@@ -14652,13 +14652,14 @@ class HttpCacheNoVarySearchTestBase
     return scoped_mock_transactions_.back();
   }
 
-  void FetchIntoCache(std::string_view query,
-                      std::string_view no_vary_search,
-                      int max_age = kMaxAgeOneDay,
-                      ETagUsage use_etag = kIncludeETagHeader) {
+  std::string FetchIntoCache(std::string_view query,
+                             std::string_view no_vary_search,
+                             int max_age = kMaxAgeOneDay,
+                             ETagUsage use_etag = kIncludeETagHeader) {
     MockTransaction& transaction =
         CreateMockTransaction(query, no_vary_search, max_age, use_etag);
     MockHttpRequest network_request(transaction);
+    std::string cache_key = network_request.CacheKey();
 
     HttpResponseInfo info;
     RunTransactionTestWithRequest(cache(), transaction, network_request, &info);
@@ -14668,6 +14669,29 @@ class HttpCacheNoVarySearchTestBase
     EXPECT_FALSE(info.was_cached);
     EXPECT_TRUE(info.network_accessed);
     EXPECT_EQ(info.headers->response_code(), 200);
+    return cache_key;
+  }
+
+  void RewriteCachedResponseInfo(
+      const std::string& cache_key,
+      std::string_view raw_headers,
+      bool truncated,
+      std::optional<int64_t> zstd_uncompressed_body_size = std::nullopt) {
+    disk_cache::Entry* entry = nullptr;
+    ASSERT_TRUE(http_cache_->OpenBackendEntry(cache_key, &entry));
+    disk_cache::ScopedEntryPtr closer(entry);
+
+    HttpResponseInfo cached_response;
+    bool was_truncated = false;
+    ASSERT_TRUE(MockHttpCache::ReadResponseInfo(entry, &cached_response,
+                                                &was_truncated));
+    if (!raw_headers.empty()) {
+      cached_response.headers = base::MakeRefCounted<HttpResponseHeaders>(
+          HttpUtil::AssembleRawHeaders(raw_headers));
+    }
+    cached_response.zstd_uncompressed_body_size = zstd_uncompressed_body_size;
+    ASSERT_TRUE(MockHttpCache::WriteResponseInfo(
+        entry, &cached_response, /*skip_transient_headers=*/true, truncated));
   }
 
  private:
@@ -14730,6 +14754,136 @@ TEST_P(HttpCacheNoVarySearchTest, SimpleSuccess) {
   EXPECT_FALSE(info.network_accessed);
   EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
   EXPECT_EQ(info.headers->response_code(), 200);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, ExternalValidatorDoesNotMatch) {
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  MockTransaction& transaction = CreateMockTransaction("q=fred&a=2", "");
+  transaction.request_headers = "If-None-Match: W/\"bar\"\r\n";
+  MockHttpRequest request(transaction);
+
+  HttpResponseInfo info;
+  RunTransactionTestWithRequest(cache(), transaction, request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.headers->response_code(), 200);
+
+  MockTransaction& probe = CreateMockTransaction("q=fred&a=3", "");
+  MockHttpRequest probe_request(probe);
+  RunTransactionTestWithRequest(cache(), probe, probe_request, &info);
+  EXPECT_TRUE(info.was_cached);
+  EXPECT_FALSE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, ExternalValidatorMatchesOriginalUrl) {
+  MockTransaction& transaction = CreateMockTransaction("q=fred&a=2", "");
+  MockHttpRequest initial_request(transaction);
+  const std::string original_url_cache_key = initial_request.CacheKey();
+  HttpResponseInfo info;
+  RunTransactionTestWithRequest(cache(), transaction, initial_request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.headers->response_code(), 200);
+
+  ASSERT_NO_FATAL_FAILURE(
+      RewriteCachedResponseInfo(original_url_cache_key,
+                                "HTTP/1.1 200 OK\n"
+                                "Cache-Control: max-age=86400\n"
+                                "ETag: W/\"bar\"\n",
+                                /*truncated=*/false));
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  transaction.request_headers = "If-None-Match: W/\"bar\"\r\n";
+  transaction.status = "HTTP/1.1 304 Not Modified";
+  MockHttpRequest request(transaction);
+
+  RunTransactionTestWithRequest(cache(), transaction, request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_VALIDATED);
+  EXPECT_EQ(info.headers->response_code(), 304);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, CompressedEntryWithDecompressionDisabled) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kHttpCacheZstdDecompression);
+  std::string cache_key = FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  ASSERT_NO_FATAL_FAILURE(RewriteCachedResponseInfo(
+      cache_key, /*raw_headers=*/"", /*truncated=*/false,
+      /*zstd_uncompressed_body_size=*/1));
+
+  MockTransaction& transaction = CreateMockTransaction("q=fred&a=2", "");
+  MockHttpRequest request(transaction);
+
+  HttpResponseInfo info;
+  RunTransactionTestWithRequest(cache(), transaction, request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.headers->response_code(), 200);
+
+  MockTransaction& probe = CreateMockTransaction("q=fred&a=3", "");
+  MockHttpRequest probe_request(probe);
+  RunTransactionTestWithRequest(cache(), probe, probe_request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_NOT_IN_CACHE);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, TruncatedCompressedEntry) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kHttpCacheZstdDecompression);
+  std::string cache_key = FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  ASSERT_NO_FATAL_FAILURE(RewriteCachedResponseInfo(
+      cache_key, /*raw_headers=*/"", /*truncated=*/true,
+      /*zstd_uncompressed_body_size=*/1));
+
+  MockTransaction& transaction = CreateMockTransaction("q=fred&a=2", "");
+  MockHttpRequest request(transaction);
+
+  HttpResponseInfo info;
+  RunTransactionTestWithRequest(cache(), transaction, request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_NOT_IN_CACHE);
+  EXPECT_EQ(info.headers->response_code(), 200);
+
+  MockTransaction& probe = CreateMockTransaction("q=fred&a=3", "");
+  MockHttpRequest probe_request(probe);
+  RunTransactionTestWithRequest(cache(), probe, probe_request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_NOT_IN_CACHE);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, OversizedTruncatedEntry) {
+  std::string cache_key = FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  ASSERT_NO_FATAL_FAILURE(
+      RewriteCachedResponseInfo(cache_key,
+                                "HTTP/1.1 200 OK\n"
+                                "Cache-Control: max-age=86400\n"
+                                "Content-Length: 2147483648\n"
+                                "ETag: \"foo\"\n"
+                                "No-Vary-Search: params=(\"a\")\n",
+                                /*truncated=*/true));
+
+  MockTransaction& transaction = CreateMockTransaction("q=fred&a=2", "");
+  MockHttpRequest request(transaction);
+
+  HttpResponseInfo info;
+  RunTransactionTestWithRequest(cache(), transaction, request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_NOT_IN_CACHE);
+  EXPECT_EQ(info.headers->response_code(), 200);
+
+  MockTransaction& probe = CreateMockTransaction("q=fred&a=3", "");
+  MockHttpRequest probe_request(probe);
+  RunTransactionTestWithRequest(cache(), probe, probe_request, &info);
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_NOT_IN_CACHE);
 }
 
 TEST_P(HttpCacheNoVarySearchTest, HeadMethodSupported) {
