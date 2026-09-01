@@ -127,11 +127,19 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     mock_client_.OnGestureEventForPinchAck(event, ack_source, ack_result);
+    if (destroy_queue_on_ack_) {
+      queue_.reset();
+    }
+  }
+
+  void set_destroy_queue_on_ack(bool destroy) {
+    destroy_queue_on_ack_ = destroy;
   }
 
   testing::StrictMock<MockTouchpadPinchEventQueueClient> mock_client_;
   std::unique_ptr<TouchpadPinchEventQueue> queue_;
   base::circular_deque<HandleEventCallback> callbacks_;
+  bool destroy_queue_on_ack_ = false;
 };
 
 MATCHER_P(EventHasType,
@@ -628,6 +636,44 @@ TEST_F(TouchpadPinchEventQueueTest, IgnoreNonMatchingEvents) {
                     blink::mojom::InputEventResultState::kConsumed);
   SendWheelEventAck(blink::mojom::InputEventResultSource::kBrowser,
                     blink::mojom::InputEventResultState::kIgnored);
+}
+
+TEST_F(TouchpadPinchEventQueueTest, SynchronousDestructionDuringPinchBeginAck) {
+  set_destroy_queue_on_ack(true);
+  EXPECT_CALL(mock_client_,
+              OnGestureEventForPinchAck(
+                  EventHasType(blink::WebInputEvent::Type::kGesturePinchBegin),
+                  blink::mojom::InputEventResultSource::kBrowser,
+                  blink::mojom::InputEventResultState::kIgnored));
+  QueuePinchBegin();
+  EXPECT_EQ(nullptr, queue_);
+}
+
+TEST_F(TouchpadPinchEventQueueTest,
+       SynchronousDestructionDuringPinchUpdateAck) {
+  ::testing::InSequence sequence;
+  EXPECT_CALL(mock_client_,
+              OnGestureEventForPinchAck(
+                  EventHasType(blink::WebInputEvent::Type::kGesturePinchBegin),
+                  blink::mojom::InputEventResultSource::kBrowser,
+                  blink::mojom::InputEventResultState::kIgnored));
+  EXPECT_CALL(mock_client_,
+              SendMouseWheelEventForPinchImmediately(
+                  ::testing::AllOf(EventHasCtrlModifier(), EventIsBlocking())));
+  EXPECT_CALL(mock_client_,
+              OnGestureEventForPinchAck(
+                  EventHasType(blink::WebInputEvent::Type::kGesturePinchUpdate),
+                  blink::mojom::InputEventResultSource::kMainThread,
+                  blink::mojom::InputEventResultState::kConsumed));
+
+  QueuePinchBegin();
+  QueuePinchUpdate(1.23, false);
+
+  set_destroy_queue_on_ack(true);
+  SendWheelEventAck(blink::mojom::InputEventResultSource::kMainThread,
+                    blink::mojom::InputEventResultState::kConsumed);
+
+  EXPECT_EQ(nullptr, queue_);
 }
 
 }  // namespace input

@@ -148,8 +148,12 @@ void TouchpadPinchEventQueue::ProcessMouseWheelAck(
         (ack_result == blink::mojom::InputEventResultState::kConsumed);
 
   pinch_event_awaiting_ack_->latency.AddNewLatencyFrom(ack_event.latency);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   client_->OnGestureEventForPinchAck(*pinch_event_awaiting_ack_, ack_source,
                                      ack_result);
+  if (!weak_this) {
+    return;
+  }
 
   pinch_event_awaiting_ack_.reset();
   TryForwardNextEventToRenderer();
@@ -167,13 +171,22 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
 
   if (pinch_event_awaiting_ack_->event.GetType() ==
       blink::WebInputEvent::Type::kGesturePinchBegin) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    auto dispatch_callback =
+        std::move(pinch_event_awaiting_ack_->dispatch_callback);
+    const blink::WebGestureEvent event = pinch_event_awaiting_ack_->event;
     client_->OnGestureEventForPinchAck(
         *pinch_event_awaiting_ack_,
         blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kIgnored);
-    std::move(pinch_event_awaiting_ack_->dispatch_callback)
-        .Run(pinch_event_awaiting_ack_->event,
-             DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
+    std::move(dispatch_callback)
+        .Run(event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     pinch_event_awaiting_ack_.reset();
     TryForwardNextEventToRenderer();
     return;
@@ -215,7 +228,7 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
   client_->SendMouseWheelEventForPinchImmediately(
       pinch_event_awaiting_ack_->event, synthetic_wheel,
       base::BindOnce(&TouchpadPinchEventQueue::ProcessMouseWheelAck,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       pinch_event_awaiting_ack_->dispatch_callback);
 }
 
