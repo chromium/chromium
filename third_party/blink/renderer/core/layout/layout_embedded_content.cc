@@ -61,8 +61,6 @@ void LayoutEmbeddedContent::WillBeDestroyed(const ComputedStyle* style) {
     frame_owner->SetEmbeddedContentView(nullptr);
 
   LayoutReplaced::WillBeDestroyed(style);
-
-  ClearNode();
 }
 
 FrameView* LayoutEmbeddedContent::ChildFrameView() const {

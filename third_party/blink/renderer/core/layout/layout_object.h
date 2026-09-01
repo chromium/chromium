@@ -1748,11 +1748,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsPseudoElement() ? nullptr : GetNode();
   }
 
-  void ClearNode() {
-    NOT_DESTROYED();
-    node_ = nullptr;
-  }
-
   // Returns the styled node that caused the generation of this layoutObject.
   // It will its GetNode(), or the first layout ancestor GetNode().
   //
