@@ -17,18 +17,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -1285,7 +1283,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testGetViewForUrlBackFocus() {
-        reset(mLocationBarDataProvider);
+        clearInvocations(mLocationBarDataProvider);
         doReturn(mView).when(mTab).getView();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         assertEquals(mView, mMediator.getViewForUrlBackFocus());
@@ -1958,7 +1956,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testAnimateIconChanges_bottomToolbar() {
         doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
-        reset(mStatusCoordinator);
+        clearInvocations(mStatusCoordinator);
         mMediator.onUrlFocusChange(true);
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
     }
@@ -1966,7 +1964,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testAnimateIconChanges_desktopPlatform() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        reset(mStatusCoordinator);
+        clearInvocations(mStatusCoordinator);
         mMediator.onUrlFocusChange(true);
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
     }
@@ -2057,7 +2055,7 @@ public class LocationBarMediatorUnitTest {
         UrlBarData urlBarData = UrlBarData.create(null, "text", 0, 0, "text");
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         mTabletMediator.onUrlFocusChange(true);
-        reset(mStatusCoordinator);
+        clearInvocations(mStatusCoordinator);
 
         mTabletMediator.onUrlFocusChange(false);
 
@@ -2175,7 +2173,7 @@ public class LocationBarMediatorUnitTest {
                 .when(mUrlCoordinator)
                 .requestFocus();
 
-        reset(mAutocompleteCoordinator);
+        clearInvocations(mAutocompleteCoordinator);
 
         doReturn(mOmniboxAnimator)
                 .when(mAutocompleteCoordinator)
@@ -2193,7 +2191,7 @@ public class LocationBarMediatorUnitTest {
         verify(mLocationBarLayout, atLeast(1)).setMicButtonVisibility(false);
         verify(mLocationBarLayout, never()).setMicButtonVisibility(true);
 
-        reset(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
         mMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
@@ -2265,7 +2263,7 @@ public class LocationBarMediatorUnitTest {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
-        reset(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
 
@@ -2314,7 +2312,7 @@ public class LocationBarMediatorUnitTest {
         mTabletMediator.onUrlFocusChange(true);
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        reset(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
 
@@ -2366,7 +2364,7 @@ public class LocationBarMediatorUnitTest {
         mTabletMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         mTabletMediator.onUrlFocusChange(true);
         doReturn(inputText).when(mUrlCoordinator).getTextWithAutocomplete();
-        reset(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
 
@@ -2417,7 +2415,7 @@ public class LocationBarMediatorUnitTest {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mTabletMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        reset(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
 
@@ -2433,7 +2431,7 @@ public class LocationBarMediatorUnitTest {
     public void testButtonVisibility_tablet() {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onFinishNativeInitialization();
-        reset(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         int buttonWidth =
@@ -2454,7 +2452,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onFinishNativeInitialization();
         mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(false);
-        reset(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         mTabletMediator.updateButtonVisibility();
@@ -2917,7 +2915,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(false);
         mMediator.setUrlFocusChangeInProgress(false);
 
-        reset(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
 
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(true);
@@ -2927,7 +2925,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testInstallButton_invisibleIfNotInstallable() {
         doReturn(false).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        reset(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
 
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(false);
@@ -2939,7 +2937,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(true);
         mMediator.setUrlFocusChangeInProgress(false);
 
-        reset(mLocationBarLayout, mLocationBarEmbedder);
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
 
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(false);
@@ -3831,7 +3829,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.handleUrlFocusAnimation(true);
         assertTrue(mMediator.isParentedToSuggestionsContainer());
 
-        reset(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
 
