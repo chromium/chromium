@@ -61,32 +61,15 @@ constexpr FuzzerTestCase kFuzzerTestCases[] = {
     // LLVM-style Fuzzers
     {
         .fuzzer = "llvm_stub_fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/536875721): Expect kSuccess when MSAN is
-        // fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kSuccess,
-#endif
     },
     {
         .fuzzer = "llvm_crashing_fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/536875721): Expect kCrash when MSAN is fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kCrash,
-#endif
     },
     {
         .fuzzer = "lpm_stub_fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/526656114): Expect kSuccess when MSAN is
-        // fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kSuccess,
-#endif
     },
 
 // Native FuzzTest Wrappers
@@ -96,43 +79,21 @@ constexpr FuzzerTestCase kFuzzerTestCases[] = {
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
     {
         .fuzzer = "fuzztest_stub_fuzzer_FuzzTestStub_Stub_fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/536875721): Expect kSuccess when MSAN is
-        // fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kSuccess,
-#endif
     },
     {
         .fuzzer = "fuzztest_crashing_fuzzer_FuzzTestCrashing_FastCrash_fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/536875721): Expect kCrash when MSAN is fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kCrash,
-#endif
     },
     {
         .fuzzer = "fuzztest_proto_stub_fuzzer_FuzzTestProtoStub_Stub_fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/536875721): Expect kSuccess when MSAN is
-        // fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kSuccess,
-#endif
     },
     {
         .fuzzer =
             "fuzztest_proto_crashing_fuzzer_FuzzTestProtoCrashing_FastCrash_"
             "fuzzer",
-#if defined(MEMORY_SANITIZER)
-        // TODO(https://crbug.com/536875721): Expect kCrash when MSAN is fixed.
-        .expectation = FuzzExpectation::kExecutionFailure,
-#else
         .expectation = FuzzExpectation::kCrash,
-#endif
     },
 #endif
 
@@ -194,14 +155,7 @@ INSTANTIATE_TEST_SUITE_P(
 // (which uses SIGTERM first).
 #if BUILDFLAG(USE_FUZZTEST_WRAPPER) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC))
-// TODO(https://crbug.com/536875721): Re-enable when MSAN builds are fixed.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_WrapperDoesNotLeakChildOnSIGTERM \
-  DISABLED_WrapperDoesNotLeakChildOnSIGTERM
-#else
-#define MAYBE_WrapperDoesNotLeakChildOnSIGTERM WrapperDoesNotLeakChildOnSIGTERM
-#endif
-TEST(FuzzTestWrapperSmokeTest, MAYBE_WrapperDoesNotLeakChildOnSIGTERM) {
+TEST(FuzzTestWrapperSmokeTest, WrapperDoesNotLeakChildOnSIGTERM) {
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 
