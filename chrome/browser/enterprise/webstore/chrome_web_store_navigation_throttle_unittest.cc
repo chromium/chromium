@@ -195,6 +195,8 @@ TEST_F(ChromeWebStoreNavigationThrottleTest,
 
   test_handle.set_url(GURL("https://www.notchromewebstore.test/"));
 
+  EXPECT_CALL(test_handle, RemoveRequestHeader(kBrowserDmTokenHeader));
+  EXPECT_CALL(test_handle, RemoveRequestHeader(kDeviceIdHeader));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_EQ(throttle->WillRedirectRequest().action(),
             NavigationThrottle::PROCEED);

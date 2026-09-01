@@ -30,6 +30,8 @@ ChromeWebStoreNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ChromeWebStoreNavigationThrottle::WillRedirectRequest() {
+  navigation_handle()->RemoveRequestHeader(kDmTokenHeader);
+  navigation_handle()->RemoveRequestHeader(kDeviceIdHeader);
   return MaybeAppendHeaders();
 }
 
