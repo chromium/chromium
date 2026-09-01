@@ -158,5 +158,40 @@ TEST_F(UsageTrackerTest, ClearAllUseCaseUsages) {
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), std::nullopt);
 }
 
+// TODO(crbug.com/548711885): Remove this test when scam detection code is
+// updated to pass the right priority.
+TEST_F(UsageTrackerTest, ScamDetectionNeverUserBlocking) {
+  const std::string scam_detection_use_case =
+      ToUseCaseName(mojom::OnDeviceFeature::kScamDetection);
+
+  usage_tracker().RaisePriority(scam_detection_use_case,
+                                Priority::kUserBlocking);
+  EXPECT_EQ(usage_tracker().GetPriority(scam_detection_use_case),
+            Priority::kBestEffort);
+}
+
+// TODO(crbug.com/548711885): Remove this test when scam detection code is
+// updated to pass the right priority.
+TEST_F(UsageTrackerTest, ScamDetectionObserverNotifiedWithBestEffort) {
+  const std::string scam_detection_use_case =
+      ToUseCaseName(mojom::OnDeviceFeature::kScamDetection);
+  MockUsageTrackerObserver observer;
+  usage_tracker().AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnPriorityIncrease(scam_detection_use_case,
+                                           std::optional<Priority>()))
+      .Times(1);
+  usage_tracker().RaisePriority(scam_detection_use_case,
+                                Priority::kUserBlocking);
+
+  // Calling RaisePriority again with kUserBlocking does not fire observer again
+  // because priority was clamped to kBestEffort.
+  EXPECT_CALL(observer, OnPriorityIncrease).Times(0);
+  usage_tracker().RaisePriority(scam_detection_use_case,
+                                Priority::kUserBlocking);
+
+  usage_tracker().RemoveObserver(&observer);
+}
+
 }  // namespace
 }  // namespace optimization_guide

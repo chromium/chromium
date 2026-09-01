@@ -24,6 +24,12 @@ UsageTracker::~UsageTracker() = default;
 
 void UsageTracker::RaisePriority(const std::string& use_case_name,
                                  Priority priority) {
+  // TODO(crbug.com/548711885): Bandaid fix to avoid downloading scam detection
+  // model at foreground priority.
+  if (use_case_name == ToUseCaseName(mojom::OnDeviceFeature::kScamDetection)) {
+    priority = Priority::kBestEffort;
+  }
+
   TRACE_EVENT("optimization_guide", "UsageTracker::RaisePriority", "use_case",
               use_case_name, "priority", static_cast<int>(priority));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
