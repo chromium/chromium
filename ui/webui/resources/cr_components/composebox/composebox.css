@@ -494,6 +494,11 @@ search-animated-glow {
   --cr-icon-button-icon-size: 12px;
 }
 
+:host-context([webui-rounded-icons]):host([searchbox-next-enabled])
+    cr-composebox-submit::part(submit-icon) {
+  --cr-icon-button-icon-size: 24px;
+}
+
 :host([expanding_][show-dropdown][searchbox-next-enabled][searchbox-layout-mode='Compact']) cr-composebox-dropdown {
   padding-bottom: 0;
   padding-top: 4px;
