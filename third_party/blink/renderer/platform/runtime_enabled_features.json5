@@ -2547,10 +2547,6 @@
       settable_from_internals: true
     },
     {
-      name: "EditingLineMovementWithRubyFix",
-      status: "stable",
-    },
-    {
       name: "EditingUseDomPositionApi",
       status: "test",
     },
