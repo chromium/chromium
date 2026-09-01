@@ -3274,6 +3274,26 @@ bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
   }
 }
 
+static bool MatchesHighlightName(const AtomicString& selector_highlight_name,
+                                 const String& request_highlight_name) {
+  if (selector_highlight_name == CSSSelector::UniversalSelectorAtom()) {
+    return true;
+  }
+  return selector_highlight_name.Impl() == request_highlight_name;
+}
+bool SelectorChecker::MatchAllHighlightRules(
+    const SelectorCheckingContext& context) const {
+  if (mode_ == SelectorChecker::Mode::kResolvingStyle) {
+    // Match all ::highlight() rules if we are matching rules for the
+    // originating element, tracking the existence of any ::highlight() styles
+    // via dynamic_pseudo.
+    return context.pseudo_id != kPseudoIdHighlight;
+  }
+  // We are collecting rules for other purposes, either for a specific
+  // ::highlight() name, or for ::highlight() rules in general.
+  return !pseudo_argument_;
+}
+
 bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
                                          MatchResult& result) const {
   const CSSSelector& selector = *context.selector;
@@ -3368,15 +3388,16 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoHighlight: {
       result.dynamic_pseudo = PseudoId::kPseudoIdHighlight;
-      // A null pseudo_argument_ means we are matching rules on the originating
-      // element. We keep track of which pseudo-elements may match for the
-      // element through result.dynamic_pseudo. For ::highlight() pseudo-
-      // elements we have a single flag for tracking whether an element may
-      // match _any_ ::highlight() element (kPseudoIdHighlight).
-      if (!pseudo_argument_ || pseudo_argument_ == selector.Argument()) {
+      // We keep track of which pseudo-elements may match for the element
+      // through result.dynamic_pseudo. For ::highlight() pseudo-elements we
+      // have a single flag for tracking whether an element may match _any_
+      // ::highlight() element (kPseudoIdHighlight).
+      if (MatchAllHighlightRules(context) ||
+          MatchesHighlightName(selector.Argument(), pseudo_argument_)) {
         result.custom_highlight_name = selector.Argument().Impl();
         return true;
       }
+
       return false;
     }
     case CSSSelector::kPseudoViewTransition:

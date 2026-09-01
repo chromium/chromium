@@ -7196,20 +7196,40 @@ void Element::RecalcCustomHighlightPseudoStyle(
     const ComputedStyle& originating_style) {
   const HashSet<AtomicString>* highlight_names =
       originating_style.CustomHighlightNames();
+  StyleHighlightData& highlights = builder.AccessHighlightData();
+
+  if (originating_style.HasCustomHighlightUniversalSelector()) {
+    const ComputedStyle* universal_parent =
+        parent_highlights ? parent_highlights->CustomHighlightUniversal()
+                          : nullptr;
+    // Resolve this element's own ::highlight(*) style.
+    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, universal_parent,
+                                         originating_style,
+                                         style_recalc_context.size_container)) {
+      highlights.SetCustomHighlightUniversal(StyleForHighlightPseudoElement(
+          style_recalc_context, universal_parent, originating_style,
+          kPseudoIdHighlight, CSSSelector::UniversalSelectorAtom()));
+    }
+  }
+
   if (!highlight_names) {
     return;
   }
 
-  StyleHighlightData& highlights = builder.AccessHighlightData();
   for (const auto& highlight_name : *highlight_names) {
-    const ComputedStyle* highlight_parent =
+    const ComputedStyle* parent_highlight_style =
         parent_highlights ? parent_highlights->CustomHighlight(highlight_name)
                           : nullptr;
-    if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
-                                         originating_style,
-                                         style_recalc_context.size_container)) {
+    if (!parent_highlight_style && parent_highlights) {
+      // Names the parent has no style for inherit from the parent's
+      // universal style.
+      parent_highlight_style = parent_highlights->CustomHighlightUniversal();
+    }
+    if (ShouldRecalcHighlightPseudoStyle(
+            highlight_recalc, parent_highlight_style, originating_style,
+            style_recalc_context.size_container)) {
       const ComputedStyle* highlight_style = StyleForHighlightPseudoElement(
-          style_recalc_context, highlight_parent, originating_style,
+          style_recalc_context, parent_highlight_style, originating_style,
           kPseudoIdHighlight, highlight_name);
 
       // Always update, even when there is no longer a matching style.

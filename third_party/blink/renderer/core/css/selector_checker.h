@@ -453,6 +453,7 @@ class CORE_EXPORT SelectorChecker {
   bool MatchesAnyInList(const SelectorCheckingContext& context,
                         const CSSSelector* selector_list,
                         MatchResult& result) const;
+  bool MatchAllHighlightRules(const SelectorCheckingContext& context) const;
 
   enum FeaturelessMatch {
     // Matches a selector which is allowed to match the featureless element.

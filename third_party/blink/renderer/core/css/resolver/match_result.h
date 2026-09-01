@@ -207,6 +207,12 @@ class CORE_EXPORT MatchResult {
   bool HasNonUniversalHighlightPseudoStyles() const {
     return has_non_universal_highlight_pseudo_styles_;
   }
+  void SetHasCustomHighlightUniversalSelector() {
+    has_custom_highlight_universal_selector_ = true;
+  }
+  bool HasCustomHighlightUniversalSelector() const {
+    return has_custom_highlight_universal_selector_;
+  }
   void SetHasNonUaHighlightPseudoStyles() {
     has_non_ua_highlight_pseudo_styles_ = true;
   }
@@ -274,6 +280,7 @@ class CORE_EXPORT MatchResult {
   bool conditionally_affects_animations_{false};
   bool has_non_universal_highlight_pseudo_styles_{false};
   bool has_non_ua_highlight_pseudo_styles_{false};
+  bool has_custom_highlight_universal_selector_{false};
   bool highlights_depend_on_size_container_queries_{false};
   MatchFlags flags_{0};
 #if DCHECK_IS_ON()

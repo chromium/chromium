@@ -2051,10 +2051,16 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     }
     case CSSSelector::kPseudoHighlight: {
       const CSSParserToken& ident = stream.Peek();
-      if (ident.GetType() != kIdentToken) {
+      if (ident.GetType() == kIdentToken) {
+        selector.SetArgument(ident.Value().ToAtomicString());
+      } else if (RuntimeEnabledFeatures::
+                     CSSCustomHighlightUniversalSelectorEnabled() &&
+                 ident.GetType() == kDelimiterToken &&
+                 ident.Delimiter() == '*') {
+        selector.SetArgument(CSSSelector::UniversalSelectorAtom());
+      } else {
         return false;
       }
-      selector.SetArgument(ident.Value().ToAtomicString());
       stream.ConsumeIncludingWhitespace();
       if (!stream.AtEnd()) {
         return false;

@@ -308,10 +308,14 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
                      ? 0
                      : kTagSpecificity;
         }
+        case kPseudoHighlight:
+          if (Argument() == UniversalSelectorAtom()) {
+            return 0;
+          }
+          [[fallthrough]];
         default:
-          break;
+          return kTagSpecificity;
       }
-      return kTagSpecificity;
     case kClass:
     case kAttributeExact:
     case kAttributeSet:
@@ -1496,7 +1500,12 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
       case kPseudoPicker:
       case kPseudoHighlight: {
         builder.Append('(');
-        SerializeIdentifier(Argument(), builder);
+        if (GetPseudoType() == kPseudoHighlight &&
+            Argument() == UniversalSelectorAtom()) {
+          builder.Append('*');
+        } else {
+          SerializeIdentifier(Argument(), builder);
+        }
         builder.Append(')');
         break;
       }

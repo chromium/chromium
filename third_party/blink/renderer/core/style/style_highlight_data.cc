@@ -39,6 +39,8 @@ bool StyleHighlightData::operator==(const StyleHighlightData& other) const {
                                 other.search_text_not_current_) &&
          base::ValuesEquivalent(spelling_error_, other.spelling_error_) &&
          base::ValuesEquivalent(grammar_error_, other.grammar_error_) &&
+         base::ValuesEquivalent(custom_highlight_universal_,
+                                other.custom_highlight_universal_) &&
          HighlightStyleMapEquals(custom_highlights_, other.custom_highlights_);
 }
 
@@ -59,7 +61,9 @@ const ComputedStyle* StyleHighlightData::Style(
     case kPseudoIdGrammarError:
       return GrammarError();
     case kPseudoIdHighlight:
-      return CustomHighlight(pseudo_argument);
+      return pseudo_argument == CSSSelector::UniversalSelectorAtom()
+                 ? CustomHighlightUniversal()
+                 : CustomHighlight(pseudo_argument);
     default:
       NOTREACHED();
   }
@@ -101,6 +105,14 @@ const ComputedStyle* StyleHighlightData::CustomHighlight(
   return nullptr;
 }
 
+const ComputedStyle* StyleHighlightData::CustomHighlightOrUniversal(
+    const AtomicString& highlight_name) const {
+  if (const ComputedStyle* style = CustomHighlight(highlight_name)) {
+    return style;
+  }
+  return CustomHighlightUniversal();
+}
+
 void StyleHighlightData::SetSelection(const ComputedStyle* style) {
   selection_ = style;
 }
@@ -135,6 +147,11 @@ void StyleHighlightData::SetCustomHighlight(const AtomicString& highlight_name,
   }
 }
 
+void StyleHighlightData::SetCustomHighlightUniversal(
+    const ComputedStyle* style) {
+  custom_highlight_universal_ = style;
+}
+
 bool StyleHighlightData::DependsOnSizeContainerQueries() const {
   if ((selection_ && (selection_->DependsOnSizeContainerQueries() ||
                       selection_->HasContainerRelativeValue())) ||
@@ -143,7 +160,12 @@ bool StyleHighlightData::DependsOnSizeContainerQueries() const {
       (spelling_error_ && (spelling_error_->DependsOnSizeContainerQueries() ||
                            spelling_error_->HasContainerRelativeValue())) ||
       (grammar_error_ && (grammar_error_->DependsOnSizeContainerQueries() ||
-                          grammar_error_->HasContainerRelativeValue()))) {
+                          grammar_error_->HasContainerRelativeValue())) ||
+      (custom_highlight_universal_ &&
+       (custom_highlight_universal_->DependsOnSizeContainerQueries() ||
+        custom_highlight_universal_->HasContainerRelativeValue()))
+
+  ) {
     return true;
   }
   for (const auto& style : custom_highlights_) {
@@ -163,6 +185,7 @@ void StyleHighlightData::Trace(Visitor* visitor) const {
   visitor->Trace(spelling_error_);
   visitor->Trace(grammar_error_);
   visitor->Trace(custom_highlights_);
+  visitor->Trace(custom_highlight_universal_);
 }
 
 }  // namespace blink

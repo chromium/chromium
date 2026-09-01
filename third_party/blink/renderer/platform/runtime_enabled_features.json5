@@ -1614,6 +1614,10 @@
       status: "experimental",
     },
     {
+      name: "CSSCustomHighlightUniversalSelector",
+      status: "experimental",
+    },
+    {
       name: "CSSCustomMedia",
       status: "test",
     },

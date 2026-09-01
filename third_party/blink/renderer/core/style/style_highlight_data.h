@@ -40,6 +40,10 @@ class CORE_EXPORT StyleHighlightData final {
   const ComputedStyle* SpellingError() const;
   const ComputedStyle* GrammarError() const;
   const ComputedStyle* CustomHighlight(const AtomicString&) const;
+  const ComputedStyle* CustomHighlightUniversal() const {
+    return custom_highlight_universal_.Get();
+  }
+  const ComputedStyle* CustomHighlightOrUniversal(const AtomicString&) const;
   const CustomHighlightsStyleMap& CustomHighlights() const {
     return custom_highlights_;
   }
@@ -50,6 +54,7 @@ class CORE_EXPORT StyleHighlightData final {
   void SetSpellingError(const ComputedStyle*);
   void SetGrammarError(const ComputedStyle*);
   void SetCustomHighlight(const AtomicString&, const ComputedStyle*);
+  void SetCustomHighlightUniversal(const ComputedStyle*);
 
   bool StylesDependOnFunc(
       base::FunctionRef<bool(const ComputedStyle&)> func) const {
@@ -71,6 +76,9 @@ class CORE_EXPORT StyleHighlightData final {
     if (grammar_error_ && func(*grammar_error_)) {
       return true;
     }
+    if (custom_highlight_universal_ && func(*custom_highlight_universal_)) {
+      return true;
+    }
     for (const auto& custom_highlight : custom_highlights_) {
       if (custom_highlight.value && func(*custom_highlight.value)) {
         return true;
@@ -90,6 +98,7 @@ class CORE_EXPORT StyleHighlightData final {
   Member<const ComputedStyle> target_text_;
   Member<const ComputedStyle> spelling_error_;
   Member<const ComputedStyle> grammar_error_;
+  Member<const ComputedStyle> custom_highlight_universal_;
   CustomHighlightsStyleMap custom_highlights_;
 };
 

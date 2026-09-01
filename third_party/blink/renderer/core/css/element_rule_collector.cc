@@ -1435,9 +1435,14 @@ void ElementRuleCollector::DidMatchRule(
       }
 
       if (dynamic_pseudo == kPseudoIdHighlight) {
-        DCHECK(result.custom_highlight_name);
-        result_.AddCustomHighlightName(
-            AtomicString(result.custom_highlight_name));
+        if (result.custom_highlight_name ==
+            CSSSelector::UniversalSelectorAtom().Impl()) {
+          result_.SetHasCustomHighlightUniversalSelector();
+        } else {
+          DCHECK(result.custom_highlight_name);
+          result_.AddCustomHighlightName(
+              AtomicString(result.custom_highlight_name));
+        }
       }
     } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query_set) {
       result_.SetFirstLineDependsOnSizeContainerQueries();

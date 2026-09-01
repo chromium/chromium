@@ -290,6 +290,19 @@
       reset_on_new_style: true,
       custom_compare: true,
     },
+    // Whether any ::highlight(*) universal selectors were found when
+    // collecting rules for the originating element. Stored in the
+    // *originating* style, and needs to be restored *non-monotonically* in
+    // ApplyMatchedCache.
+    {
+      name: "HasCustomHighlightUniversalSelector",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      reset_on_new_style: true,
+      custom_compare: true,
+    },
     // Whether any highlight pseudo selectors were found within container
     // query blocks.
     {

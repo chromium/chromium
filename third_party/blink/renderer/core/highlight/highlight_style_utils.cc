@@ -332,7 +332,7 @@ const ComputedStyle* HighlightStyleUtils::HighlightPseudoStyle(
     case kPseudoIdGrammarError:
       return style.HighlightData().GrammarError();
     case kPseudoIdHighlight:
-      return style.HighlightData().CustomHighlight(pseudo_argument);
+      return style.HighlightData().CustomHighlightOrUniversal(pseudo_argument);
     default:
       NOTREACHED();
   }
@@ -605,7 +605,7 @@ bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
     return false;
   }
   const ComputedStyle* pseudo_style =
-      layout_object->StyleRef().HighlightData().CustomHighlight(
+      layout_object->StyleRef().HighlightData().CustomHighlightOrUniversal(
           pseudo_argument);
   if (!pseudo_style) {
     return false;
