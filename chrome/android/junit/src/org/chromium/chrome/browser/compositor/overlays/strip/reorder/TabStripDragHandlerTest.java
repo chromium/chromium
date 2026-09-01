@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
@@ -167,9 +166,7 @@ public class TabStripDragHandlerTest {
     private Activity mActivity;
     private ViewGroup mTabsToolbarView;
     private Tab mTabBeingDragged;
-    private Tab mTabBeingDragged2;
     private Tab mGroupedTab1;
-    private Tab mGroupedTab2;
     private final ArrayList<Tab> mTabGroupBeingDragged = new ArrayList<>();
     private final ArrayList<Tab> mTabsBeingDragged = new ArrayList<>();
     private TabGroupMetadata mTabGroupMetadata;
@@ -201,14 +198,14 @@ public class TabStripDragHandlerTest {
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         mTabBeingDragged = MockTab.createAndInitialize(TAB_ID, mProfile);
-        mTabBeingDragged2 = MockTab.createAndInitialize(TAB_ID_2, mProfile);
+        Tab tabBeingDragged2 = MockTab.createAndInitialize(TAB_ID_2, mProfile);
 
         // Setup tab group being dragged.
         setupTabGroup(/* isGroupShared= */ false);
 
         // Setup multi-tab drag.
         mTabsBeingDragged.add(mTabBeingDragged);
-        mTabsBeingDragged.add(mTabBeingDragged2);
+        mTabsBeingDragged.add(tabBeingDragged2);
 
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         when(mSourceMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
@@ -1766,14 +1763,14 @@ public class TabStripDragHandlerTest {
         assertFalse(
                 "Drag shadow should not yet be visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
-                        .getShadowShownForTesting());
+                        .getShowDragShadow());
 
         // Verify the drag shadow is visible after the runnable completes.
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(
                 "Drag shadow should now be visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
-                        .getShadowShownForTesting());
+                        .getShowDragShadow());
     }
 
     private void doTestOnDragStartsOutsideSourceStripRunnableCancelledOnEnter(boolean isGroupDrag) {
@@ -1792,7 +1789,7 @@ public class TabStripDragHandlerTest {
         assertFalse(
                 "Drag shadow should not yet be visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
-                        .getShadowShownForTesting());
+                        .getShowDragShadow());
 
         // Verify the drag shadow is not visible as the runnable has been cancelled after
         // #onDragEnter. Not triggered until ACTiON_DRAG_LOCATION since the drag's y-position is
@@ -1815,7 +1812,7 @@ public class TabStripDragHandlerTest {
         assertFalse(
                 "Drag shadow should still not visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
-                        .getShadowShownForTesting());
+                        .getShowDragShadow());
     }
 
     private void testOnDragStartsOutsideSourceStripRunnableCancelledOnEnd(boolean isGroupDrag) {
@@ -1956,7 +1953,7 @@ public class TabStripDragHandlerTest {
                     "Drag shadow visibility does not match.",
                     visible,
                     ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
-                            .getShadowShownForTesting());
+                            .getShowDragShadow());
             return this;
         }
 
@@ -2081,11 +2078,11 @@ public class TabStripDragHandlerTest {
 
     private void setupTabGroup(boolean isGroupShared) {
         mGroupedTab1 = spy(MockTab.createAndInitialize(GROUPED_TAB_ID_1, mProfile));
-        mGroupedTab2 = spy(MockTab.createAndInitialize(GROUPED_TAB_ID_2, mProfile));
+        Tab groupedTab2 = spy(MockTab.createAndInitialize(GROUPED_TAB_ID_2, mProfile));
         doReturn(TAB_GROUP_ID).when(mGroupedTab1).getTabGroupId();
-        doReturn(TAB_GROUP_ID).when(mGroupedTab2).getTabGroupId();
+        doReturn(TAB_GROUP_ID).when(groupedTab2).getTabGroupId();
         mTabGroupBeingDragged.add(mGroupedTab1);
-        mTabGroupBeingDragged.add(mGroupedTab2);
+        mTabGroupBeingDragged.add(groupedTab2);
         mTabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         mTabModel,
@@ -2096,9 +2093,9 @@ public class TabStripDragHandlerTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mTabGroupBeingDragged);
         when(mTabModel.isTabModelRestored()).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
-        when(mTabModel.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(groupedTab2)).thenReturn(true);
         when(mTabModel.getTabById(mGroupedTab1.getId())).thenReturn(mGroupedTab1);
-        when(mTabModel.getTabById(mGroupedTab2.getId())).thenReturn(mGroupedTab2);
+        when(mTabModel.getTabById(groupedTab2.getId())).thenReturn(groupedTab2);
     }
 
     private void startDragAction(DragType dragType, boolean isGroupShared) {

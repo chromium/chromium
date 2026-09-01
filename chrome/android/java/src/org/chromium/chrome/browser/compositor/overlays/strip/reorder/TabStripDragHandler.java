@@ -11,9 +11,6 @@ import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.BlurMaskFilter;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Handler;
@@ -22,9 +19,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
@@ -277,7 +271,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     if (shadowBuilder instanceof TabDragShadowBuilder builder) {
                         // We register callbacks (e.g. to update the thumbnail) that may attempt to
                         // update the shadow after the drop has already ended. No-op in that case.
-                        showDragShadow(builder.mShowDragShadow);
+                        showDragShadow(builder.getShowDragShadow());
                     }
                 });
     }
@@ -640,14 +634,14 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mHoveringInStrip = false;
         mDragEverLeftStrip = true;
         if (DeviceInfo.isXr()) {
-            showDragShadow(true);
+            showDragShadow(/* show= */ true);
         }
         boolean isDragSource = isDragSource();
         if (isDragSource) {
             DragShadowBuilder shadowBuilder = DragDropGlobalState.getDragShadowBuilder();
             if (shadowBuilder instanceof TabDragShadowBuilder builder) {
                 if (mShadowView != null) {
-                    builder.mShowDragShadow = true;
+                    builder.setShowDragShadow(/* show= */ true);
                     mShadowView.expand();
                 }
             }
@@ -727,87 +721,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     protected @BackPressResult int cancelDrag() {
         mWasCancelled = true;
         return super.cancelDrag();
-    }
-
-    @VisibleForTesting
-    static class TabDragShadowBuilder extends View.DragShadowBuilder {
-        // Touch offset for drag shadow view.
-        private final Point mDragShadowOffset;
-        // Source initiating drag - to call updateDragShadow().
-        private final View mDragSourceView;
-        // Whether drag shadow should be shown.
-        private boolean mShowDragShadow;
-        // Paint for the shadow.
-        private final Paint mShadowPaint;
-        private final float mCornerRadius;
-
-        public TabDragShadowBuilder(View dragSourceView, View shadowView, Point dragShadowOffset) {
-            // Store the View parameter.
-            super(shadowView);
-            mDragShadowOffset = dragShadowOffset;
-            mDragSourceView = dragSourceView;
-
-            // Set up the shadow paint.
-            Context context = shadowView.getContext();
-            Resources resources = shadowView.getResources();
-            mShadowPaint = new Paint();
-            mShadowPaint.setAntiAlias(true);
-            mShadowPaint.setColor(context.getColor(R.color.tab_strip_reorder_shadow_color));
-            float blurThickness =
-                    resources.getDimension(R.dimen.tab_strip_dragged_tab_shadow_thickness);
-            mShadowPaint.setMaskFilter(
-                    new BlurMaskFilter(blurThickness, BlurMaskFilter.Blur.OUTER));
-            mCornerRadius = resources.getDimension(R.dimen.tab_grid_card_bg_radius);
-        }
-
-        public void update(boolean show) {
-            mShowDragShadow = show;
-            mDragSourceView.updateDragShadow(this);
-        }
-
-        @Override
-        public void onDrawShadow(Canvas canvas) {
-            View shadowView = getView();
-            if (mShowDragShadow) {
-                View cardView = shadowView.findViewById(R.id.card_view);
-                if (cardView == null) {
-                    shadowView.draw(canvas); // Fallback
-                    return;
-                }
-                // Draw the shadow.
-                canvas.drawRoundRect(
-                        cardView.getLeft(),
-                        cardView.getTop(),
-                        cardView.getRight(),
-                        cardView.getBottom(),
-                        mCornerRadius,
-                        mCornerRadius,
-                        mShadowPaint);
-
-                // Draw the view on top of the shadow.
-                shadowView.draw(canvas);
-            } else {
-                // When drag shadow should hide, replace with empty ImageView.
-                ImageView imageView = new ImageView(shadowView.getContext());
-                imageView.layout(0, 0, shadowView.getWidth(), shadowView.getHeight());
-                imageView.draw(canvas);
-            }
-        }
-
-        // Defines a callback that sends the drag shadow dimensions and touch point
-        // back to the system.
-        @Override
-        public void onProvideShadowMetrics(Point size, Point touch) {
-            // Set the size parameter's width and height values. These get back to the system
-            // through the size parameter.
-            size.set(getView().getWidth(), getView().getHeight());
-            touch.set(mDragShadowOffset.x, mDragShadowOffset.y);
-            Log.d(TAG, "DnD onProvideShadowMetrics: %s", mDragShadowOffset);
-        }
-
-        boolean getShadowShownForTesting() {
-            return mShowDragShadow;
-        }
     }
 
     DragShadowBuilder createDragShadowBuilder(
