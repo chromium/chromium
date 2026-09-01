@@ -48,7 +48,8 @@ export interface {{interface.name}}Interface {
 {%- endfor %}
 }
 
-export class {{interface.name}}Remote implements {{interface.name}}Interface {
+export class {{interface.name}}Remote implements {{interface.name}}Interface,
+    mojo.internal.interfaceSupport.InterfaceRemote<{{interface.name}}PendingReceiver> {
   private proxy: mojo.internal.interfaceSupport.InterfaceRemoteBase<{{interface.name}}PendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<{{interface.name}}PendingReceiver>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
@@ -99,7 +100,9 @@ export class {{interface.name}}Remote implements {{interface.name}}Interface {
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export class {{interface.name}}Receiver {
+export class {{interface.name}}Receiver implements
+    mojo.internal.interfaceSupport.InterfaceReceiver<
+        {{interface.name}}Remote, {{interface.name}}PendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     {{interface.name}}Remote, {{interface.name}}PendingReceiver>;
 
@@ -165,7 +168,9 @@ export class {{interface.name}} {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export class {{interface.name}}CallbackRouter {
+export class {{interface.name}}CallbackRouter implements
+    mojo.internal.interfaceSupport.InterfaceCallbackRouter<
+        {{interface.name}}Remote, {{interface.name}}PendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     {{interface.name}}Remote, {{interface.name}}PendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<

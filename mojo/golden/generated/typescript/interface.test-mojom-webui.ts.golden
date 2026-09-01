@@ -37,7 +37,8 @@ export interface IFaceInterface {
         result: string, }>;
 }
 
-export class IFaceRemote implements IFaceInterface {
+export class IFaceRemote implements IFaceInterface,
+    mojo.internal.interfaceSupport.InterfaceRemote<IFacePendingReceiver> {
   private proxy: mojo.internal.interfaceSupport.InterfaceRemoteBase<IFacePendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<IFacePendingReceiver>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
@@ -72,7 +73,9 @@ export class IFaceRemote implements IFaceInterface {
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export class IFaceReceiver {
+export class IFaceReceiver implements
+    mojo.internal.interfaceSupport.InterfaceReceiver<
+        IFaceRemote, IFacePendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     IFaceRemote, IFacePendingReceiver>;
 
@@ -123,7 +126,9 @@ export class IFace {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export class IFaceCallbackRouter {
+export class IFaceCallbackRouter implements
+    mojo.internal.interfaceSupport.InterfaceCallbackRouter<
+        IFaceRemote, IFacePendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     IFaceRemote, IFacePendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<

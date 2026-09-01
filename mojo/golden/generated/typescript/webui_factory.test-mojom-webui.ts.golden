@@ -38,7 +38,8 @@ export interface PageInterface {
   onSomethingHappened(): void;
 }
 
-export class PageRemote implements PageInterface {
+export class PageRemote implements PageInterface,
+    mojo.internal.interfaceSupport.InterfaceRemote<PagePendingReceiver> {
   private proxy: mojo.internal.interfaceSupport.InterfaceRemoteBase<PagePendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<PagePendingReceiver>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
@@ -70,7 +71,9 @@ export class PageRemote implements PageInterface {
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export class PageReceiver {
+export class PageReceiver implements
+    mojo.internal.interfaceSupport.InterfaceReceiver<
+        PageRemote, PagePendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     PageRemote, PagePendingReceiver>;
 
@@ -121,7 +124,9 @@ export class Page {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export class PageCallbackRouter {
+export class PageCallbackRouter implements
+    mojo.internal.interfaceSupport.InterfaceCallbackRouter<
+        PageRemote, PagePendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     PageRemote, PagePendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
@@ -186,7 +191,8 @@ export interface PageHandlerInterface {
   doSomething(): void;
 }
 
-export class PageHandlerRemote implements PageHandlerInterface {
+export class PageHandlerRemote implements PageHandlerInterface,
+    mojo.internal.interfaceSupport.InterfaceRemote<PageHandlerPendingReceiver> {
   private proxy: mojo.internal.interfaceSupport.InterfaceRemoteBase<PageHandlerPendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<PageHandlerPendingReceiver>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
@@ -218,7 +224,9 @@ export class PageHandlerRemote implements PageHandlerInterface {
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export class PageHandlerReceiver {
+export class PageHandlerReceiver implements
+    mojo.internal.interfaceSupport.InterfaceReceiver<
+        PageHandlerRemote, PageHandlerPendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     PageHandlerRemote, PageHandlerPendingReceiver>;
 
@@ -269,7 +277,9 @@ export class PageHandler {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export class PageHandlerCallbackRouter {
+export class PageHandlerCallbackRouter implements
+    mojo.internal.interfaceSupport.InterfaceCallbackRouter<
+        PageHandlerRemote, PageHandlerPendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     PageHandlerRemote, PageHandlerPendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
@@ -334,7 +344,8 @@ export interface WebUiPageHandlerFactoryInterface {
   createPageHandler(page: PageRemote, handler: PageHandlerPendingReceiver): void;
 }
 
-export class WebUiPageHandlerFactoryRemote implements WebUiPageHandlerFactoryInterface {
+export class WebUiPageHandlerFactoryRemote implements WebUiPageHandlerFactoryInterface,
+    mojo.internal.interfaceSupport.InterfaceRemote<WebUiPageHandlerFactoryPendingReceiver> {
   private proxy: mojo.internal.interfaceSupport.InterfaceRemoteBase<WebUiPageHandlerFactoryPendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<WebUiPageHandlerFactoryPendingReceiver>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
@@ -370,7 +381,9 @@ export class WebUiPageHandlerFactoryRemote implements WebUiPageHandlerFactoryInt
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export class WebUiPageHandlerFactoryReceiver {
+export class WebUiPageHandlerFactoryReceiver implements
+    mojo.internal.interfaceSupport.InterfaceReceiver<
+        WebUiPageHandlerFactoryRemote, WebUiPageHandlerFactoryPendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     WebUiPageHandlerFactoryRemote, WebUiPageHandlerFactoryPendingReceiver>;
 
@@ -421,7 +434,9 @@ export class WebUiPageHandlerFactory {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export class WebUiPageHandlerFactoryCallbackRouter {
+export class WebUiPageHandlerFactoryCallbackRouter implements
+    mojo.internal.interfaceSupport.InterfaceCallbackRouter<
+        WebUiPageHandlerFactoryRemote, WebUiPageHandlerFactoryPendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     WebUiPageHandlerFactoryRemote, WebUiPageHandlerFactoryPendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<

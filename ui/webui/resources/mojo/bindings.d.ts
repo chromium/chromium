@@ -214,6 +214,23 @@ export namespace mojo {
         close(): void;
         flush(): Promise<void>;
       }
+
+      // The next few interfaces are necessary to prevent name mangling in ts.
+      interface InterfaceRemote<T> {
+        $: InterfaceRemoteBaseWrapper<T>;
+        onConnectionError?: ConnectionErrorEventRouter;
+      }
+
+      interface InterfaceReceiver<T, E> {
+        $: InterfaceReceiverHelper<T, E>;
+        onConnectionError?: ConnectionErrorEventRouter;
+      }
+
+      interface InterfaceCallbackRouter<T, E> {
+        $: InterfaceReceiverHelper<T, E>;
+        onConnectionError?: ConnectionErrorEventRouter;
+        removeListener(id: number): boolean;
+      }
     }
 
     class Decoder {}

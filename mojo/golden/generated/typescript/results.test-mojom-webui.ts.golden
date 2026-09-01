@@ -37,7 +37,8 @@ export interface ResultInterfaceInterface {
   syncMethod(a: boolean): Promise<boolean>;
 }
 
-export class ResultInterfaceRemote implements ResultInterfaceInterface {
+export class ResultInterfaceRemote implements ResultInterfaceInterface,
+    mojo.internal.interfaceSupport.InterfaceRemote<ResultInterfacePendingReceiver> {
   private proxy: mojo.internal.interfaceSupport.InterfaceRemoteBase<ResultInterfacePendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<ResultInterfacePendingReceiver>;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
@@ -83,7 +84,9 @@ export class ResultInterfaceRemote implements ResultInterfaceInterface {
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export class ResultInterfaceReceiver {
+export class ResultInterfaceReceiver implements
+    mojo.internal.interfaceSupport.InterfaceReceiver<
+        ResultInterfaceRemote, ResultInterfacePendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     ResultInterfaceRemote, ResultInterfacePendingReceiver>;
 
@@ -140,7 +143,9 @@ export class ResultInterface {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export class ResultInterfaceCallbackRouter {
+export class ResultInterfaceCallbackRouter implements
+    mojo.internal.interfaceSupport.InterfaceCallbackRouter<
+        ResultInterfaceRemote, ResultInterfacePendingReceiver> {
   private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
     ResultInterfaceRemote, ResultInterfacePendingReceiver>;
   $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
