@@ -364,6 +364,17 @@ class RuntimeGetContextsFunction : public ExtensionFunction {
   int GetWindowId(content::WebContents& web_contents);
 };
 
+class RuntimeMarkListenerRegistrationCompleteFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("runtime.markListenerRegistrationComplete",
+                             RUNTIME_MARKLISTENERREGISTRATIONCOMPLETE)
+
+ protected:
+  ~RuntimeMarkListenerRegistrationCompleteFunction() override = default;
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_RUNTIME_RUNTIME_API_H_

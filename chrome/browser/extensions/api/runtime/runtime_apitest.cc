@@ -35,6 +35,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/events/listener_registration_phase_map.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function.h"
@@ -45,6 +46,7 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
@@ -1773,5 +1775,58 @@ INSTANTIATE_TEST_SUITE_P(DockedDevTools,
                          GetContextsWithDeveloperToolsOpened,
                          ::testing::Values(true) /* open_docked */);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class RuntimeAsyncListenerRegistrationApiTest : public ExtensionApiTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      extensions_features::kExtensionAsyncListenerRegistration};
+};
+
+// Tests that runtime.markListenerRegistrationComplete() succeeds for an
+// opted-in extension and that the browser commits its listener registration
+// phase only once the extension calls it.
+IN_PROC_BROWSER_TEST_F(RuntimeAsyncListenerRegistrationApiTest,
+                       MarkCompleteCommitsPhase) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "async listener registration",
+           "version": "1.0",
+           "manifest_version": 3,
+           "background": {
+             "service_worker": "background.js",
+             "async_listener_registration": true
+           }
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function markCompleteSucceeds() {
+             await chrome.test.sendMessage('started');
+             await chrome.runtime.markListenerRegistrationComplete();
+             chrome.test.succeed();
+           },
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ExtensionTestMessageListener started_listener("started",
+                                                ReplyBehavior::kWillReply);
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // The phase stays started until the extension calls the API.
+  ASSERT_TRUE(started_listener.WaitUntilSatisfied());
+  EXPECT_EQ(ListenerRegistrationPhaseMap::State::kStarted,
+            service_worker_test_utils::GetListenerRegistrationPhaseState(
+                *profile(), extension->id()));
+
+  // Replying triggers the API call.
+  started_listener.Reply("");
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  EXPECT_EQ(ListenerRegistrationPhaseMap::State::kCommitted,
+            service_worker_test_utils::GetListenerRegistrationPhaseState(
+                *profile(), extension->id()));
+}
 
 }  // namespace extensions

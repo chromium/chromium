@@ -291,6 +291,20 @@ chrome.runtime.getVersion = function() {};
 chrome.runtime.getURL = function(path) {};
 
 /**
+ * Signals that the extension has finished registering its event listeners for
+ * the current service worker instance. The browser replaces persisted listener
+ * registrations with the newly registered listeners and dispatches any queued
+ * events. Only available in the service worker of extensions declaring
+ * <code>"background.async_listener_registration": true</code>.
+ * @param {function(): void=} callback Called once the browser has committed the
+ *     listener registration. The promise is rejected if the extension is not
+ *     opted in, the caller is not the service worker, or no listener
+ *     registration is in progress.
+ * @see https://developer.chrome.com/extensions/runtime#method-markListenerRegistrationComplete
+ */
+chrome.runtime.markListenerRegistrationComplete = function(callback) {};
+
+/**
  * Sets the URL to be visited upon uninstallation. This may be used to clean up
  * server-side data, do analytics, and implement surveys. Maximum 1023
  * characters.

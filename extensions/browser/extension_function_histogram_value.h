@@ -2046,6 +2046,7 @@ enum HistogramValue {
   AUTOFILLPRIVATE_FETCHUSERDATAPROCESSINGCONSENT = 1981,
   DEVELOPERPRIVATE_OPENREVIEWPAGE = 1982,
   TABS_CREATESPLIT = 1983,
+  RUNTIME_MARKLISTENERREGISTRATIONCOMPLETE = 1984,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -32,6 +32,7 @@ function getApiPaths() {
         // - `idle.getAutoLockDelay()` (restricted to certain platforms)
         // - `power.reportActivity()` (restricted to certain platforms)
         // - `runtime.getContexts()` (restricted to MV3)
+        // - `runtime.markListenerRegistrationComplete()` (restricted to MV3)
         // - `runtime.onUserScriptConnect()` (restricted to MV3)
         // - `runtime.onUserScriptMessage()` (restricted to MV3)
         // - `permissions.addHostAccessRequest()` (restricted to MV3)
@@ -41,6 +42,7 @@ function getApiPaths() {
           'idle.getAutoLockDelay',
           'power.reportActivity',
           'runtime.getContexts',
+          'runtime.markListenerRegistrationComplete',
           'runtime.onUserScriptConnect',
           'runtime.onUserScriptMessage',
           'permissions.addHostAccessRequest',

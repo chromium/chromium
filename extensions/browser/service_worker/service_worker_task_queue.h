@@ -118,7 +118,8 @@ class Extension;
 //         mojom pipe. In classic listener registration, all listeners must be
 //         registered at this point; with async listener registration,
 //         listeners can continue to be registered until calling
-//         `runtime.markListenerRegistrationComplete()`.
+//         `runtime.markListenerRegistrationComplete()`
+//         (`RendererDidCompleteListenerRegistrationPhase()`).
 //   * `worker_id_.has_value()`: this signal confirms that
 //     the class is populated with the running service worker’s information
 //     (render process and thread id, and worker version id) . This confirms
@@ -192,6 +193,7 @@ class ServiceWorkerTaskQueue
       int64_t service_worker_version_id,
       int thread_id,
       const blink::ServiceWorkerToken& service_worker_token);
+
   // Called once an extension Service Worker started running.
   // This can be thought as "loadstop", i.e. the global JS script of the worker
   // has completed executing.
@@ -203,6 +205,15 @@ class ServiceWorkerTaskQueue
       int64_t service_worker_version_id,
       int thread_id,
       const blink::ServiceWorkerToken& service_worker_token);
+
+  // Called when extension service worker `worker_id` calls
+  // `runtime.markListenerRegistrationComplete()`, completing its listener
+  // registration phase. Only extensions opting into
+  // `background.async_listener_registration` have this phase. Returns false if
+  // `worker_id` is not the tracked worker of the current activation or has no
+  // started phase.
+  bool RendererDidCompleteListenerRegistrationPhase(const WorkerId& worker_id);
+
   // Called once an extension Service Worker was destroyed.
   void RendererDidStopServiceWorkerContext(
       content::ChildProcessId render_process_id,
@@ -212,6 +223,7 @@ class ServiceWorkerTaskQueue
       int64_t service_worker_version_id,
       int thread_id,
       const blink::ServiceWorkerToken& service_worker_token);
+
   // Called when the extension renderer process that was running an extension
   // Service Worker has exited.
   void RenderProcessForWorkerExited(const WorkerId& worker_id);

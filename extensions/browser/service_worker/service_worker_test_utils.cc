@@ -10,6 +10,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,14 @@ content::ServiceWorkerContext* GetServiceWorkerContext(
     content::BrowserContext* browser_context) {
   return browser_context->GetDefaultStoragePartition()
       ->GetServiceWorkerContext();
+}
+
+std::optional<ListenerRegistrationPhaseMap::State>
+GetListenerRegistrationPhaseState(content::BrowserContext& browser_context,
+                                  const ExtensionId& extension_id) {
+  return EventRouter::Get(&browser_context)
+      ->listener_registration_phases()
+      .GetState(extension_id, browser_context);
 }
 
 testing::AssertionResult StopServiceWorkerForScope(

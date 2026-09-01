@@ -209,6 +209,33 @@ void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
   }
 }
 
+bool ServiceWorkerTaskQueue::RendererDidCompleteListenerRegistrationPhase(
+    const WorkerId& worker_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const ExtensionId& extension_id = worker_id.extension_id;
+
+  // `worker_id` lacks a start token, so look up the tracked worker for the
+  // current activation to get it, and ignore calls from other instances.
+  std::optional<base::UnguessableToken> activation_token =
+      GetCurrentActivationToken(extension_id);
+  if (!activation_token) {
+    return false;
+  }
+  auto [worker_state, context_id] =
+      GetWorkerStateForActivation(extension_id, *activation_token);
+  CHECK(worker_state);
+  if (worker_state->worker_id() != worker_id) {
+    return false;
+  }
+
+  // `Commit()` safely ignores missing phases (e.g. during shutdown), duplicate
+  // completions, calls after an abort, and mismatched tokens.
+  return EventRouter::Get(browser_context_)
+      ->listener_registration_phases()
+      .Commit(extension_id, *browser_context_,
+              *worker_state->worker_id()->start_token);
+}
+
 void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
     const WorkerId& worker_id) {
   // Abort the listener registration phase for this worker instance, if started.
