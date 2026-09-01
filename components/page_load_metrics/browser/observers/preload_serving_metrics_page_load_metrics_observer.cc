@@ -4,13 +4,99 @@
 
 #include "components/page_load_metrics/browser/observers/preload_serving_metrics_page_load_metrics_observer.h"
 
+#include <array>
+#include <string_view>
+
+#include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/page_transition_types.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(UsedInstantLoadUma)
+enum class UsedInstantLoadUma {
+  kNoInstantLoad = 0,
+  kPrefetch = 1,
+  kPrerender = 2,
+  kBFCache = 3,
+  kMaxValue = kBFCache,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:UsedInstantLoadUma)
+
+UsedInstantLoadUma ToUsedInstantLoadUma(
+    content::UsedInstantLoad used_instant_load) {
+  switch (used_instant_load) {
+    case content::UsedInstantLoad::kNoInstantLoad:
+      return UsedInstantLoadUma::kNoInstantLoad;
+    case content::UsedInstantLoad::kPrefetchWithoutPrePrefetch:
+    case content::UsedInstantLoad::kPrefetchWithPrePrefetch:
+      return UsedInstantLoadUma::kPrefetch;
+    case content::UsedInstantLoad::kPrerender:
+      return UsedInstantLoadUma::kPrerender;
+    case content::UsedInstantLoad::kBFCache:
+      return UsedInstantLoadUma::kBFCache;
+  }
+  NOTREACHED();
+}
+
+const char* ToString(UsedInstantLoadUma used_instant_load_uma) {
+  switch (used_instant_load_uma) {
+    case UsedInstantLoadUma::kNoInstantLoad:
+      return "NoInstantLoad";
+    case UsedInstantLoadUma::kPrefetch:
+      return "Prefetch";
+    case UsedInstantLoadUma::kPrerender:
+      return "Prerender";
+    case UsedInstantLoadUma::kBFCache:
+      return "BFCache";
+  }
+  NOTREACHED();
+}
+
+// Returns the histogram suffix for the obsolete
+// `PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.*`
+// histograms before the introduction of InitiatorLocation and SRP variants.
+//
+// TODO(crbug.com/517725655): Remove this function and obsolete histograms once
+// the new histograms are fully rolled out.
+const char* GetObsoleteSuffix(content::UsedInstantLoad used_instant_load) {
+  switch (used_instant_load) {
+    case content::UsedInstantLoad::kPrerender:
+      return ".WithPrerender";
+    case content::UsedInstantLoad::kPrefetchWithoutPrePrefetch:
+    case content::UsedInstantLoad::kPrefetchWithPrePrefetch:
+      return ".WithPrefetch";
+    case content::UsedInstantLoad::kNoInstantLoad:
+      return ".WithoutPreload";
+    case content::UsedInstantLoad::kBFCache:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+bool IsPrefetch(content::UsedInstantLoad used_instant_load) {
+  switch (used_instant_load) {
+    case content::UsedInstantLoad::kPrefetchWithoutPrePrefetch:
+    case content::UsedInstantLoad::kPrefetchWithPrePrefetch:
+      return true;
+    case content::UsedInstantLoad::kNoInstantLoad:
+    case content::UsedInstantLoad::kPrerender:
+    case content::UsedInstantLoad::kBFCache:
+      return false;
+  }
+  NOTREACHED();
+}
 
 std::string GetNavigationInitiatorString(
     content::NavigationHandle* navigation_handle) {
@@ -63,6 +149,131 @@ bool GetServedByLegacySearchPrefetch(
 }
 
 }  // namespace
+
+namespace page_load_metrics_internal {
+
+void RecordPreloadServingMetricsByNavigationInitiator(
+    content::UsedInstantLoad used_instant_load,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp) {
+  UsedInstantLoadUma used_instant_load_uma =
+      ToUsedInstantLoadUma(used_instant_load);
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"PreloadServingMetrics.", navigation_initiator_string, ".All"}),
+      used_instant_load_uma);
+  if (is_url_srp) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"PreloadServingMetrics.", navigation_initiator_string, ".SRP"}),
+        used_instant_load_uma);
+  }
+}
+
+void RecordFirstContentfulPaint(
+    base::TimeDelta corrected_first_contentful_paint,
+    bool is_in_foreground,
+    content::UsedInstantLoad used_instant_load,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp) {
+  if (used_instant_load == content::UsedInstantLoad::kBFCache) {
+    return;
+  }
+
+  const char* obsolete_suffix = GetObsoleteSuffix(used_instant_load);
+  const char* used_instant_load_string =
+      ToString(ToUsedInstantLoadUma(used_instant_load));
+
+  PAGE_LOAD_HISTOGRAM(
+      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                    "NavigationToFirstContentfulPaint",
+                    obsolete_suffix}),
+      corrected_first_contentful_paint);
+
+  const std::array<std::string_view, 2> navigation_initiators = {
+      "All", navigation_initiator_string};
+  static constexpr std::string_view kAllOnly[] = {"All"};
+  static constexpr std::string_view kAllAndSrp[] = {"All", "SRP"};
+  const base::span<const std::string_view> srp_alls =
+      is_url_srp ? base::span<const std::string_view>(kAllAndSrp)
+                 : base::span<const std::string_view>(kAllOnly);
+  const std::array<std::string_view, 2> used_instant_loads = {
+      "All", used_instant_load_string};
+
+  if (is_in_foreground) {
+    for (const auto navigation_initiator : navigation_initiators) {
+      for (const auto srp_all : srp_alls) {
+        for (const auto instant_load : used_instant_loads) {
+          PAGE_LOAD_HISTOGRAM(
+              base::StrCat(
+                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                   "NavigationToFirstContentfulPaint.",
+                   navigation_initiator, ".", srp_all, ".", instant_load}),
+              corrected_first_contentful_paint);
+        }
+      }
+    }
+  }
+
+  for (const auto navigation_initiator : navigation_initiators) {
+    for (const auto srp_all : srp_alls) {
+      for (const auto instant_load : used_instant_loads) {
+        PAGE_LOAD_HISTOGRAM(
+            base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                          "NavigationToFirstContentfulPaint."
+                          "WithoutFiltering.",
+                          navigation_initiator, ".", srp_all, ".",
+                          instant_load}),
+            corrected_first_contentful_paint);
+      }
+    }
+  }
+
+  if (IsPrefetch(used_instant_load)) {
+    if (base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
+      const char* pre_prefetch_suffix =
+          used_instant_load ==
+                  content::UsedInstantLoad::kPrefetchWithPrePrefetch
+              ? ".WithPrePrefetch"
+              : ".WithoutPrePrefetch";
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                        "NavigationToFirstContentfulPaint.WithPrefetch",
+                        pre_prefetch_suffix}),
+          corrected_first_contentful_paint);
+
+      if (is_in_foreground) {
+        for (const auto navigation_initiator : navigation_initiators) {
+          for (const auto srp_all : srp_alls) {
+            PAGE_LOAD_HISTOGRAM(
+                base::StrCat(
+                    {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                     "NavigationToFirstContentfulPaint.",
+                     navigation_initiator, ".", srp_all, ".Prefetch",
+                     pre_prefetch_suffix}),
+                corrected_first_contentful_paint);
+          }
+        }
+      }
+
+      for (const auto navigation_initiator : navigation_initiators) {
+        for (const auto srp_all : srp_alls) {
+          PAGE_LOAD_HISTOGRAM(
+              base::StrCat(
+                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                   "NavigationToFirstContentfulPaint."
+                   "WithoutFiltering.",
+                   navigation_initiator, ".", srp_all, ".Prefetch",
+                   pre_prefetch_suffix}),
+              corrected_first_contentful_paint);
+        }
+      }
+    }
+  }
+}
+
+}  // namespace page_load_metrics_internal
 
 PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData() =
     default;
@@ -176,13 +387,16 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
                     timing.paint_timing->first_contentful_paint, GetDelegate())
           : page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
                 timing.paint_timing->first_contentful_paint, GetDelegate());
-
   base::TimeDelta corrected =
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
-  navigation_data_->preload_serving_metrics_capsule->RecordFirstContentfulPaint(
-      corrected, is_in_foreground,
-      navigation_data_->is_served_by_legacy_search_prefetch,
+  content::UsedInstantLoad used_instant_load =
+      navigation_data_->preload_serving_metrics_capsule->GetUsedInstantLoad(
+          navigation_data_->used_bfcache,
+          navigation_data_->is_served_by_legacy_search_prefetch);
+
+  page_load_metrics_internal::RecordFirstContentfulPaint(
+      corrected, is_in_foreground, used_instant_load,
       navigation_data_->navigation_initiator_string,
       navigation_data_->is_url_srp);
 }
@@ -228,10 +442,12 @@ void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
   // TODO(https://crbug.com/517725655): PreloadServingMetricsCapsule is taken
   // for BFCache, and this part should be re-visited again to explore better
   // ways to record this case.
-  navigation_data_->preload_serving_metrics_capsule
-      ->RecordPreloadServingMetricsByNavigationInitiator(
+  content::UsedInstantLoad used_instant_load =
+      navigation_data_->preload_serving_metrics_capsule->GetUsedInstantLoad(
           navigation_data_->used_bfcache,
-          navigation_data_->is_served_by_legacy_search_prefetch,
-          navigation_data_->navigation_initiator_string,
-          navigation_data_->is_url_srp);
+          navigation_data_->is_served_by_legacy_search_prefetch);
+
+  page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
+      used_instant_load, navigation_data_->navigation_initiator_string,
+      navigation_data_->is_url_srp);
 }

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -225,19 +224,13 @@ struct CONTENT_EXPORT PreloadServingMetrics final {
   // Returns nullptr if there is no `PrefetchMatchMetrics`.
   const PrefetchMatchMetrics* GetMeaningfulPrefetchMatchMetrics() const;
 
+  // Returns the instant load technology used for the navigation.
+  UsedInstantLoad GetUsedInstantLoad(
+      bool nav_used_bfcache,
+      bool is_served_by_legacy_search_prefetch) const;
+
   void RecordMetricsForNonPrerenderNavigationCommitted() const;
-  void RecordPreloadServingMetricsByNavigationInitiator(
-      bool did_nav_use_bfcache,
-      bool is_served_by_legacy_search_prefetch,
-      std::string_view navigation_initiator_string,
-      bool is_url_srp) const;
   void RecordMetricsForPrerenderInitialNavigationFailed() const;
-  void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint,
-      bool is_in_foreground,
-      bool is_served_by_legacy_search_prefetch,
-      std::string_view navigation_initiator_string,
-      bool is_url_srp) const;
 
   // Added per prefetch matching.
   std::vector<std::unique_ptr<PrefetchMatchMetrics>>
@@ -267,17 +260,9 @@ class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
       NavigationHandle& navigation_handle);
 
   void RecordMetricsForNonPrerenderNavigationCommitted() const override;
-  void RecordPreloadServingMetricsByNavigationInitiator(
-      bool did_nav_use_bfcache,
-      bool is_served_by_legacy_search_prefetch,
-      std::string_view navigation_initiator_string,
-      bool is_url_srp) const override;
-  void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint,
-      bool is_in_foreground,
-      bool is_served_by_legacy_search_prefetch,
-      std::string_view navigation_initiator_string,
-      bool is_url_srp) const override;
+  UsedInstantLoad GetUsedInstantLoad(
+      bool nav_used_bfcache,
+      bool is_served_by_legacy_search_prefetch) const override;
 
  private:
   explicit PreloadServingMetricsCapsuleImpl(

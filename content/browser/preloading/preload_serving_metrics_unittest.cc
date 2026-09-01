@@ -6,13 +6,11 @@
 
 #include <optional>
 
-#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
-#include "content/common/features.h"
-#include "content/public/browser/preloading.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -37,20 +35,6 @@ base::TimeTicks Millis(int ms) {
   return base::TimeTicks() + base::Milliseconds(ms);
 }
 
-void ExpectFCP(const base::HistogramTester& histogram_tester,
-               const std::string& suffix,
-               std::optional<int> fcp) {
-  const std::string name =
-      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                    "NavigationToFirstContentfulPaint.",
-                    suffix});
-  if (fcp) {
-    histogram_tester.ExpectUniqueTimeSample(name, base::Milliseconds(*fcp), 1);
-  } else {
-    histogram_tester.ExpectTotalCount(name, 0);
-  }
-}
-
 // Scenario:
 //
 // - Navigation A started.
@@ -73,15 +57,10 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kNoInstantLoad);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -237,85 +216,6 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
       "PotentialCandidateServingResult",
       0);
 
-  ExpectFCP(histogram_tester, "WithoutPreload", {334});
-  ExpectFCP(histogram_tester, "WithPrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {334});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad",
-            {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      0 /* kNoInstantLoad */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
-}
-
-// Tests that FCP metrics with foreground filtering are not recorded for
-// background navigations.
-//
-// Scenario:
-//
-// - Navigation A committed.
-// - FCP occurred in background.
-TEST(PreloadServingMetricsTest, NavigationWithoutPreloadInBackground) {
-  base::HistogramTester histogram_tester;
-
-  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
-  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
-  log->prerender_initial_preload_serving_metrics = nullptr;
-
-  log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/false,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
-
-  ExpectFCP(histogram_tester, "WithoutPreload", {334});
-  ExpectFCP(histogram_tester, "WithPrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad",
-            {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
 }
 
 // Scenario:
@@ -330,124 +230,27 @@ TEST(PreloadServingMetricsTest, NavigationWithBFCacheRestore) {
 
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
   log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
-  log->prerender_initial_preload_serving_metrics = nullptr;
-
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/true,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-
-  // Note: `RecordFirstContentfulPaint` is not called for BFCache restore
-  // because `PreloadServingMetricsPageLoadMetricsObserver` does not handle
-  // `OnFirstPaintAfterBackForwardCacheRestoreInPage` (and BFCache restore only
-  // provides FirstPaint, not FirstContentfulPaint).
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      3 /* kBFCache */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/true,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kBFCache);
 }
 
 // Scenario:
 //
-// - Navigation A started to a search result page (SRP).
-// - A committed.
-TEST(PreloadServingMetricsTest, NavigationWithSRP) {
-  base::HistogramTester histogram_tester;
-
-  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
-  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
-  log->prerender_initial_preload_serving_metrics = nullptr;
-
-  log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/true);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/true);
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "All.SRP.All", {334});
-  ExpectFCP(histogram_tester, "All.SRP.NoInstantLoad", {334});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {334});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "Other.SRP.All", {334});
-  ExpectFCP(histogram_tester, "Other.SRP.NoInstantLoad", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.NoInstantLoad", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad",
-            {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.NoInstantLoad",
-            {334});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      0 /* kNoInstantLoad */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 1);
-}
-
-// Scenario:
-//
-// - Navigation A started to a search result page (SRP).
-// - Navigation A was served by legacy search prefetch.
+// - Navigation A is served by legacy search prefetch (DSEv1).
 // - A committed.
 TEST(PreloadServingMetricsTest, NavigationWithLegacySearchPrefetch) {
-  base::HistogramTester histogram_tester;
-
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
   log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/true, "Other",
-      /*is_url_srp=*/true);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/true,
-                                  "Other",
-                                  /*is_url_srp=*/true);
-
-  ExpectFCP(histogram_tester, "WithPrefetch", {334});
-  ExpectFCP(histogram_tester, "WithoutPreload", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "All.SRP.All", {334});
-  ExpectFCP(histogram_tester, "All.SRP.Prefetch", {334});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {334});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "Other.SRP.All", {334});
-  ExpectFCP(histogram_tester, "Other.SRP.Prefetch", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.Prefetch", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.Prefetch", {334});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      1 /* kPrefetch */, 1);
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.SRP",
-                                      1 /* kPrefetch */, 1);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/true),
+            UsedInstantLoad::kPrefetchWithoutPrePrefetch);
 }
 
 // Scenario:
@@ -509,15 +312,10 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kPrefetchWithoutPrePrefetch);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -673,47 +471,6 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
       "PotentialCandidateServingResult",
       0);
 
-  ExpectFCP(histogram_tester, "WithoutPreload", {});
-  ExpectFCP(histogram_tester, "WithPrefetch", {334});
-  ExpectFCP(histogram_tester, "WithPrefetch.WithPrePrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "All.All.Prefetch.WithPrePrefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prefetch.WithoutPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {334});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch.WithPrePrefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch.WithoutPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.All.All.Prefetch.WithPrePrefetch", {});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.All.All.Prefetch.WithoutPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.Other.All.Prefetch.WithPrePrefetch", {});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.Other.All.Prefetch.WithoutPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      1 /* kPrefetch */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 
 TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
@@ -769,15 +526,10 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kPrefetchWithPrePrefetch);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -827,95 +579,6 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.WithAheadOfPrerender.PotentialCandidateServingResult",
       0);
-
-  ExpectFCP(histogram_tester, "WithoutPreload", {});
-  ExpectFCP(histogram_tester, "WithPrefetch", {334});
-  ExpectFCP(histogram_tester, "WithPrefetch.WithPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "All.All.Prefetch.WithPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "All.All.Prefetch.WithoutPrePrefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {334});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {334});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch.WithPrePrefetch", {334});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch.WithoutPrePrefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.All.All.Prefetch.WithPrePrefetch", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.All.All.Prefetch.WithoutPrePrefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.Other.All.Prefetch.WithPrePrefetch", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.Other.All.Prefetch.WithoutPrePrefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      1 /* kPrefetch */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
-}
-
-// Tests that PreloadServingMetrics.*.{All,SRP} are recorded depending on the
-// navigation initiator string.
-TEST(PreloadServingMetricsTest, RecordByNavigationInitiator) {
-  base::HistogramTester histogram_tester;
-
-  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
-  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
-  log->prerender_initial_preload_serving_metrics = nullptr;
-
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "TestInitiator",
-      /*is_url_srp=*/true);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "TestInitiator",
-                                  /*is_url_srp=*/true);
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.All",
-                                      0 /* kNoInstantLoad */, 1);
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.SRP",
-                                      0 /* kNoInstantLoad */, 1);
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "All.SRP.All", {334});
-  ExpectFCP(histogram_tester, "All.SRP.NoInstantLoad", {334});
-
-  ExpectFCP(histogram_tester, "TestInitiator.All.All", {334});
-  ExpectFCP(histogram_tester, "TestInitiator.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "TestInitiator.SRP.All", {334});
-  ExpectFCP(histogram_tester, "TestInitiator.SRP.NoInstantLoad", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.NoInstantLoad", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.TestInitiator.All.All", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.TestInitiator.All.NoInstantLoad", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.TestInitiator.SRP.All", {334});
-  ExpectFCP(histogram_tester,
-            "WithoutFiltering.TestInitiator.SRP.NoInstantLoad", {334});
 }
 
 // Scenario:
@@ -986,15 +649,10 @@ TEST(PreloadServingMetricsTest,
   log->prerender_initial_preload_serving_metrics = std::move(log_prerender);
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kPrerender);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -1152,33 +810,6 @@ TEST(PreloadServingMetricsTest,
       "PotentialCandidateServingResult",
       0);
 
-  ExpectFCP(histogram_tester, "WithoutPreload", {});
-  ExpectFCP(histogram_tester, "WithPrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {334});
-
-  ExpectFCP(histogram_tester, "All.All.All", {334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {334});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {334});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {334});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {334});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      2 /* kPrerender */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 
 // Scenario:
@@ -1271,15 +902,10 @@ TEST(PreloadServingMetricsTest,
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(2157),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kNoInstantLoad);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -1496,34 +1122,6 @@ TEST(PreloadServingMetricsTest,
       "WithAheadOfPrerender.PotentialCandidateServingResult",
       0);
 
-  ExpectFCP(histogram_tester, "WithoutPreload", {2157});
-  ExpectFCP(histogram_tester, "WithPrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {2157});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {2157});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {2157});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {2157});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {2157});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {2157});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {2157});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad",
-            {2157});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      0 /* kNoInstantLoad */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 
 // Variant of PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailed
@@ -1607,15 +1205,10 @@ TEST(
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(10334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kNoInstantLoad);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -1831,35 +1424,6 @@ TEST(
       "WithAheadOfPrerender.PotentialCandidateServingResult",
       PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 
-  ExpectFCP(histogram_tester, "WithoutPreload", {10334});
-  ExpectFCP(histogram_tester, "WithPrefetch", {});
-  ExpectFCP(histogram_tester, "WithPrerender", {});
-
-  ExpectFCP(histogram_tester, "All.All.All", {10334});
-  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {10334});
-  ExpectFCP(histogram_tester, "All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "Other.All.All", {10334});
-  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {10334});
-  ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {10334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad",
-            {10334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
-
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {10334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad",
-            {10334});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
-  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      0 /* kNoInstantLoad */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 
 // Check for `PrefetchMatchPrerenderDebugMetrics`
@@ -1955,15 +1519,10 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false,
-      /*is_served_by_legacy_search_prefetch=*/false, "Other",
-      /*is_url_srp=*/false);
-  log->RecordFirstContentfulPaint(base::Milliseconds(10334),
-                                  /*is_in_foreground=*/true,
-                                  /*is_served_by_legacy_search_prefetch=*/false,
-                                  "Other",
-                                  /*is_url_srp=*/false);
+  EXPECT_EQ(log->GetUsedInstantLoad(
+                /*nav_used_bfcache=*/false,
+                /*is_served_by_legacy_search_prefetch=*/false),
+            UsedInstantLoad::kNoInstantLoad);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
@@ -2025,10 +1584,6 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match1.PrefetchMatchMetrics.Count",
       0);
-
-  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
-                                      0 /* kNoInstantLoad */, 1);
-  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 
 }  // namespace content

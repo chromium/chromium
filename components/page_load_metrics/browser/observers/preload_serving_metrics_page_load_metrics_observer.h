@@ -5,11 +5,30 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRELOAD_SERVING_METRICS_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRELOAD_SERVING_METRICS_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/preload_serving_metrics_capsule.h"
+
+namespace page_load_metrics_internal {
+
+void RecordPreloadServingMetricsByNavigationInitiator(
+    content::UsedInstantLoad used_instant_load,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp);
+
+void RecordFirstContentfulPaint(
+    base::TimeDelta corrected_first_contentful_paint,
+    bool is_in_foreground,
+    content::UsedInstantLoad used_instant_load,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp);
+
+}  // namespace page_load_metrics_internal
 
 // Records FirstContentfulPaint for `PreloadServingMetrics`
 //

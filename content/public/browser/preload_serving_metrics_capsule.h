@@ -6,14 +6,21 @@
 #define CONTENT_PUBLIC_BROWSER_PRELOAD_SERVING_METRICS_CAPSULE_H_
 
 #include <memory>
-#include <string_view>
 
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 class NavigationHandle;
+
+// Instant load technology used for the navigation.
+enum class UsedInstantLoad {
+  kNoInstantLoad,
+  kPrefetchWithoutPrePrefetch,
+  kPrefetchWithPrePrefetch,
+  kPrerender,
+  kBFCache,
+};
 
 // Allows `PageLoadMetricsObserver` to get/hold/record `PreloadServingMetrics`.
 class CONTENT_EXPORT PreloadServingMetricsCapsule {
@@ -23,26 +30,22 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
   static std::unique_ptr<PreloadServingMetricsCapsule> TakeFromNavigationHandle(
       NavigationHandle& navigation_handle);
 
+  PreloadServingMetricsCapsule() = default;
   virtual ~PreloadServingMetricsCapsule();
+
+  // Not movable nor copyable.
+  PreloadServingMetricsCapsule(PreloadServingMetricsCapsule&&) = delete;
+  PreloadServingMetricsCapsule& operator=(PreloadServingMetricsCapsule&&) =
+      delete;
+  PreloadServingMetricsCapsule(const PreloadServingMetricsCapsule&) = delete;
+  PreloadServingMetricsCapsule& operator=(const PreloadServingMetricsCapsule&) =
+      delete;
 
   virtual void RecordMetricsForNonPrerenderNavigationCommitted() const = 0;
 
-  virtual void RecordPreloadServingMetricsByNavigationInitiator(
-      bool did_nav_use_bfcache,
-      bool is_served_by_legacy_search_prefetch,
-      std::string_view navigation_initiator_string,
-      bool is_url_srp) const = 0;
-
-  // Records FirstContentfulPaint
-  //
-  // The parameter `corrected_first_contentful_paint` is the return value of
-  // `page_load_metrics::CorrectEventAsNavigationOrActivationOrigined()`.
-  virtual void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint,
-      bool is_in_foreground,
-      bool is_served_by_legacy_search_prefetch,
-      std::string_view navigation_initiator_string,
-      bool is_url_srp) const = 0;
+  virtual UsedInstantLoad GetUsedInstantLoad(
+      bool nav_used_bfcache,
+      bool is_served_by_legacy_search_prefetch) const = 0;
 };
 
 }  // namespace content

@@ -27815,7 +27815,7 @@ Called by update_net_error_codes.py.-->
 
 </enum>
 
-<!-- LINT.IfChange(UsedInstantLoad) -->
+<!-- LINT.IfChange(UsedInstantLoadUma) -->
 
 <enum name="UsedInstantLoad">
   <int value="0" label="NoInstantLoad"/>
@@ -27824,7 +27824,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="BFCache"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/preloading/preload_serving_metrics.cc:UsedInstantLoad) -->
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/preload_serving_metrics_page_load_metrics_observer.cc:UsedInstantLoadUma) -->
 
 <enum name="UserAgentRequestType">
   <int value="0" label="RequestDesktop"/>

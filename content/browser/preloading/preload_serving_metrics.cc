@@ -5,13 +5,10 @@
 #include "content/browser/preloading/preload_serving_metrics.h"
 
 #include <sstream>
-#include <string_view>
 
-#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
@@ -20,11 +17,6 @@
 namespace content {
 
 namespace {
-
-// Copied from components/page_load_metrics/browser/page_load_metrics_util.h
-#define PAGE_LOAD_HISTOGRAM(name, sample)                             \
-  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(10), \
-                                base::Minutes(10), 100)
 
 #define WITH(prefix, name) base::StrCat({prefix, name})
 
@@ -301,18 +293,34 @@ PreloadServingMetrics::GetMeaningfulPrefetchMatchMetrics() const {
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(UsedInstantLoad)
-enum class UsedInstantLoad {
-  kNoInstantLoad = 0,
-  kPrefetch = 1,
-  kPrerender = 2,
-  kBFCache = 3,
-  kMaxValue = kBFCache,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:UsedInstantLoad)
+UsedInstantLoad PreloadServingMetrics::GetUsedInstantLoad(
+    bool nav_used_bfcache,
+    bool is_served_by_legacy_search_prefetch) const {
+  if (nav_used_bfcache) {
+    return UsedInstantLoad::kBFCache;
+  }
+
+  if (prerender_initial_preload_serving_metrics) {
+    return UsedInstantLoad::kPrerender;
+  }
+
+  if (const auto* prefetch_match = GetMeaningfulPrefetchMatchMetrics();
+      prefetch_match && prefetch_match->IsActualMatch()) {
+    if (prefetch_match->prefetch_container_metrics &&
+        prefetch_match->prefetch_container_metrics
+            ->is_constructed_from_pre_prefetch) {
+      return UsedInstantLoad::kPrefetchWithPrePrefetch;
+    }
+
+    return UsedInstantLoad::kPrefetchWithoutPrePrefetch;
+  }
+
+  if (is_served_by_legacy_search_prefetch) {
+    return UsedInstantLoad::kPrefetchWithoutPrePrefetch;
+  }
+
+  return UsedInstantLoad::kNoInstantLoad;
+}
 
 void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
     const {
@@ -323,40 +331,6 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
         *prerender_initial_preload_serving_metrics,
         "PreloadServingMetrics.ForPrerenderInitialNavigationUsed.",
         /*is_prerender_initial_navigation=*/true);
-  }
-}
-
-void PreloadServingMetrics::RecordPreloadServingMetricsByNavigationInitiator(
-    bool did_nav_use_bfcache,
-    bool is_served_by_legacy_search_prefetch,
-    std::string_view navigation_initiator_string,
-    bool is_url_srp) const {
-  const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
-      GetMeaningfulPrefetchMatchMetrics();
-  const bool is_prefetch_actual_match =
-      meaningful_prefetch_match_metrics &&
-      meaningful_prefetch_match_metrics->IsActualMatch();
-
-  UsedInstantLoad used_instant_load;
-  if (did_nav_use_bfcache) {
-    used_instant_load = UsedInstantLoad::kBFCache;
-  } else if (prerender_initial_preload_serving_metrics) {
-    used_instant_load = UsedInstantLoad::kPrerender;
-  } else if (is_prefetch_actual_match || is_served_by_legacy_search_prefetch) {
-    used_instant_load = UsedInstantLoad::kPrefetch;
-  } else {
-    used_instant_load = UsedInstantLoad::kNoInstantLoad;
-  }
-
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"PreloadServingMetrics.", navigation_initiator_string, ".All"}),
-      used_instant_load);
-  if (is_url_srp) {
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"PreloadServingMetrics.", navigation_initiator_string, ".SRP"}),
-        used_instant_load);
   }
 }
 
@@ -481,121 +455,6 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
   }
 }
 
-void PreloadServingMetrics::RecordFirstContentfulPaint(
-    base::TimeDelta corrected_first_contentful_paint,
-    bool is_in_foreground,
-    bool is_served_by_legacy_search_prefetch,
-    std::string_view navigation_initiator_string,
-    bool is_url_srp) const {
-  const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;
-  const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
-      GetMeaningfulPrefetchMatchMetrics();
-  const bool is_prefetch_actual_match =
-      meaningful_prefetch_match_metrics &&
-      meaningful_prefetch_match_metrics->IsActualMatch();
-
-  const char* suffix;
-  const char* used_instant_load_suffix;
-  if (is_prerender_used) {
-    suffix = ".WithPrerender";
-    used_instant_load_suffix = "Prerender";
-  } else if (is_prefetch_actual_match || is_served_by_legacy_search_prefetch) {
-    suffix = ".WithPrefetch";
-    used_instant_load_suffix = "Prefetch";
-  } else {
-    suffix = ".WithoutPreload";
-    used_instant_load_suffix = "NoInstantLoad";
-  }
-
-  PAGE_LOAD_HISTOGRAM(
-      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                    "NavigationToFirstContentfulPaint",
-                    suffix}),
-      corrected_first_contentful_paint);
-
-  const std::array<std::string_view, 2> navigation_initiators = {
-      "All", navigation_initiator_string};
-  static constexpr std::string_view kAllOnly[] = {"All"};
-  static constexpr std::string_view kAllAndSrp[] = {"All", "SRP"};
-  const base::span<const std::string_view> srp_alls =
-      is_url_srp ? base::span<const std::string_view>(kAllAndSrp)
-                 : base::span<const std::string_view>(kAllOnly);
-  const std::array<std::string_view, 2> used_instant_loads = {
-      "All", used_instant_load_suffix};
-
-  if (is_in_foreground) {
-    for (const auto navigation_initiator : navigation_initiators) {
-      for (const auto srp_all : srp_alls) {
-        for (const auto used_instant_load : used_instant_loads) {
-          PAGE_LOAD_HISTOGRAM(
-              base::StrCat(
-                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                   "NavigationToFirstContentfulPaint.",
-                   navigation_initiator, ".", srp_all, ".", used_instant_load}),
-              corrected_first_contentful_paint);
-        }
-      }
-    }
-  }
-
-  for (const auto navigation_initiator : navigation_initiators) {
-    for (const auto srp_all : srp_alls) {
-      for (const auto used_instant_load : used_instant_loads) {
-        PAGE_LOAD_HISTOGRAM(
-            base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                          "NavigationToFirstContentfulPaint."
-                          "WithoutFiltering.",
-                          navigation_initiator, ".", srp_all, ".",
-                          used_instant_load}),
-            corrected_first_contentful_paint);
-      }
-    }
-  }
-
-  if (is_prefetch_actual_match) {
-    if (base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
-      CHECK(meaningful_prefetch_match_metrics->prefetch_container_metrics);
-      const char* pre_prefetch_suffix =
-          meaningful_prefetch_match_metrics->prefetch_container_metrics
-                  ->is_constructed_from_pre_prefetch
-              ? ".WithPrePrefetch"
-              : ".WithoutPrePrefetch";
-      PAGE_LOAD_HISTOGRAM(
-          base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                        "NavigationToFirstContentfulPaint.WithPrefetch",
-                        pre_prefetch_suffix}),
-          corrected_first_contentful_paint);
-
-      if (is_in_foreground) {
-        for (const auto navigation_initiator : navigation_initiators) {
-          for (const auto srp_all : srp_alls) {
-            PAGE_LOAD_HISTOGRAM(
-                base::StrCat(
-                    {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                     "NavigationToFirstContentfulPaint.",
-                     navigation_initiator, ".", srp_all, ".Prefetch",
-                     pre_prefetch_suffix}),
-                corrected_first_contentful_paint);
-          }
-        }
-      }
-
-      for (const auto navigation_initiator : navigation_initiators) {
-        for (const auto srp_all : srp_alls) {
-          PAGE_LOAD_HISTOGRAM(
-              base::StrCat(
-                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                   "NavigationToFirstContentfulPaint."
-                   "WithoutFiltering.",
-                   navigation_initiator, ".", srp_all, ".Prefetch",
-                   pre_prefetch_suffix}),
-              corrected_first_contentful_paint);
-        }
-      }
-    }
-  }
-}
-
 PreloadServingMetrics::PreloadServingMetrics() = default;
 
 PreloadServingMetrics::~PreloadServingMetrics() = default;
@@ -621,27 +480,11 @@ void PreloadServingMetricsCapsuleImpl::
   preload_serving_metrics_->RecordMetricsForNonPrerenderNavigationCommitted();
 }
 
-void PreloadServingMetricsCapsuleImpl::
-    RecordPreloadServingMetricsByNavigationInitiator(
-        bool did_nav_use_bfcache,
-        bool is_served_by_legacy_search_prefetch,
-        std::string_view navigation_initiator_string,
-        bool is_url_srp) const {
-  preload_serving_metrics_->RecordPreloadServingMetricsByNavigationInitiator(
-      did_nav_use_bfcache, is_served_by_legacy_search_prefetch,
-      navigation_initiator_string, is_url_srp);
-}
-
-void PreloadServingMetricsCapsuleImpl::RecordFirstContentfulPaint(
-    base::TimeDelta corrected_first_contentful_paint,
-    bool is_in_foreground,
-    bool is_served_by_legacy_search_prefetch,
-    std::string_view navigation_initiator_string,
-    bool is_url_srp) const {
-  preload_serving_metrics_->RecordFirstContentfulPaint(
-      std::move(corrected_first_contentful_paint), is_in_foreground,
-      is_served_by_legacy_search_prefetch, navigation_initiator_string,
-      is_url_srp);
+UsedInstantLoad PreloadServingMetricsCapsuleImpl::GetUsedInstantLoad(
+    bool nav_used_bfcache,
+    bool is_served_by_legacy_search_prefetch) const {
+  return preload_serving_metrics_->GetUsedInstantLoad(
+      nav_used_bfcache, is_served_by_legacy_search_prefetch);
 }
 
 }  // namespace content
