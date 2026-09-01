@@ -233,17 +233,13 @@ ImageElementTiming::TakeElementTimingsOnPaintFinished() {
 void ImageElementTiming::OnFramePresented(
     const HeapVector<Member<ImageRecord>>&,
     const HeapVector<Member<TextRecord>>&,
-    const GCedHeapVector<Member<ElementTimingInfo>>* element_timings,
+    const HeapVector<Member<ElementTimingInfo>>& element_timings,
     const DOMPaintTimingInfo& paint_timing_info) {
-  if (!element_timings) {
-    return;
-  }
-
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   // `PaintTiming` guarantees that `performance` is non-null.
   CHECK(performance);
 
-  for (ElementTimingInfo* painted_image : *element_timings) {
+  for (ElementTimingInfo* painted_image : element_timings) {
     if (internal::IsExplicitlyRegisteredForElementTiming(
             painted_image->element)) {
       performance->AddElementTiming(

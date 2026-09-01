@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
@@ -85,7 +84,7 @@ class CORE_EXPORT SoftNavigationHeuristics
                                     bool was_previously_reported) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
-                        const GCedHeapVector<Member<ElementTimingInfo>>*,
+                        const HeapVector<Member<ElementTimingInfo>>&,
                         const DOMPaintTimingInfo&) override;
   void OnPaintFinished() override;
   void OnInputOrScroll() override;

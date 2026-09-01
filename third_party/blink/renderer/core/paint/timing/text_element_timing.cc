@@ -68,7 +68,7 @@ bool TextElementTiming::CanReportElements() {
 void TextElementTiming::OnFramePresented(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records,
-    const GCedHeapVector<Member<ElementTimingInfo>>*,
+    const HeapVector<Member<ElementTimingInfo>>&,
     const DOMPaintTimingInfo&) {
   if (!CanReportElements()) {
     return;

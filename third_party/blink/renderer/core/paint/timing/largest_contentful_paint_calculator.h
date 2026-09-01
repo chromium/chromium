@@ -165,9 +165,9 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // the LCP candidate, the page load isn't reported to UKM.
   void OnImageFirstPaint(ImageRecord*);
 
-  // Called when a pending image, one that has been painted but whose paint and
-  // presentation times are not yet set, is removed from the DOM.
-  void OnPendingImageRemoved(ImageRecord* record);
+  // Called when an image is removed from the DOM. Clears the
+  // `largest_pending_image_` if that was removed.
+  void OnImageRemoved(const LayoutObject& object, const MediaTiming* timing);
 
   void Trace(Visitor* visitor) const;
 

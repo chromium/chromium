@@ -27,7 +27,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-struct DOMPaintTimingInfo;
 class LargestContentfulPaintManager;
 class LayoutObject;
 class MediaTiming;
@@ -94,7 +93,15 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // image is pending.
   void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);
 
-  OptionalPaintTimingDetectorCallback<ImageRecord> TakePaintTimingCallback();
+  // Returns the set of `ImageRecord`s that are sufficiently loaded and need
+  // paint and presentation time for the current frame. Called by `PaintTiming`
+  // at the current frame's paint stage.
+  HeapVector<Member<ImageRecord>> TakeImageRecordsOnPaintFinished();
+
+  // Returns the set of `ImageRecord`s representing animated images that need
+  // the first animated frame timestamp set to the presentation time of the
+  // current frame. Called by `PaintTiming` at the current frame's paint stage.
+  HeapVector<Member<ImageRecord>> TakeAnimatedImageRecordsOnPaintFinished();
 
   // Called when documentElement changes from zero to nonzero opacity. Makes the
   // largest image that was hidden due to this a Largest Contentful Paint
@@ -121,24 +128,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   friend class ImagePaintTimingDetectorTestBase;
   friend class LargestContentfulPaintCalculatorTest;
 
-  enum class PresentationReason : uint8_t {
-    kFirstAnimatedFrame,
-    kSufficientlyLoaded,
-  };
-
-  struct QueuedImageRecordInfo
-      : public GarbageCollected<QueuedImageRecordInfo> {
-    QueuedImageRecordInfo(ImageRecord*,
-                          uint32_t frame_index,
-                          PresentationReason);
-
-    void Trace(Visitor*) const;
-
-    const Member<ImageRecord> image_record;
-    const uint32_t frame_index;
-    const PresentationReason presentation_reason;
-  };
-
   void SendRectsToHud();
 
   // Returns the viewport size, initializing the cached `viewport_size_` if
@@ -149,27 +138,15 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   // Removes the image data associated with the `MediaRecordIdHash` from all
   // collections.
-  ImageRecord* RemoveRecord(MediaRecordIdHash);
+  void RemoveRecord(MediaRecordIdHash);
 
   // Sets the first animated frame time for the given `ImageRecord` based on the
   // record's `MediaTiming`, which must be a VideoTiming.
   void SetVideoFirstAnimatedFrameTime(ImageRecord*);
 
-  void AssignPaintTimeToRegisteredQueuedRecords(
-      uint32_t last_queued_frame_index,
-      const base::TimeTicks&,
-      const DOMPaintTimingInfo&,
-      HeapVector<Member<ImageRecord>>& settled_records);
-
-  void QueueToMeasurePaintTime(ImageRecord*, PresentationReason);
-
   base::TimeTicks LoadTime(MediaRecordIdHash) const;
 
   void ForEachPaintTimingClient(base::FunctionRef<void(PaintTimingClient*)>);
-
-  // Used to decide which frame a record belongs to, monotonically increasing.
-  uint32_t frame_index_ = 1;
-  bool added_entry_in_latest_frame_ = false;
 
   // We cache the viewport size computation to avoid performing it on every
   // image. This value is reset when paint is finished and is computed if unset
@@ -178,19 +155,22 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   Member<PaintTimingDetector> paint_timing_detector_;
 
-  // MediaRecordId for images for which we have seen a first paint. A
-  // MediaRecordId is added to this set regardless of whether the image could be
-  // an LCP candidate.
+  // `MediaRecordId` of images for which we have seen a first paint.
   HashSet<MediaRecordIdHash> recorded_images_;
 
-  // Map of MediaRecordId to ImageRecord for images for which the first paint
-  // has been seen but which do not have the paint time set yet. This may
-  // contain only images which are potential LCP candidates.
+  // Map of `MediaRecordId` to `ImageRecord` for images for which the first
+  // paint has been seen but which are not yet sufficiently loaded.
   HeapHashMap<MediaRecordIdHash, Member<ImageRecord>> pending_images_;
 
-  // |ImageRecord|s waiting for paint time are stored in this map
-  // until they get a presentation time.
-  HeapDeque<Member<QueuedImageRecordInfo>> images_queued_for_paint_time_;
+  // `ImageRecord`s that were marked as sufficiently loaded and painted in this
+  // frame. These correspond to the images ready to be reported to clients. This
+  // set is returned and cleared in `TakeImageRecordsOnPaintFinished()`.
+  HeapVector<Member<ImageRecord>> images_queued_for_paint_time_;
+
+  // Animated image `ImageRecord`s that were painted this frame that need the
+  // first animated frame time set. This set is returned and cleared in
+  // `TakeAnimatedImageRecordsOnPaintFinished()`.
+  HeapVector<Member<ImageRecord>> animated_images_queued_for_first_frame_time_;
 
   // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
   // first called.

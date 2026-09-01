@@ -49,6 +49,11 @@ class CORE_EXPORT PaintTimingRecord
   Node* GetNode() const { return node_.Get(); }
   int NodeIdForTracing() const;
 
+  // Returns the `LayoutObject` this record was constructed with. This can
+  // differ from the record's node's `LayoutObject` if the node was removed from
+  // the DOM.
+  LayoutObject* GetLayoutObject() const { return layout_object_; }
+
   const gfx::RectF& RootVisualRect() const { return root_visual_rect_; }
 
   bool HasPaintTime() const { return !paint_time_.is_null(); }
@@ -127,9 +132,6 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
     return effective_visual_size_;
   }
 
-  uint32_t FrameIndex() const { return frame_index_; }
-  void SetFrameIndex(uint32_t index) { frame_index_ = index; }
-
   bool IsNeededForElementTiming() const override {
     return is_needed_for_element_timing_;
   }
@@ -139,7 +141,6 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
   const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
 
  private:
-  uint32_t frame_index_ = 0;
   const uint64_t effective_visual_size_;
   const gfx::RectF element_timing_rect_;
   bool is_needed_for_element_timing_ = false;

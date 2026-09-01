@@ -570,8 +570,9 @@ void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {
   }
 }
 
-void LargestContentfulPaintCalculator::OnPendingImageRemoved(
-    ImageRecord* record) {
+void LargestContentfulPaintCalculator::OnImageRemoved(
+    const LayoutObject& object,
+    const MediaTiming* timing) {
   // TODO(crbug.com/457794552): This causes metrics to fall back to the
   // `largest_painted_image_`, but there are a couple problems with this:
   //  - What if there's a larger pending image and the page unloads? We might
@@ -580,7 +581,11 @@ void LargestContentfulPaintCalculator::OnPendingImageRemoved(
   //  - Metrics won't be updated until something else triggers calling
   //    `NotifyMetricsIfLargestImagePaintChanged()`, e.g. a new largest text
   //    or image paint. We should probably metrics sooner and not rely on this.
-  if (largest_pending_image_ == record) {
+  if (!largest_pending_image_) {
+    return;
+  }
+  if (largest_pending_image_->GetMediaTiming() == timing &&
+      largest_pending_image_->GetLayoutObject() == &object) {
     largest_pending_image_ = nullptr;
   }
 }

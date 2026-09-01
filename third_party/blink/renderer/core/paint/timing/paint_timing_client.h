@@ -46,13 +46,9 @@ class PaintTimingClient : public GarbageCollectedMixin {
   virtual void OnElementLastContentfulPaint(TextRecord*,
                                             bool was_previously_reported) {}
 
-  // Called when an image has been removed. The `ImageRecord` will be non-null
-  // if the image hasn't finished loading or is waiting for presentation time.
-  // Clients typically don't need to override this unless caching the
-  // `ImageRecord`.
-  virtual void OnImageRemoved(ImageRecord*,
-                              const LayoutObject&,
-                              const MediaTiming*) {}
+  // Called when an image has been removed. Clients typically don't need to
+  // override this unless caching the `ImageRecord`.
+  virtual void OnImageRemoved(const LayoutObject&, const MediaTiming*) {}
 
   // Called when the paint phase has finished.
   virtual void OnPaintFinished() {}
@@ -62,11 +58,10 @@ class PaintTimingClient : public GarbageCollectedMixin {
   //
   // TODO(crbug.com/535432431): Remove the ElementTimingInfo vector once
   // ImageElementTiming uses ImagePaintTimingDetector.
-  virtual void OnFramePresented(
-      const HeapVector<Member<ImageRecord>>&,
-      const HeapVector<Member<TextRecord>>&,
-      const GCedHeapVector<Member<ElementTimingInfo>>*,
-      const DOMPaintTimingInfo&) {}
+  virtual void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
+                                const HeapVector<Member<TextRecord>>&,
+                                const HeapVector<Member<ElementTimingInfo>>&,
+                                const DOMPaintTimingInfo&) {}
 
   // Called when a discrete input or non-programmatic scroll has been detected.
   virtual void OnInputOrScroll() {}

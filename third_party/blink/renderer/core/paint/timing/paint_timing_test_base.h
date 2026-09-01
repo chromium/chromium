@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -36,6 +37,56 @@ class PaintTimingTestingPlatformSupport : public TestingPlatformSupport {
     }
     return TestingPlatformSupport::QueryLocalizedString(message_id);
   }
+};
+
+// A `PaintTimingClient` that tracks the number of `PaintTimingRecord`s waiting
+// for presentation time by observing paint and presentation for each record.
+class PendingPaintTimingRecordObserverClient
+    : public GarbageCollected<PendingPaintTimingRecordObserverClient>,
+      public PaintTimingClient {
+ public:
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(pending_text_records_);
+    visitor->Trace(pending_image_records_);
+  }
+
+  void OnElementLastContentfulPaint(TextRecord* record,
+                                    bool was_previously_presented) override {
+    // Only track records that are needed by some other client. This works
+    // because this observer is added after the default clients, specifically
+    // LCP for these tests.
+    if (record->IsNeededForPaintTiming()) {
+      pending_text_records_.insert(record);
+    }
+  }
+
+  void OnElementLastContentfulPaint(ImageRecord* record) override {
+    // Only track records that are needed by some other client. This works
+    // because this observer is added after the default clients, specifically
+    // LCP for these tests.
+    if (record->IsNeededForPaintTiming()) {
+      pending_image_records_.insert(record);
+    }
+  }
+
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>& image_records,
+                        const HeapVector<Member<TextRecord>>& text_records,
+                        const HeapVector<Member<ElementTimingInfo>>&,
+                        const DOMPaintTimingInfo&) override {
+    for (TextRecord* record : text_records) {
+      pending_text_records_.erase(record);
+    }
+    for (ImageRecord* record : image_records) {
+      pending_image_records_.erase(record);
+    }
+  }
+
+  wtf_size_t PendingTextRecordsSize() { return pending_text_records_.size(); }
+  wtf_size_t PendingImageRecordsSize() { return pending_image_records_.size(); }
+
+ private:
+  HeapHashSet<Member<TextRecord>> pending_text_records_;
+  HeapHashSet<Member<ImageRecord>> pending_image_records_;
 };
 
 class PaintTimingTestBase : public RenderingTest {

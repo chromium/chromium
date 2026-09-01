@@ -46,7 +46,7 @@ class CORE_EXPORT ImageElementTiming final
   // PaintTimingClient:
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
-                        const GCedHeapVector<Member<ElementTimingInfo>>*,
+                        const HeapVector<Member<ElementTimingInfo>>&,
                         const DOMPaintTimingInfo&) override;
   void Trace(Visitor* visitor) const override;
 

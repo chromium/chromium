@@ -19,7 +19,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-struct DOMPaintTimingInfo;
 class LargestContentfulPaintManager;
 class LayoutBoxModelObject;
 class PaintTimingClient;
@@ -50,7 +49,11 @@ class CORE_EXPORT TextPaintTimingDetector final
   void RecordAggregatedText(const LayoutBoxModelObject& aggregator,
                             const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
-  OptionalPaintTimingDetectorCallback<TextRecord> TakePaintTimingCallback();
+
+  // Returns the set of `TextRecord`s that were rendered in the current frame
+  // and need paint and presentation time. Called by `PaintTiming` at the end of
+  // the current frame's paint stage.
+  HeapVector<Member<TextRecord>> TakeTextRecordsOnPaintFinished();
 
   // Mark that the `LayoutObject` should be considered for paint timing, even if
   // it's already been painted, because it was modified as part of an
@@ -68,24 +71,12 @@ class CORE_EXPORT TextPaintTimingDetector final
   // The state of `LayoutObject`s being tracked in the `recorded_set_`.
   enum class TextPaintStatus { kPainted, kAllowRepaint };
 
-  void AssignPaintTimeToQueuedRecords(
-      uint32_t frame_index,
-      const base::TimeTicks&,
-      const DOMPaintTimingInfo&,
-      HeapVector<Member<TextRecord>>& settled_records);
-
   TextRecord* CreateTextRecord(
       const LayoutObject& object,
       uint64_t visual_size,
       const PropertyTreeStateOrAlias& property_tree_state,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect);
-
-  inline void QueueToMeasurePaintTime(TextRecord* record) {
-    record->SetFrameIndex(frame_index_);
-    texts_queued_for_paint_time_.push_back(record);
-    added_entry_in_latest_frame_ = true;
-  }
 
   void ForEachPaintTimingClient(base::FunctionRef<void(PaintTimingClient*)>);
 
@@ -94,14 +85,11 @@ class CORE_EXPORT TextPaintTimingDetector final
   // LayoutObjects for which text has been aggregated.
   HeapHashMap<WeakMember<const LayoutObject>, TextPaintStatus> recorded_set_;
 
-  // Text records queued for paint time.
-  HeapDeque<Member<TextRecord>> texts_queued_for_paint_time_;
+  // Text records queued for paint time for the current frame. This is returned
+  // and cleared in `TakeTextRecordsOnPaintFinished()`.
+  HeapVector<Member<TextRecord>> texts_queued_for_paint_time_;
 
   Member<PaintTimingDetector> paint_timing_detector_;
-
-  // Used to decide which frame a record belongs to, monotonically increasing.
-  uint32_t frame_index_ = 1;
-  bool added_entry_in_latest_frame_ = false;
 };
 
 }  // namespace blink

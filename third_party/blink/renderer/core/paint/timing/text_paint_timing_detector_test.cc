@@ -38,9 +38,26 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
         GetPaintTiming()
             .GetLargestContentfulPaintManager()
             ->LargestContentfulPaintCalculatorForTest();
+    InitializeMainFramePaintTimingClient();
   }
 
  protected:
+  void InitializeChildFramePaintTimingClient() {
+    child_frame_client_ =
+        MakeGarbageCollected<PendingPaintTimingRecordObserverClient>();
+    PaintTiming::From(ChildDocument()).AddClient(child_frame_client_.Get());
+  }
+
+  void InitializeMainFramePaintTimingClient() {
+    // Allow re-initialization, which is needed for some tests for ordering.
+    if (main_frame_client_) {
+      GetPaintTiming().RemoveClient(main_frame_client_.Get());
+    }
+    main_frame_client_ =
+        MakeGarbageCollected<PendingPaintTimingRecordObserverClient>();
+    GetPaintTiming().AddClient(main_frame_client_.Get());
+  }
+
   LocalFrameView& GetChildFrameView() { return *ChildFrame().View(); }
 
   TextPaintTimingDetector& GetChildFrameTextPaintTimingDetector() {
@@ -61,12 +78,11 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
   }
 
   wtf_size_t MainFrameTextQueuedForPaintTimeSize() {
-    return GetTextPaintTimingDetector().texts_queued_for_paint_time_.size();
+    return main_frame_client_->PendingTextRecordsSize();
   }
 
   wtf_size_t ChildFrameTextQueuedForPaintTimeSize() {
-    return GetChildFrameTextPaintTimingDetector()
-        .texts_queued_for_paint_time_.size();
+    return child_frame_client_->PendingTextRecordsSize();
   }
 
   bool HasLargestIgnoredText() {
@@ -147,6 +163,8 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
   }
 
   Persistent<LargestContentfulPaintCalculator> main_frame_lcp_calculator_;
+  Persistent<PendingPaintTimingRecordObserverClient> main_frame_client_;
+  Persistent<PendingPaintTimingRecordObserverClient> child_frame_client_;
 };
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_NoText) {
@@ -649,6 +667,7 @@ TEST_F(TextPaintTimingDetectorTest, Iframe) {
   SetMainFrameBodyContent(R"HTML(
     <iframe width=100px height=100px></iframe>
   )HTML");
+  InitializeChildFramePaintTimingClient();
   SetChildFrameBodyContent("A");
   SimulateRendering();
   EXPECT_EQ(ChildFrameTextQueuedForPaintTimeSize(), 1u);
@@ -661,6 +680,7 @@ TEST_F(TextPaintTimingDetectorTest, Iframe_ClippedByViewport) {
   SetMainFrameBodyContent(R"HTML(
     <iframe width=100px height=100px></iframe>
   )HTML");
+  InitializeChildFramePaintTimingClient();
   SetChildFrameBodyContent(R"HTML(
     <style>
       #d { margin-top: 200px }
@@ -881,6 +901,9 @@ TEST_F(TextPaintTimingDetectorTest, NodeModifiedWhileRecordPending) {
   // LCP ignores repainted elements, so ensure we can still get the timing for
   // the repaint.
   GetPaintTiming().AddClient(MakeGarbageCollected<TestClient>());
+  // Reinitialize the main PaintTimingClient after the `TestClient` so it
+  // observes records last.
+  InitializeMainFramePaintTimingClient();
 
   // Simulate painting the text node. This should queue a presentation callback
   // for this frame.
