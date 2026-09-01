@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './organizer_list_section_item.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -11,6 +12,12 @@ import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from './organizer_list_section_item.js';
+
+/**
+ * This is the number of items in a section that are rendered before the "Show
+ * more" option.
+ */
+export const INITIAL_ITEM_COUNT = 3;
 
 export interface OrganizerListSectionElement {
   $: {
@@ -37,11 +44,13 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return {
       delegate: {type: Object},
       items: {type: Array},
+      expanded_: {type: Boolean},
     };
   }
 
   accessor delegate: OrganizerListSectionDelegate|null = null;
   accessor items: OrganizerListSectionItem[] = [];
+  protected accessor expanded_: boolean = false;
 
   // The panel WebUI will remain loaded but invisible when the panel is closed.
   // While invisible, the WebUI will not receive update events from the browser,
@@ -81,6 +90,25 @@ export class OrganizerListSectionElement extends CrLitElement implements
       return;
     }
     this.items = await this.delegate.getItems();
+  }
+
+  protected getInitialItems_(): OrganizerListSectionItem[] {
+    return this.items.slice(0, INITIAL_ITEM_COUNT);
+  }
+
+  protected getRemainingItems_(): OrganizerListSectionItem[] {
+    if (!this.expanded_) {
+      return [];
+    }
+    return this.items.slice(INITIAL_ITEM_COUNT);
+  }
+
+  protected hasMoreItems_(): boolean {
+    return this.items.length > INITIAL_ITEM_COUNT;
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
   }
 }
 

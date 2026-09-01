@@ -7,7 +7,7 @@ import './app.js';
 export {OrganizerPanelAppElement} from './app.js';
 export {OpenTabsDelegate} from './delegates/open_tabs_delegate.js';
 export {OrganizerListElement} from './organizer_list.js';
-export {OrganizerListSectionElement} from './organizer_list_section.js';
+export {INITIAL_ITEM_COUNT, OrganizerListSectionElement} from './organizer_list_section.js';
 export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 export type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from './organizer_list_section_item.js';
 export {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
