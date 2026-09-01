@@ -90,7 +90,7 @@ std::string DecisionSourceToString(DecisionSource source);
 // An opaque domain tag identifying an enum type used for custom predicates.
 // Each enum type provides a singleton `kInstance<E>` value.
 struct CustomPredicateDomain {
-  template <typename T>
+  template <IsIntCompatibleEnum E>
   static const CustomPredicateDomain kInstance;
 };
 
