@@ -68,6 +68,13 @@ SkPath VerticalTabStyleViews::GetPath(TabStyle::PathType path_type,
       gfx::RectFToSkRect(bounds), scaled_corner_radius, scaled_corner_radius));
 }
 
+std::optional<SkPath> VerticalTabStyleViews::GetChildClipPath(
+    float paint_recording_scale) const {
+  // Vertical tabs do not need to specifically clip their children, instead we
+  // have a global clip path for the entire tab view.
+  return std::nullopt;
+}
+
 void VerticalTabStyleViews::PaintTab(gfx::Canvas* canvas) const {
   std::optional<int> active_tab_fill_id;
   const ui::ThemeProvider* const theme_provider =

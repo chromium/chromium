@@ -69,6 +69,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
@@ -740,6 +741,19 @@ void TabView::OnGestureEvent(ui::GestureEvent* event) {
     default:
       break;
   }
+}
+
+void TabView::PaintChildren(const views::PaintInfo& info) {
+  ui::ClipRecorder clip_recorder(info.context());
+  // The paint recording scale for tabs is consistent along the x and y axis.
+  const float paint_recording_scale = info.paint_recording_scale_x();
+
+  if (const std::optional<SkPath> clip_path =
+          tab_styling()->GetChildClipPath(paint_recording_scale)) {
+    clip_recorder.ClipPathWithAntiAliasing(clip_path.value());
+  }
+
+  View::PaintChildren(info);
 }
 
 void TabView::OnPaint(gfx::Canvas* canvas) {

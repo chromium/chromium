@@ -27,6 +27,8 @@ class VerticalTabStyleViews : public TabStyleViews {
   SkPath GetPath(TabStyle::PathType path_type,
                  float scale,
                  const TabPathFlags& flags) const override;
+  std::optional<SkPath> GetChildClipPath(
+      float paint_recording_scale) const override;
   void PaintTab(gfx::Canvas* canvas) const override;
 
   gfx::Insets GetContentsInsets() const override;

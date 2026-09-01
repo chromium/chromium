@@ -111,6 +111,11 @@ class TabStyleViews {
                          float scale,
                          const TabPathFlags& flags) const = 0;
 
+  // Gets the path that children should be clipped to. Returns `nullopt` if
+  // children shouldn't be clipped.
+  virtual std::optional<SkPath> GetChildClipPath(
+      float paint_recording_scale) const = 0;
+
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
 

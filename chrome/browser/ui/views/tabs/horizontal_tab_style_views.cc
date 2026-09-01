@@ -348,6 +348,14 @@ SkPath HorizontalTabStyleViews::GetPath(TabStyle::PathType path_type,
   return path.detach();
 }
 
+std::optional<SkPath> HorizontalTabStyleViews::GetChildClipPath(
+    float paint_recording_scale) const {
+  // Clip children based on the tab's fill path. This has no effect except when
+  // the tab is too narrow to completely show even one icon, at which point this
+  // serves to clip the favicon.
+  return GetPath(TabStyle::PathType::kHighlight, paint_recording_scale, {});
+}
+
 void HorizontalTabStyleViews::PaintTab(gfx::Canvas* canvas) const {
   std::optional<int> active_tab_fill_id;
   if (delegate_->GetView()->GetThemeProvider()->HasCustomImage(
