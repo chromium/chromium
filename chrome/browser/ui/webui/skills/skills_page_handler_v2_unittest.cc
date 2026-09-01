@@ -57,6 +57,7 @@ class MockSkillsPageV2 : public skills::mojom::SkillsPageV2 {
               LoadProvidedSkills,
               ((const std::vector<skills::Skill>&)),
               (override));
+  MOCK_METHOD(void, OnUserSkillsUpdated, (), (override));
 
   mojo::Receiver<skills::mojom::SkillsPageV2> receiver_{this};
 };
@@ -283,6 +284,23 @@ TEST_F(SkillsPageHandlerV2Test, OnProvidedSkillsChanged) {
 
   handler_->OnProvidedSkillsChanged(nullptr);
   mock_page.receiver_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, OnSkillUpdated_NotifiesPage) {
+  MockSkillsPageV2 mock_page;
+  remote_handler_->SetPage(mock_page.BindAndGetRemote());
+  remote_handler_.FlushForTesting();
+
+  EXPECT_CALL(mock_page, OnUserSkillsUpdated()).Times(1);
+
+  handler_->OnSkillUpdated("skill_id", SkillsService::UpdateSource::kSync,
+                           /*is_position_changed=*/false);
+  mock_page.receiver_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, OnSkillUpdated_PageNotBound_NoCrash) {
+  handler_->OnSkillUpdated("skill_id", SkillsService::UpdateSource::kSync,
+                           /*is_position_changed=*/false);
 }
 
 }  // namespace

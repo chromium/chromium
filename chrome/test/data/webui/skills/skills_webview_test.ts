@@ -8,6 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ErrorType} from 'chrome://skills/error_page.js';
 import {SkillsDialogType} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
+import type {SkillsWebviewBridge} from 'chrome://skills/v2/skills_webview_bridge.js';
 import {IS_SAVING_GEMINI_QUERY_PARAMETER, SkillSource, SOURCE_QUERY_PARAMETER} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -188,5 +189,20 @@ suite('SkillsWebviewTest', () => {
     // Look for an editor specific element.
     assertTrue(
         !!loadingPage.shadowRoot?.querySelector('.skeleton-editor-card'));
+  });
+
+  test('SkillsWebview_OnUserSkillsUpdated_CallsBridge', () => {
+    class BridgeMockSkillsWebview extends SkillsWebview {
+      sentSkillsUpdated = false;
+      override bridge = {
+        sendSkillsUpdated: () => {
+          this.sentSkillsUpdated = true;
+        },
+      } as unknown as SkillsWebviewBridge;
+    }
+
+    const webviewApp = new BridgeMockSkillsWebview();
+    webviewApp.onUserSkillsUpdated();
+    assertTrue(webviewApp.sentSkillsUpdated);
   });
 });

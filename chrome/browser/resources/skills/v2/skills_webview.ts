@@ -261,4 +261,8 @@ export class SkillsWebview implements SkillsPageV2Interface {
   loadProvidedSkills(skills: Skill[]) {
     this.bridge?.sendProvidedSkills(skills);
   }
+
+  onUserSkillsUpdated() {
+    this.bridge?.sendSkillsUpdated();
+  }
 }

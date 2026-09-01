@@ -146,6 +146,9 @@ struct PendingEditorData {
 interface SkillsPageV2 {
   // Notifies the UI that provided skills changed and need refreshing.
   LoadProvidedSkills(array<skills.mojom.Skill> skills);
+
+  // Notifies the UI that user skills changed (e.g. from Sync or CRUD) and need refreshing.
+  OnUserSkillsUpdated();
 };
 
 // Called from TS side of chrome://skills (Renderer -> Browser).

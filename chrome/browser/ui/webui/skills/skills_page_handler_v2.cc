@@ -139,6 +139,15 @@ void SkillsPageHandlerV2::OnProvidedSkillsChanged(SkillsProvider* provider) {
   page_->LoadProvidedSkills(std::move(skills));
 }
 
+void SkillsPageHandlerV2::OnSkillUpdated(
+    std::string_view skill_id,
+    SkillsService::UpdateSource update_source,
+    bool is_position_changed) {
+  if (page_.is_bound()) {
+    page_->OnUserSkillsUpdated();
+  }
+}
+
 void SkillsPageHandlerV2::SyncCookies(SyncCookiesCallback callback) {
   cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(
       std::move(callback));
