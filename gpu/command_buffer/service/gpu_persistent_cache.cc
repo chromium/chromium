@@ -792,10 +792,10 @@ void GpuPersistentCache::StoreImpl(std::string_view key,
 
   // Record the cache key and value sizes infrequently.
   if (base::ShouldRecordSubsampledMetric(kRecordCacheEntrySizeFrequency)) {
-    base::UmaHistogramMemoryKB(GetHistogramName(cache_prefix_, "KeySize"),
-                               base::ByteSize(key.size()));
-    base::UmaHistogramMemoryKB(GetHistogramName(cache_prefix_, "ValueSize"),
-                               base::ByteSize(value.size()));
+    base::UmaHistogramCounts1M(GetHistogramName(cache_prefix_, "KeySize2"),
+                               key.size());
+    base::UmaHistogramCounts1M(GetHistogramName(cache_prefix_, "ValueSize2"),
+                               value.size());
   }
 
   scoped_refptr<MemoryCacheEntry> memory_cache_entry;

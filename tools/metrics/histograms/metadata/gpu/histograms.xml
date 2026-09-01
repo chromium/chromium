@@ -1596,8 +1596,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.KeySize"
-    units="KB" expires_after="2027-02-28">
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.KeySize2"
+    units="bytes" expires_after="2027-02-28">
   <owner>geofflang@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
@@ -1657,8 +1657,8 @@ chromium-metrics-reviews@google.com.
   <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
 </histogram>
 
-<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.ValueSize"
-    units="KB" expires_after="2027-02-28">
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.ValueSize2"
+    units="bytes" expires_after="2027-02-28">
   <owner>geofflang@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
