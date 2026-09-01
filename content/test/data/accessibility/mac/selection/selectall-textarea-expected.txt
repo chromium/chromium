@@ -1,4 +1,4 @@
 textarea_range={anchor: {:3, 0, down}, focus: {:3, 19, down}}
 textarea.AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:3, 19, down}}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove AXTextStateSync=true}
 textarea.AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:3, 19, down}}

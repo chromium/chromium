@@ -7,7 +7,7 @@ marker_3={:3, 15, down}
 marker_4={:3, 10, down}
 target_selected_marker_range={anchor: {:3, 10, down}, focus: {:3, 15, down}}
 textarea.AXSelectedTextMarkerRange={anchor: {:3, 10, down}, focus: {:3, 15, down}}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove AXTextStateSync=true}
 textarea.AXSelectedText='brown'
 textarea.accessibilitySelectedText='brown'
 // Select 2nd word on the 2nd line (AXSelectedTextMarkerRange).
@@ -19,26 +19,26 @@ marker_3={:3, 25, down}
 marker_4={:3, 20, down}
 target_selected_marker_range={anchor: {:3, 20, down}, focus: {:3, 25, down}}
 textarea.AXSelectedTextMarkerRange={anchor: {:3, 20, down}, focus: {:3, 25, down}}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown AXTextStateSync=true}
 textarea.AXSelectedText='jumps'
 textarea.accessibilitySelectedText='jumps'
 // Select text on the 1st line (AXSelectedTextRange).
 textarea.AXSelectedTextRange={loc: 10, len: 5}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown AXTextStateSync=true}
 textarea.AXSelectedText='brown'
 textarea.accessibilitySelectedText='brown'
 // select text on the 2nd line (AXSelectedTextRange).
 textarea.AXSelectedTextRange={loc: 20, len: 5}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown AXTextStateSync=true}
 textarea.AXSelectedText='jumps'
 textarea.accessibilitySelectedText='jumps'
 // Put cursor after the 2nd word.
 textarea.AXSelectedTextRange={loc: 10, len: 0}
-AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown AXTextStateSync=true}
 // Force line break.
 press Enter
 // Select text on the 2nd line (fox).
 textarea.AXSelectedTextRange={loc: 17, len: 3}
-AXSelectedTextChanged on AXTextArea AXValue='The quick <newline>brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+AXSelectedTextChanged on AXTextArea AXValue='The quick <newline>brown fox jumps over the lazy dog<newline>' user_info={AXTextChangeElement=AXTextArea AXTextSelectionChangedFocus=true AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown AXTextStateSync=true}
 textarea.AXSelectedText='fox'
 textarea.accessibilitySelectedText='fox'

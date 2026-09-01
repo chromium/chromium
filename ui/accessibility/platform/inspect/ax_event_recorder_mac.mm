@@ -21,6 +21,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
+#include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 #include "ui/gfx/native_ui_types.h"
@@ -213,6 +214,19 @@ std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
           ToString(static_cast<AXTextSelectionGranularity>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextEditType]) {
       value_string = ToString(static_cast<AXTextEditType>(value.intValue));
+    } else if ([key isEqual:NSAccessibilityTextStateSyncKey]) {
+      value_string = value.boolValue ? "true" : "false";
+    } else if ([key isEqual:NSAccessibilityTextSelectionChangedFocus]) {
+      value_string = value.boolValue ? "true" : "false";
+    } else if ([key isEqual:NSAccessibilityTextChangeElement]) {
+      AXElementWrapper ax_element(ns_user_info[key]);
+      AXOptionalNSObject role =
+          ax_element.GetAttributeValue(NSAccessibilityRoleAttribute);
+      if (!role.HasValue()) {
+        continue;
+      }
+      NSString* role_string = *role;
+      value_string = base::SysNSStringToUTF8(role_string);
     } else {
       continue;
     }
@@ -224,7 +238,7 @@ std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
   // consistent output ordering.
   std::sort(serialized_info.begin(), serialized_info.end());
 
-  return base::JoinString(serialized_info, " ");
+  return "user_info={" + base::JoinString(serialized_info, " ") + "}";
 }
 
 void AXEventRecorderMac::WaitForDoneRecording() {
