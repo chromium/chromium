@@ -40,6 +40,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorBackgroundActuationManager;
+import org.chromium.chrome.browser.actor.ActorNotificationFactory;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1830,6 +1833,21 @@ public class IntentHandler {
     public static boolean getPinnedState(Intent intent) {
         if (!wasIntentSenderChrome(intent)) return false;
         return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PINNED_STATE, false);
+    }
+
+    /**
+     * @param intent The intent to check.
+     * @return Whether the intent originated from an Actor notification.
+     */
+    public static boolean isActorNotificationIntent(@Nullable Intent intent) {
+        if (intent == null) return false;
+        return IntentUtils.safeGetBooleanExtra(
+                        intent, ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false)
+                || IntentUtils.safeGetIntExtra(
+                                intent,
+                                NotificationConstants.EXTRA_ACTOR_TASK_ID,
+                                ActorBackgroundActuationManager.INVALID_TASK_ID)
+                        != ActorBackgroundActuationManager.INVALID_TASK_ID;
     }
 
     /**

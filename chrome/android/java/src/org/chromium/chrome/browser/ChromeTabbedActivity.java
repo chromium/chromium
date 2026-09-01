@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.accessibility.settings.CaretBrowsingDialog;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
+import org.chromium.chrome.browser.actor.ActorTabStateHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -2092,24 +2093,29 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                         tabIdToBringToFront,
                         intent);
-        if (tab == null) {
+        boolean isActorBringToFront =
+                tabOpenType == TabOpenType.BRING_TAB_TO_FRONT
+                        && IntentHandler.isActorNotificationIntent(intent);
+        if (tab == null && !isActorBringToFront) {
             Log.e(TAG, "processUrlViewIntent returned null, failing to handle intent.");
             return false;
         }
-        boolean shouldPin = IntentHandler.getPinnedState(intent);
-        if (shouldPin && !tab.getIsPinned()) {
-            getTabModelSelector()
-                    .getModel(tab.isIncognito())
-                    .pinTab(tab.getId(), /* showUngroupDialog= */ false);
-        }
-        int destTabId = IntentHandler.getDestTabId(intent);
-        if (destTabId != Tab.INVALID_TAB_ID) {
-            TabGroupUtils.mergeTabsToDest(
-                    Collections.singletonList(tab),
-                    destTabId,
-                    getTabModelSelector().getModel(tab.isIncognito()),
-                    null);
-            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
+        if (tab != null) {
+            boolean shouldPin = IntentHandler.getPinnedState(intent);
+            if (shouldPin && !tab.getIsPinned()) {
+                getTabModelSelector()
+                        .getModel(tab.isIncognito())
+                        .pinTab(tab.getId(), /* showUngroupDialog= */ false);
+            }
+            int destTabId = IntentHandler.getDestTabId(intent);
+            if (destTabId != Tab.INVALID_TAB_ID) {
+                TabGroupUtils.mergeTabsToDest(
+                        Collections.singletonList(tab),
+                        destTabId,
+                        getTabModelSelector().getModel(tab.isIncognito()),
+                        null);
+                IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
+            }
         }
         return true;
     }
@@ -2926,41 +2932,29 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 : archivedOrchestrator
                                         .getTabModel()
                                         .getTabById(tabIdToBringToFront);
+                boolean isActorIntent = IntentHandler.isActorNotificationIntent(intent);
                 if (archivedTab != null) {
                     archivedOrchestrator
                             .getTabArchiver()
                             .unarchiveAndRestoreTabs(
-                                    tabModel.getTabCreator(),
+                                    getTabCreator(archivedTab.isIncognito()),
                                     Arrays.asList(archivedTab),
                                     /* updateTimestamp= */ true,
                                     /* areTabsBeingOpened= */ true);
-                } else {
+                } else if (!isActorIntent) {
+                    // For Actor notification intents on cold start, the background tab is restored
+                    // and attached into TabModel asynchronously during tab state initialization.
+                    // Standard tryToRestoreTabStateForId is only needed for non-Actor intents.
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                 }
 
-                Tab tabToBringToFront = tabModel.getTabById(tabIdToBringToFront);
-                if (tabToBringToFront == null) {
-                    TabModel otherModel = getTabModelSelector().getModel(!tabModel.isIncognito());
-                    tabToBringToFront = otherModel.getTabById(tabIdToBringToFront);
-                    if (tabToBringToFront != null) {
-                        getTabModelSelector().selectModel(otherModel.isIncognito());
-                        TabModelUtils.setIndex(otherModel, otherModel.indexOf(tabToBringToFront));
-                        resultTab = tabToBringToFront;
-                    } else {
-                        Log.e(TAG, "Failed to bring tab to front because it doesn't exist.");
-                        return null;
-                    }
-                } else {
-                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(tabToBringToFront));
-                    resultTab = tabToBringToFront;
+                resultTab =
+                        ActorTabStateHelper.selectTabAndShow(
+                                getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
+                if (resultTab == null && isActorIntent) {
+                    ActorTabStateHelper.listenAndSelectTabOnAdded(
+                            getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
                 }
-
-                LayoutManagerChrome layoutManager = getLayoutManager();
-                // If the tab-switcher is displayed, hide it to show the tab.
-                if (layoutManager != null && layoutManager.isLayoutVisible(LayoutType.HUB)) {
-                    layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
-                }
-
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:
                 // The browser triggered the intent. This happens when clicking links which
