@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,8 +69,15 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
 // Test that when SSL error overriding is allowed, the origin list is ignored
 // and the proceed link appears on SSL blocking pages.
+// TODO(crbug.com/555854628): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SSLErrorOverridingAllowedEnabled \
+  DISABLED_SSLErrorOverridingAllowedEnabled
+#else
+#define MAYBE_SSLErrorOverridingAllowedEnabled SSLErrorOverridingAllowedEnabled
+#endif
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       SSLErrorOverridingAllowedEnabled) {
+                       MAYBE_SSLErrorOverridingAllowedEnabled) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -112,8 +120,16 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
 // Test that when SSL error overriding is disabled, the proceed link does not
 // appear appear on SSL blocking pages.
+// TODO(crbug.com/555854628): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SSLErrorOverridingAllowedDisabled \
+  DISABLED_SSLErrorOverridingAllowedDisabled
+#else
+#define MAYBE_SSLErrorOverridingAllowedDisabled \
+  SSLErrorOverridingAllowedDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       SSLErrorOverridingAllowedDisabled) {
+                       MAYBE_SSLErrorOverridingAllowedDisabled) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
