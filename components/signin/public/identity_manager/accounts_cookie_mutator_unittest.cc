@@ -89,7 +89,7 @@ class AccountsCookieMutatorTest
 
   // Make an account available and returns the account ID.
   CoreAccountId AddAcountWithRefreshToken(const std::string& email) {
-    return identity_test_env_.MakeAccountAvailable(email).account_id;
+    return identity_test_env_.MakeAccountAvailable(email).GetAccountId();
   }
 
   // Feed the TestURLLoaderFactory with the responses for the requests that will

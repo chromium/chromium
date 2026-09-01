@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -89,9 +90,9 @@ void AddSection(base::ListValue& parent_list,
 }
 
 void AddSectionEntry(base::ListValue& section_list,
-                     const std::string& field_name,
-                     const std::string& field_status,
-                     const std::string& field_time = "") {
+                     std::string_view field_name,
+                     std::string_view field_status,
+                     std::string_view field_time = "") {
   base::DictValue entry;
   entry.Set("label", field_name);
   entry.Set("status", field_status);
@@ -748,7 +749,7 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
         AddSectionEntry(basic_info, "Auth Error Account Id",
                         error_account_id.ToString());
         AddSectionEntry(basic_info, "Auth Error Username",
-                        error_account_info.email);
+                        error_account_info.GetEmail());
       } else {
         AddSectionEntry(basic_info, "Auth Error", "None");
       }

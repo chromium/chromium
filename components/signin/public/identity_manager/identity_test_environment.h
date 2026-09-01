@@ -336,7 +336,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // passing in a null callback, before the Wait* methods can be used again.
   void SetCallbackForNextAccessTokenRequest(base::OnceClosure callback);
 
-  // Updates the info for |account_info.account_id|, which must be a known
+  // Updates the info for |account_info.GetAccountId()|, which must be a known
   // account.
   void UpdateAccountInfoForAccount(AccountInfo account_info);
 

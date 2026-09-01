@@ -56,7 +56,7 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetrics) {
 
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
-  GaiaId gaia_id = account_info.gaia;
+  GaiaId gaia_id = account_info.GetGaiaId();
 
   account_info = AccountInfo::Builder(account_info)
                      .SetHostedDomain(signin::constants::kNoHostedDomainFound)
@@ -131,7 +131,7 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsSupervised) {
 
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("supervised@example.com");
-  GaiaId gaia_id = account_info.gaia;
+  GaiaId gaia_id = account_info.GetGaiaId();
 
   account_info = AccountInfo::Builder(account_info)
                      .SetHostedDomain(signin::constants::kNoHostedDomainFound)
@@ -167,7 +167,7 @@ TEST_F(AccountPreviewMetricsRecorderTest, DropAccountsAboveFive) {
 
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user5@example.com");
-  GaiaId gaia_id = account_info.gaia;
+  GaiaId gaia_id = account_info.GetGaiaId();
 
   account_info = AccountInfo::Builder(account_info)
                      .SetHostedDomain(signin::constants::kNoHostedDomainFound)
@@ -190,7 +190,7 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsProfileOverflow) {
 
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
-  GaiaId gaia_id = account_info.gaia;
+  GaiaId gaia_id = account_info.GetGaiaId();
 
   account_info = AccountInfo::Builder(account_info)
                      .SetHostedDomain(signin::constants::kNoHostedDomainFound)

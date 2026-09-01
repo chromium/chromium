@@ -470,7 +470,7 @@ void SigninMetricsService::OnExtendedAccountInfoUpdated(
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     ScopedDictPrefUpdate update(&pref_service_.get(),
                                 kWebSigninAccountStartTimesPref);
-    update->Set(info.account_id.ToString(),
+    update->Set(info.GetAccountId().ToString(),
                 base::TimeToValue(base::Time::Now()));
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -478,7 +478,7 @@ void SigninMetricsService::OnExtendedAccountInfoUpdated(
   if (active_primary_accounts_metrics_recorder_ &&
       info.IsManaged() != signin::Tribool::kUnknown) {
     active_primary_accounts_metrics_recorder_->MarkAccountAsManaged(
-        info.gaia, signin::TriboolToBoolOrDie(info.IsManaged()));
+        info.GetGaiaId(), signin::TriboolToBoolOrDie(info.IsManaged()));
   }
 }
 
@@ -606,7 +606,7 @@ void SigninMetricsService::UpdateIsManagedForAllAccounts() {
   for (const AccountInfo& extended_info : accounts) {
     if (extended_info.IsManaged() != signin::Tribool::kUnknown) {
       active_primary_accounts_metrics_recorder_->MarkAccountAsManaged(
-          extended_info.gaia,
+          extended_info.GetGaiaId(),
           signin::TriboolToBoolOrDie(extended_info.IsManaged()));
     }
   }

@@ -150,7 +150,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   SetAccounts({account1_});
   Sequence seq;
   // Previously stored account is removed.
-  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -166,11 +166,11 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
        ReloadAccountsFrom1To1WithoutPrimaryAccount) {
   SetAccounts({account1_});
   Sequence seq;
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account1_.account_id,
+              OnAuthErrorChanged(account1_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
 
@@ -179,7 +179,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       /*primary_account_id=*/std::nullopt);
 
   EXPECT_EQ(delegate_->GetAccounts(),
-            std::vector<CoreAccountId>({account1_.account_id}));
+            std::vector<CoreAccountId>({account1_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account1_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
@@ -189,19 +189,19 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
        ReloadAccountsFrom1To1WithPrimaryAccount) {
   SetAccounts({account1_});
   Sequence seq;
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account1_.account_id,
+              OnAuthErrorChanged(account1_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account1_}, account1_.account_id);
+      {account1_}, account1_.GetAccountId());
 
   EXPECT_EQ(delegate_->GetAccounts(),
-            std::vector<CoreAccountId>({account1_.account_id}));
+            std::vector<CoreAccountId>({account1_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account1_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
@@ -212,23 +212,23 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   SetAccounts({account1_});
   Sequence seq;
   // Primary account is available.
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account2_.account_id,
+              OnAuthErrorChanged(account2_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
   // Previously stored account is removed.
-  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account2_}, account2_.account_id);
+      {account2_}, account2_.GetAccountId());
 
   EXPECT_EQ(delegate_->GetAccounts(),
-            std::vector<CoreAccountId>({account2_.account_id}));
+            std::vector<CoreAccountId>({account2_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account2_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
@@ -240,26 +240,26 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       {account1_},
       /*primary_account_id=*/std::nullopt,
       /*should_remove_stale_accounts=*/false);
-  delegate_->SetAccounts({account2_.account_id});
+  delegate_->SetAccounts({account2_.GetAccountId()});
   Sequence seq;
   // Primary account is available.
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account3_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account3_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account3_.account_id,
+              OnAuthErrorChanged(account3_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
   // Previously stored account is removed.
-  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account3_}, account3_.account_id);
+      {account3_}, account3_.GetAccountId());
 
   EXPECT_EQ(delegate_->GetAccounts(),
-            std::vector<CoreAccountId>({account3_.account_id}));
+            std::vector<CoreAccountId>({account3_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account3_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
@@ -269,19 +269,19 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
        ReloadAccountsFrom0To1WithPrimaryAccount) {
   Sequence seq;
   // Primary account is available.
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account1_.account_id,
+              OnAuthErrorChanged(account1_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account1_}, account1_.account_id);
+      {account1_}, account1_.GetAccountId());
 
   EXPECT_EQ(delegate_->GetAccounts(),
-            std::vector<CoreAccountId>({account1_.account_id}));
+            std::vector<CoreAccountId>({account1_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account1_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
@@ -292,23 +292,23 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   SetAccounts({account1_, account2_});
   Sequence seq;
   // OnRefreshTokenAvailable fired, primary account should go first.
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account1_.account_id,
+              OnAuthErrorChanged(account1_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
   // Previously stored account is removed.
-  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account1_}, account1_.account_id);
+      {account1_}, account1_.GetAccountId());
 
   EXPECT_EQ(delegate_->GetAccounts(),
-            std::vector<CoreAccountId>({account1_.account_id}));
+            std::vector<CoreAccountId>({account1_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account1_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
@@ -319,27 +319,27 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   SetAccounts({account1_});
   Sequence seq;
   // OnRefreshTokenAvailable fired, primary account should go first.
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account2_.account_id,
+              OnAuthErrorChanged(account2_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
-  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.GetAccountId()))
       .InSequence(seq)
       .WillOnce(Return());
   EXPECT_CALL(*observer_,
-              OnAuthErrorChanged(account1_.account_id,
+              OnAuthErrorChanged(account1_.GetAccountId(),
                                  GoogleServiceAuthError::AuthErrorNone(), _))
       .InSequence(seq);
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      {account1_, account2_}, account2_.account_id);
+      {account1_, account2_}, account2_.GetAccountId());
 
-  EXPECT_EQ(
-      delegate_->GetAccounts(),
-      std::vector<CoreAccountId>({account1_.account_id, account2_.account_id}));
+  EXPECT_EQ(delegate_->GetAccounts(),
+            std::vector<CoreAccountId>(
+                {account1_.GetAccountId(), account2_.GetAccountId()}));
   EXPECT_THAT(
       std::vector<AccountInfo>({account1_, account2_}),
       Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));

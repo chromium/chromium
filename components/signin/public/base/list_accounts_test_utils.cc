@@ -62,10 +62,10 @@ void SetListAccountsResponseNoAccounts(
 }
 
 void SetListAccountsResponseOneAccount(
-    const std::string& email,
+    std::string_view email,
     const GaiaId& gaia_id,
     TestURLLoaderFactory* test_url_loader_factory) {
-  gaia::CookieParams params = {email, gaia_id, /*valid=*/true,
+  gaia::CookieParams params = {std::string(email), gaia_id, /*valid=*/true,
                                /*signed_out=*/false, /*verified=*/true};
   SetListAccountsResponseWithParams({params}, test_url_loader_factory);
 }
@@ -77,15 +77,15 @@ void SetListAccountsResponseOneAccountWithParams(
 }
 
 void SetListAccountsResponseTwoAccounts(
-    const std::string& email1,
+    std::string_view email1,
     const GaiaId& gaia_id1,
-    const std::string& email2,
+    std::string_view email2,
     const GaiaId& gaia_id2,
     TestURLLoaderFactory* test_url_loader_factory) {
   SetListAccountsResponseWithParams(
-      {{email1, gaia_id1, /*valid=*/true, /*signed_out=*/false,
+      {{std::string(email1), gaia_id1, /*valid=*/true, /*signed_out=*/false,
         /*verified=*/true},
-       {email2, gaia_id2, /*valid=*/true, /*signed_out=*/false,
+       {std::string(email2), gaia_id2, /*valid=*/true, /*signed_out=*/false,
         /*verified=*/true}},
       test_url_loader_factory);
 }

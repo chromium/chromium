@@ -209,7 +209,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   {
     SigninPrefs signin_prefs(*prefs());
     std::optional<base::Time> last_signout_time =
-        signin_prefs.GetChromeLastSignoutTime(account_info.gaia);
+        signin_prefs.GetChromeLastSignoutTime(account_info.GetGaiaId());
     EXPECT_FALSE(last_signout_time.has_value());
   }
 #endif
@@ -233,7 +233,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   {
     SigninPrefs signin_prefs(*prefs());
     std::optional<base::Time> last_signout_time =
-        signin_prefs.GetChromeLastSignoutTime(account_info.gaia);
+        signin_prefs.GetChromeLastSignoutTime(account_info.GetGaiaId());
     ASSERT_TRUE(last_signout_time.has_value());
     EXPECT_LE(base::Time::Now() - last_signout_time.value(), base::Seconds(10));
   }

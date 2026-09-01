@@ -87,7 +87,7 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -95,7 +95,7 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
@@ -132,7 +132,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -140,7 +140,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
@@ -174,7 +174,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -182,7 +182,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(0U, result_data->counts[syncer::BOOKMARKS]);
@@ -214,7 +214,7 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -222,11 +222,11 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
   fetcher->Start();
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info.account_id,
+      account_info.GetAccountId(),
       GoogleServiceAuthError::FromServiceError("Service error"));
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   EXPECT_FALSE(result_data.has_value());
 
@@ -252,7 +252,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -260,7 +260,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_TRUE(result_data->counts.empty());
@@ -288,7 +288,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -296,7 +296,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(5U, result_data->counts[syncer::BOOKMARKS]);
@@ -331,7 +331,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -339,7 +339,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_TRUE(result_data->counts.empty());
@@ -370,7 +370,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -378,7 +378,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(10U, result_data->counts[syncer::PASSWORDS]);
@@ -407,7 +407,7 @@ TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -415,7 +415,7 @@ TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   EXPECT_FALSE(result_data.has_value());
 
@@ -507,7 +507,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -515,7 +515,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   ASSERT_EQ(1U, result_data->devices.size());
@@ -548,7 +548,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidFormFactorOrOsType) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -556,7 +556,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidFormFactorOrOsType) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   ASSERT_EQ(1U, result_data->devices.size());
@@ -623,7 +623,7 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersNonChromeDevices) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -631,7 +631,7 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersNonChromeDevices) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   ASSERT_EQ(1U, result_data->devices.size());
@@ -680,7 +680,7 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersCurrentDevice) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/
@@ -688,7 +688,7 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersCurrentDevice) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_FALSE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   ASSERT_EQ(1U, result_data->devices.size());
@@ -711,7 +711,7 @@ TEST_F(AccountPreviewDataFetcherTest, Stats429Error) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -719,7 +719,7 @@ TEST_F(AccountPreviewDataFetcherTest, Stats429Error) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_TRUE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_TRUE(result_data->counts.empty());
@@ -737,7 +737,7 @@ TEST_F(AccountPreviewDataFetcherTest, Previews429Error) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -745,7 +745,7 @@ TEST_F(AccountPreviewDataFetcherTest, Previews429Error) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_TRUE(hit_429);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(5U, result_data->counts[syncer::BOOKMARKS]);
@@ -762,7 +762,7 @@ TEST_F(AccountPreviewDataFetcherTest, Both429Error) {
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN,
       /*current_device_cache_guids=*/base::flat_set<std::string>(),
@@ -770,7 +770,7 @@ TEST_F(AccountPreviewDataFetcherTest, Both429Error) {
   fetcher->Start();
 
   auto [gaia_id, result_data, hit_429] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
   EXPECT_TRUE(hit_429);
   EXPECT_FALSE(result_data.has_value());
   histogram_tester_.ExpectBucketCount(kFetchHit429Histogram, true, 1);

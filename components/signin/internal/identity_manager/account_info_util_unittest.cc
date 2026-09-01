@@ -445,11 +445,12 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountInfo) {
       DeserializeAccountInfo(dict);
 
   ASSERT_TRUE(deserialized_account_info.has_value());
-  EXPECT_EQ(account_info.account_id, deserialized_account_info->account_id);
-  EXPECT_EQ(account_info.gaia, deserialized_account_info->gaia);
-  EXPECT_EQ(account_info.email, deserialized_account_info->email);
-  EXPECT_EQ(account_info.is_under_advanced_protection,
-            deserialized_account_info->is_under_advanced_protection);
+  EXPECT_EQ(account_info.GetAccountId(),
+            deserialized_account_info->GetAccountId());
+  EXPECT_EQ(account_info.GetGaiaId(), deserialized_account_info->GetGaiaId());
+  EXPECT_EQ(account_info.GetEmail(), deserialized_account_info->GetEmail());
+  EXPECT_EQ(account_info.IsUnderAdvancedProtection(),
+            deserialized_account_info->IsUnderAdvancedProtection());
   EXPECT_EQ(account_info.GetFullName(),
             deserialized_account_info->GetFullName());
   EXPECT_EQ(account_info.GetGivenName(),
@@ -507,17 +508,17 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_FormatStability) {
 
   ASSERT_NE(account_info, std::nullopt);
   GaiaId gaia_id("test_gaia_id");
-  EXPECT_EQ(account_info->gaia, gaia_id);
-  EXPECT_EQ(account_info->email, "test@example.com");
+  EXPECT_EQ(account_info->GetGaiaId(), gaia_id);
+  EXPECT_EQ(account_info->GetEmail(), "test@example.com");
   if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
     // AccountInfo::Builder enforces that AccountInfo::account_id is derived
     // from GaiaId.
-    EXPECT_EQ(account_info->account_id, CoreAccountId::FromGaiaId(gaia_id));
+    EXPECT_EQ(account_info->GetAccountId(), CoreAccountId::FromGaiaId(gaia_id));
   } else {
-    EXPECT_EQ(account_info->account_id,
+    EXPECT_EQ(account_info->GetAccountId(),
               CoreAccountId::FromString("test_account_id"));
   }
-  EXPECT_EQ(account_info->is_under_advanced_protection, false);
+  EXPECT_EQ(account_info->IsUnderAdvancedProtection(), false);
   EXPECT_EQ(account_info->GetFullName(), "Test Name");
   EXPECT_EQ(account_info->GetGivenName(), "Test");
   EXPECT_EQ(account_info->GetHostedDomain(), "example.com");
@@ -551,14 +552,14 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_Minimal) {
   std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
   ASSERT_NE(account_info, std::nullopt);
   GaiaId gaia_id("gaia_id");
-  EXPECT_EQ(account_info->gaia, gaia_id);
-  EXPECT_EQ(account_info->email, "test@example.org");
+  EXPECT_EQ(account_info->GetGaiaId(), gaia_id);
+  EXPECT_EQ(account_info->GetEmail(), "test@example.org");
   if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
     // AccountInfo::Builder enforces that AccountInfo::account_id is derived
     // from GaiaId.
-    EXPECT_EQ(account_info->account_id, CoreAccountId::FromGaiaId(gaia_id));
+    EXPECT_EQ(account_info->GetAccountId(), CoreAccountId::FromGaiaId(gaia_id));
   } else {
-    EXPECT_EQ(account_info->account_id,
+    EXPECT_EQ(account_info->GetAccountId(),
               CoreAccountId::FromString("test_account_id"));
   }
   // All other fields should be unknown.
@@ -599,8 +600,8 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoAccountId) {
                   .Set("email", "test@example.org");
   std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
   ASSERT_NE(account_info, std::nullopt);
-  EXPECT_EQ(account_info->gaia, GaiaId("gaia_id"));
-  EXPECT_EQ(account_info->email, "test@example.org");
+  EXPECT_EQ(account_info->GetGaiaId(), GaiaId("gaia_id"));
+  EXPECT_EQ(account_info->GetEmail(), "test@example.org");
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaiaWithoutEnforcement) {
@@ -615,9 +616,9 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaiaWithoutEnforcement) {
   std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_NE(account_info, std::nullopt);
-  EXPECT_EQ(account_info->gaia, GaiaId());
-  EXPECT_EQ(account_info->email, "test@example.org");
-  EXPECT_EQ(account_info->account_id,
+  EXPECT_EQ(account_info->GetGaiaId(), GaiaId());
+  EXPECT_EQ(account_info->GetEmail(), "test@example.org");
+  EXPECT_EQ(account_info->GetAccountId(),
             CoreAccountId::FromString("test_account_id"));
 #else
   EXPECT_EQ(account_info, std::nullopt);
@@ -658,8 +659,8 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_EmptyStringValues) {
 
   std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
   ASSERT_NE(account_info, std::nullopt);
-  EXPECT_EQ(account_info->gaia, GaiaId("gaia_id"));
-  EXPECT_EQ(account_info->email, "test@example.org");
+  EXPECT_EQ(account_info->GetGaiaId(), GaiaId("gaia_id"));
+  EXPECT_EQ(account_info->GetEmail(), "test@example.org");
   EXPECT_EQ(account_info->GetFullName(), std::nullopt);
   EXPECT_EQ(account_info->GetGivenName(), std::nullopt);
   EXPECT_EQ(account_info->GetLocale(), std::nullopt);
@@ -678,8 +679,8 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_SentinelValues) {
 
   std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
   ASSERT_NE(account_info, std::nullopt);
-  EXPECT_EQ(account_info->gaia, GaiaId("gaia_id"));
-  EXPECT_EQ(account_info->email, "test@example.org");
+  EXPECT_EQ(account_info->GetGaiaId(), GaiaId("gaia_id"));
+  EXPECT_EQ(account_info->GetEmail(), "test@example.org");
   EXPECT_EQ(account_info->GetHostedDomain(), std::string());
   EXPECT_EQ(account_info->GetAvatarUrl(), std::string());
 }
@@ -695,12 +696,12 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_InvalidAccessPoint) {
   std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
   ASSERT_NE(account_info, std::nullopt);
   GaiaId gaia_id("gaia_id");
-  EXPECT_EQ(account_info->gaia, gaia_id);
-  EXPECT_EQ(account_info->email, "test@example.org");
+  EXPECT_EQ(account_info->GetGaiaId(), gaia_id);
+  EXPECT_EQ(account_info->GetEmail(), "test@example.org");
   if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
-    EXPECT_EQ(account_info->account_id, CoreAccountId::FromGaiaId(gaia_id));
+    EXPECT_EQ(account_info->GetAccountId(), CoreAccountId::FromGaiaId(gaia_id));
   } else {
-    EXPECT_EQ(account_info->account_id,
+    EXPECT_EQ(account_info->GetAccountId(),
               CoreAccountId::FromString("test_account_id"));
   }
   // Access point should be empty.
@@ -767,9 +768,10 @@ TEST(AccountInfoUtilTest,
       DeserializeAccountInfo(dict);
 
   ASSERT_TRUE(deserialized_account_info.has_value());
-  EXPECT_EQ(account_info.account_id, deserialized_account_info->account_id);
-  EXPECT_EQ(account_info.gaia, deserialized_account_info->gaia);
-  EXPECT_EQ(account_info.email, deserialized_account_info->email);
+  EXPECT_EQ(account_info.GetAccountId(),
+            deserialized_account_info->GetAccountId());
+  EXPECT_EQ(account_info.GetGaiaId(), deserialized_account_info->GetGaiaId());
+  EXPECT_EQ(account_info.GetEmail(), deserialized_account_info->GetEmail());
 
   // Check roundtrip using SerializeAccountInfo.
   base::DictValue reserialized_dict =
@@ -807,17 +809,17 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_FormatStabilityWithOverrides) {
 
   ASSERT_NE(account_info, std::nullopt);
   GaiaId gaia_id("test_gaia_id");
-  EXPECT_EQ(account_info->gaia, gaia_id);
-  EXPECT_EQ(account_info->email, "test@example.com");
+  EXPECT_EQ(account_info->GetGaiaId(), gaia_id);
+  EXPECT_EQ(account_info->GetEmail(), "test@example.com");
   if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
     // AccountInfo::Builder enforces that AccountInfo::account_id is derived
     // from GaiaId.
-    EXPECT_EQ(account_info->account_id, CoreAccountId::FromGaiaId(gaia_id));
+    EXPECT_EQ(account_info->GetAccountId(), CoreAccountId::FromGaiaId(gaia_id));
   } else {
-    EXPECT_EQ(account_info->account_id,
+    EXPECT_EQ(account_info->GetAccountId(),
               CoreAccountId::FromString("test_account_id"));
   }
-  EXPECT_EQ(account_info->is_under_advanced_protection, false);
+  EXPECT_EQ(account_info->IsUnderAdvancedProtection(), false);
   EXPECT_EQ(account_info->GetFullName(), "Test Name");
   EXPECT_EQ(account_info->GetGivenName(), "Test");
   EXPECT_EQ(account_info->GetHostedDomain(), "example.com");

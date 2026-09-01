@@ -267,7 +267,7 @@ void AccountPreviewDataFetcher::Start() {
   }
 
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      account_info.account_id, OAuthConsumerId::kSyncPreview,
+      account_info.GetAccountId(), OAuthConsumerId::kSyncPreview,
       base::BindOnce(&AccountPreviewDataFetcher::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr()),
       AccessTokenFetcher::Mode::kImmediate);

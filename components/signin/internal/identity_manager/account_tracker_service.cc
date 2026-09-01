@@ -172,7 +172,8 @@ AccountInfo AccountTrackerService::FindAccountInfoByGaiaId(
     const GaiaId& gaia_id) const {
   if (!gaia_id.empty()) {
     const auto iterator = std::ranges::find(
-        accounts_, gaia_id, [](const auto& pair) { return pair.second.gaia; });
+        accounts_, gaia_id,
+        [](const auto& pair) { return pair.second.GetGaiaId(); });
     if (iterator != accounts_.end()) {
       return iterator->second;
     }
@@ -186,7 +187,7 @@ AccountInfo AccountTrackerService::FindAccountInfoByEmail(
   if (!email.empty()) {
     const auto iterator =
         std::ranges::find_if(accounts_, [email](const auto& pair) {
-          return gaia::AreEmailsSame(pair.second.email, email);
+          return gaia::AreEmailsSame(pair.second.GetEmail(), email);
         });
     if (iterator != accounts_.end()) {
       return iterator->second;
@@ -209,7 +210,7 @@ void AccountTrackerService::SetMigrationDone() {
 
 void AccountTrackerService::MaybeNotifyAccountUpdated(
     const AccountInfo& account_info) {
-  DCHECK(!account_info.gaia.empty());
+  DCHECK(!account_info.GetGaiaId().empty());
   if (account_info.GetEmail().empty() &&
       base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
     // Do not notify about incomplete accounts.
@@ -222,7 +223,7 @@ void AccountTrackerService::MaybeNotifyAccountUpdated(
 
 void AccountTrackerService::MaybeNotifyAccountRemoved(
     const AccountInfo& account_info) {
-  DCHECK(!account_info.gaia.empty());
+  DCHECK(!account_info.GetGaiaId().empty());
   if (account_info.GetEmail().empty() &&
       base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
     // Do not notify about incomplete accounts.
@@ -251,9 +252,18 @@ void AccountTrackerService::StartTrackingAccount(
       // In the meantime, the hack below ensures that at least GaiaId is set in
       // the corresponding AccountInfo object.
       CHECK(!account_id.IsEmail());
-      account_info.gaia = GaiaId(account_id.ToString());
+      account_info =
+          AccountInfo::Builder::CreateWithPossiblyEmptyGaiaIdAndEmail(
+              GaiaId(account_id.ToString()), "")
+              .SetAccountId(account_id)
+              .Build();
+    } else {
+      account_info =
+          AccountInfo::Builder::CreateWithPossiblyEmptyGaiaIdAndEmail(GaiaId(),
+                                                                      "")
+              .SetAccountId(account_id)
+              .Build();
     }
-    account_info.account_id = account_id;
     accounts_.insert(std::make_pair(account_id, account_info));
   }
 }
@@ -271,7 +281,7 @@ void AccountTrackerService::StopTrackingAccount(
     RemoveAccountImageFromDisk(account_id.ToString());
     accounts_.erase(account_id);
 
-    if (!account_info.gaia.empty()) {
+    if (!account_info.GetGaiaId().empty()) {
       MaybeNotifyAccountRemoved(account_info);
     }
   }
@@ -286,7 +296,8 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   AccountInPrefState state = AccountInPrefState::kValid;
   if (account_info.IsEmpty()) {
     state = AccountInPrefState::kEmptyAccount;
-  } else if (account_info.gaia.empty() || account_info.email.empty()) {
+  } else if (account_info.GetGaiaId().empty() ||
+             account_info.GetEmail().empty()) {
     // This may happen if account capabilities are fetched first.
     state = AccountInPrefState::kEmptyEmailOrGaiaId;
   } else if (account_info.GetAccountId().empty()) {
@@ -295,14 +306,17 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   }
   base::UmaHistogramEnumeration("Signin.AccountInPref.State", state);
 
-  CHECK(!fetched_user_info.gaia.empty());
-  CHECK(!fetched_user_info.email.empty());
-  AccountInfo user_info_copy = fetched_user_info;
-  user_info_copy.account_id =
-      PickAccountIdForAccount(fetched_user_info.gaia, fetched_user_info.email);
+  CHECK(!fetched_user_info.GetGaiaId().empty());
+  CHECK(!fetched_user_info.GetEmail().empty());
+  AccountInfo user_info_copy =
+      AccountInfo::Builder(fetched_user_info)
+          .SetAccountId(PickAccountIdForAccount(fetched_user_info.GetGaiaId(),
+                                                fetched_user_info.GetEmail()))
+          .Build();
 
   // Whether the existing account in pref matches the fetched account.
-  bool accounts_matching = user_info_copy.account_id == account_info.account_id;
+  bool accounts_matching =
+      user_info_copy.GetAccountId() == account_info.GetAccountId();
   base::UmaHistogramBoolean("Signin.AccountInPref.MatchingFetchedAccount",
                             accounts_matching);
 
@@ -315,7 +329,7 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
                 << "}";
   }
 
-  if (!account_info.gaia.empty()) {
+  if (!account_info.GetGaiaId().empty()) {
     MaybeNotifyAccountUpdated(account_info);
   }
   SaveToPrefs(account_info);
@@ -368,7 +382,7 @@ void AccountTrackerService::SetAccountCapabilities(
     return;
   }
 
-  if (!account_info.gaia.empty()) {
+  if (!account_info.GetGaiaId().empty()) {
     MaybeNotifyAccountUpdated(account_info);
   }
   SaveToPrefs(account_info);
@@ -390,7 +404,7 @@ void AccountTrackerService::SetCapabilityOverride(
                      .SetAccountCapabilities(capabilities)
                      .Build();
 
-  if (!account_info.gaia.empty()) {
+  if (!account_info.GetGaiaId().empty()) {
     MaybeNotifyAccountUpdated(account_info);
   }
   SaveToPrefs(account_info);
@@ -404,7 +418,7 @@ void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
   if (!modified) {
     return;
   }
-  if (!account_info.gaia.empty()) {
+  if (!account_info.GetGaiaId().empty()) {
     MaybeNotifyAccountUpdated(account_info);
   }
   SaveToPrefs(account_info);
@@ -415,12 +429,14 @@ void AccountTrackerService::SetIsAdvancedProtectionAccount(
     bool is_under_advanced_protection) {
   DCHECK(accounts_.contains(account_id)) << account_id.ToString();
   AccountInfo& account_info = accounts_[account_id];
-  if (account_info.is_under_advanced_protection ==
+  if (account_info.IsUnderAdvancedProtection() ==
       is_under_advanced_protection) {
     return;
   }
-  account_info.is_under_advanced_protection = is_under_advanced_protection;
-  if (!account_info.gaia.empty()) {
+  account_info = AccountInfo::Builder(account_info)
+                     .SetIsUnderAdvancedProtection(is_under_advanced_protection)
+                     .Build();
+  if (!account_info.GetGaiaId().empty()) {
     MaybeNotifyAccountUpdated(account_info);
   }
   SaveToPrefs(account_info);
@@ -451,7 +467,7 @@ void AccountTrackerService::MigrateToGaiaId() {
   std::vector<AccountInfo> migrated_accounts;
   for (const auto& pair : accounts_) {
     const CoreAccountId new_account_id =
-        CoreAccountId::FromGaiaId(pair.second.gaia);
+        CoreAccountId::FromGaiaId(pair.second.GetGaiaId());
     if (pair.first == new_account_id) {
       continue;
     }
@@ -465,17 +481,15 @@ void AccountTrackerService::MigrateToGaiaId() {
       continue;
     }
 
-    AccountInfo new_account_info = pair.second;
-    new_account_info.account_id = new_account_id;
+    AccountInfo new_account_info =
+        AccountInfo::Builder(pair.second).SetAccountId(new_account_id).Build();
     SaveToPrefs(new_account_info);
     migrated_accounts.emplace_back(std::move(new_account_info));
   }
 
   // Insert the new migrated accounts.
   for (AccountInfo& new_account_info : migrated_accounts) {
-    // Copy the AccountInfo |gaia| member field so that it is not left in
-    // an undeterminate state in the structure after std::map::emplace call.
-    CoreAccountId account_id = new_account_info.account_id;
+    CoreAccountId account_id = new_account_info.GetAccountId();
     SaveToPrefs(new_account_info);
 
     accounts_.emplace(std::move(account_id), std::move(new_account_info));
@@ -493,7 +507,7 @@ void AccountTrackerService::MigrateToGaiaId() {
 
 bool AccountTrackerService::AreAllAccountsMigrated() const {
   for (const auto& pair : accounts_) {
-    if (pair.first.ToString() != pair.second.gaia.ToString()) {
+    if (pair.first.ToString() != pair.second.GetGaiaId().ToString()) {
       return false;
     }
   }
@@ -515,14 +529,14 @@ AccountTrackerService::ComputeNewMigrationState() const {
   bool migration_required = false;
   for (const auto& pair : accounts_) {
     // If there is any non-migratable account, skip migration.
-    if (pair.first.empty() || pair.second.gaia.empty()) {
+    if (pair.first.empty() || pair.second.GetGaiaId().empty()) {
       return MIGRATION_NOT_STARTED;
     }
 
     // Migration is required if at least one account is not keyed to its
     // gaia id.
     migration_required |=
-        (pair.first.ToString() != pair.second.gaia.ToString());
+        (pair.first.ToString() != pair.second.GetGaiaId().ToString());
   }
 
   return migration_required ? MIGRATION_IN_PROGRESS : MIGRATION_DONE;
@@ -588,7 +602,7 @@ void AccountTrackerService::LoadAccountImagesFromDisk() {
     return;
   }
   for (const auto& pair : accounts_) {
-    const CoreAccountId& account_id = pair.second.account_id;
+    const CoreAccountId& account_id = pair.second.GetAccountId();
     image_storage_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&ReadImage, GetImagePathFor(account_id.ToString())),
@@ -711,8 +725,9 @@ void AccountTrackerService::LoadFromPrefs() {
       if (deserialized_account_info) {
         account_info = std::move(*deserialized_account_info);
       }
-      account_info.account_id = account_id;
-      if (!account_info.gaia.empty()) {
+      account_info =
+          AccountInfo::Builder(account_info).SetAccountId(account_id).Build();
+      if (!account_info.GetGaiaId().empty()) {
         MaybeNotifyAccountUpdated(account_info);
       }
     }
@@ -799,7 +814,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
 
   ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   base::DictValue* dict =
-      FindOrCreateDictForAccount(update, account_info.account_id);
+      FindOrCreateDictForAccount(update, account_info.GetAccountId());
   dict->Remove(signin::kAccountCapabilityOverridesKey);
   dict->Merge(signin::SerializeAccountInfo(account_info));
 }
@@ -823,7 +838,7 @@ void AccountTrackerService::RemoveFromPrefs(
 
 CoreAccountId AccountTrackerService::PickAccountIdForAccount(
     const GaiaId& gaia,
-    const std::string& email) const {
+    std::string_view email) const {
   if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
     CHECK(!gaia.empty());
     return CoreAccountId::FromGaiaId(gaia);
@@ -869,26 +884,30 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(
 }
 
 CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
-  info.account_id = PickAccountIdForAccount(info.gaia, info.email);
+  CoreAccountId picked_account_id =
+      PickAccountIdForAccount(info.GetGaiaId(), info.GetEmail());
+  if (!picked_account_id.empty() && info.GetAccountId() != picked_account_id) {
+    info = AccountInfo::Builder(info).SetAccountId(picked_account_id).Build();
+  }
   base::UmaHistogramBoolean(
       "Signin.AccountTracker.SeedAccountInfo.IsAccountIdEmpty",
-      info.account_id.empty());
+      info.GetAccountId().empty());
 
-  if (info.account_id.empty()) {
+  if (info.GetAccountId().empty()) {
     DLOG(ERROR) << "Cannot seed an account with an empty account id: [" << info
                 << "]";
     return CoreAccountId();
   }
 
-  const bool already_exists = accounts_.contains(info.account_id);
-  StartTrackingAccount(info.account_id);
-  AccountInfo& account_info = accounts_[info.account_id];
-  DCHECK(!already_exists || account_info.gaia.empty() ||
-         account_info.gaia == info.gaia);
+  const bool already_exists = accounts_.contains(info.GetAccountId());
+  StartTrackingAccount(info.GetAccountId());
+  AccountInfo& account_info = accounts_[info.GetAccountId()];
+  DCHECK(!already_exists || account_info.GetGaiaId().empty() ||
+         account_info.GetGaiaId() == info.GetGaiaId());
 
   // Update the missing fields in |account_info| with |info|.
   if (account_info.UpdateWith(info)) {
-    if (!account_info.gaia.empty()) {
+    if (!account_info.GetGaiaId().empty()) {
       MaybeNotifyAccountUpdated(account_info);
     }
 
@@ -897,13 +916,13 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
 
   if (!already_exists && info.GetAvatarImage().has_value()) {
     SetAccountImage(
-        account_info.account_id,
+        account_info.GetAccountId(),
         std::string(
             account_info.GetLastDownloadedAvatarUrlWithSize().value_or("")),
         *info.GetAvatarImage());
   }
 
-  return info.account_id;
+  return info.GetAccountId();
 }
 
 void AccountTrackerService::SeedAccountsInfo(
@@ -924,10 +943,10 @@ void AccountTrackerService::SeedAccountsInfo(
     // Remove the accounts deleted from the device, but don't remove the primary
     // account.
     for (const auto& account : GetAccounts()) {
-      CoreAccountId curr_account_id = account.account_id;
+      CoreAccountId curr_account_id = account.GetAccountId();
       if (curr_account_id != primary_account_id &&
           !std::ranges::contains(accounts, curr_account_id,
-                                 &AccountInfo::account_id)) {
+                                 &AccountInfo::GetAccountId)) {
         RemoveAccount(curr_account_id);
       }
     }

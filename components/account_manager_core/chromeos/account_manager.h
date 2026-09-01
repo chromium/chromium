@@ -10,6 +10,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -172,8 +173,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   //  unknown tokens.
   // Note: This API is idempotent.
   void UpsertAccount(const ::account_manager::AccountKey& account_key,
-                     const std::string& raw_email,
-                     const std::string& token);
+                     std::string_view raw_email,
+                     std::string_view token);
 
   // Updates the token for the account corresponding to the given `account_key`.
   // The account must be known to Account Manager. See `UpsertAccount` for

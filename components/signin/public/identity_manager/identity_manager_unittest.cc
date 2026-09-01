@@ -808,7 +808,7 @@ TEST_F(IdentityManagerTest, GetAccountsInteractionWithSecondaryAccounts) {
   // GetAccountsWithRefreshTokens().
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
   std::vector<CoreAccountInfo> accounts_after_update =
@@ -823,7 +823,7 @@ TEST_F(IdentityManagerTest, GetAccountsInteractionWithSecondaryAccounts) {
   // also shows up in GetAccountsWithRefreshTokens().
   account_tracker()->SeedAccountInfo(kTestGaiaId3, kTestEmail3);
   CoreAccountId account_id3 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId3).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId3).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id3);
 
   std::vector<CoreAccountInfo> accounts_after_second_update =
@@ -861,7 +861,7 @@ TEST_F(IdentityManagerTest,
   // about the primary account
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
@@ -871,7 +871,7 @@ TEST_F(IdentityManagerTest,
   // either.
   account_tracker()->SeedAccountInfo(kTestGaiaId3, kTestEmail3);
   CoreAccountId account_id3 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId3).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId3).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id3);
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
@@ -889,43 +889,43 @@ TEST_F(IdentityManagerTest,
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   AccountInfo account_info2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2);
-  CoreAccountId account_id2 = account_info2.account_id;
+  CoreAccountId account_id2 = account_info2.GetAccountId();
 
-  EXPECT_FALSE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
 
   // Add a refresh token for account_info2 and check that this is reflected by
   // HasAccountWithRefreshToken(.account_id).
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
 
   // Go through the same process for a different secondary account.
   account_tracker()->SeedAccountInfo(kTestGaiaId3, kTestEmail3);
   AccountInfo account_info3 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId3);
-  CoreAccountId account_id3 = account_info3.account_id;
+  CoreAccountId account_id3 = account_info3.GetAccountId();
 
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
-  EXPECT_FALSE(
-      identity_manager()->HasAccountWithRefreshToken(account_info3.account_id));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
+      account_info3.GetAccountId()));
 
   SetRefreshTokenForAccount(identity_manager(), account_id3);
 
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info3.account_id));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info3.GetAccountId()));
 
   // Remove the token for account2.
   RemoveRefreshTokenForAccount(identity_manager(), account_id2);
 
-  EXPECT_FALSE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info3.account_id));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info3.GetAccountId()));
 }
 
 TEST_F(IdentityManagerTest,
@@ -939,7 +939,7 @@ TEST_F(IdentityManagerTest,
   // GetAccountsWithRefreshTokens().
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
   std::vector<CoreAccountInfo> accounts_after_update =
@@ -1025,7 +1025,7 @@ TEST_F(
   // impact the above state.
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
@@ -1068,12 +1068,12 @@ TEST_F(
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   AccountInfo account_info2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2);
-  CoreAccountId account_id2 = account_info2.account_id;
+  CoreAccountId account_id2 = account_info2.GetAccountId();
 
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
       primary_account_info.account_id));
-  EXPECT_FALSE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
 
   // Add a refresh token for account_info2 and check that this is reflected by
   // HasAccountWithRefreshToken(.account_id).
@@ -1081,24 +1081,24 @@ TEST_F(
 
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
       primary_account_info.account_id));
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
 
   // Go through the same process for the primary account.
   SetRefreshTokenForPrimaryAccount(identity_manager());
 
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       primary_account_info.account_id));
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
 
   // Remove the token for account2.
   RemoveRefreshTokenForAccount(identity_manager(), account_id2);
 
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       primary_account_info.account_id));
-  EXPECT_FALSE(
-      identity_manager()->HasAccountWithRefreshToken(account_info2.account_id));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
+      account_info2.GetAccountId()));
 }
 
 TEST_F(IdentityManagerTest,
@@ -1111,7 +1111,7 @@ TEST_F(IdentityManagerTest,
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   AccountInfo account_info2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2);
-  CoreAccountId account_id2 = account_info2.account_id;
+  CoreAccountId account_id2 = account_info2.GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
   GoogleServiceAuthError account_not_found_error =
@@ -1169,7 +1169,7 @@ TEST_F(IdentityManagerTest,
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   SetRefreshTokenForAccount(
       identity_manager(),
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId(),
       "refresh_token_2");
 
   EXPECT_THAT(identity_manager()->GetWrappedBindingKey(), IsEmpty());
@@ -1192,7 +1192,7 @@ TEST_F(IdentityManagerTest,
   const std::vector<uint8_t> secondary_account_wrapped_binding_key = {4, 5, 6};
   SetRefreshTokenForAccount(
       identity_manager(),
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId(),
       "refresh_token_2",
       signin::TokenBindingInfo(secondary_account_wrapped_binding_key,
                                /*mtls_token_binding=*/false));
@@ -1213,7 +1213,7 @@ TEST_F(IdentityManagerTest,
   const std::vector<uint8_t> secondary_account_wrapped_binding_key = {1, 2, 3};
   SetRefreshTokenForAccount(
       identity_manager(),
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId(),
       "refresh_token_2",
       signin::TokenBindingInfo(secondary_account_wrapped_binding_key,
                                /*mtls_token_binding=*/false));
@@ -1226,7 +1226,7 @@ TEST_F(IdentityManagerTest, HasAccountWithRefreshTokenBoundToMtls) {
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   AccountInfo account_info2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2);
-  CoreAccountId account_id2 = account_info2.account_id;
+  CoreAccountId account_id2 = account_info2.GetAccountId();
 
   // Non-existent token should return false.
   EXPECT_FALSE(
@@ -1291,7 +1291,7 @@ TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   AccountInfo account_info2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2);
-  CoreAccountId account_id2 = account_info2.account_id;
+  CoreAccountId account_id2 = account_info2.GetAccountId();
   EXPECT_EQ(
       GoogleServiceAuthError::AuthErrorNone(),
       identity_manager()->GetErrorStateOfRefreshTokenForAccount(account_id2));
@@ -1476,7 +1476,7 @@ TEST_F(IdentityManagerTest,
 
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2, "refresh_token");
 
   callback = base::BindOnce(
@@ -1616,7 +1616,7 @@ TEST_F(IdentityManagerTest,
 
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
-      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).GetAccountId();
   SetRefreshTokenForAccount(identity_manager(), account_id2, "refresh_token");
 
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
@@ -1711,41 +1711,41 @@ TEST_F(IdentityManagerTest,
        CallbackSentOnSecondaryAccountRefreshTokenUpdateWithValidToken) {
   AccountInfo expected_account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  EXPECT_EQ(kTestEmail2, expected_account_info.email);
+  EXPECT_EQ(kTestEmail2, expected_account_info.GetEmail());
 
   CoreAccountInfo account_info =
       identity_manager_observer()->AccountFromRefreshTokenUpdatedCallback();
-  EXPECT_EQ(expected_account_info.account_id, account_info.account_id);
-  EXPECT_EQ(expected_account_info.gaia, account_info.gaia);
-  EXPECT_EQ(expected_account_info.email, account_info.email);
+  EXPECT_EQ(expected_account_info.GetAccountId(), account_info.account_id);
+  EXPECT_EQ(expected_account_info.GetGaiaId(), account_info.gaia);
+  EXPECT_EQ(expected_account_info.GetEmail(), account_info.email);
 }
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnSecondaryAccountRefreshTokenUpdateWithInvalidToken) {
   AccountInfo expected_account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  EXPECT_EQ(kTestEmail2, expected_account_info.email);
+  EXPECT_EQ(kTestEmail2, expected_account_info.GetEmail());
 
   SetInvalidRefreshTokenForAccount(identity_manager(),
-                                   expected_account_info.account_id);
+                                   expected_account_info.GetAccountId());
 
   CoreAccountInfo account_info =
       identity_manager_observer()->AccountFromRefreshTokenUpdatedCallback();
-  EXPECT_EQ(expected_account_info.account_id, account_info.account_id);
-  EXPECT_EQ(expected_account_info.gaia, account_info.gaia);
-  EXPECT_EQ(expected_account_info.email, account_info.email);
+  EXPECT_EQ(expected_account_info.GetAccountId(), account_info.account_id);
+  EXPECT_EQ(expected_account_info.GetGaiaId(), account_info.gaia);
+  EXPECT_EQ(expected_account_info.GetEmail(), account_info.email);
 }
 
 TEST_F(IdentityManagerTest, CallbackSentOnSecondaryAccountRefreshTokenRemoval) {
   AccountInfo expected_account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  EXPECT_EQ(kTestEmail2, expected_account_info.email);
+  EXPECT_EQ(kTestEmail2, expected_account_info.GetEmail());
 
   RemoveRefreshTokenForAccount(identity_manager(),
-                               expected_account_info.account_id);
+                               expected_account_info.GetAccountId());
 
   EXPECT_EQ(
-      expected_account_info.account_id,
+      expected_account_info.GetAccountId(),
       identity_manager_observer()->AccountIdFromRefreshTokenRemovedCallback());
 }
 
@@ -1762,13 +1762,13 @@ TEST_F(
           .WithCookie(true)
           .WithGaiaId(kTestGaiaId2)
           .Build(kTestEmail2));
-  EXPECT_EQ(kTestEmail2, expected_account_info.email);
+  EXPECT_EQ(kTestEmail2, expected_account_info.GetEmail());
 
   CoreAccountInfo account_info =
       identity_manager_observer()->AccountFromRefreshTokenUpdatedCallback();
-  EXPECT_EQ(expected_account_info.account_id, account_info.account_id);
-  EXPECT_EQ(expected_account_info.gaia, account_info.gaia);
-  EXPECT_EQ(expected_account_info.email, account_info.email);
+  EXPECT_EQ(expected_account_info.GetAccountId(), account_info.account_id);
+  EXPECT_EQ(expected_account_info.GetGaiaId(), account_info.gaia);
+  EXPECT_EQ(expected_account_info.GetEmail(), account_info.email);
 }
 
 TEST_F(
@@ -1783,16 +1783,16 @@ TEST_F(
           .WithCookie(true)
           .WithGaiaId(kTestGaiaId2)
           .Build(kTestEmail2));
-  EXPECT_EQ(kTestEmail2, expected_account_info.email);
+  EXPECT_EQ(kTestEmail2, expected_account_info.GetEmail());
 
   SetInvalidRefreshTokenForAccount(identity_manager(),
-                                   expected_account_info.account_id);
+                                   expected_account_info.GetAccountId());
 
   CoreAccountInfo account_info =
       identity_manager_observer()->AccountFromRefreshTokenUpdatedCallback();
-  EXPECT_EQ(expected_account_info.account_id, account_info.account_id);
-  EXPECT_EQ(expected_account_info.gaia, account_info.gaia);
-  EXPECT_EQ(expected_account_info.email, account_info.email);
+  EXPECT_EQ(expected_account_info.GetAccountId(), account_info.account_id);
+  EXPECT_EQ(expected_account_info.GetGaiaId(), account_info.gaia);
+  EXPECT_EQ(expected_account_info.GetEmail(), account_info.email);
 }
 
 TEST_F(IdentityManagerTest,
@@ -1806,13 +1806,13 @@ TEST_F(IdentityManagerTest,
           .WithCookie(true)
           .WithGaiaId(kTestGaiaId2)
           .Build(kTestEmail2));
-  EXPECT_EQ(kTestEmail2, expected_account_info.email);
+  EXPECT_EQ(kTestEmail2, expected_account_info.GetEmail());
 
   RemoveRefreshTokenForAccount(identity_manager(),
-                               expected_account_info.account_id);
+                               expected_account_info.GetAccountId());
 
   EXPECT_EQ(
-      expected_account_info.account_id,
+      expected_account_info.GetAccountId(),
       identity_manager_observer()->AccountIdFromRefreshTokenRemovedCallback());
 }
 
@@ -2331,9 +2331,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfo) {
   const AccountInfo extended_account_info =
       identity_manager()->FindExtendedAccountInfo(account_info);
   EXPECT_TRUE(!extended_account_info.IsEmpty());
-  EXPECT_EQ(account_info.gaia, extended_account_info.gaia);
-  EXPECT_EQ(account_info.email, extended_account_info.email);
-  EXPECT_EQ(account_info.account_id, extended_account_info.account_id);
+  EXPECT_EQ(account_info.gaia, extended_account_info.GetGaiaId());
+  EXPECT_EQ(account_info.email, extended_account_info.GetEmail());
+  EXPECT_EQ(account_info.account_id, extended_account_info.GetAccountId());
 }
 
 // Checks that FindExtendedAccountInfoByAccountId() returns information about
@@ -2357,9 +2357,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByAccountId) {
   maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
       account_info.account_id);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
-  EXPECT_EQ(account_info.account_id, maybe_account_info.account_id);
-  EXPECT_EQ(account_info.email, maybe_account_info.email);
-  EXPECT_EQ(account_info.gaia, maybe_account_info.gaia);
+  EXPECT_EQ(account_info.account_id, maybe_account_info.GetAccountId());
+  EXPECT_EQ(account_info.email, maybe_account_info.GetEmail());
+  EXPECT_EQ(account_info.gaia, maybe_account_info.GetGaiaId());
 }
 
 // Checks that FindExtendedAccountInfoByEmailAddress() returns information about
@@ -2384,9 +2384,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByEmailAddress) {
       identity_manager()->FindExtendedAccountInfoByEmailAddress(
           account_info.email);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
-  EXPECT_EQ(account_info.account_id, maybe_account_info.account_id);
-  EXPECT_EQ(account_info.email, maybe_account_info.email);
-  EXPECT_EQ(account_info.gaia, maybe_account_info.gaia);
+  EXPECT_EQ(account_info.account_id, maybe_account_info.GetAccountId());
+  EXPECT_EQ(account_info.email, maybe_account_info.GetEmail());
+  EXPECT_EQ(account_info.gaia, maybe_account_info.GetGaiaId());
 }
 
 // Checks that FindExtendedAccountInfoByGaiaId() returns information about the
@@ -2409,9 +2409,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoByGaiaId) {
   maybe_account_info =
       identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia);
   EXPECT_FALSE(maybe_account_info.IsEmpty());
-  EXPECT_EQ(account_info.account_id, maybe_account_info.account_id);
-  EXPECT_EQ(account_info.email, maybe_account_info.email);
-  EXPECT_EQ(account_info.gaia, maybe_account_info.gaia);
+  EXPECT_EQ(account_info.account_id, maybe_account_info.GetAccountId());
+  EXPECT_EQ(account_info.email, maybe_account_info.GetEmail());
+  EXPECT_EQ(account_info.gaia, maybe_account_info.GetGaiaId());
 }
 
 TEST_F(IdentityManagerTest, FindExtendedPrimaryAccountInfo) {
@@ -2425,9 +2425,9 @@ TEST_F(IdentityManagerTest, FindExtendedPrimaryAccountInfo) {
   CoreAccountInfo core_info =
       identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
   EXPECT_FALSE(extended_info.IsEmpty());
-  EXPECT_EQ(core_info.account_id, extended_info.account_id);
-  EXPECT_EQ(core_info.email, extended_info.email);
-  EXPECT_EQ(core_info.gaia, extended_info.gaia);
+  EXPECT_EQ(core_info.account_id, extended_info.GetAccountId());
+  EXPECT_EQ(core_info.email, extended_info.GetEmail());
+  EXPECT_EQ(core_info.gaia, extended_info.GetGaiaId());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // It's not possible to sign out on Ash.
@@ -2467,24 +2467,25 @@ TEST_F(IdentityManagerTest, ObserveOnAccountUpdated) {
       MakeAccountAvailable(identity_manager(), kTestEmail3);
 
   SimulateSuccessfulFetchOfAccountInfo(
-      identity_manager(), account_info.account_id, account_info.email,
-      account_info.gaia, kTestHostedDomain, kTestFullName, kTestGivenName,
-      kTestLocale, kTestPictureUrl);
+      identity_manager(), account_info.GetAccountId(), account_info.GetEmail(),
+      account_info.GetGaiaId(), kTestHostedDomain, kTestFullName,
+      kTestGivenName, kTestLocale, kTestPictureUrl);
 
-  EXPECT_EQ(account_info.account_id, identity_manager_observer()
+  EXPECT_EQ(account_info.GetAccountId(),
+            identity_manager_observer()
+                ->AccountFromAccountUpdatedCallback()
+                .GetAccountId());
+  EXPECT_EQ(account_info.GetEmail(), identity_manager_observer()
                                          ->AccountFromAccountUpdatedCallback()
-                                         .account_id);
-  EXPECT_EQ(
-      account_info.email,
-      identity_manager_observer()->AccountFromAccountUpdatedCallback().email);
+                                         .GetEmail());
 }
 
 TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
   AccountInfo account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  EXPECT_EQ(kTestEmail2, account_info.email);
+  EXPECT_EQ(kTestEmail2, account_info.GetEmail());
 
-  account_tracker()->RemoveAccount(account_info.account_id);
+  account_tracker()->RemoveAccount(account_info.GetAccountId());
 
   // Check if OnAccountRemovedWithInfo is called after removing |account_info|
   // by RemoveAccount().
@@ -2492,14 +2493,14 @@ TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
       identity_manager_observer()->WasCalledAccountRemovedWithInfoCallback());
 
   // Check if the passed AccountInfo is the same to the removing one.
-  EXPECT_EQ(account_info.account_id,
+  EXPECT_EQ(account_info.GetAccountId(),
             identity_manager_observer()
                 ->AccountFromAccountRemovedWithInfoCallback()
-                .account_id);
-  EXPECT_EQ(account_info.email,
+                .GetAccountId());
+  EXPECT_EQ(account_info.GetEmail(),
             identity_manager_observer()
                 ->AccountFromAccountRemovedWithInfoCallback()
-                .email);
+                .GetEmail());
 }
 
 TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
@@ -2516,9 +2517,9 @@ TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   identity_manager()->RefreshAccountInfoIfStale(account_info.GetAccountId());
 
   SimulateSuccessfulFetchOfAccountInfo(
-      identity_manager(), account_info.account_id, account_info.email,
-      account_info.gaia, kTestHostedDomain, kTestFullName, kTestGivenName,
-      kTestLocale, kTestPictureUrl);
+      identity_manager(), account_info.GetAccountId(), account_info.GetEmail(),
+      account_info.GetGaiaId(), kTestHostedDomain, kTestFullName,
+      kTestGivenName, kTestLocale, kTestPictureUrl);
 
   const AccountInfo& refreshed_account_info =
       identity_manager_observer()->AccountFromAccountUpdatedCallback();

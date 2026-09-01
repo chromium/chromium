@@ -541,7 +541,7 @@ void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
   DCHECK_EQ(outcome_, Outcome::kPending);
 
   // Don't care about other accounts.
-  if (info.account_id != account_.account_id) {
+  if (info.GetAccountId() != account_.account_id) {
     return;
   }
 

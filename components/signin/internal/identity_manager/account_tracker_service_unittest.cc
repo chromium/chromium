@@ -894,16 +894,16 @@ TEST_F(AccountTrackerServiceTest, GetAccounts) {
 TEST_F(AccountTrackerServiceTest, GetAccountInfo_Empty) {
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_EQ(CoreAccountId(), info.account_id);
+  EXPECT_EQ(CoreAccountId(), info.GetAccountId());
 }
 
 TEST_F(AccountTrackerServiceTest, GetAccountInfo_TokenAvailable) {
   SimulateTokenAvailable(kAccountKeyAlpha);
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
-  EXPECT_EQ(GaiaId(), info.gaia);
-  EXPECT_EQ(std::string(), info.email);
+  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.GetAccountId());
+  EXPECT_EQ(GaiaId(), info.GetGaiaId());
+  EXPECT_EQ(std::string(), info.GetEmail());
 }
 
 TEST_F(AccountTrackerServiceTest, GetAccountInfo_TokenAvailable_UserInfo) {
@@ -941,12 +941,12 @@ TEST_F(AccountTrackerServiceTest, FindAccountInfoByGaiaId) {
 
   const GaiaId gaia_id_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   AccountInfo info = account_tracker()->FindAccountInfoByGaiaId(gaia_id_alpha);
-  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
-  EXPECT_EQ(gaia_id_alpha, info.gaia);
+  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.GetAccountId());
+  EXPECT_EQ(gaia_id_alpha, info.GetGaiaId());
 
   const GaiaId gaia_id_beta = AccountKeyToGaiaId(kAccountKeyBeta);
   info = account_tracker()->FindAccountInfoByGaiaId(gaia_id_beta);
-  EXPECT_TRUE(info.account_id.empty());
+  EXPECT_TRUE(info.GetAccountId().empty());
 }
 
 TEST_F(AccountTrackerServiceTest, FindAccountInfoByEmail) {
@@ -955,20 +955,20 @@ TEST_F(AccountTrackerServiceTest, FindAccountInfoByEmail) {
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   AccountInfo info = account_tracker()->FindAccountInfoByEmail(email_alpha);
-  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
-  EXPECT_EQ(email_alpha, info.email);
+  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.GetAccountId());
+  EXPECT_EQ(email_alpha, info.GetEmail());
 
   // Should also work with "canonically-equal" email addresses.
   info = account_tracker()->FindAccountInfoByEmail("Alpha@Gmail.COM");
-  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
-  EXPECT_EQ(email_alpha, info.email);
+  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.GetAccountId());
+  EXPECT_EQ(email_alpha, info.GetEmail());
   info = account_tracker()->FindAccountInfoByEmail("al.pha@gmail.com");
-  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
-  EXPECT_EQ(email_alpha, info.email);
+  EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.GetAccountId());
+  EXPECT_EQ(email_alpha, info.GetEmail());
 
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   info = account_tracker()->FindAccountInfoByEmail(email_beta);
-  EXPECT_EQ(CoreAccountId(), info.account_id);
+  EXPECT_EQ(CoreAccountId(), info.GetAccountId());
 }
 
 TEST_F(AccountTrackerServiceTest, Persistence) {
@@ -1053,10 +1053,10 @@ TEST_F(AccountTrackerServiceTest, Persistence_DeleteEmpty) {
 
   // Create a tracker and save to prefs a valid account and an empty one.
   ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
-  AccountInfo a;
-  a.account_id = AccountKeyToAccountId(kAccountKeyAlpha);
-  a.gaia = AccountKeyToGaiaId(kAccountKeyAlpha);
-  a.email = AccountKeyToEmail(kAccountKeyAlpha);
+  AccountInfo a = AccountInfo::Builder(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                       AccountKeyToEmail(kAccountKeyAlpha))
+                      .SetAccountId(AccountKeyToAccountId(kAccountKeyAlpha))
+                      .Build();
   SaveToPrefs(a);
 
   AccountInfo empty_account;
@@ -1465,15 +1465,15 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   CoreAccountId gaia_alpha_account_id = CoreAccountId::FromGaiaId(gaia_alpha);
   AccountInfo account_info =
       account_tracker()->GetAccountInfo(gaia_alpha_account_id);
-  EXPECT_EQ(account_info.account_id, gaia_alpha_account_id);
-  EXPECT_EQ(account_info.gaia, gaia_alpha);
-  EXPECT_EQ(account_info.email, email_alpha);
+  EXPECT_EQ(account_info.GetAccountId(), gaia_alpha_account_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_alpha);
+  EXPECT_EQ(account_info.GetEmail(), email_alpha);
 
   account_info =
       account_tracker()->GetAccountInfo(CoreAccountId::FromGaiaId(gaia_beta));
-  EXPECT_EQ(account_info.account_id, CoreAccountId::FromGaiaId(gaia_beta));
-  EXPECT_EQ(account_info.gaia, gaia_beta);
-  EXPECT_EQ(account_info.email, email_beta);
+  EXPECT_EQ(account_info.GetAccountId(), CoreAccountId::FromGaiaId(gaia_beta));
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_beta);
+  EXPECT_EQ(account_info.GetEmail(), email_beta);
 
   std::vector<AccountInfo> accounts = account_tracker()->GetAccounts();
   EXPECT_EQ(2u, accounts.size());
@@ -1510,14 +1510,14 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
   CoreAccountId email_alpha_account_id = CoreAccountId::FromEmail(email_alpha);
   AccountInfo account_info =
       account_tracker()->GetAccountInfo(email_alpha_account_id);
-  EXPECT_EQ(account_info.account_id, email_alpha_account_id);
-  EXPECT_EQ(account_info.gaia, gaia_alpha);
-  EXPECT_EQ(account_info.email, email_alpha);
+  EXPECT_EQ(account_info.GetAccountId(), email_alpha_account_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_alpha);
+  EXPECT_EQ(account_info.GetEmail(), email_alpha);
 
   CoreAccountId email_beta_account_id = CoreAccountId::FromEmail(email_beta);
   account_info = account_tracker()->GetAccountInfo(email_beta_account_id);
-  EXPECT_EQ(account_info.account_id, email_beta_account_id);
-  EXPECT_EQ(account_info.email, email_beta);
+  EXPECT_EQ(account_info.GetAccountId(), email_beta_account_id);
+  EXPECT_EQ(account_info.GetEmail(), email_beta);
 
   std::vector<AccountInfo> accounts = account_tracker()->GetAccounts();
   EXPECT_EQ(2u, accounts.size());
@@ -1561,15 +1561,15 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   CoreAccountId gaia_alpha_account_id = CoreAccountId::FromGaiaId(gaia_alpha);
   AccountInfo account_info =
       account_tracker()->GetAccountInfo(gaia_alpha_account_id);
-  EXPECT_EQ(account_info.account_id, gaia_alpha_account_id);
-  EXPECT_EQ(account_info.gaia, gaia_alpha);
-  EXPECT_EQ(account_info.email, email_alpha);
+  EXPECT_EQ(account_info.GetAccountId(), gaia_alpha_account_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_alpha);
+  EXPECT_EQ(account_info.GetEmail(), email_alpha);
 
   CoreAccountId gaia_beta_account_id = CoreAccountId::FromGaiaId(gaia_beta);
   account_info = account_tracker()->GetAccountInfo(gaia_beta_account_id);
-  EXPECT_EQ(account_info.account_id, gaia_beta_account_id);
-  EXPECT_EQ(account_info.gaia, gaia_beta);
-  EXPECT_EQ(account_info.email, email_beta);
+  EXPECT_EQ(account_info.GetAccountId(), gaia_beta_account_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_beta);
+  EXPECT_EQ(account_info.GetEmail(), email_beta);
 
   std::vector<AccountInfo> accounts = account_tracker()->GetAccounts();
   EXPECT_EQ(2u, accounts.size());
@@ -1582,14 +1582,14 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
             AccountTrackerService::MIGRATION_DONE);
 
   account_info = account_tracker()->GetAccountInfo(gaia_alpha_account_id);
-  EXPECT_EQ(account_info.account_id, gaia_alpha_account_id);
-  EXPECT_EQ(account_info.gaia, gaia_alpha);
-  EXPECT_EQ(account_info.email, email_alpha);
+  EXPECT_EQ(account_info.GetAccountId(), gaia_alpha_account_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_alpha);
+  EXPECT_EQ(account_info.GetEmail(), email_alpha);
 
   account_info = account_tracker()->GetAccountInfo(gaia_beta_account_id);
-  EXPECT_EQ(account_info.account_id, gaia_beta_account_id);
-  EXPECT_EQ(account_info.gaia, gaia_beta);
-  EXPECT_EQ(account_info.email, email_beta);
+  EXPECT_EQ(account_info.GetAccountId(), gaia_beta_account_id);
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_beta);
+  EXPECT_EQ(account_info.GetEmail(), email_beta);
 
   accounts = account_tracker()->GetAccounts();
   EXPECT_EQ(2u, accounts.size());

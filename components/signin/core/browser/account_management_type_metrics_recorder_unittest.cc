@@ -59,7 +59,7 @@ TEST_F(AccountManagementTypeMetricsRecorderTest,
   // The enterprise-ness of the account is already known.
   // (The consumer-ness of @gmail.com accounts is known synchronously anyway.)
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise.account_id, enterprise.email, enterprise.gaia,
+      enterprise.GetAccountId(), enterprise.GetEmail(), enterprise.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -105,15 +105,17 @@ TEST_F(AccountManagementTypeMetricsRecorderTest,
 
   // The status of all accounts becomes known.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      consumer.account_id, consumer.email, consumer.gaia,
+      consumer.GetAccountId(), consumer.GetEmail(), consumer.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise1.account_id, enterprise1.email, enterprise1.gaia,
+      enterprise1.GetAccountId(), enterprise1.GetEmail(),
+      enterprise1.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise2.account_id, enterprise2.email, enterprise2.gaia,
+      enterprise2.GetAccountId(), enterprise2.GetEmail(),
+      enterprise2.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -140,7 +142,8 @@ TEST_F(AccountManagementTypeMetricsRecorderTest,
   // The *first* account's status is known synchronously, but the second
   // account's isn't.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise1.account_id, enterprise1.email, enterprise1.gaia,
+      enterprise1.GetAccountId(), enterprise1.GetEmail(),
+      enterprise1.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -160,7 +163,8 @@ TEST_F(AccountManagementTypeMetricsRecorderTest,
   // Once the other account's status becomes known, its own status as well as
   // the summary should be recorded.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise2.account_id, enterprise2.email, enterprise2.gaia,
+      enterprise2.GetAccountId(), enterprise2.GetEmail(),
+      enterprise2.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -183,7 +187,8 @@ TEST_F(AccountManagementTypeMetricsRecorderTest,
   // The *second* account's status is known synchronously, but the first
   // account's isn't.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise2.account_id, enterprise2.email, enterprise2.gaia,
+      enterprise2.GetAccountId(), enterprise2.GetEmail(),
+      enterprise2.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -203,7 +208,8 @@ TEST_F(AccountManagementTypeMetricsRecorderTest,
   // Once the other account's status becomes known, its own status as well as
   // the summary should be recorded.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      enterprise1.account_id, enterprise1.email, enterprise1.gaia,
+      enterprise1.GetAccountId(), enterprise1.GetEmail(),
+      enterprise1.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 

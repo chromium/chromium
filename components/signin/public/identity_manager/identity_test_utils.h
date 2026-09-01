@@ -312,7 +312,7 @@ void SetCookieAccounts(IdentityManager* identity_manager,
 void TriggerListAccount(IdentityManager* identity_manager,
                         network::TestURLLoaderFactory* test_url_loader_factory);
 
-// Updates the info for |account_info.account_id|, which must be a known
+// Updates the info for |account_info.GetAccountId()|, which must be a known
 // account.
 void UpdateAccountInfoForAccount(IdentityManager* identity_manager,
                                  AccountInfo account_info);

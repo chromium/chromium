@@ -34,21 +34,37 @@ TEST_F(AccountInfoTest, IsEmpty) {
     EXPECT_TRUE(info_empty.IsEmpty());
   }
   {
-    AccountInfo info_with_account_id;
-    info_with_account_id.account_id =
-        CoreAccountId::FromGaiaId(GaiaId("test_id"));
+    CoreAccountInfo core_info;
+    core_info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
+    AccountInfo info_with_account_id = AccountInfo::Builder(core_info).Build();
     EXPECT_FALSE(info_with_account_id.IsEmpty());
   }
   {
-    AccountInfo info_with_email;
-    info_with_email.email = "test_email@email.com";
+    CoreAccountInfo core_info;
+    core_info.email = "test_email@email.com";
+    AccountInfo info_with_email = AccountInfo::Builder(core_info).Build();
     EXPECT_FALSE(info_with_email.IsEmpty());
   }
   {
-    AccountInfo info_with_gaia;
-    info_with_gaia.gaia = GaiaId("test_gaia");
+    CoreAccountInfo core_info;
+    core_info.gaia = GaiaId("test_gaia");
+    AccountInfo info_with_gaia = AccountInfo::Builder(core_info).Build();
     EXPECT_FALSE(info_with_gaia.IsEmpty());
   }
+}
+
+TEST_F(AccountInfoTest, GetCoreAccountInfo) {
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetIsUnderAdvancedProtection(true)
+          .Build();
+
+  const CoreAccountInfo& core_info = info;
+  EXPECT_EQ(core_info.account_id, CoreAccountId::FromGaiaId(GaiaId("test_id")));
+  EXPECT_EQ(core_info.gaia, GaiaId("test_id"));
+  EXPECT_EQ(core_info.email, "test@example.com");
+  EXPECT_TRUE(core_info.is_under_advanced_protection);
 }
 
 TEST_F(AccountInfoTest, DefaultIsInvalid) {
@@ -73,8 +89,10 @@ TEST_F(AccountInfoTest, IsValid) {
 // Tests that UpdateWith() correctly ignores parameters with a different
 // account ID.
 TEST_F(AccountInfoTest, UpdateWithDifferentAccountId) {
-  AccountInfo info;
-  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .Build();
 
   const GaiaId other_gaia_id = GaiaId("test_other_id");
   AccountInfo other =
@@ -83,8 +101,8 @@ TEST_F(AccountInfoTest, UpdateWithDifferentAccountId) {
           .Build();
 
   EXPECT_FALSE(info.UpdateWith(other));
-  EXPECT_TRUE(info.GetGaiaId().empty());
-  EXPECT_TRUE(info.GetEmail().empty());
+  EXPECT_EQ(info.GetGaiaId(), GaiaId("test_id"));
+  EXPECT_EQ(info.GetEmail(), "test@example.com");
 }
 
 // Tests that UpdateWith() doesn't update the fields that were already set

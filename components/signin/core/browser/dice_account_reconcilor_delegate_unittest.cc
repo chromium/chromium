@@ -29,9 +29,9 @@ gaia::ListedAccount GetListedAccountFromAccountInfo(
     const AccountInfo& account_info,
     bool valid = true) {
   gaia::ListedAccount gaia_account;
-  gaia_account.id = account_info.account_id;
-  gaia_account.email = account_info.email;
-  gaia_account.gaia_id = account_info.gaia;
+  gaia_account.id = account_info.GetAccountId();
+  gaia_account.email = std::string(account_info.GetEmail());
+  gaia_account.gaia_id = account_info.GetGaiaId();
   gaia_account.valid = valid;
   return gaia_account;
 }
@@ -124,7 +124,7 @@ TEST_F(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
   AccountInfo valid_account =
       identity_test_environment().MakeAccountAvailable("account@gmail.com");
 
-  identity_test_environment().SetPrimaryAccount(valid_account.email,
+  identity_test_environment().SetPrimaryAccount(valid_account.GetEmail(),
                                                 ConsentLevel::kSignin);
 
   EXPECT_FALSE(delegate().IsCookieBasedConsistencyMode());

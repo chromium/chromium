@@ -92,7 +92,7 @@ class PrimaryAccountAccessTokenFetcherTest
     return identity_test_env_
         ->MakePrimaryAccountAvailable("me@gmail.com",
                                       signin::ConsentLevel::kSync)
-        .account_id;
+        .GetAccountId();
   }
 
   // Returns an AccessTokenInfo with valid information that can be used for

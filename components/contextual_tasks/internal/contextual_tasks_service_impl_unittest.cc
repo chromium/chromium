@@ -290,7 +290,8 @@ TEST_F(ContextualTasksServiceImplTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()}});
 
   ContextualTask task =
       service_->CreateTaskFromUrl(GURL("https://google.com?authuser=0"));

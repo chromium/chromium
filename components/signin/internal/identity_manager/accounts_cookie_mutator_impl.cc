@@ -48,7 +48,8 @@ void AccountsCookieMutatorImpl::SetAccountsInCookie(
   std::vector<GaiaCookieManagerService::AccountIdGaiaIdPair> accounts;
   for (const auto& account_id : parameters.accounts_to_send) {
     accounts.push_back(std::make_pair(
-        account_id, account_tracker_service_->GetAccountInfo(account_id).gaia));
+        account_id,
+        account_tracker_service_->GetAccountInfo(account_id).GetGaiaId()));
   }
   gaia_cookie_manager_service_->SetAccountsInCookie(
       parameters.mode, accounts, source,
@@ -72,7 +73,8 @@ AccountsCookieMutatorImpl::SetAccountsInCookieForPartition(
   std::vector<GaiaCookieManagerService::AccountIdGaiaIdPair> accounts;
   for (const auto& account_id : parameters.accounts_to_send) {
     accounts.emplace_back(std::make_pair(
-        account_id, account_tracker_service_->GetAccountInfo(account_id).gaia));
+        account_id,
+        account_tracker_service_->GetAccountInfo(account_id).GetGaiaId()));
   }
 
   return std::make_unique<MultiloginHelperWrapper>(

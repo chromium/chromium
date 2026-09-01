@@ -53,9 +53,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
     return PrimaryAccountError::kAccountInfoEmpty;
   }
 
-  DCHECK_EQ(account_info.account_id, account_id);
-  DCHECK(!account_info.email.empty());
-  DCHECK(!account_info.gaia.empty());
+  DCHECK_EQ(account_info.GetAccountId(), account_id);
+  DCHECK(!account_info.GetEmail().empty());
+  DCHECK(!account_info.GetGaiaId().empty());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   bool is_signin_allowed = pref_service_->GetBoolean(prefs::kSigninAllowed);
@@ -98,8 +98,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
   }
   if (primary_account_manager_->HasPrimaryAccount(
           signin::ConsentLevel::kSignin) &&
-      account_info.account_id != primary_account_manager_->GetPrimaryAccountId(
-                                     signin::ConsentLevel::kSignin) &&
+      account_info.GetAccountId() !=
+          primary_account_manager_->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin) &&
       !signin_client_->IsClearPrimaryAccountAllowed()) {
     DVLOG(1) << "Changing the primary account is not allowed.";
     return PrimaryAccountError::kPrimaryAccountChangeNotAllowed;

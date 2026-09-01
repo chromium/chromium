@@ -37,9 +37,10 @@ TEST_F(AccountUtilsTest,
           "primary@example.com", signin::ConsentLevel::kSignin);
   CoreAccountInfo primary_account = GetPrimaryAccountInfoFromProfile(
       identity_test_environment_.identity_manager());
-  EXPECT_EQ(primary_account.account_id, expected_primary_account.account_id);
-  EXPECT_EQ(primary_account.gaia, expected_primary_account.gaia);
-  EXPECT_EQ(primary_account.email, expected_primary_account.email);
+  EXPECT_EQ(primary_account.account_id,
+            expected_primary_account.GetAccountId());
+  EXPECT_EQ(primary_account.gaia, expected_primary_account.GetGaiaId());
+  EXPECT_EQ(primary_account.email, expected_primary_account.GetEmail());
 }
 
 TEST_F(AccountUtilsTest, GetAccountFromCookieJar_NoAccounts) {
@@ -56,14 +57,16 @@ TEST_F(AccountUtilsTest, GetAccountFromCookieJar_NoIndex_ReturnsFirstAccount) {
   AccountInfo secondary_account_info =
       identity_test_environment_.MakeAccountAvailable("secondary@example.com");
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
-       {secondary_account_info.email, secondary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
+       {std::string(secondary_account_info.GetEmail()),
+        secondary_account_info.GetGaiaId()}});
 
   std::optional<gaia::ListedAccount> account =
       GetAccountFromCookieJar(identity_test_environment_.identity_manager(),
                               GURL("https://google.com"));
   ASSERT_TRUE(account.has_value());
-  EXPECT_EQ(account->gaia_id, primary_account_info.gaia);
+  EXPECT_EQ(account->gaia_id, primary_account_info.GetGaiaId());
 }
 
 TEST_F(AccountUtilsTest,
@@ -74,14 +77,16 @@ TEST_F(AccountUtilsTest,
   AccountInfo secondary_account_info =
       identity_test_environment_.MakeAccountAvailable("secondary@example.com");
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
-       {secondary_account_info.email, secondary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
+       {std::string(secondary_account_info.GetEmail()),
+        secondary_account_info.GetGaiaId()}});
 
   std::optional<gaia::ListedAccount> account =
       GetAccountFromCookieJar(identity_test_environment_.identity_manager(),
                               GURL("https://google.com?authuser=1"));
   ASSERT_TRUE(account.has_value());
-  EXPECT_EQ(account->gaia_id, secondary_account_info.gaia);
+  EXPECT_EQ(account->gaia_id, secondary_account_info.GetGaiaId());
 }
 
 TEST_F(AccountUtilsTest, GetAccountFromCookieJar_OutOfBoundsIndex) {
@@ -91,8 +96,10 @@ TEST_F(AccountUtilsTest, GetAccountFromCookieJar_OutOfBoundsIndex) {
   AccountInfo secondary_account_info =
       identity_test_environment_.MakeAccountAvailable("secondary@example.com");
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
-       {secondary_account_info.email, secondary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
+       {std::string(secondary_account_info.GetEmail()),
+        secondary_account_info.GetGaiaId()}});
 
   std::optional<gaia::ListedAccount> account =
       GetAccountFromCookieJar(identity_test_environment_.identity_manager(),
@@ -112,7 +119,8 @@ TEST_F(AccountUtilsTest, IsUrlForPrimaryAccount_SingleAccount_Matches) {
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()}});
 
   EXPECT_TRUE(
       IsUrlForPrimaryAccount(identity_test_environment_.identity_manager(),
@@ -127,8 +135,10 @@ TEST_F(AccountUtilsTest,
   AccountInfo secondary_account_info =
       identity_test_environment_.MakeAccountAvailable("secondary@example.com");
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
-       {secondary_account_info.email, secondary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
+       {std::string(secondary_account_info.GetEmail()),
+        secondary_account_info.GetGaiaId()}});
 
   // No authuser or /u/ index, so it should be considered for the primary
   // account.
@@ -143,7 +153,8 @@ TEST_F(AccountUtilsTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
        {"secondary@example.com",
         signin::GetTestGaiaIdForEmail("secondary@example.com")}});
 
@@ -158,7 +169,8 @@ TEST_F(AccountUtilsTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
        {"secondary@example.com",
         signin::GetTestGaiaIdForEmail("secondary@example.com")}});
 
@@ -173,7 +185,8 @@ TEST_F(AccountUtilsTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
        {"secondary@example.com",
         signin::GetTestGaiaIdForEmail("secondary@example.com")}});
 
@@ -188,7 +201,8 @@ TEST_F(AccountUtilsTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
        {"secondary@example.com",
         signin::GetTestGaiaIdForEmail("secondary@example.com")}});
 
@@ -203,7 +217,8 @@ TEST_F(AccountUtilsTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia},
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()},
        {"secondary@example.com",
         signin::GetTestGaiaIdForEmail("secondary@example.com")}});
 
@@ -217,7 +232,8 @@ TEST_F(AccountUtilsTest, IsUserSignedInToWeb_BrowserAndWebAccounts) {
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account_info.email, primary_account_info.gaia}});
+      {{std::string(primary_account_info.GetEmail()),
+        primary_account_info.GetGaiaId()}});
 
   EXPECT_TRUE(IsUserSignedInToWeb(identity_test_environment_.identity_manager(),
                                   GURL("https://google.com/u/0/test")));
@@ -276,7 +292,7 @@ TEST_F(AccountUtilsTest,
       identity_test_environment_.MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
-      {{primary_account.email, primary_account.gaia}});
+      {{std::string(primary_account.GetEmail()), primary_account.GetGaiaId()}});
 
   EXPECT_TRUE(CookieJarContainsPrimaryAccount(
       identity_test_environment_.identity_manager()));
@@ -289,7 +305,7 @@ TEST_F(AccountUtilsTest,
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.SetCookieAccounts(
       {{"other@example.com", GaiaId("other_gaia")},
-       {primary_account.email, primary_account.gaia}});
+       {std::string(primary_account.GetEmail()), primary_account.GetGaiaId()}});
 
   EXPECT_TRUE(CookieJarContainsPrimaryAccount(
       identity_test_environment_.identity_manager()));

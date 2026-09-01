@@ -129,7 +129,7 @@ void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
   }
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
-  DCHECK(!account_info.account_id.empty());
+  DCHECK(!account_info.GetAccountId().empty());
 
   auto* target_impl = static_cast<AccountsMutatorImpl*>(target);
   target_impl->account_tracker_service_->SeedAccountInfo(account_info);

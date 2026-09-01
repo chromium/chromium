@@ -930,11 +930,11 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
     const CoreAccountId primary_account_id_ =
         GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     for (const auto& account : accounts_in_tracker_service) {
-      if (primary_account_id_ != account.account_id &&
-          !token_service_->RefreshTokenIsAvailable(account.account_id)) {
+      if (primary_account_id_ != account.GetAccountId() &&
+          !token_service_->RefreshTokenIsAvailable(account.GetAccountId())) {
         VLOG(0) << "Removed account from account tracker service: "
-                << account.account_id;
-        account_tracker_service_->RemoveAccount(account.account_id);
+                << account.GetAccountId();
+        account_tracker_service_->RemoveAccount(account.GetAccountId());
       }
     }
   }

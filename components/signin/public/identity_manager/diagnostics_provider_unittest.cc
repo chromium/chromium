@@ -60,7 +60,7 @@ TEST_F(DiagnosticsProviderTest, GetDelayBeforeMakingAccessTokenRequests) {
   EXPECT_EQ(diagnostics_provider()->GetDelayBeforeMakingAccessTokenRequests(),
             zero);
   CoreAccountId account_id =
-      identity_test_env()->MakeAccountAvailable(kAccountEmail).account_id;
+      identity_test_env()->MakeAccountAvailable(kAccountEmail).GetAccountId();
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       account_id, GoogleServiceAuthError::FromServiceUnavailable(""));
   EXPECT_GT(diagnostics_provider()->GetDelayBeforeMakingAccessTokenRequests(),

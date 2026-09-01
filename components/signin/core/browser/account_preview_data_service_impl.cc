@@ -219,8 +219,8 @@ void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
   if (email.has_value() && !email->empty() && identity_manager_) {
     AccountInfo account_info =
         identity_manager_->FindExtendedAccountInfoByEmailAddress(*email);
-    if (!account_info.IsEmpty() && !account_info.gaia.empty()) {
-      new_external_account = account_info.gaia;
+    if (!account_info.IsEmpty() && !account_info.GetGaiaId().empty()) {
+      new_external_account = account_info.GetGaiaId();
     }
   }
 
@@ -560,19 +560,19 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
 #endif
   std::vector<AccountPreviewHeuristicContext> contexts;
   for (const AccountInfo& account : ordered_accounts) {
-    auto cache_it = cached_data_.find(account.gaia);
+    auto cache_it = cached_data_.find(account.GetGaiaId());
     if (cache_it == cached_data_.end()) {
       continue;
     }
 
     contexts.push_back(AccountPreviewHeuristicContext{
-        .gaia_id = account.gaia,
+        .gaia_id = account.GetGaiaId(),
         .preview_data = raw_ref(cache_it->second),
         .is_managed = account.IsManaged() == signin::Tribool::kTrue,
         .is_child = account.IsChildAccount() == signin::Tribool::kTrue,
 #if BUILDFLAG(IS_ANDROID)
         .is_external_app_primary = external_app_account.has_value() &&
-                                   *external_app_account == account.gaia,
+                                   *external_app_account == account.GetGaiaId(),
 #else
         .is_external_app_primary = false,
 #endif

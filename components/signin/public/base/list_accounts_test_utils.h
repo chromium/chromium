@@ -5,6 +5,7 @@
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_LIST_ACCOUNTS_TEST_UTILS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "google_apis/gaia/gaia_auth_test_util.h"
@@ -39,7 +40,7 @@ void SetListAccountsResponseNoAccounts(
 // Make ListAccounts return one account with the provided |email| and
 // |gaia_id|.
 void SetListAccountsResponseOneAccount(
-    const std::string& email,
+    std::string_view email,
     const GaiaId& gaia_id,
     network::TestURLLoaderFactory* test_url_loader_factory);
 
@@ -50,9 +51,9 @@ void SetListAccountsResponseOneAccountWithParams(
 
 // Make ListAccounts return two accounts with the provided emails and gaia_ids.
 void SetListAccountsResponseTwoAccounts(
-    const std::string& email1,
+    std::string_view email1,
     const GaiaId& gaia_id1,
-    const std::string& email2,
+    std::string_view email2,
     const GaiaId& gaia_id2,
     network::TestURLLoaderFactory* test_url_loader_factory);
 

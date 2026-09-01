@@ -143,7 +143,7 @@ TEST_F(AccountManagedStatusFinderTest, EnterpriseAccountDeterminedImmediately) {
   // The full account info is already available before the
   // AccountManagedStatusFinder gets created.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -163,7 +163,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // The full account info is already available before the
   // AccountManagedStatusFinder gets created.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -193,7 +193,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // account (because it has a non-empty hosted domain).
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -217,7 +217,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // account (because the hosted domain is empty).
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -249,8 +249,7 @@ TEST_F(AccountManagedStatusFinderTest, KeepsWaitingOnPartialAccountInfoUpdate) {
   // AccountManagedStatusFinder should determine the account type.
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.GetAccountId(), std::string(account.GetEmail()),
-      account.GetGaiaId(),
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -275,8 +274,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // AccountManagedStatusFinder should ignore this irrelevant update.
   EXPECT_CALL(outcome_determined, Run).Times(0);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      different_account.account_id, different_account.email,
-      different_account.gaia,
+      different_account.GetAccountId(), different_account.GetEmail(),
+      different_account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
@@ -284,7 +283,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // Similarly, the AccountManagedStatusFinder should ignore if the different
   // account gets removed.
   EXPECT_CALL(outcome_determined, Run).Times(0);
-  identity_env_.RemoveRefreshTokenForAccount(different_account.account_id);
+  identity_env_.RemoveRefreshTokenForAccount(different_account.GetAccountId());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
   // Once the full extended account info for the interesting account becomes
@@ -292,7 +291,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // type.
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -316,7 +315,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // AccountManagedStatusFinder should keep waiting.
   EXPECT_CALL(outcome_determined, Run).Times(0);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
@@ -332,7 +331,7 @@ TEST_F(AccountManagedStatusFinderTest, ErrorOnNonExistentAccount) {
   AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
 
   // The account gets removed before the AccountManagedStatusFinder is created.
-  identity_env_.RemoveRefreshTokenForAccount(account.account_id);
+  identity_env_.RemoveRefreshTokenForAccount(account.GetAccountId());
 
   // The AccountManagedStatusFinder should detect this and immediately report an
   // error.
@@ -354,7 +353,7 @@ TEST_F(AccountManagedStatusFinderTest, ErrorOnAccountRemoved) {
 
   // Before the status can be determined, the account gets removed.
   EXPECT_CALL(outcome_determined, Run);
-  identity_env_.RemoveRefreshTokenForAccount(account.account_id);
+  identity_env_.RemoveRefreshTokenForAccount(account.GetAccountId());
 
   // The AccountManagedStatusFinder should detect this and report an error.
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kError);
@@ -406,7 +405,7 @@ TEST_F(AccountManagedStatusFinderTest,
        ErrorOnNonExistentAccountImmediatelyAfterRefreshTokensAreLoaded) {
   AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
   // The account gets removed before the AccountManagedStatusFinder is created.
-  identity_env_.RemoveRefreshTokenForAccount(account.account_id);
+  identity_env_.RemoveRefreshTokenForAccount(account.GetAccountId());
   // Simulate refresh tokens not being loaded state.
   identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
 
@@ -448,7 +447,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // account (because it has a non-empty hosted domain).
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -510,7 +509,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // decided.
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -555,7 +554,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // AccountManagedStatusFinder gets created. Other parts of the info should not
   // be required for determining the outcome.
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", /*full_name=*/"", /*given_name=*/"",
       /*locale=*/"", /*picture_url=*/"");
 
@@ -585,7 +584,7 @@ TEST_F(AccountManagedStatusFinderTest,
   // account.
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), account.GetEmail(), account.GetGaiaId(),
       /*hosted_domain=*/"enterprise.com", /*full_name=*/"", /*given_name=*/"",
       /*locale=*/"", /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
@@ -596,7 +595,7 @@ TEST_F(AccountManagedStatusFinderTest, ImmediateOutcomeAuthError) {
   AccountInfo account =
       identity_env_.MakeAccountAvailable("account@not-an-enterprise.com");
   identity_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account.account_id,
+      account.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -629,7 +628,7 @@ TEST_F(AccountManagedStatusFinderTest, DelayedOutcomeAuthError) {
   EXPECT_CALL(outcome_determined, Run);
 
   identity_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account.account_id,
+      account.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));

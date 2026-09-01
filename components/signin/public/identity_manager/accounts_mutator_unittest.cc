@@ -148,7 +148,7 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   CoreAccountId account_id = identity_test_env()
                                  ->MakePrimaryAccountAvailable(
                                      kTestEmail, signin::ConsentLevel::kSignin)
-                                 .account_id;
+                                 .GetAccountId();
   run_loop.Run();
 
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
@@ -239,8 +239,8 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
 
   AccountInfo account_info =
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
-  EXPECT_EQ(account_info.account_id, account_id);
-  EXPECT_EQ(account_info.email, kTestEmail);
+  EXPECT_EQ(account_info.GetAccountId(), account_id);
+  EXPECT_EQ(account_info.GetEmail(), kTestEmail);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_EQ(account_info.GetLastAuthenticationAccessPoint(),
             signin_metrics::AccessPoint::kSettings);
@@ -275,8 +275,8 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
           account_id));
   AccountInfo account_info =
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
-  EXPECT_EQ(account_info.account_id, account_id);
-  EXPECT_EQ(account_info.email, kTestEmail);
+  EXPECT_EQ(account_info.GetAccountId(), account_id);
+  EXPECT_EQ(account_info.GetEmail(), kTestEmail);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
 
   // Now try adding the account again with the same account id but with
@@ -289,7 +289,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   // as the account id. Detect whether the current plaform has completed
   // the migration.
   const bool use_gaia_as_account_id =
-      account_id.ToString() == account_info.gaia.ToString();
+      account_id.ToString() == account_info.GetGaiaId().ToString();
 
   // If the system uses gaia id as account_id, then change the email and
   // the |is_under_advanced_protection| field. Otherwise only change the
@@ -313,20 +313,20 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
   AccountInfo updated_account_info =
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
-  EXPECT_EQ(account_info.account_id, updated_account_info.account_id);
-  EXPECT_EQ(account_info.gaia, updated_account_info.gaia);
-  EXPECT_EQ(updated_account_info.email, maybe_updated_email);
+  EXPECT_EQ(account_info.GetAccountId(), updated_account_info.GetAccountId());
+  EXPECT_EQ(account_info.GetGaiaId(), updated_account_info.GetGaiaId());
+  EXPECT_EQ(updated_account_info.GetEmail(), maybe_updated_email);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // The access point was not updated because nullopt was passed.
   EXPECT_EQ(updated_account_info.GetLastAuthenticationAccessPoint(),
             signin_metrics::AccessPoint::kSettings);
 #endif
   if (use_gaia_as_account_id) {
-    EXPECT_NE(updated_account_info.email, account_info.email);
-    EXPECT_EQ(updated_account_info.email, kTestEmail2);
+    EXPECT_NE(updated_account_info.GetEmail(), account_info.GetEmail());
+    EXPECT_EQ(updated_account_info.GetEmail(), kTestEmail2);
   }
-  EXPECT_NE(account_info.is_under_advanced_protection,
-            updated_account_info.is_under_advanced_protection);
+  EXPECT_NE(account_info.IsUnderAdvancedProtection(),
+            updated_account_info.IsUnderAdvancedProtection());
 
   // Update the account with a different access point.
   accounts_mutator()->AddOrUpdateAccount(
@@ -366,14 +366,14 @@ TEST_F(AccountsMutatorTest,
   EXPECT_EQ(identity_manager_observer()
                 ->AccountFromRefreshTokenUpdatedCallback()
                 .account_id,
-            primary_account_info.account_id);
+            primary_account_info.GetAccountId());
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
-      primary_account_info.account_id));
+      primary_account_info.GetAccountId()));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_info.account_id));
+          primary_account_info.GetAccountId()));
   auto error = identity_manager()->GetErrorStateOfRefreshTokenForAccount(
-      primary_account_info.account_id);
+      primary_account_info.GetAccountId());
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error.state());
   EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_REJECTED_BY_CLIENT,
@@ -421,16 +421,16 @@ TEST_F(
   EXPECT_EQ(identity_manager_observer()
                 ->AccountFromRefreshTokenUpdatedCallback()
                 .account_id,
-            primary_account_info.account_id);
+            primary_account_info.GetAccountId());
 
   // Check whether the primary account refresh token got invalidated.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
-      primary_account_info.account_id));
+      primary_account_info.GetAccountId()));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_info.account_id));
+          primary_account_info.GetAccountId()));
   auto error = identity_manager()->GetErrorStateOfRefreshTokenForAccount(
-      primary_account_info.account_id);
+      primary_account_info.GetAccountId());
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error.state());
   EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_REJECTED_BY_CLIENT,
@@ -441,8 +441,8 @@ TEST_F(
   EXPECT_FALSE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           account_id));
-  EXPECT_EQ(secondary_account_info.account_id, account_id);
-  EXPECT_EQ(secondary_account_info.email, kTestEmail);
+  EXPECT_EQ(secondary_account_info.GetAccountId(), account_id);
+  EXPECT_EQ(secondary_account_info.GetEmail(), kTestEmail);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2U);
 }
 
@@ -656,11 +656,11 @@ TEST_F(AccountsMutatorTest, MoveAccount) {
 
   AccountInfo account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail);
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
   EXPECT_FALSE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info.account_id));
+          account_info.GetAccountId()));
   EXPECT_EQ(1U, identity_manager()->GetAccountsWithRefreshTokens().size());
 
   IdentityTestEnvironment other_identity_test_env;
@@ -671,7 +671,7 @@ TEST_F(AccountsMutatorTest, MoveAccount) {
   EXPECT_FALSE(device_id_1.empty());
 
   accounts_mutator()->MoveAccount(other_accounts_mutator,
-                                  account_info.account_id);
+                                  account_info.GetAccountId());
   EXPECT_EQ(0U, identity_manager()->GetAccountsWithRefreshTokens().size());
 
   std::string device_id_2 = GetSigninScopedDeviceId(pref_service());
@@ -702,7 +702,7 @@ TEST(ExplicitBrowserSigninAccountsMutatorTest, MoveAccount) {
   EXPECT_TRUE(identity_manager->HasPrimaryAccountWithRefreshToken(
       ConsentLevel::kSignin));
   EXPECT_EQ(identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin),
-            account_info.account_id);
+            account_info.GetAccountId());
   EXPECT_EQ(1U, identity_manager->GetAccountsWithRefreshTokens().size());
 
   IdentityTestEnvironment other_identity_test_env;
@@ -710,7 +710,7 @@ TEST(ExplicitBrowserSigninAccountsMutatorTest, MoveAccount) {
       other_identity_test_env.identity_manager();
   auto* other_accounts_mutator = other_identity_manager->GetAccountsMutator();
   accounts_mutator->MoveAccount(other_accounts_mutator,
-                                account_info.account_id);
+                                account_info.GetAccountId());
 
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_EQ(0U, identity_manager->GetAccountsWithRefreshTokens().size());
@@ -736,7 +736,7 @@ class MoveAccountUafTestObserver : public signin::IdentityManager::Observer {
       IdentityManager* identity_manager,
       std::unique_ptr<AccountInfo>& account_info_temporary)
       : account_info_temporary_(account_info_temporary),
-        account_id_copy_(account_info_temporary->account_id) {
+        account_id_copy_(account_info_temporary->GetAccountId()) {
     identity_manager_observation_.Observe(identity_manager);
   }
 
@@ -771,8 +771,8 @@ TEST(ExplicitBrowserSigninAccountsMutatorTest, RemoveAccountCopiesAccountId) {
   IdentityManager* identity_manager = identity_test_env.identity_manager();
   AccountsMutator* accounts_mutator = identity_manager->GetAccountsMutator();
   AccountInfo account_info = identity_test_env.MakeAccountAvailable(kTestEmail);
-  EXPECT_TRUE(
-      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
   EXPECT_EQ(1U, identity_manager->GetAccountsWithRefreshTokens().size());
 
   // Setup two observers. The first one deletes the temporary account info when
@@ -787,13 +787,13 @@ TEST(ExplicitBrowserSigninAccountsMutatorTest, RemoveAccountCopiesAccountId) {
 
   // This should not crash.
   accounts_mutator->RemoveAccount(
-      account_info_temporary->account_id,
+      account_info_temporary->GetAccountId(),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_TRUE(test_observer1.called());
   EXPECT_TRUE(test_observer2.called());
 
-  EXPECT_FALSE(
-      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
   EXPECT_EQ(0U, identity_manager->GetAccountsWithRefreshTokens().size());
 }
 

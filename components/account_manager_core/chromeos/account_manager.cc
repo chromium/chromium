@@ -558,14 +558,14 @@ void AccountManager::RemoveAccount(
 
 void AccountManager::UpsertAccount(
     const ::account_manager::AccountKey& account_key,
-    const std::string& raw_email,
-    const std::string& token) {
+    std::string_view raw_email,
+    std::string_view token) {
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
   DCHECK(!raw_email.empty());
 
   base::OnceClosure closure = base::BindOnce(
       &AccountManager::UpsertAccountInternal, weak_factory_.GetWeakPtr(),
-      account_key, AccountInfo{raw_email, token});
+      account_key, AccountInfo{std::string(raw_email), std::string(token)});
   RunOnInitialization(std::move(closure));
 }
 

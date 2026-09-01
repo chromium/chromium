@@ -91,7 +91,7 @@ void AccountPreviewMetricsRecorder::RecordMetrics(
   std::string account_suffix = ".Account" + base::NumberToString(account_index);
 
   bool is_primary = identity_manager_->GetPrimaryAccountId(
-                        ConsentLevel::kSignin) == account_info.account_id;
+                        ConsentLevel::kSignin) == account_info.GetAccountId();
   // TODO(crbug.com/510760810): Add HasOtherDevices metric once the network
   // response parsing is implemented.
 

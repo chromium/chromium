@@ -233,7 +233,7 @@ TEST_F(PrivateAiServiceTest,
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-        account_info.account_id,
+        account_info.GetAccountId(),
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
     EXPECT_EQ(future.Get<0>(),
@@ -252,7 +252,7 @@ TEST_F(PrivateAiServiceTest,
   // Fix the sign-in state of the account (the refresh token error transitions
   // to NONE).
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id, GoogleServiceAuthError::AuthErrorNone());
+      account_info.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
 
   // The backoff should be reset. Calling GetAuthToken should now trigger
   // a new OAuth token request instead of failing immediately.
