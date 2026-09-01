@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
@@ -958,6 +959,56 @@ TEST_F(InspectorHighlightTest, ShapeOutsideHighlightScalesAfterTranslation) {
 
   const std::string json = SerializeToJson(*highlight.AsProtocolValue());
   EXPECT_THAT(json, testing::HasSubstr("\"path\":[\"M\",5,5"));
+}
+
+TEST_F(InspectorHighlightTest, CanvasInlineChildHighlight) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  ScopedElementCanvasTransformForTest forced_canvas_transform_feature(true);
+
+  PageTestBase::LoadAhem(*GetDocument().GetFrame());
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body { margin: 0; }
+      canvas {
+        width: 200px;
+        height: 200px;
+      }
+      #drawable-container {
+        padding-left: 100px;
+      }
+      span {
+        font: 25px/1 Ahem;
+      }
+    </style>
+    <canvas id="canvas" layoutsubtree>
+      <div drawable id="drawable-container">
+        <span id="a">X</span><span id="drawable-span" drawable>X</span>
+      </div>
+    </canvas>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Set canvas transform on #drawable-span to (125, 0) which is its layout
+  // position (100px padding + 25px for #a).
+  Element* span = GetDocument().getElementById(AtomicString("drawable-span"));
+  span->SetCanvasTransform(gfx::Transform::MakeTranslation(125, 0));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(span, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+
+  const std::string json = SerializeToJson(*highlight.AsProtocolValue());
+  // The highlight path for #drawable-span should start at 125,0 and have lines
+  // to 150,0, 150,25, 125,25, and finally back to 125,0 with Z.
+  EXPECT_THAT(
+      json,
+      testing::HasSubstr(
+          "\"path\":[\"M\",125,0,\"L\",150,0,\"L\",150,25,\"L\",125,25,\"Z\""));
 }
 
 }  // namespace blink

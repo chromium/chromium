@@ -2077,6 +2077,9 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
   } else if (const auto* layout_inline =
                  DynamicTo<LayoutInline>(layout_object)) {
     border_box = layout_inline->PhysicalLinesBoundingBox();
+    if (layout_inline->CanvasForDrawingLayoutObject()) {
+      border_box.offset = PhysicalOffset();
+    }
 
     padding_box = border_box;
     padding_box.Contract(layout_inline->BorderOutsets());
