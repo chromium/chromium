@@ -17,6 +17,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -83,6 +84,20 @@ class SplitViewIphControllerTest : public ChromeRenderViewHostTestHarness {
   MockBrowserUserEducationInterface* user_education() {
     return static_cast<MockBrowserUserEducationInterface*>(
         BrowserUserEducationInterface::From(browser_window_interface()));
+  }
+
+  // Verifies that if any feature promos are shown, they are not for
+  // `kIPHSideBySidePinnableFeature`. During tests we may show other feature
+  // promos such as for top/bottom splits.
+  void ExpectSideBySidePinnableFeaturePromoNotShown() {
+    EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_))
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*user_education(),
+                MaybeShowFeaturePromo(testing::Truly([](const auto& params) {
+                  return params.feature ==
+                         feature_engagement::kIPHSideBySidePinnableFeature;
+                })))
+        .Times(0);
   }
 
  private:
@@ -159,7 +174,7 @@ TEST_F(SplitViewIphControllerTest, NoPromoWhenSwitchingTabsWhenAlreadyPinned) {
   AddTab(tab_strip_model(), GURL("test_tab_1"));
   AddTab(tab_strip_model(), GURL("test_tab_2"));
 
-  EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_)).Times(0);
+  ExpectSideBySidePinnableFeaturePromoNotShown();
 
   tab_strip_model()->SelectTabAt(0);
   tab_strip_model()->SelectTabAt(1);
@@ -179,7 +194,7 @@ TEST_F(SplitViewIphControllerTest, NoPromoWhenSplitCreatedWhenAlreadyPinned) {
   AddTab(tab_strip_model(), GURL("test_url_1"));
   AddTab(tab_strip_model(), GURL("test_url_2"));
 
-  EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_)).Times(0);
+  ExpectSideBySidePinnableFeaturePromoNotShown();
 
   tab_strip_model()->AddToNewSplit(
       {0}, split_tabs::SplitTabVisualData(),
