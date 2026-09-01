@@ -19,8 +19,6 @@
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/server_certificate_database/server_certificate_database_service.h"
 #include "components/server_certificate_database/server_certificate_database_test_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -143,12 +141,6 @@ size_t CountCertOccurencesInCertificateList(
   return count;
 }
 
-void CertDbMigrationNssSlotGetter(
-    crypto::ScopedPK11Slot slot,
-    base::OnceCallback<void(crypto::ScopedPK11Slot)> callback) {
-  std::move(callback).Run(std::move(slot));
-}
-
 class TestNSSCertDatabase : public net::NSSCertDatabaseChromeOS {
  public:
   TestNSSCertDatabase(crypto::ScopedPK11Slot public_slot,
@@ -186,10 +178,7 @@ class NetworkCertLoaderTest : public testing::Test,
   void SetUp() override {
     ASSERT_TRUE(primary_public_slot_db_.is_open());
     ASSERT_TRUE(primary_private_slot_db_.is_open());
-    ASSERT_TRUE(test_slot_for_migration_.is_open());
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
-    net::ServerCertificateDatabaseService::RegisterProfilePrefs(
-        pref_service_.registry());
 
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
@@ -344,10 +333,7 @@ class NetworkCertLoaderTest : public testing::Test,
   std::unique_ptr<net::ServerCertificateDatabaseService>
   CreateServerCertDbService() {
     return std::make_unique<net::ServerCertificateDatabaseService>(
-        temp_profile_dir_.GetPath(), &pref_service_,
-        base::BindOnce(&CertDbMigrationNssSlotGetter,
-                       crypto::ScopedPK11Slot(PK11_ReferenceSlot(
-                           test_slot_for_migration_.slot()))));
+        temp_profile_dir_.GetPath());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -371,17 +357,7 @@ class NetworkCertLoaderTest : public testing::Test,
   // system_db_).
   std::unique_ptr<TestNSSCertDatabase> system_certdb_;
 
-  // The NSS DB that will be passed to ServerCertificateDatabaseService for
-  // migration. This is a separate slot from the `primary_public_slot_db_` to
-  // simplify test setup. (For example, being able to test having different
-  // certs in the `primary_public_slot_db_` and in the
-  // ServerCertificateDatabase, without having the certs from the NSS slot
-  // automatically getting migrated into the ServerCertificateDatabase.)
-  crypto::ScopedTestNSSDB test_slot_for_migration_;
-
   base::ScopedTempDir temp_profile_dir_;
-  base::ScopedTempDir temp_server_cert_db_dir_;
-  TestingPrefServiceSimple pref_service_;
 
  private:
   size_t certificates_loaded_events_count_;

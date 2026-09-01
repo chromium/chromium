@@ -670,7 +670,6 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  net::ServerCertificateDatabaseService::RegisterProfilePrefs(registry);
   // The following two prefs are primarily used (elsewhere) as local_state
   // prefs, but they are also used here as Profile prefs, for the login screen
   // Profile on ChromeOS. Their value is only used if managed.

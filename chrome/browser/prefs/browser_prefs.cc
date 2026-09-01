@@ -1043,6 +1043,12 @@ inline constexpr char kPluginVmEngagementTimeDayId[] =
     "plugin_vm.metrics.engagement_time.day_id";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 09/2026.
+constexpr char kNSSCertsMigratedToServerCertDb[] =
+    "certificates.nss_certs_migrated_to_server_cert_db";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1451,6 +1457,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 08/2026.
   registry->RegisterStringPref(kSigninInterceptionIDPCookiesUrl, std::string());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 09/2026.
+  registry->RegisterIntegerPref(kNSSCertsMigratedToServerCertDb, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2806,6 +2817,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 08/2026.
   profile_prefs->ClearPref(kSigninInterceptionIDPCookiesUrl);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 09/2026.
+  profile_prefs->ClearPref(kNSSCertsMigratedToServerCertDb);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

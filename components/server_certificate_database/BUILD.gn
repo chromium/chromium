@@ -25,19 +25,11 @@ component("server_certificate_database") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//components/prefs",
     "//net",
     "//sql",
     "//third_party/boringssl",
   ]
   public_deps = [ ":proto" ]
-
-  if (is_chromeos) {
-    sources += [
-      "server_certificate_database_nss_migrator.cc",
-      "server_certificate_database_nss_migrator.h",
-    ]
-  }
 }
 
 static_library("test_support") {
@@ -64,13 +56,7 @@ source_set("unit_tests") {
     ":server_certificate_database",
     ":test_support",
     "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//crypto:test_support",
     "//net:test_support",
     "//testing/gtest",
   ]
-
-  if (is_chromeos) {
-    sources += [ "server_certificate_database_nss_migrator_unittest.cc" ]
-  }
 }
