@@ -394,15 +394,10 @@ public class ContentTextSelectionTest {
 
         List<ItemMatcher> matchers =
                 List.of(
-                        hasId(R.id.select_action_menu_cut),
-                        hasId(R.id.select_action_menu_copy),
                         hasId(android.R.id.paste),
-                        hasId(android.R.id.pasteAsPlainText),
                         hasId(R.id.select_action_menu_select_all),
                         isDivider(),
-                        hasTitle("testNonSelectionItem"),
-                        hasId(R.id.select_action_menu_web_search),
-                        hasId(R.id.select_action_menu_share));
+                        hasTitle("testNonSelectionItem"));
         TestSelectionDropdownMenuDelegate dropdownDelegate =
                 new TestSelectionDropdownMenuDelegate();
         MVCListAdapter.ModelList items = menu.getMenuAsDropdown(dropdownDelegate);
@@ -468,7 +463,6 @@ public class ContentTextSelectionTest {
         matchers.add(hasId(R.id.select_action_menu_cut));
         matchers.add(hasId(R.id.select_action_menu_copy));
         matchers.add(hasId(android.R.id.paste));
-        matchers.add(hasId(android.R.id.pasteAsPlainText));
         matchers.add(hasId(R.id.select_action_menu_select_all));
         matchers.add(isDivider());
         if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
