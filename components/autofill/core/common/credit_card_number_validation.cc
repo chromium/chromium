@@ -56,27 +56,29 @@ bool IsValidCreditCardNumber(std::u16string_view text) {
 }
 
 bool HasCorrectCreditCardNumberLength(std::u16string_view number) {
-  // Credit card numbers are at most 19 digits in length, 12 digits seems to
-  // be a fairly safe lower-bound [1].  Specific card issuers have more rigidly
-  // defined sizes.
-  // (Last updated: May 29, 2017)
-  // [1] https://en.wikipedia.org/wiki/Payment_card_number.
-  // CardEditor.isCardNumberLengthMaxium() needs to be kept in sync.
+  // Credit card numbers are generally 12-19 digits in length, where specific
+  // card issuers have more rigidly defined sizes.
+  // https://en.wikipedia.org/wiki/Payment_card_number is generally used as a
+  // best-effort approach in keeping these values accurate.
   const char* const type = GetCardNetwork(number);
   if (type == kAmericanExpressCard && number.size() != 15)
     return false;
-  if (type == kDinersCard && number.size() != 14)
+  if (type == kDinersCard && (number.size() < 14 || number.size() > 19)) {
     return false;
-  if (type == kDiscoverCard && number.size() != 16)
+  }
+  if (type == kDiscoverCard && (number.size() < 16 || number.size() > 19)) {
     return false;
+  }
   if (type == kEloCard && number.size() != 16)
     return false;
-  if (type == kJCBCard && number.size() != 16)
+  if (type == kJCBCard && (number.size() < 16 || number.size() > 19)) {
     return false;
+  }
   if (type == kMasterCard && number.size() != 16)
     return false;
-  if (type == kMirCard && number.size() != 16)
+  if (type == kMirCard && (number.size() < 16 || number.size() > 19)) {
     return false;
+  }
   if (type == kTroyCard && number.size() != 16)
     return false;
   if (type == kUnionPay && (number.size() < 16 || number.size() > 19))
@@ -129,18 +131,17 @@ const char* GetCardNetwork(std::u16string_view number) {
   // https://developer.ean.com/general-info/valid-card-types,
   // http://www.bincodes.com/, and
   // http://www.fraudpractice.com/FL-binCC.html.
-  // (Last updated: March 2021; change Troy bin range)
   //
   // Card Type              Prefix(es)                                  Length
   // --------------------------------------------------------------------------
   // Visa                   4                                          13,16,19
   // American Express       34,37                                      15
-  // Diners Club            300-305,309,36,38-39                       14
-  // Discover Card          6011,644-649,65                            16
+  // Diners Club            300-305,309,36,38-39                       14-19
+  // Discover Card          6011,644-649,65                            16-19
   // Elo                    See Elo regex pattern below                16
-  // JCB                    3528-3589                                  16
+  // JCB                    3528-3589                                  16-19
   // Mastercard             2221-2720, 51-55                           16
-  // MIR                    2200-2204                                  16
+  // Mir                    2200-2204                                  16-19
   // Troy                   22050-22052, 9792                          16
   // UnionPay               62                                         16-19
   // Verve                  506099–506198,507865-507964,650002–650027  16,18,19

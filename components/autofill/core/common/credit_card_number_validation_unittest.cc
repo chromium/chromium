@@ -18,8 +18,6 @@
 namespace autofill {
 namespace {
 
-// From
-// https://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
 constexpr auto kValidNumbers = std::to_array<std::u16string_view>(
     {u"378282246310005",
      u"3714 4963 5398 431",
@@ -45,13 +43,27 @@ constexpr auto kValidNumbers = std::to_array<std::u16string_view>(
      u"506099576481577267",   // Verve 18 digits.
      u"5060995764815772675",  // Verve 19 digits.
      u"6362970000457013",
+     u"361111111111116",      // Diners Club, 15 digits
+     u"3611111111111118",     // Diners Club, 16 digits
+     u"36111111111111113",    // Diners Club, 17 digits
+     u"361111111111111115",   // Diners Club, 18 digits
+     u"3611111111111111110",  // Diners Club, 19 digits
+     u"60110000000000001",    // Discover, 17 digits
+     u"601100000000000004",   // Discover, 18 digits
+     u"6011000000000000001",  // Discover, 19 digits
+     u"35280000000000007",    // JCB, 17 digits
+     u"352800000000000007",   // JCB, 18 digits
+     u"3528000000000000007",  // JCB, 19 digits
+     u"22001112345678904",    // Mir, 17 digits
+     u"220011123456789016",   // Mir, 18 digits
+     u"2200111234567890129",  // Mir, 19 digits
      u"4012.8888.8888.1881",
      u"3787.3449.3671.000",
      u"4012\u00A08888\u202F8888\u00A01881",
      u"5555\u30005555\u20025555\u20034444"});
 constexpr auto kInvalidNumbers = std::to_array<std::u16string_view>({
-    u"4111 1111 112",        /* too short */
-    u"41111111111111111115", /* too long */
+    u"4111 1111 112",        /* too short (Visa, 11 digits) */
+    u"41111111111111111115", /* too long (Visa, 20 digits) */
     u"4111-1111-1111-1110",  /* wrong Luhn checksum */
     u"3056 9309 0259 04aa",  /* non-digit characters */
     u"50609957648157726"     /* Verve 17 digits */
