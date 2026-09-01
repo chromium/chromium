@@ -28,8 +28,7 @@ import java.util.ArrayList;
 @NullMarked
 public class TabSwitcherBackPressHandlerManager implements BackPressHandler {
 
-    private final ArrayList<TabSwitcherDragHandler> mHandlers =
-            new ArrayList<TabSwitcherDragHandler>();
+    private final ArrayList<TabSwitcherDragHandler> mHandlers = new ArrayList<>();
     private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
             ObservableSuppliers.createNonNull(false);
 

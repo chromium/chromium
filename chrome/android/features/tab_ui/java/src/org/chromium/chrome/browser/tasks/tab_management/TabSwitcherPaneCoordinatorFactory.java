@@ -240,8 +240,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         // initialization is an async process; when tab state restoration completes
         // TabModelObserver#restoreCompleted() is called which is listened for in
         // TabSwitcherPaneMediator to properly refresh the list in the event the contents changed.
-        Callback<TabModel> observer =
-                new Callback<TabModel>() {
+        Callback<TabModel> observer = new Callback<>() {
                     @Override
                     public void onResult(TabModel unused) {
                         assert !mTabModelSelector.getModels().isEmpty();

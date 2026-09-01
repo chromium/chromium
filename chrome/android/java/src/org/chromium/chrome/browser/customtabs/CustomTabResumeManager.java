@@ -59,8 +59,7 @@ public class CustomTabResumeManager {
     private static final int DEFAULT_MAX_RESUMPTION_TABS = 20;
     private static final long DEFAULT_RESUMPTION_TAB_TTL_MS = TimeUnit.DAYS.toMillis(5);
 
-    private static final Map<String, TabState> sInMemoryStateCache =
-            new LinkedHashMap<String, TabState>(IN_MEMORY_CACHE_MAX_SIZE + 1, 0.75f, true) {
+    private static final Map<String, TabState> sInMemoryStateCache = new LinkedHashMap<>(IN_MEMORY_CACHE_MAX_SIZE + 1, 0.75f, true) {
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<String, TabState> eldest) {
                     return size() > IN_MEMORY_CACHE_MAX_SIZE;

@@ -307,7 +307,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             tabLaunchType = TabLaunchType.FROM_LONGPRESS_FOREGROUND;
         }
 
-        final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<Boolean>();
+        final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<>();
         final Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab,

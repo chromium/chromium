@@ -883,7 +883,7 @@ public final class LaunchTest {
         ActivityManager.AppTask appTask = Mockito.mock(ActivityManager.AppTask.class);
         Mockito.when(appTask.getTaskInfo()).thenReturn(recentTaskInfo);
 
-        ArrayList<ActivityManager.AppTask> appTasks = new ArrayList<ActivityManager.AppTask>();
+        ArrayList<ActivityManager.AppTask> appTasks = new ArrayList<>();
         appTasks.add(appTask);
 
         ActivityManager activityManager =
