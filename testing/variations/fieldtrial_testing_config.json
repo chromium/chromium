@@ -6322,6 +6322,24 @@
             ]
         }
     ],
+    "DefaultBrowserPromoOverflowMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "DefaultBrowserPromoOverflowMenuType": "0"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromoOverflowMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserRound3Phase1": [
         {
             "platforms": [
