@@ -743,6 +743,24 @@
             ]
         }
     ],
+    "AndroidDownloadImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableDownloadSaveAsContextMenu",
+                        "OpenDownloadInFilesAppIfNoHandlerFound",
+                        "OpenDownloadInNewTab",
+                        "OpenDownloadInPreferredApp"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMediaInsertion": [
         {
             "platforms": [
@@ -14252,36 +14270,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OnlyUseWindowResizeHelperOnResize"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OpenDownloadInFilesAppIfNoHandlerFound": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OpenDownloadInFilesAppIfNoHandlerFound"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OpenDownloadInPreferredApp": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OpenDownloadInPreferredApp"
                     ]
                 }
             ]
