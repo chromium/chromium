@@ -2208,8 +2208,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
           Property(&EntityInstance::type,
                    Property(&EntityType::name, EntityTypeName::kPassport)),
           HasAttributeWithValue(AttributeTypeName::kPassportName, u"Jane Doe"),
-          HasAttributeWithValue(AttributeTypeName::kPassportNumber,
-                                u"P12345"))));
+          HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"45"))));
 }
 
 // Tests that prefetching a mix of non-SPII and SPII types sends a single
@@ -2257,7 +2256,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
                        Property(&EntityType::name, EntityTypeName::kPassport)),
               HasAttributeWithValue(AttributeTypeName::kPassportName, u"Alice"),
               HasAttributeWithValue(AttributeTypeName::kPassportNumber,
-                                    u"P5678"))));
+                                    u"78"))));
 }
 
 // Tests that if decrypting an encrypted entity fails, the entity is dropped,
@@ -2350,13 +2349,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
           AllOf(
               Property(&EntityInstance::type,
                        Property(&EntityType::name, EntityTypeName::kPassport)),
-              HasAttributeWithValue(AttributeTypeName::kPassportNumber,
-                                    u"P100")),
+              HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"0")),
           AllOf(Property(&EntityInstance::type,
                          Property(&EntityType::name,
                                   EntityTypeName::kDriversLicense)),
                 HasAttributeWithValue(AttributeTypeName::kDriversLicenseNumber,
-                                      u"DL200"))));
+                                      u"00"))));
 }
 
 // Tests that prefetched encrypted entities expire after the 30-minute TTL.
@@ -2427,6 +2425,33 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   histogram_tester().ExpectUniqueSample(
       "Autofill.Ai.Unmask.Result.PersonalContext",
       AutofillAiUnmaskResult::kDecryptionFailed, 1);
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
+       ConvertProtoToEntityInstance_MaskSpii) {
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() = CreateEncryptedEntity("enc_passport");
+  const DenseSet<EntityType> requested_types = {
+      EntityType(EntityTypeName::kPassport)};
+
+  EXPECT_CALL(mock_personal_context_service(),
+              DecryptEntity(MatchEncryptedEntity("enc_passport")))
+      .WillOnce(Return(CreateDecryptedPassportEntity("P12345", "Jane Doe")));
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync(requested_types, response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_TRUE(entities[0].IsMaskedEntity());
+  EXPECT_THAT(
+      entities,
+      UnorderedElementsAre(AllOf(
+          Property(&EntityInstance::type,
+                   Property(&EntityType::name, EntityTypeName::kPassport)),
+          HasAttributeWithValue(AttributeTypeName::kPassportName, u"Jane Doe"),
+          HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"45"))));
 }
 
 }  // namespace

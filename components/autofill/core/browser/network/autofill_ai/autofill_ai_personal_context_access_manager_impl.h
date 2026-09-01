@@ -262,8 +262,11 @@ class AutofillAiPersonalContextAccessManagerImpl
       observers_;
 
   // Converts a proto Entity into an EntityInstance (decrypting if encrypted).
+  // If `mask_spii` is true, decrypted entities have their SPII fields masked,
+  // retaining only a suffix.
   std::optional<EntityInstance> ConvertProtoToEntityInstance(
-      const personal_context::proto::Entity& entity) const;
+      const personal_context::proto::Entity& entity,
+      bool mask_spii) const;
 
   base::ScopedObservation<
       personal_context::PersonalContextEligibilityService,

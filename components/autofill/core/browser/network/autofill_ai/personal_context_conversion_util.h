@@ -27,6 +27,10 @@ std::optional<EntityType> ToEntityType(
 std::optional<EntityType> ToEntityType(
     personal_context::proto::SensitivePiiPresence::Type presence_type);
 
+// Masks the sensitive SPII fields content in `entity`, keeping only a partial
+// suffix of length min(4, ceil(string.length() / 4)).
+void MaskSpiiEntityFields(personal_context::proto::Entity& entity);
+
 // Converts a generic `personal_context::proto::Entity` to an `EntityInstance`.
 // If `is_masked` is true, sensitive attributes (passport, drivers license, and
 // national ID number) are marked as masked. Otherwise, they are kept unmasked.
