@@ -705,6 +705,7 @@ struct DecoderTextureState {
   bool unpack_overlapping_rows_separately_unpack_buffer;
   bool split_level_0_pbo_full_sub_image_2d;
   bool upload_oversized_mip_levels_via_unpack_buffer;
+  bool use_tex_sub_image_for_host_twiddled_npot_uploads;
 };
 
 // This class keeps track of the textures and their sizes so we can do NPOT and
