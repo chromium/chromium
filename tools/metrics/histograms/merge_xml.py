@@ -126,6 +126,8 @@ def MergeTrees(
   root.append(CombineEnumsSections(trees))
   for node in CombineHistogramsSorted(trees):
     root.append(node)
+  if should_expand_owners:
+    expand_owners.ExpandHistogramsOWNERS(root)
   return root
 
 
@@ -178,19 +180,31 @@ def _BuildTreeWithComponentMetadata(filename_or_file):
   return root
 
 
-def MergeFiles(filenames=[], files=[]):
+def MergeFiles(
+  filenames=[], files=[], expand_owners_and_extract_components=False
+):
   """Merges a list of histograms.xml files using ElementTree.
 
   Args:
     filenames: A list of histograms.xml filenames.
     files: A list of histograms.xml file-like objects.
+    expand_owners_and_extract_components: Whether we want to expand owners and
+      extract components.
 
   Returns:
     A merged ElementTree Element.
   """
   all_files = files + filenames
-  trees = xml_utils.ParseXMLFiles(all_files)
-  return MergeTrees(trees)
+  if expand_owners_and_extract_components:
+    trees = [_BuildTreeWithComponentMetadata(f) for f in all_files]
+  else:
+    trees = xml_utils.ParseXMLFiles(all_files)
+
+  merged_et = MergeTrees(
+    trees, should_expand_owners=expand_owners_and_extract_components
+  )
+
+  return merged_et
 
 
 # TODO(crbug.com/531790306): Deprecated. All callers of MergeFilesDeprecated
@@ -204,21 +218,19 @@ def MergeFilesDeprecated(
     all_files = files + filenames
     trees = [_BuildTreeWithComponentMetadata(f) for f in all_files]
     merged_et = MergeTrees(trees)
+    expand_owners.ExpandHistogramsOWNERS(merged_et)
   else:
     merged_et = MergeFiles(filenames, files)
 
   # Convert to minidom.Document for backward compatibility.
   xml_string = ET.tostring(merged_et, encoding='utf-8')
   doc = xml.dom.minidom.parseString(xml_string)
-  if expand_owners_and_extract_components:
-    for histograms in doc.getElementsByTagName('histograms'):
-      expand_owners.ExpandHistogramsOWNERS(histograms)
   return doc
 
 
 def PrettyPrintMergedFiles(filenames=[], files=[]):
   return histogram_configuration_model.PrettifyTree(
-    MergeFilesDeprecated(
+    MergeFiles(
       filenames=filenames,
       files=files,
       expand_owners_and_extract_components=True,

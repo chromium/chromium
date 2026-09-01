@@ -7,7 +7,7 @@
 import argparse
 import re
 import sys
-import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -18,27 +18,25 @@ import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 
-def _ConstructHistogram(doc, name, histogram_dict):
+def _ConstructHistogram(name, histogram_dict):
   """Constructs a histogram node based on the |histogram_dict|."""
-  histogram = doc.createElement('histogram')
+  histogram = ET.Element('histogram')
   # Set histogram node attributes.
-  histogram.setAttribute('name', name)
+  histogram.set('name', name)
   if 'enumDetails' in histogram_dict:
-    histogram.setAttribute('enum', histogram_dict['enumDetails']['name'])
+    histogram.set('enum', histogram_dict['enumDetails']['name'])
   elif 'units' in histogram_dict:
-    histogram.setAttribute('units', histogram_dict['units'])
+    histogram.set('units', histogram_dict['units'])
   if 'expires_after' in histogram_dict:
-    histogram.setAttribute('expires_after', histogram_dict['expires_after'])
+    histogram.set('expires_after', histogram_dict['expires_after'])
   # Populate owner nodes.
   for owner in histogram_dict.get('owners', []):
-    owner_node = doc.createElement('owner')
-    owner_node.appendChild(doc.createTextNode(owner))
-    histogram.appendChild(owner_node)
+    owner_node = ET.SubElement(histogram, 'owner')
+    owner_node.text = owner
   # Populate the summary node - stored as description.
   if 'description' in histogram_dict:
-    summary_node = doc.createElement('summary')
-    summary_node.appendChild(doc.createTextNode(histogram_dict['description']))
-    histogram.appendChild(summary_node)
+    summary_node = ET.SubElement(histogram, 'summary')
+    summary_node.text = histogram_dict['description']
   return histogram
 
 
@@ -87,11 +85,13 @@ def main(argv=sys.argv[1:]):
 
   # Extract all histograms into a dict. This is the expensive part that
   # handles expansion of suffixes and variants.
-  doc = merge_xml.MergeFilesDeprecated(
+  merged_root = merge_xml.MergeFiles(
     filenames=files,
     expand_owners_and_extract_components=expand_owners_and_extract_components,
   )
-  histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
+  histograms, had_errors = extract_histograms.ExtractHistogramsFromXmlET(
+    merged_root
+  )
   if had_errors:
     raise ValueError('Error parsing inputs.')
 
@@ -103,17 +103,14 @@ def main(argv=sys.argv[1:]):
         print(name)
     return 0
 
-  # Construct a dom tree that is similar to the normal histograms.xml so that
-  # we can use histogram_configuration_model to pretty print it.
-  doc = xml.dom.minidom.Document()
-  configuration = doc.createElement('histogram-configuration')
-  histograms_node = doc.createElement('histograms')
+  # Construct an ElementTree tree that is similar to the normal histograms.xml
+  # so that we can use histogram_configuration_model to pretty print it.
+  root = ET.Element('histogram-configuration')
+  histograms_node = ET.SubElement(root, 'histograms')
   for name, histogram in sorted(histograms.items()):
     if re.match(pattern, name):
-      histograms_node.appendChild(_ConstructHistogram(doc, name, histogram))
-  configuration.appendChild(histograms_node)
-  doc.appendChild(configuration)
-  print(histogram_configuration_model.PrettifyTree(doc))
+      histograms_node.append(_ConstructHistogram(name, histogram))
+  print(histogram_configuration_model.PrettifyTree(root))
   return 0
 
 

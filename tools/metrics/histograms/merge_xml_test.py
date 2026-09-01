@@ -229,7 +229,7 @@ class MergeXmlTest(unittest.TestCase):
       'Googler with an @google.com or @chromium.org email address. Please '
       'manually update the histogram with a valid primary owner.',
     ):
-      merge_xml.MergeFilesDeprecated(
+      merge_xml.MergeFiles(
         files=[io.StringIO(xml_content)],
         expand_owners_and_extract_components=True,
       )
