@@ -23,9 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
@@ -33,7 +31,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the implementation of onProvideVirtualStructure in WebContentsAccessibility. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@DisableFeatures(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)
 public class AssistViewStructureTest {
 
     @Rule

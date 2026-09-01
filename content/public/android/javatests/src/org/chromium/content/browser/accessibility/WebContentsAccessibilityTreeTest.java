@@ -40,7 +40,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DisableFeatures({ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS})
 @EnableFeatures({
     ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
     ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION,

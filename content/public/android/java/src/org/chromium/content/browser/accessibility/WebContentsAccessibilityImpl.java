@@ -201,7 +201,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     protected Context mContext;
     private final @Nullable String mProductVersion;
     protected long mNativeObj;
-    protected long mNativeAssistDataObj;
     private boolean mIsHovering;
     private int mLastHoverId = View.NO_ID;
     private int mCurrentRootId;
@@ -1520,34 +1519,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         mHasFinishedLatestAccessibilitySnapshot = false;
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
-            mNativeAssistDataObj =
-                    WebContentsAccessibilityImplJni.get()
-                            .initForAssistData(webContents, new AssistDataBuilder());
-
-            WebContentsAccessibilityImplJni.get()
-                    .requestAccessibilityTreeSnapshot(
-                            mNativeAssistDataObj,
-                            viewRoot,
-                            mDelegate.getAccessibilityCoordinates(),
-                            mView,
-                            () -> onSnapshotDoneCallback(viewRoot));
-        } else {
-            mDelegate.requestAccessibilitySnapshot(
-                    viewRoot, () -> onSnapshotDoneCallback(viewRoot));
-        }
+        mDelegate.requestAccessibilitySnapshot(viewRoot, () -> onSnapshotDoneCallback(viewRoot));
     }
 
     private void onSnapshotDoneCallback(ViewStructure viewRoot) {
         viewRoot.asyncCommit();
         mHasFinishedLatestAccessibilitySnapshot = true;
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
-            // In some cases (e.g. testing) the full engine may also be running, so don't delete.
-            if (!isNativeInitialized()) {
-                WebContentsAccessibilityImplJni.get().deleteEarly(mNativeAssistDataObj);
-                mNativeAssistDataObj = 0;
-            }
-        }
     }
 
     @Override
@@ -2913,18 +2890,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         long init(WebContents webContents);
 
         long initWithAXTree(long axTreePtr);
-
-        // These two methods are only used for one-off accessibility tree snapshots.
-        long initForAssistData(
-                @Nullable WebContents webContents,
-                AssistDataBuilder builder);
-
-        void requestAccessibilityTreeSnapshot(
-                long nativeWebContentsAccessibilityAndroid,
-                ViewStructure viewRoot,
-                AccessibilityDelegate.AccessibilityCoordinates accessibilityCoordinates,
-                View view,
-                Runnable onDoneCallback);
 
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
 

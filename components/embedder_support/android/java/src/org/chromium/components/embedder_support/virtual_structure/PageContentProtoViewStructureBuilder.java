@@ -205,7 +205,7 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
             } else if (contentAttributes.hasImageData()) {
                 ImageInfo imageData = contentAttributes.getImageData();
                 if (imageData.hasImageCaption()) {
-                    // Set image caption with 'setText' to match behavior of AssistDataBuilder.
+                    // Set image caption with 'setText' to match behavior of ViewStructureBuilder.
                     node.setText(imageData.getImageCaption());
                 }
             } else if (contentAttributes.hasIframeData()) {

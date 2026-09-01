@@ -5506,12 +5506,6 @@ inline constexpr char kAccessibilityTextChangeTypesDescription[] =
     "When enabled, text change types will be set alongside with text changed "
     "events to Android a11y services for finely-grained a11y feedback";
 
-inline constexpr char kAccessibilityUnifiedSnapshotsName[] =
-    "Accessibility Unified Snapshots";
-inline constexpr char kAccessibilityUnifiedSnapshotsDescription[] =
-    "When enabled, use the experimental unified code path for AXTree "
-    "snapshots.";
-
 inline constexpr char kAllowMultipleMediaNotificationsName[] =
     "Allow multiple media notifications";
 inline constexpr char kAllowMultipleMediaNotificationsDescription[] =

@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/fixed_array.h"
-#include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 #include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
@@ -56,7 +55,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoUtils_jni.h"
-#include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
 #include "content/public/android/content_jni_headers/FakeAndroidCache_jni.h"
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 
@@ -747,16 +745,6 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
   snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
       *ax_tree_snapshot, GetWeakPtr(), *this, nullptr);
   snapshot_root_manager_->BuildAXTreeHitTestCache();
-  connector_ = nullptr;
-}
-
-WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
-    JNIEnv* env,
-    const JavaRef<jobject>& jassist_data_builder,
-    WebContents* web_contents)
-    : java_adb_ref_(env, jassist_data_builder),
-      web_contents_(static_cast<WebContentsImpl*>(web_contents)) {
-  // A Connector is not required for a simple snapshot.
   connector_ = nullptr;
 }
 
@@ -3160,165 +3148,6 @@ bool WebContentsAccessibilityAndroid::
       env, obj, unique_id);
 }
 
-void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
-    JNIEnv* env,
-    const JavaRef<jobject>& view_structure_root,
-    const JavaRef<jobject>& accessibility_coordinates,
-    const JavaRef<jobject>& view,
-    const JavaRef<jobject>& on_done_callback) {
-  // This method should only be called by the unified snapshots feature.
-  CHECK(base::FeatureList::IsEnabled(features::kAccessibilityUnifiedSnapshots));
-
-  // This is the callback provided by the Java-side code and will be called
-  // after the snapshot has been requested and fully processed. This is not to
-  // be confused with the ProcessCompletedAccessibilityTreeSnapshot callback
-  // below, which is called once the renderer has returned all AXTreeUpdates.
-  on_done_callback_ = std::move(on_done_callback);
-  accessibility_coordinates_ = accessibility_coordinates;
-  view_ = view;
-
-  base::android::ScopedJavaGlobalRef<jobject> movable_view_structure_root;
-  movable_view_structure_root.Reset(env, view_structure_root);
-
-  // Define snapshot parameters:
-  auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  params->ax_mode = ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTML |
-                               ui::AXMode::kHTMLMetadata)
-                        .flags();
-  params->max_nodes = 5000;
-  params->timeout = base::Seconds(2);
-
-  // Use AccessibilityTreeSnapshotCombiner to perform snapshots
-  auto combiner = base::MakeRefCounted<AccessibilityTreeSnapshotCombiner>(
-      base::BindOnce(&WebContentsAccessibilityAndroid::
-                         ProcessCompletedAccessibilityTreeSnapshot,
-                     GetWeakPtr(), env, std::move(movable_view_structure_root)),
-      std::move(params));
-  web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
-      [&combiner](RenderFrameHostImpl* rfhi) {
-        combiner->RequestSnapshotOnRenderFrameHost(rfhi);
-      });
-}
-
-void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& view_structure_root,
-    ui::AXTreeUpdate& result) {
-  // If we don't have a connection back to the Java-side objects, then stop. It
-  // may be that the Java-side object was destroyed (e.g. tab closed) before the
-  // snapshot was able to finish.
-  ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
-  if (!obj) {
-    on_done_callback_ = nullptr;
-    accessibility_coordinates_ = nullptr;
-    view_ = nullptr;
-    return;
-  }
-
-  // Construct a root manager without a delegate using the snapshot result.
-  snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
-      result, GetWeakPtr(), *this, /* delegate= */ nullptr);
-
-  auto* root = static_cast<BrowserAccessibilityAndroid*>(
-      snapshot_root_manager_->GetBrowserAccessibilityRoot());
-  CHECK(root);
-
-  // Construct the Java-side tree, use the JNI builder `java_adb_ref_` to
-  // recursively construct each node of the tree starting with the provided
-  // root.
-  RecursivelyPopulateViewStructureTree(env, obj, root, view_structure_root,
-                                       /* is_root= */ true);
-
-  // Add tree-level (root only) data to Java-side tree (e.g. HTML metadata).
-  const auto& metadata_strings =
-      GetRootBrowserAccessibilityManager()->GetMetadataForTree();
-  if (metadata_strings.has_value() && !metadata_strings->empty()) {
-    Java_AssistDataBuilder_populateHTMLMetadataProperties(
-        env, obj, view_structure_root,
-        base::android::ToJavaArrayOfStrings(env, *metadata_strings));
-  }
-
-  // We have fulfilled the request for an accessibility tree snapshot, so we can
-  // now call the provided Java-side callback to inform original client that the
-  // async construction is complete.
-  jni_zero::RunRunnable(on_done_callback_);
-}
-
-void WebContentsAccessibilityAndroid::RecursivelyPopulateViewStructureTree(
-    JNIEnv* env,
-    ScopedJavaLocalRef<jobject> obj,
-    const BrowserAccessibilityAndroid* node,
-    const base::android::JavaRef<jobject>& java_side_assist_data_object,
-    bool is_root) {
-  PopulateViewStructureNode(env, obj, node, java_side_assist_data_object);
-  for (size_t child_index = 0; const auto& child : node->PlatformChildren()) {
-    const auto& child_node =
-        static_cast<const BrowserAccessibilityAndroid&>(child);
-    ScopedJavaLocalRef<jobject> java_side_child_object =
-        Java_AssistDataBuilder_addChildNode(
-            env, obj, java_side_assist_data_object, child_index);
-    child_index++;
-    RecursivelyPopulateViewStructureTree(env, obj, &child_node,
-                                         java_side_child_object,
-                                         /* is_root= */ false);
-  }
-  if (!is_root) {
-    Java_AssistDataBuilder_commitNode(env, obj, java_side_assist_data_object);
-  }
-}
-
-void WebContentsAccessibilityAndroid::PopulateViewStructureNode(
-    JNIEnv* env,
-    ScopedJavaLocalRef<jobject> obj,
-    const BrowserAccessibilityAndroid* node,
-    const base::android::JavaRef<jobject>& java_side_assist_data_object) {
-  Java_AssistDataBuilder_populateBaseProperties(
-      env, obj, java_side_assist_data_object,
-      GetCanonicalJNIString(env, node->GetClassName()), node->GetChildCount());
-
-  int bgcolor = 0;
-  int color = 0;
-  int text_size = -1.0;
-  if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
-    color = node->GetIntAttribute(ax::mojom::IntAttribute::kColor);
-    bgcolor = node->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
-    text_size = node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
-  }
-  Java_AssistDataBuilder_populateTextProperties(
-      env, obj, java_side_assist_data_object,
-      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
-      node->GetSelectedItemCount() > 0, node->GetSelectionStart(),
-      node->GetSelectionEnd(), color, bgcolor, text_size,
-      node->HasTextStyle(ax::mojom::TextStyle::kBold),
-      node->HasTextStyle(ax::mojom::TextStyle::kItalic),
-      node->HasTextStyle(ax::mojom::TextStyle::kUnderline),
-      node->HasTextStyle(ax::mojom::TextStyle::kLineThrough));
-
-  float dip_scale =
-      1 /
-      web_contents_->GetPrimaryMainFrame()->AccessibilityGetDeviceScaleFactor();
-  gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
-      node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
-
-  Java_AssistDataBuilder_populateBoundsProperties(
-      env, obj, java_side_assist_data_object, absolute_rect.x(),
-      absolute_rect.y(), absolute_rect.width(), absolute_rect.height(),
-      accessibility_coordinates_, view_);
-
-  std::vector<std::vector<std::u16string>> html_attrs;
-  for (const auto& attr : node->GetHtmlAttributes()) {
-    html_attrs.push_back(
-        {base::UTF8ToUTF16(attr.first), base::UTF8ToUTF16(attr.second)});
-  }
-  Java_AssistDataBuilder_populateHTMLProperties(
-      env, obj, java_side_assist_data_object,
-      GetCanonicalJNIString(
-          env, node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag)),
-      GetCanonicalJNIString(
-          env, node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)),
-      base::android::ToJavaArrayOfStringArray(env, html_attrs));
-}
-
 ScopedJavaLocalRef<jobject>
 WebContentsAccessibilityAndroid::ToJavaCanonicalStringRangesMap(
     JNIEnv* env,
@@ -3409,21 +3238,9 @@ static int64_t JNI_WebContentsAccessibilityImpl_Init(
       new WebContentsAccessibilityAndroid(web_contents));
 }
 
-static int64_t JNI_WebContentsAccessibilityImpl_InitForAssistData(
-    JNIEnv* env,
-    const JavaRef<jobject>& jweb_contents,
-    const JavaRef<jobject>& jassist_data_builder) {
-  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
-
-  return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
-      env, jassist_data_builder, web_contents));
-}
-
 }  // namespace content
 
 DEFINE_JNI(AccessibilityNodeInfoBuilder)
 DEFINE_JNI(AccessibilityNodeInfoUtils)
 DEFINE_JNI(FakeAndroidCache)
-DEFINE_JNI(AssistDataBuilder)
 DEFINE_JNI(WebContentsAccessibilityImpl)

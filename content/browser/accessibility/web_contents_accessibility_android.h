@@ -66,10 +66,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
  public:
   explicit WebContentsAccessibilityAndroid(WebContents* web_contents);
   explicit WebContentsAccessibilityAndroid(int64_t ax_tree_update_ptr);
-  WebContentsAccessibilityAndroid(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jassist_data_builder,
-      WebContents* web_contents);
 
   WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
       delete;
@@ -418,31 +414,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
     return slot;
   }
 
-  void RequestAccessibilityTreeSnapshot(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& view_structure_root,
-      const base::android::JavaRef<jobject>& accessibility_coordinates,
-      const base::android::JavaRef<jobject>& view,
-      const base::android::JavaRef<jobject>& on_done_callback);
-
-  void ProcessCompletedAccessibilityTreeSnapshot(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& view_structure_root,
-      ui::AXTreeUpdate& result);
-
-  void RecursivelyPopulateViewStructureTree(
-      JNIEnv* env,
-      base::android::ScopedJavaLocalRef<jobject> obj,
-      const BrowserAccessibilityAndroid* node,
-      const base::android::JavaRef<jobject>& java_side_assist_data_object,
-      bool is_root);
-
-  void PopulateViewStructureNode(
-      JNIEnv* env,
-      base::android::ScopedJavaLocalRef<jobject> obj,
-      const BrowserAccessibilityAndroid* node,
-      const base::android::JavaRef<jobject>& java_side_assist_data_object);
-
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
@@ -640,16 +611,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
           absl::flat_hash_map<std::string, AXStyleData::RangePairs>>& attrs,
       int* ranges_count);
 
-  // A weak reference to the AssistData tree builder which will only be
-  // instantiated after a request from the Android framework.
-  JavaObjectWeakGlobalRef java_adb_ref_;
-
   raw_ptr<WebContentsImpl> web_contents_;
-
-  // Used by the accessibility tree snapshotter when snapshot is completed.
-  base::android::ScopedJavaGlobalRef<jobject> on_done_callback_;
-  base::android::ScopedJavaGlobalRef<jobject> accessibility_coordinates_;
-  base::android::ScopedJavaGlobalRef<jobject> view_;
 
   bool frame_info_initialized_;
 

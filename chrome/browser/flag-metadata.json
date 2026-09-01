@@ -3266,11 +3266,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-accessibility-unified-snapshots",
-    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-account-preview-data",
     "owners": [ "rsult@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 160

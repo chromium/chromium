@@ -1458,9 +1458,6 @@ BASE_FEATURE(kAccessibilitySequentialFocus, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAccessibilitySetSelectableOnAllNodesWithText,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the use of a unified code path for AXTree snapshots.
-BASE_FEATURE(kAccessibilityUnifiedSnapshots, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables posting registering, unregistering the broadcast receiver to the
 // background thread.
 BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
