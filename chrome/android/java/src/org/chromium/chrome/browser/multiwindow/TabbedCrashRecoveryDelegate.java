@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -259,6 +260,16 @@ public class TabbedCrashRecoveryDelegate {
 
             // Reset persisted pending state since metadata has been successfully processed.
             ChromeMultiInstancePersistentStore.writeIsCrashRecoveryPending(false);
+        } else if (ChromeMultiInstancePersistentStore.readSessionStartupPolicy()
+                != SessionStartupPolicy.RESTORE_ALL) {
+            // When not recovering from a crash and no session restore policy is pending,
+            // clear recovery state so stale windows are not restored in future sessions.
+            // TODO(crbug.com/553545586): Reconsider creating a parent/shared class between crash
+            // recovery and startup window policy delegates to better organize common functionality
+            // and coordinate shared state cleanup across both features.
+            for (int windowId : ChromeMultiInstancePersistentStore.readAllInstanceIds()) {
+                cleanUpWindow(windowId, /* appTasks= */ null, /* shouldFinishTask= */ false);
+            }
         }
     }
 
@@ -280,14 +291,6 @@ public class TabbedCrashRecoveryDelegate {
                         || reason == ApplicationExitInfo.REASON_CRASH_NATIVE
                         || reason == ApplicationExitInfo.REASON_ANR;
         if (!isCrash) {
-            // Clear crash recovery state for all windows when we detect an exit reason ineligible
-            // for crash recovery so that we don't attempt stale crash recovery in the future.
-            // Do not clear the state if there is already a pending recovery from a prior session.
-            if (!ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending()) {
-                for (int windowId : ChromeMultiInstancePersistentStore.readAllInstanceIds()) {
-                    cleanUpWindow(windowId, /* appTasks= */ null, /* shouldFinishTask= */ false);
-                }
-            }
             return false;
         }
 

@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
+import android.app.ApplicationExitInfo;
 import android.content.Context;
 
 import org.junit.After;
@@ -30,12 +31,15 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -111,6 +115,33 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
+        verify(mTabbedActivity).startActivity(any());
+        assertEquals(
+                SessionStartupPolicy.DEFAULT,
+                ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
+        assertFalse(
+                "isRecoverable should be cleared when restoring window on launch after quit.",
+                ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+    }
+
+    @Test
+    public void testApplyPolicy_restoreAll_afterNonTabbedActivityLaunch_restoresWindows() {
+        // Setup: 2 instances with Window 1 recoverable, RESTORE_ALL session startup policy,
+        // and non-crash exit reason.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        prefs.writeInt(
+                ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON,
+                ApplicationExitInfo.REASON_USER_REQUESTED);
+
+        // Act: Non-tabbed activity launches and runs maybeDeferCrashRecovery during deferred
+        // startup.
+        TabbedCrashRecoveryDelegate.getInstance().maybeDeferCrashRecovery();
+
+        // Act: Tabbed activity launches and applies startup policy.
+        mDelegate.applyPolicy(mTabbedActivity);
+
+        // Verify: Window 1 is restored.
         verify(mTabbedActivity).startActivity(any());
         assertEquals(
                 SessionStartupPolicy.DEFAULT,

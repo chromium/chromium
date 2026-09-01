@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -255,8 +256,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
             assertFalse(
                     "Reason " + reason + " should not need crash recovery.",
                     mDelegate.didLastSessionCrashWithRecoverableWindows());
-            assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
-            assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+            assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
+            assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         }
     }
 
@@ -319,6 +320,24 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     }
 
     @Test
+    public void testMaybeDeferCrashRecovery_nonCrashExitReason_doesNotClearRecoverableState() {
+        // Setup: Recoverable windows exist, but exit reason in prefs is non-crash.
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0);
+        writeExitReasonToPrefs(ApplicationExitInfo.REASON_USER_REQUESTED);
+
+        // Act.
+        mDelegate.maybeDeferCrashRecovery();
+
+        // Verify: Pending crash recovery is not written and recoverable state is preserved.
+        assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
     public void testInitializeCrashRecoveryMetadata_featureDisabled_noOp() {
         // Setup.
@@ -355,6 +374,34 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+    }
+
+    @Test
+    public void
+            testInitializeCrashRecoveryMetadata_pendingSessionStartupPolicy_doesNotClearRecoverableState() {
+        // Setup: Recoverable windows and pending RESTORE_ALL session startup policy.
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 2,
+                /* numNonDefaultDisplayWindows= */ 0);
+        ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
+                SessionStartupPolicy.RESTORE_ALL);
+
+        // Setup: Write non-crash exit reason.
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        prefs.writeInt(
+                ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON,
+                ApplicationExitInfo.REASON_USER_REQUESTED);
+
+        // Act.
+        mDelegate.initializeCrashRecoveryMetadata();
+
+        // Verify: Recoverable state is preserved because a session startup policy is pending.
+        assertFalse(
+                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity));
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
     }
 
     @Test
