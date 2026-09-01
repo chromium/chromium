@@ -17,6 +17,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
 from typing import Dict, Any, Optional, Tuple
 
 _SRC_ROOT = Path(__file__).resolve().parents[4]
@@ -70,7 +71,15 @@ def fetch_results(job_id: str) -> Optional[str]:
     """Fetches result table from pp show-results."""
     cmd = ["pp", "s", job_id]
     code, stdout, _ = run_command(cmd)
-    if code != 0:
+    if (
+        code != 0
+        or not stdout
+        or "not completed" in stdout.lower()
+        or "queued" in stdout.lower()
+        or "running" in stdout.lower()
+        or "no histogram data yet" in stdout.lower()
+        or "error:" in stdout.lower()
+    ):
         return None
     return stdout
 
@@ -158,7 +167,14 @@ def evaluate_results(stdout: str) -> Dict[str, Any]:
 
 
 def get_issue_id() -> Optional[str]:
-    """Retrieves current Gerrit issue ID from git cl status."""
+    """Retrieves current Gerrit issue ID from git config or git cl status."""
+    code, branch, _ = run_command(["git", "branch", "--show-current"])
+    if code == 0 and branch.strip():
+        code, issue, _ = run_command(
+            ["git", "config", f"branch.{branch.strip()}.gerritissue"]
+        )
+        if code == 0 and issue.strip():
+            return issue.strip()
     code, out, _ = run_command(["git", "cl", "status"])
     if code != 0 or not out:
         return None
@@ -226,6 +242,19 @@ def main():
         "--repeat", type=int, default=150, help="Iteration count"
     )
     parser.add_argument("--job-id", help="Pinpoint job ID to check/evaluate")
+    parser.add_argument(
+        "--watch",
+        action="store_true",
+        help="Wait and poll until the job completes, then evaluate.",
+    )
+    parser.add_argument(
+        "--poll-interval",
+        type=int,
+        default=60,
+        help=(
+            "Polling interval in seconds when --watch is enabled (default: 60)."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -239,7 +268,15 @@ def main():
         if not args.job_id:
             print("Error: --job-id is required for evaluate.", file=sys.stderr)
             sys.exit(1)
-        raw = fetch_results(args.job_id)
+        if args.watch:
+            print(f"Watching Pinpoint job {args.job_id} until completion...")
+            while True:
+                raw = fetch_results(args.job_id)
+                if raw:
+                    break
+                time.sleep(args.poll_interval)
+        else:
+            raw = fetch_results(args.job_id)
         if not raw:
             print(f"Results not ready or error fetching job {args.job_id}")
             sys.exit(2)

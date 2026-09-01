@@ -51,7 +51,7 @@ main optimization loop or sit idle.**
 2. Delegate monitoring to a background task or subagent using
    `pinpoint_evaluator.py`:
    ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>
+   vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>
    ```
 3. Limit concurrent in-flight Pinpoint try jobs to **max 2** to avoid bot pool
    starvation.

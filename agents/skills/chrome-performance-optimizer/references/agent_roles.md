@@ -60,8 +60,8 @@ ______________________________________________________________________
   Your role is to explore the codebase holistically, looking across engine subsystems and layers to find high-leverage architectural opportunities.
 
   Your mission:
-  1. Learn from Proven Patterns: Study `agents/skills/chrome-performance-optimizer/references/optimization_patterns.md` to internalize the core macro-levers (allocation elimination, invariant caching, fast-path bypasses, devirtualization, and idle deferral) and historical top wins across Blink and V8.
-  2. Learn from Past Attempts: Run `vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py` to inspect all previously accepted (`topic:chrome-perf-opt-accepted`) and rejected (`topic:chrome-perf-opt-rejected`) CLs.
+  1. Learn from Proven Patterns: Study `.agents/skills/chrome-performance-optimizer/references/optimization_patterns.md` to internalize the core macro-levers (allocation elimination, invariant caching, fast-path bypasses, devirtualization, and idle deferral) and historical top wins across Blink and V8.
+  2. Learn from Past Attempts: Run `vpython3 .agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py` to inspect all previously accepted (`topic:chrome-perf-opt-accepted`) and rejected (`topic:chrome-perf-opt-rejected`) CLs.
      - Analyze why accepted CLs won to learn generalizable architectural principles (e.g. extending primitive builders to unhandled primitives, caching in other subsystems), but **NEVER propose or re-implement an already accepted or rejected CL**. All candidates must be completely novel.
      - Analyze why rejected CLs failed (e.g. micro-tweaks that vanished in noise, unviable fast paths) and NEVER repeat any rejected pattern or variation.
   3. Search & Inspect Code: Explore candidate areas in the Chromium and V8 codebase (using `code_search` and source inspection), evaluating data flow, hot loops, allocation lifecycles, and cross-layer interactions.
@@ -130,7 +130,7 @@ ______________________________________________________________________
   4. Trigger 150-iteration Pinpoint try job:
      `pp c -c m1 -t sp3 -r 150`
      Extract the `JOB_ID`.
-  5. Monitor the job asynchronously using `pp s <JOB_ID>` or `vpython3 agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>`.
+  5. Monitor the job asynchronously using `pp s <JOB_ID>` or `vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>`.
   6. Apply Decision Rules:
      - If Win ($p < 0.05$, overall score positive, no significant regressions):
        - Set Gerrit topic to `chrome-perf-opt-accepted`
@@ -157,9 +157,9 @@ ______________________________________________________________________
 
   Your mission:
   1. Ingest profile source: `[Profile URL / ID / CSV Path]`.
-  2. Run `vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "[Source]" --mode=cum --nodecount=30` and `--mode=flat`.
+  2. Run `vpython3 .agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "[Source]" --mode=cum --nodecount=30` and `--mode=flat`.
   3. Inspect hot call chains, allocation sites, and microarchitectural bottlenecks (TMA, cache misses, branch mispredictions, lock contention).
-  4. Identify the top 3 hot subtrees and cross-reference with `agents/skills/chrome-performance-optimizer/references/optimization_patterns.md`.
+  4. Identify the top 3 hot subtrees and cross-reference with `.agents/skills/chrome-performance-optimizer/references/optimization_patterns.md`.
   5. Report findings with exact symbol names, line numbers, and architectural bottleneck summaries.
   ```
 

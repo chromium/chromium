@@ -67,16 +67,16 @@ Crossbench CSVs.
 
 ```bash
 # 1. Top Cumulative Call Stacks (identify caller subtrees):
-vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=cum --nodecount=30
+vpython3 .agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=cum --nodecount=30
 
 # 2. Top Flat Functions (identify hot leaf loops):
-vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=flat --nodecount=30
+vpython3 .agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=flat --nodecount=30
 
 # 3. Inspect Callers & Callees for a Specific Symbol:
-vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=peek --symbol="*HasOwnProperty*"
+vpython3 .agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=peek --symbol="*HasOwnProperty*"
 
 # 4. Compare Two Profiles (Diff Mode):
-vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
+vpython3 .agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
 ```
 
 ### Mode B: When No Profile is Provided (General Opportunity Exploration)
@@ -133,11 +133,16 @@ ______________________________________________________________________
 
 > [!IMPORTANT] **Mandatory High-Impact & Novelty Standard**:
 >
-> - **Mandatory Novelty Pre-Check with `--search`**: Before writing code for any
->   candidate, run
->   `vpython3 .agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py --search <target_file_or_symbol>`
->   to verify that neither an accepted winner nor a rejected attempt already
->   exists for that code path.
+> - **Mandatory Automated Novelty Gate**: Before uploading any candidate CL,
+>   run:
+>   ```bash
+>   vpython3 .agents/skills/chrome-performance-optimizer/scripts/check_candidate_novelty.py
+>   ```
+>   This machine-independent tool queries Gerrit directly across
+>   `topic:chrome-perf-opt-*` and verifies that the candidate diff does not
+>   duplicate or overlap with any previously accepted or rejected attempts. If
+>   overlap is detected, the check fails immediately and the candidate must be
+>   discarded.
 > - **No Duplication & No Combining**: NEVER repeat changes listed under
 >   `topic:chrome-perf-opt-rejected` or `topic:chrome-perf-opt-accepted`. Do NOT
 >   combine multiple separate optimizations into a single CL; each optimization
@@ -201,7 +206,19 @@ ______________________________________________________________________
 
 ## Step 4: Submit CL to Gerrit (Work In Progress)
 
-1. Commit all modified files with descriptive rationale:
+1. **Verify Candidate Novelty (Mandatory Gate)**: Run the automated novelty
+   verifier against authoritative Gerrit performance records:
+
+   ```bash
+   vpython3 .agents/skills/chrome-performance-optimizer/scripts/check_candidate_novelty.py
+   ```
+
+   Ensure the check outputs `✅ NOVELTY CHECK PASSED`. If any duplicate logic,
+   re-proposals, or overlapping changes are detected, **abort immediately** and
+   do not upload.
+
+2. Commit all modified files with descriptive rationale:
+
    ```bash
    git commit -m "[<Subsystem>] <Title>
 
@@ -210,12 +227,16 @@ ______________________________________________________________________
    TAG=agy
    CONV=<conversation_id>"
    ```
-2. Upload the CL to Gerrit as **Work In Progress (WIP)** to avoid notifying
+
+3. Upload the CL to Gerrit as **Work In Progress (WIP)** to avoid notifying
    reviewers before Pinpoint validation:
+
    ```bash
    git cl upload -o wip --no-autocc --bypass-hooks -f -m "Performance optimization for Speedometer 3"
    ```
-3. Retrieve the Gerrit Issue ID:
+
+4. Retrieve the Gerrit Issue ID:
+
    ```bash
    git cl issue
    ```
@@ -250,7 +271,7 @@ ______________________________________________________________________
 1. Check comparison results once the job completes:
 
    ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>
+   vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>
    ```
 
    Or inspect the comparison table directly:
@@ -275,7 +296,7 @@ ______________________________________________________________________
    - ✅ **Statistically Significant Improvement ($p < 0.05$)**:
      - Significant reduction in subtest durations (`-X%` on `smaller-better`) or
        increase in composite `Score` with zero significant regressions.
-     - Set Gerrit topic to `chrome-perf-opt-accepted`:
+     - Mark the CL as accepted on Gerrit:
        ```bash
        vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action accept
        ```
@@ -287,13 +308,13 @@ ______________________________________________________________________
    - ❌ **Neutral or Regressed**:
      - Positive delta (`+X%`) on `smaller-better` metrics indicates a
        **regression**, or no metric reaches $p < 0.05$.
-     - Set Gerrit topic to `chrome-perf-opt-rejected` and abandon the CL:
+     - Mark as rejected on Gerrit and abandon the CL:
        ```bash
        vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action reject
        ```
        *(Note: Gerrit returns `403 Forbidden` if attempting to change the topic
-       after the CL is already closed/abandoned; the topic must always be set
-       prior to abandoning).*
+       after the CL is already closed/abandoned; `pinpoint_evaluator.py` sets
+       the topic prior to calling `git cl set-close`).*
      - Free the worktree and iterate on the next candidate in the pipeline.
 
 ______________________________________________________________________
@@ -303,6 +324,7 @@ ______________________________________________________________________
 - [Multi-Agent Roles & Pipelining Guide](references/agent_roles.md)
 - [Macro-Optimization Patterns](references/optimization_patterns.md)
 - [Pinpoint & Gerrit Workflow Guide](references/pinpoint_workflow.md)
+- [Candidate Novelty Verifier Script](scripts/check_candidate_novelty.py)
 - [Fetch Previously Tried CLs Script](scripts/fetch_tried_cls.py)
 - [Profile Analyzer Script](scripts/analyze_profile.py)
 - [Pinpoint Evaluator Script](scripts/pinpoint_evaluator.py)
