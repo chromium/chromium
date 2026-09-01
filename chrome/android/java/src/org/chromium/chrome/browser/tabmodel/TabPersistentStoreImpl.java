@@ -575,7 +575,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             }
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing app on startup.
-            Log.i(TAG, "loadState exception: " + e.toString(), e);
+            Log.i(TAG, "loadState exception: %s", e.toString(), e);
             mTabRestoreStartTime = INVALID_TIME;
         }
 
@@ -700,7 +700,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing the app
             // at startup.
-            Log.e(TAG, "loadTabs exception: " + e, e);
+            Log.e(TAG, "loadTabs exception: %s", e, e);
             ChromePureJavaExceptionReporter.reportJavaException(e, false);
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
@@ -1230,7 +1230,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     ThreadUtils.assertOnBackgroundThread();
                     for (File fileToDelete : filesToDelete) {
                         if (fileToDelete.exists() && !fileToDelete.delete()) {
-                            Log.e(TAG, "Error deleting " + fileToDelete);
+                            Log.e(TAG, "Error deleting %s", fileToDelete);
                         }
                     }
                 });
@@ -1756,7 +1756,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 return TabStateFileManager.restoreTabState(
                         getStateDirectory(), details.id, mCipherFactory);
             } catch (Exception e) {
-                Log.w(TAG, "Unable to read state: " + e);
+                Log.w(TAG, "Unable to read state: %s", e);
                 return null;
             }
         }
@@ -2124,7 +2124,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             TabMetadataFileManager.readSavedMetadataFile(
                     stream, createClosedWindowTabReader(tabs), /* tabIds= */ null);
         } catch (Exception e) {
-            Log.i(TAG, "getTabListForClosedWindowSync exception: " + e.toString(), e);
+            Log.i(TAG, "getTabListForClosedWindowSync exception: %s", e.toString(), e);
         } finally {
             StreamUtil.closeQuietly(stream);
         }
@@ -2173,14 +2173,14 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                             // well as those that reside in sub directories.
                             if (!baseStateFile.isDirectory()) {
                                 if (!baseStateFile.delete()) {
-                                    Log.e(TAG, "Failed to delete file: " + baseStateFile);
+                                    Log.e(TAG, "Failed to delete file: %s", baseStateFile);
                                 }
                             } else {
                                 File[] files = baseStateFile.listFiles();
                                 if (files == null) continue;
                                 for (File file : files) {
                                     if (!file.delete()) {
-                                        Log.e(TAG, "Failed to delete file: " + file);
+                                        Log.e(TAG, "Failed to delete file: %s", file);
                                     }
                                 }
                             }
@@ -2250,7 +2250,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             ThreadUtils.assertOnBackgroundThread();
             File stateFile = new File(getStateDirectory(persistencePolicy), file);
             if (stateFile.exists()) {
-                if (!stateFile.delete()) Log.e(TAG, "Failed to delete file: " + stateFile);
+                if (!stateFile.delete()) Log.e(TAG, "Failed to delete file: %s", stateFile);
 
                 // The merge isn't completely finished until the other TabPersistentStores'
                 // metadata files are deleted.

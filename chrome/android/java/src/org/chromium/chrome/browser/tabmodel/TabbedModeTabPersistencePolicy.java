@@ -250,7 +250,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             File modelFile = new File(oldFolder, LEGACY_SAVED_STATE_FILE);
             if (modelFile.exists()) {
                 if (!modelFile.renameTo(new File(newFolder, getMetadataFileName()))) {
-                    Log.e(TAG, "Failed to rename file: " + modelFile);
+                    Log.e(TAG, "Failed to rename file: %s", modelFile);
                 }
             }
 
@@ -259,7 +259,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                 for (File file : files) {
                     if (TabStateFileManager.parseInfoFromFilename(file.getName()) != null) {
                         if (!file.renameTo(new File(newFolder, file.getName()))) {
-                            Log.e(TAG, "Failed to rename file: " + file);
+                            Log.e(TAG, "Failed to rename file: %s", file);
                         }
                     }
                 }
@@ -287,7 +287,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         } else if (oldMetadataFile.exists()) {
             // 1. Rename tab metadata file for tab directory "0".
             if (!oldMetadataFile.renameTo(newMetadataFile)) {
-                Log.e(TAG, "Failed to rename file: " + oldMetadataFile);
+                Log.e(TAG, "Failed to rename file: %s", oldMetadataFile);
             }
         }
 
@@ -305,7 +305,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             oldMetadataFile = new File(otherStateDir, LEGACY_SAVED_STATE_FILE);
             if (oldMetadataFile.exists()) {
                 if (!oldMetadataFile.renameTo(new File(stateDir, getMetadataFileNameForIndex(i)))) {
-                    Log.e(TAG, "Failed to rename file: " + oldMetadataFile);
+                    Log.e(TAG, "Failed to rename file: %s", oldMetadataFile);
                 }
             }
 
@@ -318,7 +318,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                         // migrating.
                         if (i == TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX) {
                             if (!file.delete()) {
-                                Log.e(TAG, "Failed to delete file: " + file);
+                                Log.e(TAG, "Failed to delete file: %s", file);
                             }
                             continue;
                         }
@@ -330,10 +330,10 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                         if (newFileName.exists()
                                 && newFileName.lastModified() > file.lastModified()) {
                             if (!file.delete()) {
-                                Log.e(TAG, "Failed to delete file: " + file);
+                                Log.e(TAG, "Failed to delete file: %s", file);
                             }
                         } else if (!file.renameTo(newFileName)) {
-                            Log.e(TAG, "Failed to rename file: " + file);
+                            Log.e(TAG, "Failed to rename file: %s", file);
                         }
                     }
                 }
@@ -341,7 +341,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
             // Delete other state directory.
             if (!otherStateDir.delete()) {
-                Log.e(TAG, "Failed to delete directory: " + otherStateDir);
+                Log.e(TAG, "Failed to delete directory: %s", otherStateDir);
             }
         }
 
@@ -490,7 +490,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                                 new BufferedInputStream(new FileInputStream(metadataFile)));
                 TabMetadataFileManager.readSavedMetadataFile(stream, /* callback= */ null, tabIds);
             } catch (Exception e) {
-                Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
+                Log.e(TAG, "Unable to read state for %s: %s", metadataFile.getName(), e.toString());
             } finally {
                 StreamUtil.closeQuietly(stream);
             }
