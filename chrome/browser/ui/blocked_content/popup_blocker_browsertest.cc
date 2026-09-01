@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -67,6 +69,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/views/widget/widget.h"
@@ -211,8 +214,11 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
     // Launch the blocked popup.
     blocked_content::PopupBlockerTabHelper* popup_blocker_helper =
         blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
-    ui_test_utils::WaitForViewVisibility(browser, VIEW_ID_CONTENT_SETTING_POPUP,
-                                         true);
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                 ContentSettingImageModel::kPopupsIconElementId) != nullptr;
+    }));
     EXPECT_EQ(1u, popup_blocker_helper->GetBlockedPopupsCount());
     std::map<int32_t, GURL> blocked_requests =
         popup_blocker_helper->GetBlockedPopupRequests();
