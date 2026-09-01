@@ -1701,69 +1701,6 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     SingleClientNigoriWithWebApiTest,
-    ShouldRemotelyTransitFromTrustedVaultToKeystorePassphrase) {
-  // Mimic the account being already using a trusted vault passphrase.
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
-                        GetFakeServer());
-
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(GetSyncService(0)
-                  ->GetUserSettings()
-                  ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-
-  // There needs to be an existing tab for the second tab (the retrieval flow)
-  // to be closeable via javascript.
-  chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
-                   /*foreground=*/true);
-
-  // Mimic opening a web page where the user can interact with the retrieval
-  // flow.
-  OpenTabForSyncKeyRetrieval(
-      GetBrowser(0),
-      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
-  ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
-              NotNull());
-
-  // Wait until the page closes, which indicates successful completion.
-  EXPECT_TRUE(
-      TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
-          .Wait());
-
-  // Mimic remote transition to keystore passphrase.
-  const std::vector<std::vector<uint8_t>>& keystore_keys =
-      GetFakeServer()->GetKeystoreKeys();
-  ASSERT_THAT(keystore_keys, SizeIs(1));
-  const KeyParamsForTesting kKeystoreKeyParams =
-      KeystoreKeyParamsForTesting(keystore_keys.back());
-  const KeyParamsForTesting kTrustedVaultKeyParams =
-      TrustedVaultKeyParamsForTesting(kTestEncryptionKey);
-  SetNigoriInFakeServer(
-      BuildKeystoreNigoriSpecifics(
-          /*keybag_keys_params=*/{kTrustedVaultKeyParams, kKeystoreKeyParams},
-          /*keystore_decryptor_params*/ {kKeystoreKeyParams},
-          /*keystore_key_params=*/kKeystoreKeyParams),
-      GetFakeServer());
-
-  // Ensure that client can decrypt with both |kTrustedVaultKeyParams|
-  // and |kKeystoreKeyParams|.
-  const password_manager::PasswordForm password_form1 =
-      passwords_helper::CreateTestPasswordForm(1, GetPasswordStoreType());
-  const password_manager::PasswordForm password_form2 =
-      passwords_helper::CreateTestPasswordForm(2, GetPasswordStoreType());
-
-  passwords_helper::InjectEncryptedServerPassword(
-      password_form1, kKeystoreKeyParams.password,
-      kKeystoreKeyParams.derivation_params, GetFakeServer());
-  passwords_helper::InjectEncryptedServerPassword(
-      password_form2, kTrustedVaultKeyParams.password,
-      kTrustedVaultKeyParams.derivation_params, GetFakeServer());
-
-  EXPECT_TRUE(WaitForPasswordForms({password_form1, password_form2}));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    SingleClientNigoriWithWebApiTest,
     ShouldRemotelyTransitFromTrustedVaultToCustomPassphrase) {
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),

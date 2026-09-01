@@ -204,8 +204,7 @@ bool IsValidPassphraseTransition(
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
       return false;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
-      return new_passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE ||
-             new_passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE;
+      return new_passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE;
   }
   NOTREACHED();
 }

@@ -1535,9 +1535,9 @@ TEST_F(NigoriSyncBridgeImplTest,
 }
 
 // Tests processing of remote incremental update that transits from trusted
-// vault to keystore passphrase.
+// vault to keystore passphrase. The bridge should report model error.
 TEST_F(NigoriSyncBridgeImplTest,
-       ShouldProcessRemoteTransitionFromTrustedVaultToKeystore) {
+       ShouldFailOnRemoteTransitionFromTrustedVaultToKeystore) {
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
       BuildTrustedVaultNigoriSpecifics({kTrustedVaultKey});
@@ -1564,23 +1564,8 @@ TEST_F(NigoriSyncBridgeImplTest,
       /*keystore_decryptor_params=*/kKeystoreKeyParams,
       /*keystore_key_params=*/kKeystoreKeyParams);
 
-  EXPECT_CALL(*observer(), OnEncryptedTypesChanged).Times(0);
-  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
-                               NotNull(), /*has_pending_keys=*/false));
-  EXPECT_CALL(
-      *observer(),
-      OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase, NullTime()));
-
   EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::move(new_entity_data)),
-              Eq(std::nullopt));
-  EXPECT_THAT(bridge()->GetPassphraseType(),
-              Eq(PassphraseType::kKeystorePassphrase));
-  EXPECT_THAT(bridge()->GetEncryptedTypes(), Eq(AlwaysEncryptedUserTypes()));
-  EXPECT_FALSE(bridge()->HasPendingKeysForTesting());
-
-  EXPECT_THAT(*cryptographer(), CanDecryptWith(kTrustedVaultKeyParams));
-  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams));
-  EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
+              Ne(std::nullopt));
 }
 
 TEST_F(NigoriSyncBridgeImplTest,
@@ -1685,40 +1670,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(*cryptographer(), CanDecryptWith(kCustomPassphraseKeyParams));
   EXPECT_THAT(*cryptographer(),
               HasDefaultKeyDerivedFrom(kCustomPassphraseKeyParams));
-}
-
-// Tests processing of remote incremental update that transits from trusted
-// vault to keystore passphrase, which doesn't contain trusted vault key. The
-// bridge should report model error.
-TEST_F(NigoriSyncBridgeImplTest,
-       ShouldFailOnInvalidRemoteTransitionFromTrustedVaultToKeystore) {
-  EntityData entity_data;
-  *entity_data.specifics.mutable_nigori() =
-      BuildTrustedVaultNigoriSpecifics({kTrustedVaultKey});
-
-  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
-  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
-              Eq(std::nullopt));
-  bridge()->NotifyInitialStateToObservers();
-  ASSERT_TRUE(bridge()->HasPendingKeysForTesting());
-  bridge()->AddTrustedVaultDecryptionKeys({kTrustedVaultKey});
-  ASSERT_FALSE(bridge()->HasPendingKeysForTesting());
-  ASSERT_THAT(bridge()->GetPassphraseType(),
-              Eq(PassphraseType::kTrustedVaultPassphrase));
-  ASSERT_THAT(bridge()->GetDataForDebugging(),
-              Not(HasCustomPassphraseNigori()));
-
-  const KeyParamsForTesting kKeystoreKeyParams =
-      KeystoreKeyParamsForTesting(kRawKeystoreKey);
-  // Don't populate kTrustedVaultKey into `new_entity_data`.
-  EntityData new_entity_data;
-  *new_entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
-      /*keybag_keys_params=*/{kKeystoreKeyParams},
-      /*keystore_decryptor_params=*/kKeystoreKeyParams,
-      /*keystore_key_params=*/kKeystoreKeyParams);
-
-  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::move(new_entity_data)),
-              Ne(std::nullopt));
 }
 
 // Tests processing of remote incremental update that transits from trusted
