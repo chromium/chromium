@@ -416,6 +416,36 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+                       ReparentTabBetweenWindowsDoesNotCrash) {
+  // Add a second tab with the first tab in the foreground so the initial
+  // browser window does not close when its active tab is detached.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  // Create a second browser window.
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Move the dictating tab to the second window.
+    MoveTabToWindow(browser(), second_browser, 0),
+
+    // Move the tab back to the original window.
+    MoveTabToWindow(second_browser, browser(), 1),
+
+    // Verify the session remains active and UI is present without crashing.
+    InContext(BrowserElements::From(browser())->GetContext(),
+              WaitForShow(DictationBubbleUi::kViewElementIdForTesting)),
+    CheckHasSession(true)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        BackgroundTabActivationEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
