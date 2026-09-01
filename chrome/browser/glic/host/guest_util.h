@@ -37,7 +37,7 @@ namespace glic {
 // Returns the URL/origin from where the guest web client will be loaded from.
 GURL GetGuestURL();
 url::Origin GetGuestOrigin();
-std::string GetGlicAllowedOrigins(bool is_internal_google_account = false);
+std::string GetGlicAllowedOrigins();
 bool IsOriginAllowedGlicApi(const url::Origin& origin);
 bool IsGuestOriginAllowed(const url::Origin& origin);
 bool IsAdminBlockedUrl(const GURL& url);

@@ -295,7 +295,7 @@ url::Origin GetGuestOrigin() {
   return url::Origin::Create(GetGuestURL());
 }
 
-std::string GetGlicAllowedOrigins(bool is_internal_google_account) {
+std::string GetGlicAllowedOrigins() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   std::string allowed_origins =
       command_line->GetSwitchValueASCII(::switches::kGlicAllowedOrigins);
@@ -303,10 +303,8 @@ std::string GetGlicAllowedOrigins(bool is_internal_google_account) {
     allowed_origins = features::kGlicAllowedOriginsOverride.Get();
   }
 
-  // Allow corp origins for @google accounts.
-  if (is_internal_google_account) {
-    allowed_origins += " https://*.corp.google.com";
-  }
+  // Allow corp origins, needed for @google accounts.
+  allowed_origins += " https://*.corp.google.com";
   return allowed_origins;
 }
 
