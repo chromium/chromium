@@ -68,8 +68,8 @@ content::WebContents* OpenURLFromTabInternal(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  NavigateParams new_tab_params(static_cast<Browser*>(nullptr), params.url,
-                                params.transition);
+  NavigateParams new_tab_params(Profile::FromBrowserContext(context),
+                                params.url, params.transition);
   new_tab_params.FillNavigateParamsFromOpenURLParams(params);
 
   // Force all links to open in a new tab, even if they were trying to open a

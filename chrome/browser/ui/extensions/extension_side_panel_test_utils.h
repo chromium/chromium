@@ -7,13 +7,14 @@
 
 #include "extensions/common/extension_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace extensions {
 
 // Opens the side panel for `browser` for the given extension's `id`.
 // Implemented by extension_side_panel_test_utils.cc in views/.
-void OpenExtensionSidePanel(Browser& browser, const ExtensionId& id);
+void OpenExtensionSidePanel(BrowserWindowInterface& browser,
+                            const ExtensionId& id);
 
 }  // namespace extensions
 

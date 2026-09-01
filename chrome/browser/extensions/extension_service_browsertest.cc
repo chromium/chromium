@@ -31,8 +31,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 
-class Browser;
-
 namespace extensions {
 
 // A helper WebUIMessageHandler that quits a RunLoop when a "quit" message

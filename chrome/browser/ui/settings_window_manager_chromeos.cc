@@ -138,7 +138,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
   // screen profile) then bail out. Neither the new SWA code path nor the legacy
   // code path can successfully open the window for these profiles.
   if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-      Browser::CreationStatus::kOk) {
+      BrowserWindowInterface::CreationStatus::kOk) {
     LOG(ERROR) << "Unable to open settings for this profile, url "
                << gurl.spec();
     if (callback) {

@@ -13,7 +13,6 @@ namespace global_media_controls {
 class MediaItemManager;
 }  // namespace global_media_controls
 
-class Browser;
 class BrowserWindowInterface;
 class MediaToolbarButtonView;
 

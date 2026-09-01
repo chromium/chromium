@@ -15,7 +15,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
 class GURL;
 
 namespace blink {

@@ -62,7 +62,6 @@ class TabHelpers {
   friend class TabAndroid;
   friend class android::TabWebContentsDelegateAndroid;
 #else
-  friend class Browser;
   friend class chrome::BrowserTabStripModelDelegate;
   friend class tabs::TabModel;
 #endif  // BUILDFLAG(IS_ANDROID)

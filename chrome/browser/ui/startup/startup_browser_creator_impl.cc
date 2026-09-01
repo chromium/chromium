@@ -323,7 +323,7 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // when the browser process is shutting down. This can also fail if the
     // passed profile is of a type that is not suitable for browser creation.
     if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
-        Browser::CreationStatus::kOk) {
+        BrowserWindowInterface::CreationStatus::kOk) {
       return nullptr;
     }
     // Startup browsers are not counted as being created by a user_gesture

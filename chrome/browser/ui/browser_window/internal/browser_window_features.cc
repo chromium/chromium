@@ -670,7 +670,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   embedder_browser_window_features_->Init(browser);
 }
 
-void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
+void BrowserWindowFeatures::InitPostWindowConstruction(
+    BrowserWindowInterface* browser) {
   // Foundational state used throughout this function. Computed/assigned early
   // so the alphabetical sections below can rely on them.
   Profile* const profile = browser_->GetProfile();

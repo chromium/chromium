@@ -58,16 +58,6 @@ SignInFunctions::SignInFunctions(
         add_tab_function)
     : browser_(browser), add_tab_function_(add_tab_function) {}
 
-SignInFunctions::SignInFunctions(
-    const base::RepeatingCallback<Browser*()> browser,
-    const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
-        add_tab_function)
-    : browser_(base::BindRepeating(
-          [](base::RepeatingCallback<Browser*()> cb)
-              -> BrowserWindowInterface* { return cb.Run(); },
-          browser)),
-      add_tab_function_(add_tab_function) {}
-
 SignInFunctions::~SignInFunctions() = default;
 
 void SignInFunctions::SignInFromWeb(

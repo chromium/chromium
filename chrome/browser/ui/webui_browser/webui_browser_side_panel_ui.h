@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
-class Browser;
+class BrowserWindowInterface;
 class WebUIBrowserWindow;
 
 namespace views {
@@ -19,7 +19,7 @@ class View;
 
 class WebUIBrowserSidePanelUI : public SidePanelUIBase {
  public:
-  explicit WebUIBrowserSidePanelUI(Browser* browser);
+  explicit WebUIBrowserSidePanelUI(BrowserWindowInterface* browser);
   ~WebUIBrowserSidePanelUI() override;
 
   // SidePanelUI:

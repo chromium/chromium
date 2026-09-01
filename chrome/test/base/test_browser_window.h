@@ -29,7 +29,6 @@
 #include "components/apps/link_capturing/intent_picker_info.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
-class Browser;
 class LocationBarTesting;
 class GlobalBrowserCollection;
 class OmniboxView;

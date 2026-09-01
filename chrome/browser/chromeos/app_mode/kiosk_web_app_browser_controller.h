@@ -15,10 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 
-class Browser;
-
 namespace web_app {
-class WebAppRegistrar;
 class WebAppProvider;
 }  // namespace web_app
 

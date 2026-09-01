@@ -13,7 +13,6 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace base {

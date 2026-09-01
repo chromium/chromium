@@ -38,7 +38,6 @@ class BookmarksSidePanelCoordinator;
 class BookmarksServiceFeature;
 class BreadcrumbManagerBrowserAgent;
 
-class Browser;
 class BrowserActions;
 class BrowserActiveStateManager;
 class BrowserAnimationController;
@@ -305,7 +304,7 @@ class BrowserWindowFeatures {
 
   // Called exactly once to initialize features that depend on the window object
   // being created.
-  void InitPostWindowConstruction(Browser* browser);
+  void InitPostWindowConstruction(BrowserWindowInterface* browser);
 
   // Called exactly once to initialize features that depend on the view
   // hierarchy in BrowserView.

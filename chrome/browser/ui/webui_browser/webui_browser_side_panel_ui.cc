@@ -29,7 +29,8 @@ content::WebContents* GetContainingWebContents(views::View* view) {
 
 }  // namespace
 
-WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
+WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(
+    BrowserWindowInterface* browser)
     : SidePanelUIBase(browser) {
   // TODO(webium): Currently only reading list and bookmarks side panel
   // coordinators are constructed prior to this call. For the remaining
@@ -89,7 +90,7 @@ void WebUIBrowserSidePanelUI::Show(
     std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
   // Side panel is not supported for non-normal browsers.
-  if (browser()->GetType() != Browser::Type::TYPE_NORMAL) {
+  if (browser()->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
     return;
   }
 

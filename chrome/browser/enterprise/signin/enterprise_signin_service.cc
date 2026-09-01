@@ -33,7 +33,7 @@ namespace {
 bool IsNormalBrowserWithProfile(BrowserWindowInterface* browser,
                                 Profile* profile) {
   return profile == browser->GetProfile() && !browser->IsDeleteScheduled() &&
-         browser->GetType() == Browser::TYPE_NORMAL;
+         browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 }
 
 // Returns the Browser associated with `profile` that was most recently

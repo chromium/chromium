@@ -12,8 +12,6 @@
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
-
 namespace content {
 class RenderWidgetHost;
 class WebContents;

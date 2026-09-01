@@ -51,7 +51,7 @@ bool BrowserMatchesURL(BrowserWindowInterface* browser, const GURL& url) {
 bool BrowserMatches(BrowserWindowInterface* browser,
                     Profile* profile,
                     webapps::AppId app_id,
-                    Browser::Type type,
+                    BrowserWindowInterface::Type type,
                     const GURL& url) {
   return browser->GetProfile() == profile && browser->GetType() == type &&
          web_app::GetAppIdFromApplicationName(
@@ -206,7 +206,8 @@ BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
 
   CHECK(browser_type == BrowserType::kApp ||
         browser_type == BrowserType::kAppPopup);
-  Browser::Type internal_type = ToInternalBrowserType(browser_type);
+  BrowserWindowInterface::Type internal_type =
+      ToInternalBrowserType(browser_type);
 
   BrowserDelegate* browser_delegate = nullptr;
   GlobalBrowserCollection::GetInstance()->ForEach(
@@ -273,7 +274,7 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
   CHECK(profile);
 
   if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-      Browser::CreationStatus::kOk) {
+      BrowserWindowInterface::CreationStatus::kOk) {
     LOG(WARNING) << "Cannot create browser for given profile";
     return nullptr;
   }

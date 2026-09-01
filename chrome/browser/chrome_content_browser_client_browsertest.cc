@@ -2154,7 +2154,7 @@ class DevToolsOverridesThirdPartyCookiesBrowserTest
   GURL GetURL(std::string_view host) { return https_server_.GetURL(host, "/"); }
 
   void NavigateToPageWithFrame(std::string_view host,
-                               Browser* browser_ptr = nullptr) {
+                               BrowserWindowInterface* browser_ptr = nullptr) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser_ptr ? browser_ptr : browser(), main_url));
