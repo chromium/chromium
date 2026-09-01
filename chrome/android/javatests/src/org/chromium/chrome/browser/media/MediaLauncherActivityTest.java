@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +99,7 @@ public class MediaLauncherActivityTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHandleAudioIntentOpenInNewTab() throws Exception {
         String url = TestContentProvider.createContentUrl("media/audio.mp3");
         Context context = ContextUtils.getApplicationContext();

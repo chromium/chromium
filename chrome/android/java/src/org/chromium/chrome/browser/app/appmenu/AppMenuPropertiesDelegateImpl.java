@@ -514,7 +514,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the download this page action. */
     protected PropertyModel buildDownloadActionModel(@Nullable Tab currentTab) {
         int titleId =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+                                && DeviceInfo.isDesktop())
                         ? R.string.menu_save_page_as
                         : R.string.download_page;
         PropertyModel downloadButton =

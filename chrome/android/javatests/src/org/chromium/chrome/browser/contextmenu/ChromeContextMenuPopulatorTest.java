@@ -4012,6 +4012,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
     public void testSaveAsContextMenuStrings() {
+        DeviceInfo.setIsDesktopForTesting(true);
         Context context = ContextUtils.getApplicationContext();
 
         // Verify that getTitle() returns the "Save... as..." strings

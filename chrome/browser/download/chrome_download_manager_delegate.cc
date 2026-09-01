@@ -231,6 +231,12 @@ base::FilePath CreateLocalTempFile() {
 
 #if BUILDFLAG(IS_ANDROID)
 const char kPdfDirName[] = "pdfs";
+
+bool IsDownloadSaveAsContextMenuEnabled() {
+  return base::FeatureList::IsEnabled(
+             download::features::kEnableDownloadSaveAsContextMenu) &&
+         base::android::device_info::is_desktop();
+}
 #endif
 
 // Used with GetPlatformDownloadPath() to indicate which platform path to
@@ -1241,9 +1247,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
       offline_pages::OfflinePageUtils::CanDownloadAsOfflinePage(url,
                                                                 mime_type)) {
 #if BUILDFLAG(IS_ANDROID)
-    if (profile_->IsOffTheRecord() ||
-        base::FeatureList::IsEnabled(
-            download::features::kEnableDownloadSaveAsContextMenu)) {
+    if (profile_->IsOffTheRecord() || IsDownloadSaveAsContextMenuEnabled()) {
       return false;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1571,8 +1575,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download);
 
-  bool is_save_as_enabled = base::FeatureList::IsEnabled(
-      download::features::kEnableDownloadSaveAsContextMenu);
+  bool is_save_as_enabled = IsDownloadSaveAsContextMenuEnabled();
   if (reason == DownloadConfirmationReason::SAVE_AS && !is_save_as_enabled) {
     // If this is a 'Save As' download, just run without confirmation.
     std::move(callback).Run(
@@ -1627,8 +1630,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     bool is_save_as_prompt =
         (download->GetTargetDisposition() ==
          download::DownloadItem::TARGET_DISPOSITION_PROMPT) &&
-        base::FeatureList::IsEnabled(
-            download::features::kEnableDownloadSaveAsContextMenu);
+        IsDownloadSaveAsContextMenuEnabled();
     if (!download_prefs_->PromptForDownload() && !is_save_as_prompt) {
       DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
           download, suggested_path, web_contents, std::move(callback));
@@ -1782,8 +1784,7 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
         download &&
         (download->GetTargetDisposition() ==
          download::DownloadItem::TARGET_DISPOSITION_PROMPT) &&
-        base::FeatureList::IsEnabled(
-            download::features::kEnableDownloadSaveAsContextMenu);
+        IsDownloadSaveAsContextMenuEnabled();
     if (download_prefs_->PromptForDownload() || is_save_as_enabled) {
       content::WebContents* web_contents =
           download ? content::DownloadItemUtils::GetWebContents(download)
@@ -2696,8 +2697,7 @@ void ChromeDownloadManagerDelegate::RequestIncognitoSavePackageConfirmationDone(
     return;
   }
 
-  bool is_save_as_enabled = base::FeatureList::IsEnabled(
-      download::features::kEnableDownloadSaveAsContextMenu);
+  bool is_save_as_enabled = IsDownloadSaveAsContextMenuEnabled();
   if (is_save_as_enabled) {
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
     base::FilePath mhtml_path = suggested_path.ReplaceExtension("mhtml");

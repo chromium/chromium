@@ -4352,6 +4352,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
     public void testDownloadActionModel_SaveAsEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         setUpMocksForPageMenu();
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         ListItem iconRow = findItemById(modelList, R.id.icon_row_menu_id);
@@ -4383,6 +4384,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
     public void testDownloadPageItemTitle_SaveAsEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         SaveAndShareItemBuilder builder =
                 new SaveAndShareItemBuilder(
                         ContextUtils.getApplicationContext(),

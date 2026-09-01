@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Locale;
@@ -70,7 +71,8 @@ public class MediaViewerUtils {
             boolean allowExternalAppHandlers,
             boolean allowShareAction,
             Context context) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             Intent intent = createViewIntentForUri(contentUri, mimeType, null, null);
             intent.setClass(context, ChromeLauncherActivity.class);
             intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);

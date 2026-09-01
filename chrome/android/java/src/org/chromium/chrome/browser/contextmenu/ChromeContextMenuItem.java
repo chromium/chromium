@@ -14,6 +14,7 @@ import android.text.style.SuperscriptSpan;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -303,7 +304,8 @@ class ChromeContextMenuItem {
     }
 
     private static boolean isSaveAsEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+                && DeviceInfo.isDesktop();
     }
 
     /**

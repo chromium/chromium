@@ -23,7 +23,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
 /** Integration test suite for the MediaViewerUtils. */
@@ -122,6 +125,7 @@ public class MediaViewerUtilsTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testOpenDownloadInNewTab() {
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
         Intent intent =
@@ -136,5 +140,28 @@ public class MediaViewerUtilsTest {
                 ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
         Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
         Assert.assertFalse(intent.hasExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testOpenDownloadInNewTab_Phone() {
+        Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
+        Intent intent =
+                MediaViewerUtils.getMediaViewerIntent(
+                        uri,
+                        uri,
+                        "image/png",
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ true,
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        Assert.assertEquals(
+                ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        Assert.assertFalse(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        Assert.assertEquals(
+                CustomTabsUiType.MEDIA_VIEWER,
+                intent.getIntExtra(
+                        CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT));
     }
 }
