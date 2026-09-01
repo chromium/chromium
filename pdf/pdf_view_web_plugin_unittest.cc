@@ -403,6 +403,7 @@ class FakePdfHost : public pdf::mojom::PdfHost {
               (mojo::PendingRemote<pdf::mojom::PdfListener>),
               (override));
   MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
+  MOCK_METHOD(void, OnPdfFirstContentPainted, (base::TimeTicks), (override));
   MOCK_METHOD(void, UpdateContentRestrictions, (int32_t), (override));
   MOCK_METHOD(void, SavePdf, (), (override));
   MOCK_METHOD(void,
@@ -797,6 +798,25 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
             plugin_->document_load_state_for_testing());
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginTest, OnFirstContentPaintedNotSentWhenNotFullFrame) {
+  // A PDF embedded in an HTML page is already described by that page's own
+  // contentful paints, so it must not feed the startup PDF paint metric.
+  EXPECT_CALL(pdf_host_, OnPdfFirstContentPainted).Times(0);
+
+  plugin_->OnFirstContentPainted();
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, OnFirstContentPainted) {
+  EXPECT_CALL(pdf_host_, OnPdfFirstContentPainted(
+                             ::testing::Not(::testing::Eq(base::TimeTicks()))));
+
+  plugin_->OnFirstContentPainted();
+
   pdf_receiver_.FlushForTesting();
 }
 

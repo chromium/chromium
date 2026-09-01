@@ -1535,6 +1535,19 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   pdf_host_->UpdateContentRestrictions(GetContentRestrictions());
 }
 
+void PdfViewWebPlugin::OnFirstContentPainted() {
+  // Only a full-page PDF represents what the user navigated to; a PDF embedded
+  // in an HTML page is already covered by that page's own paint timing.
+  if (!full_frame_) {
+    return;
+  }
+
+  // The engine fires this at most once, so this is not re-entrant. Sampled
+  // here rather than in the engine so the timestamp is taken on the same clock
+  // the browser compares it against.
+  pdf_host_->OnPdfFirstContentPainted(base::TimeTicks::Now());
+}
+
 void PdfViewWebPlugin::DocumentLoadFailed() {
   DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
   document_load_state_ = DocumentLoadState::kFailed;

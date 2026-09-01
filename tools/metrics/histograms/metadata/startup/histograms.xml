@@ -1193,6 +1193,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Startup.FirstWebContents.PdfFirstContentPaint{StartupTemperature}"
+    units="ms" expires_after="2027-05-10">
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>chrdavis@microsoft.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    [Desktop] Measure the elapsed time from the application start to the moment
+    the PDF plugin in the first web contents first paints document content. Only
+    comprised of cases where the initial foreground tab gets to complete its
+    rendering task unimpeded.
+
+    This is the PDF counterpart of
+    Startup.FirstWebContents.FirstContentfulPaint: a full-page PDF never reports
+    a first or largest contentful paint because its content is painted by the
+    plugin rather than produced by Blink layout, so those two metrics silently
+    exclude PDF startups.
+
+    Not directly comparable to Startup.FirstWebContents.FirstContentfulPaint:
+    the end timestamp is taken in the renderer when the plugin finishes
+    rasterizing the first page of real content, whereas the contentful paints
+    are timestamped when the frame is presented. This one therefore excludes
+    compositing and presentation, and reads earlier than a true contentful paint
+    would.
+
+    Application start is a time recorded as early as possible in the startup
+    process. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
+    application start.
+
+    {StartupTemperature}
+  </summary>
+  <token key="StartupTemperature" variants="StartupTemperature"/>
+</histogram>
+
 <histogram name="Startup.GPU.LoadTime.ApplicationStartToGpuInitialized"
     units="ms" expires_after="2027-02-14">
   <owner>spvm@chromium.org</owner>

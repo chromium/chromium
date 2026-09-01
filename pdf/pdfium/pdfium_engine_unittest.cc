@@ -194,6 +194,7 @@ class MockTestClient : public TestClient {
               (base::OnceCallback<void(const std::string&)>),
               (override));
   MOCK_METHOD(void, DocumentLoadFailed, (), (override));
+  MOCK_METHOD(void, OnFirstContentPainted, (), (override));
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
@@ -1316,6 +1317,64 @@ TEST_P(PDFiumEngineTest, IsSynthesizedNewline) {
 
   // '\n' synthesized.
   EXPECT_TRUE(engine->IsSynthesizedNewline({0, 22}));
+}
+
+// Paints repeatedly until the engine reports a rect as ready, mimicking the
+// progressive painting loop `PdfViewWebPlugin` drives. Returns whether any
+// content became ready.
+bool PaintUntilReady(PDFiumEngine& engine, const gfx::Rect& rect) {
+  SkBitmap image_data;
+  image_data.allocN32Pixels(rect.width(), rect.height());
+
+  // Generous but bounded: a small local document finishes in far fewer passes.
+  constexpr int kMaxPasses = 100;
+  for (int i = 0; i < kMaxPasses; ++i) {
+    std::vector<gfx::Rect> ready;
+    std::vector<gfx::Rect> pending;
+    engine.PrePaint();
+    engine.Paint(rect, image_data, ready, pending);
+    engine.PostPaint();
+    if (!ready.empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+TEST_P(PDFiumEngineTest, OnFirstContentPaintedFiresOnceForAvailablePage) {
+  NiceMock<MockTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(engine);
+
+  ON_CALL(client, IsPrintPreview()).WillByDefault(Return(false));
+
+  // Fires once even though painting continues afterwards.
+  EXPECT_CALL(client, OnFirstContentPainted()).Times(1);
+
+  // Plugin size chosen so pages of the document are visible.
+  constexpr gfx::Rect kPaintRect(0, 0, 343, 1664);
+  engine->PluginSizeUpdated(kPaintRect.size());
+
+  ASSERT_TRUE(PaintUntilReady(*engine, kPaintRect));
+  ASSERT_TRUE(PaintUntilReady(*engine, kPaintRect));
+}
+
+TEST_P(PDFiumEngineTest, OnFirstContentPaintedNotFiredForPrintPreview) {
+  NiceMock<MockTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(engine);
+
+  ON_CALL(client, IsPrintPreview()).WillByDefault(Return(true));
+
+  // Print preview is not a startup surface, so it must not report a paint.
+  EXPECT_CALL(client, OnFirstContentPainted()).Times(0);
+
+  constexpr gfx::Rect kPaintRect(0, 0, 343, 1664);
+  engine->PluginSizeUpdated(kPaintRect.size());
+
+  ASSERT_TRUE(PaintUntilReady(*engine, kPaintRect));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());

@@ -327,6 +327,7 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   is_browser_window_display_metric_emitted_ = false;
   did_record_startup_fcp_ = false;
   did_record_startup_lcp_ = false;
+  did_record_startup_pdf_first_content_paint_ = false;
 }
 
 bool BrowserStartupMetricRecorder::WasMainWindowStartupInterrupted() const {
@@ -537,6 +538,29 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsLargestContentfulPaint(
       &base::UmaHistogramLongTimes100,
       "Startup.FirstWebContents.LargestContentfulPaint",
       web_contents_start_ticks, lcp_ticks);
+}
+
+void BrowserStartupMetricRecorder::RecordFirstWebContentsPdfFirstContentPaint(
+    base::TimeTicks pdf_paint_ticks) {
+  if (did_record_startup_pdf_first_content_paint_) {
+    return;
+  }
+
+  const base::TimeTicks web_contents_start_ticks = GetWebContentsStartTicks();
+  if (web_contents_start_ticks.is_null()) {
+    return;
+  }
+
+  if (!ShouldLogStartupHistogram()) {
+    return;
+  }
+
+  did_record_startup_pdf_first_content_paint_ = true;
+
+  EmitHistogramWithTemperatureAndTraceEvent(
+      &base::UmaHistogramLongTimes100,
+      "Startup.FirstWebContents.PdfFirstContentPaint", web_contents_start_ticks,
+      pdf_paint_ticks);
 }
 
 void BrowserStartupMetricRecorder::RecordFirstWebContentsMainNavigationStart(

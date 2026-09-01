@@ -15,6 +15,12 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/functional/bind.h"
+#include "components/pdf/browser/pdf_first_content_paint_registry.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
 
@@ -43,6 +49,16 @@ FirstWebContentsProfilerBase::FirstWebContentsProfilerBase(
   // rather than an abandoned one. On other platforms, a navigation is
   // typically pending at construction.
   first_navigation_started_ = web_contents->GetController().GetPendingEntry();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // `base::Unretained()` is safe because the subscription is a member that is
+  // destroyed with this profiler, which unsubscribes the callback before
+  // `this` is invalidated.
+  pdf_first_content_paint_subscription_ =
+      pdf::RegisterPdfFirstContentPaintCallback(base::BindRepeating(
+          &FirstWebContentsProfilerBase::OnPdfFirstContentPainted,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(ENABLE_PDF)
 }
 
 FirstWebContentsProfilerBase::~FirstWebContentsProfilerBase() = default;
@@ -154,6 +170,9 @@ void FirstWebContentsProfilerBase::DidFirstVisuallyNonEmptyPaint() {
   RecordFinishReason(StartupProfilingFinishReason::kDone);
   finish_reason_recorded_ = true;
   MaybeRecordFirstContentfulPaint();
+#if BUILDFLAG(ENABLE_PDF)
+  MaybeRecordPdfFirstContentPaint();
+#endif  // BUILDFLAG(ENABLE_PDF)
 }
 
 void FirstWebContentsProfilerBase::OnFirstContentfulPaintInPrimaryMainFrame(
@@ -212,6 +231,45 @@ void FirstWebContentsProfilerBase::MaybeRecordLargestContentfulPaint() {
   }
   RecordLargestContentfulPaint(last_largest_contentful_paint_ticks_);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+void FirstWebContentsProfilerBase::OnPdfFirstContentPainted(
+    content::WebContents* embedder,
+    base::TimeTicks paint_time) {
+  if (!ShouldObservePaintTimingMetrics() || WasStartupInterrupted()) {
+    return;
+  }
+
+  // The broadcast is process-wide, so a PDF in any other tab or window reaches
+  // here too. Only the contents being profiled describes this startup.
+  if (embedder != web_contents()) {
+    return;
+  }
+
+  // As with the contentful paints, the timestamp originates in the renderer,
+  // so a null one is ignored rather than latched: latching it would
+  // permanently satisfy "already have a candidate" while never being
+  // recordable.
+  if (pdf_first_content_paint_ticks_.is_null() && !paint_time.is_null()) {
+    pdf_first_content_paint_ticks_ = paint_time;
+  }
+  MaybeRecordPdfFirstContentPaint();
+}
+
+void FirstWebContentsProfilerBase::MaybeRecordPdfFirstContentPaint() {
+  // Gated on the non-empty paint the same way the contentful paints are, so
+  // this only records for a startup that was not abandoned. For a PDF the
+  // non-empty paint fires early - it marks the viewer shell finishing parsing
+  // - so in practice it is already recorded by the time the plugin paints, but
+  // the ordering is not guaranteed and this is also called from there.
+  if (!finish_reason_recorded_ || did_record_pdf_first_content_paint_ ||
+      pdf_first_content_paint_ticks_.is_null()) {
+    return;
+  }
+  did_record_pdf_first_content_paint_ = true;
+  RecordPdfFirstContentPaint(pdf_first_content_paint_ticks_);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 bool FirstWebContentsProfilerBase::ShouldObservePaintTimingMetrics() {
   return false;

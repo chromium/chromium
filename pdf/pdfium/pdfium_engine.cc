@@ -1141,6 +1141,15 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
       if (ContinuePaint(progressive_index.value(), image_data)) {
         FinishPaint(progressive_index.value(), image_data);
         ready.push_back(dirty_in_screen);
+
+        // Reaching here means a page whose data was available finished
+        // rasterizing, so this rect holds real document content. The
+        // `PaintUnavailablePage()` branch below also pushes to `ready`, but
+        // paints a blank placeholder, so it deliberately does not count.
+        if (!first_content_paint_reported_ && !client_->IsPrintPreview()) {
+          first_content_paint_reported_ = true;
+          client_->OnFirstContentPainted();
+        }
       } else {
         pending.push_back(dirty_in_screen);
       }

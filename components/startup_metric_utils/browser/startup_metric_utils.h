@@ -126,6 +126,14 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   // recorded for this session. Records at most once per session.
   void RecordFirstWebContentsLargestContentfulPaint(base::TimeTicks lcp_ticks);
 
+  // Call this with the time when the PDF plugin in the first web contents
+  // painted document content for the first time. This is the PDF analogue of
+  // the first contentful paint: a full-page PDF never reports FCP or LCP
+  // because its content is painted by the plugin rather than by Blink layout.
+  // Records at most once per session.
+  void RecordFirstWebContentsPdfFirstContentPaint(
+      base::TimeTicks pdf_paint_ticks);
+
   // Call this with the time when the first web contents began navigating its
   // main frame / successfully committed its navigation for the main frame.
   // These functions must be called after RecordApplicationStartTime(), because
@@ -239,6 +247,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 
   bool did_record_startup_fcp_ = false;
   bool did_record_startup_lcp_ = false;
+  bool did_record_startup_pdf_first_content_paint_ = false;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

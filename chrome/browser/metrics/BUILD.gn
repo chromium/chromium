@@ -4,6 +4,7 @@
 
 import("//components/metrics/generate_expired_histograms_array.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 
 # TODO(b/504980566): Further modularize //chrome/browser/metrics.
 if (!is_android) {
@@ -73,6 +74,7 @@ source_set("metrics") {
     "//components/unified_consent",
     "//components/variations/service",
     "//components/webui/flags",
+    "//pdf:buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
     "//ui/base",
@@ -324,6 +326,10 @@ source_set("impl") {
     "//components/ukm:ukm_recorder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
 
   if (is_android) {
     sources += [

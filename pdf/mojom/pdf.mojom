@@ -6,6 +6,7 @@ module pdf.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -152,6 +153,22 @@ interface PdfHost {
   // Invoked when document load is completed successfully. Will not be invoked
   // if the load fails.
   OnDocumentLoadComplete();
+
+  // Invoked the first time the plugin finishes rendering actual document
+  // content, i.e. when the first readable PDF pixels exist. `paint_time` is
+  // when the renderer finished rasterizing them.
+  //
+  // Blink cannot observe this: the viewer shell document holds no text or
+  // images, so it never produces a first or largest contentful paint, and the
+  // content itself is drawn by the plugin into the <embed>. Startup telemetry
+  // uses this instead so that launching into a PDF stays measurable.
+  //
+  // Sent only for full-page PDFs. A PDF embedded in an HTML page is described
+  // by that page's own paint timing.
+  //
+  // Must be sent at most once per document. Sending it again is a bad message
+  // and terminates the renderer.
+  OnPdfFirstContentPainted(mojo_base.mojom.TimeTicks paint_time);
 
   // Updates the content restrictions, i.e. to disable print/copy.
   UpdateContentRestrictions(int32 restrictions);

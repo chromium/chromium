@@ -161,6 +161,16 @@ class PDFiumEngineClient {
   // Notifies the client that the document has finished loading.
   virtual void DocumentLoadComplete() {}
 
+  // Notifies the client that the engine has finished rasterizing document
+  // content for the first time, i.e. that the first PDF pixels the user can
+  // actually read are ready. Fired at most once per engine.
+  //
+  // This is deliberately narrower than "the plugin painted something": the
+  // plugin's own first paint fills the buffer with the background color, and a
+  // page whose data has not arrived yet is painted as a blank placeholder.
+  // Neither shows document content, so neither fires this.
+  virtual void OnFirstContentPainted() {}
+
   // Notifies the client that the document has failed to load.
   virtual void DocumentLoadFailed() {}
 

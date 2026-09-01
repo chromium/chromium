@@ -1447,6 +1447,9 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Keeps track of sending `PDF.FirstPaintTime` metric.
   bool first_paint_metric_reported_ = false;
 
+  // Keeps track of firing PDFiumEngineClient::OnFirstContentPainted().
+  bool first_content_paint_reported_ = false;
+
   // Shadow matrix for generating the page shadow bitmap.
   std::unique_ptr<draw_utils::ShadowMatrix> page_shadow_;
 

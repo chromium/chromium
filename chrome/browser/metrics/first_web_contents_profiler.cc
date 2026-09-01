@@ -25,6 +25,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "pdf/buildflags.h"
 
 namespace metrics {
 namespace {
@@ -50,6 +51,9 @@ class FirstWebContentsProfiler : public FirstWebContentsProfilerBase {
   void RecordFirstNonEmptyPaintForOsLaunch() override;
   void RecordFirstContentfulPaint(base::TimeTicks fcp_ticks) override;
   void RecordLargestContentfulPaint(base::TimeTicks lcp_ticks) override;
+#if BUILDFLAG(ENABLE_PDF)
+  void RecordPdfFirstContentPaint(base::TimeTicks pdf_paint_ticks) override;
+#endif  // BUILDFLAG(ENABLE_PDF)
   bool WasStartupInterrupted() override;
   bool ShouldObservePaintTimingMetrics() override;
 
@@ -125,6 +129,14 @@ void FirstWebContentsProfiler::RecordLargestContentfulPaint(
   startup_metric_utils::GetBrowser()
       .RecordFirstWebContentsLargestContentfulPaint(lcp_ticks);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+void FirstWebContentsProfiler::RecordPdfFirstContentPaint(
+    base::TimeTicks pdf_paint_ticks) {
+  startup_metric_utils::GetBrowser().RecordFirstWebContentsPdfFirstContentPaint(
+      pdf_paint_ticks);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 bool FirstWebContentsProfiler::WasStartupInterrupted() {
   return startup_metric_utils::GetBrowser().WasMainWindowStartupInterrupted();

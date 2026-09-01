@@ -11,6 +11,8 @@ source_set("browser") {
     "pdf_document_helper.cc",
     "pdf_document_helper.h",
     "pdf_document_helper_client.h",
+    "pdf_first_content_paint_registry.cc",
+    "pdf_first_content_paint_registry.h",
     "pdf_frame_util.cc",
     "pdf_frame_util.h",
   ]
@@ -78,12 +80,14 @@ source_set("unit_tests") {
   sources = [
     "fake_pdf_stream_delegate.cc",
     "fake_pdf_stream_delegate.h",
+    "pdf_first_content_paint_registry_unittest.cc",
     "pdf_navigation_throttle_unittest.cc",
     "pdf_url_loader_request_interceptor_unittest.cc",
     "plugin_response_writer_unittest.cc",
   ]
 
   deps = [
+    ":browser",
     ":interceptors",
     "//base",
     "//base/test:test_support",

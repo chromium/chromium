@@ -398,6 +398,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                                const std::u16string& haystack,
                                                bool case_sensitive) override;
   void DocumentLoadComplete() override;
+  void OnFirstContentPainted() override;
   void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;

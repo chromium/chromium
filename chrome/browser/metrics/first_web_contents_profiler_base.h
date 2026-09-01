@@ -7,6 +7,11 @@
 
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/callback_list.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace content {
 class WebContents;
@@ -93,6 +98,14 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
   // contentful paint candidate.
   virtual void RecordLargestContentfulPaint(base::TimeTicks lcp_ticks) {}
 
+#if BUILDFLAG(ENABLE_PDF)
+  // Records the first paint of document content by the PDF plugin embedded in
+  // the profiled WebContents. Only called when
+  // `ShouldObservePaintTimingMetrics()` returns true. |pdf_paint_ticks| is the
+  // renderer-side timestamp of that paint.
+  virtual void RecordPdfFirstContentPaint(base::TimeTicks pdf_paint_ticks) {}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   // Whether this profiler should keep observing past the first non-empty paint
   // to record the first contentful paint and the final largest contentful
   // paint. Defaults to false; profilers that record FCP/LCP override this.
@@ -118,6 +131,17 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
 
   // Records the latest observed largest contentful paint candidate, if any.
   void MaybeRecordLargestContentfulPaint();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // Invoked for every PDF in the process that reports a first content paint,
+  // so it filters down to the contents being profiled.
+  void OnPdfFirstContentPainted(content::WebContents* embedder,
+                                base::TimeTicks paint_time);
+
+  // Records the PDF first content paint once it has been observed and the
+  // profiler has committed to recording paint timing metrics.
+  void MaybeRecordPdfFirstContentPaint();
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   // Logs |finish_reason| to UMA (unless already logged) and deletes this
   // profiler. When paint timing metrics are being observed, the final largest
@@ -150,6 +174,19 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
   // The renderer-side presentation timestamp of the latest largest contentful
   // paint candidate.
   base::TimeTicks last_largest_contentful_paint_ticks_;
+
+#if BUILDFLAG(ENABLE_PDF)
+  // The renderer-side timestamp of the first content paint reported by a PDF
+  // plugin in the profiled contents, and whether it has been recorded yet.
+  base::TimeTicks pdf_first_content_paint_ticks_;
+  bool did_record_pdf_first_content_paint_ = false;
+
+  // Held for the lifetime of this profiler. Subscribed in the constructor
+  // rather than on the PDF's own PDFDocumentHelper because that helper does
+  // not exist yet: it is created when the PDF renderer binds its PdfHost,
+  // which is after this point.
+  base::CallbackListSubscription pdf_first_content_paint_subscription_;
+#endif  // BUILDFLAG(ENABLE_PDF)
 };
 
 }  // namespace metrics
