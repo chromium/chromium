@@ -105,6 +105,11 @@ namespace {
 constexpr char kChromeSingInInterceptionSupervisionStateHistogramPrefix[] =
     "Signin.Intercept.Heuristic.SupervisionState";
 
+void RecordLinkedAccountsInterceptionDeferralLatency(base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral", duration);
+}
+
 constexpr size_t kMaxChromeSigninInterceptionDismissCount = 5;
 
 // The user will only see the Chrome Signin bubble reprompt a maximum of 4 times
@@ -693,6 +698,13 @@ void DiceWebSigninInterceptor::OnDiceSigninSessionComplete(
 
   if (state_->waiting_for_dice_signin_session_completion_) {
     state_->waiting_for_dice_signin_session_completion_ = false;
+    if (!state_->secondary_accounts_.empty() &&
+        state_->session_completion_wait_start_time_.has_value()) {
+      RecordLinkedAccountsInterceptionDeferralLatency(
+          base::TimeTicks::Now() -
+          *state_->session_completion_wait_start_time_);
+      state_->session_completion_wait_start_time_.reset();
+    }
     CHECK(state_->deferred_action_callback_);
     std::move(state_->deferred_action_callback_).Run();
   }
@@ -1367,9 +1379,13 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
                      base::Unretained(this), account_info, profile_color);
 
   if (state_->dice_signin_session_complete_) {
+    if (!state_->secondary_accounts_.empty()) {
+      RecordLinkedAccountsInterceptionDeferralLatency(base::Milliseconds(0));
+    }
     std::move(proceed_with_profile_creation).Run();
   } else {
     state_->waiting_for_dice_signin_session_completion_ = true;
+    state_->session_completion_wait_start_time_ = base::TimeTicks::Now();
     state_->deferred_action_callback_ =
         std::move(proceed_with_profile_creation);
   }
@@ -1504,9 +1520,13 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
                      base::Unretained(this), profile_path);
 
   if (state_->dice_signin_session_complete_) {
+    if (!state_->secondary_accounts_.empty()) {
+      RecordLinkedAccountsInterceptionDeferralLatency(base::Milliseconds(0));
+    }
     std::move(proceed_with_profile_switch).Run();
   } else {
     state_->waiting_for_dice_signin_session_completion_ = true;
+    state_->session_completion_wait_start_time_ = base::TimeTicks::Now();
     state_->deferred_action_callback_ = std::move(proceed_with_profile_switch);
   }
 }

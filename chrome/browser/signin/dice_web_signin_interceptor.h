@@ -454,6 +454,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     std::vector<CoreAccountId> secondary_accounts_;
     bool dice_signin_session_complete_ = false;
     bool waiting_for_dice_signin_session_completion_ = false;
+    std::optional<base::TimeTicks> session_completion_wait_start_time_;
     base::OnceClosure deferred_action_callback_;
 
     // Stores `primary_is_connected` from the initial token exchange during a

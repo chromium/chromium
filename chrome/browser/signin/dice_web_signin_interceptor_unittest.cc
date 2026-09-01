@@ -3212,3 +3212,162 @@ TEST_F(DiceWebSigninInterceptorTest,
       interceptor()->dice_signed_in_profile_creator_accounts_for_testing(),
       testing::ElementsAre(initiator_bob.GetAccountId()));
 }
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_DeferralLatency_UserWaits) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_info);
+  initiator_info =
+      AccountInfo::Builder(initiator_info).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_info);
+
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&secondary_info);
+  secondary_info =
+      AccountInfo::Builder(secondary_info).SetGivenName("Bob").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(secondary_info);
+
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kFalse);
+
+  ASSERT_TRUE(bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // User accepts bubble before session completion.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
+  // Fast forward time by 200 ms while waiting.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // Session completion arrives.
+  std::vector<CoreAccountId> secondary_ids = {secondary_info.GetAccountId()};
+  interceptor()->OnDiceSigninSessionComplete(initiator_info.GetAccountId(),
+                                             secondary_ids);
+
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+  histogram_tester.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral",
+      base::Milliseconds(200), 1);
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_DeferralLatency_ZeroWait) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_info);
+  initiator_info =
+      AccountInfo::Builder(initiator_info).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_info);
+
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&secondary_info);
+  secondary_info =
+      AccountInfo::Builder(secondary_info).SetGivenName("Bob").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(secondary_info);
+
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kFalse);
+
+  ASSERT_TRUE(bubble_callback);
+  ASSERT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Session completion arrives before user acceptance.
+  std::vector<CoreAccountId> secondary_ids = {secondary_info.GetAccountId()};
+  interceptor()->OnDiceSigninSessionComplete(initiator_info.GetAccountId(),
+                                             secondary_ids);
+
+  // User accepts bubble.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
+  // 0 ms should be recorded for immediate/frictionless profile creation.
+  histogram_tester.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral",
+      base::Milliseconds(0), 1);
+}
+
+TEST_F(DiceWebSigninInterceptorTest,
+       MultiAccountInterception_DeferralLatency_SingleAccountNoOp) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo initiator_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&initiator_info);
+  initiator_info =
+      AccountInfo::Builder(initiator_info).SetGivenName("Alice").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(initiator_info);
+
+  base::OnceCallback<void(SigninInterceptionResult)> bubble_callback;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [&bubble_callback](
+              base::OnceCallback<void(SigninInterceptionResult)> callback) {
+            bubble_callback = std::move(callback);
+            return std::make_unique<
+                TestScopedWebSigninInterceptionBubbleHandle>();
+          }));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), initiator_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  ASSERT_TRUE(bubble_callback);
+
+  // Single-account completion arrives with empty secondaries.
+  interceptor()->OnDiceSigninSessionComplete(initiator_info.GetAccountId(),
+                                             /*secondary_accounts=*/{});
+
+  // User accepts bubble.
+  std::move(bubble_callback).Run(SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(interceptor()->has_dice_signed_in_profile_creator_for_testing());
+
+  // No InterceptionDeferral metric should be recorded for single account
+  // sign-in.
+  histogram_tester.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral", 0);
+}

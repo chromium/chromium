@@ -1956,6 +1956,42 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch"
+    units="ms" expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the latency to fetch the OAuth2 refresh token for the initiator
+    account during a multi-account DICE Linked Accounts sign-in session. Emitted
+    upon successful token exchange of the initiator account.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral"
+    units="ms" expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the wall-clock duration the user spent waiting after accepting an
+    interception prompt (profile creation or profile switch) for background
+    secondary account token fetches to settle during a multi-account DICE Linked
+    Accounts sign-in. Recorded as 0 ms if secondary fetches had already settled
+    before user acceptance, or as the elapsed duration in the waiting state
+    until session completion arrives.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration"
+    units="ms" expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the total wall-clock duration of a multi-account DICE Linked
+    Accounts sign-in session, measured from header processing start until all
+    token fetches have completed or the session is terminated.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
     expires_after="never">
 <!-- expires-never: used to monitor OAuth outages in Dice.  -->

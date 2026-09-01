@@ -2474,4 +2474,171 @@ TEST_F(DiceResponseHandlerTest, SessionCompleteFiredOnHandlerDestruction) {
   EXPECT_TRUE(session_complete_called_);
 }
 
+TEST_F(DiceResponseHandlerTest,
+       LinkedAccountsLatencySequentialFetchingSuccess) {
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, /*account_count=*/2,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/false, /*mtls_token_binding=*/false,
+      /*initiator_index=*/0);
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Fast forward time by 150 ms before initiator fetch completes.
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+
+  GaiaAuthConsumer* consumer_initiator = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_initiator, testing::NotNull());
+  consumer_initiator->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_0", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch",
+      base::Milliseconds(150), 1);
+  EXPECT_EQ(0u,
+            histogram_tester_
+                .GetAllSamples(
+                    "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration")
+                .size());
+
+  // Now secondary fetch is started. Fast forward time by 250 ms.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+
+  GaiaAuthConsumer* consumer_secondary = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_secondary, testing::NotNull());
+  consumer_secondary->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_1", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration",
+      base::Milliseconds(400), 1);
+}
+
+TEST_F(DiceResponseHandlerTest, LinkedAccountsLatencyParallelFetchingSuccess) {
+  identity_test_env_.MakePrimaryAccountAvailable("primary@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, /*account_count=*/2,
+      /*primary_is_connected=*/signin::Tribool::kTrue,
+      /*eligible_for_token_binding=*/false, /*mtls_token_binding=*/false,
+      /*initiator_index=*/0);
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  GaiaAuthConsumer* consumer_initiator = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_initiator, testing::NotNull());
+  GaiaAuthConsumer* consumer_secondary = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_secondary, testing::NotNull());
+
+  // Fast forward time by 100 ms and complete initiator.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  consumer_initiator->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_0", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch",
+      base::Milliseconds(100), 1);
+  EXPECT_EQ(0u,
+            histogram_tester_
+                .GetAllSamples(
+                    "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration")
+                .size());
+
+  // Fast forward time by 150 ms (250 ms total) and complete secondary.
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  consumer_secondary->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_1", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration",
+      base::Milliseconds(250), 1);
+}
+
+TEST_F(DiceResponseHandlerTest, LinkedAccountsLatencyInitiatorFailure) {
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, /*account_count=*/2,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/false, /*mtls_token_binding=*/false,
+      /*initiator_index=*/0);
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  task_environment_.FastForwardBy(base::Milliseconds(120));
+
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  consumer->OnClientOAuthFailure(
+      GoogleServiceAuthError::FromServiceError("Network error"));
+
+  // Initiator latency is not recorded on failure.
+  histogram_tester_.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch", 0);
+  // Total session duration is recorded when session fails closed.
+  histogram_tester_.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration",
+      base::Milliseconds(120), 1);
+}
+
+TEST_F(DiceResponseHandlerTest, LinkedAccountsLatencySingleAccountNoOp) {
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  // Single-account sign-in should not emit LinkedAccounts latency metrics.
+  histogram_tester_.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration", 0);
+}
+
+TEST_F(DiceResponseHandlerTest, LinkedAccountsLatencyCancelledSession) {
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, /*account_count=*/2,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/false, /*mtls_token_binding=*/false,
+      /*initiator_index=*/0);
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  task_environment_.FastForwardBy(base::Milliseconds(80));
+
+  signin_client_.GetAndClearConsumer();
+
+  // Cancel via overlapping sign-in.
+  dice_response_handler_->ProcessDiceHeader(
+      MakeDiceParams(DiceAction::SIGNIN),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  signin_client_.GetAndClearConsumer();
+
+  histogram_tester_.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch", 0);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration",
+      base::Milliseconds(80), 1);
+}
+
 }  // namespace
