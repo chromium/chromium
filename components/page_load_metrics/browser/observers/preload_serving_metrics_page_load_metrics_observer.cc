@@ -192,7 +192,10 @@ void RecordFirstContentfulPaint(
     content::UsedInstantLoad used_instant_load,
     std::string_view navigation_initiator_string,
     bool is_url_srp) {
+  // BFCache restores are filtered out in `OnFirstContentfulPaintInPage()`, but
+  // unit tests can call this function directly.
   if (used_instant_load == content::UsedInstantLoad::kBFCache) {
+    CHECK_IS_TEST();
     return;
   }
 
@@ -449,6 +452,10 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   // is not expected to be called between `PLMO::OnEnterBackForwardCache()` and
   // `PLMO::OnRestoreFromBackForwardCache()`, but currently it is happening.
   if (!navigation_data_) {
+    return;
+  }
+
+  if (navigation_data_->used_bfcache) {
     return;
   }
 
