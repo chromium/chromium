@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +31,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -77,7 +81,9 @@ public class ActorBackgroundActuationManagerTest {
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private Tab mPlaceholderTab;
     @Mock private TabWindowManager mTabWindowManager;
-    @Mock private AsyncInitializationActivity mActivity;
+    @Mock private ChromeTabbedActivity mActivity;
+    @Mock private TabModelOrchestrator mTabModelOrchestrator;
+    @Mock private TabPersistentStore mTabPersistentStore;
 
     private ActorBackgroundActuationManager mManager;
 
@@ -92,6 +98,9 @@ public class ActorBackgroundActuationManagerTest {
         TabBuilder.setTabForTesting(mTab);
 
         when(mActivity.getWindowAndroid()).thenReturn(mWindowAndroid);
+        doCallRealMethod().when(mActivity).setTabModelOrchestratorForTesting(any());
+        mActivity.setTabModelOrchestratorForTesting(mTabModelOrchestrator);
+        when(mTabModelOrchestrator.getTabPersistentStore()).thenReturn(mTabPersistentStore);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getTabCreatorManager()).thenReturn(mTabCreatorManager);
         when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
@@ -407,6 +416,7 @@ public class ActorBackgroundActuationManagerTest {
         mManager.destroy();
 
         verify(mTab).updateAttachment(eq(mWindowAndroid), any());
+        verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -425,6 +435,7 @@ public class ActorBackgroundActuationManagerTest {
 
         verify(mTab, never()).updateAttachment(any(), any());
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTabPersistentStore, never()).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -443,6 +454,7 @@ public class ActorBackgroundActuationManagerTest {
 
         verify(mTab, never()).updateAttachment(any(), any());
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTabPersistentStore, never()).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -468,6 +480,7 @@ public class ActorBackgroundActuationManagerTest {
         mManager.destroy();
 
         verify(mTab).updateAttachment(eq(mWindowAndroid), any());
+        verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -485,6 +498,7 @@ public class ActorBackgroundActuationManagerTest {
         mManager.cleanupContext("msg_cleanup_warm");
 
         verify(mTab).updateAttachment(eq(mWindowAndroid), any());
+        verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -501,6 +515,7 @@ public class ActorBackgroundActuationManagerTest {
 
         verify(mTab, never()).updateAttachment(any(), any());
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTabPersistentStore, never()).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -534,6 +549,7 @@ public class ActorBackgroundActuationManagerTest {
         mManager.onTaskCompleted(777);
 
         verify(mTab).updateAttachment(eq(mWindowAndroid), any());
+        verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
