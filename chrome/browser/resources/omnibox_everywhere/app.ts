@@ -13,6 +13,8 @@ import '//resources/cr_components/search/animated_glow.js';
 import type {ComposeboxState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
 import type {MostVisitedElement} from '//resources/cr_components/most_visited/most_visited.js';
+import {browserProxyFactory} from '//resources/cr_components/most_visited/most_visited.mojom-webui.js';
+import type {MostVisitedInfo} from '//resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/animated_glow.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -82,6 +84,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       voiceIdleTimeoutMs_: {type: Number},
       voiceQueryLengthLimit_: {type: Number},
       callbackRouter_: {type: Object},
+      hasMostVisitedTiles_: {type: Boolean},
       mostVisitedEnabled_: {type: Boolean},
       showShortcuts_: {type: Boolean},
       showFreModal_: {type: Boolean},
@@ -117,10 +120,12 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
   protected accessor showShortcuts_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereShowShortcuts');
+  protected accessor hasMostVisitedTiles_: boolean = false;
   protected accessor showFreModal_: boolean =
       loadTimeData.getBoolean('initialShowFre');
   private eventTracker_ = new EventTracker();
   private addFileContextListenerId_: number|null = null;
+  private mostVisitedListenerId_: number|null = null;
   // TODO(crbug.com/552539106): Refactor client-side file context buffering once
   // the C++ OpenComposeboxWithFile flow (crrev.com/c/8287107) lands.
   private pendingFileContexts_:
@@ -140,6 +145,16 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.callbackRouter_.setShowFre.addListener((show: boolean) => {
       this.showFreModal_ = show;
     });
+
+    if (this.mostVisitedEnabled_ && this.showShortcuts_) {
+      this.mostVisitedListenerId_ =
+          browserProxyFactory.getInstance()
+              .callbackRouter.setMostVisitedInfo.addListener(
+                  (info: MostVisitedInfo) => {
+                    this.hasMostVisitedTiles_ =
+                        info.visible && !!info.tiles && info.tiles.length > 0;
+                  });
+    }
   }
 
   override disconnectedCallback() {
@@ -149,6 +164,11 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     if (this.addFileContextListenerId_ !== null) {
       this.callbackRouter_.removeListener(this.addFileContextListenerId_);
       this.addFileContextListenerId_ = null;
+    }
+    if (this.mostVisitedListenerId_ !== null) {
+      browserProxyFactory.getInstance().callbackRouter.removeListener(
+          this.mostVisitedListenerId_);
+      this.mostVisitedListenerId_ = null;
     }
   }
 

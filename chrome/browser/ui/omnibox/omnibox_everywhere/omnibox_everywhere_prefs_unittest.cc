@@ -9,7 +9,9 @@
 
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,6 +87,88 @@ TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_NullProfile) {
   local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
                           std::to_underlying(ShowShortcutsPrefValue::kUnset));
   EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(nullptr, &local_state_));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       ShortcutsVisible_EnterprisePolicyBothCheckboxesDisabled) {
+  // Populate enterprise shortcuts policy list.
+  {
+    ScopedListPrefUpdate update(
+        profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
+    update->Append("https://corp.example.com");
+  }
+
+  // Top toggle is ON, but both enterprise and personal shortcuts are OFF.
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                  false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  false);
+
+  // Even if fallback or explicitly enabled, should return false because no
+  // shortcuts exist to show.
+  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
+                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+
+  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
+                          std::to_underlying(ShowShortcutsPrefValue::kEnabled));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       ShortcutsVisible_EnterprisePolicyOnlyPersonalEnabled) {
+  {
+    ScopedListPrefUpdate update(
+        profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
+    update->Append("https://corp.example.com");
+  }
+
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                  false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  true);
+
+  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
+                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       ShortcutsVisible_EnterprisePolicyOnlyEnterpriseEnabled) {
+  {
+    ScopedListPrefUpdate update(
+        profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
+    update->Append("https://corp.example.com");
+  }
+
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                  true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  false);
+
+  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
+                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       ShortcutsVisible_PersonalDisabledWithoutEnterprisePolicy) {
+  // Top toggle is ON, no enterprise policy list, but personal shortcuts are
+  // OFF.
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  false);
+
+  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
+                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+
+  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
+                          std::to_underlying(ShowShortcutsPrefValue::kEnabled));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
 }
 
 }  // namespace

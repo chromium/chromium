@@ -38,7 +38,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
   ${
       this.mostVisitedEnabled_ && this.showShortcuts_ &&
       !this.showFreModal_ ? html`
-    <div id="mostVisitedContainer">
+    <div id="mostVisitedContainer" ?hidden="${!this.hasMostVisitedTiles_}">
       <cr-most-visited id="mostVisited" single-row non-editable hide-title
           max-tiles="7"></cr-most-visited>
     </div>
