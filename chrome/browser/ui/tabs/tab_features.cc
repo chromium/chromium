@@ -345,7 +345,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     pinned_translate_action_listener_ =
         std::make_unique<PinnedTranslateActionListener>(&tab);
 
-    if (!profile->IsIncognitoProfile()) {
+    if (!profile->IsPrimaryOTRProfileWithRegularParent()) {
       // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
       commerce_ui_tab_helper_ =
           GetUserDataFactory().CreateInstance<commerce::CommerceUiTabHelper>(
@@ -386,7 +386,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 
     if (base::FeatureList::IsEnabled(commerce::kInStockNotification) &&
-        !profile->IsIncognitoProfile()) {
+        !profile->IsPrimaryOTRProfileWithRegularParent()) {
       in_stock_notification_manager_ =
           GetUserDataFactory()
               .CreateInstance<commerce::InStockNotificationManager>(tab, &tab);

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -872,6 +873,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, NewIncognitoWindowMetrics) {
   EXPECT_EQ(0, action_tester.GetActionCount("NewGuestWindow"));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       CommerceUiTabHelperDisabledInIncognito) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
+
+  tabs::TabInterface* incognito_tab =
+      incognito_browser->GetTabStripModel()->GetActiveTab();
+  ASSERT_NE(incognito_tab, nullptr);
+  EXPECT_EQ(incognito_tab->GetTabFeatures()->commerce_ui_tab_helper(), nullptr);
+}
+
 class BrowserCommandsIsolatedModeTest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -904,6 +916,23 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,
   EXPECT_EQ(1, action_tester.GetActionCount("NewIncognitoWindow"));
   EXPECT_EQ(1, action_tester.GetActionCount("NewIsolatedWindow"));
   EXPECT_EQ(0, action_tester.GetActionCount("NewIncognitoWindow2"));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,
+                       CommerceUiTabHelperDisabledInIsolatedMode) {
+  tabs::TabInterface* regular_tab =
+      browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_NE(regular_tab, nullptr);
+  EXPECT_NE(regular_tab->GetTabFeatures()->commerce_ui_tab_helper(), nullptr);
+
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  tabs::TabInterface* isolated_tab =
+      isolated_browser->GetTabStripModel()->GetActiveTab();
+  ASSERT_NE(isolated_tab, nullptr);
+  EXPECT_EQ(isolated_tab->GetTabFeatures()->commerce_ui_tab_helper(), nullptr);
 }
 
 }  // namespace chrome
