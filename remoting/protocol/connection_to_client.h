@@ -139,6 +139,9 @@ class ConnectionToClient {
   // Returns an object holding the RTC event logs if supported by this
   // connection type, or nullptr otherwise.
   virtual WebrtcEventLogData* rtc_event_log() = 0;
+
+  // Returns a WeakPtr to this instance.
+  virtual base::WeakPtr<ConnectionToClient> GetWeakPtr() = 0;
 };
 
 }  // namespace remoting::protocol

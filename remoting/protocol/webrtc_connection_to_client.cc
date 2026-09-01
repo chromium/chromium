@@ -198,6 +198,10 @@ WebrtcEventLogData* WebrtcConnectionToClient::rtc_event_log() {
   return transport_->rtc_event_log();
 }
 
+base::WeakPtr<ConnectionToClient> WebrtcConnectionToClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void WebrtcConnectionToClient::OnWebrtcTransportConnecting() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Create outgoing control channel. |event_dispatcher_| is initialized later

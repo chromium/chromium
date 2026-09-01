@@ -1393,7 +1393,7 @@ void PeerSessionImpl::CreateRtcLogTransferMessageHandler(
     std::unique_ptr<protocol::MessagePipe> pipe) {
   new FileTransferMessageHandler(
       channel_name, std::move(pipe),
-      std::make_unique<RtcLogFileOperations>(connection_.get()));
+      std::make_unique<RtcLogFileOperations>(connection_->GetWeakPtr()));
 }
 
 void PeerSessionImpl::CreateActionMessageHandler(

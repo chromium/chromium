@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_event_log_data.h"
@@ -40,7 +41,7 @@ class FakeConnectionWithRtcLog : public protocol::FakeConnectionToClient {
 class RtcLogFileOperationsTest : public testing::Test {
  public:
   RtcLogFileOperationsTest()
-      : connection_(&event_log_), file_operations_(&connection_) {}
+      : connection_(&event_log_), file_operations_(connection_.GetWeakPtr()) {}
 
   void SetUp() override { reader_ = file_operations_.CreateReader(); }
 
@@ -173,6 +174,24 @@ TEST_F(RtcLogFileOperationsTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(ToString(**read_result_), "cc");
+}
+
+TEST_F(RtcLogFileOperationsTest,
+       ConnectionDestroyedBeforeOpen_RaisesProtocolError) {
+  auto connection = std::make_unique<FakeConnectionWithRtcLog>(&event_log_);
+  RtcLogFileOperations file_operations(connection->GetWeakPtr());
+  std::unique_ptr<FileOperations::Reader> reader =
+      file_operations.CreateReader();
+
+  base::test::TestFuture<FileOperations::Reader::OpenResult> future;
+  reader->Open(future.GetCallback());
+  connection.reset();
+
+  auto result = future.Take();
+  ASSERT_FALSE(result);
+  EXPECT_EQ(result.error().type(),
+            protocol::FileTransfer_Error_Type_PROTOCOL_ERROR);
+  EXPECT_EQ(reader->state(), FileOperations::State::kFailed);
 }
 
 }  // namespace remoting

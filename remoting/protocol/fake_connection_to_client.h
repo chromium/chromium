@@ -100,9 +100,8 @@ class FakeConnectionToClient : public ConnectionToClient {
   ErrorCode disconnect_error() { return disconnect_error_; }
   const NetworkSettings& network_settings() const { return network_settings_; }
 
-  base::WeakPtr<FakeConnectionToClient> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<ConnectionToClient> GetWeakPtr() override;
+  base::WeakPtr<FakeConnectionToClient> GetWeakPtrForTest();
 
  private:
   // TODO(crbug.com/40115219): Remove the requirement that ConnectionToClient

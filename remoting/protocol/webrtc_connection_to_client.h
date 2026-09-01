@@ -70,6 +70,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void ApplyNetworkSettings(const NetworkSettings& settings) override;
   PeerConnectionControls* peer_connection_controls() override;
   WebrtcEventLogData* rtc_event_log() override;
+  base::WeakPtr<ConnectionToClient> GetWeakPtr() override;
 
   // WebrtcTransport::EventHandler interface
   void OnWebrtcTransportConnecting() override;

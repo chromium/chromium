@@ -124,4 +124,13 @@ WebrtcEventLogData* FakeConnectionToClient::rtc_event_log() {
   return nullptr;
 }
 
+base::WeakPtr<ConnectionToClient> FakeConnectionToClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<FakeConnectionToClient>
+FakeConnectionToClient::GetWeakPtrForTest() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace remoting::protocol

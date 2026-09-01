@@ -305,7 +305,7 @@ void PeerSessionImplTest::CreatePeerSession() {
   std::unique_ptr<protocol::FakeConnectionToClient> connection(
       new protocol::FakeConnectionToClient());
   connection->set_client_stub(&client_stub_);
-  connection_ = connection->GetWeakPtr();
+  connection_ = connection->GetWeakPtrForTest();
 
   peer_session_ = std::make_unique<PeerSessionImpl>(
       std::move(connection), desktop_environment_factory_.get(),
