@@ -503,7 +503,6 @@ public class UrlBarCoordinator
     public void startReparenting() {
         mMediator.startReparenting(
                 new TextSelection(mUrlBar.getSelectionStart(), mUrlBar.getSelectionEnd()));
-        mUrlBar.setModelShouldIgnoreFocusChanges(true);
     }
 
     /**
@@ -524,7 +523,6 @@ public class UrlBarCoordinator
                     new UrlBarFocusChangeInfo(
                             postReparentingFocus, UrlBarFocusChangeInfo.NO_FOCUS_DIRECTION));
         }
-        mUrlBar.setModelShouldIgnoreFocusChanges(false);
     }
 
     public void maybeAcceptInlineSuggestion(KeyEvent event) {

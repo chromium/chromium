@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 /** An abstraction of the text model to show, keep track of, and update autocomplete. */
 @NullMarked
 public interface AutocompleteEditTextModelBase {
-
     /** An embedder should implement this. */
     interface Delegate {
         /**

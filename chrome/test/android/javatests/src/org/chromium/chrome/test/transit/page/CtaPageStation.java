@@ -295,13 +295,12 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      * @param fakeSuggestions If non-null, fake suggestions expected to be shown in the Omnibox.
      */
     public OmniboxFacility openOmnibox(@Nullable FakeOmniboxSuggestions fakeSuggestions) {
-        OmniboxFacility omniboxFacility = new OmniboxFacility(fakeSuggestions);
+        OmniboxFacility omniboxFacility =
+                new OmniboxFacility(/* incognito= */ mIsIncognito, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
 
         // The Omnibox opens and so does the soft keyboard.
-        clickUrlBarOrSearchBarTo()
-                .withPossiblyAlreadyFulfilled()
-                .enterFacilities(omniboxFacility, softKeyboard);
+        clickUrlBarOrSearchBarTo().enterFacilities(omniboxFacility, softKeyboard);
 
         // Close the soft keyboard before returning since autocomplete doesn't work well with the
         // GBoard displayed in the 12L AVD image (android_32_google_apis_x64_foldable_*.textpb).

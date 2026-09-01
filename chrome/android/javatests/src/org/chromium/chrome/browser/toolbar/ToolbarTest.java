@@ -228,7 +228,6 @@ public class ToolbarTest {
         ScrimManager scrimManager = mActivity.getRootUiCoordinatorForTesting().getScrimManager();
         scrimManager.disableAnimationForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
 
         assertNull("The scrim should be null.", scrimManager.getViewForTesting());
         assertFalse(

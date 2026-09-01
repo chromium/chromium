@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.test.transit.omnibox;
 
-import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
-import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
@@ -22,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.widget.scrim.ScrimView;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 
 /** Represents the Omnibox focused state showing the URL bar and accepting keyboard input. */
@@ -29,26 +30,30 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
     public static final ViewSpec<View> STATUS_ICON =
             viewSpec(withId(R.id.location_bar_status_icon));
     public static final ViewSpec<UrlBar> URL_FIELD = viewSpec(UrlBar.class, withId(R.id.url_bar));
+    public static final ViewSpec<View> LOCATION_BAR = viewSpec(withId(R.id.location_bar));
     public static final ViewSpec<View> MIC_BUTTON = viewSpec(withId(R.id.mic_button));
     public static final ViewSpec<View> DELETE_BUTTON = viewSpec(withId(R.id.delete_button));
+    private final boolean mIncognito;
     private final @Nullable FakeOmniboxSuggestions mFakeSuggestions;
     public ViewElement<UrlBar> urlBarElement;
+    public ViewElement<View> actionContainerElement;
     public OptionalViewElement<View> statusIconElement;
     public OptionalViewElement<View> micButtonElement;
     public OptionalViewElement<View> deleteButtonElement;
     final boolean mIsDesktopPlatform;
 
-    public OmniboxFacility(@Nullable FakeOmniboxSuggestions fakeSuggestions) {
+    public OmniboxFacility(boolean incognito, @Nullable FakeOmniboxSuggestions fakeSuggestions) {
         mIsDesktopPlatform =
                 ThreadUtils.runOnUiThreadBlocking(OmniboxCapabilities::isDesktopPlatform);
+        mIncognito = incognito;
         mFakeSuggestions = fakeSuggestions;
+
+        declareView(instanceOf(ScrimView.class));
 
         // Unscoped elements exist in PageStations too.
         //
         // Action buttons are 71% displayed in tablets (though the actual image is fully displayed).
         urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
-        declareEnterCondition(urlBarElement.matches(hasFocus()));
-        declareExitCondition(urlBarElement.matches(doesNotHaveFocus()));
         statusIconElement = declareOptionalView(STATUS_ICON);
         micButtonElement = declareOptionalView(MIC_BUTTON);
         deleteButtonElement = declareOptionalView(DELETE_BUTTON);

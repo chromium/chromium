@@ -53,8 +53,6 @@ public class AutocompleteEditText extends EditTextWithLeading
     /** Local copy of the OnKeyListener. */
     private @Nullable OnKeyListener mOnKeyListener;
 
-    private boolean mModelShouldIgnoreFocusChanges;
-
     public AutocompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         addTextWatcherForPaste();
@@ -197,13 +195,9 @@ public class AutocompleteEditText extends EditTextWithLeading
 
     @Override
     protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        if (mModel != null && !mModelShouldIgnoreFocusChanges) mModel.onFocusChanged(focused);
+        if (mModel != null) mModel.onFocusChanged(focused);
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
         if (!focused) setCursorVisible(false);
-    }
-
-    void setModelShouldIgnoreFocusChanges(boolean ignoreFocusChanges) {
-        mModelShouldIgnoreFocusChanges = ignoreFocusChanges;
     }
 
     @Override
