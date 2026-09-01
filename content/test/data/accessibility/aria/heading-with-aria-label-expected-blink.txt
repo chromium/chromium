@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Foo' hierarchicalLevel=1
+++++++++paragraph
+++++++++++staticText name='bar'
+++++++++++++inlineTextBox name='bar'
+++++++++paragraph
+++++++++++staticText name='baz'
+++++++++++++inlineTextBox name='baz'
+++++++heading name='foo' hierarchicalLevel=1
+++++++++paragraph
+++++++++++staticText name='bar'
+++++++++++++inlineTextBox name='bar'
+++++++++paragraph
+++++++++++staticText name='baz'
+++++++++++++inlineTextBox name='baz'
+++++++heading name='Section' hierarchicalLevel=1
+++++++++link name='Read More'
+++++++++++staticText name='Read More'
+++++++++++++inlineTextBox name='Read More'

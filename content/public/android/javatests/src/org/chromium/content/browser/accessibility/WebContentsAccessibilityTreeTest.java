@@ -1248,6 +1248,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_headingWithAriaLabel() {
+        performAriaTest("heading-with-aria-label.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_hiddenDescribedBy() {
         performAriaTest("hidden-described-by.html");
     }

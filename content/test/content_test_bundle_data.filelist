@@ -2765,6 +2765,10 @@ data/accessibility/aria/graphics-roles-expected-mac.txt
 data/accessibility/aria/graphics-roles-expected-uia-win.txt
 data/accessibility/aria/graphics-roles-expected-win.txt
 data/accessibility/aria/graphics-roles.html
+data/accessibility/aria/heading-with-aria-label-expected-android-external.txt
+data/accessibility/aria/heading-with-aria-label-expected-android.txt
+data/accessibility/aria/heading-with-aria-label-expected-blink.txt
+data/accessibility/aria/heading-with-aria-label.html
 data/accessibility/aria/hidden-described-by-expected-android-assist-data.txt
 data/accessibility/aria/hidden-described-by-expected-android-external.txt
 data/accessibility/aria/hidden-described-by-expected-android.txt

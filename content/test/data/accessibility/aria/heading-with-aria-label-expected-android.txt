@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='heading 1' heading interesting content_description='Foo'
+++android.view.View role_description='heading 1' heading interesting content_description='foo'
+++android.view.View role_description='heading 1 link' clickable heading content_description='Section'
+++++android.view.View role_description='heading 1 link' clickable focusable link interesting name='Read More'
+++++++android.widget.TextView name='Read More'

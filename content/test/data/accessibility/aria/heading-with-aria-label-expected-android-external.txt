@@ -1,0 +1,6 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View contentDescription:"Foo" heading actions:[AX_FOCUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++View contentDescription:"foo" heading actions:[AX_FOCUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++View contentDescription:"Section" clickable heading actions:[CLICK, AX_FOCUS] bundle:[chromeRole="heading", roleDescription="heading 1 link"]
+++++View text:"null" contentDescription:"Read More" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="heading 1 link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/aria/heading-with-aria-label.html#"]
+++++++TextView text:"Read More" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]

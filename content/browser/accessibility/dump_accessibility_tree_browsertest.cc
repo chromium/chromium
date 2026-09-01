@@ -2524,6 +2524,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityGraphicsRoles) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityHeadingWithAriaLabel) {
+  RunAriaTest(FILE_PATH_LITERAL("heading-with-aria-label.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableBr) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
 }

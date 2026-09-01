@@ -927,6 +927,13 @@ bool BrowserAccessibilityAndroid::ComputeIsLeaf() const {
     return true;
   }
 
+  // Headings can drop their children if the name comes from an attribute (e.g.
+  // aria-label) in order to avoid announcing the contents twice.
+  if (GetRole() == ax::mojom::Role::kHeading &&
+      GetNameFrom() == ax::mojom::NameFrom::kAttribute) {
+    return IsLeafConsideringChildren();
+  }
+
   // Headings, focusable nodes, and options/menu-items can drop their children
   // if the name comes from the node's contents in order to avoid announcing
   // the contents twice. There are some exceptions where we want nodes to be
