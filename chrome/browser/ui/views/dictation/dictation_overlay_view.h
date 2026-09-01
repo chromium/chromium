@@ -62,9 +62,11 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
  private:
   void OnFocusSelectionBoundsChanged(
       content::RenderWidgetHostView* render_widget_host_view);
+  void OnFullscreenStateChanged();
   void UpdatePosition(content::RenderFrameHost* target_rfh);
 
   base::CallbackListSubscription focus_selection_bounds_changed_subscription_;
+  base::CallbackListSubscription fullscreen_subscription_;
   content::GlobalDOMNodeId last_target_node_id_;
 
   std::unique_ptr<views::Widget> widget_;
