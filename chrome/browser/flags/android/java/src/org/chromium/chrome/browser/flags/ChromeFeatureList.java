@@ -1757,7 +1757,7 @@ public abstract class ChromeFeatureList {
                     newMutableFlagWithSafeDefault(
                             ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION, false);
     public static final MutableFlagWithSafeDefault sPdfLauncherActivity =
-            newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, true);
+            newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSafetyFrePromo =
