@@ -1129,6 +1129,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       performAction:grey_replaceText(@"")];
 
   // Save the profile.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:NavigationBarDoneButton()];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
@@ -1146,6 +1148,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       performAction:grey_replaceText(@"New York")];
 
   // Save the profile.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:NavigationBarDoneButton()];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
