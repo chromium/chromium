@@ -73,7 +73,6 @@ class CommandBufferClientMessageFilter
 
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message) override;
-  void OnGpuSwitched() override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error) override;
   void OnReturnData(const std::vector<uint8_t>& data) override;
@@ -140,13 +139,6 @@ void CommandBufferClientMessageFilter::OnConsoleMessage(
   base::AutoLock auto_lock(proxy_lock_);
   if (proxy_) {
     proxy_->OnConsoleMessage(message);
-  }
-}
-
-void CommandBufferClientMessageFilter::OnGpuSwitched() {
-  base::AutoLock auto_lock(proxy_lock_);
-  if (proxy_) {
-    proxy_->OnGpuSwitched();
   }
 }
 
@@ -331,12 +323,6 @@ void CommandBufferProxyImpl::OnConsoleMessage(const std::string& message) {
   base::AutoLock shared_state_lock(shared_state_lock_);
   if (gpu_control_client_)
     gpu_control_client_->OnGpuControlErrorMessage(message.c_str(), /*id=*/0);
-}
-
-void CommandBufferProxyImpl::OnGpuSwitched() {
-  base::AutoLock shared_state_lock(shared_state_lock_);
-  if (gpu_control_client_)
-    gpu_control_client_->OnGpuSwitched();
 }
 
 void CommandBufferProxyImpl::AddDeletionObserver(DeletionObserver* observer) {

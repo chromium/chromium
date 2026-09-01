@@ -104,7 +104,6 @@ class MockDecoderClient : public DecoderClient {
   ~MockDecoderClient() override;
 
   MOCK_METHOD(void, OnConsoleMessage, (int32_t id, const std::string& message));
-  MOCK_METHOD(void, OnGpuSwitched, ());
   MOCK_METHOD(void,
               CacheBlob,
               (gpu::GpuDiskCacheType type,

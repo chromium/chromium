@@ -363,10 +363,6 @@ base::WeakPtr<CommandBufferStub> GLES2CommandBufferStub::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void GLES2CommandBufferStub::OnGpuSwitched() {
-  client().OnGpuSwitched();
-}
-
 void GLES2CommandBufferStub::CreateGpuFenceFromHandle(
     uint32_t gpu_fence_id,
     gfx::GpuFenceHandle handle) {

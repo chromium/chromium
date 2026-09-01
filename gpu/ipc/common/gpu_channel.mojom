@@ -259,9 +259,6 @@ interface CommandBufferClient {
   // developer-facing UI such as the DevTools console.
   OnConsoleMessage(string message);
 
-  // Notifies the client of a GPU switch.
-  OnGpuSwitched();
-
   // Tells the proxy that there was an error and the command buffer had to be
   // destroyed for some reason.
   OnDestroyed(ContextLostReason reason, Error error);

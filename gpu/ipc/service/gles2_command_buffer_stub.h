@@ -37,9 +37,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
 
   base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
-  // DecoderClient implementation.
-  void OnGpuSwitched() override;
-
  private:
   // CommandBufferStub overrides:
   void CreateGpuFenceFromHandle(uint32_t id,

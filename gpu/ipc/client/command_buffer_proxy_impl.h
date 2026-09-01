@@ -196,7 +196,6 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message)
       LOCKS_EXCLUDED(shared_state_lock_) override;
-  void OnGpuSwitched() LOCKS_EXCLUDED(shared_state_lock_) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error)
       LOCKS_EXCLUDED(shared_state_lock_) override;

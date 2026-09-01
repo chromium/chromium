@@ -442,17 +442,8 @@ void GLES2Implementation::OnGpuControlErrorMessage(const char* message,
   SendErrorMessage(message, id);
 }
 
-void GLES2Implementation::OnGpuSwitched() {
-  gpu_switched_ = true;
-}
-
 GLboolean GLES2Implementation::DidGpuSwitch(gl::GpuPreference* active_gpu) {
-  if (gpu_switched_) {
-    *active_gpu = gl::GpuPreference::kDefault;
-  }
-  GLboolean result = gpu_switched_ ? GL_TRUE : GL_FALSE;
-  gpu_switched_ = false;
-  return result;
+  return GL_FALSE;
 }
 
 bool GLES2Implementation::CanCopySharedImageDirectlyToGLTexture(

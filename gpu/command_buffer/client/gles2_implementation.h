@@ -397,7 +397,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
-  void OnGpuSwitched() final;
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   void SendErrorMessage(std::string message, int32_t id);
@@ -842,8 +841,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   std::vector<const char*> cached_extensions_;
 
   std::string last_active_url_;
-
-  bool gpu_switched_ = false;
 
   base::WeakPtrFactory<GLES2Implementation> weak_ptr_factory_{this};
 };
