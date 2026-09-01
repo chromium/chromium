@@ -55,15 +55,15 @@ html {
   --tab-group-color-cyan: var(--google-cyan-900);
   --tab-group-color-orange: var(--google-orange-400);
 
-  --tab-group-refresh-color-grey-rgb: 73, 77, 82; /* #494d52 */
-  --tab-group-refresh-color-blue-rgb: 50, 92, 205; /* #325ccd */
-  --tab-group-refresh-color-red-rgb: 223, 0, 12; /* #df000c */
-  --tab-group-refresh-color-pink-rgb: 204, 6, 171; /* #cc06ab */
-  --tab-group-refresh-color-green-rgb: 26, 119, 54; /* #1a7736 */
-  --tab-group-refresh-color-yellow-rgb: 99, 117, 5; /* #637505 */
-  --tab-group-refresh-color-purple-rgb: 124, 49, 230; /* #7c31e6 */
-  --tab-group-refresh-color-cyan-rgb: 5, 124, 132; /* #057c84 */
-  --tab-group-refresh-color-orange-rgb: 204, 78, 0; /* #cc4e00 */
+  --tab-group-refresh-color-grey-rgb: 95, 99, 105; /* #5f6369 */
+  --tab-group-refresh-color-blue-rgb: 67, 107, 215; /* #436bd7 */
+  --tab-group-refresh-color-red-rgb: 219, 27, 43; /* #db1b2b */
+  --tab-group-refresh-color-pink-rgb: 200, 9, 168; /* #c809a8 */
+  --tab-group-refresh-color-green-rgb: 24, 129, 41; /* #188129 */
+  --tab-group-refresh-color-yellow-rgb: 255, 208, 54; /* #ffd036 */
+  --tab-group-refresh-color-purple-rgb: 157, 57, 243; /* #9d39f3 */
+  --tab-group-refresh-color-cyan-rgb: 0, 123, 131; /* #007b83 */
+  --tab-group-refresh-color-orange-rgb: 255, 148, 54; /* #ff9436 */
 
   --tab-group-refresh-color-grey: rgb(
     var(--tab-group-refresh-color-grey-rgb));
@@ -97,15 +97,15 @@ html {
     --tab-group-color-cyan: var(--google-cyan-300);
     --tab-group-color-orange: var(--google-orange-300);
 
-    --tab-group-refresh-color-grey-rgb: 208, 213, 221; /* #d0d5dd */
-    --tab-group-refresh-color-blue-rgb: 200, 211, 255; /* #c8d3ff */
-    --tab-group-refresh-color-red-rgb: 255, 199, 193; /* #ffc7c1 */
-    --tab-group-refresh-color-pink-rgb: 255, 195, 232; /* #ffc3e8 */
-    --tab-group-refresh-color-green-rgb: 198, 255, 199; /* #c6ffc7 */
-    --tab-group-refresh-color-yellow-rgb: 238, 255, 165; /* #eeffa5 */
-    --tab-group-refresh-color-purple-rgb: 224, 203, 255; /* #e0cbff */
-    --tab-group-refresh-color-cyan-rgb: 199, 250, 255; /* #c7faff */
-    --tab-group-refresh-color-orange-rgb: 255, 222, 167; /* #ffdea7 */
+    --tab-group-refresh-color-grey-rgb: 223, 226, 233; /* #dfe2e9 */
+    --tab-group-refresh-color-blue-rgb: 168, 188, 255; /* #a8bcff */
+    --tab-group-refresh-color-red-rgb: 255, 146, 139; /* #ff928b */
+    --tab-group-refresh-color-pink-rgb: 255, 150, 222; /* #ff96de */
+    --tab-group-refresh-color-green-rgb: 135, 235, 132; /* #87eb84 */
+    --tab-group-refresh-color-yellow-rgb: 255, 221, 122; /* #ffdd7a */
+    --tab-group-refresh-color-purple-rgb: 203, 147, 255; /* #cb93ff */
+    --tab-group-refresh-color-cyan-rgb: 136, 227, 235; /* #88e3eb */
+    --tab-group-refresh-color-orange-rgb: 255, 179, 121; /* #ffb379 */
 
     --tab-group-refresh-color-grey: rgb(
       var(--tab-group-refresh-color-grey-rgb));

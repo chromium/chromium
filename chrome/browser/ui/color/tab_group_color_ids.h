@@ -10,68 +10,68 @@
 
 namespace gfx {
 
-constexpr SkColor kTabGroupBlueDarkMode = SkColorSetRGB(0xC8, 0xD3, 0xFF);
-constexpr SkColor kTabGroupBlueLightMode = SkColorSetRGB(0x32, 0x5C, 0xCD);
+constexpr SkColor kTabGroupBlueDarkMode = SkColorSetRGB(0xA8, 0xBC, 0xFF);
+constexpr SkColor kTabGroupBlueLightMode = SkColorSetRGB(0x43, 0x6B, 0xD7);
 constexpr SkColor kTabGroupBlueChipLightMode =
     SkColorSetA(kTabGroupBlueDarkMode, 0x80);
 constexpr SkColor kTabGroupBlueChipDarkMode =
     SkColorSetA(kTabGroupBlueLightMode, 0x80);
 
-constexpr SkColor kTabGroupRedDarkMode = SkColorSetRGB(0xFF, 0xC7, 0xC1);
-constexpr SkColor kTabGroupRedLightMode = SkColorSetRGB(0xDF, 0x00, 0x0C);
+constexpr SkColor kTabGroupRedDarkMode = SkColorSetRGB(0xFF, 0x92, 0x8B);
+constexpr SkColor kTabGroupRedLightMode = SkColorSetRGB(0xDB, 0x1B, 0x2B);
 constexpr SkColor kTabGroupRedChipLightMode =
     SkColorSetA(kTabGroupRedDarkMode, 0x80);
 constexpr SkColor kTabGroupRedChipDarkMode =
     SkColorSetA(kTabGroupRedLightMode, 0x80);
 
-constexpr SkColor kTabGroupGreenDarkMode = SkColorSetRGB(0xC6, 0xFF, 0xC7);
-constexpr SkColor kTabGroupGreenLightMode = SkColorSetRGB(0x1A, 0x77, 0x36);
+constexpr SkColor kTabGroupGreenDarkMode = SkColorSetRGB(0x87, 0xEB, 0x84);
+constexpr SkColor kTabGroupGreenLightMode = SkColorSetRGB(0x18, 0x81, 0x29);
 constexpr SkColor kTabGroupGreenChipLightMode =
     SkColorSetA(kTabGroupGreenDarkMode, 0x80);
 constexpr SkColor kTabGroupGreenChipDarkMode =
     SkColorSetA(kTabGroupGreenLightMode, 0x80);
 
-constexpr SkColor kTabGroupGreyDarkMode = SkColorSetRGB(0xD0, 0xD5, 0xDD);
-constexpr SkColor kTabGroupGreyLightMode = SkColorSetRGB(0x49, 0x4D, 0x52);
+constexpr SkColor kTabGroupGreyDarkMode = SkColorSetRGB(0xDF, 0xE2, 0xE9);
+constexpr SkColor kTabGroupGreyLightMode = SkColorSetRGB(0x5F, 0x63, 0x69);
 constexpr SkColor kTabGroupGreyChipLightMode =
     SkColorSetA(kTabGroupGreyDarkMode, 0x80);
 constexpr SkColor kTabGroupGreyChipDarkMode =
     SkColorSetA(kTabGroupGreyLightMode, 0x80);
 
-constexpr SkColor kTabGroupOrangeDarkMode = SkColorSetRGB(0xFF, 0xDE, 0xA7);
-constexpr SkColor kTabGroupOrangeLightMode = SkColorSetRGB(0xCC, 0x4E, 0x00);
+constexpr SkColor kTabGroupOrangeDarkMode = SkColorSetRGB(0xFF, 0xB3, 0x79);
+constexpr SkColor kTabGroupOrangeLightMode = SkColorSetRGB(0xFF, 0x94, 0x36);
 constexpr SkColor kTabGroupOrangeChipLightMode =
     SkColorSetA(kTabGroupOrangeDarkMode, 0x80);
 constexpr SkColor kTabGroupOrangeChipDarkMode =
     SkColorSetA(kTabGroupOrangeLightMode, 0x80);
 
-constexpr SkColor kTabGroupPurpleDarkMode = SkColorSetRGB(0xE0, 0xCB, 0xFF);
-constexpr SkColor kTabGroupPurpleLightMode = SkColorSetRGB(0x7C, 0x31, 0xE6);
+constexpr SkColor kTabGroupPurpleDarkMode = SkColorSetRGB(0xCB, 0x93, 0xFF);
+constexpr SkColor kTabGroupPurpleLightMode = SkColorSetRGB(0x9D, 0x39, 0xF3);
 constexpr SkColor kTabGroupPurpleChipLightMode =
     SkColorSetA(kTabGroupPurpleDarkMode, 0x80);
 constexpr SkColor kTabGroupPurpleChipDarkMode =
     SkColorSetA(kTabGroupPurpleLightMode, 0x80);
 
-constexpr SkColor kTabGroupCyanDarkMode = SkColorSetRGB(0xC7, 0xFA, 0xFF);
-constexpr SkColor kTabGroupCyanLightMode = SkColorSetRGB(0x05, 0x7C, 0x84);
+constexpr SkColor kTabGroupCyanDarkMode = SkColorSetRGB(0x88, 0xE3, 0xEB);
+constexpr SkColor kTabGroupCyanLightMode = SkColorSetRGB(0x00, 0x7B, 0x83);
 constexpr SkColor kTabGroupCyanChipLightMode =
     SkColorSetA(kTabGroupCyanDarkMode, 0x80);
 constexpr SkColor kTabGroupCyanChipDarkMode =
     SkColorSetA(kTabGroupCyanLightMode, 0x80);
 
-constexpr SkColor kTabGroupMagentaDarkMode = SkColorSetRGB(0xFF, 0xC3, 0xE8);
-constexpr SkColor kTabGroupMagentaLightMode = SkColorSetRGB(0xCC, 0x06, 0xAB);
-constexpr SkColor kTabGroupMagentaChipLightMode =
-    SkColorSetA(kTabGroupMagentaDarkMode, 0x80);
-constexpr SkColor kTabGroupMagentaChipDarkMode =
-    SkColorSetA(kTabGroupMagentaLightMode, 0x80);
+constexpr SkColor kTabGroupPinkDarkMode = SkColorSetRGB(0xFF, 0x96, 0xDE);
+constexpr SkColor kTabGroupPinkLightMode = SkColorSetRGB(0xC8, 0x09, 0xA8);
+constexpr SkColor kTabGroupPinkChipLightMode =
+    SkColorSetA(kTabGroupPinkDarkMode, 0x80);
+constexpr SkColor kTabGroupPinkChipDarkMode =
+    SkColorSetA(kTabGroupPinkLightMode, 0x80);
 
-constexpr SkColor kTabGroupLimeDarkMode = SkColorSetRGB(0xEE, 0xFF, 0xA5);
-constexpr SkColor kTabGroupLimeLightMode = SkColorSetRGB(0x63, 0x75, 0x05);
-constexpr SkColor kTabGroupLimeChipLightMode =
-    SkColorSetA(kTabGroupLimeDarkMode, 0x80);
-constexpr SkColor kTabGroupLimeChipDarkMode =
-    SkColorSetA(kTabGroupLimeLightMode, 0x80);
+constexpr SkColor kTabGroupYellowDarkMode = SkColorSetRGB(0xFF, 0xDD, 0x7A);
+constexpr SkColor kTabGroupYellowLightMode = SkColorSetRGB(0xFF, 0xD0, 0x36);
+constexpr SkColor kTabGroupYellowChipLightMode =
+    SkColorSetA(kTabGroupYellowDarkMode, 0x80);
+constexpr SkColor kTabGroupYellowChipDarkMode =
+    SkColorSetA(kTabGroupYellowLightMode, 0x80);
 
 }  // namespace gfx
 

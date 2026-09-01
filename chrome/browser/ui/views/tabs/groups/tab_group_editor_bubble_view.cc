@@ -1172,16 +1172,6 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
   colors_.clear();
   tab_groups::ColorLabelMap color_map = tab_groups::GetTabGroupColorLabelMap();
 
-  // In the tab group color update, the yellow and pink are better described
-  // as lime and magenta. We update the tooltip accordingly.
-  if (features::IsTabGroupColorRefreshEnabled()) {
-    color_map[tab_groups::TabGroupColorId::kYellow] =
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_LIME);
-
-    color_map[tab_groups::TabGroupColorId::kPink] =
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_MAGENTA);
-  }
-
   const std::vector<tab_groups::TabGroupColorId> color_ordering =
       TabGroupModel::GetColorOrdering();
 
