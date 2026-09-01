@@ -139,7 +139,7 @@ ConvertRouterCondition(const blink::ServiceWorkerRouterCondition& c) {
   DCHECK(!or_condition.has_value() && !not_condition.has_value())
       << "nested conditions are not yet supported.";
   if (url_pattern) {
-    condition->SetUrlPattern(SafeURLPatternToJsonString(*url_pattern));
+    condition->SetUrlPattern(SafeURLPatternToString(*url_pattern));
   }
   if (request) {
     if (request->method) {

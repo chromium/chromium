@@ -35,7 +35,8 @@ enum class ServiceWorkerRouterEvaluatorErrorEnums {
 namespace content {
 
 // Used for DevTools to serialize URLPatternCondition.
-std::string SafeURLPatternToJsonString(const blink::SafeUrlPattern& pattern);
+CONTENT_EXPORT std::string SafeURLPatternToString(
+    const blink::SafeUrlPattern& pattern);
 
 // Another version of `blink::ServiceWorkerRouterRule` that has the internal ID
 // assigned by the browser.

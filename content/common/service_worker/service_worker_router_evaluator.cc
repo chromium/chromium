@@ -9,6 +9,7 @@
 #include <tuple>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -17,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/common/features.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
@@ -143,6 +145,12 @@ std::string ConvertToPatternString(const blink::SafeUrlPattern& url_pattern,
   return pattern.GeneratePatternString();
 }
 
+// Returns true if the field (a sequence of parts) represents a single full
+// wildcard; i.e. `*`.
+bool IsSimpleFullWildcardField(const std::vector<liburlpattern::Part>& parts) {
+  return parts.size() == 1 && parts[0].IsSimpleFullWildcard();
+}
+
 base::Value RequestToValue(
     const blink::ServiceWorkerRouterRequestCondition& request) {
   base::DictValue ret;
@@ -169,6 +177,24 @@ std::string RunningStatusToString(
         kNotRunning:
       return "not-running";
   }
+}
+
+// A struct representation requires default port/credentials and at least one
+// specified component (e.g. `pathname`).
+bool CanReconstructAsStruct(const blink::SafeUrlPattern& pattern) {
+  // TODO(crbug.com/540469610): Support custom port, username, and password in
+  // struct reconstruction in a follow-up.
+  if (!IsSimpleFullWildcardField(pattern.port) ||
+      !IsSimpleFullWildcardField(pattern.username) ||
+      !IsSimpleFullWildcardField(pattern.password)) {
+    return false;
+  }
+
+  return !IsSimpleFullWildcardField(pattern.protocol) ||
+         !IsSimpleFullWildcardField(pattern.hostname) ||
+         !IsSimpleFullWildcardField(pattern.pathname) ||
+         !IsSimpleFullWildcardField(pattern.search) ||
+         !IsSimpleFullWildcardField(pattern.hash);
 }
 
 base::Value OrConditionToValue(
@@ -204,6 +230,30 @@ base::DictValue SafeURLPatternToValue(const blink::SafeUrlPattern& pattern) {
   TO_VALUE(URLPatternFieldType::kSearch, "search");
   TO_VALUE(URLPatternFieldType::kHash, "hash");
 #undef TO_VALUE
+  return url_pattern_value;
+}
+
+// Converts `pattern` to a base::DictValue, omitting default wildcard fields.
+base::DictValue SafeURLPatternToURLPatternInitDict(
+    const blink::SafeUrlPattern& pattern) {
+  base::DictValue url_pattern_value;
+#define TO_VALUE_IF_NOT_SIMPLE(type, field)               \
+  do {                                                    \
+    if (!IsSimpleFullWildcardField(pattern.field)) {      \
+      auto value = ConvertToPatternString(pattern, type); \
+      url_pattern_value.Set(#field, value);               \
+    }                                                     \
+  } while (0)
+
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kProtocol, protocol);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kUsername, username);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kPassword, password);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kHostname, hostname);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kPort, port);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kPathname, pathname);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kSearch, search);
+  TO_VALUE_IF_NOT_SIMPLE(URLPatternFieldType::kHash, hash);
+#undef TO_VALUE_IF_NOT_SIMPLE
   return url_pattern_value;
 }
 
@@ -661,7 +711,14 @@ bool NotCondition::Match(
 
 namespace content {
 
-std::string SafeURLPatternToJsonString(const blink::SafeUrlPattern& pattern) {
+std::string SafeURLPatternToString(const blink::SafeUrlPattern& pattern) {
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterTypedRulesForDevTools)) {
+    if (CanReconstructAsStruct(pattern)) {
+      return base::WriteJson(SafeURLPatternToURLPatternInitDict(pattern))
+          .value_or("");
+    }
+  }
   return base::WriteJson(SafeURLPatternToValue(pattern)).value_or("");
 }
 
