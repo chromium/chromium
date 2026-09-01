@@ -3248,7 +3248,7 @@
   {
     "name": "enable-accessibility-shake-to-locate",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 160
   },
   {
     "name": "enable-accessibility-text-change-types",
