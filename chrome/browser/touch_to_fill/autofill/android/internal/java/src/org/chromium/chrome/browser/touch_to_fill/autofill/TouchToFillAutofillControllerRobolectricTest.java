@@ -52,9 +52,9 @@ public class TouchToFillAutofillControllerRobolectricTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
 
-        mCoordinator = new TouchToFillAutofillCoordinator();
-        mCoordinator.initialize(
-                mActivity, mBottomSheetController, mDelegateMock, mBottomSheetFocusHelper);
+        mCoordinator =
+                new TouchToFillAutofillCoordinator(
+                        mActivity, mBottomSheetController, mDelegateMock, mBottomSheetFocusHelper);
     }
 
     @Test

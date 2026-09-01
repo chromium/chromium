@@ -20,33 +20,32 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @NullMarked
 public class TouchToFillAutofillCoordinator implements TouchToFillAutofillComponent {
-    private final TouchToFillAutofillMediator mMediator = new TouchToFillAutofillMediator();
+    private final TouchToFillAutofillMediator mMediator;
     private @Nullable
             PropertyModelChangeProcessor<PropertyModel, TouchToFillAutofillView, PropertyKey>
             mModelChangeProcessor;
     private @Nullable TouchToFillAutofillView mView;
 
-    @Override
-    public void initialize(
+    /**
+     * Constructs a new {@link TouchToFillAutofillCoordinator}.
+     *
+     * @param context The {@link Context} for accessing string resources and creating the view.
+     * @param sheetController The {@link BottomSheetController} used to display and manage the
+     *     bottom sheet.
+     * @param delegate The {@link Delegate} handling the interaction callbacks from the view.
+     * @param bottomSheetFocusHelper The {@link BottomSheetFocusHelper} used to manage and restore
+     *     accessibility focus for the bottom sheet.
+     */
+    public TouchToFillAutofillCoordinator(
             Context context,
             BottomSheetController sheetController,
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
-        PropertyModel model =
-                new PropertyModel.Builder(TouchToFillAutofillProperties.ALL_KEYS)
-                        .with(TouchToFillAutofillProperties.DISMISS_HANDLER, mMediator::onDismissed)
-                        .with(
-                                TouchToFillAutofillProperties.ACKNOWLEDGE_HANDLER,
-                                mMediator::onNoticeAcknowledged)
-                        .with(
-                                TouchToFillAutofillProperties.SETTINGS_LINK_HANDLER,
-                                mMediator::onSettingsLinkClicked)
-                        .build();
-        mMediator.initialize(delegate, model, bottomSheetFocusHelper);
+        mMediator = new TouchToFillAutofillMediator(delegate, bottomSheetFocusHelper);
         mView = new TouchToFillAutofillView(context, sheetController);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        model, mView, TouchToFillAutofillViewBinder::bind);
+                        mMediator.getModel(), mView, TouchToFillAutofillViewBinder::bind);
     }
 
     @Override
@@ -70,6 +69,5 @@ public class TouchToFillAutofillCoordinator implements TouchToFillAutofillCompon
             mView.destroy();
             mView = null;
         }
-        mMediator.destroy();
     }
 }

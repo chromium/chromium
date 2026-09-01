@@ -101,12 +101,12 @@ public class TouchToFillAutofillRenderTest {
                         .getBottomSheetController();
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator = new TouchToFillAutofillCoordinator();
-                    mCoordinator.initialize(
-                            mActivityTestRule.getActivity(),
-                            mBottomSheetController,
-                            mDelegateMock,
-                            mBottomSheetFocusHelper);
+                    mCoordinator =
+                            new TouchToFillAutofillCoordinator(
+                                    mActivityTestRule.getActivity(),
+                                    mBottomSheetController,
+                                    mDelegateMock,
+                                    mBottomSheetFocusHelper);
                 });
     }
 

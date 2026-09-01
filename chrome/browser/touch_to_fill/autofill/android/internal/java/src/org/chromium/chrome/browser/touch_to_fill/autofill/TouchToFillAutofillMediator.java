@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.touch_to_fill.autofill;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.ACKNOWLEDGE_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SETTINGS_LINK_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.VISIBLE;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.PopupNoticeInteractions;
@@ -24,22 +25,30 @@ class TouchToFillAutofillMediator {
     static final String NOTICE_INTERACTIONS_HISTOGRAM =
             "PersonalContext.AmbientAutofill.NoticeInteractions";
 
-    private @Nullable Delegate mDelegate;
-    private @Nullable PropertyModel mModel;
-    private @Nullable BottomSheetFocusHelper mBottomSheetFocusHelper;
+    private final Delegate mDelegate;
+    private final PropertyModel mModel;
+    private final BottomSheetFocusHelper mBottomSheetFocusHelper;
     private boolean mWasDismissed;
 
-    void initialize(
-            Delegate delegate, PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
+    TouchToFillAutofillMediator(Delegate delegate, BottomSheetFocusHelper bottomSheetFocusHelper) {
         mDelegate = delegate;
-        mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
+        mModel =
+                new PropertyModel.Builder(TouchToFillAutofillProperties.ALL_KEYS)
+                        .with(DISMISS_HANDLER, this::onDismissed)
+                        .with(ACKNOWLEDGE_HANDLER, this::onNoticeAcknowledged)
+                        .with(SETTINGS_LINK_HANDLER, this::onSettingsLinkClicked)
+                        .build();
+    }
+
+    PropertyModel getModel() {
+        return mModel;
     }
 
     void show() {
         mWasDismissed = false;
-        assumeNonNull(mBottomSheetFocusHelper).registerForOneTimeUse();
-        assumeNonNull(mModel).set(VISIBLE, true);
+        mBottomSheetFocusHelper.registerForOneTimeUse();
+        mModel.set(VISIBLE, true);
         recordNoticeInteraction(PopupNoticeInteractions.SHOWN);
     }
 
@@ -50,34 +59,26 @@ class TouchToFillAutofillMediator {
     private boolean dismiss() {
         if (mWasDismissed) return false;
         mWasDismissed = true;
-        assumeNonNull(mModel).set(VISIBLE, false);
+        mModel.set(VISIBLE, false);
         return true;
     }
 
-    void onNoticeAcknowledged() {
+    private void onNoticeAcknowledged() {
         if (!dismiss()) return;
-        assumeNonNull(mDelegate).onNoticeAcknowledged();
+        mDelegate.onNoticeAcknowledged();
         recordNoticeInteraction(PopupNoticeInteractions.ACKNOWLEDGED);
     }
 
-    void onSettingsLinkClicked() {
+    private void onSettingsLinkClicked() {
         if (!dismiss()) return;
-        assumeNonNull(mDelegate).onSettingsLinkClicked();
+        mDelegate.onSettingsLinkClicked();
         recordNoticeInteraction(PopupNoticeInteractions.LINK_BUTTON_CLICKED);
     }
 
-    void onDismissed() {
+    private void onDismissed() {
         if (!dismiss()) return;
-        if (mDelegate != null) {
-            mDelegate.onDismissed();
-        }
+        mDelegate.onDismissed();
         recordNoticeInteraction(PopupNoticeInteractions.DISMISSED);
-    }
-
-    void destroy() {
-        mDelegate = null;
-        mModel = null;
-        mBottomSheetFocusHelper = null;
     }
 
     private void recordNoticeInteraction(@PopupNoticeInteractions int interaction) {
