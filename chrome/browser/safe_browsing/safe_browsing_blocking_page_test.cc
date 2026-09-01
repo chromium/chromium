@@ -601,8 +601,7 @@ class SafeBrowsingBlockingPageBrowserTest
         ->SetExpectReportUrlForHats(expect_report_url_for_hats);
   }
 
-  void SetExpectInterstitialInteractions(
-      bool expect_interstitial_interactions) {
+  void SetExpectInterstitialInteractions(int expect_interstitial_interactions) {
     static_cast<FakeSafeBrowsingUIManager*>(
         factory_.test_safe_browsing_service()->ui_manager().get())
         ->SetExpectInterstitialInteractions(expect_interstitial_interactions);

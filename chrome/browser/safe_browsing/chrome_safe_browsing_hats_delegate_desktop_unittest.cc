@@ -78,7 +78,8 @@ TEST_F(ChromeSafeBrowsingHatsDelegateDesktopTest, LaunchRedWarningSurvey) {
                    testing::Eq(std::nullopt), testing::_));
 
   delegate_->LaunchRedWarningSurvey(std::move(product_specific_string_data),
-                                    /*product_specific_bits_data=*/{});
+                                    /*product_specific_bits_data=*/{},
+                                    /*is_tab_closed=*/false);
 }
 
 TEST_F(ChromeSafeBrowsingHatsDelegateDesktopTest,
@@ -111,7 +112,8 @@ TEST_F(ChromeSafeBrowsingHatsDelegateDesktopTest,
                    testing::Eq(std::nullopt), testing::_));
 
   delegate_->LaunchRedWarningSurvey(std::move(all_string_data),
-                                    std::move(bits_data));
+                                    std::move(bits_data),
+                                    /*is_tab_closed=*/false);
 }
 
 }  // namespace safe_browsing

@@ -568,7 +568,7 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
   };
 
   hats_delegate_->LaunchRedWarningSurvey(std::move(string_data),
-                                         std::move(bits_data));
+                                         std::move(bits_data), is_tab_closed);
 }
 
 void PingManager::ReportThreatDetailsOnGotAccessToken(

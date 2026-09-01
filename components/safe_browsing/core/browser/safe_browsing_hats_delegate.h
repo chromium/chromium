@@ -28,7 +28,9 @@ class SafeBrowsingHatsDelegate {
       // Named string values sent with user survey responses.
       SurveyStringData product_specific_string_data,
       // Named bit values sent with user survey responses.
-      SurveyBitsData product_specific_bits_data) = 0;
+      SurveyBitsData product_specific_bits_data,
+      // Whether the survey is being triggered due to a tab close.
+      bool is_tab_closed) = 0;
 
   // Determines if the associated user is a candidate for a HaTS survey.
   static bool IsSurveyCandidate(const SBThreatType& threat_type,

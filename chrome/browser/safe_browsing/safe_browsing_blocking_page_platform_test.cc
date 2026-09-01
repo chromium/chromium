@@ -170,36 +170,6 @@ class SafeBrowsingBlockingPageHatsSurveyPlatformTest
   bool IsSiteIsolationEnabled() const { return GetParam(); }
 
  protected:
-  FakeSafeBrowsingUIManager* GetUiManager() {
-    return static_cast<FakeSafeBrowsingUIManager*>(
-        factory_.test_safe_browsing_service()->ui_manager().get());
-  }
-
-  void SetUpUnsafeUrl(const GURL& url) {
-    safe_browsing::SetSafeBrowsingState(
-        profile()->GetPrefs(),
-        safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-
-    profile()->GetPrefs()->SetInteger(
-        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-        enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-    profile()->GetPrefs()->SetInteger(
-        enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
-        policy::POLICY_SCOPE_MACHINE);
-    SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
-
-    SetupUrlRealTimeVerdictInCacheManager(
-        url, profile(), RTLookupResponse::ThreatInfo::DANGEROUS,
-        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
-  }
-
-  void EnableExtendedReporting(bool enable) {
-    SetSafeBrowsingState(profile()->GetPrefs(),
-                         enable ? SafeBrowsingState::ENHANCED_PROTECTION
-                                : SafeBrowsingState::STANDARD_PROTECTION);
-    SetExtendedReportingPrefForTests(profile()->GetPrefs(), enable);
-  }
-
   void SendCommand(
       security_interstitials::SecurityInterstitialCommand command) {
     auto* helper =
@@ -225,13 +195,15 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHatsSurveyPlatformTest,
                        ReportNotSentToSbButAttachedForHats) {
   GetUiManager()->SetExpectEmptyReportForHats(false);
   GetUiManager()->SetExpectReportUrlForHats(true);
-  GetUiManager()->SetExpectInterstitialInteractions(true);
+  GetUiManager()->SetExpectInterstitialInteractions(2);
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   SetUpUnsafeUrl(url);
   EnableExtendedReporting(false);
 
-  EXPECT_CALL(*GetUiManager(), OnAttachThreatDetailsAndLaunchSurvey).Times(1);
+  EXPECT_CALL(*GetUiManager(),
+              OnAttachThreatDetailsAndLaunchSurvey(/*is_tab_closed=*/false))
+      .Times(1);
 
   NavigateToURL(url, /*expect_success=*/false);
   ASSERT_TRUE(
@@ -254,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHatsSurveyPlatformTest,
                        ReportSentToSbAndAttachedForHats) {
   GetUiManager()->SetExpectEmptyReportForHats(false);
   GetUiManager()->SetExpectReportUrlForHats(true);
-  GetUiManager()->SetExpectInterstitialInteractions(true);
+  GetUiManager()->SetExpectInterstitialInteractions(2);
 
   base::RunLoop run_loop;
   SetReportSentCallback(run_loop.QuitClosure());
@@ -263,7 +235,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHatsSurveyPlatformTest,
   SetUpUnsafeUrl(url);
   EnableExtendedReporting(true);
 
-  EXPECT_CALL(*GetUiManager(), OnAttachThreatDetailsAndLaunchSurvey).Times(1);
+  EXPECT_CALL(*GetUiManager(),
+              OnAttachThreatDetailsAndLaunchSurvey(/*is_tab_closed=*/false))
+      .Times(1);
 
   NavigateToURL(url, /*expect_success=*/false);
   ASSERT_TRUE(

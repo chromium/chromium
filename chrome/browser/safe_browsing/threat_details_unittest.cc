@@ -2152,4 +2152,34 @@ TEST_P(ThreatDetailsTest, ThreatSourceToUrlApiType) {
   }
 }
 
+// Regression test for crbug.com/550941964: ensures FinishCollection does not
+// crash if WebContents is destroyed before collection finishes.
+TEST_P(ThreatDetailsTest, FinishCollection_WebContentsDestroyed) {
+  UnsafeResource resource;
+  InitResource(SB_THREAT_TYPE_URL_PHISHING, ThreatSource::LOCAL_PVER4,
+               /*is_async_check=*/true, GURL(kThreatURL), &resource);
+
+  auto report = std::make_unique<ThreatDetailsWrap>(
+      ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
+      referrer_chain_provider_.get());
+  report->SetIsHatsCandidate(true);
+  report->StartCollection();
+
+  // Destroy the WebContents before finishing collection.
+  DeleteContents();
+
+  EXPECT_CALL(*ui_manager_,
+              AttachThreatDetailsAndLaunchSurvey(profile(), testing::_,
+                                                 /*is_tab_closed=*/true))
+      .Times(1);
+
+  report->FinishCollection(/*did_proceed=*/false, /*num_visits=*/1,
+                           /*interstitial_interactions=*/nullptr);
+
+  base::RunLoop run_loop;
+  report->SetRunLoopToQuit(&run_loop);
+  run_loop.Run();
+  EXPECT_EQ(1u, report->done_callback_count());
+}
+
 }  // namespace safe_browsing

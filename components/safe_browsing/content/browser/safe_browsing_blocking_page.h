@@ -119,6 +119,14 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // navigation elsewhere.
   void OnInterstitialClosing() override;
 
+  // Assembles a minimal report request for fallback reporting or tab-close
+  // surveys.
+  std::unique_ptr<ClientSafeBrowsingReportRequest> CreateFallbackReport(
+      const security_interstitials::UnsafeResource& resource,
+      bool did_proceed,
+      int num_visits,
+      security_interstitials::InterstitialInteractionMap* interactions);
+
   // Called when the trigger manager can't send the report because the threat
   // details are unavailable. This typically happens when the user closes the
   // tab without using the interstitial UI.

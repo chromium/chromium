@@ -33,9 +33,38 @@ ChromeSafeBrowsingHatsDelegateAndroid::ChromeSafeBrowsingHatsDelegateAndroid(
   CHECK(profile_);
 }
 
+ChromeSafeBrowsingHatsDelegateAndroid::
+    ~ChromeSafeBrowsingHatsDelegateAndroid() = default;
+
 void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurvey(
     SurveyStringData product_specific_string_data,
-    SurveyBitsData product_specific_bits_data) {
+    SurveyBitsData product_specific_bits_data,
+    bool is_tab_closed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // When a tab is closed, TabModelList has not yet updated its active tab state
+  // synchronously. Post a task to allow the next tab activation to complete
+  // before querying TabModelList.
+  if (is_tab_closed) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ChromeSafeBrowsingHatsDelegateAndroid::
+                                      LaunchRedWarningSurveyInternal,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(product_specific_string_data),
+                                  std::move(product_specific_bits_data),
+                                  /*is_tab_closed=*/true));
+    return;
+  }
+
+  LaunchRedWarningSurveyInternal(std::move(product_specific_string_data),
+                                 std::move(product_specific_bits_data),
+                                 /*is_tab_closed=*/false);
+}
+
+void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurveyInternal(
+    SurveyStringData product_specific_string_data,
+    SurveyBitsData product_specific_bits_data,
+    bool is_tab_closed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // On Android, HaTS survey prompt banner is presented as a native UI banner
@@ -44,14 +73,13 @@ void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurvey(
   // to anchor the survey.
   content::WebContents* anchor_web_contents = nullptr;
   for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() == profile_) {
-      if (content::WebContents* active_contents =
-              tab_model->GetActiveWebContents()) {
-        if (!active_contents->IsBeingDestroyed()) {
-          anchor_web_contents = active_contents;
-          break;
-        }
-      }
+    if (tab_model->GetProfile() != profile_ || !tab_model->IsActiveModel()) {
+      continue;
+    }
+    content::WebContents* active_contents = tab_model->GetActiveWebContents();
+    if (active_contents && !active_contents->IsBeingDestroyed()) {
+      anchor_web_contents = active_contents;
+      break;
     }
   }
 
@@ -65,11 +93,16 @@ void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurvey(
     return;
   }
 
-  internal::ReferringAppInfo referring_app_info =
-      GetReferringAppInfo(anchor_web_contents, /*get_webapk_info=*/false);
-  if (referring_app_info.has_referring_app()) {
-    product_specific_string_data[safe_browsing::kReferringApp] =
-        std::move(referring_app_info.referring_app_name);
+  // Only query anchor_web_contents for referring app if the tab was NOT closed.
+  // When a tab is closed, anchor_web_contents is an adjacent tab whose
+  // referring app may be completely unrelated to the interstitial tab.
+  if (!is_tab_closed) {
+    internal::ReferringAppInfo referring_app_info =
+        GetReferringAppInfo(anchor_web_contents);
+    if (referring_app_info.has_referring_app()) {
+      product_specific_string_data[safe_browsing::kReferringApp] =
+          std::move(referring_app_info.referring_app_name);
+    }
   }
 
   std::string trigger_id =
@@ -96,6 +129,18 @@ void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurvey(
       HatsService::SurveyOptions(
           /*custom_invitation=*/l10n_util::GetStringUTF16(
               IDS_SAFE_BROWSING_HATS_CUSTOM_INVITATION)));
+}
+
+internal::ReferringAppInfo
+ChromeSafeBrowsingHatsDelegateAndroid::GetReferringAppInfo(
+    content::WebContents* web_contents) {
+  if (referring_app_name_for_testing_.has_value()) {
+    internal::ReferringAppInfo info;
+    info.referring_app_name = *referring_app_name_for_testing_;
+    return info;
+  }
+  return safe_browsing::GetReferringAppInfo(web_contents,
+                                            /*get_webapk_info=*/false);
 }
 
 }  // namespace safe_browsing

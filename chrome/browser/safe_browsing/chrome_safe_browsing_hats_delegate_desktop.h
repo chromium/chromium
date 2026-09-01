@@ -18,9 +18,9 @@ class ChromeSafeBrowsingHatsDelegateDesktop : public SafeBrowsingHatsDelegate {
   ~ChromeSafeBrowsingHatsDelegateDesktop() override = default;
 
   // SafeBrowsingHatsDelegate:
-  void LaunchRedWarningSurvey(
-      SurveyStringData product_specific_string_data,
-      SurveyBitsData product_specific_bits_data) override;
+  void LaunchRedWarningSurvey(SurveyStringData product_specific_string_data,
+                              SurveyBitsData product_specific_bits_data,
+                              bool is_tab_closed) override;
 
  private:
   // raw_ptr is safe because this object is owned by keyed service, which will
