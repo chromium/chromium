@@ -15835,6 +15835,23 @@
             ]
         }
     ],
+    "PreFirstRunDesktopRefresh": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreFirstRunDesktopRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrecomputeSiteInfo": [
         {
             "platforms": [
