@@ -156,6 +156,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Crashed"/>
 </enum>
 
+<enum name="ArcContentUrlAccessCheckResult">
+  <int value="0" label="Denied"/>
+  <int value="1" label="Cache Hit"/>
+  <int value="2" label="Database Hit"/>
+</enum>
+
+<enum name="ArcContentUrlGrantAccessResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Browser Context"/>
+  <int value="2" label="No Operation Runner"/>
+</enum>
+
 <enum name="ArcCorePriAbiMigEvent">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 

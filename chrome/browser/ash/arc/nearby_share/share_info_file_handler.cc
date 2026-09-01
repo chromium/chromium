@@ -12,11 +12,13 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
@@ -139,7 +141,23 @@ ShareInfoFileHandler::ShareInfoFileHandler(
 
   file_config_.directory = directory;
   if (share_info->files.has_value()) {
+    auto* runner =
+        ArcFileSystemOperationRunner::GetForBrowserContext(browser_context_);
+    if (!runner) {
+      LOG(WARNING) << "ArcFileSystemOperationRunner is unavailable. "
+                   << "Content URL access will not be granted.";
+      base::UmaHistogramEnumeration(
+          "Arc.FileSystem.ContentUrlGrantAccessResult",
+          arc::ArcContentUrlGrantAccessResult::kNoOperationRunner);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Arc.FileSystem.ContentUrlGrantAccessResult",
+          arc::ArcContentUrlGrantAccessResult::kSuccess);
+    }
     for (const auto& file_info : share_info->files.value()) {
+      if (runner) {
+        runner->GrantAccessToContentUrl(file_info->content_uri);
+      }
       GURL externalFileUrl = ArcUrlToExternalFileUrl(file_info->content_uri);
       file_config_.external_urls.emplace_back(externalFileUrl);
       file_config_.mime_types.emplace_back(file_info->mime_type);
