@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -73,6 +74,7 @@ public class SettingsPageSigninTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @DisabledTest(message = "crbug.com/555360488")
     public void testSignOutInSingleColumnThenTransitionToMultiColumn() {
         // Sign in.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
