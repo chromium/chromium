@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -170,9 +171,7 @@ public class ImmersiveVideoPlaybackActivityTest {
                             PROJECTION_TYPE,
                             pendingState.mProjectionType.intValue());
                     Assert.assertEquals(
-                            "Is recommended mismatch",
-                            true,
-                            pendingState.mIsRecommended.booleanValue());
+                            "Is recommended mismatch", TriState.TRUE, pendingState.mIsRecommended);
                     Assert.assertEquals(
                             "Duration mismatch", DURATION_MS, pendingState.mDurationMs.longValue());
                     Assert.assertEquals(

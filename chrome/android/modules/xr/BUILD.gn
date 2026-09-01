@@ -93,6 +93,7 @@ android_library("java") {
     "//base:task_executor_java",
     "//base:tasks_java",
     "//base:token_java",
+    "//base:tristate_java",
     "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/android:xr_java",
@@ -225,6 +226,7 @@ android_library("javatests") {
     ":java",
     ":javatests_manifest_java",
     "//base:flagged_apis_java",
+    "//base:tristate_java",
     "//chrome/android/javatests:chrome_test_java_helper",
     "//components/thin_webview:java",
   ]
