@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
@@ -145,25 +145,23 @@ TEST(CacheEntryKeyTest, StdHash) {
   EXPECT_EQ(key_set.count(CacheEntryKey("non_existent_key")), 0u);
 }
 
-class CacheEntryKeyFeatureTest : public testing::TestWithParam<bool> {
+class CacheEntryKeyFeatureTest : public testing::TestWithParam<bool>,
+                                 public net::WithTaskEnvironment {
  public:
   static std::string ParamToString(const testing::TestParamInfo<bool>& info) {
     return info.param ? "RendererAccessibleHttpCacheEnabled"
                       : "RendererAccessibleHttpCacheDisabled";
   }
 
-  void SetUp() override {
+  CacheEntryKeyFeatureTest() {
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
+      AddScopedFeatureList().InitAndEnableFeature(
           net::features::kRendererAccessibleHttpCache);
     } else {
-      feature_list_.InitAndDisableFeature(
+      AddScopedFeatureList().InitAndDisableFeature(
           net::features::kRendererAccessibleHttpCache);
     }
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

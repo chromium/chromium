@@ -11,39 +11,34 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_view_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
 
 class SqlSharedCacheIsolatedDatabaseReaderTest
-    : public testing::TestWithParam<bool> {
+    : public testing::TestWithParam<bool>,
+      public net::WithTaskEnvironment {
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return info.param ? "WalEnabled" : "WalDisabled";
   }
 
+  SqlSharedCacheIsolatedDatabaseReaderTest() {
+    AddScopedFeatureList().InitWithFeaturesAndParameters(
+        {{net::features::kRendererAccessibleHttpCache,
+          {{net::features::kRendererAccessibleHttpCacheWalMode.name,
+            GetParam() ? "true" : "false"}}}},
+        {});
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    if (GetParam()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{net::features::kRendererAccessibleHttpCache,
-            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
-              "true"}}}},
-          {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{net::features::kRendererAccessibleHttpCache,
-            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
-              "false"}}}},
-          {});
-    }
   }
 
  protected:
@@ -84,8 +79,6 @@ class SqlSharedCacheIsolatedDatabaseReaderTest
     return std::move(pending_file_set.value());
   }
 
-  base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
 

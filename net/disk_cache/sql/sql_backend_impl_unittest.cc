@@ -25,8 +25,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
@@ -50,6 +48,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/test/gtest_util.h"
+#include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -124,9 +123,11 @@ std::string GetExpectedFakeIndexContents() {
        backend_field_trial ? backend_field_trial->group_name() : ""});
 }
 
-class SqlBackendImplTest : public testing::Test {
+class SqlBackendImplTest : public net::TestWithTaskEnvironment {
  public:
-  SqlBackendImplTest() = default;
+  SqlBackendImplTest()
+      : net::TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~SqlBackendImplTest() override = default;
 
   // Sets up a temporary directory and a background task runner for each test.
@@ -272,9 +273,6 @@ class SqlBackendImplTest : public testing::Test {
 
   void RunDelayedPostInitializationTasksTest();
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
   base::ScopedTempDir temp_dir_;
 };
 
@@ -316,8 +314,7 @@ TEST_F(SqlBackendImplTest, InitWithFakeIndexFile) {
 
 TEST_F(SqlBackendImplTest, ExperimentGroupChangeResetsCacheWhenParamSet) {
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitFromCommandLine(
+    AddScopedFeatureList().InitFromCommandLine(
         "DiskCacheBackendExperiment<DiskCacheBackendExperiment.GroupA:"
         "DiskCacheBackendResetCacheOnGroupChange/true",
         "FeatureParamWithCache");
@@ -337,8 +334,7 @@ TEST_F(SqlBackendImplTest, ExperimentGroupChangeResetsCacheWhenParamSet) {
   }
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitFromCommandLine(
+    AddScopedFeatureList().InitFromCommandLine(
         "DiskCacheBackendExperiment<DiskCacheBackendExperiment.GroupB:"
         "DiskCacheBackendResetCacheOnGroupChange/true",
         "FeatureParamWithCache");
@@ -362,8 +358,7 @@ TEST_F(SqlBackendImplTest, ExperimentGroupChangeResetsCacheWhenParamSet) {
 TEST_F(SqlBackendImplTest,
        ExperimentGroupChangeDoesNotResetCacheWhenParamNotSet) {
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitFromCommandLine(
+    AddScopedFeatureList().InitFromCommandLine(
         "DiskCacheBackendExperiment<TrialC.GroupA:dummy/1",
         "FeatureParamWithCache");
 
@@ -382,8 +377,7 @@ TEST_F(SqlBackendImplTest,
   }
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitFromCommandLine(
+    AddScopedFeatureList().InitFromCommandLine(
         "DiskCacheBackendExperiment<TrialD.GroupB:dummy/1",
         "FeatureParamWithCache");
 
@@ -402,8 +396,7 @@ TEST_F(SqlBackendImplTest,
 
 TEST_F(SqlBackendImplTest, WalModeChangeResetsCache) {
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
         net::features::kDiskCacheBackendExperiment,
         {{"SqlDiskCacheWalMode", "false"}});
 
@@ -421,8 +414,7 @@ TEST_F(SqlBackendImplTest, WalModeChangeResetsCache) {
   }
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
         net::features::kDiskCacheBackendExperiment,
         {{"SqlDiskCacheWalMode", "true"}});
 
@@ -438,8 +430,7 @@ TEST_F(SqlBackendImplTest, WalModeChangeResetsCache) {
 }
 
 TEST_F(SqlBackendImplTest, SerialInit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{"SqlDiskCacheSerialInitialize", "true"},
        {"SqlDiskCacheShardCount", "2"}});
@@ -455,8 +446,7 @@ TEST_F(SqlBackendImplTest, SerialInit) {
 }
 
 TEST_F(SqlBackendImplTest, SerialInitShardFail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{"SqlDiskCacheSerialInitialize", "true"},
        {"SqlDiskCacheShardCount", "2"}});
@@ -475,8 +465,7 @@ TEST_F(SqlBackendImplTest, SerialInitShardFail) {
 }
 
 TEST_F(SqlBackendImplTest, SerialInitFail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{"SqlDiskCacheSerialInitialize", "true"}});
 
@@ -813,7 +802,7 @@ TEST_F(SqlBackendImplTest, IteratorParallelWriteDataAndClose) {
   auto* entry = create_result.ReleaseEntry();
 
   // Advance clock to ensure `last_used` time is distinct from creation.
-  task_environment_.AdvanceClock(base::Minutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Create an iterator and attempt to open the entry concurrently.
   auto iter = backend->CreateIterator();
@@ -903,7 +892,7 @@ TEST_F(SqlBackendImplTest, IteratorParallelReadDataAndClose) {
   auto* entry = create_result.ReleaseEntry();
 
   // Advance clock to ensure `last_used` time is distinct from creation.
-  task_environment_.AdvanceClock(base::Minutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Create an iterator and attempt to open the entry concurrently.
   auto iter = backend->CreateIterator();
@@ -1091,7 +1080,7 @@ TEST_F(SqlBackendImplTest, OpenOrCreateEntryEntryRacesWithIteratorAndDoom) {
   EXPECT_EQ(entry->GetLastUsed(), first_entry_creation_time);
   entry->Close();
 
-  task_environment_.AdvanceClock(base::Minutes(1));
+  AdvanceClock(base::Minutes(1));
 
   auto iter = backend->CreateIterator();
   // 2. Start opening the entry via an iterator. This is an async operation.
@@ -1144,7 +1133,7 @@ TEST_F(SqlBackendImplTest, OpenEntryRacesWithIteratorAndWriteData) {
   EXPECT_EQ(entry->GetLastUsed(), first_entry_creation_time);
   entry->Close();
 
-  task_environment_.AdvanceClock(base::Minutes(1));
+  AdvanceClock(base::Minutes(1));
 
   const std::string kHeadData = "header_data";
   // 2. Start opening the entry via an iterator. This is an async operation.
@@ -1209,7 +1198,7 @@ TEST_F(SqlBackendImplTest, OnExternalCacheHitRacesWithOpen) {
   created_entry->Close();
 
   // 2. Advance time.
-  task_environment_.AdvanceClock(base::Minutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // 3. Start opening the entry. This is an async operation.
   base::test::TestFuture<EntryResult> open_future;
@@ -1487,8 +1476,7 @@ TEST_F(SqlBackendImplTest, AbortPendingReadData) {
 // Tests that if a pending WriteData operation is aborted (e.g., due to backend
 // destruction), the callback is invoked with net::ERR_ABORTED.
 TEST_F(SqlBackendImplTest, AbortPendingWriteData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
 
@@ -1853,8 +1841,7 @@ TEST_F(SqlBackendImplTest,
 }
 
 TEST_F(SqlBackendImplTest, SpeculativeCreateEntryOptimisticWriteOnBufferFlush) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "10"}});
   auto backend = CreateBackendAndInit();
@@ -1911,8 +1898,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryOptimisticWriteOnBufferFlush) {
 }
 
 TEST_F(SqlBackendImplTest, SpeculativeCreateEntryNonOptmisticWrite) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "10"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10"}});
@@ -2010,8 +1996,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryWithDbFailure) {
 }
 
 TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureOnOptmisticWrite) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "20"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10"}});
@@ -2073,8 +2058,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureOnOptmisticWrite) {
 }
 
 TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureOnNonOptmisticWrite) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "10"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10"}});
@@ -2113,8 +2097,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureOnNonOptmisticWrite) {
 }
 
 TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10"}});
   auto backend = CreateBackendAndInit();
@@ -2158,8 +2141,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {
 }
 
 TEST_F(SqlBackendImplTest, OptimisticWriteBufferSize) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
@@ -2198,8 +2180,7 @@ TEST_F(SqlBackendImplTest, OptimisticWriteBufferSize) {
 }
 
 TEST_F(SqlBackendImplTest, OptimisticWriteBufferLifecycle) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
@@ -2268,8 +2249,7 @@ TEST_F(SqlBackendImplTest, OptimisticWriteBufferLifecycle) {
 }
 
 TEST_F(SqlBackendImplTest, OptimisticWriteFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
@@ -2461,7 +2441,7 @@ void SqlBackendImplTest::RunDelayedPostInitializationTasksTest() {
   }
 
   // Fast forward time to trigger the delayed post-initialization tasks.
-  task_environment_.FastForwardBy(kSqlBackendPostInitializationTasksDelay);
+  FastForwardBy(kSqlBackendPostInitializationTasksDelay);
 
   backend->RunUntilAllTasksCompleteForTest();
 
@@ -2490,8 +2470,7 @@ TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
 
 TEST_F(SqlBackendImplTest,
        DelayedPostInitializationTasksWithLoadIndexOnInitFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       {{net::features::kDiskCacheBackendExperiment,
         {{net::features::kDiskCacheBackendParam.name, "sql"},
          {net::features::kSqlDiskCacheLoadIndexOnInit.name, "true"}}}},
@@ -2702,8 +2681,7 @@ TEST_F(SqlBackendImplTest, SetDataHintsAndDoomAndWriteOptimistically) {
 }
 
 TEST_F(SqlBackendImplTest, SetEntryDataHintsWithSpeculativeCreateEntryFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10"}});
   auto backend = CreateBackendAndInit();
@@ -2793,8 +2771,7 @@ TEST_F(SqlBackendImplTest, OptimisticWriteIndexMismatchAfterDoomAllEntries) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBuffering) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"},
@@ -2846,8 +2823,7 @@ TEST_F(SqlBackendImplTest, WriteBuffering) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
@@ -2886,8 +2862,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
@@ -2925,8 +2900,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingGlobalLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "100"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1000"}});
@@ -2975,8 +2949,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingGlobalLimit) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
@@ -3021,8 +2994,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1000"},
@@ -3092,8 +3064,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
        {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
@@ -3327,8 +3298,7 @@ TEST_F(SqlBackendImplTest, ReadCachingSparse) {
 }
 
 TEST_F(SqlBackendImplTest, ReadCachingGlobalLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxReadBufferTotalSize.name, "90"}});
 
@@ -3403,8 +3373,7 @@ TEST_F(SqlBackendImplTest, ReadCachingGlobalLimit) {
 }
 
 TEST_F(SqlBackendImplTest, GetAvailableRangeWithBufferedWrite) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "1024"},
        {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "1024"}});
@@ -3561,8 +3530,7 @@ TEST_F(SqlBackendImplTest, CalculateSizeOfEntriesBetweenFlushesBuffers) {
 // is pending (blocked by another operation) and the entry is in 'Creating'
 // state.
 TEST_F(SqlBackendImplTest, AsyncDoomEntryAndWrite) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "250"}});
   auto backend = CreateBackendAndInit();
@@ -3616,8 +3584,7 @@ TEST_F(SqlBackendImplTest, AsyncDoomEntryAndWrite) {
 // operation is pending (blocked by another operation) and the entry is in
 // 'Creating' state.
 TEST_F(SqlBackendImplTest, AsyncDoomEntryAndFlushBuffer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "250"}});
   auto backend = CreateBackendAndInit();
@@ -3770,8 +3737,7 @@ TEST_F(SqlBackendImplTest, SparseDataExceedsMaxFileSizeBackwards) {
 }
 
 TEST_F(SqlBackendImplTest, ReadFromSharedCacheViaOpenEntry) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kRendererAccessibleHttpCache);
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -3813,8 +3779,7 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheViaOpenEntry) {
 }
 
 TEST_F(SqlBackendImplTest, ReadFromSharedCacheViaOpenNextEntry) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kRendererAccessibleHttpCache);
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -3861,8 +3826,7 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheViaOpenNextEntry) {
 }
 
 TEST_F(SqlBackendImplTest, ReadFromSharedCacheWithLargerBuffer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kRendererAccessibleHttpCache);
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -3895,8 +3859,7 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheWithLargerBuffer) {
 }
 
 TEST_F(SqlBackendImplTest, ReadFromSharedCacheHandleNotFound) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kRendererAccessibleHttpCache);
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -3936,31 +3899,12 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheHandleNotFound) {
   backend->RunUntilAllTasksCompleteForTest();
 }
 
-// Helper base class to ensure `base::test::ScopedFeatureList` is initialized
-// before `SqlBackendImplTest`'s `TaskEnvironment` starts and destroyed only
-// after `TaskEnvironment` has shut down and joined all worker threads.
-//
-// In C++, base classes are constructed in the order of declaration and
-// destructed in reverse order. Inheriting `SqlBackendImplFeatureInitializer`
-// before `SqlBackendImplTest` prevents `base::FeatureList` from being deleted
-// while background threads in the task environment are still running and
-// querying feature flags (e.g. on Android during thread creation; see
-// crbug.com/359904334).
-class SqlBackendImplFeatureInitializer {
+class SqlBackendImplSharedCacheTest : public SqlBackendImplTest {
  public:
-  SqlBackendImplFeatureInitializer() {
-    feature_list_.InitAndEnableFeature(
+  SqlBackendImplSharedCacheTest() {
+    AddScopedFeatureList().InitAndEnableFeature(
         net::features::kRendererAccessibleHttpCache);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class SqlBackendImplSharedCacheTest : private SqlBackendImplFeatureInitializer,
-                                      public SqlBackendImplTest {
- public:
-  SqlBackendImplSharedCacheTest() = default;
 
  protected:
   void WriteResponseInfoToEntry(disk_cache::Entry* entry,
@@ -4888,7 +4832,7 @@ class SqlBackendImplSharedCacheWriteTest
 
     // If we want another entry in the same shared cache (same NIK)
     if (WithOtherEntry()) {
-      task_environment_.FastForwardBy(base::Seconds(1));
+      FastForwardBy(base::Seconds(1));
       base::Time response_time2 = base::Time::Now();
 
       auto* entry2 = CreateEntryAndWriteData(backend.get(), kOtherKey, data);

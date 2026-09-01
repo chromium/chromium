@@ -4,8 +4,8 @@
 
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,18 +20,15 @@ const SqlPersistentStoreResId kResId2(2);
 
 }  // namespace
 
-class SqlPersistentStoreInMemoryIndexTest
-    : public testing::TestWithParam<bool> {
+class SqlPersistentStoreInMemoryIndexTest : public testing::TestWithParam<bool>,
+                                            public net::WithTaskEnvironment {
  public:
   SqlPersistentStoreInMemoryIndexTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
         net::features::kDiskCacheBackendExperiment,
         {{"SqlDiskCacheConsolidatedInMemoryIndex",
           GetParam() ? "true" : "false"}});
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(SqlPersistentStoreInMemoryIndexTest, Insert) {

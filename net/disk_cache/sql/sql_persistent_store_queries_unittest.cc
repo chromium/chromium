@@ -14,8 +14,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
@@ -23,6 +21,7 @@
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/disk_cache/sql/test_util.h"
+#include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,18 +41,21 @@ constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
     Query::kIndex_BlobsResIdStart,
 });
 
-class SqlPersistentStoreQueriesTest : public testing::TestWithParam<bool> {
- protected:
-  void SetUp() override {
+class SqlPersistentStoreQueriesTest : public testing::TestWithParam<bool>,
+                                      public net::WithTaskEnvironment {
+ public:
+  SqlPersistentStoreQueriesTest() {
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
+      AddScopedFeatureList().InitAndEnableFeature(
           net::features::kRendererAccessibleHttpCache);
     } else {
-      feature_list_.InitAndDisableFeature(
+      AddScopedFeatureList().InitAndDisableFeature(
           net::features::kRendererAccessibleHttpCache);
     }
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
+
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   // Creates a database file with the correct schema in the temporary directory.
   // This is done by instantiating and initializing a SqlPersistentStore, which
@@ -98,8 +100,6 @@ class SqlPersistentStoreQueriesTest : public testing::TestWithParam<bool> {
   base::ScopedTempDir temp_dir_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
   disk_cache::SqlAsyncTaskManager async_task_manager_;
 };
 

@@ -13,39 +13,34 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "net/base/features.h"
 #include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
 
-class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
+class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool>,
+                                           public net::WithTaskEnvironment {
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return info.param ? "WalEnabled" : "WalDisabled";
   }
 
+  SqlSharedCacheIsolatedDatabaseTest() {
+    AddScopedFeatureList().InitWithFeaturesAndParameters(
+        {{net::features::kRendererAccessibleHttpCache,
+          {{net::features::kRendererAccessibleHttpCacheWalMode.name,
+            GetParam() ? "true" : "false"}}}},
+        {});
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-    if (GetParam()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{net::features::kRendererAccessibleHttpCache,
-            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
-              "true"}}}},
-          {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{net::features::kRendererAccessibleHttpCache,
-            {{net::features::kRendererAccessibleHttpCacheWalMode.name,
-              "false"}}}},
-          {});
-    }
   }
 
  protected:
@@ -62,8 +57,6 @@ class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
     return db.blob_handle_holders_.empty();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
