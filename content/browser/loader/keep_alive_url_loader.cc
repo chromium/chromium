@@ -1494,39 +1494,35 @@ void KeepAliveURLLoader::LogFetchKeepAliveRequestMetric(
   const std::string histogram_name = base::StrCat(
       {"FetchKeepAlive.Requests2.", request_state_name, ".Browser"});
 
-  // When under the experiment keep a local cache of resolved histograms to
-  // avoid contention on the global lock that is taken by histogram functions.
-  if (base::features::IsReducePPMsEnabled()) {
-    static base::NoDestructor<
-        absl::flat_hash_map<std::string, base::HistogramBase*>>
-        histograms;
+  // Keep a local cache of resolved histograms to avoid contention on the global
+  // lock that is taken by histogram functions.
+  static base::NoDestructor<
+      absl::flat_hash_map<std::string, base::HistogramBase*>>
+      histograms;
 
-    // Verify that `histograms` is not read/modified by more than one thread.
-    // Since it's static it will be used by any code that calls into the
-    // function.
-    static WrappedThreadChecker* thread_checker = new WrappedThreadChecker;
-    thread_checker->Check();
+  // Verify that `histograms` is not read/modified by more than one thread.
+  // Since it's static it will be used by any code that calls into the
+  // function.
+  static WrappedThreadChecker* thread_checker = new WrappedThreadChecker;
+  thread_checker->Check();
 
-    auto it = histograms->find(histogram_name);
-    if (it != histograms->end()) {
-      it->second->Add(static_cast<int32_t>(sample_type));
-    } else {
-      // TODO(crbug.com/424432184): This is messy and leaks information from
-      // LinearHistogram. If the experiment succeeds implement
-      // GetUmaHistogramEnumerationFactory before cleaning up the flag.
-      int32_t max_value =
-          static_cast<int32_t>(FetchKeepAliveRequestMetricType::kMaxValue);
-      base::HistogramBase* histo = base::LinearHistogram::FactoryGet(
-          histogram_name, /*minimum=*/1,
-          /*maximum=*/max_value + 1,
-          /*bucket_count=*/max_value + 2,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-      histo->Add(static_cast<int32_t>(sample_type));
-
-      (*histograms)[histogram_name] = histo;
-    }
+  auto it = histograms->find(histogram_name);
+  if (it != histograms->end()) {
+    it->second->Add(static_cast<int32_t>(sample_type));
   } else {
-    base::UmaHistogramEnumeration(histogram_name, sample_type);
+    // TODO(crbug.com/424432184): This is messy and leaks information from
+    // LinearHistogram. If the experiment succeeds implement
+    // GetUmaHistogramEnumerationFactory before cleaning up the flag.
+    int32_t max_value =
+        static_cast<int32_t>(FetchKeepAliveRequestMetricType::kMaxValue);
+    base::HistogramBase* histo = base::LinearHistogram::FactoryGet(
+        histogram_name, /*minimum=*/1,
+        /*maximum=*/max_value + 1,
+        /*bucket_count=*/max_value + 2,
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    histo->Add(static_cast<int32_t>(sample_type));
+
+    (*histograms)[histogram_name] = histo;
   }
 
   if (bool is_context_detached = !GetInitiator();
