@@ -31,28 +31,28 @@ import org.chromium.ui.util.AttrUtils;
 @NullMarked
 class OmniboxChipViewBinder {
     public static void bind(PropertyModel model, MaterialButton view, PropertyKey propertyKey) {
-        if (TEXT.equals(propertyKey)) {
+        if (AVAILABLE_WIDTH.equals(propertyKey)) {
+            int availableWidth = model.get(AVAILABLE_WIDTH);
+            view.setVisibility(availableWidth > 0 ? View.VISIBLE : View.GONE);
+            view.setMaxWidth(availableWidth);
             updatePaddingAndText(view, model);
+        } else if (CONTENT_DESC.equals(propertyKey)) {
+            String contentDesc = model.get(CONTENT_DESC);
+            view.setContentDescription(contentDesc);
+            TooltipCompat.setTooltipText(view, contentDesc);
         } else if (ICON.equals(propertyKey)) {
             Drawable icon = model.get(ICON);
             if (icon != null) {
                 icon = scaleIcon(view.getContext(), icon);
             }
             view.setIcon(icon);
-        } else if (CONTENT_DESC.equals(propertyKey)) {
-            String contentDesc = model.get(CONTENT_DESC);
-            view.setContentDescription(contentDesc);
-            TooltipCompat.setTooltipText(view, contentDesc);
         } else if (ON_CLICK.equals(propertyKey)) {
             Runnable onClick = model.get(ON_CLICK);
             view.setOnClickListener(
                     v -> {
                         if (onClick != null) onClick.run();
                     });
-        } else if (AVAILABLE_WIDTH.equals(propertyKey)) {
-            int availableWidth = model.get(AVAILABLE_WIDTH);
-            view.setVisibility(availableWidth > 0 ? View.VISIBLE : View.GONE);
-            view.setMaxWidth(availableWidth);
+        } else if (TEXT.equals(propertyKey)) {
             updatePaddingAndText(view, model);
         }
     }

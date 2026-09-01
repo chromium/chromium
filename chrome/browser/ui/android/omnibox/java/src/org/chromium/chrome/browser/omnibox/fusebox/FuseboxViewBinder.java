@@ -95,9 +95,9 @@ class FuseboxViewBinder {
             }
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
-        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE) {
-            reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.FUSEBOX_LAYOUT_MODE) {
+            reanchorViewsForCompactFusebox(model, view);
+        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE) {
             reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE) {
             updatePlusButtonVisuals(model, view);

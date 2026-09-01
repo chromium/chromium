@@ -14,24 +14,24 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** The properties for the omnibox chip component. */
 @NullMarked
 class OmniboxChipProperties {
-    /** The text shown in the chip. */
-    public static final WritableObjectPropertyKey<String> TEXT = new WritableObjectPropertyKey<>();
-
-    /** The icon shown in the chip. */
-    public static final WritableObjectPropertyKey<Drawable> ICON =
-            new WritableObjectPropertyKey<>();
+    /** The available width for the chip to display itself. */
+    public static final WritableIntPropertyKey AVAILABLE_WIDTH = new WritableIntPropertyKey();
 
     /** The content description of the chip. */
     public static final WritableObjectPropertyKey<String> CONTENT_DESC =
+            new WritableObjectPropertyKey<>();
+
+    /** The icon shown in the chip. */
+    public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
 
     /** The callback to be notified when the chip is clicked. */
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
             new WritableObjectPropertyKey<>();
 
-    /** The available width for the chip to display itself. */
-    public static final WritableIntPropertyKey AVAILABLE_WIDTH = new WritableIntPropertyKey();
+    /** The text shown in the chip. */
+    public static final WritableObjectPropertyKey<String> TEXT = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {TEXT, ICON, CONTENT_DESC, ON_CLICK, AVAILABLE_WIDTH};
+            new PropertyKey[] {AVAILABLE_WIDTH, CONTENT_DESC, ICON, ON_CLICK, TEXT};
 }
