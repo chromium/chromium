@@ -401,7 +401,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   virtual void SetTotalBytes(int64_t total_bytes);
 
   virtual void OnAllDataSaved(int64_t total_bytes,
-                              std::unique_ptr<crypto::SecureHash> hash_state);
+                              std::optional<crypto::hash::Hasher> hash_state);
 
   // Called by SavePackage to display progress when the DownloadItem
   // should be considered complete.
@@ -415,10 +415,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void DestinationError(
       DownloadInterruptReason reason,
       int64_t bytes_so_far,
-      std::unique_ptr<crypto::SecureHash> hash_state) override;
+      std::optional<crypto::hash::Hasher> hash_state) override;
   void DestinationCompleted(
       int64_t total_bytes,
-      std::unique_ptr<crypto::SecureHash> hash_state) override;
+      std::optional<crypto::hash::Hasher> hash_state) override;
 
   void SetDelegate(DownloadItemImplDelegate* delegate);
 
@@ -661,7 +661,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // interrupt reason allows, this partial state may be allowed to continue the
   // interrupted download upon resumption.
   void InterruptWithPartialState(int64_t bytes_so_far,
-                                 std::unique_ptr<crypto::SecureHash> hash_state,
+                                 std::optional<crypto::hash::Hasher> hash_state,
                                  DownloadInterruptReason reason);
 
   void UpdateProgress(int64_t bytes_so_far, int64_t bytes_per_sec);
@@ -669,7 +669,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void UpdateResumptionInfo(bool user_resume);
 
   // Set |hash_| and |hash_state_| based on |hash_state|.
-  void SetHashState(std::unique_ptr<crypto::SecureHash> hash_state);
+  void SetHashState(std::optional<crypto::hash::Hasher> hash_state);
 
   // Destroy the DownloadFile object.  If |destroy_file| is true, the file is
   // destroyed with it.  Otherwise, DownloadFile::Detach() is called before
@@ -872,7 +872,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // In the event of an interruption, the DownloadDestinationObserver interface
   // exposes the partial hash state. This state can be held by the download item
   // in case it's needed for resumption.
-  std::unique_ptr<crypto::SecureHash> hash_state_;
+  std::optional<crypto::hash::Hasher> hash_state_;
 
   // Contents of the Last-Modified header for the most recent server response.
   std::string last_modified_time_;

@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
-#include <memory>
+#include <optional>
 
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 
 namespace download {
 
@@ -38,11 +38,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDestinationObserver {
   virtual void DestinationError(
       DownloadInterruptReason reason,
       int64_t bytes_so_far,
-      std::unique_ptr<crypto::SecureHash> hash_state) = 0;
+      std::optional<crypto::hash::Hasher> hash_state) = 0;
 
   virtual void DestinationCompleted(
       int64_t total_bytes,
-      std::unique_ptr<crypto::SecureHash> hash_state) = 0;
+      std::optional<crypto::hash::Hasher> hash_state) = 0;
 };
 
 }  // namespace download

@@ -14,7 +14,6 @@
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_utils.h"
-#include "crypto/secure_hash.h"
 
 namespace download {
 
@@ -60,7 +59,7 @@ void DownloadFileWithCopy::RenameAndUniquify(
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DownloadDestinationObserver::DestinationCompleted,
-                     observer_, file_size, nullptr));
+                     observer_, file_size, std::nullopt));
 }
 
 void DownloadFileWithCopy::RenameAndAnnotate(

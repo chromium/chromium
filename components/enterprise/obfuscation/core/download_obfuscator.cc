@@ -56,8 +56,7 @@ DownloadObfuscationData::DownloadObfuscationData(bool is_obfuscated)
 DownloadObfuscationData::~DownloadObfuscationData() = default;
 
 DownloadObfuscator::DownloadObfuscator()
-    : unobfuscated_hash_(
-          crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {}
+    : unobfuscated_hash_(crypto::hash::Hasher(crypto::hash::kSha256)) {}
 
 DownloadObfuscator::~DownloadObfuscator() = default;
 
@@ -205,8 +204,8 @@ DownloadObfuscator::CalculateDeobfuscationOverhead(base::File& file) {
       });
 }
 
-std::unique_ptr<crypto::SecureHash> DownloadObfuscator::GetUnobfuscatedHash() {
-  return std::move(unobfuscated_hash_);
+std::optional<crypto::hash::Hasher> DownloadObfuscator::GetUnobfuscatedHash() {
+  return std::exchange(unobfuscated_hash_, std::nullopt);
 }
 
 void DownloadObfuscator::UpdateDeobfuscatedChunkPosition(size_t bytes_written) {

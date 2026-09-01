@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_DOWNLOAD_OBFUSCATOR_H_
 
 #include <array>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -13,7 +14,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "components/enterprise/obfuscation/core/utils.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 
 namespace enterprise_obfuscation {
 
@@ -82,7 +83,7 @@ class COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) DownloadObfuscator {
 
   // Returns the hash of the original data. Call only after completing
   // obfuscation as it invalidates the obfuscator.
-  std::unique_ptr<crypto::SecureHash> GetUnobfuscatedHash();
+  std::optional<crypto::hash::Hasher> GetUnobfuscatedHash();
 
   // Updates the offset within the current obfuscated chunk with the bytes that
   // were actually processed.
@@ -98,7 +99,7 @@ class COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) DownloadObfuscator {
   std::array<uint8_t, kKeySize> derived_key_;
   uint32_t chunk_counter_ = 0;
   int64_t total_overhead_ = 0;
-  std::unique_ptr<crypto::SecureHash> unobfuscated_hash_;
+  std::optional<crypto::hash::Hasher> unobfuscated_hash_;
 
   // Members used for partial deobfuscation.
   std::vector<uint8_t> deobfuscated_chunk_;

@@ -41,7 +41,7 @@ class MockDownloadItemImpl : public DownloadItemImpl {
   MOCK_METHOD3(UpdateProgress, void(int64_t, int64_t, const std::string&));
   MOCK_METHOD1(Cancel, void(bool));
   MOCK_METHOD0(MarkAsComplete, void());
-  void OnAllDataSaved(int64_t, std::unique_ptr<crypto::SecureHash>) override {
+  void OnAllDataSaved(int64_t, std::optional<crypto::hash::Hasher>) override {
     NOTREACHED();
   }
   MOCK_METHOD0(OnDownloadedFileRemoved, void());

@@ -220,7 +220,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   // of the first |offset| bytes of the target file. In this case, the prefix
   // hash will be ignored since the |hash_state| is assumed to be correct if
   // provided.
-  void set_hash_state(std::unique_ptr<crypto::SecureHash> hash_state) {
+  void set_hash_state(std::optional<crypto::hash::Hasher> hash_state) {
     save_info_.hash_state = std::move(hash_state);
   }
 

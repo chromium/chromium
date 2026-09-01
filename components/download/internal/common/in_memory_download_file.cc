@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/common/download_destination_observer.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/download/internal/common/jni_headers/InMemoryDownloadFile_jni.h"
@@ -186,7 +186,7 @@ void InMemoryDownloadFile::OnStreamCompleted() {
       FROM_HERE,
       base::BindOnce(&DownloadDestinationObserver::DestinationCompleted,
                      observer_, total_bytes_,
-                     crypto::SecureHash::Create(crypto::SecureHash::SHA256)));
+                     crypto::hash::Hasher(crypto::hash::kSha256)));
 }
 
 void InMemoryDownloadFile::NotifyObserver(
@@ -200,10 +200,9 @@ void InMemoryDownloadFile::NotifyObserver(
   // Our observer will clean us up.
   weak_factory_.InvalidateWeakPtrs();
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DownloadDestinationObserver::DestinationError, observer_,
-                     reason, total_bytes_,
-                     crypto::SecureHash::Create(crypto::SecureHash::SHA256)));
+      FROM_HERE, base::BindOnce(&DownloadDestinationObserver::DestinationError,
+                                observer_, reason, total_bytes_,
+                                crypto::hash::Hasher(crypto::hash::kSha256)));
 }
 
 bool InMemoryDownloadFile::IsMemoryFile() {

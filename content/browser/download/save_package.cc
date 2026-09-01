@@ -401,7 +401,7 @@ void SavePackage::OnMHTMLGenerated(int64_t size) {
   }
   wrote_to_completed_file_ = true;
 
-  download_->OnAllDataSaved(size, std::unique_ptr<crypto::SecureHash>());
+  download_->OnAllDataSaved(size, std::nullopt);
 
   auto* delegate = download_manager_->GetDelegate();
   if (!delegate || delegate->ShouldCompleteDownload(
@@ -887,8 +887,7 @@ void SavePackage::Finish() {
       download_->DestinationUpdate(
           all_save_items_count_, CurrentSpeed(),
           std::vector<download::DownloadItem::ReceivedSlice>());
-      download_->OnAllDataSaved(all_save_items_count_,
-                                std::unique_ptr<crypto::SecureHash>());
+      download_->OnAllDataSaved(all_save_items_count_, std::nullopt);
     }
     download_->MarkAsComplete();
 

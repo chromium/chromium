@@ -25,8 +25,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_stats.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -248,11 +247,12 @@ void DownloadFileImpl::Initialize(
 #endif
 
   int64_t bytes_wasted = 0;
-  DownloadInterruptReason reason = file_.Initialize(
-      save_info_->file_path, default_download_directory_,
-      std::move(save_info_->file), bytes_so_far,
-      save_info_->hash_of_partial_file, std::move(save_info_->hash_state),
-      IsSparseFile(), &bytes_wasted);
+  DownloadInterruptReason reason =
+      file_.Initialize(save_info_->file_path, default_download_directory_,
+                       std::move(save_info_->file), bytes_so_far,
+                       save_info_->hash_of_partial_file,
+                       std::exchange(save_info_->hash_state, std::nullopt),
+                       IsSparseFile(), &bytes_wasted);
   if (reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -784,11 +784,11 @@ void DownloadFileImpl::OnDownloadCompleted() {
     }
   }
 
-  std::unique_ptr<crypto::SecureHash> hash_state =
+  std::optional<crypto::hash::Hasher> hash_state =
       obfuscator_ ? obfuscator_->GetUnobfuscatedHash()
                   : file_.Finish(potential_file_length_);
 #else
-  std::unique_ptr<crypto::SecureHash> hash_state =
+  std::optional<crypto::hash::Hasher> hash_state =
       file_.Finish(potential_file_length_);
 #endif
 
@@ -939,7 +939,7 @@ void DownloadFileImpl::SendErrorUpdateIfFinished(
   weak_factory_.InvalidateWeakPtrs();
 
   // TODO(b/367257039): Maintain obfuscated file hash for interrupted downloads.
-  std::unique_ptr<crypto::SecureHash> hash_state =
+  std::optional<crypto::hash::Hasher> hash_state =
       file_.Finish(potential_file_length_);
   main_task_runner_->PostTask(
       FROM_HERE,

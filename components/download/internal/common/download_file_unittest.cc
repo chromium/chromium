@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -70,10 +71,11 @@ int64_t GetBuffersLength(const char** buffers, size_t num_buffer) {
   return result;
 }
 
-std::string GetHexEncodedHashValue(crypto::SecureHash* hash_state) {
+std::string GetHexEncodedHashValue(
+    std::optional<crypto::hash::Hasher>& hash_state) {
   if (!hash_state)
     return std::string();
-  std::vector<uint8_t> hash_value(hash_state->GetHashLength());
+  std::array<uint8_t, crypto::hash::kSha256Size> hash_value;
   hash_state->Finish(hash_value);
   return base::HexEncode(hash_value);
 }
@@ -87,15 +89,14 @@ class MockDownloadDestinationObserver : public DownloadDestinationObserver {
   void DestinationError(
       DownloadInterruptReason reason,
       int64_t bytes_so_far,
-      std::unique_ptr<crypto::SecureHash> hash_state) override {
+      std::optional<crypto::hash::Hasher> hash_state) override {
     MockDestinationError(reason, bytes_so_far,
-                         GetHexEncodedHashValue(hash_state.get()));
+                         GetHexEncodedHashValue(hash_state));
   }
   void DestinationCompleted(
       int64_t total_bytes,
-      std::unique_ptr<crypto::SecureHash> hash_state) override {
-    MockDestinationCompleted(total_bytes,
-                             GetHexEncodedHashValue(hash_state.get()));
+      std::optional<crypto::hash::Hasher> hash_state) override {
+    MockDestinationCompleted(total_bytes, GetHexEncodedHashValue(hash_state));
   }
 
   MOCK_METHOD3(MockDestinationError,

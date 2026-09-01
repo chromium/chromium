@@ -1401,7 +1401,7 @@ std::string DownloadItemImpl::DebugString(bool verbose) const {
 void DownloadItemImpl::SimulateErrorForTesting(DownloadInterruptReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  InterruptWithPartialState(GetReceivedBytes(), nullptr, reason);
+  InterruptWithPartialState(GetReceivedBytes(), std::nullopt, reason);
   UpdateObservers();
 }
 
@@ -1499,7 +1499,7 @@ void DownloadItemImpl::SetTotalBytes(int64_t total_bytes) {
 
 void DownloadItemImpl::OnAllDataSaved(
     int64_t total_bytes,
-    std::unique_ptr<crypto::SecureHash> hash_state) {
+    std::optional<crypto::hash::Hasher> hash_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!AllDataSaved());
   destination_info_.all_data_saved = true;
@@ -1581,7 +1581,7 @@ void DownloadItemImpl::DestinationUpdate(
 void DownloadItemImpl::DestinationError(
     DownloadInterruptReason reason,
     int64_t bytes_so_far,
-    std::unique_ptr<crypto::SecureHash> secure_hash) {
+    std::optional<crypto::hash::Hasher> secure_hash) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // If the download is in any other state we don't expect any
   // DownloadDestinationObserver callbacks. An interruption or a cancellation
@@ -1599,7 +1599,7 @@ void DownloadItemImpl::DestinationError(
 
 void DownloadItemImpl::DestinationCompleted(
     int64_t total_bytes,
-    std::unique_ptr<crypto::SecureHash> secure_hash) {
+    std::optional<crypto::hash::Hasher> secure_hash) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // If the download is in any other state we don't expect any
   // DownloadDestinationObserver callbacks. An interruption or a cancellation
@@ -1721,12 +1721,8 @@ void DownloadItemImpl::Start(
     // DownloadCreateInfo with an intact DownloadSaveInfo.
     DCHECK(new_create_info.save_info);
 
-    std::unique_ptr<crypto::SecureHash> hash_state =
-        new_create_info.save_info->hash_state
-            ? new_create_info.save_info->hash_state->Clone()
-            : nullptr;
+    hash_state_ = new_create_info.save_info->hash_state;
 
-    hash_state_ = std::move(hash_state);
     destination_info_.hash.clear();
     deferred_interrupt_reason_ = new_create_info.result;
     TransitionTo(INTERRUPTED_TARGET_PENDING_INTERNAL);
@@ -1958,7 +1954,8 @@ void DownloadItemImpl::OnTargetResolved() {
   TransitionTo(TARGET_RESOLVED_INTERNAL);
 
   if (DOWNLOAD_INTERRUPT_REASON_NONE != deferred_interrupt_reason_) {
-    InterruptWithPartialState(GetReceivedBytes(), std::move(hash_state_),
+    InterruptWithPartialState(GetReceivedBytes(),
+                              std::exchange(hash_state_, std::nullopt),
                               deferred_interrupt_reason_);
     deferred_interrupt_reason_ = DOWNLOAD_INTERRUPT_REASON_NONE;
     UpdateObservers();
@@ -2181,12 +2178,12 @@ void DownloadItemImpl::Completed() {
 
 void DownloadItemImpl::InterruptAndDiscardPartialState(
     DownloadInterruptReason reason) {
-  InterruptWithPartialState(0, nullptr, reason);
+  InterruptWithPartialState(0, std::nullopt, reason);
 }
 
 void DownloadItemImpl::InterruptWithPartialState(
     int64_t bytes_so_far,
-    std::unique_ptr<crypto::SecureHash> hash_state,
+    std::optional<crypto::hash::Hasher> hash_state,
     DownloadInterruptReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(DOWNLOAD_INTERRUPT_REASON_NONE, reason);
@@ -2339,16 +2336,16 @@ void DownloadItemImpl::UpdateProgress(int64_t bytes_so_far,
 }
 
 void DownloadItemImpl::SetHashState(
-    std::unique_ptr<crypto::SecureHash> hash_state) {
+    std::optional<crypto::hash::Hasher> hash_state) {
   hash_state_ = std::move(hash_state);
   if (!hash_state_) {
     destination_info_.hash.clear();
     return;
   }
 
-  std::unique_ptr<crypto::SecureHash> clone_of_hash_state(hash_state_->Clone());
-  destination_info_.hash.resize(clone_of_hash_state->GetHashLength());
-  clone_of_hash_state->Finish(
+  crypto::hash::Hasher clone_of_hash_state(*hash_state_);
+  destination_info_.hash.resize(crypto::hash::kSha256Size);
+  clone_of_hash_state.Finish(
       base::as_writable_byte_span(destination_info_.hash));
 }
 
@@ -2674,7 +2671,7 @@ void DownloadItemImpl::ResumeInterruptedDownload(
   download_params->set_last_modified(GetLastModifiedTime());
   download_params->set_etag(GetETag());
   download_params->set_hash_of_partial_file(GetHash());
-  download_params->set_hash_state(std::move(hash_state_));
+  download_params->set_hash_state(std::exchange(hash_state_, std::nullopt));
   download_params->set_guid(guid_);
 
   if (url_loader_factory_) {
@@ -2696,7 +2693,7 @@ void DownloadItemImpl::ResumeInterruptedDownload(
       // There is not enough data for validation, simply overwrites the
       // existing data from the beginning.
       download_params->set_offset(0);
-      download_params->set_hash_state(nullptr);
+      download_params->set_hash_state(std::nullopt);
     }
   }
 

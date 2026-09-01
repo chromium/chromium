@@ -4,6 +4,8 @@
 
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,8 +17,8 @@ namespace enterprise_obfuscation {
 
 namespace {
 
-std::string GetHexEncodedHash(const std::unique_ptr<crypto::SecureHash>& hash) {
-  std::vector<uint8_t> hash_value(hash->GetHashLength());
+std::string GetHexEncodedHash(std::optional<crypto::hash::Hasher> hash) {
+  std::vector<uint8_t> hash_value(crypto::hash::kSha256Size);
   hash->Finish(hash_value);
   return base::HexEncode(hash_value);
 }
@@ -52,7 +54,7 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
   DownloadObfuscator obfuscator;
   const auto& params = GetParam();
 
-  auto expected_hash = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  crypto::hash::Hasher expected_hash(crypto::hash::kSha256);
   size_t expected_overhead = 0;
   std::vector<uint8_t> obfuscated_content;
 
@@ -81,7 +83,7 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
       return;
     }
 
-    expected_hash->Update(base::as_byte_span(params.chunks[i]));
+    expected_hash.Update(base::as_byte_span(params.chunks[i]));
   }
 
   EXPECT_EQ(obfuscator.GetTotalOverhead(),
@@ -89,7 +91,8 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
 
   auto hash = obfuscator.GetUnobfuscatedHash();
   ASSERT_TRUE(hash);
-  EXPECT_EQ(GetHexEncodedHash(hash), GetHexEncodedHash(expected_hash));
+  EXPECT_EQ(GetHexEncodedHash(hash),
+            GetHexEncodedHash(std::optional(expected_hash)));
 
   // Test deobfuscation process.
   if (params.feature_enabled) {

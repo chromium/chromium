@@ -8,7 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/download_features.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
@@ -152,14 +152,14 @@ TEST(DownloadUtilsTest, HandleServerResponse200_ClampedOffsetClearsHash) {
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
   DownloadSaveInfo save_info;
   save_info.offset = 0;
-  save_info.hash_state = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  save_info.hash_state = crypto::hash::Hasher(crypto::hash::kSha256);
 
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             HandleSuccessfulServerResponse(*headers, &save_info,
                                            /*fetch_error_body=*/false));
 
   // Verification that the hash state was cleared.
-  EXPECT_EQ(nullptr, save_info.hash_state);
+  EXPECT_FALSE(save_info.hash_state.has_value());
 }
 
 // A net::ERR_ABORTED completion on a non-Service-Worker download is a user
