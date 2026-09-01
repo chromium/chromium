@@ -1,105 +1,121 @@
 # DOM Storage
 
-*Under Contruction*
+DOM Storage includes Local Storage and Session Storage. Code in `//content`
+connects renderers to the Storage Service, where the data is managed. The
+Storage Service implementations are in
+[`//components/services/storage/dom_storage`][storage-service-dom-storage].
 
-# Session Storage (Mojo)
+Renderers access both types of storage through
+[`blink::mojom::StorageArea`][storage-area]. A storage area contains the
+key-value data for a [`StorageKey`][storage-key], which identifies the context
+whose data is being accessed. A Local Storage area is identified by its
+`StorageKey`. A Session Storage area is identified by both its `StorageKey` and
+a namespace ID.
 
-*Under Contruction*
+[`DOMStorageContextWrapper`][dom-storage-context-wrapper] owns the
+`//content` connections used to manage Local Storage and Session Storage.
 
-The browser manages the lifetime of session storage namespaces with
-[SessionStorageNamespaceImpl](
-https://cs.chromium.org/chromium/src/content/browser/dom_storage/session_storage_namespace_impl.h).
+## Local Storage
 
-The object calls [`SessionStorageContextMojo::CreateSessionNamespace`](
-https://cs.chromium.org/chromium/src/content/browser/dom_storage/session_storage_context_mojo.h?dr=CSs&l=50)
-when it is created, and [`SessionStorageContextMojo::DeleteSessionNamespace`](
-https://cs.chromium.org/chromium/src/content/browser/dom_storage/session_storage_context_mojo.h?dr=CSs&l=53)
-when it's destructed.
+Local Storage does not use namespace IDs. A renderer requests an area for a
+`StorageKey`, and [`storage::LocalStorageImpl`][local-storage-impl] manages the
+areas for a storage partition.
 
+## Session Storage namespaces
 
-This object is primarily held by both the [`NavigationControllerImpl`](
-https://cs.chromium.org/chromium/src/content/browser/renderer_host/navigation_controller_impl.h?dr=CSs&l=426)
-and in the [`ContentPlatformSpecificTabData`](
-https://cs.chromium.org/chromium/src/components/sessions/content/content_platform_specific_tab_data.h?dr=C&l=35)
-which is used to restore tabs. The services stores recent tab
-closures for possible browser restore [here](
-https://cs.chromium.org/chromium/src/components/sessions/core/tab_restore_service_helper.h?dr=C&l=186).
+A namespace separates the Session Storage used by one tab or window from
+another. The Session Storage namespace types have different responsibilities:
 
-In the future when it's fully mojo-ified, the lifetime will be managed by the
-mojo [`SessionStorageNamespace`](
-https://cs.chromium.org/chromium/src/content/common/storage_partition_service.mojom)
-which can be passed to the renderer and the session restore service. There will
-always need to be an ID though as we save this ID to disk in the session
-restore service.
+* [`content::SessionStorageNamespace`][content-session-storage-namespace] is
+  the `//content` interface for a namespace. It exposes the namespace ID and
+  lets callers mark whether the data should remain available for session
+  restore after the object is destroyed.
+* [`content::SessionStorageNamespaceImpl`][content-session-storage-namespace-impl]
+  implements that interface. It uses
+  [`storage::mojom::SessionStorageControl`][session-storage-control] to create
+  and delete namespaces and to identify the source and destination of a clone.
+* [`blink::mojom::SessionStorageNamespace`][blink-session-storage-namespace]
+  lets a renderer order the clone with its storage area changes.
+* [`storage::SessionStorageNamespaceImpl`][storage-session-storage-namespace-impl]
+  implements that interface in the Storage Service. It owns a
+  [`SessionStorageAreaImpl`][session-storage-area-impl] for each `StorageKey`,
+  creates or loads areas as needed, binds requests to them, and coordinates
+  cloning.
 
-## High Level Access And Lifetime Flow
+## Lifetime and session restore
 
- 1. Before a renderer tab is opened, a `SessionStorageNamespaceImpl` object is
-    created, which in turn calls
-    `SessionStorageContextMojo::CreateSessionNamespace`.
-    * This can happen by either navigation or session restore.
- 1. The following can happen in any order:
-    * Renderer creation, usage, and destruction
-       * The `session_namespace_id` is sent to the renderer, which uses
-         `StorageParitionService` to access storage.
-       * The renderer is destroyed, calling
-         `SessionStorageContextMojo::DeleteSessionNamespace`.
-          * If `SetShouldPersist(true)` was not called (or called with false),
-            then the data is deleted from disk.
-    * `SetShouldPersist(true)` is called from the session restores service,
-      which means the data should NOT be deleted on disk when the namespace is
-      destroyed. This is called for all tabs that the session restore services
-      wants to persist to disk.
-    * The session restore service calls
-      `DomStorageContext::StartScavengingUnusedSessionStorage` to clean up any
-      namespaces that are on disk but were not used by any recreated tab. This
-      is an 'after startup task', and usually happens before `SetShouldPesist`
-      is called.
+[`NavigationController`][navigation-controller] keeps a namespace object for
+each storage partition it uses. Creating a new namespace sends
+`SessionStorageControl::CreateNamespace()` to the Storage Service. Destroying
+the last object sends `SessionStorageControl::DeleteNamespace()`.
 
-## Possible Edge Case: Persisted Data vs Stale Disk Data
+Chrome's session service saves the namespace ID with the tab and calls
+`SetShouldPersist(true)`. Session restore recreates tabs after the browser
+restarts. During session restore,
+[`DOMStorageContext::RecreateSessionStorage()`][dom-storage-context] creates a
+namespace object with the saved ID. The data can then be loaded from the Storage
+Service.
 
-Namespace is created, persisted, destroyed, and then we scavange unused session
-storage.
+Tab restore allows a user to reopen a recently closed tab without restarting
+the browser. It keeps a reference to the namespace object in
+[`sessions::ContentPlatformSpecificTabData`][content-platform-specific-tab-data]
+so the restored tab can reuse the same namespace.
 
-Flow:
- 1. `SessionStorageContextMojo::CreateSessionNamespace`
- 1. `SetShouldPersist(true)`
- 1. `SessionStorageContextMojo::DeleteSessionNamespace`
- 1. `DomStorageContext::StartScavengingUnusedSessionStorage`
- 1. The data should still reside on disk after scavenging.
+After startup, the Storage Service removes Session Storage data saved on disk
+for namespaces that are no longer in use.
 
-The namespace could accidentally be considered a 'leftover' namespace by the
-scavenging algorithm and deleted from disk.
+## Renderer access
 
-## Navigation Details
+Code in `//content` sends the namespace ID when it initializes the
+renderer-side [`blink::WebView`][web-view]. Blink stores the ID in
+[`blink::StorageNamespace`][storage-namespace] and uses it when requesting the
+namespace and its storage areas.
 
-When navigating from a previous frame, the previous frame will allocate a new
-session storage id for the new frame, as well as issue the 'clone' call [here](https://cs.chromium.org/chromium/src/content/renderer/render_view_impl.cc?q=RenderViewImpl::RenderViewImpl&l=1273).
+Before forwarding a storage area request from a renderer,
+`DOMStorageContextWrapper` verifies that the renderer process can access the
+requested origin and that the identified frame may access the requested
+`StorageKey`. The Storage Service then connects the request to the area within
+the given namespace.
 
-The `session_namespace_id` for a frame's session storage is stored in the
-`CreateNewWindowParams` object in [frame.mojom](https://cs.chromium.org/chromium/src/content/common/frame.mojom).
+## Cloning
 
-If the frame wasn't created from a previous frame, the SessionStorage namespace
-object is created [here](https://cs.chromium.org/chromium/src/content/browser/renderer_host/navigation_controller_impl.cc?type=cs&l=1904)
-and the id is accessed [here](https://cs.chromium.org/chromium/src/content/browser/renderer_host/render_view_host_impl.cc?type=cs&l=321).
+When `window.open()` creates a new window without `noopener`, the new window
+receives a copy of the opening page's Session Storage. Blink allocates a
+namespace ID for the new window and sends
+`blink::mojom::SessionStorageNamespace::Clone()` on the original namespace.
+Blink orders the clone with storage-area changes so that changes sent before
+the clone are included and changes sent afterward are not. With `noopener`, no
+copy is made.
 
-## Renderer Connection to Session Storage
+Code in `//content` creates an object for the new namespace and calls
+`SessionStorageControl::CloneNamespace()` with the source namespace ID, the
+destination namespace ID, and either `kWaitForCloneOnNamespace` or
+`kImmediate`.
 
-Renderers use the `session_namespace_id` from the `CreateNewWindowParams`. They
-access session storage by using [`StoragePartitionService::OpenSessionStorage`](
-https://cs.chromium.org/chromium/src/content/common/storage_partition_service.mojom),
-and then `SessionStorageNamespace::OpenArea` with the `session_namespace_id`.
+For a namespace that is in use by a renderer, `//content` uses
+`kWaitForCloneOnNamespace`. The browser request and the renderer's ordered
+`Clone()` request use different Mojo connections and can arrive in either
+order. The Storage Service handles both orders, waiting for the renderer
+request when the browser request arrives first.
 
-They can then bind to a `LevelDBWrapper` on a per-origin basis.
+A renderer request is not always needed. If the source namespace is not in use
+but has saved data, the Storage Service can clone that data directly. Copies
+initiated entirely in `//content`, such as copying a `NavigationController`,
+use `kImmediate` and also proceed without a renderer `Clone()` request.
 
-## Session Restore Service Interaction
-
-A reference to the session is stored in the [`ContentPlatformSpecificTabData`](
-https://cs.chromium.org/chromium/src/components/sessions/content/content_platform_specific_tab_data.h?dr=C&l=35)
-which is used to restore recently closed tabs. The services stores recent tab
-closures for possible browser restore [here](
-https://cs.chromium.org/chromium/src/components/sessions/core/tab_restore_service_helper.h?dr=C&l=186).
-
-When tabs are inserted, the session storage service saves the id to disk [here](https://cs.chromium.org/chromium/src/chrome/browser/sessions/session_service.cc?type=cs&l=313)
-using the `commands` (which are saved to disk). The session id is also accessed
-here for saving in `commands` in `TabClosing` and `BuildCommandsForTab`.
+[blink-session-storage-namespace]: ../../../third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom
+[content-platform-specific-tab-data]: ../../../components/sessions/content/content_platform_specific_tab_data.h
+[content-session-storage-namespace]: ../../public/browser/session_storage_namespace.h
+[content-session-storage-namespace-impl]: session_storage_namespace_impl.h
+[dom-storage-context]: ../../public/browser/dom_storage_context.h
+[dom-storage-context-wrapper]: dom_storage_context_wrapper.h
+[local-storage-impl]: ../../../components/services/storage/dom_storage/local_storage_impl.h
+[navigation-controller]: ../../public/browser/navigation_controller.h
+[session-storage-control]: ../../../components/services/storage/public/mojom/session_storage_control.mojom
+[session-storage-area-impl]: ../../../components/services/storage/dom_storage/session_storage_area_impl.h
+[storage-area]: ../../../third_party/blink/public/mojom/dom_storage/storage_area.mojom
+[storage-key]: ../../../third_party/blink/public/common/storage_key/storage_key.h
+[storage-namespace]: ../../../third_party/blink/renderer/modules/storage/storage_namespace.h
+[storage-service-dom-storage]: ../../../components/services/storage/dom_storage/
+[storage-session-storage-namespace-impl]: ../../../components/services/storage/dom_storage/session_storage_namespace_impl.h
+[web-view]: ../../../third_party/blink/public/web/web_view.h
