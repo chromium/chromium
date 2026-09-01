@@ -8223,7 +8223,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Treatment",
+                    "name": "EnergyEffectFusebox",
+                    "params": {
+                        "EnergyEffectVariantParam": "energy-effect-fusebox"
+                    },
                     "enable_features": [
                         "EnergyEffect"
                     ]
