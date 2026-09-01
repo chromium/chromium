@@ -613,6 +613,7 @@ void SearchPrefetchService::ClearPrefetches() {
   prefetches_.clear();
   prefetch_expiry_timers_.clear();
   prefetch_cache_.clear();
+  serving_navigation_ids_.clear();
   SaveToPrefs();
 }
 
@@ -1248,3 +1249,14 @@ void SearchPrefetchService::SetLoaderDestructionCallbackForTesting(
           std::move(streaming_url_loader_destruction_callback));
 }
 
+void SearchPrefetchService::AddServingNavigationId(int64_t navigation_id) {
+  serving_navigation_ids_.insert(navigation_id);
+}
+
+bool SearchPrefetchService::IsServingNavigation(int64_t navigation_id) const {
+  return serving_navigation_ids_.contains(navigation_id);
+}
+
+void SearchPrefetchService::RemoveServingNavigationId(int64_t navigation_id) {
+  serving_navigation_ids_.erase(navigation_id);
+}

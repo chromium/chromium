@@ -70,6 +70,7 @@ class PreloadServingMetricsPageLoadMetricsObserver
   // https://docs.google.com/document/d/1d9k-YDEdT35LDVN3BkILyDVqZKlv-b6F0yV_OZRVIQk/edit?resourcekey=0-Jr0Dysk9Cabb0vZlG-ESXg&tab=t.0#heading=h.dygbqkif9aw5
   std::optional<std::string> navigation_initiator_string_;
   bool is_url_srp_ = false;
+  bool is_served_by_legacy_search_prefetch_ = false;
   // TODO(https://crbug.com/539388005): `PLMO::OnFirstContentfulPaintInPage()`
   // is not expected to be called between `PLMO::OnEnterBackForwardCache()` and
   // `PLMO::OnRestoreFromBackForwardCache()`, but currently it is happening. To

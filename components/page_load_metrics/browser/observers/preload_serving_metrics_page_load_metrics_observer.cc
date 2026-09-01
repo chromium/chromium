@@ -10,6 +10,21 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 
+namespace {
+
+bool GetServedByLegacySearchPrefetch(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle) {
+    return false;
+  }
+  auto* user_data =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  return user_data && user_data->is_served_by_legacy_search_prefetch();
+}
+
+}  // namespace
+
 PreloadServingMetricsPageLoadMetricsObserver::
     PreloadServingMetricsPageLoadMetricsObserver() = default;
 
@@ -76,6 +91,8 @@ void PreloadServingMetricsPageLoadMetricsObserver::
     navigation_initiator_string_ = "Other";
   }
   is_url_srp_ = google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
+  is_served_by_legacy_search_prefetch_ =
+      GetServedByLegacySearchPrefetch(navigation_handle);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -130,7 +147,7 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
   preload_serving_metrics_capsule_->RecordFirstContentfulPaint(
-      std::move(corrected));
+      std::move(corrected), is_served_by_legacy_search_prefetch_);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::OnComplete(
@@ -186,6 +203,6 @@ void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
   // ways to record this case.
   preload_serving_metrics_capsule_
       ->RecordPreloadServingMetricsByNavigationInitiator(
-          has_restored_from_bfcache_, *navigation_initiator_string_,
-          is_url_srp_);
+          has_restored_from_bfcache_, is_served_by_legacy_search_prefetch_,
+          *navigation_initiator_string_, is_url_srp_);
 }

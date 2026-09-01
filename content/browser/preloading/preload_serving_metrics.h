@@ -226,11 +226,13 @@ struct CONTENT_EXPORT PreloadServingMetrics final {
   void RecordMetricsForNonPrerenderNavigationCommitted() const;
   void RecordPreloadServingMetricsByNavigationInitiator(
       bool did_nav_use_bfcache,
+      bool is_served_by_legacy_search_prefetch,
       const std::string& navigation_initiator_string,
       bool is_url_srp) const;
   void RecordMetricsForPrerenderInitialNavigationFailed() const;
   void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint) const;
+      base::TimeDelta corrected_first_contentful_paint,
+      bool is_served_by_legacy_search_prefetch) const;
 
   // Added per prefetch matching.
   std::vector<std::unique_ptr<PrefetchMatchMetrics>>
@@ -262,10 +264,12 @@ class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
   void RecordMetricsForNonPrerenderNavigationCommitted() const override;
   void RecordPreloadServingMetricsByNavigationInitiator(
       bool did_nav_use_bfcache,
+      bool is_served_by_legacy_search_prefetch,
       const std::string& navigation_initiator_string,
       bool is_url_srp) const override;
   void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint) const override;
+      base::TimeDelta corrected_first_contentful_paint,
+      bool is_served_by_legacy_search_prefetch) const override;
 
  private:
   explicit PreloadServingMetricsCapsuleImpl(

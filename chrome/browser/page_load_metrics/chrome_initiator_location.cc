@@ -66,3 +66,12 @@ void AttachBookmarkBarNavigationHandleUserData(
       GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
       StringifyChromeInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
 }
+
+void MarkNavigationServedBySearchPrefetch(
+    content::NavigationHandle& navigation_handle) {
+  if (auto* user_data =
+          page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+              navigation_handle)) {
+    user_data->set_is_served_by_legacy_search_prefetch(true);
+  }
+}

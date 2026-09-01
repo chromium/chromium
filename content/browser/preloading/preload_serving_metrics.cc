@@ -326,15 +326,21 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
 
 void PreloadServingMetrics::RecordPreloadServingMetricsByNavigationInitiator(
     bool did_nav_use_bfcache,
+    bool is_served_by_legacy_search_prefetch,
     const std::string& navigation_initiator_string,
     bool is_url_srp) const {
+  const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
+      GetMeaningfulPrefetchMatchMetrics();
+  const bool is_prefetch_actual_match =
+      meaningful_prefetch_match_metrics &&
+      meaningful_prefetch_match_metrics->IsActualMatch();
+
   UsedInstantLoad used_instant_load;
   if (did_nav_use_bfcache) {
     used_instant_load = UsedInstantLoad::kBFCache;
   } else if (prerender_initial_preload_serving_metrics) {
     used_instant_load = UsedInstantLoad::kPrerender;
-  } else if (const auto* prefetch_match = GetMeaningfulPrefetchMatchMetrics();
-             prefetch_match && prefetch_match->IsActualMatch()) {
+  } else if (is_prefetch_actual_match || is_served_by_legacy_search_prefetch) {
     used_instant_load = UsedInstantLoad::kPrefetch;
   } else {
     used_instant_load = UsedInstantLoad::kNoInstantLoad;
@@ -474,7 +480,8 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
 }
 
 void PreloadServingMetrics::RecordFirstContentfulPaint(
-    base::TimeDelta corrected_first_contentful_paint) const {
+    base::TimeDelta corrected_first_contentful_paint,
+    bool is_served_by_legacy_search_prefetch) const {
   const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;
   const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
       GetMeaningfulPrefetchMatchMetrics();
@@ -485,7 +492,7 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
   const char* suffix;
   if (is_prerender_used) {
     suffix = ".WithPrerender";
-  } else if (is_prefetch_actual_match) {
+  } else if (is_prefetch_actual_match || is_served_by_legacy_search_prefetch) {
     suffix = ".WithPrefetch";
   } else {
     suffix = ".WithoutPreload";
@@ -539,16 +546,20 @@ void PreloadServingMetricsCapsuleImpl::
 void PreloadServingMetricsCapsuleImpl::
     RecordPreloadServingMetricsByNavigationInitiator(
         bool did_nav_use_bfcache,
+        bool is_served_by_legacy_search_prefetch,
         const std::string& navigation_initiator_string,
         bool is_url_srp) const {
   preload_serving_metrics_->RecordPreloadServingMetricsByNavigationInitiator(
-      did_nav_use_bfcache, navigation_initiator_string, is_url_srp);
+      did_nav_use_bfcache, is_served_by_legacy_search_prefetch,
+      navigation_initiator_string, is_url_srp);
 }
 
 void PreloadServingMetricsCapsuleImpl::RecordFirstContentfulPaint(
-    base::TimeDelta corrected_first_contentful_paint) const {
+    base::TimeDelta corrected_first_contentful_paint,
+    bool is_served_by_legacy_search_prefetch) const {
   preload_serving_metrics_->RecordFirstContentfulPaint(
-      std::move(corrected_first_contentful_paint));
+      std::move(corrected_first_contentful_paint),
+      is_served_by_legacy_search_prefetch);
 }
 
 }  // namespace content
