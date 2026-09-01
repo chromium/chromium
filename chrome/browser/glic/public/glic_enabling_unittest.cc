@@ -2584,5 +2584,23 @@ TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromDisabledByAdmin) {
   histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.RecoveredFromState",
                                     1);
 }
+
+TEST_F(GlicEnablingProfileEligibilityTest, IsAnyEntryPointEnabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kGlicLauncherEnabled, false);
+  EXPECT_FALSE(IsAnyEntryPointEnabled(profile()));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_TRUE(IsAnyEntryPointEnabled(profile()));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kGlicLauncherEnabled, true);
+  EXPECT_TRUE(IsAnyEntryPointEnabled(profile()));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_TRUE(IsAnyEntryPointEnabled(profile()));
+}
 }  // namespace
 }  // namespace glic

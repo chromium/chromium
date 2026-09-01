@@ -136,6 +136,13 @@ enum class RequiredExperimentalOptIn {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequiredExperimentalOptIn)
 
+// Returns true if any Glic entry point (such as the tab strip button or the
+// OS-level shortcut) is enabled in settings.
+bool IsAnyEntryPointEnabled(Profile* profile);
+
+// Sets the state of Glic entry points for testing.
+void SetAnyEntryPointEnabledForTesting(Profile* profile, bool is_enabled);
+
 // This class provides a central location for checking if Glic is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
 // such as based on user preferences or system settings.

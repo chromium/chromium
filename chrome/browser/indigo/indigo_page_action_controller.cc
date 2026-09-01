@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -51,6 +52,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
@@ -334,6 +336,10 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
       return false;
     }
   }
+
+  base::UmaHistogramBoolean(
+      "Indigo.PageAction.IsGlicOptedOutOnIndigoInvocation",
+      !glic::IsAnyEntryPointEnabled(profile));
 
   glic::GlicInvokeOptions options(
       glic::Target(tab(), glic::NewConversation()),

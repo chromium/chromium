@@ -140,6 +140,21 @@ constexpr char kDefaultEnabledLocales[] =
 #endif  // BUILDFLAG(IS_ANDROID)
     ;
 
+bool IsAnyEntryPointEnabled(Profile* profile) {
+  bool is_button_enabled =
+      profile->GetPrefs()->GetBoolean(glic::prefs::kGlicPinnedToTabstrip);
+  bool is_shortcut_enabled = g_browser_process->local_state()->GetBoolean(
+      glic::prefs::kGlicLauncherEnabled);
+  return is_button_enabled || is_shortcut_enabled;
+}
+
+void SetAnyEntryPointEnabledForTesting(Profile* profile, bool is_enabled) {
+  profile->GetPrefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip,
+                                  is_enabled);
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicLauncherEnabled, is_enabled);
+}
+
 namespace {
 
 constexpr int kExperimentalTriggeringVersion = 1;

@@ -2188,5 +2188,45 @@ TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingPendingTimeout) 
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(IndigoPageActionControllerTest,
+       RecordsIsGlicOptedOutOnIndigoInvocation) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
+      .WillRepeatedly(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  // 1. Entry points disabled -> Opted out
+  glic::SetAnyEntryPointEnabledForTesting(profile_.get(), false);
+  {
+    base::HistogramTester histogram_tester;
+    controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+    histogram_tester.ExpectUniqueSample(
+        "Indigo.PageAction.IsGlicOptedOutOnIndigoInvocation", true, 1);
+  }
+
+  // 2. Entry points enabled -> Not opted out
+  glic::SetAnyEntryPointEnabledForTesting(profile_.get(), true);
+  {
+    base::HistogramTester histogram_tester;
+    controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+    histogram_tester.ExpectUniqueSample(
+        "Indigo.PageAction.IsGlicOptedOutOnIndigoInvocation", false, 1);
+  }
+}
+
 }  // namespace
 }  // namespace indigo

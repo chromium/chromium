@@ -91,6 +91,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.PageAction.IsGlicOptedOutOnIndigoInvocation"
+    enum="Boolean" expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records whether all configurable Gemini in Chrome entry points were turned
+    off at the moment Indigo is invoked. Helps determine how often users who
+    have specifically opted out of Gemini in Chrome are cued to open the side
+    panel.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.PageAction.ShownEntryPoint"
     enum="IndigoPageActionEntryPoint" expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>
