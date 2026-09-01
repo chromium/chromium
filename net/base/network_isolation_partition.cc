@@ -19,6 +19,8 @@ std::string NetworkIsolationPartitionToDebugString(
       return "fedcm uncredentialed requests";
     case NetworkIsolationPartition::kDnsOverHttps:
       return "dns over https";
+    case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      return "shared worker same site cookies none";
   }
 }
 
