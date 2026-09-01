@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
@@ -487,4 +488,13 @@ TEST_F(BrowserModalHostTest,
   [handler showDialogForPassKitPasses:passes];
 
   EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-dismissContextualPanelEntrypointIPH:` can be invoked without
+// crashing.
+TEST_F(BrowserModalHostTest, DismissesContextualPanelEntrypointIPH) {
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<ContextualPanelEntrypointIPHCommands> handler =
+      HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
+  [handler dismissContextualPanelEntrypointIPH:NO];
 }

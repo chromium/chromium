@@ -89,9 +89,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
-#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/generic/coordinator/default_browser_generic_promo_coordinator.h"
@@ -196,8 +194,6 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
@@ -311,7 +307,6 @@
     AutofillSettingsNavigator,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
-    ContextualPanelEntrypointIPHCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
@@ -483,7 +478,6 @@
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
   BubblePresenterCoordinator* _bubblePresenterCoordinator;
-  BubbleViewControllerPresenter* _contextualPanelEntrypointHelpPresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensViewFinderCoordinator* _lensViewFinderCoordinator;
   LensOverlayCoordinator* _lensOverlayCoordinator;
@@ -973,7 +967,6 @@
   NSArray<Protocol*>* protocols = @[
     @protocol(AutoDeletionCommands),
     @protocol(BrowserCoordinatorCommands),
-    @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
@@ -1230,9 +1223,6 @@
 
   [_toolbarAccessoryPresenter disconnect];
   _toolbarAccessoryPresenter = nil;
-
-  [_contextualPanelEntrypointHelpPresenter dismissAnimated:NO];
-  _contextualPanelEntrypointHelpPresenter = nil;
 
   _fullscreenController = nullptr;
 
@@ -1525,63 +1515,6 @@
 - (web::WebState*)activeWebState {
   WebStateList* webStateList = self.browser->GetWebStateList();
   return webStateList ? webStateList->GetActiveWebState() : nullptr;
-}
-
-- (void)contextualPanelEntrypointIPHDidDismissWithConfig:
-            (base::WeakPtr<ContextualPanelItemConfiguration>)config
-                                         dismissalReason:
-                                             (IPHDismissalReasonType)reason {
-  ContextualPanelItemConfiguration* config_ptr = config.get();
-  if (!config_ptr) {
-    return;
-  }
-
-  [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
-      notifyContextualPanelEntrypointIPHDismissed];
-
-  ProfileIOS* profile = self.profile;
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
-
-  if (!engagementTracker || !_contextualPanelEntrypointHelpPresenter) {
-    return;
-  }
-
-  engagementTracker->Dismissed(*config_ptr->iph_feature);
-  _contextualPanelEntrypointHelpPresenter = nil;
-
-  if (reason == IPHDismissalReasonType::kTappedAnchorView ||
-      reason == IPHDismissalReasonType::kTappedIPH) {
-    [HandlerForProtocol(self.dispatcher, ContextualSheetCommands)
-        openContextualSheet];
-    [self recordContextualPanelEntrypointIPHDismissed:
-              ContextualPanelIPHDismissedReason::UserInteracted];
-    return;
-  }
-
-  if (reason == IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
-      reason == IPHDismissalReasonType::kTappedClose) {
-    engagementTracker->NotifyEvent(
-        config_ptr->iph_entrypoint_explicitly_dismissed);
-    [self recordContextualPanelEntrypointIPHDismissed:
-              ContextualPanelIPHDismissedReason::UserDismissed];
-    return;
-  }
-
-  if (reason == IPHDismissalReasonType::kTimedOut) {
-    [self recordContextualPanelEntrypointIPHDismissed:
-              ContextualPanelIPHDismissedReason::TimedOut];
-    return;
-  }
-
-  [self recordContextualPanelEntrypointIPHDismissed:
-            ContextualPanelIPHDismissedReason::Other];
-}
-
-- (void)recordContextualPanelEntrypointIPHDismissed:
-    (ContextualPanelIPHDismissedReason)dismissalReason {
-  base::UmaHistogramEnumeration("IOS.ContextualPanel.IPH.DismissedReason",
-                                dismissalReason);
 }
 
 // Cancels all the currently active collaboration flows.
@@ -2195,74 +2128,6 @@
       clearPresentedStateWithCompletion:completion
                          dismissOmnibox:dismissOmnibox
          dismissPresentedViewController:dismissPresentedViewController];
-}
-
-#pragma mark - ContextualPanelEntrypointIPHCommands
-
-- (BOOL)showContextualPanelEntrypointIPHWithConfig:
-            (ContextualPanelItemConfiguration*)config
-                                       anchorPoint:(CGPoint)anchorPoint
-                                   isBottomOmnibox:(BOOL)isBottomOmnibox {
-  ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config);
-
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
-
-  if (!engagementTracker) {
-    return NO;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  base::WeakPtr<ContextualPanelItemConfiguration> config_weak_ptr =
-      config_ref.weak_ptr_factory.GetWeakPtr();
-  CallbackWithIPHDismissalReasonType dismissalCallback = ^(
-      IPHDismissalReasonType reason) {
-    [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config_weak_ptr
-                                               dismissalReason:reason];
-  };
-
-  _contextualPanelEntrypointHelpPresenter =
-      [[BubbleViewControllerPresenter alloc]
-               initWithText:base::SysUTF8ToNSString(config_ref.iph_text)
-                      title:base::SysUTF8ToNSString(config_ref.iph_title)
-             arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
-                                            : BubbleArrowDirectionUp
-                  alignment:BubbleAlignmentTopOrLeading
-                 bubbleType:BubbleViewTypeRich
-            pageControlPage:BubblePageControlPageNone
-          dismissalCallback:dismissalCallback];
-
-  _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement =
-      base::SysUTF8ToNSString(config_ref.iph_text);
-  _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
-      YES;
-  _contextualPanelEntrypointHelpPresenter.customBubbleVisibilityDuration =
-      kLargeContextualPanelEntrypointDisplayDuration.InSecondsF();
-
-  // Early return if the bubble wouldn't fit in its parent view.
-  if (![_contextualPanelEntrypointHelpPresenter
-          canPresentInView:self.viewController.view
-               anchorPoint:anchorPoint]) {
-    _contextualPanelEntrypointHelpPresenter = nil;
-    return NO;
-  }
-
-  // Do this check last as the FET needs to know the IPH can be shown.
-  if (!engagementTracker->ShouldTriggerHelpUI(*config_ref.iph_feature)) {
-    _contextualPanelEntrypointHelpPresenter = nil;
-    return NO;
-  }
-
-  [_contextualPanelEntrypointHelpPresenter
-      presentInViewController:self.viewController
-                  anchorPoint:anchorPoint];
-
-  return YES;
-}
-
-- (void)dismissContextualPanelEntrypointIPH:(BOOL)animated {
-  [_contextualPanelEntrypointHelpPresenter dismissAnimated:animated];
-  _contextualPanelEntrypointHelpPresenter = nil;
 }
 
 #pragma mark - DefaultBrowserPromoCommands

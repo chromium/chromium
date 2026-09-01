@@ -7,11 +7,16 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/send_tab_to_self/features.h"
@@ -37,16 +42,21 @@
 #import "ios/chrome/browser/autofill/ui_bundled/error_dialog/autofill_error_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/coordinator/wallet_reminder_notice_coordinator.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
@@ -97,6 +107,8 @@
 #import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
@@ -168,9 +180,15 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 // TODO(crbug.com/544595243): Move this inside the SharingParams.
 const char kChromeAppStoreUrl[] =
     "https://apps.apple.com/app/id535886823?pt=9008&ct=iosChromeShare&mt=8";
+
+// Histogram name for the IPH dismissal reason.
+const char kContextPanelDismissedHistogram[] =
+    "IOS.ContextualPanel.IPH.DismissedReason";
+
 }  // namespace
 
 @interface BrowserModalHost () <ActivityServiceCommands,
@@ -179,6 +197,7 @@ const char kChromeAppStoreUrl[] =
                                 AutofillCommands,
                                 CobaltCommands,
                                 CollaborationGroupCommands,
+                                ContextualPanelEntrypointIPHCommands,
                                 ContextualSheetCommands,
                                 CountryCodePickerCommands,
                                 DockingPromoCommands,
@@ -247,6 +266,7 @@ const char kChromeAppStoreUrl[] =
   AutofillEditProfileCoordinator* _autofillEditProfileCoordinator;
   AutofillErrorDialogCoordinator* _autofillErrorDialogCoordinator;
   AutofillProgressDialogCoordinator* _autofillProgressDialogCoordinator;
+  BubbleViewControllerPresenter* _contextualPanelEntrypointHelpPresenter;
   CardUnmaskAuthenticationCoordinator* _cardUnmaskAuthenticationCoordinator;
   ChromeCoordinator* _cobaltCoordinator;
   ChromeCoordinator* _cobaltAlertCoordinator;
@@ -353,6 +373,7 @@ const char kChromeAppStoreUrl[] =
   [self hideCobaltAlert];
   [self hideCobaltPopup];
   [self hideContextualSheet];
+  [self dismissContextualPanelEntrypointIPH:NO];
   [self hideCountryCodePicker];
   [self dismissDockingPromo];
   if (IsDownloadListEnabled()) {
@@ -529,6 +550,65 @@ const char kChromeAppStoreUrl[] =
   _storeKitCoordinator = nil;
 }
 
+// Handles cleanup and metric logging when the Contextual Panel Entrypoint IPH
+// is dismissed.
+// TODO(crbug.com/555640717): Investigate if this can be moved to an
+// IPH-specific object.
+- (void)contextualPanelEntrypointIPHDidDismissWithConfig:
+            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+                                         dismissalReason:
+                                             (IPHDismissalReasonType)reason {
+  ContextualPanelItemConfiguration* configPointer = config.get();
+  if (!configPointer) {
+    return;
+  }
+
+  // TODO(crbug.com/555654175): This should be using a state object to propagate
+  // the change to the different object rather than forwarding it.
+  [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
+      notifyContextualPanelEntrypointIPHDismissed];
+
+  ProfileIOS* profile = _browser->GetProfile();
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(profile);
+
+  if (!engagementTracker || !_contextualPanelEntrypointHelpPresenter) {
+    return;
+  }
+
+  engagementTracker->Dismissed(*configPointer->iph_feature);
+  _contextualPanelEntrypointHelpPresenter = nil;
+
+  if (reason == IPHDismissalReasonType::kTappedAnchorView ||
+      reason == IPHDismissalReasonType::kTappedIPH) {
+    [HandlerForProtocol(self.dispatcher, ContextualSheetCommands)
+        openContextualSheet];
+    base::UmaHistogramEnumeration(
+        kContextPanelDismissedHistogram,
+        ContextualPanelIPHDismissedReason::UserInteracted);
+    return;
+  }
+
+  if (reason == IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
+      reason == IPHDismissalReasonType::kTappedClose) {
+    engagementTracker->NotifyEvent(
+        configPointer->iph_entrypoint_explicitly_dismissed);
+    base::UmaHistogramEnumeration(
+        kContextPanelDismissedHistogram,
+        ContextualPanelIPHDismissedReason::UserDismissed);
+    return;
+  }
+
+  if (reason == IPHDismissalReasonType::kTimedOut) {
+    base::UmaHistogramEnumeration(kContextPanelDismissedHistogram,
+                                  ContextualPanelIPHDismissedReason::TimedOut);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kContextPanelDismissedHistogram,
+                                ContextualPanelIPHDismissedReason::Other);
+}
+
 // Starts dispatching to the various command protocols.
 - (void)startDispatching {
   NSArray<Protocol*>* protocols = @[
@@ -538,6 +618,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(AutofillCommands),
     @protocol(CobaltCommands),
     @protocol(CollaborationGroupCommands),
+    @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(ContextualSheetCommands),
     @protocol(CountryCodePickerCommands),
     @protocol(DockingPromoCommands),
@@ -1089,6 +1170,75 @@ const char kChromeAppStoreUrl[] =
           _browser->GetProfile());
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
+}
+
+#pragma mark - ContextualPanelEntrypointIPHCommands
+
+// TODO(crbug.com/555650699): commands should not return a value.
+- (BOOL)showContextualPanelEntrypointIPHWithConfig:
+            (ContextualPanelItemConfiguration*)config
+                                       anchorPoint:(CGPoint)anchorPoint
+                                   isBottomOmnibox:(BOOL)isBottomOmnibox {
+  ContextualPanelItemConfiguration& configRef = CHECK_DEREF(config);
+
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(_browser->GetProfile());
+
+  if (!engagementTracker) {
+    return NO;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<ContextualPanelItemConfiguration> config_weak_ptr =
+      configRef.weak_ptr_factory.GetWeakPtr();
+  CallbackWithIPHDismissalReasonType dismissalCallback = ^(
+      IPHDismissalReasonType reason) {
+    [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config_weak_ptr
+                                               dismissalReason:reason];
+  };
+
+  _contextualPanelEntrypointHelpPresenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:base::SysUTF8ToNSString(configRef.iph_text)
+                      title:base::SysUTF8ToNSString(configRef.iph_title)
+             arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
+                                            : BubbleArrowDirectionUp
+                  alignment:BubbleAlignmentTopOrLeading
+                 bubbleType:BubbleViewTypeRich
+            pageControlPage:BubblePageControlPageNone
+          dismissalCallback:dismissalCallback];
+
+  _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement =
+      base::SysUTF8ToNSString(configRef.iph_text);
+  _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
+      YES;
+  _contextualPanelEntrypointHelpPresenter.customBubbleVisibilityDuration =
+      kLargeContextualPanelEntrypointDisplayDuration.InSecondsF();
+
+  // Early return if the bubble wouldn't fit in its parent view.
+  if (![_contextualPanelEntrypointHelpPresenter
+          canPresentInView:self.activeBaseViewController.view
+               anchorPoint:anchorPoint]) {
+    _contextualPanelEntrypointHelpPresenter = nil;
+    return NO;
+  }
+
+  // Do this check last as the FET needs to know the IPH can be shown.
+  if (!engagementTracker->ShouldTriggerHelpUI(*configRef.iph_feature)) {
+    _contextualPanelEntrypointHelpPresenter = nil;
+    return NO;
+  }
+
+  [_contextualPanelEntrypointHelpPresenter
+      presentInViewController:self.activeBaseViewController
+                  anchorPoint:anchorPoint];
+
+  return YES;
+}
+
+- (void)dismissContextualPanelEntrypointIPH:(BOOL)animated {
+  [_contextualPanelEntrypointHelpPresenter dismissAnimated:animated];
+  _contextualPanelEntrypointHelpPresenter = nil;
 }
 
 #pragma mark - ContextualSheetCommands
