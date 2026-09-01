@@ -10,7 +10,9 @@
 #include "base/memory/raw_ref.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class BrowserWindowInterface;
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 class SidePanelEntryScope;
 class SidePanelRegistry;
 
@@ -24,15 +26,15 @@ namespace geic {
 // GEiC SidePanelEntry.
 class GeicSidePanelCoordinator {
  public:
-  explicit GeicSidePanelCoordinator(
-      BrowserWindowInterface& browser_window_interface);
+  explicit GeicSidePanelCoordinator(tabs::TabInterface& tab_interface,
+                                    SidePanelRegistry* registry);
   ~GeicSidePanelCoordinator();
 
-  static GeicSidePanelCoordinator* From(BrowserWindowInterface* browser);
+  static GeicSidePanelCoordinator* From(tabs::TabInterface* tab);
 
   DECLARE_USER_DATA(GeicSidePanelCoordinator);
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void CreateAndRegisterEntry(SidePanelRegistry* registry);
 
   // Toggles the GEiC side panel visibility.
   void Toggle();
@@ -40,7 +42,7 @@ class GeicSidePanelCoordinator {
  private:
   std::unique_ptr<views::View> CreateGeicView(SidePanelEntryScope& scope);
 
-  const raw_ref<BrowserWindowInterface> browser_window_interface_;
+  const raw_ref<tabs::TabInterface> tab_interface_;
   ui::ScopedUnownedUserData<GeicSidePanelCoordinator> scoped_unowned_user_data_;
 };
 

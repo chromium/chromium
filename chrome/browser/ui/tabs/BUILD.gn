@@ -529,6 +529,8 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/favicon",
+      "//chrome/browser/geic",
+      "//chrome/browser/geic:ui",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",

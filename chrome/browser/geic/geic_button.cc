@@ -45,7 +45,8 @@ std::unique_ptr<GeicButton> GeicButton::Create(
       browser_window_interface, tooltip_text,
       base::BindRepeating(
           [](BrowserWindowInterface* bwi) {
-            if (auto* coordinator = GeicSidePanelCoordinator::From(bwi)) {
+            if (auto* coordinator = GeicSidePanelCoordinator::From(
+                    bwi->GetActiveTabInterface())) {
               coordinator->Toggle();
             }
           },

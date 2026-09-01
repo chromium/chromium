@@ -30,8 +30,6 @@
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
-#include "chrome/browser/geic/geic_enabling.h"
-#include "chrome/browser/geic/geic_side_panel_coordinator.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
@@ -411,12 +409,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   extension_installed_watcher_ =
       std::make_unique<ExtensionInstalledWatcher>(profile);
-
-  if (geic::IsGeicEnabled(profile)) {
-    geic_side_panel_coordinator_ =
-        GetUserDataFactory().CreateInstance<geic::GeicSidePanelCoordinator>(
-            *browser, *browser);
-  }
 
   history_clusters_side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<HistoryClustersSidePanelCoordinator>(

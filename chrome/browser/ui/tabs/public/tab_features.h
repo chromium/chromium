@@ -138,6 +138,10 @@ namespace extensions {
 class ExtensionSidePanelManager;
 }  // namespace extensions
 
+namespace geic {
+class GeicSidePanelCoordinator;
+}  // namespace geic
+
 namespace glic {
 class ContextualCueingHelper;
 class GlicCueTabState;
@@ -544,6 +548,7 @@ class TabFeatures {
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
+  std::unique_ptr<geic::GeicSidePanelCoordinator> geic_side_panel_coordinator_;
   std::unique_ptr<glic::GlicSelectionObserver> glic_selection_observer_;
   std::unique_ptr<glic::SelectionOverlayController>
       glic_selection_overlay_controller_;
