@@ -311,7 +311,7 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   no_vary_search.vary_on_key_order_ = vary_on_key_order;
   no_vary_search.vary_by_default_ = vary_by_default;
 
-  return base::ok(no_vary_search);
+  return no_vary_search;
 }
 
 bool HttpNoVarySearchData::AreEquivalentOldImpl(const GURL& a,
@@ -430,7 +430,7 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
       }
       members.emplace_back(
           keys::kParams,
-          structured_headers::ParameterizedMember(param_items, {}));
+          structured_headers::ParameterizedMember(std::move(param_items), {}));
     }
   } else {
     members.emplace_back(keys::kParams,
@@ -448,7 +448,7 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
       }
       members.emplace_back(
           keys::kExcept,
-          structured_headers::ParameterizedMember(except_items, {}));
+          structured_headers::ParameterizedMember(std::move(except_items), {}));
     }
   }
 
