@@ -16,7 +16,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,7 +31,6 @@ import org.chromium.content_public.browser.test.mock.MockWebContents;
 
 /** Tests for {@link MediaSessionTabHelper} lazy-initialization and cleanup. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 // TODO(crbug.com/522397811): Add tests with ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS enabled once
 // the feature is implemented.
 @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)

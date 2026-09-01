@@ -33,7 +33,7 @@ import org.chromium.services.media_session.MediaPosition;
  * NotificationManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = MediaNotificationTestShadowResources.class)
+@Config(shadows = MediaNotificationTestShadowResources.class)
 public class MediaNotificationManagerNotificationTest extends MediaNotificationTestBase {
     @Test
     public void updateNotificationBuilderDisplaysCorrectMetadata_EmptyArtistAndAlbum() {

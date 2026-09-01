@@ -25,7 +25,6 @@ import org.chromium.components.browser_ui.media.MediaNotificationListener;
 /** JUnit tests for {@link MediaNotificationController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationControllerTest extends MediaNotificationTestBase {
 

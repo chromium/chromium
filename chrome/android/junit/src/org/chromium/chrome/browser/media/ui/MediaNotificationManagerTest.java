@@ -47,7 +47,6 @@ import java.util.Map;
 /** JUnit tests for {@link MediaNotificationManager} to verify multiple notifications support. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationManagerTest extends MediaNotificationTestBase {
 

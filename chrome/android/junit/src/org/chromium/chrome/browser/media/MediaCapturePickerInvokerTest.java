@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ServiceLoaderUtil;
@@ -40,7 +39,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Tests for MediaCapturePickerInvoker. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MediaCapturePickerInvokerTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

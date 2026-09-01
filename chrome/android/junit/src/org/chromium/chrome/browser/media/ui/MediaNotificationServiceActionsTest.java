@@ -26,7 +26,6 @@ import org.chromium.media_session.mojom.MediaSessionAction;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationServiceActionsTest extends MediaNotificationTestBase {
     @Test

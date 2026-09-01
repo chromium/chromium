@@ -25,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SupplierUtils;
@@ -53,7 +52,6 @@ import java.util.function.Supplier;
 
 /** Tests for {@link ImmersivePlaybackMessageController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersivePlaybackMessageControllerTest {
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;

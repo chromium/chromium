@@ -36,7 +36,6 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;

@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -32,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link ImmersiveVideoFormatRadioGroup}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersiveVideoFormatRadioGroupTest {
     private Activity mActivity;
     private ImmersiveVideoFormatRadioGroup mRadioGroup;

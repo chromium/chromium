@@ -19,7 +19,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -34,7 +33,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ImmersiveVideoFormatSelectionDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersiveVideoFormatSelectionDialogTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ImmersivePlaybackConfirmationCallback mCallback;
