@@ -82,19 +82,28 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   // perfetto::ProducerEndpoint implementation:
   void Disconnect() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    producer_->OnDisconnect();  // Will delete |this|.
+    OnMojoDisconnect();
+  }
+
+  bool is_connected() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return producer_host_.is_bound();
   }
 
   void RegisterDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    producer_host_->RegisterDataSource(descriptor);
+    if (producer_host_) {
+      producer_host_->RegisterDataSource(descriptor);
+    }
   }
 
   void UpdateDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    producer_host_->UpdateDataSource(descriptor);
+    if (producer_host_) {
+      producer_host_->UpdateDataSource(descriptor);
+    }
   }
 
   void UnregisterDataSource(const std::string& name) override {
@@ -107,17 +116,27 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void RegisterTraceWriter(uint32_t writer_id,
                            uint32_t target_buffer) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    producer_host_->RegisterTraceWriter(writer_id, target_buffer);
+    if (producer_host_) {
+      producer_host_->RegisterTraceWriter(writer_id, target_buffer);
+    }
   }
 
   void UnregisterTraceWriter(uint32_t writer_id) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    producer_host_->UnregisterTraceWriter(writer_id);
+    if (producer_host_) {
+      producer_host_->UnregisterTraceWriter(writer_id);
+    }
   }
 
   void CommitData(const perfetto::CommitDataRequest& commit,
                   CommitDataCallback callback = {}) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!producer_host_) {
+      if (callback) {
+        callback();
+      }
+      return;
+    }
     auto commit_callback =
         callback
             ? base::BindOnce(
@@ -172,8 +191,10 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     perfetto::CommitDataRequest commit;
     commit.set_flush_request_id(flush_request_id);
-    producer_host_->CommitData(commit,
-                               mojom::ProducerHost::CommitDataCallback());
+    if (producer_host_) {
+      producer_host_->CommitData(commit,
+                                 mojom::ProducerHost::CommitDataCallback());
+    }
   }
 
   void NotifyDataSourceStarted(
@@ -281,11 +302,12 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
                                 shmem_page_size_bytes_);
 
     producer_host_.Bind(std::move(host_remote));
+    producer_host_.set_disconnect_handler(base::BindOnce(
+        &ProducerEndpoint::OnMojoDisconnect, base::Unretained(this)));
     receiver_ = std::make_unique<mojo::Receiver<mojom::ProducerClient>>(
         this, std::move(client_receiver));
     receiver_->set_disconnect_handler(base::BindOnce(
-        [](ProducerEndpoint* endpoint) { endpoint->receiver_->reset(); },
-        base::Unretained(this)));
+        &ProducerEndpoint::OnMojoDisconnect, base::Unretained(this)));
 
     // The shared memory arbiter can call producer host methods if it has
     // uncommitted requests at this moment. So bind it to the producer only
@@ -307,9 +329,18 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   }
 
  private:
+  void OnMojoDisconnect() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    receiver_.reset();
+    producer_host_.reset();
+    if (producer_) {
+      producer_.ExtractAsDangling()->OnDisconnect();
+    }
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<perfetto::Producer> producer_;
+  raw_ptr<perfetto::Producer> producer_;
 
   base::flat_map<perfetto::DataSourceInstanceID, StartDataSourceCallback>
       ds_start_callbacks_;
@@ -823,6 +854,13 @@ void PerfettoTracingBackend::BindProducerConnectionIfNecessary() {
 
   if (!producer_endpoint_) {
     return;
+  }
+
+  if (producer_endpoint_->is_connected()) {
+    producer_endpoint_->Disconnect();
+    if (!producer_endpoint_) {
+      return;
+    }
   }
 
   mojo::PendingRemote<mojom::PerfettoService> perfetto_service;

@@ -394,6 +394,92 @@ TEST_F(TracingServiceTest, PerfettoClientProducer) {
   EXPECT_EQ(kNumPackets, ReadAndCountTestPackets(*session));
 }
 
+TEST_F(TracingServiceTest, PerfettoClientProducerReconnect) {
+  EnableClientApiConsumer();
+  EnableClientApiProducer();
+
+  perfetto::DataSourceDescriptor dsd;
+  dsd.set_name("com.example.custom_data_source_reconnect");
+  CustomDataSource::Events ds_events;
+  CustomDataSource::set_events(&ds_events);
+  CustomDataSource::Register(dsd);
+
+  // First tracing session.
+  {
+    auto session =
+        perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+    perfetto::TraceConfig perfetto_config;
+    perfetto_config.add_buffers()->set_size_kb(1024);
+    auto* ds_cfg = perfetto_config.add_data_sources()->mutable_config();
+    ds_cfg->set_name("com.example.custom_data_source_reconnect");
+    session->Setup(perfetto_config);
+    session->Start();
+
+    ds_events.wait_for_setup_loop.Run();
+    ds_events.wait_for_start_loop.Run();
+
+    size_t kNumPackets = 10;
+    CustomDataSource::Trace([kNumPackets](CustomDataSource::TraceContext ctx) {
+      for (size_t i = 0; i < kNumPackets; i++) {
+        ctx.NewTracePacket()->set_for_testing()->set_str(
+            tracing::kPerfettoTestString);
+      }
+      ctx.Flush();
+    });
+
+    base::RunLoop wait_for_stop_loop;
+    session->SetOnStopCallback(
+        [&wait_for_stop_loop] { wait_for_stop_loop.Quit(); });
+    session->Stop();
+    ds_events.wait_for_stop_loop.Run();
+    wait_for_stop_loop.Run();
+
+    EXPECT_EQ(kNumPackets, ReadAndCountTestPackets(*session));
+  }
+
+  // Simulate Mojo disconnect by dropping the service's producer endpoints.
+  perfetto_service()->DisconnectAllProducersForTesting();
+
+  // Reconnect the producer.
+  EnableClientApiProducer();
+
+  // Second tracing session after reconnection.
+  {
+    CustomDataSource::Events ds_events_reconnect;
+    CustomDataSource::set_events(&ds_events_reconnect);
+
+    auto session =
+        perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+    perfetto::TraceConfig perfetto_config;
+    perfetto_config.add_buffers()->set_size_kb(1024);
+    auto* ds_cfg = perfetto_config.add_data_sources()->mutable_config();
+    ds_cfg->set_name("com.example.custom_data_source_reconnect");
+    session->Setup(perfetto_config);
+    session->Start();
+
+    ds_events_reconnect.wait_for_setup_loop.Run();
+    ds_events_reconnect.wait_for_start_loop.Run();
+
+    size_t kNumPackets = 10;
+    CustomDataSource::Trace([kNumPackets](CustomDataSource::TraceContext ctx) {
+      for (size_t i = 0; i < kNumPackets; i++) {
+        ctx.NewTracePacket()->set_for_testing()->set_str(
+            tracing::kPerfettoTestString);
+      }
+      ctx.Flush();
+    });
+
+    base::RunLoop wait_for_stop_loop;
+    session->SetOnStopCallback(
+        [&wait_for_stop_loop] { wait_for_stop_loop.Quit(); });
+    session->Stop();
+    ds_events_reconnect.wait_for_stop_loop.Run();
+    wait_for_stop_loop.Run();
+
+    EXPECT_EQ(kNumPackets, ReadAndCountTestPackets(*session));
+  }
+}
+
 #if !BUILDFLAG(IS_WIN)
 // TODO(crbug.com/40736989): Support tracing to file on Windows.
 TEST_F(TracingServiceTest, TraceToFile) {

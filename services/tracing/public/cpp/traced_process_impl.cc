@@ -54,6 +54,8 @@ void TracedProcessImpl::OnTracedProcessRequest(
     return;
 
   receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &TracedProcessImpl::ResetTracedProcessReceiver, base::Unretained(this)));
 }
 
 mojo::Remote<mojom::SystemTracingService>&

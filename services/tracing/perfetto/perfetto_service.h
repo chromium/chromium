@@ -75,6 +75,11 @@ class PerfettoService : public mojom::PerfettoService {
     return active_service_pids_initialized_;
   }
 
+  void DisconnectAllProducersForTesting() {
+    producer_receivers_.Clear();
+    receivers_.Clear();
+  }
+
  private:
   void BindOnSequence(mojo::PendingReceiver<mojom::PerfettoService> receiver);
   void CreateServiceOnSequence();
