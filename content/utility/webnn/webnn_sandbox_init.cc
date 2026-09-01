@@ -52,12 +52,11 @@ bool PreSandboxInit() {
       command_line->GetSwitchValuePath(switches::kWebNNCompilerEpLibrary);
   CHECK(!library_path.empty());
 
-  std::optional<EpDeviceInfo> device_info = EpDeviceInfo::FromSwitchValue(
+  EpDeviceInfo device_info = EpDeviceInfo::FromSwitchValue(
       command_line->GetSwitchValueASCII(switches::kWebNNCompilerEpDeviceInfo));
-  CHECK(device_info.has_value());
 
-  auto env_result = ort::Environment::InitializeForCompilerProcess(
-      library_path, *device_info);
+  auto env_result =
+      ort::Environment::InitializeForCompilerProcess(library_path, device_info);
   if (!env_result.has_value()) {
     LOG(ERROR) << "[WebNN] Failed to initialize ORT Environment before "
                   "sandbox lockdown: "

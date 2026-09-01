@@ -69,6 +69,16 @@ inline constexpr OfflineCompilationSupport kWebGpuOfflineCompilation[] = {
     },
 };
 
+inline constexpr OfflineCompilationSupport kNvTensorRTRTXOfflineCompilation[] =
+    {
+        {
+            // The TensorRT-RTX EP only enumerates NVIDIA GPUs, so every GPU
+            // device it exposes is supported. An empty `device_ids` span means
+            // all device IDs for this device type qualify.
+            .device_type = mojom::Device::kGpu,
+        },
+};
+
 }  // namespace internal
 
 inline constexpr std::string_view kCPUExecutionProvider =
@@ -136,6 +146,21 @@ struct EpInfo {
   // via this config entry. Empty value means the EP uses the default
   // `SetOptimizedModelFilePath` approach.
   base::cstring_view model_dump_config_key;
+  // Environment config keys naming the device this EP must compile for,
+  // supplying what it would otherwise query from a driver the Compiler process
+  // cannot reach. They go on the environment rather than into provider options
+  // because the EP reads them while enumerating devices, before any session
+  // exists. Values are opaque to WebNN. Empty for an EP that resolves the
+  // target from the hardware it runs on.
+  //
+  // Both are spelled without the "ep_factory.<ep_name>." prefix ORT reserves
+  // for entries addressed to a particular execution provider, and must be set
+  // together: an architecture without a device to attribute it to, or a device
+  // without the architecture that decides what gets built, is not useful.
+  base::cstring_view target_architecture_env_config_key;
+  // Key whose value is the PCI device id from
+  // `OrtApi::HardwareDevice_DeviceId()`, written as a hexadecimal string.
+  base::cstring_view hardware_device_id_env_config_key;
   // The information of offline compilation support.
   base::raw_span<const OfflineCompilationSupport> offline_compilation_support;
 };
@@ -172,7 +197,14 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
                     .Revision = 0,
                 },
             .vendor_id = 0x10de,
+            // Kept disabled until the EP can compile inside the
+            // Win32k-locked-down Compiler process. `min_package_version` must
+            // be raised to the first package that does before enabling.
             .enabled = false,
+            .target_architecture_env_config_key = "nv_target_sm",
+            .hardware_device_id_env_config_key = "nv_hardware_device_id",
+            .offline_compilation_support =
+                internal::kNvTensorRTRTXOfflineCompilation,
         },
     },
     // Intel

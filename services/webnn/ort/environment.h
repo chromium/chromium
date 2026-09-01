@@ -149,8 +149,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Environment
                            const EpDeviceInfo& target_device);
 
   // Compiles a trivial graph on the target device to ensure the required
-  // libraries are loaded for the Compiler process.
-  void WarmupEpDeviceForCompilerProcess(const EpDeviceInfo& target_device);
+  // libraries are loaded for the Compiler process. Fails if the EP cannot
+  // compile in this process, which is not necessarily a defect: an EP may
+  // depend on libraries that cannot be loaded under the compiler process's
+  // mitigations.
+  base::expected<void, std::string> WarmupEpDeviceForCompilerProcess(
+      const EpDeviceInfo& target_device);
 
   ~Environment();
 

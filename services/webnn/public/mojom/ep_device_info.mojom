@@ -13,4 +13,9 @@ struct EpDeviceInfo {
   Device device_type;
   uint32 device_id;
   uint32 vendor_id;
+  // An execution provider specific name for this device's compute
+  // architecture, read from the EP's device metadata, and used to compile for
+  // this device without inspecting the hardware. Empty when the execution
+  // provider does not publish one.
+  string target_architecture;
 };

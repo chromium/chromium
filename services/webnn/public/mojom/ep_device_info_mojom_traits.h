@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_PUBLIC_MOJOM_EP_DEVICE_INFO_MOJOM_TRAITS_H_
 #define SERVICES_WEBNN_PUBLIC_MOJOM_EP_DEVICE_INFO_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -31,6 +32,11 @@ struct StructTraits<webnn::mojom::EpDeviceInfoDataView, webnn::EpDeviceInfo> {
     return device.vendor_id;
   }
 
+  static const std::string& target_architecture(
+      const webnn::EpDeviceInfo& device) {
+    return device.target_architecture;
+  }
+
   static bool Read(webnn::mojom::EpDeviceInfoDataView data,
                    webnn::EpDeviceInfo* out) {
     if (!data.ReadEpName(&out->ep_name)) {
@@ -39,6 +45,13 @@ struct StructTraits<webnn::mojom::EpDeviceInfoDataView, webnn::EpDeviceInfo> {
     out->device_type = data.device_type();
     out->device_id = data.device_id();
     out->vendor_id = data.vendor_id();
+    if (!data.ReadTargetArchitecture(&out->target_architecture)) {
+      return false;
+    }
+    if (!out->target_architecture.empty() &&
+        !webnn::IsValidEpTargetArchitecture(out->target_architecture)) {
+      return false;
+    }
     return true;
   }
 };

@@ -25,11 +25,9 @@ WebNNCompilerServiceImpl::WebNNCompilerServiceImpl(
     mojo::PendingReceiver<mojom::WebNNCompilerService> receiver)
     // The switch is already parsed and validated in PreSandboxInit() so it is
     // guaranteed to be valid.
-    : target_device_(
-          EpDeviceInfo::FromSwitchValue(
-              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                  switches::kWebNNCompilerEpDeviceInfo))
-              .value()),
+    : target_device_(EpDeviceInfo::FromSwitchValue(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kWebNNCompilerEpDeviceInfo))),
       receiver_(this, std::move(receiver)) {
   compiler_contexts_.set_disconnect_handler(base::BindRepeating(
       &WebNNCompilerServiceImpl::OnCompilerContextDisconnected,
