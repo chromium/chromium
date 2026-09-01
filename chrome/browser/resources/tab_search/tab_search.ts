@@ -7,7 +7,7 @@ import './app.js';
 export {getInstance as getAnnouncerInstance, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
-export type {SearchOptions} from './search.js';
+export type {OptionKeyObject, Range, SearchOptions} from './search.js';
 export {search} from './search.js';
 export type {SearchApiProxy} from './search_api_proxy.js';
 export {SearchApiProxyImpl} from './search_api_proxy.js';
@@ -25,6 +25,5 @@ export {SEARCH_QUERY_MAX_LENGTH, TabSearchPageElement, TabSearchUserAction} from
 export {TabSearchSplitItemElement} from './tab_search_split_item.js';
 export type {TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
 export {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
-export type {Range} from './tab_search_utils.js';
 export {TabAlertState} from './tabs.mojom-webui.js';
 export {TitleItem} from './title_item.js';

@@ -5,7 +5,11 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {SearchApiProxyImpl} from './search_api_proxy.js';
-import type {ItemData, SplitViewData, TabData, TabGroupData} from './tab_data.js';
+
+export interface Range {
+  start: number;
+  length: number;
+}
 
 // Regex covering Hiragana, Katakana, Kanji, and Hangul (CJK ranges).
 const CJK_REGEX = new RegExp(
@@ -21,40 +25,42 @@ function getSegmenter(): Intl.Segmenter {
   return segmenter;
 }
 
-export interface OptionKeyObject {
+export interface OptionKeyObject<T = any> {
   name: string;
-  getter: (data: TabData|TabGroupData|SplitViewData) => string | undefined;
+  getter: (data: T) => string | undefined;
   weight: number;
 }
 
-export interface SearchOptions {
+export interface SearchOptions<T = any> {
   includeScore?: boolean;
   includeMatches?: boolean;
   ignoreLocation?: boolean;
   threshold?: number;
   distance?: number;
-  keys: OptionKeyObject[];
+  keys: Array<OptionKeyObject<T>>;
 }
 
 /**
  * @return A new array of entries satisfying the input. If no search input is
  *     present, returns a shallow copy of the records.
  */
-export async function search<T extends ItemData>(
-    input: string, records: T[], options: SearchOptions): Promise<T[]> {
+export async function search<T>(
+    input: string, records: T[], options: SearchOptions<T>): Promise<T[]> {
   if (input.length === 0) {
     return [...records];
   }
   const searchStartTime = Date.now();
   const result = await exactSearch(input, records, options);
-  chrome.metricsPrivate.recordTime(
+  chrome.metricsPrivate?.recordTime?.(
       'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
       Math.round(Date.now() - searchStartTime));
   return result;
 }
 
-function cloneTabDataObj<T extends ItemData>(tabData: T): T {
-  const clone = Object.assign({}, tabData);
+type WithHighlightRanges<T> = T&{highlightRanges: Record<string, Range[]>};
+
+function cloneTabDataObj<T>(tabData: T): WithHighlightRanges<T> {
+  const clone = Object.assign({}, tabData) as WithHighlightRanges<T>;
   clone.highlightRanges = {};
   Object.setPrototypeOf(clone, Object.getPrototypeOf(tabData));
 
@@ -71,8 +77,8 @@ function cloneTabDataObj<T extends ItemData>(tabData: T): T {
  * score within the same priority. See `scoringFunction` for how to calculate
  * score and `prioritizeMatchResult` for how to calculate priority.
  */
-async function exactSearch<T extends ItemData>(
-    searchText: string, records: T[], options: SearchOptions): Promise<T[]> {
+async function exactSearch<T>(
+    searchText: string, records: T[], options: SearchOptions<T>): Promise<T[]> {
   if (searchText.length === 0) {
     return records;
   }
@@ -93,7 +99,7 @@ async function exactSearch<T extends ItemData>(
   const targets: string[] = [];
   for (const record of records) {
     for (const searchField of options.keys) {
-      const fieldText = searchField.getter(record as TabData | TabGroupData);
+      const fieldText = searchField.getter(record);
       if (fieldText) {
         targets.push(fieldText);
       }
@@ -115,8 +121,7 @@ async function exactSearch<T extends ItemData>(
     const matchedRecord = cloneTabDataObj(tabDataRecord);
     // Searches for fields or nested fields in the record.
     for (const searchField of options.keys) {
-      const fieldText =
-          searchField.getter(tabDataRecord as TabData | TabGroupData);
+      const fieldText = searchField.getter(tabDataRecord);
       if (fieldText) {
         const matchRanges = ranges[targetIdx++];
         if (matchRanges && matchRanges.length !== 0) {
@@ -153,7 +158,7 @@ async function exactSearch<T extends ItemData>(
  * than single matches.
  */
 function scoringFunction(
-    tabData: ItemData, distance: number,
+    tabData: {highlightRanges: Record<string, Range[]>}, distance: number,
     searchFieldWeights: {[key: string]: number}) {
   let score = 0;
   // For every match, map the match index in [0, distance] to a scalar value in
@@ -179,8 +184,10 @@ function scoringFunction(
  * 3. All remaining items with a search key matching the searchText elsewhere in
  *    the string.
  */
-function prioritizeMatchResult<T extends ItemData>(
-    searchFields: OptionKeyObject[], result: T[], input: string): T[] {
+function prioritizeMatchResult<T>(
+    searchFields: Array<OptionKeyObject<T>>,
+    result: Array<WithHighlightRanges<T>>,
+    input: string): Array<WithHighlightRanges<T>> {
   const itemsMatchingStringStart = [];
   const itemsMatchingWordStart = [];
   const others = [];
@@ -197,7 +204,7 @@ function prioritizeMatchResult<T extends ItemData>(
         continue;
       }
 
-      const fieldText = searchField.getter(tab as TabData | TabGroupData);
+      const fieldText = searchField.getter(tab);
       if (!fieldText) {
         continue;
       }
