@@ -4027,7 +4027,7 @@ Element::TinyBloomFilter Element::RecomputeLocalBloomFilter() const {
       new_bloom_filter |= FilterForString(class_name);
     }
     for (const Attribute& attribute : element_data_->Attributes()) {
-      new_bloom_filter |= FilterForAttribute(attribute.GetName());
+      new_bloom_filter |= attribute.BloomFilter();
     }
   }
   return new_bloom_filter;
@@ -4137,7 +4137,7 @@ void Element::ParserSetAttributes(
     }
 
     for (const Attribute& attribute : attribute_vector) {
-      attribute_or_class_bloom_ |= FilterForAttribute(attribute.GetName());
+      attribute_or_class_bloom_ |= attribute.BloomFilter();
     }
   }
 

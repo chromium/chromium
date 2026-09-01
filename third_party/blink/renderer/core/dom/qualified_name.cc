@@ -36,6 +36,7 @@ namespace blink {
 struct SameSizeAsQualifiedNameImpl
     : public RefCounted<SameSizeAsQualifiedNameImpl> {
   unsigned bitfield;
+  uint32_t bloom_filter;
   void* pointers[4];
 };
 
@@ -132,6 +133,11 @@ const AtomicString& QualifiedName::LocalNameUpperSlow() const {
   return impl_->local_name_upper_;
 }
 
+uint32_t QualifiedName::BloomFilterSlow() const {
+  impl_->bloom_filter_ = Element::FilterForString(LocalNameUpper());
+  return impl_->bloom_filter_;
+}
+
 unsigned QualifiedNameImpl::ComputeHash() const {
   QualifiedNameComponents components = {prefix_.Impl(), local_name_.Impl(),
                                         namespace_.Impl()};
@@ -175,6 +181,6 @@ QualifiedNameWithHash::QualifiedNameWithHash(const AtomicString& prefix,
                                              const AtomicString& namespace_uri,
                                              bool is_static)
     : QualifiedName(prefix, local_name, namespace_uri, is_static),
-      bloom_filter(Element::FilterForAttribute(*this)) {}
+      bloom_filter(BloomFilter()) {}
 
 }  // namespace blink

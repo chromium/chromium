@@ -91,6 +91,7 @@ class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
   // doing hashing and use one of the bits for the is_static_ value.
   mutable unsigned existing_hash_ : 24;
   mutable unsigned is_static_and_html_attribute_triggers_index_ : 8;
+  mutable uint32_t bloom_filter_ = 0;
   const AtomicString prefix_;
   const AtomicString local_name_;
   const AtomicString namespace_;
@@ -166,6 +167,15 @@ class CORE_EXPORT QualifiedName {
   }
 
   const AtomicString& LocalNameUpperSlow() const;
+
+  uint32_t BloomFilter() const {
+    if (impl_->bloom_filter_) [[likely]] {
+      return impl_->bloom_filter_;
+    }
+    return BloomFilterSlow();
+  }
+
+  uint32_t BloomFilterSlow() const;
 
   void RegisterHTMLAttributeTriggersIndex(unsigned index) const {
     using enum QualifiedNameImpl::StaticAndAttributeTriggersConstants;

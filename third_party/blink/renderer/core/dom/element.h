@@ -914,7 +914,7 @@ class CORE_EXPORT Element : public ContainerNode {
   using TinyBloomFilter = uint32_t;
   static TinyBloomFilter FilterForAttribute(
       const QualifiedName& attribute_name) {
-    return FilterForString(attribute_name.LocalNameUpper());
+    return attribute_name.BloomFilter();
   }
   static TinyBloomFilter FilterForString(const AtomicString& str) {
     unsigned hash = str.Hash();

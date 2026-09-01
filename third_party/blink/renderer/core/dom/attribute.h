@@ -78,6 +78,8 @@ class Attribute {
 
   const QualifiedName& GetName() const { return name_; }
 
+  uint32_t BloomFilter() const { return name_.BloomFilter(); }
+
   bool IsEmpty() const { return value_.empty(); }
   bool Matches(const QualifiedName&) const;
   bool MatchesCaseInsensitive(const QualifiedName&) const;
