@@ -24,6 +24,7 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(web::WebUIIOS* web_ui,
 
   source->AddBoolean(
       "isOtr", web_ui->GetWebState()->GetBrowserState()->IsOffTheRecord());
+  source->AddBoolean("canDeleteDeviceTrustKey", false);
   source->UseStringsJs();
 
   web::WebUIIOSDataSource::Add(web_ui->GetWebState()->GetBrowserState(),

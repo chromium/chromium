@@ -7,7 +7,7 @@ import '/strings.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './connectors_tabs.html.js';
-// <if expr="not is_android and not is_ios">
+// <if expr="not is_android">
 import {DeviceTrustConnectorElement} from './device_trust_connector.js';
 // </if>
 import {ManagedClientCertificateElement} from './managed_client_certificate.js';
@@ -33,7 +33,7 @@ interface ConnectorTab {
 // show in the UI.
 const connectorTabs: ConnectorTab[] = [
   // Device Trust Connector is not supported on Android
-  // <if expr="not is_android and not is_ios">
+  // <if expr="not is_android">
   {
     title: 'Device Trust',
     directive: DeviceTrustConnectorElement.is,
@@ -53,7 +53,7 @@ const connectorTabs: ConnectorTab[] = [
     isEnabled: true,
   },
   // </if>
-    {
+  {
     title: 'Provisioning Domain Config',
     directive: ProvisioningDomainConfigElement.is,
     isEnabled: true,

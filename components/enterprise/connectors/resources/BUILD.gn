@@ -20,7 +20,7 @@ build_webui("build") {
     web_component_files += [ "signals_reporting.ts" ]
   }
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     web_component_files += [ "device_trust_connector.ts" ]
   }
 
