@@ -2881,6 +2881,16 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       // html anchor scroll marker case.
       if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(element)) {
+        if (mode_ == kQueryingRules) {
+          // Recomputing the slot assignment can update scroll targets. If we do
+          // not recalc slot assignments before we get the active scroll marker,
+          // the LayoutTreeBuilderTraversal below may change the active scroll
+          // marker while traversing.
+          Document& document = element.GetDocument();
+          if (document.IsSlotAssignmentDirty()) {
+            document.GetSlotAssignmentEngine().RecalcSlotAssignments();
+          }
+        }
         if (ScrollMarkerGroupData* data =
                 anchor_element->GetScrollTargetGroupContainerData()) {
           scroll_marker = anchor_element;
