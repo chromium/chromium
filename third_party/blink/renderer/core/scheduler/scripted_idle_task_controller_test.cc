@@ -409,8 +409,6 @@ TEST_F(ScriptedIdleTaskControllerTest,
 
 TEST_F(ScriptedIdleTaskControllerTest,
        SchedulerTasksCleanedUpdOnTimeoutTaskRun) {
-  base::test::ScopedFeatureList feature_list(kRemoveCancelledScriptedIdleTasks);
-
   InitializeScheduler(ShouldYield(false));
 
   // Register many idle tasks with a timeout.
@@ -431,8 +429,6 @@ TEST_F(ScriptedIdleTaskControllerTest,
 
 TEST_F(ScriptedIdleTaskControllerTest,
        SchedulerTasksCleanedUpOnExecutionContextDeleted) {
-  base::test::ScopedFeatureList feature_list(kRemoveCancelledScriptedIdleTasks);
-
   InitializeScheduler(ShouldYield(false));
 
   // Register many idle tasks with a timeout.
@@ -451,8 +447,6 @@ TEST_F(ScriptedIdleTaskControllerTest,
 
 TEST_F(ScriptedIdleTaskControllerTest,
        SchedulerTasksRemovedOnManyIdleTasksCancelled) {
-  base::test::ScopedFeatureList feature_list(kRemoveCancelledScriptedIdleTasks);
-
   InitializeScheduler(ShouldYield(false));
 
   // Register 1 idle task which will not be cancelled.
