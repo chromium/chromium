@@ -924,6 +924,7 @@ class LocationBarMediator
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)
                     .setAutocompleteState(AutocompleteState.STANDBY)
+                    .setDisplayState(DisplayState.DRAFTING)
                     .setUserText(mCurrentInput.getInitialUserText())
                     .setSelection(TextSelection.SELECT_ALL);
             pushUrlBarDataFromCurrentInput();
@@ -2934,7 +2935,8 @@ class LocationBarMediator
             }
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)
-                    .setAutocompleteState(AutocompleteState.STANDBY);
+                    .setAutocompleteState(AutocompleteState.STANDBY)
+                    .setDisplayState(DisplayState.DRAFTING);
             // TODO(https://crbug.com/534359434): Remove bespoke update calls.
             updateButtonVisibility();
         } else if (!TextUtils.equals(
