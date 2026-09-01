@@ -2671,5 +2671,50 @@ TEST_F(BrowserAccessibilityAndroidTest, TestTreeItemInterestingAndLeaf) {
   EXPECT_TRUE(item_node->IsLeaf());
 }
 
+TEST_F(BrowserAccessibilityAndroidTest, TestIsLeafSliderWithComplexChildren) {
+  // `kSlider` nodes should be treated as leaf nodes in Android accessibility,
+  // returning `IsLeaf() == true` and `PlatformChildCount() == 0` even when they
+  // contain complex child structures (e.g. container, button, static text).
+  ui::AXNodeData thumb_button;
+  thumb_button.id = 11;
+  thumb_button.role = ax::mojom::Role::kButton;
+  thumb_button.SetName("Thumb");
+
+  ui::AXNodeData slider_label;
+  slider_label.id = 12;
+  slider_label.role = ax::mojom::Role::kStaticText;
+  slider_label.SetName("50%");
+
+  ui::AXNodeData slider_container;
+  slider_container.id = 13;
+  slider_container.role = ax::mojom::Role::kGenericContainer;
+  slider_container.child_ids = {thumb_button.id, slider_label.id};
+
+  ui::AXNodeData slider;
+  slider.id = 2;
+  slider.role = ax::mojom::Role::kSlider;
+  slider.AddState(ax::mojom::State::kFocusable);
+  slider.SetName("Volume");
+  slider.child_ids = {slider_container.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {slider.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, slider, slider_container,
+                                     thumb_button, slider_label),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* slider_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(slider.id));
+  ASSERT_NE(nullptr, slider_node);
+  EXPECT_TRUE(slider_node->IsLeaf());
+  EXPECT_EQ(0U, slider_node->PlatformChildCount());
+}
+
 }  // namespace content
+
 
