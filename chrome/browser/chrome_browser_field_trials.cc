@@ -287,6 +287,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(features::kLazyBrowserInterfaceBroker);
   feature_overrides.EnableFeature(chrome::android::kLoadAllTabsAtStartup);
 
+  // Enable desktop tab restore logic, where some background tabs get
+  // reloaded. This requires kLoadAllTabsAtStartup above to be enabled as well.
+  // This is not enabled elsewhere because the desktop behavior is not desirable
+  // on mobile Android.
+  feature_overrides.EnableFeature(
+      chrome::android::kDesktopAndroidBackgroundTabLoading);
+
   // Enable the ability for extensions to override chrome pages.
   // TODO(crbug.com/404069963): Remove flag when the feature is verified to be
   // stable on desktop Android.
