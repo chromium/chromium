@@ -630,6 +630,11 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     if (target_fragment_idx != -1)
       target_fragment_idx += cursor.ContainerFragmentIndex();
 
+    PhysicalOffset lines_offset;
+    if (CanvasForDrawingLayoutObject()) {
+      lines_offset = PhysicalLinesBoundingBox().offset;
+    }
+
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (target_fragment_idx != -1 &&
           wtf_size_t(target_fragment_idx) != cursor.ContainerFragmentIndex())
@@ -641,11 +646,12 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
       // BoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
       // up to the fragment itself. Compute this offset.
       const PhysicalOffset child_offset =
-          accumulated_offset + item.OffsetInContainerFragment();
+          accumulated_offset + item.OffsetInContainerFragment() - lines_offset;
+      const PhysicalOffset root_offset = accumulated_offset - lines_offset;
       InlinePaintContext inline_context;
       if (BoxFragmentPainter(cursor, item, *box_fragment, &inline_context)
-              .NodeAtPoint(result, hit_test_location, child_offset,
-                           accumulated_offset, phase)) {
+              .NodeAtPoint(result, hit_test_location, child_offset, root_offset,
+                           phase)) {
         return true;
       }
     }
