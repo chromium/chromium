@@ -4425,7 +4425,7 @@ bool FontFamilyNeedsQuoting(const AtomicString& string) {
           ? IsCSSTokenizerIdentSequence(string)
           : IsCSSTokenizerIdentifier(string);
   return (IsCSSWideKeyword(string) || IsDefaultKeyword(string) ||
-          FontFamily::InferredTypeFor(string) ==
+          FontFamily::InferredTypeFor(string.ToAsciiLower()) ==
               FontFamily::Type::kGenericFamily ||
           !can_serialize_unquoted);
 }
