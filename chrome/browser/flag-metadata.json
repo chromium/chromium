@@ -6146,12 +6146,12 @@
   {
     "name": "history-embeddings",
     "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 170
   },
   {
     "name": "history-embeddings-answers",
     "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 170
   },
   {
     "name": "history-journeys",
