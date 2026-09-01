@@ -391,6 +391,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kAllowByContainerConfig"/>
   <int value="5" label="kBlockByContainerConfig"/>
   <int value="6" label="kBlockByDangerousMimeType"/>
+  <int value="7" label="kLookalikeUrl"/>
+  <int value="8" label="kSafeBrowsing"/>
+  <int value="9" label="kSafetyChecksDisabled"/>
+  <int value="10" label="kTabErrorDocument"/>
+  <int value="11" label="kTabSafeBrowsingObserver"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:GatingDecision) -->

@@ -559,12 +559,21 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
         case ActorCustomPredicate::kDangerousMimeType:
           return ExecutionEngine::GatingDecision::kBlockByDangerousMimeType;
-        default:
-          NOTREACHED() << "Unrecognized custom predicate attribution: "
-                       << static_cast<int>(
-                              decision.attribution
-                                  .CustomPredicateId<ActorCustomPredicate>());
+        case ActorCustomPredicate::kSensitiveUrl:
+          return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+        case ActorCustomPredicate::kLookalikeUrl:
+          return ExecutionEngine::GatingDecision::kBlockByLookalikeUrl;
+        case ActorCustomPredicate::kSafeBrowsing:
+          return ExecutionEngine::GatingDecision::kBlockBySafeBrowsing;
+        case ActorCustomPredicate::kSafetyChecksDisabled:
+          return ExecutionEngine::GatingDecision::kAllowBySafetyChecksDisabled;
+        case ActorCustomPredicate::kTabErrorDocument:
+          return ExecutionEngine::GatingDecision::kBlockByTabErrorDocument;
+        case ActorCustomPredicate::kTabSafeBrowsingObserver:
+          return ExecutionEngine::GatingDecision::
+              kBlockByTabSafeBrowsingObserver;
       }
+      NOTREACHED();
   }
 }
 
@@ -593,9 +602,14 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
           // blocks actions if the URL was sensitive and the user refused the
           // prompt.
           return MayActOnUrlBlockReason::kOptimizationGuideBlock;
-        default:
-          NOTREACHED() << "Unexpected decision source: "
-                       << static_cast<int>(decision.attribution.Source());
+        case origin_gating::DecisionSource::kAllowSameOrigin:
+        case origin_gating::DecisionSource::kAllowHttpLocalhost:
+        case origin_gating::DecisionSource::kAllowAboutBlank:
+        case origin_gating::DecisionSource::kCacheWithUserConfirmation:
+        case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
+          // Unreachable since these predicates allow the event, but
+          // `decision.is_allowed` is false.
+          NOTREACHED();
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
       switch (decision.attribution.CustomPredicateId<ActorCustomPredicate>()) {
@@ -614,12 +628,12 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
           return MayActOnUrlBlockReason::kTabIsErrorDocument;
         case ActorCustomPredicate::kTabSafeBrowsingObserver:
           return MayActOnUrlBlockReason::kSafeBrowsing;
-        default:
-          NOTREACHED() << "Unrecognized custom predicate attribution: "
-                       << static_cast<int>(
-                              decision.attribution
-                                  .CustomPredicateId<ActorCustomPredicate>());
+        case ActorCustomPredicate::kSafetyChecksDisabled:
+          // Unreachable since this predicate allows the event, but
+          // `decision.is_allowed` is false.
+          NOTREACHED();
       }
+      NOTREACHED();
   }
 }
 

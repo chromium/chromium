@@ -128,7 +128,17 @@ class ExecutionEngine : public ToolDelegate,
     kBlockByContainerConfig = 5,
     // The navigation was blocked due to a dangerous MIME type in the response.
     kBlockByDangerousMimeType = 6,
-    kMaxValue = kBlockByDangerousMimeType,
+    // Blocked by the Lookalike URL service.
+    kBlockByLookalikeUrl = 7,
+    // Blocked by SafeBrowsing.
+    kBlockBySafeBrowsing = 8,
+    // Allowed because safety checks are disabled.
+    kAllowBySafetyChecksDisabled = 9,
+    // Blocked because the destination was an error document.
+    kBlockByTabErrorDocument = 10,
+    // Blocked by SafeBrowsing tab observer.
+    kBlockByTabSafeBrowsingObserver = 11,
+    kMaxValue = kBlockByTabSafeBrowsingObserver,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:GatingDecision)
 
