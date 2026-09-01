@@ -27,8 +27,6 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/config/gpu_feature_info.h"
-#include "gpu/config/gpu_feature_type.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
@@ -250,13 +248,6 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
-    // Graphite can handle a large buffer size.
-    if (context_provider_wrapper_->ContextProvider()
-            .GetGpuFeatureInfo()
-            .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-        gpu::kGpuFeatureStatusEnabled) {
-      recorder_for_external_draws_->DisableLineDrawingAsPaths();
-    }
   }
 
   if (raster_context_provider_) {
