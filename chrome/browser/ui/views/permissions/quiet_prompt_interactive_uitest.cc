@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
@@ -39,7 +41,6 @@
 #include "url/gurl.h"
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
-const char kLocationBarView[] = "LocationBarView";
 const auto QuietChipElementId =
     PermissionChipView::kPermissionRequestChipElementId;
 const auto QuietBubbleAllowElementId =
@@ -90,14 +91,18 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpCommandLine(command_line);
   }
 
-  LocationBarView* GetLocationBarView() {
+  LocationBar* GetLocationBar() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->location_bar_view();
+        ->location_bar();
+  }
+
+  PermissionDashboardController* GetDashboardController() {
+    return GetLocationBar()->GetPermissionDashboardController();
   }
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {
-    OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+    OmniboxView* omnibox_view = GetLocationBar()->GetOmniboxView();
     raw_ptr<TestLocationBarModel> test_location_bar_model_ =
         new TestLocationBarModel;
     std::unique_ptr<LocationBarModel> location_bar_model(
@@ -124,14 +129,26 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   // Checks that the permission chip is visible and in the given mode.
   // If `is_request` is false, should be in indicator mode instead.
   auto CheckChipIsRequest(bool is_request) {
-    return CheckViewProperty(QuietChipElementId,
-                             &PermissionChipView::GetIsRequestForTesting,
-                             is_request);
+    return CheckResult(
+        [&]() -> std::optional<bool> {
+          auto* chip = GetDashboardController()
+                           ->permission_dashboard()
+                           ->GetRequestChip();
+          return chip ? std::optional(chip->GetIsRequestForTesting())
+                      : std::nullopt;
+        },
+        is_request);
   }
 
   auto CheckChipText(int id_string) {
-    return CheckViewProperty(QuietChipElementId, &PermissionChipView::GetText,
-                             l10n_util::GetStringUTF16(id_string));
+    return CheckResult(
+        [&]() -> std::optional<std::u16string> {
+          auto* chip = GetDashboardController()
+                           ->permission_dashboard()
+                           ->GetRequestChip();
+          return chip ? std::optional(chip->GetTextForTesting()) : std::nullopt;
+        },
+        l10n_util::GetStringUTF16(id_string));
   }
 
   auto CheckQuietPromptMessage(int id_string) {
@@ -183,10 +200,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestNotification"),
       WaitForShow(QuietChipElementId), CheckChipIsRequest(true),
       CheckChipText(IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_TITLE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "RequestChip", "5875965"));
+      Screenshot(kLocationBarElementId, "RequestChip", "5875965"));
 }
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
@@ -277,10 +293,9 @@ IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestLocation"),
       WaitForShow(QuietChipElementId), CheckChipIsRequest(true),
       CheckChipText(IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_TITLE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "RequestChip", "5875965"));
+      Screenshot(kLocationBarElementId, "RequestChip", "5875965"));
 }
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,
@@ -412,8 +427,7 @@ IN_PROC_BROWSER_TEST_P(QuietPromptInteractiveParamUITest,
             "Permissions.QuietPrompt.Preignore.PageReloadInfoBar", should_show,
             1);
       }),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, test_name, "6768828"));
+      Screenshot(kLocationBarElementId, test_name, "6768828"));
 }
