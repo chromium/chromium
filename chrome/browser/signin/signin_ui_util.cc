@@ -445,8 +445,7 @@ AccountInfo GetSingleAccountForPromos(
 content::WebContents* GetSignInTabWithAccessPoint(
     BrowserWindowInterface* browser_window_interface,
     signin_metrics::AccessPoint access_point) {
-  TabStripModel* tab_strip =
-      browser_window_interface->GetFeatures().tab_strip_model();
+  TabStripModel* tab_strip = browser_window_interface->GetTabStripModel();
   int tab_count = tab_strip->count();
   for (int tab_index = 0; tab_index < tab_count; ++tab_index) {
     content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);

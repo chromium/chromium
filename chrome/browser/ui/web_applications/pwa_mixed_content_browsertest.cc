@@ -187,8 +187,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
       ReparentWebContentsIntoAppBrowser(tab_contents, app_id);
 
   ASSERT_NE(app_browser, browser());
-  ASSERT_EQ(GetMixedContentAppURL(), app_browser->GetFeatures()
-                                         .tab_strip_model()
+  ASSERT_EQ(GetMixedContentAppURL(), app_browser->GetTabStripModel()
                                          ->GetActiveWebContents()
                                          ->GetLastCommittedURL());
 
@@ -232,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(
   CheckMixedContentFailedToLoad(app_browser);
 
   // Change the mixed content to be acceptable.
-  content::RenderFrameHost* main_frame = app_browser->GetFeatures()
-                                             .tab_strip_model()
+  content::RenderFrameHost* main_frame = app_browser->GetTabStripModel()
                                              ->GetActiveWebContents()
                                              ->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);

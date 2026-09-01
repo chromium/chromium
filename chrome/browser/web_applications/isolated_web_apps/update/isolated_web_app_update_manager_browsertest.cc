@@ -1711,7 +1711,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       AppBrowserController::FindForWebApp(*profile(), GetAppId());
   ASSERT_THAT(app_window, NotNull());
   content::WebContents* web_contents =
-      app_window->GetFeatures().tab_strip_model()->GetActiveWebContents();
+      app_window->GetTabStripModel()->GetActiveWebContents();
 
   content::TitleWatcher title_watcher(web_contents, u"7.0.6");
   title_watcher.AlsoWaitForTitle(u"3.0.4");

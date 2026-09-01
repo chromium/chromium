@@ -110,10 +110,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(new_window_observer.created_browser()
-                ->GetFeatures()
-                .tab_strip_model()
-                ->count(),
+  EXPECT_EQ(new_window_observer.created_browser()->GetTabStripModel()->count(),
             1);
   EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
 }
@@ -136,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
     ExpectOkResult(result);
 
     first_new_window_tab = new_window_observer.created_browser()
-                               ->GetFeatures()
-                               .tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveTab();
   }
 

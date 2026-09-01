@@ -1060,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
       web_app::AppBrowserController::FindForWebApp(*browser()->GetProfile(),
                                                    app_id);
   auto* web_contents_after =
-      app_browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_NE(app_browser, browser());
   EXPECT_EQ(web_contents_before, web_contents_after);
   // Use a page target API to verify the WebContents is still attached.

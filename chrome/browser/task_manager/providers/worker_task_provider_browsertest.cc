@@ -53,8 +53,7 @@ std::u16string ExpectedTaskTitle(const std::string& title) {
 
 // Get the process id of the active WebContents for the passed |browser|.
 int GetChildProcessID(BrowserWindowInterface* browser) {
-  return browser->GetFeatures()
-      .tab_strip_model()
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->GetProcess()

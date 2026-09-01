@@ -72,7 +72,7 @@ content::WebContents* FirstWebContentsProfilerBase::GetVisibleContents(
 
   // The active WebContents may be hidden when the window height is small.
   content::WebContents* contents =
-      browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
 
   // It is incorrect to have a visible browser window with no active
   // WebContents, but reports on show that it happens.

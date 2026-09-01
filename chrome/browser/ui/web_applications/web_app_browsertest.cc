@@ -3140,8 +3140,8 @@ class WebAppBrowserTest_PageInfoManagementLink : public WebAppBrowserTest {
   bool ShowingAppManagementLink(BrowserWindowInterface* browser) {
     int unused_id, unused_id2;
     return GetLabelIdsForAppManagementLinkInPageInfo(
-        browser->GetFeatures().tab_strip_model()->GetActiveWebContents(),
-        &unused_id, &unused_id2);
+        browser->GetTabStripModel()->GetActiveWebContents(), &unused_id,
+        &unused_id2);
   }
 };
 

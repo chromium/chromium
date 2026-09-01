@@ -237,7 +237,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   WindowOpenDisposition navigation_disposition =
       GetNavigationDisposition(is_new_browser);
   content::WebContents* existing_tab =
-      browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   bool open_in_new_window =
       !existing_tab ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB;

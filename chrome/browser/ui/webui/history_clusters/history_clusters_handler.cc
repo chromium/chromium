@@ -466,8 +466,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     visits.resize(kMaxVisitsToOpenInTabGroup);
   }
 
-  auto* model =
-      GetBrowserWindowInterface(interface_)->GetFeatures().tab_strip_model();
+  auto* model = GetBrowserWindowInterface(interface_)->GetTabStripModel();
   std::vector<int> tab_indices;
   tab_indices.reserve(visits.size());
   for (const auto& visit_ptr : visits) {

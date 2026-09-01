@@ -206,17 +206,14 @@ std::optional<int> AppBrowserController::FindTabIndexForApp(
            (From(browser)->GetPinnedHomeTab() == contents);
   };
   // The active web contents should have preference if it is in scope.
-  if (browser->GetFeatures().tab_strip_model()->active_index() !=
-      TabStripModel::kNoTab) {
-    if (is_valid_tab(
-            browser->GetFeatures().tab_strip_model()->GetActiveWebContents())) {
-      return {browser->GetFeatures().tab_strip_model()->active_index()};
+  if (browser->GetTabStripModel()->active_index() != TabStripModel::kNoTab) {
+    if (is_valid_tab(browser->GetTabStripModel()->GetActiveWebContents())) {
+      return {browser->GetTabStripModel()->active_index()};
     }
   }
   // Otherwise, use the first one for the app.
-  for (int i = 0; i < browser->GetFeatures().tab_strip_model()->count(); ++i) {
-    if (is_valid_tab(
-            browser->GetFeatures().tab_strip_model()->GetWebContentsAt(i))) {
+  for (int i = 0; i < browser->GetTabStripModel()->count(); ++i) {
+    if (is_valid_tab(browser->GetTabStripModel()->GetWebContentsAt(i))) {
       return {i};
     }
   }
