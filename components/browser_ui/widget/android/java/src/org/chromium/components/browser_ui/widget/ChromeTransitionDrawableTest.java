@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link ChromeTransitionDrawable} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChromeTransitionDrawableTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

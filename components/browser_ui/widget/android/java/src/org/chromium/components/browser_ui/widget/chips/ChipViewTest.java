@@ -48,9 +48,7 @@ import org.chromium.ui.widget.LoadingView;
 
 /** Tests for {@link ChipViewTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowView.class})
+@Config(shadows = {ShadowView.class})
 public final class ChipViewTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

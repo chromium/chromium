@@ -55,9 +55,7 @@ import java.util.List;
 
 /** Unit test for {@link BrowserUiListMenuUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 public class BrowserUiListMenuUnitTest {
 
     @Rule

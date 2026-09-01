@@ -19,13 +19,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for CompositeTouchDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class CompositeTouchDelegateUnitTest {
     CompositeTouchDelegate mCompositeTouchDelegate;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

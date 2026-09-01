@@ -10,14 +10,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link BitmapCache}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BitmapCacheTest {
     private final DiscardableReferencePool mReferencePool = new DiscardableReferencePool();
     private static final int MAX_CACHE_BYTES = 5 * 1024 * 1024;

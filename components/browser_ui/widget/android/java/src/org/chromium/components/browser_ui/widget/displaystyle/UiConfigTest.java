@@ -21,7 +21,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplaySt
 
 /** Unit tests for {@link UiConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UiConfigTest {
     private View mView;
     private UiConfig mUiConfig;

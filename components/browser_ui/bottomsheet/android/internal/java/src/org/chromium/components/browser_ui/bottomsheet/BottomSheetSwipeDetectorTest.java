@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -28,7 +27,6 @@ import java.util.List;
 
 /** Unit tests for the {@link BottomSheetSwipeDetector} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class BottomSheetSwipeDetectorTest {
     /** The minimum height of the bottom sheet. */
     private static final float MIN_SHEET_OFFSET = 100;

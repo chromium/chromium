@@ -19,7 +19,6 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,7 +29,6 @@ import java.util.List;
 
 /** Unit tests for {@link AvatarGenerator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AvatarGeneratorUnitTest {
     private Context mContext;
 

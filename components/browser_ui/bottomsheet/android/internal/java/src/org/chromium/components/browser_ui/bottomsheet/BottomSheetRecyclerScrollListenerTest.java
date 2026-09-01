@@ -23,14 +23,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 
 /** Robolectric unit tests for {@link BottomSheetRecyclerScrollListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BottomSheetRecyclerScrollListenerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

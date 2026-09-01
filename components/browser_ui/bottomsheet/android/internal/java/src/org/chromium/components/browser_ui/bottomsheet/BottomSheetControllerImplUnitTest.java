@@ -54,7 +54,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomSheetControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BottomSheetControllerImplUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

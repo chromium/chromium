@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 import org.robolectric.fakes.BaseCursor;
 
 import org.chromium.base.ThreadUtils;
@@ -40,7 +39,6 @@ import java.util.List;
 
 /** Tests for {@link FileEnumWorkerTaskTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumeratedCallback {
     // The Fields the test Cursor represents.
     @IntDef({Fields.ID, Fields.MIME_TYPE, Fields.DATE_ADDED})

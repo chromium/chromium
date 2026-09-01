@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.HeaderItemGroup;
@@ -30,7 +29,6 @@ import java.util.List;
 
 /** Unit test for {@link DateDividedAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DateDividedAdapterUnitTest {
     private static class TestDateDividedAdapter extends DateDividedAdapter {
         @Override

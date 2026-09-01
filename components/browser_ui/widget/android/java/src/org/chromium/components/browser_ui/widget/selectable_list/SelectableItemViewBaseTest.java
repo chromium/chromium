@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the {@link SelectableItemViewBase} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SelectableItemViewBaseTest {
 
     private static class SelectableItemViewBaseTestImpl<E> extends SelectableItemViewBase<E> {

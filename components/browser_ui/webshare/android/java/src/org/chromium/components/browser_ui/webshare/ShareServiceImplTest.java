@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 
 /** Unit tests for {@link ShareServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ShareServiceImplTest {
     // Verifies all the file names that are not allowed to be shared on Android.
     @Test

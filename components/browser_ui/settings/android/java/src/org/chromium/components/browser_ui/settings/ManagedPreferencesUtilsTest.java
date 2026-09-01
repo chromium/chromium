@@ -40,9 +40,7 @@ import org.chromium.ui.widget.ToastManager;
 
 /** Tests of {@link ManagedPreferencesUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class ManagedPreferencesUtilsTest {
     private Activity mActivity;
     private Preference mPreference;

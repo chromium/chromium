@@ -36,7 +36,6 @@ import java.time.Duration;
 
 /** Unit tests for {@link ModalDialogView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
 public class ModalDialogViewUnitTest {
     private static final int MIN_DIALOG_WIDTH = 280;

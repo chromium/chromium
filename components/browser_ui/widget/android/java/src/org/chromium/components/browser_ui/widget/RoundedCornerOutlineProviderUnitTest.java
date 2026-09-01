@@ -17,13 +17,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link RoundedCornerOutlineProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class RoundedCornerOutlineProviderUnitTest {
     private static final int VIEW_WIDTH = 120;
     private static final int VIEW_HEIGHT = 50;

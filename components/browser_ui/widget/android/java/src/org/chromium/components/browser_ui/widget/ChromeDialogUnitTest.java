@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
@@ -26,7 +25,6 @@ import org.chromium.ui.util.AttrUtils;
 
 /** Unit tests for {@link ChromeDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChromeDialogUnitTest {
     private Activity mActivity;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
