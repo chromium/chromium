@@ -31,15 +31,12 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/gpu/windows/d3d_av1_accelerator.h"
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "media/gpu/windows/d3d_h265_accelerator.h"
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
-#include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d12_video_decoder_wrapper.h"
+#include "media/gpu/windows/d3d_av1_accelerator.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
+#include "media/gpu/windows/d3d_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/color_space.h"
@@ -47,6 +44,10 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/gpu/windows/d3d_h265_accelerator.h"
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
 
@@ -133,7 +134,7 @@ D3DVideoDecoder::D3DVideoDecoder(
     SupportedConfigs supported_configs)
     : media_log_(std::move(media_log)),
       mailbox_release_helper_(
-          base::MakeRefCounted<D3D11VideoFrameMailboxReleaseHelper>(
+          base::MakeRefCounted<D3DVideoFrameMailboxReleaseHelper>(
               media_log_->Clone(),
               get_helper_cb)),
       gpu_task_runner_(std::move(gpu_task_runner)),
@@ -460,7 +461,7 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
   } else {
     gpu_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&D3D11VideoFrameMailboxReleaseHelper::Initialize,
+        base::BindOnce(&D3DVideoFrameMailboxReleaseHelper::Initialize,
                        mailbox_release_helper_,
                        base::BindPostTaskToCurrentDefault(
                            std::move(mailbox_helper_init_cb))));
@@ -500,7 +501,7 @@ void D3DVideoDecoder::PictureBufferGPUResourceInitDone(
 
 void D3DVideoDecoder::OnGpuInitComplete(
     bool success,
-    D3D11VideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb) {
+    D3DVideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "D3DVideoDecoder::OnGpuInitComplete");
 

@@ -30,10 +30,10 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
-#include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_h264_accelerator.h"
 #include "media/gpu/windows/d3d_video_decoder_client.h"
+#include "media/gpu/windows/d3d_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d_vp9_accelerator.h"
 
 namespace gpu {
@@ -136,7 +136,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // Called when the gpu side of initialization is complete.
   void OnGpuInitComplete(
       bool success,
-      D3D11VideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb);
+      D3DVideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb);
 
   // Run the decoder loop.
   void DoDecode();
@@ -196,7 +196,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // Mailbox release helper; which lives on the GPU main thread. Note: This must
   // be ref counted to outlive D3DVideoDecoder since each output VideoFrame
   // uses it to wait on a SyncToken during mailbox release.
-  scoped_refptr<D3D11VideoFrameMailboxReleaseHelper> mailbox_release_helper_;
+  scoped_refptr<D3DVideoFrameMailboxReleaseHelper> mailbox_release_helper_;
 
   // GPU main thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
@@ -214,7 +214,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
 
   // Callback to be used as a release CB for VideoFrames.  Be sure to
   // base::BindPostTaskToCurrentDefault the closure that it takes.
-  D3D11VideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb_;
+  D3DVideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb_;
 
   // Right now, this is used both for the video decoder and for display.  In
   // the future, this should only be for the video decoder.  We should use

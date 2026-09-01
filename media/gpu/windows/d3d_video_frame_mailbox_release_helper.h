@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_FRAME_MAILBOX_RELEASE_HELPER_H_
-#define MEDIA_GPU_WINDOWS_D3D11_VIDEO_FRAME_MAILBOX_RELEASE_HELPER_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_VIDEO_FRAME_MAILBOX_RELEASE_HELPER_H_
+#define MEDIA_GPU_WINDOWS_D3D_VIDEO_FRAME_MAILBOX_RELEASE_HELPER_H_
 
 #include <memory>
 
@@ -24,20 +24,20 @@ class MediaLog;
 
 // Waits for SyncTokens during mailbox release for D3DVideoDecoder frames. May
 // only be used on the GPU main thread. May destruct on any thread.
-class MEDIA_GPU_EXPORT D3D11VideoFrameMailboxReleaseHelper
-    : public base::RefCountedThreadSafe<D3D11VideoFrameMailboxReleaseHelper> {
+class MEDIA_GPU_EXPORT D3DVideoFrameMailboxReleaseHelper
+    : public base::RefCountedThreadSafe<D3DVideoFrameMailboxReleaseHelper> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
   // May be constructed on any thread.
-  D3D11VideoFrameMailboxReleaseHelper(
+  D3DVideoFrameMailboxReleaseHelper(
       std::unique_ptr<MediaLog> media_log,
       base::OnceCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb);
 
-  D3D11VideoFrameMailboxReleaseHelper(
-      const D3D11VideoFrameMailboxReleaseHelper&) = delete;
-  D3D11VideoFrameMailboxReleaseHelper& operator=(
-      const D3D11VideoFrameMailboxReleaseHelper&) = delete;
+  D3DVideoFrameMailboxReleaseHelper(const D3DVideoFrameMailboxReleaseHelper&) =
+      delete;
+  D3DVideoFrameMailboxReleaseHelper& operator=(
+      const D3DVideoFrameMailboxReleaseHelper&) = delete;
 
   // Callback to us to wait for a sync token, then call a closure.
   using ReleaseMailboxCB =
@@ -48,8 +48,8 @@ class MEDIA_GPU_EXPORT D3D11VideoFrameMailboxReleaseHelper
   void Initialize(InitCB init_cb);
 
  private:
-  friend class base::RefCountedThreadSafe<D3D11VideoFrameMailboxReleaseHelper>;
-  ~D3D11VideoFrameMailboxReleaseHelper();
+  friend class base::RefCountedThreadSafe<D3DVideoFrameMailboxReleaseHelper>;
+  ~D3DVideoFrameMailboxReleaseHelper();
 
   // Called to wait on |sync_token|, and call |wait_complete_cb| when done.
   void OnMailboxReleased(base::OnceClosure wait_complete_cb,
@@ -68,4 +68,4 @@ class MEDIA_GPU_EXPORT D3D11VideoFrameMailboxReleaseHelper
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_VIDEO_FRAME_MAILBOX_RELEASE_HELPER_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_VIDEO_FRAME_MAILBOX_RELEASE_HELPER_H_
