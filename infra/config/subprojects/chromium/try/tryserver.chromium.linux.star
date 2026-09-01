@@ -514,6 +514,10 @@ try_.builder(
     gn_args = "try/linux-rel",
     contact_team_email = "chrome-build-team@google.com",
     cq_settings = try_.cq_settings(
+        # Changes to linux-rel's testing specs would normally have to pass on
+        # this bot. But this bot isn't stable enough for such CLs to land
+        # safely.
+        add_default_filters = False,
         location_filters = [
             "build/conifg/siso/.+",
         ],
