@@ -93,6 +93,20 @@ void RecordDestructionSource(SharedWorkerHostDestructionSource source) {
                                 source);
 }
 
+net::IsolationInfo ComputeIsolationInfoWithPartition(
+    const blink::StorageKey& storage_key,
+    net::NetworkIsolationPartition partition) {
+  net::IsolationInfo isolation_info = storage_key.ToPartialNetIsolationInfo();
+  if (partition != net::NetworkIsolationPartition::kGeneral &&
+      !isolation_info.IsEmpty()) {
+    return net::IsolationInfo::Create(
+        isolation_info.request_type(), *isolation_info.top_frame_origin(),
+        *isolation_info.frame_origin(), isolation_info.site_for_cookies(),
+        isolation_info.nonce(), partition);
+  }
+  return isolation_info;
+}
+
 }  // namespace
 
 namespace content {
@@ -974,6 +988,14 @@ base::WeakPtr<SharedWorkerHost> SharedWorkerHost::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+net::NetworkIsolationPartition SharedWorkerHost::GetNetworkIsolationPartition()
+    const {
+  return instance_.same_site_cookies() ==
+                 blink::mojom::SharedWorkerSameSiteCookies::kNone
+             ? net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone
+             : net::NetworkIsolationPartition::kGeneral;
+}
+
 net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
   // Note: Since shared workers are partitioned by the storage key, we'll use
   // the storage key to create a NIK that matches the current partitioning
@@ -981,15 +1003,15 @@ net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
   // different top-level sites will be able to share the same shared worker, so
   // it doesn't make sense to incorporate the top-level site into the NIK in
   // that case either.
-  return GetWorkerStorageKey()
-      .ToPartialNetIsolationInfo()
+  return ComputeIsolationInfoWithPartition(GetWorkerStorageKey(),
+                                           GetNetworkIsolationPartition())
       .network_isolation_key();
 }
 
 net::NetworkAnonymizationKey SharedWorkerHost::GetNetworkAnonymizationKey()
     const {
-  return GetWorkerStorageKey()
-      .ToPartialNetIsolationInfo()
+  return ComputeIsolationInfoWithPartition(GetWorkerStorageKey(),
+                                           GetNetworkIsolationPartition())
       .network_anonymization_key();
 }
 
