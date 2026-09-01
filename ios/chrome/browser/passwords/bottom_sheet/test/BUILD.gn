@@ -9,6 +9,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base:i18n",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios:auto_submit_test_bundle_data",

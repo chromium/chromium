@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/features.h"
 #import "components/strings/grit/components_strings.h"
@@ -1513,10 +1514,14 @@ void VerifyManualFillShowsSignInActionButton(
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForWebStateContainingText:"Form Submitted!"];
+  using password_manager::SubmissionReadinessState;
   GREYAssertNil(
       [MetricsAppInterface
-          expectTotalCount:1
-              forHistogram:@"PasswordManager.TouchToFill.SubmissionReadiness"],
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          SubmissionReadinessState::kTwoFields)
+                         forHistogram:@"PasswordManager.TouchToFill."
+                                      @"SubmissionReadiness"],
       @"Failed to record SubmissionReadiness histogram.");
 }
 
