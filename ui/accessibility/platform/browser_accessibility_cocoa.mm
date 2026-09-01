@@ -3294,37 +3294,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   BrowserAccessibility* actionTarget = [self actionTarget];
   BrowserAccessibilityManager* manager = actionTarget->manager();
   if ([action isEqualToString:NSAccessibilityPressAction]) {
-    // LINT.IfChange(NSAccessibilityPressAction)
-    ui::AXNode* node = actionTarget->node();
-    if (!node || !actionTarget->HasDefaultAction()) {
-      return;
-    }
-
-    manager->DoDefaultAction(*actionTarget);
-    if (actionTarget->GetData().GetRestriction() !=
-            ax::mojom::Restriction::kNone ||
-        ![self isCheckable]) {
-      return;
-    }
-
-    // Hack: preemptively set the checked state to what it should become,
-    // otherwise VoiceOver will very likely report the old, incorrect state to
-    // the user as it requests the value too quickly.
-    AXNodeData data(node->TakeData());  // Temporarily take data.
-    if (data.role == ax::mojom::Role::kRadioButton) {
-      data.SetCheckedState(ax::mojom::CheckedState::kTrue);
-    } else if (data.role == ax::mojom::Role::kCheckBox ||
-               data.role == ax::mojom::Role::kSwitch ||
-               data.role == ax::mojom::Role::kToggleButton) {
-      ax::mojom::CheckedState checkedState = data.GetCheckedState();
-      ax::mojom::CheckedState newCheckedState =
-          checkedState == ax::mojom::CheckedState::kFalse
-              ? ax::mojom::CheckedState::kTrue
-              : ax::mojom::CheckedState::kFalse;
-      data.SetCheckedState(newCheckedState);
-    }
-    node->SetData(data);  // Set the data back in the node.
-    // LINT.ThenChange(accessibilityPerformPress)
+    [self accessibilityPerformPress];
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     if (SupportsShowMenuAction(*actionTarget)) {
       PerformShowMenuAction(*actionTarget);
@@ -3344,7 +3314,6 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   }
 }
 
-// LINT.IfChange(accessibilityPerformPress)
 - (BOOL)accessibilityPerformPress {
   if (![self instanceActive]) {
     return NO;
@@ -3359,9 +3328,11 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   BrowserAccessibilityManager* manager = actionTarget->manager();
   manager->DoDefaultAction(*actionTarget);
   if (actionTarget->GetData().GetRestriction() !=
-          ax::mojom::Restriction::kNone ||
-      ![self isCheckable]) {
+      ax::mojom::Restriction::kNone) {
     return NO;
+  }
+  if (![self isCheckable]) {
+    return YES;
   }
 
   // Hack: preemptively set the checked state to what it should become,
@@ -3407,7 +3378,6 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
   return NSAccessibilityActionDescription(action);
 }
-// LINT.ThenChange(NSAccessibilityPressAction)
 
 - (NSArray<NSAccessibilityCustomAction*>*)accessibilityCustomActions {
   if (![self instanceActive]) {

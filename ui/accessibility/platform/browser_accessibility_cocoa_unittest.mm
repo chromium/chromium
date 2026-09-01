@@ -277,7 +277,7 @@ TEST_P(BrowserAccessibilityCocoaTest, AXPressAdvertisementMatchesExecution) {
 
   EXPECT_CALL(*manager, DoDefaultAction(::testing::Ref(*node_3)));
   EXPECT_FALSE([cocoa_node_2 accessibilityPerformPress]);
-  [cocoa_node_3 accessibilityPerformPress];
+  EXPECT_TRUE([cocoa_node_3 accessibilityPerformPress]);
 }
 
 TEST_P(BrowserAccessibilityCocoaTest, ViewsShowMenuUsesSerializedCapabilities) {
