@@ -71,6 +71,13 @@ PageInfoBubbleSpecification::Builder::ShowPermissionPage(
   return *this;
 }
 
+PageInfoBubbleSpecification::Builder&
+PageInfoBubbleSpecification::Builder::SetShowExtensionsMenu(
+    bool show_extensions_menu) {
+  page_info_bubble_specification_->SetShowExtensionsMenu(show_extensions_menu);
+  return *this;
+}
+
 void PageInfoBubbleSpecification::Builder::ValidateSpecification() {
   CHECK(page_info_bubble_specification_->web_contents());
 }
@@ -119,6 +126,15 @@ void PageInfoBubbleSpecification::HideExtendedSiteInfo() {
 
 void PageInfoBubbleSpecification::ShowPermissionPage(ContentSettingsType type) {
   permission_page_type_ = type;
+}
+
+void PageInfoBubbleSpecification::SetShowExtensionsMenu(
+    bool show_extensions_menu) {
+  show_extensions_menu_ = show_extensions_menu;
+}
+
+bool PageInfoBubbleSpecification::show_extensions_menu() const {
+  return show_extensions_menu_;
 }
 
 views::BubbleAnchor PageInfoBubbleSpecification::anchor() {

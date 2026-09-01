@@ -120,11 +120,13 @@ PageInfoViewFactory::PageInfoViewFactory(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
-    bool allow_extended_site_info)
+    bool allow_extended_site_info,
+    bool show_extensions_menu)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler),
-      allow_extended_site_info_(allow_extended_site_info) {}
+      allow_extended_site_info_(allow_extended_site_info),
+      show_extensions_menu_(show_extensions_menu) {}
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreatePageView(
     std::u16string title,
@@ -138,7 +140,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
     base::OnceClosure initialized_callback) {
   return std::make_unique<PageInfoMainView>(
       presenter_, ui_delegate_, navigation_handler_,
-      std::move(initialized_callback), allow_extended_site_info_);
+      std::move(initialized_callback), allow_extended_site_info_,
+      show_extensions_menu_);
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
@@ -860,6 +863,13 @@ const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
   return GetImageModel(features::IsRoundedIconsEnabled()
                            ? vector_icons::kSettingsIcon
                            : vector_icons::kSettingsChromeRefreshOldIcon);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetExtensionIcon() {
+  return GetImageModel(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kChromeExtensionIcon
+                           : vector_icons::kExtensionChromeRefreshOldIcon);
 }
 
 // static

@@ -112,7 +112,7 @@ class PageInfoBubbleViewTestApi {
   PageInfoBubbleViewTestApi& operator=(const PageInfoBubbleViewTestApi&) =
       delete;
 
-  void CreateView() {
+  void CreateView(bool show_extensions_menu = false) {
     if (bubble_delegate_) {
       bubble_delegate_->GetWidget()->CloseNow();
     }
@@ -123,6 +123,7 @@ class PageInfoBubbleViewTestApi {
             .AddPageInfoClosingCallback(base::BindOnce(
                 &PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                 base::Unretained(this), run_loop_.QuitClosure()))
+            .SetShowExtensionsMenu(show_extensions_menu)
             .Build();
 
     auto* const bubble = static_cast<PageInfoBubbleView*>(
@@ -154,6 +155,11 @@ class PageInfoBubbleViewTestApi {
   views::View* cookie_button() {
     return bubble_delegate_->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
+  }
+
+  views::View* see_extensions_button() {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SEE_EXTENSIONS);
   }
 
   views::View* cookies_buttons_container_view() {
@@ -1361,4 +1367,13 @@ TEST_F(PageInfoUIAutoBlockedToUIStringTest, PermissionAutoBlockedToUIString) {
           content::PermissionStatusSource::UNSPECIFIED)));
   EXPECT_EQ(std::u16string(),
             PageInfoUI::PermissionAutoBlockedToUIString(&delegate, permission));
+}
+
+TEST_F(PageInfoBubbleViewTest, SeeExtensionsButton) {
+  // By default, the button is not present.
+  EXPECT_EQ(nullptr, api_->see_extensions_button());
+
+  // When show_extensions_menu is true, the button is present.
+  api_->CreateView(/*show_extensions_menu=*/true);
+  EXPECT_NE(nullptr, api_->see_extensions_button());
 }

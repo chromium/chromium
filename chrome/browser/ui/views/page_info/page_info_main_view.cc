@@ -119,6 +119,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
                                       kMerchantTrustElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
+                                      kSeeExtensionsButtonElementId);
 
 PageInfoMainView::ContainerView::ContainerView(bool set_extra_right_margin) {
   auto box_layout = std::make_unique<views::BoxLayout>(
@@ -142,7 +144,8 @@ PageInfoMainView::PageInfoMainView(
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
     base::OnceClosure initialized_callback,
-    bool allow_extended_site_info)
+    bool allow_extended_site_info,
+    bool show_extensions_menu)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler) {
@@ -175,6 +178,28 @@ PageInfoMainView::PageInfoMainView(
   SetProperty(views::kElementIdentifierKey, kMainLayoutElementId);
 
   site_settings_view_ = AddChildView(CreateContainerView());
+
+  if (show_extensions_menu) {
+    see_extensions_button_ =
+        site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
+            base::BindRepeating(&PageInfoMainView::OnSeeExtensionsClicked,
+                                base::Unretained(this)),
+            PageInfoViewFactory::GetExtensionIcon(),
+            /*title_text=*/
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_EXTENSIONS),
+            /*subtitle_text=*/std::u16string(),
+            PageInfoViewFactory::GetOpenSubpageIcon()));
+    see_extensions_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_EXTENSIONS));
+    see_extensions_button_->SetID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SEE_EXTENSIONS);
+    see_extensions_button_->SetProperty(views::kElementIdentifierKey,
+                                        kSeeExtensionsButtonElementId);
+    see_extensions_button_->SetTitleTextStyleAndColor(
+        views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+    see_extensions_button_->SetSubtitleTextStyleAndColor(
+        views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
+  }
 
   int link_text_id = 0;
   int tooltip_text_id = 0;
@@ -231,8 +256,8 @@ void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
     return;
   }
 
-  cookie_button_ =
-      site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
+  cookie_button_ = site_settings_view_->AddChildViewAt(
+      std::make_unique<RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
           PageInfoViewFactory::GetImageModel(
@@ -241,7 +266,8 @@ void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
                   : vector_icons::kCookieChromeRefreshOldIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
           /*subtitle_text=*/std::u16string(),
-          PageInfoViewFactory::GetOpenSubpageIcon()));
+          PageInfoViewFactory::GetOpenSubpageIcon()),
+      0);
   cookie_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP));
   cookie_button_->SetID(
@@ -252,6 +278,10 @@ void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
                                             kColorPageInfoForeground);
   cookie_button_->SetSubtitleTextStyleAndColor(
       views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
+}
+
+void PageInfoMainView::OnSeeExtensionsClicked() {
+  // TODO(crbug.com/533073052): Trigger the extensions control menu.
 }
 
 void PageInfoMainView::SetPermissionInfo(

@@ -51,6 +51,7 @@ class PageInfoMainView : public views::View,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMerchantTrustElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeeExtensionsButtonElementId);
 
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
@@ -68,7 +69,8 @@ class PageInfoMainView : public views::View,
                    ChromePageInfoUiDelegate* ui_delegate,
                    PageInfoNavigationHandler* navigation_handler,
                    base::OnceClosure initialized_callback,
-                   bool allow_extended_site_info);
+                   bool allow_extended_site_info,
+                   bool show_extensions_menu = false);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
@@ -95,6 +97,10 @@ class PageInfoMainView : public views::View,
   const std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>&
   GetToggleRowsForTesting() const {
     return toggle_rows_;
+  }
+
+  RichHoverButton* GetSeeExtensionsButtonForTesting() const {
+    return see_extensions_button_;
   }
 
  protected:
@@ -127,6 +133,9 @@ class PageInfoMainView : public views::View,
   // enables it if any permission is in a non-default state. Also updates
   // the label depending on the number of visible permissions.
   void UpdateResetButton(const PermissionInfoList& permission_info_list);
+
+  // Handles clicks on the "Extensions" button in the site settings section.
+  void OnSeeExtensionsClicked();
 
   void OnMerchantTrustDataFetched(
       const GURL& url,
@@ -172,6 +181,9 @@ class PageInfoMainView : public views::View,
 
   // The button that opens the "Cookies" subpage.
   raw_ptr<RichHoverButton> cookie_button_ = nullptr;
+
+  // The button that opens the "Extensions" menu.
+  raw_ptr<RichHoverButton> see_extensions_button_ = nullptr;
 
   // The button that opens up "Site Settings".
   raw_ptr<RichHoverButton> site_settings_link_ = nullptr;

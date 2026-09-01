@@ -909,6 +909,9 @@
   </message>
 
   <!-- Cookies subpage -->
+  <message name="IDS_PAGE_INFO_EXTENSIONS" desc="The label of the Extensions row in the Page Info bubble to open the extensions menu.">
+    Extensions
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_HEADER" desc="The header label of cookies subpage in Page Info bubble.">
     Cookies and site data
   </message>

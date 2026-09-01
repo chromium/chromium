@@ -1395,6 +1395,10 @@ bool ContextualTasksSidePanelCoordinator::CanExpandToFullTab() const {
 void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
     bool is_pointer_interaction) {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
+
   if (page_info_bubble_suppressor_.ShouldSuppressBubbleShow(
           is_pointer_interaction)) {
     return;
@@ -1441,6 +1445,8 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
       PageInfoBubbleSpecification::Builder(
           specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
           contents, contents->GetVisibleURL())
+          .SetShowExtensionsMenu(
+              IsContextualTasksSidePanelRearchitectureEnabled())
           .Build();
 
   views::BubbleDialogDelegateView* const bubble =
@@ -1457,6 +1463,10 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
 
 void ContextualTasksSidePanelCoordinator::OnLogoPointerDown() {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
+
   page_info_bubble_suppressor_.OnMousePressed();
 #endif
 }

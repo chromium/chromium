@@ -62,6 +62,9 @@ class PageInfoBubbleSpecification {
     // a time.
     Builder& ShowPermissionPage(ContentSettingsType type);
 
+    // Sets whether to show an extensions menu item in the page info bubble.
+    Builder& SetShowExtensionsMenu(bool show_extensions_menu);
+
     std::unique_ptr<PageInfoBubbleSpecification> Build();
 
    private:
@@ -85,6 +88,7 @@ class PageInfoBubbleSpecification {
       ChromePageInfoDelegate::GetBrowserCallback callback);
   void HideExtendedSiteInfo();
   void ShowPermissionPage(ContentSettingsType type);
+  void SetShowExtensionsMenu(bool show_extensions_menu);
 
   views::BubbleAnchor anchor();
   gfx::NativeWindow parent_window();
@@ -96,6 +100,7 @@ class PageInfoBubbleSpecification {
   ChromePageInfoDelegate::GetBrowserCallback get_browser_callback();
   bool show_extended_site_info();
   std::optional<ContentSettingsType> permission_page_type();
+  bool show_extensions_menu() const;
 
  private:
   views::BubbleAnchor anchor_;
@@ -109,6 +114,7 @@ class PageInfoBubbleSpecification {
       ChromePageInfoDelegate::DefaultGetBrowserCallback()};
   bool show_extended_site_info_ = true;
   std::optional<ContentSettingsType> permission_page_type_;
+  bool show_extensions_menu_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_SPECIFICATION_H_
