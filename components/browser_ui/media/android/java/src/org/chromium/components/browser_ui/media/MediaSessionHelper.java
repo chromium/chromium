@@ -368,7 +368,7 @@ public class MediaSessionHelper implements MediaImageCallback {
             }
 
             @Override
-            public void mediaSessionMetadataChanged(MediaMetadata metadata) {
+            public void mediaSessionMetadataChanged(@Nullable MediaMetadata metadata) {
                 mPageMetadata = metadata;
                 updateNotificationMetadata();
             }

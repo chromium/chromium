@@ -53,12 +53,14 @@ public abstract class MediaSessionObserver {
 
     /**
      * Called when the {@link MediaSession} metadata has changed.
+     *
      * @param metadata the new MediaMetadata after change.
      */
-    public void mediaSessionMetadataChanged(MediaMetadata metadata) {}
+    public void mediaSessionMetadataChanged(@Nullable MediaMetadata metadata) {}
 
     /**
      * Called when the observed {@link MediaSession} has changed its action list.
+     *
      * @param actions The new action list after the change.
      */
     public void mediaSessionActionsChanged(Set<Integer> actions) {}

@@ -150,7 +150,7 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @CalledByNative
-    private void mediaSessionMetadataChanged(MediaMetadata metadata) {
+    private void mediaSessionMetadataChanged(@Nullable MediaMetadata metadata) {
         mMetadata = metadata;
         for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionMetadataChanged(metadata);

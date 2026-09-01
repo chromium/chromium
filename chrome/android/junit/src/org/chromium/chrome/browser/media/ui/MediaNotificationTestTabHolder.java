@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -87,7 +88,7 @@ public class MediaNotificationTestTabHolder {
                 isControllable, isSuspended);
     }
 
-    public void simulateMediaSessionMetadataChanged(MediaMetadata metadata) {
+    public void simulateMediaSessionMetadataChanged(@Nullable MediaMetadata metadata) {
         mMediaSessionTabHelper.mMediaSessionHelper.mMediaSessionObserver
                 .mediaSessionMetadataChanged(metadata);
     }
