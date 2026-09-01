@@ -185,12 +185,13 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
     requires(extid != 'u' && extid != 'x')
   std::optional<Extension> GetExtension(
       bcp47_extensions::Traits<extid> traits) const {
-    std::string_view extension = GetExtensionStringInternal(extid);
-    if (extension.empty()) {
+    std::vector<std::string_view> extension_subtags =
+        GetExtensionSubtagsInternal(extid);
+    if (extension_subtags.empty()) {
       return std::nullopt;
     }
 
-    return traits.Factory(base::PassKey<LanguageTag>(), extension);
+    return traits.Factory(base::PassKey<LanguageTag>(), extension_subtags);
   }
 
   // Returns a new `LanguageTag` with the given `extension` set (language tags
@@ -231,7 +232,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // dependencies.
   LanguageTag();
 
-  std::string_view GetExtensionStringInternal(char key) const;
+  std::vector<std::string_view> GetExtensionSubtagsInternal(char key) const;
   LanguageTag WithExtensionStringInternal(char key,
                                           std::string_view subtags) const;
 

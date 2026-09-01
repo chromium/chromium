@@ -114,19 +114,28 @@ std::optional<Extension> Extension::FromString(std::string_view extension) {
       extension[1] != '-') {
     return std::nullopt;
   }
-  Extension result(extension[0]);
 
   std::vector<std::string_view> subtags = base::SplitStringPiece(
       extension.substr(2), "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  return FromSubtags(extension[0], subtags);
+}
+
+// static
+std::optional<Extension> Extension::FromSubtags(
+    char singleton,
+    base::span<const std::string_view> subtags) {
+  if (!base::IsAsciiAlphaNumeric(singleton)) {
+    return std::nullopt;
+  }
   if (subtags.empty()) {
     return std::nullopt;
   }
+  Extension result(singleton);
   for (std::string_view subtag : subtags) {
     if (!result.AddSubtag(subtag)) {
       return std::nullopt;
     }
   }
-
   return result;
 }
 
@@ -158,7 +167,7 @@ bool PrivateUseSubtags::AddSubtag(std::string_view subtag) {
 }
 
 std::string PrivateUseSubtags::SubtagsString() const {
-  return base::JoinString(subtags(), "-");
+  return base::JoinString(subtags_, "-");
 }
 
 PrivateUseSubtags::PrivateUseSubtags() = default;
@@ -183,6 +192,12 @@ std::optional<PrivateUseSubtags> PrivateUseSubtags::FromString(
   }
   std::vector<std::string_view> subtags = base::SplitStringPiece(
       private_use_subtags, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  return FromSubtags(subtags);
+}
+
+// static
+std::optional<PrivateUseSubtags> PrivateUseSubtags::FromSubtags(
+    base::span<const std::string_view> subtags) {
   if (subtags.empty()) {
     return std::nullopt;
   }
@@ -192,7 +207,6 @@ std::optional<PrivateUseSubtags> PrivateUseSubtags::FromString(
       return std::nullopt;
     }
   }
-
   return private_use_subtags_result;
 }
 
@@ -214,16 +228,21 @@ std::optional<UnicodeExtension> UnicodeExtension::FromString(
 
   std::vector<std::string_view> subtags = base::SplitStringPiece(
       extension.substr(2), "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  return FromSubtags(subtags);
+}
+
+// static
+std::optional<UnicodeExtension> UnicodeExtension::FromSubtags(
+    base::span<const std::string_view> subtags) {
   size_t keyword_start = FindNextKeyIndex(subtags);
-  base::span<const std::string_view> subtags_span(subtags);
 
   UnicodeExtension result;
   // Attributes come before the keywords.
-  if (!AddAttributes(subtags_span.take_first(keyword_start), result)) {
+  if (!AddAttributes(subtags.take_first(keyword_start), result)) {
     return std::nullopt;
   }
   // The rest of the subtags are keywords.
-  if (!AddKeywords(subtags_span, result)) {
+  if (!AddKeywords(subtags, result)) {
     return std::nullopt;
   }
 

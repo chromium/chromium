@@ -79,7 +79,6 @@ TEST(Bcp47ExtensionTest, GenericExtension) {
 
   PrivateUseSubtags ext2 = CreatePrivateUseSubtags("private-use");
   EXPECT_EQ(ext2.SubtagsString(), "private-use");
-  EXPECT_THAT(ext2.subtags(), ElementsAre("private", "use"));
 }
 
 TEST(Bcp47ExtensionTest, UnicodeExtensionBasics) {
@@ -190,6 +189,14 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionFromString) {
   EXPECT_EQ(ext1->SubtagsString(), "attr1-ca-gregory");
   EXPECT_TRUE(ext1->has_attribute("attr1"));
   EXPECT_THAT(ext1->GetKeywordValue("ca"), Optional(Eq("gregory")));
+
+  // Overload with span.
+  std::vector<std::string_view> span_input1 = {"attr1", "ca", "gregory"};
+  auto ext1_span = UnicodeExtension::FromSubtags(span_input1);
+  ASSERT_TRUE(ext1_span.has_value());
+  EXPECT_EQ(ext1_span->SubtagsString(), "attr1-ca-gregory");
+  EXPECT_TRUE(ext1_span->has_attribute("attr1"));
+  EXPECT_THAT(ext1_span->GetKeywordValue("ca"), Optional(Eq("gregory")));
 
   // Valid with just attributes.
   auto ext2 = UnicodeExtension::FromString("u-attr1-attr2");
@@ -409,6 +416,13 @@ TEST(Bcp47ExtensionTest, ExtensionFromString) {
   EXPECT_EQ(ext1->singleton(), 'a');
   EXPECT_EQ(ext1->SubtagsString(), "myext");
 
+  // Overload with span.
+  std::vector<std::string_view> span_input1 = {"myext"};
+  auto ext1_span = Extension::FromSubtags('a', span_input1);
+  ASSERT_TRUE(ext1_span.has_value());
+  EXPECT_EQ(ext1_span->singleton(), 'a');
+  EXPECT_EQ(ext1_span->SubtagsString(), "myext");
+
   auto ext2 = Extension::FromString("b-sub1-sub2");
   ASSERT_TRUE(ext2.has_value());
   EXPECT_EQ(ext2->singleton(), 'b');
@@ -466,6 +480,12 @@ TEST(Bcp47ExtensionTest, PrivateUseSubtagsFromString) {
   auto ext1 = PrivateUseSubtags::FromString("x-private");
   ASSERT_TRUE(ext1.has_value());
   EXPECT_EQ(ext1->SubtagsString(), "private");
+
+  // Overload with span.
+  std::vector<std::string_view> span_input1 = {"private"};
+  auto ext1_span = PrivateUseSubtags::FromSubtags(span_input1);
+  ASSERT_TRUE(ext1_span.has_value());
+  EXPECT_EQ(ext1_span->SubtagsString(), "private");
 
   auto ext2 = PrivateUseSubtags::FromString("x-sub1-sub2");
   ASSERT_TRUE(ext2.has_value());

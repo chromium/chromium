@@ -36,38 +36,6 @@ size_t FindNextSingleton(std::string_view tag) {
   return std::string_view::npos;
 }
 
-// Returns the subtags for the extension identified by the singleton `ext_id`.
-// It returns the whole extension string (e.g., "a-myext").
-std::string_view GetExtensionString(std::string_view tag, char ext_id) {
-  size_t extension_pos = FindNextSingleton(tag);
-  while (extension_pos != std::string_view::npos) {
-    // As `extension_pos` is not `npos`, code is not empty.
-    tag = tag.substr(extension_pos);
-    // The singleton 'x' was found, the remainder of the code is a sequence of
-    // private use subtags.
-    if (tag[0] == 'x') {
-      return (ext_id == 'x') ? tag : std::string_view();
-    }
-    if (tag[0] == ext_id) {
-      // Look for the next singleton, that is where the found extension is going
-      // to end.
-      size_t next_extension_pos = FindNextSingleton(tag);
-      // The `code` must never start with an extension.
-      if (next_extension_pos == 0u) {
-        return {};
-      }
-      return (next_extension_pos != std::string_view::npos)
-                 ? tag.substr(0, next_extension_pos - 1u)
-                 : tag;
-    }
-
-    // Move to the next singleton.
-    extension_pos = FindNextSingleton(tag);
-  }
-
-  return {};
-}
-
 }  // namespace
 
 std::string LanguageTag::ToLegacyICUFormat() const {
@@ -117,13 +85,23 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
   CHECK(tag_string().size() >= 2);
 }
 
-std::string_view LanguageTag::GetExtensionStringInternal(char key) const {
-  return GetExtensionString(tag_.AsString(), key);
+std::vector<std::string_view> LanguageTag::GetExtensionSubtagsInternal(
+    char key) const {
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag_.AsString());
+  if (!parsed) {
+    return {};
+  }
+  char normalized_key = base::ToLowerASCII(key);
+  if (normalized_key == 'x') {
+    return parsed->private_use;
+  }
+  return parsed->extensions[normalized_key];
 }
 
 std::optional<UnicodeExtension> LanguageTag::GetExtension(
     bcp47_extensions::Traits<'u'> traits) const {
-  std::string_view extension = GetExtensionStringInternal('u');
+  std::vector<std::string_view> extension = GetExtensionSubtagsInternal('u');
   if (extension.empty()) {
     return std::nullopt;
   }
@@ -133,7 +111,7 @@ std::optional<UnicodeExtension> LanguageTag::GetExtension(
 
 std::optional<PrivateUseSubtags> LanguageTag::GetExtension(
     bcp47_extensions::Traits<'x'> traits) const {
-  std::string_view extension = GetExtensionStringInternal('x');
+  std::vector<std::string_view> extension = GetExtensionSubtagsInternal('x');
   if (extension.empty()) {
     return std::nullopt;
   }
