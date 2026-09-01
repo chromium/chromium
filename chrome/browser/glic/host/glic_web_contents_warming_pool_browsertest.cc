@@ -8,6 +8,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -28,6 +31,14 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/network_change_notifier.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
+#endif
 
 namespace glic {
 
@@ -122,8 +133,13 @@ class GlicManualWarmingPoolBrowserTest
     : public GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
   GlicManualWarmingPoolBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kGlicWebContentsWarming};
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    enabled_features.push_back(features::kDestroyProfileOnBrowserClose);
+#endif
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicWebContentsWarming},
+        enabled_features,
         /*disabled_features=*/{features::kGlicWarming});
   }
 
@@ -169,6 +185,48 @@ IN_PROC_BROWSER_TEST_F(GlicManualWarmingPoolBrowserTest,
   // 4. Verify that client connects.
   ASSERT_OK(WaitForGlicClient());
 }
+
+// Multiple profiles and profile deletion upon window close are only supported
+// on desktop (Win/Mac/Linux).
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(GlicManualWarmingPoolBrowserTest,
+                       DestroyProfileWithWarmedContainerDoesNotCrash) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+
+  Profile* new_profile =
+      &profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
+  SetFRECompletion(new_profile, prefs::FreStatus::kCompleted);
+
+  BrowserWindowInterface* new_browser =
+      PlatformBrowserTest::CreateBrowser(new_profile);
+
+  GlicKeyedService* service = GlicKeyedService::Get(new_profile);
+  ASSERT_TRUE(service);
+  auto& warming_pool =
+      static_cast<GlicInstanceCoordinatorImpl&>(service->instance_coordinator())
+          .GetWebContentsWarmingPoolForTesting();
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  ASSERT_TRUE(RunUntil(
+      [&warming_pool]() -> bool {
+        return warming_pool.HasWarmedContainerForTesting();
+      },
+      "Wait for initial cold warming"));
+  auto* warmed_container = warming_pool.GetWarmedContainerForTesting();
+  ASSERT_TRUE(warmed_container);
+  content::WaitForLoadStop(warmed_container->web_contents());
+
+  ProfileDestructionWaiter profile_destruction_waiter(new_profile);
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      new_profile_path, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  CloseBrowserSynchronously(new_browser);
+  profile_destruction_waiter.Wait();
+
+  EXPECT_FALSE(profile_manager->IsValidProfile(new_profile));
+}
+#endif
 
 class GlicWarmingCellularBrowserTest : public GlicWarmingPoolBrowserTest {
  public:
