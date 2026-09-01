@@ -92,6 +92,9 @@ void GlicWebClientManager::AttachToHost(Host* host) {
   CHECK(!host_);
   CHECK(host);
   host_ = host;
+  if (pending_web_client_receiver_.is_valid()) {
+    CreateWebClient(std::move(pending_web_client_receiver_));
+  }
 }
 
 void GlicWebClientManager::AttachGuestContents(
@@ -115,14 +118,27 @@ content::RenderFrameHost* GlicWebClientManager::GetGuestMainFrame() const {
 content::WebContents* GlicWebClientManager::web_client_contents() const {
   return web_contents();
 }
+
+void GlicWebClientManager::SetPendingWebClientReceiver(
+    mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver) {
+  if (host_) {
+    CreateWebClient(std::move(web_client_receiver));
+  } else {
+    pending_web_client_receiver_ = std::move(web_client_receiver);
+  }
+}
+
 void GlicWebClientManager::CreateWebClient(
     mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver) {
+  CHECK(host_);
   base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
                                 GlicWebClientLifecycleEvent::kCreated);
+  if (delegate_) {
+    delegate_->OnWebClientCreated();
+  }
   if (web_client_owned_) {
     UnsetWebClient();
   }
-  CHECK(host_);
   web_client_owned_ = MakeGlicWebClient(
       host_, host_->profile(), std::move(web_client_receiver),
       base::BindOnce(&GlicWebClientManager::UnsetWebClient,

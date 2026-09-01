@@ -423,23 +423,11 @@ void GlicUI::AttachToHost(Host* host) {
   CHECK(host);
   host_ = host;
   web_client_manager_->AttachToHost(host);
-  if (pending_web_client_receiver_) {
-    host->CreateWebClient(std::move(pending_web_client_receiver_));
-  }
   if (pending_receiver_.is_valid()) {
     page_handler_ = std::make_unique<GlicPageHandler>(
         web_ui()->GetWebContents(), host, std::move(pending_receiver_),
         std::move(pending_page_));
     std::move(pending_callback_).Run(host->GetInstanceId().value());
-  }
-}
-
-void GlicUI::SetPendingWebClientReceiver(
-    mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver) {
-  if (host_) {
-    host_->CreateWebClient(std::move(receiver));
-  } else {
-    pending_web_client_receiver_ = std::move(receiver);
   }
 }
 
@@ -462,9 +450,6 @@ void GlicUI::CreatePageHandler(
   }
   page_handler_ = std::make_unique<GlicPageHandler>(
       web_ui()->GetWebContents(), host_, std::move(receiver), std::move(page));
-  if (pending_web_client_receiver_) {
-    host_->CreateWebClient(std::move(pending_web_client_receiver_));
-  }
   std::move(callback).Run(host_->GetInstanceId().value());
 }
 

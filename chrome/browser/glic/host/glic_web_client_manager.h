@@ -56,6 +56,8 @@ class GlicWebClientManager : public content::WebContentsObserver {
                                   bool is_initial_commit) {}
     // The guest process was terminated.
     virtual void OnGuestProcessGone(base::TerminationStatus status) {}
+    // The web client receiver was created/bound.
+    virtual void OnWebClientCreated() {}
     // The web client state was changed.
     virtual void OnWebClientStateChanged(mojom::WebClientState state) {}
   };
@@ -79,6 +81,8 @@ class GlicWebClientManager : public content::WebContentsObserver {
 
   GlicWebClientAccess* web_client_access() const { return web_client_; }
 
+  void SetPendingWebClientReceiver(
+      mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver);
   void CreateWebClient(
       mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver);
   void WebClientInitialized();
@@ -114,6 +118,9 @@ class GlicWebClientManager : public content::WebContentsObserver {
 
   // Whether the guest frame has completed at least one navigation commit.
   bool has_navigation_committed_ = false;
+
+  mojo::PendingReceiver<glic::mojom::WebClientHandler>
+      pending_web_client_receiver_;
 };
 
 }  // namespace glic

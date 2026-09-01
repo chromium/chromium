@@ -33,6 +33,14 @@ class TabInterface;
 }
 
 namespace glic {
+class Host;
+
+// Prepares a WebContents to host the Glic guest client by configuring
+// preferences, draggable regions, process markers, and attaching
+// GlicGuestObserver.
+void PrepareGlicGuestWebContents(content::WebContents& guest_contents);
+
+void SetHostForGuest(content::WebContents& guest_contents, Host* host);
 
 // Returns the URL/origin from where the guest web client will be loaded from.
 GURL GetGuestURL();

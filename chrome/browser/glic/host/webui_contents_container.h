@@ -17,6 +17,7 @@ class Profile;
 
 namespace glic {
 class Host;
+class GlicWebClientManager;
 
 class WebUIContentsContainer {
  public:
@@ -33,6 +34,7 @@ class WebUIContentsContainer {
   virtual std::unique_ptr<content::WebContents> ReleaseWebContents() = 0;
   virtual void ReclaimWebContents(
       std::unique_ptr<content::WebContents> web_contents) = 0;
+  virtual GlicWebClientManager* web_client_manager();
   base::TimeTicks creation_time() const { return creation_time_; }
 
  protected:

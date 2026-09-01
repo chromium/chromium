@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="AutoPlay granted for other RFH"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/host/guest_util.cc:WebViewAutoPlayProgress) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_guest_observer.cc:WebViewAutoPlayProgress) -->
 
 </enums>
 

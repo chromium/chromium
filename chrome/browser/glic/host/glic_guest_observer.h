@@ -5,22 +5,30 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_GUEST_OBSERVER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_GUEST_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace glic {
+class Host;
 
+// Observes the Glic guest `WebContents`, enforcing policies (autoplay, Mojo JS
+// bindings) and maintaining host associations for Mojo interface routing.
 class GlicGuestObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<GlicGuestObserver> {
  public:
-  explicit GlicGuestObserver(content::WebContents* web_contents);
+  static void CreateForWebContents(content::WebContents& web_contents);
+
   ~GlicGuestObserver() override;
 
   GlicGuestObserver(const GlicGuestObserver&) = delete;
   GlicGuestObserver& operator=(const GlicGuestObserver&) = delete;
+
+  Host* host() const { return host_; }
+  void set_host(Host* host) { host_ = host; }
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -28,9 +36,16 @@ class GlicGuestObserver
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  explicit GlicGuestObserver(content::WebContents& web_contents);
   friend class content::WebContentsUserData<GlicGuestObserver>;
 
+  void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle);
+  void MaybeEnableMojoJsBindings(content::RenderFrameHost* render_frame_host);
+  void MaybeEnableMojoJsBindings(content::NavigationHandle* navigation_handle);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  raw_ptr<Host> host_ = nullptr;
 };
 
 }  // namespace glic

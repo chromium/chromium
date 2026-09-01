@@ -78,6 +78,10 @@ WebUIContentsContainer::WebUIContentsContainer()
     : creation_time_(base::TimeTicks::Now()) {}
 WebUIContentsContainer::~WebUIContentsContainer() = default;
 
+GlicWebClientManager* WebUIContentsContainer::web_client_manager() {
+  return nullptr;
+}
+
 WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
                                                        bool initially_hidden)
     : web_contents_(content::WebContents::Create(

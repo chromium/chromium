@@ -88,9 +88,6 @@ class GlicUI : public ui::MojoWebUIController,
     return web_client_manager_.get();
   }
 
-  void SetPendingWebClientReceiver(
-      mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver);
-
  private:
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   using SlimWebViewPageHandlerFactory::CreatePageHandler;
@@ -130,8 +127,6 @@ class GlicUI : public ui::MojoWebUIController,
   mojo::PendingReceiver<glic::mojom::PageHandler> pending_receiver_;
   mojo::PendingRemote<glic::mojom::Page> pending_page_;
   CreatePageHandlerCallback pending_callback_;
-  mojo::PendingReceiver<glic::mojom::WebClientHandler>
-      pending_web_client_receiver_;
 
   static bool simulate_no_connection_;
 

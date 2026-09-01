@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/guest_util_internal.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -183,54 +184,6 @@ class GlicProcessUserData : public base::SupportsUserData::Data {
   GlicProcessUserData() = default;
 };
 
-// Attached to Guest WebContents to identify it directly.
-class GlicGuestMarker : public content::WebContentsUserData<GlicGuestMarker> {
- public:
-  ~GlicGuestMarker() override = default;
-
- private:
-  explicit GlicGuestMarker(content::WebContents* web_contents)
-      : content::WebContentsUserData<GlicGuestMarker>(*web_contents) {}
-  friend class content::WebContentsUserData<GlicGuestMarker>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicGuestMarker);
-
-// LINT.IfChange(WebViewAutoPlayProgress)
-enum class WebViewAutoPlayProgress {
-  kWebContentsObserverRegistered = 0,
-  kAutoPlayGrantedForPrimaryRFH = 1,
-  kAutoPlayGrantedForOtherRFH = 2,
-  kMaxValue = kAutoPlayGrantedForOtherRFH,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebViewAutoPlayProgress)
-
-// Observes the glic webview's `WebContents`.
-class WebviewWebContentsObserver : public content::WebContentsObserver,
-                                   public base::SupportsUserData::Data {
- public:
-  explicit WebviewWebContentsObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-
-  void ReadyToCommitNavigation(content::NavigationHandle* handle) override {
-    // Enable autoplay for the webview.
-    content::RenderFrameHost* frame = handle->GetRenderFrameHost();
-    mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
-    frame->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->AddAutoplayFlags(GetGuestOrigin(),
-                             blink::mojom::kAutoplayFlagForceAllow);
-    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin()
-            << "\" at " << (handle->IsInPrimaryMainFrame() ? "main " : "")
-            << "RFH with url=\"" << handle->GetURL() << "\"";
-    base::UmaHistogramEnumeration(
-        "Glic.Host.WebView.AutoPlay",
-        handle->IsInPrimaryMainFrame()
-            ? WebViewAutoPlayProgress::kAutoPlayGrantedForPrimaryRFH
-            : WebViewAutoPlayProgress::kAutoPlayGrantedForOtherRFH);
-  }
-};
-
 // Caches an OriginMatcher parsed from a space-separated origin list string.
 // In production, feature parameters are fixed at startup, but unit tests
 // frequently reconfigure parameters across test cases (e.g., via
@@ -257,11 +210,45 @@ class CachedOriginMatcher {
   origin_matcher::OriginMatcher matcher_;
 };
 
+void ConfigureGuestZoom(content::WebContents& guest_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  // Apply the persisted zoom level to the guest WebContents.
+  if (Profile* profile =
+          Profile::FromBrowserContext(guest_contents.GetBrowserContext())) {
+    double zoom_factor = GetZoomFactor(profile->GetPrefs());
+    double zoom_level = blink::ZoomFactorToZoomLevel(zoom_factor);
+    content::HostZoomMap::SetZoomLevel(&guest_contents, zoom_level);
+  }
+#endif
+}
+
 }  // namespace
+
+void PrepareGlicGuestWebContents(content::WebContents& guest_contents) {
+  GlicGuestObserver::CreateForWebContents(guest_contents);
+
+  if (guest_contents.GetPrimaryMainFrame()) {
+    GlicProcessUserData::MarkProcess(
+        guest_contents.GetPrimaryMainFrame()->GetProcess());
+  }
+
+  PrefsTabHelper::CreateForWebContents(&guest_contents);
+  ConfigureGuestZoom(guest_contents);
+
+#if !BUILDFLAG(IS_ANDROID)
+  guest_contents.SetSupportsDraggableRegions(true);
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void SetHostForGuest(content::WebContents& guest_contents, Host* host) {
+  if (auto* observer = GlicGuestObserver::FromWebContents(&guest_contents)) {
+    observer->set_host(host);
+  }
+}
 
 bool IsGlicGuest(content::WebContents* web_contents) {
   return web_contents &&
-         GlicGuestMarker::FromWebContents(web_contents) != nullptr;
+         GlicGuestObserver::FromWebContents(web_contents) != nullptr;
 }
 
 void MarkProcessAsGlic(content::RenderProcessHost* rph) {
@@ -411,16 +398,25 @@ void BindGlicWebClientHandler(
   if (!guest_contents) {
     return;
   }
+  auto* observer = GlicGuestObserver::FromWebContents(guest_contents);
+  if (!observer) {
+    return;
+  }
+  if (observer->host()) {
+    observer->host()->CreateWebClient(std::move(receiver));
+    return;
+  }
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
   if (!top) {
     return;
   }
   auto* glic_ui = GlicUI::From(top);
-  if (!glic_ui) {
+  if (!glic_ui || !glic_ui->web_client_manager()) {
     return;
   }
-  glic_ui->SetPendingWebClientReceiver(std::move(receiver));
+  glic_ui->web_client_manager()->SetPendingWebClientReceiver(
+      std::move(receiver));
 }
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     content::BrowserContext* browser_context) {
@@ -519,6 +515,8 @@ Host* GetGlicHostForGuest(content::WebContents* guest_contents) {
   return glic_ui ? glic_ui->host() : nullptr;
 }
 
+// Called by Chrome's GuestView subsystem when a `<webview>` guest is created.
+// Not used in NoWebview mode, where PrivilegedWebContents is used instead.
 bool OnGuestAdded(content::WebContents* guest_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extensions::WebViewGuest::FromWebContents(guest_contents)) {
@@ -545,45 +543,11 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
     return false;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  guest_contents->SetSupportsDraggableRegions(true);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   if (auto* data = GlicWebUiData::FromWebContents(top)) {
     data->SetGuestContents(guest_contents);
-    GlicGuestMarker::CreateForWebContents(guest_contents);
-    GlicProcessUserData::MarkProcess(
-        guest_contents->GetPrimaryMainFrame()->GetProcess());
-
-    PrefsTabHelper::CreateForWebContents(guest_contents);
-
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(harringtond): This looks wrong, either fix or document this.
-    blink::web_pref::WebPreferences prefs(top->GetOrCreateWebPreferences());
-    prefs.default_font_size =
-        top->GetOrCreateWebPreferences().default_font_size;
-    top->SetWebPreferences(prefs);
-#else
-    // Apply the persisted zoom level to the guest WebContents.
-    if (Profile* profile =
-            Profile::FromBrowserContext(top->GetBrowserContext())) {
-      double zoom_factor = GetZoomFactor(profile->GetPrefs());
-      double zoom_level = blink::ZoomFactorToZoomLevel(zoom_factor);
-      content::HostZoomMap::SetZoomLevel(guest_contents, zoom_level);
-    }
-#endif
+    PrepareGlicGuestWebContents(*guest_contents);
   }
 
-  guest_contents->SetUserData(
-      "glic::WebviewWebContentsObserver",
-      std::make_unique<WebviewWebContentsObserver>(guest_contents));
-  glic::GlicGuestObserver::CreateForWebContents(guest_contents);
-  VLOG(1) << "Registered glic::WebviewWebContentsObserver for guest "
-             "WebContents with url=\""
-          << guest_contents->GetVisibleURL() << "\"";
-  base::UmaHistogramEnumeration(
-      "Glic.Host.WebView.AutoPlay",
-      WebViewAutoPlayProgress::kWebContentsObserverRegistered);
   if (auto* glic_ui = GlicUI::From(top)) {
     if (glic_ui->web_client_manager()) {
       glic_ui->web_client_manager()->AttachGuestContents(guest_contents);
