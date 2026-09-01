@@ -5467,7 +5467,7 @@
       "nicolasmacbeth@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 170
   },
   {
     "name": "gemini-antiscam-protections-metrics-only",
@@ -5484,14 +5484,6 @@
       "bling-alchemy-eng@google.com"
     ],
     "expiry_milestone": 170
-  },
-  {
-    "name": "gemini-backend-migration",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 155
   },
   {
     "name": "gemini-binary-migration",
@@ -5550,7 +5542,7 @@
   {
     "name": "gemini-live",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 170
   },
   {
     "name": "gemini-live-dormant-reasons",
@@ -5558,7 +5550,7 @@
       "adamta@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "gemini-luminous",
@@ -5582,14 +5574,6 @@
     "name": "gemini-quizzes",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 165
-  },
-  {
-    "name": "gemini-rich-apc-extraction",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 155
   },
   {
     "name": "gemini-screen-context-migration",

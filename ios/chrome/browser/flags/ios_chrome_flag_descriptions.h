@@ -897,11 +897,6 @@ inline constexpr char kGeminiAureusName[] = "Gemini Aureus";
 inline constexpr char kGeminiAureusDescription[] =
     "Enables Project Aureus quota enforcement and usage limits for Gemini.";
 
-inline constexpr char kGeminiBackendMigrationName[] =
-    "Gemini Backend Migration";
-inline constexpr char kGeminiBackendMigrationDescription[] =
-    "Enables the backend migration for Gemini.";
-
 inline constexpr char kGeminiBinaryMigrationName[] = "Gemini Binary Migration";
 inline constexpr char kGeminiBinaryMigrationDescription[] =
     "Enables the binary network migration for Gemini.";
@@ -973,11 +968,6 @@ inline constexpr char kGeminiPreciseLocationDescription[] =
 inline constexpr char kGeminiQuizzesName[] = "GeminiQuizzes";
 inline constexpr char kGeminiQuizzesDescription[] =
     "Enables the GeminiQuizzes feature.";
-
-inline constexpr char kGeminiRichAPCExtractionName[] =
-    "Gemini Rich APC Extraction";
-inline constexpr char kGeminiRichAPCExtractionDescription[] =
-    "Enables rich APC extraction for Gemini.";
 
 inline constexpr char kGeminiScreenContextMigrationName[] =
     "Gemini Screen Context Migration";

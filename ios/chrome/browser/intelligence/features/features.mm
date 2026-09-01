@@ -618,15 +618,6 @@ PageActionMenuIconVariations GetPageActionMenuIcon() {
   }
 }
 
-BASE_FEATURE(kGeminiBackendMigration, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsGeminiBackendMigrationEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiBackendMigration);
-}
-
 BASE_FEATURE(kGeminiAureus, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiAureusEnabled() {
@@ -644,17 +635,6 @@ bool IsGeminiActorEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiActor);
-}
-
-BASE_FEATURE(kGeminiRichAPCExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsGeminiRichAPCExtractionEnabled() {
-  if (!IsPageActionMenuEnabled() ||
-      !IsPageContextExtractorRefactoredEnabled()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(kGeminiRichAPCExtraction);
 }
 
 BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_DISABLED_BY_DEFAULT);

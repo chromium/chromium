@@ -16,7 +16,7 @@ using PageContextWrapperConfigTest = PlatformTest;
 TEST_F(PageContextWrapperConfigTest, BuilderDefaults_FlagsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {}, {kPageContextExtractorRefactored, kGeminiRichAPCExtraction,
+      {}, {kPageContextExtractorRefactored,
            kPageContextScreenshotPasswordRedaction});
 
   PageContextWrapperConfig config = PageContextWrapperConfigBuilder().Build();
@@ -34,8 +34,7 @@ TEST_F(PageContextWrapperConfigTest, BuilderDefaults_FlagsDisabled) {
 TEST_F(PageContextWrapperConfigTest,
        BuilderDefaults_RefactoredExtractorEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kPageContextExtractorRefactored},
-                                       {kGeminiRichAPCExtraction});
+  scoped_feature_list.InitWithFeatures({kPageContextExtractorRefactored}, {});
 
   PageContextWrapperConfig config = PageContextWrapperConfigBuilder().Build();
 
@@ -50,7 +49,7 @@ TEST_F(PageContextWrapperConfigTest, BuilderSetters) {
   // Regardless of the feature flag state, explicit setters should work.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {}, {kPageContextExtractorRefactored, kGeminiRichAPCExtraction,
+      {}, {kPageContextExtractorRefactored,
            kPageContextScreenshotPasswordRedaction});
 
   PageContextWrapperConfig config =

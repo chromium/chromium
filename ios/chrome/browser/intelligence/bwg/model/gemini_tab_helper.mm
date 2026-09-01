@@ -586,9 +586,7 @@ void GeminiTabHelper::PopulatePageContextFields() {
   }
 
   PageContextWrapperConfig config =
-      PageContextWrapperConfigBuilder()
-          .SetDefaultRichExtraction(IsGeminiRichAPCExtractionEnabled())
-          .Build();
+      PageContextWrapperConfigBuilder().SetDefaultRichExtraction(true).Build();
 
   // Create a new wrapper.
   page_context_wrapper_ = [[PageContextWrapper alloc]
