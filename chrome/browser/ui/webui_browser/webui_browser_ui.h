@@ -137,7 +137,7 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   // Returns the list of known element identifiers. These elements are HTML
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
   // UIs.
-  const std::vector<ui::ElementIdentifier>& GetKnownElementIdentifiers() const;
+  std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers() const;
 
   // Lazily creates and returns a reference to the owned contextual search
   // session handle for `realbox_handler_`.

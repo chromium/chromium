@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 
+#include <array>
+
+#include "base/containers/to_vector.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -290,15 +293,16 @@ void WebUIBrowserUI::CreatePageHandler(
       ->Bind(std::move(page), std::move(receiver));
 }
 
-const std::vector<ui::ElementIdentifier>&
-WebUIBrowserUI::GetKnownElementIdentifiers() const {
-  static const std::vector<ui::ElementIdentifier> kKnownElementIdentifiers{
-      kContentsContainerViewElementId, kExtensionsMenuButtonElementId,
-      kToolbarActionViewElementId,     kLocationBarElementId,
-      kLocationIconElementId,          kToolbarAppMenuButtonElementId,
-      kToolbarAvatarButtonElementId,   kToolbarBackButtonElementId,
-      kToolbarForwardButtonElementId};
-  return kKnownElementIdentifiers;
+std::vector<ui::ElementIdentifier> WebUIBrowserUI::GetKnownElementIdentifiers()
+    const {
+  static constexpr auto kKnownElementIdentifiers =
+      std::to_array<ui::ElementIdentifier>(
+          {kContentsContainerViewElementId, kExtensionsMenuButtonElementId,
+           kToolbarActionViewElementId, kLocationBarElementId,
+           kLocationIconElementId, kToolbarAppMenuButtonElementId,
+           kToolbarAvatarButtonElementId, kToolbarBackButtonElementId,
+           kToolbarForwardButtonElementId});
+  return base::ToVector(kKnownElementIdentifiers);
 }
 
 void WebUIBrowserUI::BookmarkBarStateChanged(

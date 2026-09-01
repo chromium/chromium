@@ -251,10 +251,6 @@ component("webnn_service") {
     ]
 
     libs = [ "runtimeobject.lib" ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   if (is_apple || webnn_use_tflite || webnn_use_litert) {

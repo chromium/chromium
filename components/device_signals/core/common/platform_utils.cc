@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -57,8 +58,8 @@ void NormalizeMacAddresses(std::vector<std::string>& mac_addresses) {
 }
 
 std::optional<std::vector<std::string>>& GetMacAddressesForTestingStorage() {
-  static std::optional<std::vector<std::string>> storage;
-  return storage;
+  static base::NoDestructor<std::optional<std::vector<std::string>>> storage;
+  return *storage;
 }
 
 }  // namespace

@@ -4,7 +4,10 @@
 
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
 
-#include "base/containers/fixed_flat_set.h"
+#include <array>
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -19,34 +22,33 @@ namespace enterprise_connectors {
 
 namespace {
 
-const std::set<std::string_view>& GoogleDomains() {
-  static const std::set<std::string_view> kDomains = {"google.com"};
-  return kDomains;
-}
+constexpr auto kGoogleDomains = std::to_array<std::string_view>({
+    "google.com",
+});
 
-const std::set<std::string_view>& TabWorkspaceDomains() {
-  static const std::set<std::string_view> kDomains = {
-      "mail.google.com",        "meet.google.com",
-      "calendar.google.com",    "drive.google.com",
-      "docs.google.com",        "sites.google.com",
-      "keep.google.com",        "script.google.com",
-      "cloudsearch.google.com", "console.cloud.google.com",
-      "datastudio.google.com",  "gemini.google.com",
-  };
-  return kDomains;
-}
+constexpr auto kTabWorkspaceDomains = std::to_array<std::string_view>({
+    "mail.google.com",
+    "meet.google.com",
+    "calendar.google.com",
+    "drive.google.com",
+    "docs.google.com",
+    "sites.google.com",
+    "keep.google.com",
+    "script.google.com",
+    "cloudsearch.google.com",
+    "console.cloud.google.com",
+    "datastudio.google.com",
+    "gemini.google.com",
+});
 
-const std::set<std::string_view>& FrameWorkspaceDomains() {
-  static const std::set<std::string_view> kDomains = {
-      "ogs.google.com",
-  };
-  return kDomains;
-}
+constexpr auto kFrameWorkspaceDomains = std::to_array<std::string_view>({
+    "ogs.google.com",
+});
 
 bool IncludeContentAreaAccountEmail(
     const GURL& url,
-    const std::set<std::string_view>& allowed_domains) {
-  for (const auto& domain : allowed_domains) {
+    base::span<const std::string_view> allowed_domains) {
+  for (std::string_view domain : allowed_domains) {
     if (url.DomainIs(domain)) {
       return true;
     }
@@ -97,7 +99,7 @@ std::string GetEmailFromUrl(signin::IdentityManager* im, const GURL& url) {
 
 std::string GetActiveContentAreaUser(signin::IdentityManager* im,
                                      const GURL& tab_url) {
-  if (!IncludeContentAreaAccountEmail(tab_url, GoogleDomains())) {
+  if (!IncludeContentAreaAccountEmail(tab_url, kGoogleDomains)) {
     return "";
   }
 
@@ -107,8 +109,8 @@ std::string GetActiveContentAreaUser(signin::IdentityManager* im,
 std::string GetActiveFrameUser(signin::IdentityManager* im,
                                const GURL& tab_url,
                                const GURL& frame_url) {
-  if (!IncludeContentAreaAccountEmail(tab_url, TabWorkspaceDomains()) ||
-      !IncludeContentAreaAccountEmail(frame_url, FrameWorkspaceDomains())) {
+  if (!IncludeContentAreaAccountEmail(tab_url, kTabWorkspaceDomains) ||
+      !IncludeContentAreaAccountEmail(frame_url, kFrameWorkspaceDomains)) {
     return "";
   }
 
@@ -116,7 +118,7 @@ std::string GetActiveFrameUser(signin::IdentityManager* im,
 }
 
 std::string GetDefaultActiveUser(signin::IdentityManager* im, const GURL& url) {
-  if (!im || !IncludeContentAreaAccountEmail(url, GoogleDomains())) {
+  if (!im || !IncludeContentAreaAccountEmail(url, kGoogleDomains)) {
     return "";
   }
 
@@ -138,7 +140,7 @@ std::string GetNavigationActiveContentAreaUser(signin::IdentityManager* im,
 }
 
 bool CanRetrieveActiveUser(const GURL& tab_url) {
-  return IncludeContentAreaAccountEmail(tab_url, GoogleDomains());
+  return IncludeContentAreaAccountEmail(tab_url, kGoogleDomains);
 }
 
 }  // namespace enterprise_connectors

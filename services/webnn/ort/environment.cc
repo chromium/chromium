@@ -1143,7 +1143,7 @@ base::Lock& Environment::GetLock() {
   return *lock;
 }
 
-raw_ptr<Environment> Environment::instance_ = nullptr;
+Environment* Environment::instance_ = nullptr;
 
 // static
 base::flat_set<std::wstring>& Environment::GetDependentEpPackages() {

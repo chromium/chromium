@@ -44,6 +44,12 @@ constexpr inline auto kLaunchOnStartupTrialGroupOptions =
             {LaunchOnStartupDefaultPreference::kEnabled, "enabled"},
         });
 
+// Feature param names. Shared with about:flags so that the strings stay in
+// sync with the definitions in startup_features.cc.
+inline constexpr char kLaunchOnStartupModeParamName[] = "mode";
+inline constexpr char kLaunchOnStartupDefaultPreferenceParamName[] =
+    "default_preference";
+
 // This flag (and the params) gates the Launch on Startup feature and
 // corresponding modes.
 BASE_DECLARE_FEATURE(kLaunchOnStartup);

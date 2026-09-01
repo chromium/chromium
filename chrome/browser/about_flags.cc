@@ -1290,15 +1290,16 @@ const FeatureEntry::Choice kForceColorProfileChoices[] = {
 };
 
 #if BUILDFLAG(IS_WIN)
-const FeatureEntry::FeatureParam kStartupLaunchForegroundEnabledParams[] = {
-    {features::kLaunchOnStartupModeParam.name, "foreground"},
-    {features::kLaunchOnStartupDefaultPreferenceParam.name, "enabled"},
+constexpr FeatureEntry::FeatureParam kStartupLaunchForegroundEnabledParams[] = {
+    {features::kLaunchOnStartupModeParamName, "foreground"},
+    {features::kLaunchOnStartupDefaultPreferenceParamName, "enabled"},
 };
-const FeatureEntry::FeatureParam kStartupLaunchForegroundDisabledParams[] = {
-    {features::kLaunchOnStartupModeParam.name, "foreground"},
-    {features::kLaunchOnStartupDefaultPreferenceParam.name, "disabled"},
+constexpr FeatureEntry::FeatureParam kStartupLaunchForegroundDisabledParams[] =
+    {
+        {features::kLaunchOnStartupModeParamName, "foreground"},
+        {features::kLaunchOnStartupDefaultPreferenceParamName, "disabled"},
 };
-const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
+constexpr FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
     {"with Foreground launch enabled by default",
      kStartupLaunchForegroundEnabledParams, nullptr},
     {"with Foreground launch disabled by default",
