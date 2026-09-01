@@ -107,4 +107,14 @@ UIViewController* GetFloatyViewControllerWithConfiguration(
   return nil;
 }
 
+// TODO(crbug.com/554243740): Implement this function.
+bool IsFeatureModeDisabledByQuota(GeminiFeatureMode feature_mode) {
+  return false;
+}
+
+// TODO(crbug.com/554243740): Implement this function.
+NSDate* GetRefillDateForFeatureMode(GeminiFeatureMode feature_mode) {
+  return nil;
+}
+
 }  // namespace ios::provider
