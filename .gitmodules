@@ -330,6 +330,10 @@
 	path = third_party/jetstream/v2.2
 	url = https://chromium.googlesource.com/external/github.com/WebKit/JetStream
 	gclient-condition = checkout_press_benchmarks
+[submodule "third_party/jetstream/v3.0"]
+	path = third_party/jetstream/v3.0
+	url = https://chromium.googlesource.com/external/github.com/WebKit/JetStream
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/speedometer/main"]
 	path = third_party/speedometer/main
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer

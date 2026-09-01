@@ -471,6 +471,10 @@ vars = {
   # and whatever else without interference from each other.
   'jetstream_2.2_revision': '2145cedef4ca2777b792cb0059d3400ee2a6153c',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling jetstream-v3.0
+  # and whatever else without interference from each other.
+  'jetstream_3.0_revision': '06785cf861ac44855f168cbbe829278c2802e6de',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling wuffs
   # and whatever else without interference from each other.
   'wuffs_revision': '7411f488fe2e2c205c3d3b3d28638b7356522930',
@@ -2561,6 +2565,11 @@ deps = {
 
   'src/third_party/jetstream/v2.2': {
     'url': Var('chromium_git') + '/external/github.com/WebKit/JetStream.git' + '@' + Var('jetstream_2.2_revision'),
+    'condition': 'checkout_press_benchmarks',
+  },
+
+  'src/third_party/jetstream/v3.0': {
+    'url': Var('chromium_git') + '/external/github.com/WebKit/JetStream.git' + '@' + Var('jetstream_3.0_revision'),
     'condition': 'checkout_press_benchmarks',
   },
 
