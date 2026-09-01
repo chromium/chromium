@@ -98,15 +98,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 @interface SendTabToSelfCoordinator () <InfobarModalPositioner,
                                         SendTabToSelfMediatorDelegate,
                                         SendTabToSelfModalDelegate,
-                                        UIViewControllerTransitioningDelegate> {
-  std::unique_ptr<send_tab_to_self::TargetDeviceListWaiter>
-      _targetDeviceListWaiter;
-  send_tab_to_self::ShareEntryPoint _entryPoint;
-  // Non-nil only when the coordinator is initialized in direct-send mode,
-  // representing the target device's cache GUID where the tab should be sent.
-  NSString* _targetDeviceCacheGUID;
-  NSString* _targetDeviceName;
-}
+                                        UIViewControllerTransitioningDelegate>
 
 @property(nonatomic, assign, readonly) GURL url;
 @property(nonatomic, copy, readonly) NSString* title;
@@ -133,6 +125,13 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   UINavigationController* _navigationController;
   // The mediator of this coordinator.
   SendTabToSelfMediator* _mediator;
+  std::unique_ptr<send_tab_to_self::TargetDeviceListWaiter>
+      _targetDeviceListWaiter;
+  send_tab_to_self::ShareEntryPoint _entryPoint;
+  // Non-nil only when the coordinator is initialized in direct-send mode,
+  // representing the target device's cache GUID where the tab should be sent.
+  NSString* _targetDeviceCacheGUID;
+  NSString* _targetDeviceName;
 }
 
 #pragma mark - Public
