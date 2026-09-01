@@ -31,6 +31,10 @@ public class PaymentInstrument {
             @Nullable GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled) {
+        // equals() should consider null and empty as the same, so normalize.
+        if (displayIconUrl != null && displayIconUrl.isEmpty()) {
+            displayIconUrl = null;
+        }
         mInstrumentId = instrumentId;
         mNickname = nickname;
         mDisplayIconUrl = displayIconUrl;
@@ -46,16 +50,13 @@ public class PaymentInstrument {
 
     /** Returns the user-assigned nickname for the payment instrument, if one exists. */
     @CalledByNative
-    public @Nullable @JniType("std::u16string") String getNickname() {
+    public @JniType("std::u16string") @Nullable String getNickname() {
         return mNickname;
     }
 
-    /**
-     * Returns the URL to download the icon to be displayed for the payment instrument, if one
-     * exists.
-     */
+    /** Returns the URL to download the icon to be displayed for the payment instrument. */
     @CalledByNative
-    public @Nullable GURL getDisplayIconUrl() {
+    public @JniType("GURL") @Nullable GURL getDisplayIconUrl() {
         return mDisplayIconUrl;
     }
 

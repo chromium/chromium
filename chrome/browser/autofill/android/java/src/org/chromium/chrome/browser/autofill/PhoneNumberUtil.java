@@ -107,12 +107,14 @@ public class PhoneNumberUtil {
     public interface Natives {
         @JniType("std::string")
         String formatForDisplay(
-                @JniType("std::string") String phoneNumber, @Nullable String countryCode);
+                @JniType("std::string") String phoneNumber,
+                @JniType("std::string") @Nullable String countryCode);
 
         @JniType("std::string")
         String formatForResponse(@JniType("std::string") String phoneNumber);
 
         boolean isPossibleNumber(
-                @JniType("std::string") String phoneNumber, @Nullable String countryCode);
+                @JniType("std::string") String phoneNumber,
+                @JniType("std::string") @Nullable String countryCode);
     }
 }

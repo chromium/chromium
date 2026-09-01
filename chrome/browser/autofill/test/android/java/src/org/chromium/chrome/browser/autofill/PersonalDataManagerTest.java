@@ -1133,6 +1133,7 @@ public class PersonalDataManagerTest {
                                         .setSupportedPaymentRails(new int[] {1})
                                         .build())
                         .setBankName("bank name")
+                        .setAccountNumberSuffix("account_number_suffix")
                         .build();
         BankAccount bankAccount2 =
                 new BankAccount.Builder()
@@ -1144,6 +1145,7 @@ public class PersonalDataManagerTest {
                                         .setDisplayIconUrl(new GURL("http://example.com"))
                                         .build())
                         .setBankName("bank name 2")
+                        .setAccountNumberSuffix("account_number_suffix")
                         .build();
         AutofillTestHelper.addMaskedBankAccount(bankAccount1);
         AutofillTestHelper.addMaskedBankAccount(bankAccount2);

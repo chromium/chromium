@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,8 +25,8 @@ import java.util.Objects;
 @JNINamespace("autofill")
 @NullMarked
 public class BankAccount extends PaymentInstrument {
-    private final @Nullable String mBankName;
-    private final @Nullable String mAccountNumberSuffix;
+    private final String mBankName;
+    private final String mAccountNumberSuffix;
     private final @AccountType int mAccountType;
 
     private BankAccount(
@@ -34,8 +35,8 @@ public class BankAccount extends PaymentInstrument {
             @Nullable GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled,
-            @Nullable String bankName,
-            @Nullable String accountNumberSuffix,
+            String bankName,
+            String accountNumberSuffix,
             @AccountType int accountType) {
         super(instrumentId, nickname, displayIconUrl, supportedPaymentRails, isFidoEnrolled);
         mBankName = bankName;
@@ -46,12 +47,12 @@ public class BankAccount extends PaymentInstrument {
     @CalledByNative
     static BankAccount create(
             long instrumentId,
-            String nickname,
-            GURL displayIconUrl,
-            @PaymentRail int[] supportedPaymentRails,
+            @JniType("std::u16string") String nickname,
+            @JniType("GURL") GURL displayIconUrl,
+            @JniType("std::vector<int32_t>") @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled,
-            String bankName,
-            String accountNumberSuffix,
+            @JniType("std::u16string") String bankName,
+            @JniType("std::u16string") String accountNumberSuffix,
             @AccountType int accountType) {
         return new BankAccount.Builder()
                 .setPaymentInstrument(
@@ -70,13 +71,13 @@ public class BankAccount extends PaymentInstrument {
 
     /** Returns the bank name for the bank account. */
     @CalledByNative
-    public @Nullable String getBankName() {
+    public @JniType("std::u16string") String getBankName() {
         return mBankName;
     }
 
     /** Returns the account number suffix that can be used to identify the bank account. */
     @CalledByNative
-    public @Nullable String getAccountNumberSuffix() {
+    public @JniType("std::u16string") String getAccountNumberSuffix() {
         return mAccountNumberSuffix;
     }
 
@@ -108,7 +109,7 @@ public class BankAccount extends PaymentInstrument {
      * number is displayed to the user in this format.
      */
     public @Nullable String getObfuscatedAccountNumber() {
-        if (mAccountNumberSuffix == null || mAccountNumberSuffix.isEmpty()) {
+        if (mAccountNumberSuffix.isEmpty()) {
             return null;
         }
 
@@ -147,14 +148,16 @@ public class BankAccount extends PaymentInstrument {
         }
 
         public BankAccount build() {
+            assert mBankName != null;
+            assert mAccountNumberSuffix != null;
             return new BankAccount(
                     assumeNonNull(mPaymentInstrument).getInstrumentId(),
                     mPaymentInstrument.getNickname(),
                     mPaymentInstrument.getDisplayIconUrl(),
                     mPaymentInstrument.getSupportedPaymentRails(),
                     mPaymentInstrument.getIsFidoEnrolled(),
-                    assumeNonNull(mBankName),
-                    assumeNonNull(mAccountNumberSuffix),
+                    mBankName,
+                    mAccountNumberSuffix,
                     mAccountType);
         }
     }

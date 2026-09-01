@@ -22,6 +22,7 @@
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/url_constants.h"
 
@@ -220,15 +221,11 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
               }
 
               entries.push_back(Java_FetchAndRankHelper_addDataEntry(
-                  env,
-
-                  static_cast<int>(AuxiliarySearchEntryType::kTab),
-                  url::GURLAndroid::FromNativeGURL(
-                      env, tab_data.last_active_tab.visit.url),
-                  base::android::ConvertUTF16ToJavaString(
-                      env, tab_data.last_active_tab.visit.title),
+                  env, static_cast<int>(AuxiliarySearchEntryType::kTab),
+                  tab_data.last_active_tab.visit.url,
+                  tab_data.last_active_tab.visit.title,
                   tab_data.last_active.InMillisecondsSinceUnixEpoch(),
-                  tab_data.last_active_tab.id, /* appId= */ nullptr,
+                  tab_data.last_active_tab.id, /*appId=*/std::string(),
                   kInvalidTabId));
             },
             [&](const URLVisitAggregate::HistoryData& history_data) {
@@ -245,21 +242,13 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
               }
 
               entries.push_back(Java_FetchAndRankHelper_addDataEntry(
-                  env,
-
-                  static_cast<int>(AuxiliarySearchEntryType::kCustomTab),
-                  url::GURLAndroid::FromNativeGURL(
-                      env, history_data.last_visited.url_row.url()),
-                  base::android::ConvertUTF16ToJavaString(
-                      env, history_data.last_visited.url_row.title()),
+                  env, static_cast<int>(AuxiliarySearchEntryType::kCustomTab),
+                  history_data.last_visited.url_row.url(),
+                  history_data.last_visited.url_row.title(),
                   history_data.last_visited.visit_row.visit_time
                       .InMillisecondsSinceUnixEpoch(),
                   kInvalidTabId,
-                  history_data.last_app_id
-                      ? base::android::ConvertUTF8ToJavaString(
-                            env, *history_data.last_app_id)
-                      : base::android::ConvertUTF8ToJavaString(env,
-                                                               std::string()),
+                  history_data.last_app_id.value_or(std::string()),
                   std::abs(static_cast<int>(base::Hash(aggregate.url_key)))));
             }},
         fetcher_entry.second);

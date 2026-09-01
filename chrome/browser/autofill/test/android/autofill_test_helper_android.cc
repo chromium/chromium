@@ -6,11 +6,9 @@
 
 #include <memory>
 
-#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/test/jni_headers/AutofillTestHelper_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
@@ -18,12 +16,13 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/autofill/test/jni_headers/AutofillTestHelper_jni.h"
+
 namespace autofill {
 namespace {
 
-using ::base::android::ConvertJavaStringToUTF16;
-using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::JavaRef;
+using ::jni_zero::JavaRef;
 
 PersonalDataManager* GetPersonalDataManagerForLastUsedProfile() {
   return PersonalDataManagerFactory::GetForBrowserContext(
@@ -33,8 +32,7 @@ PersonalDataManager* GetPersonalDataManagerForLastUsedProfile() {
 }  // anonymous namespace
 
 // static
-static int64_t JNI_AutofillTestHelper_GetDateNDaysAgo(JNIEnv* env,
-                                                      int32_t days) {
+static int64_t JNI_AutofillTestHelper_GetDateNDaysAgo(int32_t days) {
   return (AutofillClock::Now() - base::Days(days)).ToTimeT();
 }
 
@@ -74,7 +72,6 @@ static void JNI_AutofillTestHelper_AddServerCreditCardWithAdditionalFields(
 
 // static
 static void JNI_AutofillTestHelper_SetProfileUseStats(
-    JNIEnv* env,
     const std::string& guid,
     int32_t count,
     int32_t days_since_last_used) {
@@ -92,7 +89,6 @@ static void JNI_AutofillTestHelper_SetProfileUseStats(
 
 // static
 static int32_t JNI_AutofillTestHelper_GetProfileUseCount(
-    JNIEnv* env,
     const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
@@ -103,7 +99,6 @@ static int32_t JNI_AutofillTestHelper_GetProfileUseCount(
 
 // static
 static int64_t JNI_AutofillTestHelper_GetProfileUseDate(
-    JNIEnv* env,
     const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
@@ -137,7 +132,6 @@ static std::string JNI_AutofillTestHelper_AddCreditCardWithUseStats(
 
 // static
 static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(
-    JNIEnv* env,
     const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
@@ -148,7 +142,6 @@ static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(
 
 // static
 static int64_t JNI_AutofillTestHelper_GetCreditCardUseDate(
-    JNIEnv* env,
     const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
@@ -158,12 +151,12 @@ static int64_t JNI_AutofillTestHelper_GetCreditCardUseDate(
 }
 
 // TODO(crbug.com/40477114): Use a mock clock for testing.
-static int64_t JNI_AutofillTestHelper_GetCurrentDate(JNIEnv* env) {
+static int64_t JNI_AutofillTestHelper_GetCurrentDate() {
   return base::Time::Now().ToTimeT();
 }
 
 // static
-static void JNI_AutofillTestHelper_ClearServerData(JNIEnv* env) {
+static void JNI_AutofillTestHelper_ClearServerData() {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   personal_data_manager->payments_data_manager().ClearAllServerDataForTesting();
@@ -171,7 +164,7 @@ static void JNI_AutofillTestHelper_ClearServerData(JNIEnv* env) {
 }
 
 // static
-static void JNI_AutofillTestHelper_SetSyncService(JNIEnv* env) {
+static void JNI_AutofillTestHelper_SetSyncService() {
   GetPersonalDataManagerForLastUsedProfile()
       ->payments_data_manager()
       .SetSyncingForTest(true);

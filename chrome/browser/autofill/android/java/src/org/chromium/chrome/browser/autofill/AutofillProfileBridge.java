@@ -111,7 +111,7 @@ public final class AutofillProfileBridge {
         @JniType("std::vector<DropdownKeyValueAndroid>")
         List<DropdownKeyValue> getSupportedCountries();
 
-        @JniType("std::vector<int>")
+        @JniType("std::vector<int32_t>")
         int[] getRequiredFields(@JniType("std::string") String countryCode);
 
         @JniType("AutofillAddressEditorUiInfoAndroid")

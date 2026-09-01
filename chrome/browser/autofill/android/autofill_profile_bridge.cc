@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +19,7 @@
 #include "components/autofill/core/browser/ui/addresses/android/dropdown_key_value_android.h"
 #include "components/autofill/core/browser/ui/addresses/android/supported_countries_cache.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
@@ -33,12 +32,6 @@
 
 namespace autofill {
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfStrings;
-using base::android::ToJavaIntArray;
 using ::i18n::addressinput::AddressField;
 using ::i18n::addressinput::AddressUiComponent;
 using ::i18n::addressinput::BuildComponents;
@@ -68,23 +61,21 @@ std::vector<DropdownKeyValueAndroid> BuildSupportedCountries(
 
 }  // namespace
 
-static std::string JNI_AutofillProfileBridge_GetDefaultCountryCode(
-    JNIEnv* env) {
+static std::string JNI_AutofillProfileBridge_GetDefaultCountryCode() {
   return AutofillCountry::CountryCodeForLocale(
       g_browser_process->GetApplicationLocale());
 }
 
 static std::vector<DropdownKeyValueAndroid>
-JNI_AutofillProfileBridge_GetSupportedCountries(JNIEnv* env) {
+JNI_AutofillProfileBridge_GetSupportedCountries() {
   static base::NoDestructor<SupportedCountriesCache> cache(
       base::BindRepeating(&BuildSupportedCountries));
   return cache->GetForLocale(g_browser_process->GetApplicationLocale());
 }
 
-static std::vector<int> JNI_AutofillProfileBridge_GetRequiredFields(
-    JNIEnv* env,
+static std::vector<int32_t> JNI_AutofillProfileBridge_GetRequiredFields(
     const std::string& country_code) {
-  std::vector<int> required;
+  std::vector<int32_t> required;
 
   // Iterating over fields in AddressField to ensure that only fields from
   // libaddressinput can be required. Should iterate over all fields in:
@@ -101,7 +92,6 @@ static std::vector<int> JNI_AutofillProfileBridge_GetRequiredFields(
 
 static AutofillAddressEditorUiInfoAndroid
 JNI_AutofillProfileBridge_GetAddressEditorUiInfo(
-    JNIEnv* env,
     const std::string& country_code,
     const std::string& language_code,
     int32_t j_validation_type) {

@@ -32,7 +32,6 @@ void WebApkHandlerDelegate::RetrieveWebApks() {
 }
 
 void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
-    JNIEnv* env,
     const std::string& jname,
     const std::string& jshort_name,
     const std::string& jpackage_name,
@@ -43,7 +42,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
     const std::string& jscope,
     const std::string& jmanifest_url,
     const std::string& jmanifest_start_url,
-    const base::android::JavaRef<jstring>& jmanifest_id,
+    const std::string& jmanifest_id,
     const int32_t jdisplay_mode,
     const int32_t jorientation,
     const int64_t jtheme_color,
@@ -53,24 +52,13 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
     const int64_t jlast_update_check_time_ms,
     const int64_t jlast_update_completion_time_ms,
     const bool jrelax_updates,
-    const base::android::JavaRef<jstring>& jbacking_browser_package_name,
+    const std::string& jbacking_browser_package_name,
     const bool jis_backing_browser,
     const std::string& jupdate_status) {
-  std::string backing_browser_package_name;
-  if (jbacking_browser_package_name) {
-    backing_browser_package_name = base::android::ConvertJavaStringToUTF8(
-        env, jbacking_browser_package_name);
-  }
-
-  std::string manifest_id;
-  if (jmanifest_id) {
-    manifest_id = base::android::ConvertJavaStringToUTF8(env, jmanifest_id);
-  }
-
   callback_.Run(WebApkInfo(
       jname, jshort_name, jpackage_name, jid,
       static_cast<int>(jshell_apk_version), static_cast<int>(jversion_code),
-      juri, jscope, jmanifest_url, jmanifest_start_url, manifest_id,
+      juri, jscope, jmanifest_url, jmanifest_start_url, jmanifest_id,
       static_cast<blink::mojom::DisplayMode>(jdisplay_mode),
       static_cast<device::mojom::ScreenOrientationLockType>(jorientation),
       ui::JavaColorToOptionalSkColor(jtheme_color),
@@ -80,7 +68,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       base::Time::FromMillisecondsSinceUnixEpoch(jlast_update_check_time_ms),
       base::Time::FromMillisecondsSinceUnixEpoch(
           jlast_update_completion_time_ms),
-      jrelax_updates, backing_browser_package_name, jis_backing_browser,
+      jrelax_updates, jbacking_browser_package_name, jis_backing_browser,
       jupdate_status));
 }
 

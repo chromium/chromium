@@ -978,17 +978,17 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     interface Natives {
         void storeWebApkUpdateRequestToFile(
                 @JniType("std::string") String updateRequestPath,
-                @Nullable @JniType("std::string") String startUrl,
+                @JniType("std::string") @Nullable String startUrl,
                 @JniType("std::string") String scope,
-                @Nullable @JniType("std::u16string") String name,
-                @Nullable @JniType("std::u16string") String shortName,
+                @JniType("std::u16string") @Nullable String name,
+                @JniType("std::u16string") @Nullable String shortName,
                 boolean hasCustomName,
-                @Nullable @JniType("std::string") String manifestId,
-                @Nullable @JniType("std::string") String appKey,
-                @Nullable @JniType("std::string") String primaryIconUrl,
+                @JniType("std::string") @Nullable String manifestId,
+                @JniType("std::string") @Nullable String appKey,
+                @JniType("std::string") @Nullable String primaryIconUrl,
                 byte[] primaryIconData,
                 boolean isPrimaryIconMaskable,
-                @Nullable @JniType("std::string") String splashIconUrl,
+                @JniType("std::string") @Nullable String splashIconUrl,
                 byte[] splashIconData,
                 boolean isSplashIconMaskable,
                 @JniType("std::vector<std::string>") String[] iconUrls,
@@ -1008,16 +1008,16 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 Object[] shareTargetParamAccepts,
                 String[][] shortcuts,
                 byte[][] shortcutIconData,
-                @Nullable @JniType("std::string") String manifestUrl,
-                @Nullable @JniType("std::string") String webApkPackage,
+                @JniType("std::string") @Nullable String manifestUrl,
+                @JniType("std::string") @Nullable String webApkPackage,
                 int webApkVersion,
                 boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported,
-                int[] updateReasons,
-                Callback<Boolean> callback);
+                @JniType("std::vector<int32_t>") int[] updateReasons,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void updateWebApkFromFile(
-                @Nullable @JniType("std::string") String updateRequestPath,
+                @JniType("std::string") @Nullable String updateRequestPath,
                 WebApkUpdateCallback callback);
 
         int getWebApkTargetShellVersion();

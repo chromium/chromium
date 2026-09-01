@@ -14,6 +14,7 @@
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/ntp_tiles/constants.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/url_constants.h"
 
@@ -91,11 +92,10 @@ void AuxiliarySearchTopSiteProviderBridge::OnURLsAvailable(
     }
 
     entries.push_back(Java_AuxiliarySearchTopSiteProviderBridge_addDataEntry(
-        env, static_cast<int>(AuxiliarySearchEntryType::kTopSite),
-        url::GURLAndroid::FromNativeGURL(env, tile.url),
-        base::android::ConvertUTF16ToJavaString(env, tile.title),
-        tile.last_visit_time.InMillisecondsSinceUnixEpoch(), kInvalidTabId,
-        /* appId= */ nullptr,
+        env, static_cast<int>(AuxiliarySearchEntryType::kTopSite), tile.url,
+        tile.title, tile.last_visit_time.InMillisecondsSinceUnixEpoch(),
+        kInvalidTabId,
+        /*appId=*/std::string(),
         std::abs(static_cast<int>(
             base::Hash(tile.url.spec() + base::UTF16ToUTF8(tile.title)))),
         convertSiteSuggestionScore(index++)));

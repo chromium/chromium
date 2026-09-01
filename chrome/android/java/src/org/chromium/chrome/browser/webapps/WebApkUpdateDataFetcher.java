@@ -123,7 +123,7 @@ public class WebApkUpdateDataFetcher implements TabObserver {
             @JniType("std::u16string") String name,
             @JniType("std::u16string") String shortName,
             @JniType("std::string") String manifestUrl,
-            String manifestId,
+            @JniType("std::string") String manifestId,
             @JniType("std::string") String primaryIconUrl,
             @JniType("std::string") String primaryIconMurmur2Hash,
             Bitmap primaryIconBitmap,
@@ -132,7 +132,7 @@ public class WebApkUpdateDataFetcher implements TabObserver {
             @JniType("std::string") String splashIconMurmur2Hash,
             byte[] splashIconData,
             boolean isSplashIconMaskable,
-            String[] iconUrls,
+            @JniType("std::vector<std::string>") String[] iconUrls,
             @DisplayMode.EnumType int displayMode,
             int orientation,
             long themeColor,
@@ -144,7 +144,7 @@ public class WebApkUpdateDataFetcher implements TabObserver {
             @JniType("std::u16string") String shareParamsText,
             boolean isShareMethodPost,
             boolean isShareEncTypeMultipart,
-            String[] shareParamsFileNames,
+            @JniType("std::vector<std::u16string>") String[] shareParamsFileNames,
             String[][] shareParamsAccepts,
             String[][] shortcuts,
             byte[][] shortcutIconData) {
@@ -233,10 +233,10 @@ public class WebApkUpdateDataFetcher implements TabObserver {
     interface Natives {
         long initialize(
                 WebApkUpdateDataFetcher self,
-                @Nullable @JniType("std::string") String startUrl,
-                @Nullable @JniType("std::string") String scope,
-                @Nullable @JniType("std::string") String webManifestUrl,
-                @Nullable String webManifestId);
+                @JniType("std::string") @Nullable String startUrl,
+                @JniType("std::string") @Nullable String scope,
+                @JniType("std::string") @Nullable String webManifestUrl,
+                @JniType("std::string") @Nullable String webManifestId);
 
         void replaceWebContents(
                 long nativeWebApkUpdateDataFetcher, @Nullable WebContents webContents);

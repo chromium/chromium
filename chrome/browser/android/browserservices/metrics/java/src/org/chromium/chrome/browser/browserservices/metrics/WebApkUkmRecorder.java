@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.metrics;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -60,12 +61,19 @@ public class WebApkUkmRecorder {
     @NativeMethods
     public interface Natives {
         void recordSessionDuration(
-                @Nullable String manifestId, int distributor, int versionCode, long duration);
+                @JniType("std::string") @Nullable String manifestId,
+                int distributor,
+                int versionCode,
+                long duration);
 
-        void recordVisit(@Nullable String manifestId, int distributor, int versionCode, int source);
+        void recordVisit(
+                @JniType("std::string") @Nullable String manifestId,
+                int distributor,
+                int versionCode,
+                int source);
 
         void recordUninstall(
-                @Nullable String manifestId,
+                @JniType("std::string") @Nullable String manifestId,
                 int distributor,
                 int versionCode,
                 int launchCount,

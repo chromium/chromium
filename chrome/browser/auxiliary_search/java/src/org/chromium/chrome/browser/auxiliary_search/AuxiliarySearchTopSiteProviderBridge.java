@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import android.text.TextUtils;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -86,15 +88,22 @@ public class AuxiliarySearchTopSiteProviderBridge {
     @VisibleForTesting
     static AuxiliarySearchDataEntry addDataEntry(
             @AuxiliarySearchEntryType int type,
-            GURL url,
-            String title,
+            @JniType("GURL") GURL url,
+            @JniType("std::u16string") String title,
             long lastActiveTime,
             int tabId,
-            @Nullable String appId,
+            @JniType("std::string") @Nullable String appId,
             int visitId,
             int score) {
         return new AuxiliarySearchDataEntry(
-                type, url, title, lastActiveTime, tabId, appId, visitId, score);
+                type,
+                url,
+                title,
+                lastActiveTime,
+                tabId,
+                TextUtils.isEmpty(appId) ? null : appId,
+                visitId,
+                score);
     }
 
     @CalledByNative

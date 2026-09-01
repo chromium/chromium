@@ -24,7 +24,7 @@
 #include "base/containers/to_vector.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "components/autofill/android/payments_jni_headers/Ewallet_jni.h"
 #include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"
 #endif
@@ -78,15 +78,10 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
                        return static_cast<int32_t>(rail);
                      });
 
-  base::android::ScopedJavaLocalRef<jobject> jdisplay_icon_url = nullptr;
-  if (!ewallet.payment_instrument().display_icon_url().is_empty()) {
-    jdisplay_icon_url = url::GURLAndroid::FromNativeGURL(
-        env, ewallet.payment_instrument().display_icon_url());
-  }
-
   return Java_Ewallet_create(env, ewallet.payment_instrument().instrument_id(),
                              ewallet.payment_instrument().nickname(),
-                             jdisplay_icon_url, supported_payment_rails_array,
+                             ewallet.payment_instrument().display_icon_url(),
+                             supported_payment_rails_array,
                              ewallet.payment_instrument().is_fido_enrolled(),
                              ewallet.ewallet_name(),
                              ewallet.account_display_name());
@@ -97,12 +92,8 @@ Ewallet CreateNativeEwalletFromJava(
     const base::android::JavaRef<jobject>& jewallet) {
   int64_t instrument_id = Java_PaymentInstrument_getInstrumentId(env, jewallet);
   std::u16string nickname = Java_PaymentInstrument_getNickname(env, jewallet);
-  const base::android::ScopedJavaLocalRef<jobject>& jdisplay_icon_url =
+  GURL display_icon_url =
       Java_PaymentInstrument_getDisplayIconUrl(env, jewallet);
-  GURL display_icon_url;
-  if (!jdisplay_icon_url.is_null()) {
-    display_icon_url = url::GURLAndroid::ToNativeGURL(env, jdisplay_icon_url);
-  }
   bool is_fido_enrolled =
       Java_PaymentInstrument_getIsFidoEnrolled(env, jewallet);
   std::u16string ewallet_name = Java_Ewallet_getEwalletName(env, jewallet);

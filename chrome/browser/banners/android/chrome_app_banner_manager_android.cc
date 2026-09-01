@@ -6,12 +6,9 @@
 
 #include <string>
 
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/browser_process.h"
@@ -26,11 +23,6 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
 
 namespace webapps {
 

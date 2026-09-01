@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import android.text.TextUtils;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,13 +29,20 @@ class FetchAndRankHelper {
     @CalledByNative
     static AuxiliarySearchDataEntry addDataEntry(
             @AuxiliarySearchEntryType int type,
-            GURL url,
-            String title,
+            @JniType("GURL") GURL url,
+            @JniType("std::u16string") String title,
             long lastActiveTime,
             int tabId,
-            @Nullable String appId,
+            @JniType("std::string") @Nullable String appId,
             int visitId) {
         return new AuxiliarySearchDataEntry(
-                type, url, title, lastActiveTime, tabId, appId, visitId, /* score= */ 0);
+                type,
+                url,
+                title,
+                lastActiveTime,
+                tabId,
+                TextUtils.isEmpty(appId) ? null : appId,
+                visitId,
+                /* score= */ 0);
     }
 }

@@ -29,17 +29,17 @@ public class WebApkHandlerDelegate {
     interface Natives {
         void onWebApkInfoRetrieved(
                 long nativeWebApkHandlerDelegate,
-                @Nullable @JniType("std::string") String name,
-                @Nullable @JniType("std::string") String shortName,
-                @Nullable @JniType("std::string") String packageName,
+                @JniType("std::string") @Nullable String name,
+                @JniType("std::string") @Nullable String shortName,
+                @JniType("std::string") @Nullable String packageName,
                 @JniType("std::string") String id,
                 int shellApkVersion,
                 int versionCode,
                 @JniType("std::string") String uri,
                 @JniType("std::string") String scope,
-                @Nullable @JniType("std::string") String manifestUrl,
-                @Nullable @JniType("std::string") String manifestStartUrl,
-                @Nullable String manifestId,
+                @JniType("std::string") @Nullable String manifestUrl,
+                @JniType("std::string") @Nullable String manifestStartUrl,
+                @JniType("std::string") @Nullable String manifestId,
                 int displayMode,
                 int orientation,
                 long themeColor,
@@ -49,7 +49,7 @@ public class WebApkHandlerDelegate {
                 long lastUpdateCheckTimeMs,
                 long lastUpdateCompletionTimeMs,
                 boolean relaxUpdates,
-                @Nullable String backingBrowserPackageName,
+                @JniType("std::string") @Nullable String backingBrowserPackageName,
                 boolean isBackingBrowser,
                 @JniType("std::string") String updateStatus);
     }

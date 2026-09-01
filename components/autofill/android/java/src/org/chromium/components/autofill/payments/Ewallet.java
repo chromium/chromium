@@ -45,9 +45,7 @@ public class Ewallet extends PaymentInstrument {
     static Ewallet create(
             long instrumentId,
             @JniType("std::u16string") String nickname,
-            // Cannot use @JniType("GURL") here, because this class handles null GURL in a
-            // different way than the GURL's FromJniType()/ToJniType().
-            GURL displayIconUrl,
+            @JniType("GURL") GURL displayIconUrl,
             @JniType("std::vector<int32_t>") @PaymentRail int[] supportedPaymentRails,
             boolean isFidoEnrolled,
             @JniType("std::u16string") String ewalletName,
@@ -112,7 +110,7 @@ public class Ewallet extends PaymentInstrument {
             return this;
         }
 
-        /** Set the payment instrument on the BankAccount. */
+        /** Set the payment instrument on the Ewallet. */
         public Builder setPaymentInstrument(PaymentInstrument paymentInstrument) {
             mPaymentInstrument = paymentInstrument;
             return this;
