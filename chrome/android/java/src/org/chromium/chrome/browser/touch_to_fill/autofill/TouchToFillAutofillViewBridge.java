@@ -142,11 +142,14 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
 
     @CalledByNative
     void destroy() {
+        if (mNativeViewImpl == 0) {
+            return;
+        }
+        mNativeViewImpl = 0;
         if (mIsObserverRegistered) {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
             mIsObserverRegistered = false;
         }
-        mNativeViewImpl = 0;
         mComponent.destroy();
     }
 

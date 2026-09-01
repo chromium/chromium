@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.touch_to_fill.autofill;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -21,10 +20,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class TouchToFillAutofillCoordinator implements TouchToFillAutofillComponent {
     private final TouchToFillAutofillMediator mMediator;
-    private @Nullable
-            PropertyModelChangeProcessor<PropertyModel, TouchToFillAutofillView, PropertyKey>
+    private final PropertyModelChangeProcessor<PropertyModel, TouchToFillAutofillView, PropertyKey>
             mModelChangeProcessor;
-    private @Nullable TouchToFillAutofillView mView;
+    private final TouchToFillAutofillView mView;
 
     /**
      * Constructs a new {@link TouchToFillAutofillCoordinator}.
@@ -61,13 +59,7 @@ public class TouchToFillAutofillCoordinator implements TouchToFillAutofillCompon
     @Override
     public void destroy() {
         hide();
-        if (mModelChangeProcessor != null) {
-            mModelChangeProcessor.destroy();
-            mModelChangeProcessor = null;
-        }
-        if (mView != null) {
-            mView.destroy();
-            mView = null;
-        }
+        mModelChangeProcessor.destroy();
+        mView.destroy();
     }
 }
