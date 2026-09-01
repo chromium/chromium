@@ -10,8 +10,9 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
@@ -66,7 +67,7 @@ public class FirstRunUtils {
                     SafetyPromoItem.ENHANCED_SAFE_BROWSING);
 
     private static boolean sDisableDelayOnExitFreForTest;
-    private static @Nullable Boolean sCctTosDialogEnabledForTesting;
+    private static @TriState int sCctTosDialogEnabledForTesting;
 
     /**
      * Synchronizes first run native and Java preferences. Must be called after native
@@ -110,15 +111,15 @@ public class FirstRunUtils {
      * @return Whether the ToS should be shown during the first-run for CCTs/PWAs.
      */
     public static boolean isCctTosDialogEnabled() {
-        if (sCctTosDialogEnabledForTesting != null) {
-            return sCctTosDialogEnabledForTesting;
+        if (sCctTosDialogEnabledForTesting != TriState.NOT_SET) {
+            return sCctTosDialogEnabledForTesting == TriState.TRUE;
         }
         return FirstRunUtilsJni.get().getCctTosDialogEnabled();
     }
 
     public static void setCctTosDialogEnabledForTesting(boolean isEnabled) {
-        sCctTosDialogEnabledForTesting = isEnabled;
-        ResettersForTesting.register(() -> sCctTosDialogEnabledForTesting = null);
+        sCctTosDialogEnabledForTesting = TriStateUtils.from(isEnabled);
+        ResettersForTesting.register(() -> sCctTosDialogEnabledForTesting = TriState.NOT_SET);
     }
 
     /**
