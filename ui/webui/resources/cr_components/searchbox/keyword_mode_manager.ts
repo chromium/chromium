@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, InputKeywordModel} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType, SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, InputKeywordModel, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 /**
  * Loosely based on `metrics::OmniboxEventProto::KeywordModeEntryMethod` in
@@ -245,39 +245,51 @@ export class KeywordModeManager {
   formatMatchFillIntoEdit(
       match: AutocompleteMatch, matchIndex: number,
       lastQueriedInput?: string|null): string {
-    const isDefaultMatch = matchIndex === 0 && match.allowedToBeDefaultMatch;
-    if (isDefaultMatch && lastQueriedInput) {
-      return lastQueriedInput + match.inlineAutocompletion;
-    }
     if (this.isInKeywordMode) {
       const keyword = this.inputKeywordModel_?.keyword;
       if (keyword) {
         if (match.fillIntoEdit.startsWith(keyword + ' ')) {
           return match.fillIntoEdit.substring(keyword.length + 1);
         }
-        if (match.fillIntoEdit === keyword) {
+        if (match.fillIntoEdit === keyword ||
+            (match.keywordModel?.type !== KeywordType.kInKeyword &&
+             match.keywordModel?.keyword === keyword)) {
           return '';
         }
       }
+      return match.fillIntoEdit;
+    }
+    const isDefaultMatch = matchIndex === 0 && match.allowedToBeDefaultMatch;
+    if (isDefaultMatch && lastQueriedInput) {
+      return lastQueriedInput + match.inlineAutocompletion;
     }
     return match.fillIntoEdit;
   }
 
   /**
    * Updates or preserves the keyword model when the selected autocomplete match
-   * changes.
+   * or popup selection changes.
    */
-  onSelectedMatchChanged(selectedMatch: AutocompleteMatch|null): void {
+  onSelectedMatchChanged(
+      selectedMatch: AutocompleteMatch|null,
+      selection?: OmniboxPopupSelection): void {
     if (!selectedMatch) {
       if (!this.isInKeywordMode) {
         this.inputKeywordModel = null;
       }
       return;
     }
-    if (selectedMatch.keywordModel?.type === KeywordType.kInstant) {
-      this.enter(
-          selectedMatch.keywordModel.keyword,
-          selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB);
+    const isKeywordChipSelected =
+        selection?.state === SelectionLineState.kKeywordMode ||
+        selectedMatch.keywordModel?.type === KeywordType.kInstant;
+
+    if (isKeywordChipSelected && selectedMatch.keywordModel) {
+      if (!this.isInKeywordMode ||
+          this.activeKeyword !== selectedMatch.keywordModel.keyword) {
+        this.enter(
+            selectedMatch.keywordModel.keyword,
+            selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB);
+      }
       return;
     }
     if (selectedMatch.keywordModel?.type === KeywordType.kInKeyword) {

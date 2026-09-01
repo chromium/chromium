@@ -1239,15 +1239,17 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
-    if (e.key === 'Tab' && this.$.input === this.shadowRoot?.activeElement) {
+    if (!this.virtualFocusEnabled && e.key === 'Tab' &&
+        this.$.input === this.shadowRoot?.activeElement) {
       if (!e.shiftKey &&
           this.keywordModeManager.acceptTab(
-              this.selectedMatch, this.selectedMatchIndex)) {
+              this.selectedMatch, this.matchIndex)) {
         e.preventDefault();
         return;
       }
-      this.acceptInlineAutocomplete(e);
-      return;
+      if (this.acceptInlineAutocomplete(e)) {
+        return;
+      }
     }
 
     super.handleKeyNavigation(e);

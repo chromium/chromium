@@ -1832,9 +1832,12 @@ suite('SearchboxMixinTest', () => {
     dropdown.dispatchEvent(new CustomEvent('keyword-click', {
       bubbles: true,
       composed: true,
-      detail: {match},
+      detail: {match, matchIndex: 0},
     }));
+    await microtasksFinished();
 
+    assertEquals(0, element.selection.line);
+    assertEquals(SelectionLineState.kKeywordMode, element.selection.state);
     assertTrue(element.inputKeywordModel !== null);
     assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
     assertEquals(keyword, element.inputKeywordModel.keyword);
@@ -2894,5 +2897,42 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertFalse(element.keywordModeManager.isInKeywordMode);
         assertEquals(null, element.inputKeywordModel);
         assertEquals('@', mockInput.inputElement.value);
+      });
+
+  test(
+      'Tab key in Virtual Focus activates keyword mode on keyword chip',
+      async () => {
+        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+        element.virtualFocusEnabledOverride = true;
+
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'youtube.com');
+
+        const defaultMatch = createSearchMatchForTesting({
+          fillIntoEdit: 'youtube.com',
+          allowedToBeDefaultMatch: true,
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kChip,
+            keyword: 'youtube.com',
+            chipHint: 'Search YouTube',
+          }),
+        });
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'youtube.com',
+          matches: [defaultMatch],
+        }));
+        await microtasksFinished();
+
+        // Tab selects the keyword chip on the default match.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Tab'));
+        await microtasksFinished();
+
+        assertEquals(0, element.selection.line);
+        assertEquals(SelectionLineState.kKeywordMode, element.selection.state);
+        assertTrue(element.keywordModeManager.isInKeywordMode);
+        assertEquals('youtube.com', element.inputKeywordModel?.keyword);
+        assertEquals('', mockInput.inputElement.value);
       });
 });
