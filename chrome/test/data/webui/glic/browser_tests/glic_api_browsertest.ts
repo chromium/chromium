@@ -1344,11 +1344,13 @@ class ApiTests extends ApiTestFixtureBase {
     const prodUrl = location.href + '#activate_prod';
     const createdProd = await this.host.createTab(prodUrl, {});
     assertEquals(createdProd.url, prodUrl);
+    assertTrue(await this.browser.navigateTab(createdProd.tabId, prodUrl));
 
     // Open another tab so prodUrl is no longer the active tab.
     const blankUrl = location.href + '#blank';
     const createdBlank = await this.host.createTab(blankUrl, {});
     assertEquals(createdBlank.url, blankUrl);
+    assertTrue(await this.browser.navigateTab(createdBlank.tabId, blankUrl));
 
     // Activating with autopush URL but matching prod pattern should deduplicate
     // and return prod tab.
