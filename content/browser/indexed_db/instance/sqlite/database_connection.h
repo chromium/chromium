@@ -431,7 +431,10 @@ class CONTENT_EXPORT DatabaseConnection {
 
     kDatabaseIdbVersionInvalid = 20,
 
-    kMaxValue = kDatabaseIdbVersionInvalid,
+    // Failure to delete a SQLite database file.
+    kDatabaseDeletionFailed = 21,
+
+    kMaxValue = kDatabaseDeletionFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbSqliteSpecificEvent)
 

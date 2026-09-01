@@ -20,6 +20,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
@@ -626,6 +627,43 @@ TEST_F(DatabaseConnectionOpenCorruptionTest, EmptyFile) {
   histograms.ExpectUniqueSample(kSpecificEventHistogram,
                                 SpecificEvent::kDatabaseOpenAttempt, 1);
   histograms.ExpectTotalCount(kOpenRetryResultHistogram, 0);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, UnreadableDatabasePath) {
+  // An unreadable file at the database path prevents initialization. Due to the
+  // retry logic, it should be cleaned up and then opened successfully. Note
+  // that this would not work with `MakeFileUnwritable`, as that registers as
+  // a transient error, which wouldn't trigger cleanup.
+  const base::FilePath db_path = GetDatabasePath(u"db");
+  ASSERT_TRUE(base::WriteFile(db_path, "foobar"));
+  ASSERT_TRUE(base::MakeFileUnreadable(db_path));
+  const base::FilePath wal_path = sql::Database::WriteAheadLogPath(db_path);
+  ASSERT_TRUE(base::WriteFile(wal_path, "deadbeef"));
+  ASSERT_TRUE(base::MakeFileUnreadable(wal_path));
+
+  std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
+  ASSERT_TRUE(db);
+  EXPECT_TRUE(base::PathExists(db_path));
+  DropDbAndDestructDatabaseConnection(std::move(db));
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, DirectoryAtDatabasePath) {
+  // A directory at the database path is a special failure case distinct from
+  // an unreadable file at the database path, because SQLite will fail to
+  // delete it during the cleanup/retry phase. That's a quirk of
+  // sqlite_vfs::xDelete, which on Unix, for example, boils down to `unlink`,
+  // and that fails for directories (even empty ones). On Fuchsia, the FDIO shim
+  // version of `unlink` does delete empty directories.
+  const base::FilePath db_path = GetDatabasePath(u"db");
+  ASSERT_TRUE(base::CreateDirectory(db_path));
+
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_TRUE(backing_store()->CreateOrOpenDatabase(u"db").has_value());
+  EXPECT_FALSE(base::DirectoryExists(db_path));
+#else
+  EXPECT_FALSE(backing_store()->CreateOrOpenDatabase(u"db").has_value());
+  EXPECT_TRUE(base::DirectoryExists(db_path));
+#endif
 }
 
 TEST_F(DatabaseConnectionOpenCorruptionTest, DropMetaTable) {

@@ -1082,7 +1082,12 @@ void DatabaseConnection::CloseDatabase(
     std::optional<std::set<int64_t>> known_legacy_blob_ids,
     bool force_closing) {
   if (should_delete) {
-    db->CloseAndDelete();
+    if (!(db->is_open() ? db->CloseAndDelete()
+                        : sql::Database::Delete(db_path))) {
+      base::UmaHistogramEnumeration(
+          "IndexedDB.SQLite.SpecificEvent.OnDisk",
+          DatabaseConnection::SpecificEvent::kDatabaseDeletionFailed);
+    }
     if (!base::DeletePathRecursively(legacy_blob_directory)) {
       base::UmaHistogramEnumeration(
           "IndexedDB.SQLite.SpecificEvent.OnDisk",
@@ -1187,16 +1192,13 @@ base::OnceCallback<void(bool)> DatabaseConnection::GetCleanupTask() && {
     // `Transaction`s, `Connection`s and `Database`s. When the last
     // `BackingStore::Database` is deleted, `this` is deleted, at which point
     // recovery is attempted if `sql_error_` warrants it.
-#if BUILDFLAG(IS_FUCHSIA)
-    // Recovery is not supported with WAL mode DBs in Fuchsia.
-    if (had_sql_error && sql::IsErrorCatastrophic(*sql_error_)) {
-      should_delete_db = true;
-    }
-#else
     should_attempt_recovery =
         had_sql_error &&
         sql::Recovery::ShouldAttemptRecovery(db_.get(), *sql_error_);
-#endif
+    if (!should_attempt_recovery && had_sql_error &&
+        sql::IsErrorCatastrophic(*sql_error_)) {
+      should_delete_db = true;
+    }
 
     // Determine whether to vacuum.
     if (!had_sql_error && !should_delete_db) {
