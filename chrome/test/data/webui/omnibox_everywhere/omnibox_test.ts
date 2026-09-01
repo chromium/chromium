@@ -1144,6 +1144,122 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
+      'clicking voice search button opens voice search dialog overlay and handles permission prompt',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        const voiceBtn = searchbox.shadowRoot.querySelector<HTMLElement>(
+            '#voiceSearchButton')!;
+        assertTrue(!!voiceBtn);
+        voiceBtn.click();
+        await microtasksFinished();
+
+        const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        assertTrue(!!dialog);
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
+        assertTrue(!!voiceSearch);
+        const glow = app.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+            '#voiceSearchGlow');
+        assertTrue(!!glow);
+
+        // Verify permission prompt showing state is handled.
+        voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: true,
+            width: 100,
+            height: 200,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
+        assertTrue(glow.classList.contains('permission-prompt-showing'));
+
+        // Verify permission prompt closed state is handled.
+        voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: false,
+            width: 0,
+            height: 0,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertFalse(
+            voiceSearch.classList.contains('permission-prompt-showing'));
+        assertFalse(glow.classList.contains('permission-prompt-showing'));
+      });
+
+  test(
+      'clicking voice search button in composebox opens voice search dialog' +
+          ' overlay and handles permission prompt',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {
+            text: '',
+            files: [],
+            mode: 0,
+            model: 0,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+        const voiceBtn = composebox.shadowRoot.querySelector<HTMLElement>(
+            '#voiceSearchButton')!;
+        assertTrue(!!voiceBtn);
+        voiceBtn.click();
+        await microtasksFinished();
+
+        const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        assertTrue(!!dialog);
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
+        assertTrue(!!voiceSearch);
+        const glow = app.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+            '#voiceSearchGlow');
+        assertTrue(!!glow);
+
+        // Verify permission prompt showing state is handled in composebox mode.
+        voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: true,
+            width: 100,
+            height: 200,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
+        assertTrue(glow.classList.contains('permission-prompt-showing'));
+
+        // Verify permission prompt closed state is handled in composebox mode.
+        voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: false,
+            width: 0,
+            height: 0,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertFalse(
+            voiceSearch.classList.contains('permission-prompt-showing'));
+        assertFalse(glow.classList.contains('permission-prompt-showing'));
+      });
+
+  test(
       'voice search final result submits query and closes dialog', async () => {
         const searchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
