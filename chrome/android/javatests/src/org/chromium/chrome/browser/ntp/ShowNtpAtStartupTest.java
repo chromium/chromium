@@ -268,6 +268,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void testSingleTabModule() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -292,6 +293,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void testSingleTabModule_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
