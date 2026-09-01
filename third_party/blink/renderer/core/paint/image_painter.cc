@@ -36,22 +36,21 @@
 namespace blink {
 namespace {
 
-ImagePaintTimingInfo ComputeImagePaintTimingInfo(
+ReportPaintTiming ComputeReportPaintTiming(
     const LayoutImage& layout_image,
     const Image& image,
     const ImageResourceContent* image_content,
     const GraphicsContext& context,
     const gfx::Rect& image_border) {
-  // |report_paint_timing| for ImagePaintTimingInfo is set to false since we
-  // expect all images to be contentful and non-generated
+  // Returns `ReportPaintTiming::kDoNotReport` since we expect all images to be
+  // contentful and non-generated.
   if (!image_content) {
-    return ImagePaintTimingInfo(/* image_may_be_lcp_candidate */ false,
-                                /* report_paint_timing */ false);
+    return ReportPaintTiming::kDoNotReport;
   }
-  return ImagePaintTimingInfo(PaintTimingDetector::NotifyImagePaint(
+  PaintTimingDetector::NotifyImagePaint(
       layout_image, image.Size(), *image_content,
-      context.GetPaintController().CurrentPaintChunkProperties(),
-      image_border));
+      context.GetPaintController().CurrentPaintChunkProperties(), image_border);
+  return ReportPaintTiming::kReport;
 }
 
 }  // namespace
@@ -272,8 +271,8 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
           node, image_content, layout_image_.StyleRef().ImageAnimation());
   context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
-      ComputeImagePaintTimingInfo(layout_image_, *image, image_content, context,
-                                  pixel_snapped_dest_rect),
+      ComputeReportPaintTiming(layout_image_, *image, image_content, context,
+                               pixel_snapped_dest_rect),
       gfx::RectF(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,
       respect_orientation, Image::ImageClampingMode::kClampImageToSourceRect,
       &image_animation);

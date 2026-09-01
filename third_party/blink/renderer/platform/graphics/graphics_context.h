@@ -102,7 +102,6 @@ struct ImageDrawOptions {
       Image::ImageClampingMode clamping_mode,
       Image::ImageDecodingMode decode_mode,
       bool apply_dark_mode,
-      bool may_be_lcp_candidate,
       const ImageNodeAnimationInfo* image_node_animation_info)
       : dark_mode_filter(dark_mode_filter),
         sampling_options(sampling_options),
@@ -110,7 +109,6 @@ struct ImageDrawOptions {
         clamping_mode(clamping_mode),
         decode_mode(decode_mode),
         apply_dark_mode(apply_dark_mode),
-        may_be_lcp_candidate(may_be_lcp_candidate),
         image_node_animation_info(image_node_animation_info) {}
   DarkModeFilter* dark_mode_filter = nullptr;
   SkSamplingOptions sampling_options;
@@ -118,7 +116,6 @@ struct ImageDrawOptions {
   Image::ImageClampingMode clamping_mode = Image::kClampImageToSourceRect;
   Image::ImageDecodingMode decode_mode = Image::kSyncDecode;
   bool apply_dark_mode = false;
-  bool may_be_lcp_candidate = false;
   const ImageNodeAnimationInfo* image_node_animation_info = nullptr;
 };
 
@@ -163,21 +160,11 @@ struct ImageAutoDarkMode : AutoDarkMode {
   DarkModeFilter::ImageType image_type;
 };
 
-struct ImagePaintTimingInfo {
-  STACK_ALLOCATED();
-
- public:
-  explicit ImagePaintTimingInfo(bool image_may_be_lcp_candidate)
-      : image_may_be_lcp_candidate(image_may_be_lcp_candidate) {}
-  ImagePaintTimingInfo(bool image_may_be_lcp_candidate,
-                       bool report_paint_timing)
-      : image_may_be_lcp_candidate(image_may_be_lcp_candidate),
-        report_paint_timing(report_paint_timing) {}
-  ImagePaintTimingInfo() = default;
-  bool image_may_be_lcp_candidate = false;
-  // Whether |PaintController::SetImagePainted| should be called if the image
-  // is painted.
-  bool report_paint_timing = true;
+// Whether `PaintController::SetImagePainted` should be called if the image
+// is painted.
+enum class ReportPaintTiming {
+  kReport,
+  kDoNotReport,
 };
 
 class PLATFORM_EXPORT GraphicsContext {
@@ -352,7 +339,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawImage(Image&,
                  Image::ImageDecodingMode,
                  const ImageAutoDarkMode& auto_dark_mode,
-                 const ImagePaintTimingInfo& paint_timing_info,
+                 ReportPaintTiming,
                  const gfx::RectF& dest_rect,
                  const gfx::RectF* src_rect = nullptr,
                  SkBlendMode = SkBlendMode::kSrcOver,
@@ -363,7 +350,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawImageRRect(Image&,
                       Image::ImageDecodingMode,
                       const ImageAutoDarkMode& auto_dark_mode,
-                      const ImagePaintTimingInfo& paint_timing_info,
+                      ReportPaintTiming,
                       const FloatRoundedRect& dest,
                       const gfx::RectF& src_rect,
                       SkBlendMode = SkBlendMode::kSrcOver,
@@ -375,11 +362,11 @@ class PLATFORM_EXPORT GraphicsContext {
                       const gfx::RectF& dest_rect,
                       const ImageTilingInfo& tiling_info,
                       const ImageAutoDarkMode& auto_dark_mode,
-                      const ImagePaintTimingInfo& paint_timing_info,
+                      ReportPaintTiming,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation,
                       const ImageNodeAnimationInfo* = nullptr);
-  void SetImagePainted(bool report_paint_timing);
+  void SetImagePainted(ReportPaintTiming);
   // These methods write to the canvas.
   // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and
   // fillRoundedRect().

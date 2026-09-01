@@ -321,11 +321,9 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
 
   auto paint_image_decoding_mode =
       ToPaintImageDecodingMode(draw_options.decode_mode);
-  if (image.decoding_mode() != paint_image_decoding_mode ||
-      image.may_be_lcp_candidate() != draw_options.may_be_lcp_candidate) {
+  if (image.decoding_mode() != paint_image_decoding_mode) {
     image = PaintImageBuilder::WithCopy(std::move(image))
                 .set_decoding_mode(paint_image_decoding_mode)
-                .set_may_be_lcp_candidate(draw_options.may_be_lcp_candidate)
                 .TakePaintImage();
   }
 

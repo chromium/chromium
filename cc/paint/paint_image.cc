@@ -83,8 +83,6 @@ bool PaintImage::IsSameForTesting(const PaintImage& other) const {
          is_multipart_ == other.is_multipart_ &&
          texture_backing_ == other.texture_backing_ &&
          deferred_paint_record_ == other.deferred_paint_record_;
-  // Do not check may_be_lcp_candidate_ as it should not affect any rendering
-  // operation, only metrics collection.
 }
 
 // static
@@ -486,7 +484,6 @@ std::string PaintImage::ToString() const {
       << " animation_type_: " << static_cast<int>(animation_type_)
       << " completion_state_: " << static_cast<int>(completion_state_)
       << " is_multipart_: " << is_multipart_
-      << " may_be_lcp_candidate_: " << may_be_lcp_candidate_
       << " has gainmap: " << HasGainmapInfo() << " is YUV: "
       << IsYuv(SkYUVAPixmapInfo::SupportedDataTypes::All(), AuxImage::kDefault);
   return str.str();

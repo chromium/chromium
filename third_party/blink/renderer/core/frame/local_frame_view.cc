@@ -237,7 +237,7 @@ std::optional<cc::PaintRecord> GetCanvasSnapshot(DOMNodeId id) {
             DisplayItem::kDocumentBackground, gfx::Rect(nested_canvas->Size()));
         builder.Context().DrawImage(*snapshot, Image::kSyncDecode,
                                     ImageAutoDarkMode::Disabled(),
-                                    ImagePaintTimingInfo(), dest_rect,
+                                    ReportPaintTiming::kReport, dest_rect,
                                     &src_rect, SkBlendMode::kSrcOver);
       }
       return builder.EndRecording();

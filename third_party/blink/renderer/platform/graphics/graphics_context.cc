@@ -520,7 +520,7 @@ void GraphicsContext::DrawImage(
     Image& image,
     Image::ImageDecodingMode decode_mode,
     const ImageAutoDarkMode& auto_dark_mode,
-    const ImagePaintTimingInfo& paint_timing_info,
+    ReportPaintTiming report_paint_timing,
     const gfx::RectF& dest,
     const gfx::RectF* src_ptr,
     SkBlendMode op,
@@ -534,18 +534,18 @@ void GraphicsContext::DrawImage(
 
   SkSamplingOptions sampling = ComputeSamplingOptions(image, dest, src);
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
-  ImageDrawOptions draw_options(
-      dark_mode_filter, sampling, should_respect_image_orientation,
-      clamping_mode, decode_mode, auto_dark_mode.enabled,
-      paint_timing_info.image_may_be_lcp_candidate, image_node_animation_info);
+  ImageDrawOptions draw_options(dark_mode_filter, sampling,
+                                should_respect_image_orientation, clamping_mode,
+                                decode_mode, auto_dark_mode.enabled,
+                                image_node_animation_info);
   image.Draw(canvas_, image_flags, dest, src, draw_options);
-  SetImagePainted(paint_timing_info.report_paint_timing);
+  SetImagePainted(report_paint_timing);
 }
 void GraphicsContext::DrawImageRRect(
     Image& image,
     Image::ImageDecodingMode decode_mode,
     const ImageAutoDarkMode& auto_dark_mode,
-    const ImagePaintTimingInfo& paint_timing_info,
+    ReportPaintTiming report_paint_timing,
     const FloatRoundedRect& dest,
     const gfx::RectF& src_rect,
     SkBlendMode op,
@@ -553,7 +553,7 @@ void GraphicsContext::DrawImageRRect(
     Image::ImageClampingMode clamping_mode,
     const ImageNodeAnimationInfo* image_node_animation_info) {
   if (!dest.IsRounded()) {
-    DrawImage(image, decode_mode, auto_dark_mode, paint_timing_info,
+    DrawImage(image, decode_mode, auto_dark_mode, report_paint_timing,
               dest.Rect(), &src_rect, op, respect_orientation, clamping_mode,
               image_node_animation_info);
     return;
@@ -575,8 +575,7 @@ void GraphicsContext::DrawImageRRect(
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
   ImageDrawOptions draw_options(
       dark_mode_filter, sampling, respect_orientation, clamping_mode,
-      decode_mode, auto_dark_mode.enabled,
-      paint_timing_info.image_may_be_lcp_candidate, image_node_animation_info);
+      decode_mode, auto_dark_mode.enabled, image_node_animation_info);
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -603,11 +602,11 @@ void GraphicsContext::DrawImageRRect(
     image.Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
   }
 
-  SetImagePainted(paint_timing_info.report_paint_timing);
+  SetImagePainted(report_paint_timing);
 }
 
-void GraphicsContext::SetImagePainted(bool report_paint_timing) {
-  if (!report_paint_timing) {
+void GraphicsContext::SetImagePainted(ReportPaintTiming report_paint_timing) {
+  if (report_paint_timing == ReportPaintTiming::kDoNotReport) {
     return;
   }
 
@@ -643,7 +642,7 @@ void GraphicsContext::DrawImageTiled(
     const gfx::RectF& dest_rect,
     const ImageTilingInfo& tiling_info,
     const ImageAutoDarkMode& auto_dark_mode,
-    const ImagePaintTimingInfo& paint_timing_info,
+    ReportPaintTiming report_paint_timing,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation,
     const ImageNodeAnimationInfo* image_node_animation_info) {
@@ -654,10 +653,9 @@ void GraphicsContext::DrawImageTiled(
   ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
                                 Image::kClampImageToSourceRect,
                                 Image::kSyncDecode, auto_dark_mode.enabled,
-                                paint_timing_info.image_may_be_lcp_candidate,
                                 image_node_animation_info);
   image.DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
-  SetImagePainted(paint_timing_info.report_paint_timing);
+  SetImagePainted(report_paint_timing);
 }
 
 void GraphicsContext::DrawLine(const gfx::PointF& from,

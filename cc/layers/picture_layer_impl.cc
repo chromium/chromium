@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -279,20 +278,8 @@ bool PictureLayerImpl::ShouldReportTileAsMissing(
 
 void PictureLayerImpl::DidAppendQuad(
     viz::DrawQuad* quad,
-    const TilingSetCoverageIterator<PictureLayerTiling>& iter,
-    AppendQuadsData* append_quads_data,
-    bool is_checkerboard) {
+    const TilingSetCoverageIterator<PictureLayerTiling>& iter) {
   ValidateQuadResources(quad);
-
-  if (is_checkerboard) {
-    // Report data on any missing images that might be the largest
-    // contentful image.
-    if (*iter) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.DecodeLCPCandidateImage.MissedDeadline",
-          iter->HasMissingLCPCandidateImages());
-    }
-  }
 }
 
 void PictureLayerImpl::WillProcessReadyToDrawTile(

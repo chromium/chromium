@@ -38,16 +38,6 @@ bool TileTask::IsRasterTask() const {
   return true;
 }
 
-bool TileTask::TaskContainsLCPCandidateImages() const {
-  for (auto dependent : dependencies_) {
-    if (!dependent->HasCompleted() &&
-        dependent->TaskContainsLCPCandidateImages()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void TileTask::SetExternalDependent(scoped_refptr<TileTask> dependent) {
   if (base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
     CHECK(IsRasterTask() != dependent->IsRasterTask());

@@ -15,13 +15,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
-#include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -104,13 +102,6 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   }
   void OnTaskCompleted() override {
     cache_->OnImageDecodeTaskCompleted(image_key_, task_type_);
-  }
-
-  // Overridden from TileTask:
-  bool TaskContainsLCPCandidateImages() const override {
-    if (!HasCompleted() && paint_image_.may_be_lcp_candidate())
-      return true;
-    return TileTask::TaskContainsLCPCandidateImages();
   }
 
  protected:
@@ -665,8 +656,6 @@ void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(const CacheKey& key,
   auto image_it = decoded_images_.Peek(key);
   CHECK(image_it != decoded_images_.end());
   CacheEntry* cache_entry = image_it->second.get();
-  UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Software",
-                        key.may_be_lcp_candidate());
   auto& task = task_type == TaskType::kInRaster
                    ? cache_entry->in_raster_task
                    : cache_entry->out_of_raster_task;

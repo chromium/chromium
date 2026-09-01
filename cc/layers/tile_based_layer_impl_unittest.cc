@@ -413,10 +413,9 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
   void set_max_contents_scale(float scale) { max_contents_scale_ = scale; }
 
  private:
-  void DidAppendQuad(viz::DrawQuad* quad,
-                     const TilingSetCoverageIterator<FakeTiling>& iter,
-                     AppendQuadsData* append_quads_data,
-                     bool is_checkerboard) override {
+  void DidAppendQuad(
+      viz::DrawQuad* quad,
+      const TilingSetCoverageIterator<FakeTiling>& iter) override {
     scaled_occlusion_ =
         draw_properties()
             .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
@@ -561,10 +560,9 @@ class QuadOffsetTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
   const gfx::Vector2d& quad_offset() const { return quad_offset_; }
 
  private:
-  void DidAppendQuad(viz::DrawQuad* quad,
-                     const TilingSetCoverageIterator<FakeTiling>& iter,
-                     AppendQuadsData* append_quads_data,
-                     bool is_checkerboard) override {
+  void DidAppendQuad(
+      viz::DrawQuad* quad,
+      const TilingSetCoverageIterator<FakeTiling>& iter) override {
     quad_offset_ = quad->rect.origin() - iter.geometry_rect().origin();
   }
   float GetIdealContentsScaleKey() const override { return 1.f; }

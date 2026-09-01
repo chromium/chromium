@@ -1253,7 +1253,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     // Make the icon more visually prominent on high-DPI displays.
     icon_size.Scale(dpr);
     context.DrawImage(*broken_canvas, Image::kSyncDecode,
-                      ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
+                      ImageAutoDarkMode::Disabled(), ReportPaintTiming::kReport,
                       gfx::RectF(upper_left, icon_size));
     context.Restore();
     return;
@@ -1281,7 +1281,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     if (!image_for_printing)
       return;
     context.DrawImage(*image_for_printing, Image::kSyncDecode,
-                      ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
+                      ImageAutoDarkMode::Disabled(), ReportPaintTiming::kReport,
                       gfx::RectF(ToPixelSnappedRect(r)));
     return;
   }
@@ -1345,7 +1345,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     snapshot = snapshot->MakeUnaccelerated();
     DCHECK(!snapshot->IsTextureBacked());
     context.DrawImage(*snapshot, Image::kSyncDecode,
-                      ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
+                      ImageAutoDarkMode::Disabled(), ReportPaintTiming::kReport,
                       gfx::RectF(ToPixelSnappedRect(r)), &src_rect,
                       composite_operator);
   } else {

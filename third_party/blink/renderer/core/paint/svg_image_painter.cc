@@ -24,16 +24,16 @@
 namespace blink {
 
 namespace {
-ImagePaintTimingInfo ComputeImagePaintTimingInfo(
+ReportPaintTiming ComputeReportPaintTiming(
     const LayoutSVGImage& layout_image,
     const Image& image,
     const ImageResourceContent* image_content,
     const GraphicsContext& context,
     const gfx::Rect& image_border) {
-  return ImagePaintTimingInfo(PaintTimingDetector::NotifyImagePaint(
+  PaintTimingDetector::NotifyImagePaint(
       layout_image, image.Size(), *image_content,
-      context.GetPaintController().CurrentPaintChunkProperties(),
-      image_border));
+      context.GetPaintController().CurrentPaintChunkProperties(), image_border);
+  return ReportPaintTiming::kReport;
 }
 }  // namespace
 
@@ -133,9 +133,9 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       src_rect);
   paint_info.context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
-      ComputeImagePaintTimingInfo(
-          layout_svg_image_, *image, image_resource.CachedImage(),
-          paint_info.context, gfx::ToEnclosingRect(dest_rect)),
+      ComputeReportPaintTiming(layout_svg_image_, *image,
+                               image_resource.CachedImage(), paint_info.context,
+                               gfx::ToEnclosingRect(dest_rect)),
       dest_rect, &src_rect, SkBlendMode::kSrcOver, respect_orientation);
 }
 

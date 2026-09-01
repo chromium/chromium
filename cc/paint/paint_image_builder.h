@@ -106,10 +106,6 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.is_high_bit_depth_ = is_high_bit_depth;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_may_be_lcp_candidate(bool may_be_lcp_candidate) {
-    paint_image_.may_be_lcp_candidate_ = may_be_lcp_candidate;
-    return std::move(*this);
-  }
   PaintImageBuilder&& set_no_cache(bool no_cache) {
     paint_image_.no_cache_ = no_cache;
     return std::move(*this);

@@ -312,7 +312,6 @@ class CC_PAINT_EXPORT PaintImage {
   CompletionState completion_state() const { return completion_state_; }
   bool is_multipart() const { return is_multipart_; }
   bool is_high_bit_depth() const { return is_high_bit_depth_; }
-  bool may_be_lcp_candidate() const { return may_be_lcp_candidate_; }
   bool no_cache() const { return no_cache_; }
   int repetition_count() const { return repetition_count_; }
   bool ShouldAnimate() const;
@@ -477,12 +476,6 @@ class CC_PAINT_EXPORT PaintImage {
 
   // Whether this image has more than 8 bits per color channel.
   bool is_high_bit_depth_ = false;
-
-  // Whether this image may untimately be a candidate for Largest Contentful
-  // Paint. The final LCP contribution of an image is unknown until we present
-  // it, but this flag is intended for metrics on when we do not present the
-  // image when the system claims.
-  bool may_be_lcp_candidate_ = false;
 
   // Indicates that the image is unlikely to be re-used past the first frame it
   // appears in. Used as a hint to avoid caching it downstream, but is not a

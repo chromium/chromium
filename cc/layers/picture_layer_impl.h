@@ -417,10 +417,9 @@ class CC_EXPORT PictureLayerImpl
   bool ShouldReportTileAsMissing(
       const gfx::Rect& tile_geometry_rect,
       const gfx::Rect& scaled_viewport_for_tile_priority) const override;
-  void DidAppendQuad(viz::DrawQuad* quad,
-                     const TilingSetCoverageIterator<PictureLayerTiling>& iter,
-                     AppendQuadsData* append_quads_data,
-                     bool is_checkerboard) override;
+  void DidAppendQuad(
+      viz::DrawQuad* quad,
+      const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
 
   gfx::Rect GetScaledViewportForTilePriority(float scale) const override;
 

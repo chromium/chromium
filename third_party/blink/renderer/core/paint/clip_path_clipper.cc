@@ -201,7 +201,7 @@ void PaintWorkletBasedClip(GraphicsContext& context,
       zoom, reference_box, dst_rect, *clip_path_owner.GetNode());
   // Dark mode should always be disabled for clip mask.
   context.DrawImage(*paint_worklet_image, Image::kSyncDecode,
-                    ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
+                    ImageAutoDarkMode::Disabled(), ReportPaintTiming::kReport,
                     dst_rect, &src_rect, SkBlendMode::kSrcOver,
                     kRespectImageOrientation);
 }

@@ -221,9 +221,9 @@ void PaintMaskLayer(const FillLayer& layer,
   // This call takes the unscaled image, applies the given scale, and paints it
   // into the dest rect using phase and the given repeat spacing. Note the
   // phase is already scaled.
-  const ImagePaintTimingInfo paint_timing_info(false, false);
   context.DrawImageTiled(*image, dest_rect, tiling_info, image_auto_dark_mode,
-                         paint_timing_info, composite_op, respect_orientation);
+                         ReportPaintTiming::kDoNotReport, composite_op,
+                         respect_orientation);
 }
 
 template <typename Callback>

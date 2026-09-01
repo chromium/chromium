@@ -902,7 +902,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
                             : *color_scheme_adjusted_cancel_image;
   paint_info.context.DrawImage(
       target_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
-      ImagePaintTimingInfo(), gfx::RectF(painting_rect));
+      ReportPaintTiming::kReport, gfx::RectF(painting_rect));
   return false;
 }
 
