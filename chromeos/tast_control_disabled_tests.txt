@@ -43,9 +43,6 @@ tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
 # b/346793249, b/330290054
 tast.videoconferencing.OpenCLCacher
 
-# b/352703668: tests failing on trogdor.
-tast.security.SELinuxFilesDataDir.arcvm_user@trogdor
-
 # b/384060114
 tast.inputs.InputMethodShelfInputs@reven-vmtest
 tast.inputs.InputMethodShelfInputs@betty
