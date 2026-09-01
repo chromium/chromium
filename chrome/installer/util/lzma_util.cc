@@ -228,20 +228,29 @@ bool SevenZipDelegateImpl::EntryDone(seven_zip::Result result,
   return true;
 }
 
-}  // namespace
-
-UnPackStatus UnPackArchive(const base::FilePath& archive,
-                           const base::FilePath& output_dir,
-                           base::FilePath* output_file) {
-  VLOG(1) << "Opening archive " << archive.value();
+template <typename ArchiveSource>
+UnPackStatus UnPackArchiveImpl(const ArchiveSource& archive,
+                               const base::FilePath& output_dir,
+                               base::FilePath* output_file) {
   LzmaUtilImpl lzma_util;
   UnPackStatus status;
   if ((status = lzma_util.OpenArchive(archive)) != UNPACK_NO_ERROR) {
-    PLOG(ERROR) << "Unable to open install archive: " << archive.value();
+    if constexpr (std::is_same_v<ArchiveSource, base::FilePath>) {
+      PLOG(ERROR) << "Unable to open install archive: " << archive.value();
+    } else {
+      LOG(ERROR) << "Unable to open in-memory install archive";
+    }
   } else {
     VLOG(1) << "Uncompressing archive to path " << output_dir.value();
-    if ((status = lzma_util.UnPack(output_dir, output_file)) != UNPACK_NO_ERROR)
-      PLOG(ERROR) << "Unable to uncompress archive: " << archive.value();
+    if ((status = lzma_util.UnPack(output_dir, output_file)) !=
+        UNPACK_NO_ERROR) {
+      if constexpr (std::is_same_v<ArchiveSource, base::FilePath>) {
+        PLOG(ERROR) << "Unable to uncompress archive: " << archive.value();
+      } else {
+        LOG(ERROR) << "Unable to uncompress in-memory archive; UnPackStatus = "
+                   << status;
+      }
+    }
   }
 
   if (status != UNPACK_NO_ERROR) {
@@ -255,14 +264,30 @@ UnPackStatus UnPackArchive(const base::FilePath& archive,
   return status;
 }
 
+}  // namespace
+
+UnPackStatus UnPackArchive(const base::FilePath& archive,
+                           const base::FilePath& output_dir,
+                           base::FilePath* output_file) {
+  VLOG(1) << "Opening archive " << archive.value();
+  return UnPackArchiveImpl(archive, output_dir, output_file);
+}
+
+UnPackStatus UnPackArchiveBuffer(base::span<const uint8_t> archive_buffer,
+                                 const base::FilePath& output_dir,
+                                 base::FilePath* output_file) {
+  VLOG(1) << "Opening in-memory archive";
+  return UnPackArchiveImpl(archive_buffer, output_dir, output_file);
+}
+
 LzmaUtilImpl::LzmaUtilImpl() = default;
 LzmaUtilImpl::~LzmaUtilImpl() = default;
 
-UnPackStatus LzmaUtilImpl::OpenArchive(const base::FilePath& archivePath) {
+UnPackStatus LzmaUtilImpl::OpenArchive(const base::FilePath& archive_path) {
   // Make sure file is not already open.
   CloseArchive();
 
-  archive_file_.Initialize(archivePath,
+  archive_file_.Initialize(archive_path,
                            base::File::FLAG_OPEN | base::File::FLAG_READ |
                                base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                base::File::FLAG_WIN_SHARE_DELETE);
@@ -274,25 +299,41 @@ UnPackStatus LzmaUtilImpl::OpenArchive(const base::FilePath& archivePath) {
              : UNPACK_ARCHIVE_CANNOT_OPEN;
 }
 
+UnPackStatus LzmaUtilImpl::OpenArchive(
+    base::span<const uint8_t> archive_buffer) {
+  CloseArchive();
+  if (archive_buffer.empty()) {
+    return UNPACK_ARCHIVE_NOT_FOUND;
+  }
+  archive_buffer_ = archive_buffer;
+  return UNPACK_NO_ERROR;
+}
+
 UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location) {
   return UnPack(location, nullptr);
 }
 
 UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
                                   base::FilePath* output_file) {
-  DCHECK(archive_file_.IsValid());
+  DCHECK(archive_file_.IsValid() || !archive_buffer_.empty());
 
   SevenZipDelegateImpl delegate(location, output_file);
-  std::unique_ptr<seven_zip::SevenZipReader> reader =
-      seven_zip::SevenZipReader::Create(archive_file_.Duplicate(), delegate);
+  std::unique_ptr<seven_zip::SevenZipReader> reader;
+  if (!archive_buffer_.empty()) {
+    reader = seven_zip::SevenZipReader::Create(archive_buffer_, delegate);
+  } else {
+    reader =
+        seven_zip::SevenZipReader::Create(archive_file_.Duplicate(), delegate);
+  }
   if (reader) {
     reader->Extract();
-  }
+  }  // else the delegate's OnOpenError() has saved the error for use below.
   error_code_ = delegate.error_code();
   return delegate.unpack_error();
 }
 
 void LzmaUtilImpl::CloseArchive() {
   archive_file_.Close();
+  archive_buffer_ = {};
   error_code_ = std::nullopt;
 }

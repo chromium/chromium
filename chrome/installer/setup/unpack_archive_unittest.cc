@@ -13,9 +13,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/types/expected.h"
 #include "chrome/installer/setup/installer_state.h"
-#include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,14 +82,13 @@ TEST_P(SetupUnpackArchiveTest, UnpackArchive) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  InstallationState original_state;  // Unused when not patching.
   base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
   cmd_line.AppendSwitchPath(GetParam().archive_switch, chrome_archive);
   FakeInstallerState installer_state;
 
   ASSERT_THAT(
       UnpackChromeArchive(
-          temp_dir.GetPath(), original_state,
+          temp_dir.GetPath(),
           base::FilePath(),  // Unused when archive is provided via cmd_line.
           cmd_line, installer_state),
       base::test::HasValue());
@@ -104,11 +103,11 @@ TEST_P(SetupUnpackArchiveTest, UnpackArchive) {
   EXPECT_STREQ(actual_installer_data.c_str(), "fakechromiumdata");
 }
 
-TEST(SetupUnpackArchiveTest, UnpackFailsWhenCompressedAndUncompressedProvided) {
+TEST(SetupUnpackArchiveDeathTest,
+     UnpackFailsWhenCompressedAndUncompressedProvided) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  InstallationState original_state;  // Unused when not patching.
   base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
   cmd_line.AppendSwitchPath(
       "install-archive",
@@ -118,12 +117,99 @@ TEST(SetupUnpackArchiveTest, UnpackFailsWhenCompressedAndUncompressedProvided) {
       GetTestFileRootPath().Append(FILE_PATH_LITERAL("test_chrome.7z")));
   FakeInstallerState installer_state;
 
-  EXPECT_THAT(
-      UnpackChromeArchive(
-          temp_dir.GetPath(), original_state,
-          base::FilePath(),  // Unused when archive is provided via cmd_line.
-          cmd_line, installer_state),
-      base::test::ErrorIs(InstallStatus::UNSUPPORTED_OPTION));
+  EXPECT_CHECK_DEATH((void)UnpackChromeArchive(
+      temp_dir.GetPath(),
+      base::FilePath(),  // Unused when archive is provided via cmd_line.
+      cmd_line, installer_state));
+}
+
+TEST(SetupUnpackArchiveTest, UnpackFromMiniInstallerCompressed) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
+  cmd_line.AppendSwitchPath(switches::kMiniInstallerPath,
+                            GetTestFileRootPath().Append(
+                                FILE_PATH_LITERAL("mini_installer.exe.test")));
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceName,
+                              L"CHROME.PACKED.7Z");
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceType,
+                              kLZMAResourceType);
+  FakeInstallerState installer_state;
+
+  ASSERT_THAT(UnpackChromeArchive(temp_dir.GetPath(), base::FilePath(),
+                                  cmd_line, installer_state),
+              base::test::HasValue());
+
+  std::string actual_installer_data;
+  EXPECT_TRUE(base::ReadFileToString(base::FilePath(temp_dir.GetPath().Append(
+                                         FILE_PATH_LITERAL("test_data.txt"))),
+                                     &actual_installer_data));
+  EXPECT_STREQ(actual_installer_data.c_str(), "fakechromiumdata");
+}
+
+TEST(SetupUnpackArchiveTest, UnpackFromMiniInstallerUncompressed) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
+  cmd_line.AppendSwitchPath(switches::kMiniInstallerPath,
+                            GetTestFileRootPath().Append(FILE_PATH_LITERAL(
+                                "mini_installer_uncompressed.exe.test")));
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceName, L"CHROME.7Z");
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceType, kBinResourceType);
+  FakeInstallerState installer_state;
+
+  ASSERT_THAT(UnpackChromeArchive(temp_dir.GetPath(), base::FilePath(),
+                                  cmd_line, installer_state),
+              base::test::HasValue());
+
+  std::string actual_installer_data;
+  EXPECT_TRUE(base::ReadFileToString(base::FilePath(temp_dir.GetPath().Append(
+                                         FILE_PATH_LITERAL("test_data.txt"))),
+                                     &actual_installer_data));
+  EXPECT_STREQ(actual_installer_data.c_str(), "fakechromiumdata");
+}
+
+TEST(SetupUnpackArchiveDeathTest,
+     UnpackFromMiniInstallerFailsWithConflictingSwitch) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
+  cmd_line.AppendSwitchPath(switches::kMiniInstallerPath,
+                            GetTestFileRootPath().Append(
+                                FILE_PATH_LITERAL("mini_installer.exe.test")));
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceName,
+                              L"CHROME.PACKED.7Z");
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceType,
+                              kLZMAResourceType);
+  cmd_line.AppendSwitchPath(
+      switches::kInstallArchive,
+      GetTestFileRootPath().Append(FILE_PATH_LITERAL("test_chrome.packed.7z")));
+  FakeInstallerState installer_state;
+
+  EXPECT_CHECK_DEATH((void)UnpackChromeArchive(
+      temp_dir.GetPath(), base::FilePath(), cmd_line, installer_state));
+}
+
+TEST(SetupUnpackArchiveTest, UnpackFromMiniInstallerFailsWithMissingResource) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::CommandLine cmd_line = base::CommandLine::FromString(L"setup.exe");
+  cmd_line.AppendSwitchPath(switches::kMiniInstallerPath,
+                            GetTestFileRootPath().Append(
+                                FILE_PATH_LITERAL("mini_installer.exe.test")));
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceName,
+                              L"NON_EXISTENT_RESOURCE");
+  cmd_line.AppendSwitchNative(switches::kArchiveResourceType,
+                              kLZMAResourceType);
+  FakeInstallerState installer_state;
+
+  EXPECT_THAT(UnpackChromeArchive(temp_dir.GetPath(), base::FilePath(),
+                                  cmd_line, installer_state),
+              base::test::ErrorIs(InstallStatus::UNCOMPRESSION_FAILED));
 }
 
 }  // namespace installer

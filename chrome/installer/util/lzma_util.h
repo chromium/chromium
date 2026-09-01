@@ -7,8 +7,10 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_span.h"
 #include "base/win/windows_types.h"
 
 // The error status of LzmaUtil::Unpack which is used to publish metrics. Do not
@@ -41,6 +43,15 @@ UnPackStatus UnPackArchive(const base::FilePath& archive,
                            const base::FilePath& output_dir,
                            base::FilePath* output_file);
 
+// Unpacks the contents of `archive_buffer` into `output_dir`. `output_file`, if
+// not null, is populated with the name of the last (or only) member extracted
+// from the archive. Returns UNPACK_NO_ERROR on success. Otherwise, returns a
+// status value indicating the operation that failed. Existing files in
+// `output_dir` are not overwritten.
+UnPackStatus UnPackArchiveBuffer(base::span<const uint8_t> archive_buffer,
+                                 const base::FilePath& output_dir,
+                                 base::FilePath* output_file);
+
 // A utility class that wraps LZMA SDK library. Prefer UnPackArchive over using
 // this class directly.
 class LzmaUtilImpl {
@@ -52,7 +63,13 @@ class LzmaUtilImpl {
 
   ~LzmaUtilImpl();
 
-  UnPackStatus OpenArchive(const base::FilePath& archivePath);
+  // Opens the archive at `archive_path` in preparation for unpacking it.
+  UnPackStatus OpenArchive(const base::FilePath& archive_path);
+
+  // Opens the archive at `archive_buffer` in preparation for unpacking it. The
+  // memory referenced by `archive_buffer` must remain valid until `UnPack`
+  // completes or `CloseArchive` is called.
+  UnPackStatus OpenArchive(base::span<const uint8_t> archive_buffer);
 
   // Unpacks the archive to the given location
   UnPackStatus UnPack(const base::FilePath& location);
@@ -71,6 +88,7 @@ class LzmaUtilImpl {
 
  private:
   base::File archive_file_;
+  base::raw_span<const uint8_t> archive_buffer_;
   std::optional<DWORD> error_code_;
 };
 

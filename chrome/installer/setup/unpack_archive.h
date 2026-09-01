@@ -15,16 +15,13 @@ class FilePath;
 
 namespace installer {
 
-class InstallationState;
 class InstallerState;
 
 // Declares the unpack function needed to unpack compressed and uncompressed
 // archives in setup.exe. Uncompress the archive if an uncompressed archive was
-// not specified on the command line and a compressed archive is found. On
-// success, returns the path to the uncompressed archive.
-base::expected<base::FilePath, InstallStatus> UnpackChromeArchive(
+// not specified on the command line and a compressed archive is found.
+base::expected<void, InstallStatus> UnpackChromeArchive(
     const base::FilePath& unpack_path,
-    InstallationState& original_state,
     const base::FilePath& setup_exe,
     const base::CommandLine& cmd_line,
     const InstallerState& installer_state);

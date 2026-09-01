@@ -1331,8 +1331,8 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
     return TEMP_DIR_FAILED;
   }
 
-  RETURN_IF_ERROR(UnpackChromeArchive(unpack_path, original_state, setup_exe,
-                                      cmd_line, installer_state));
+  RETURN_IF_ERROR(
+      UnpackChromeArchive(unpack_path, setup_exe, cmd_line, installer_state));
 
   VLOG(1) << "unpacked to " << unpack_path.value();
 

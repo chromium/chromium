@@ -6,6 +6,10 @@
 
 #include <windows.h>
 
+#include <optional>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -136,4 +140,41 @@ TEST_F(LzmaUtilTest, EmptyFile) {
   LzmaUtilImpl lzma_util;
   EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
   EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.UnPack(extract_dir, nullptr));
+}
+
+TEST_F(LzmaUtilTest, OpenArchiveBufferTest) {
+  base::FilePath archive = data_dir_.AppendASCII("archive1.7z");
+  std::optional<std::vector<uint8_t>> buffer = base::ReadFileToBytes(archive);
+  ASSERT_TRUE(buffer.has_value());
+
+  LzmaUtilImpl lzma_util;
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(*buffer));
+
+  EXPECT_EQ(UNPACK_ARCHIVE_NOT_FOUND,
+            lzma_util.OpenArchive(base::span<const uint8_t>()));
+}
+
+TEST_F(LzmaUtilTest, UnPackArchiveBufferTest) {
+  base::FilePath extract_dir(temp_dir_.GetPath());
+  extract_dir = extract_dir.AppendASCII("UnPackArchiveBufferTest");
+  ASSERT_FALSE(base::PathExists(extract_dir));
+  EXPECT_TRUE(base::CreateDirectory(extract_dir));
+  ASSERT_TRUE(base::PathExists(extract_dir));
+
+  base::FilePath archive = data_dir_.AppendASCII("archive1.7z");
+  std::optional<std::vector<uint8_t>> buffer = base::ReadFileToBytes(archive);
+  ASSERT_TRUE(buffer.has_value());
+  base::FilePath unpacked_file;
+
+  EXPECT_EQ(UNPACK_NO_ERROR,
+            UnPackArchiveBuffer(*buffer, extract_dir, &unpacked_file));
+
+  EXPECT_TRUE(base::PathExists(extract_dir.AppendASCII("a.exe")));
+  EXPECT_TRUE(unpacked_file == extract_dir.AppendASCII("a.exe"));
+
+  archive = data_dir_.AppendASCII("invalid_archive.7z");
+  buffer = base::ReadFileToBytes(archive);
+  ASSERT_TRUE(buffer.has_value());
+  EXPECT_EQ(UNPACK_SZAREX_OPEN_ERROR,
+            UnPackArchiveBuffer(*buffer, extract_dir, &unpacked_file));
 }

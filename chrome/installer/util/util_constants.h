@@ -154,6 +154,10 @@ enum InstallerStage {
   NUM_STAGES                 // The number of stages.
 };
 
+// Resource types embedded in mini_installer.
+inline constexpr wchar_t kLZMAResourceType[] = L"B7";
+inline constexpr wchar_t kBinResourceType[] = L"BN";
+
 namespace switches {
 
 // Allow an update of Chrome from a higher version to a lower version.
@@ -238,6 +242,18 @@ inline constexpr char kForceUninstall[] = "force-uninstall";
 // chrome.packed.7z or chrome.7z in the same directory as setup.exe
 // is used.
 inline constexpr char kInstallArchive[] = "install-archive";
+
+// Specify the path to the mini_installer binary containing the Chrome archive
+// resource.
+inline constexpr char kMiniInstallerPath[] = "mini-installer-path";
+
+// Specify the name of the Chrome archive resource within the mini_installer
+// binary.
+inline constexpr char kArchiveResourceName[] = "archive-resource-name";
+
+// Specify the type of the Chrome archive resource within the mini_installer
+// binary.
+inline constexpr char kArchiveResourceType[] = "archive-resource-type";
 
 // Use the given uncompressed chrome.7z archive as the source of files to
 // install.
