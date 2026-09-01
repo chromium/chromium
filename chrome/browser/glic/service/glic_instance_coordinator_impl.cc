@@ -29,10 +29,10 @@
 #include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -1320,8 +1320,8 @@ void GlicInstanceCoordinatorImpl::ContextAccessIndicatorChanged(
   ComputeContentAccessIndicator();
 }
 
-std::unique_ptr<WebUIContentsContainer>
-GlicInstanceCoordinatorImpl::CreateWebUIContentsContainer() {
+std::unique_ptr<GlicWebContentsManager>
+GlicInstanceCoordinatorImpl::CreateWebContentsManager() {
   metrics_.RecordCountAwakeOnContentsCreated();
   return web_contents_warming_pool_->TakeContainer();
 }

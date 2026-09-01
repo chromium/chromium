@@ -1,15 +1,16 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_HOST_WEBUI_CONTENTS_CONTAINER_H_
-#define CHROME_BROWSER_GLIC_HOST_WEBUI_CONTENTS_CONTAINER_H_
+#ifndef CHROME_BROWSER_GLIC_HOST_GLIC_WEBUI_CONTENTS_MANAGER_H_
+#define CHROME_BROWSER_GLIC_HOST_GLIC_WEBUI_CONTENTS_MANAGER_H_
 
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -17,44 +18,21 @@ class Profile;
 
 namespace glic {
 class Host;
-class GlicWebClientManager;
 
-class WebUIContentsContainer {
- public:
-  WebUIContentsContainer();
-  virtual ~WebUIContentsContainer();
-
-  // Attaches this container's WebContents to the provided Host. This must be
-  // called exactly once.
-  virtual void AttachToHost(Host* host) = 0;
-  virtual void SetVisibility(content::Visibility visibility) = 0;
-  virtual content::WebContents* web_contents() const = 0;
-  virtual void OnActuatingChanged(bool actuating) = 0;
-  virtual void OnTaskTabsVisibilityChanged(bool has_visible_tab) = 0;
-  virtual std::unique_ptr<content::WebContents> ReleaseWebContents() = 0;
-  virtual void ReclaimWebContents(
-      std::unique_ptr<content::WebContents> web_contents) = 0;
-  virtual GlicWebClientManager* web_client_manager();
-  base::TimeTicks creation_time() const { return creation_time_; }
-
- protected:
-  const base::TimeTicks creation_time_;
-};
-
-// Owns the `WebContents` that houses the chrome://glic WebUI.
-class WebUIContentsContainerImpl : public content::WebContentsObserver,
-                                   public WebUIContentsContainer {
+// Implementation of GlicWebContentsManager that hosts the guest client inside
+// a WebUI <webview> container (chrome://glic).
+class GlicWebUIContentsManager : public content::WebContentsObserver,
+                                 public GlicWebContentsManager {
  public:
   // `initially_hidden` value is only relevant when
   // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
   // value is used (i.e. false).
-  WebUIContentsContainerImpl(Profile* profile, bool initially_hidden);
-  ~WebUIContentsContainerImpl() override;
-  WebUIContentsContainerImpl(const WebUIContentsContainerImpl&) = delete;
-  WebUIContentsContainerImpl& operator=(const WebUIContentsContainerImpl&) =
-      delete;
+  GlicWebUIContentsManager(Profile* profile, bool initially_hidden);
+  ~GlicWebUIContentsManager() override;
+  GlicWebUIContentsManager(const GlicWebUIContentsManager&) = delete;
+  GlicWebUIContentsManager& operator=(const GlicWebUIContentsManager&) = delete;
 
-  // WebUIContentsContainer impl.
+  // GlicWebContentsManager impl.
   void AttachToHost(Host* host) override;
   void SetVisibility(content::Visibility visibility) override;
   content::WebContents* web_contents() const override;
@@ -63,6 +41,10 @@ class WebUIContentsContainerImpl : public content::WebContentsObserver,
   std::unique_ptr<content::WebContents> ReleaseWebContents() override;
   void ReclaimWebContents(
       std::unique_ptr<content::WebContents> web_contents) override;
+  base::CallbackListSubscription RegisterWebContentsChangedCallback(
+      WebContentsChangedCallback callback) override;
+  GlicWebClientManager* web_client_manager() override;
+  bool IsCrashed() const override;
 
  private:
   // content::WebContentsObserver:
@@ -75,6 +57,7 @@ class WebUIContentsContainerImpl : public content::WebContentsObserver,
   void WebContentsDestroyed() override;
   void UpdateActuationTracker();
 
+  const base::TimeTicks creation_time_ = base::TimeTicks::Now();
   base::TimeTicks navigation_commit_time_;
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<content::WebContents> web_contents_ptr_ = nullptr;
@@ -93,4 +76,4 @@ class WebUIContentsContainerImpl : public content::WebContentsObserver,
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_HOST_WEBUI_CONTENTS_CONTAINER_H_
+#endif  // CHROME_BROWSER_GLIC_HOST_GLIC_WEBUI_CONTENTS_MANAGER_H_

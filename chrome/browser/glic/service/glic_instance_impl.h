@@ -57,6 +57,7 @@ class GlicExperimentalTriggeringManager;
 class GlicMetrics;
 class GlicSkillsManagerImpl;
 class GlicUiEmbedder;
+class GlicWebContentsManager;
 class GlicZeroStateSuggestionsManager;
 
 BASE_DECLARE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing);
@@ -124,8 +125,8 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void OnFreOptInShown(ukm::SourceId source_id) = 0;
 
     // Called to create a new web contents for the glic instance.
-    virtual std::unique_ptr<WebUIContentsContainer>
-    CreateWebUIContentsContainer() = 0;
+    virtual std::unique_ptr<GlicWebContentsManager>
+    CreateWebContentsManager() = 0;
 
     // Called by an instance just before its WebUI container is created from a
     // hibernated state.
@@ -279,8 +280,7 @@ class GlicInstanceImpl : public GlicInstance,
   instance_metrics_backwards_compatibility() override;
   GlicSkillsManager& skills_manager() override;
 
-  std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
-      override;
+  std::unique_ptr<GlicWebContentsManager> CreateWebContentsManager() override;
   void CreateZeroStateSuggestionsHandler(
       mojo::PendingReceiver<mojom::ZeroStateSuggestionsHandler> receiver)
       override;

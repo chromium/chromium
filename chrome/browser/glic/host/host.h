@@ -34,7 +34,7 @@ namespace glic {
 class GlicKeyedService;
 class GlicPageHandler;
 class GlicWebClientManager;
-class WebUIContentsContainer;
+class GlicWebContentsManager;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
 
@@ -124,8 +124,8 @@ class Host : public GlicSharingManagerProvider {
 
     virtual GlicSkillsManager& skills_manager() = 0;
 
-    virtual std::unique_ptr<WebUIContentsContainer>
-    CreateWebUIContentsContainer() = 0;
+    virtual std::unique_ptr<GlicWebContentsManager>
+    CreateWebContentsManager() = 0;
     virtual GlicExperimentalTriggeringManager*
     GetExperimentalTriggeringManager() = 0;
   };
@@ -254,7 +254,7 @@ class Host : public GlicSharingManagerProvider {
 
   void OnGuestWebClientCleared(bool had_web_client);
 
-  WebUIContentsContainer* contents_container() { return contents_.get(); }
+  GlicWebContentsManager* contents_manager() { return contents_.get(); }
   std::unique_ptr<content::WebContents> ReleaseWebContents();
   void ReclaimWebContents(std::unique_ptr<content::WebContents> web_contents);
   // Returns the WebUI web contents. May be null.
@@ -471,7 +471,7 @@ class Host : public GlicSharingManagerProvider {
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
   std::optional<mojom::PanelState> pending_panel_state_;
 
-  std::unique_ptr<WebUIContentsContainer> contents_;
+  std::unique_ptr<GlicWebContentsManager> contents_;
   std::optional<PageHandlerInfo> handler_info_;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;

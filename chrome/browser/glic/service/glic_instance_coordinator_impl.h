@@ -55,7 +55,7 @@ namespace glic {
 
 class GlicActiveInstanceSharingManager;
 class ContextualCueingService;
-class WebUIContentsContainer;
+class GlicWebContentsManager;
 class GlicWebContentsWarmingPool;
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 
@@ -115,8 +115,7 @@ class GlicInstanceCoordinatorImpl
                  ukm::SourceId source_id) override;
   void OnUserInputSubmitted(ukm::SourceId source_id) override;
   void OnFreOptInShown(ukm::SourceId source_id) override;
-  std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
-      override;
+  std::unique_ptr<GlicWebContentsManager> CreateWebContentsManager() override;
 
   // signin::IdentityManager::Observer implementation
   void OnPrimaryAccountChanged(

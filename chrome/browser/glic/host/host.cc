@@ -24,8 +24,8 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
-#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
@@ -201,7 +201,7 @@ void Host::Awaken() {
   TRACE_EVENT("glic", "Host::CreateContents");
   VLOG(1) << "Glic [Host] CreateContents";
 
-  contents_ = instance_delegate_->CreateWebUIContentsContainer();
+  contents_ = instance_delegate_->CreateWebContentsManager();
   contents_->AttachToHost(this);
 }
 

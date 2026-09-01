@@ -1,14 +1,17 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/host/glic_webui_contents_manager.h"
+
+#include <utility>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
@@ -19,27 +22,18 @@
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_ui.h"
 #include "printing/buildflags/buildflags.h"
-#include "ui/color/color_provider_key.h"
-#include "ui/color/color_provider_manager.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif
 
@@ -52,44 +46,16 @@ content::WebContents::CreateParams MakeCreateParams(Profile* profile,
   params.initially_hidden = initially_hidden;
   return params;
 }
-
-SkColor GetGlicBackgroundColor(Profile* profile,
-                               const ui::ColorProvider& color_provider) {
-#if !BUILDFLAG(IS_ANDROID)
-  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
-  bool use_dark = theme_service->BrowserUsesDarkColors();
-
-  ui::ColorProviderKey key;
-  key.color_mode = use_dark ? ui::ColorProviderKey::ColorMode::kDark
-                            : ui::ColorProviderKey::ColorMode::kLight;
-
-  const ui::ColorProvider* explicit_color_provider =
-      ui::ColorProviderManager::Get().GetColorProviderFor(key);
-
-  return explicit_color_provider->GetColor(kColorGlicBackground);
-#else
-  return color_provider.GetColor(kColorGlicBackground);
-#endif
-}
-
 }  // namespace
 
-WebUIContentsContainer::WebUIContentsContainer()
-    : creation_time_(base::TimeTicks::Now()) {}
-WebUIContentsContainer::~WebUIContentsContainer() = default;
-
-GlicWebClientManager* WebUIContentsContainer::web_client_manager() {
-  return nullptr;
-}
-
-WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
-                                                       bool initially_hidden)
+GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
+                                                   bool initially_hidden)
     : web_contents_(content::WebContents::Create(
           MakeCreateParams(profile, initially_hidden))),
       web_contents_ptr_(web_contents_.get()),
       profile_(profile) {
   TRACE_EVENT_INSTANT("glic",
-                      "WebUIContentsContainerImpl::WebUIContentsContainerImpl",
+                      "GlicWebUIContentsManager::GlicWebUIContentsManager",
                       perfetto::Flow::FromPointer(this));
   CHECK(web_contents_);
   CreateGlicWebUiData(web_contents_.get());
@@ -114,14 +80,14 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
           GURL{chrome::kChromeUIGlicURL}));
 }
 
-WebUIContentsContainerImpl::~WebUIContentsContainerImpl() {
+GlicWebUIContentsManager::~GlicWebUIContentsManager() {
   Observe(nullptr);
   if (web_contents_) {
     web_contents_->ClosePage();
   }
 }
 
-void WebUIContentsContainerImpl::AttachToHost(Host* host) {
+void GlicWebUIContentsManager::AttachToHost(Host* host) {
   // This is only allowed to be called once.
   CHECK(!host_);
   host_ = host;
@@ -130,12 +96,12 @@ void WebUIContentsContainerImpl::AttachToHost(Host* host) {
   }
 }
 
-void WebUIContentsContainerImpl::DidFinishNavigation(
+void GlicWebUIContentsManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     TRACE_EVENT_INSTANT(
         "glic",
-        "WebUIContentsContainerImpl::DidFinishNavigation - PrimaryMainFrame",
+        "GlicWebUIContentsManager::DidFinishNavigation - PrimaryMainFrame",
         perfetto::Flow::FromPointer(this));
     navigation_commit_time_ = base::TimeTicks::Now();
     base::UmaHistogramTimes("Glic.Contents.NavigationCommitTime",
@@ -158,25 +124,25 @@ void WebUIContentsContainerImpl::DidFinishNavigation(
   }
 }
 
-void WebUIContentsContainerImpl::PrimaryMainDocumentElementAvailable() {
+void GlicWebUIContentsManager::PrimaryMainDocumentElementAvailable() {
   TRACE_EVENT_INSTANT(
-      "glic", "WebUIContentsContainerImpl::PrimaryMainDocumentElementAvailable",
+      "glic", "GlicWebUIContentsManager::PrimaryMainDocumentElementAvailable",
       perfetto::Flow::FromPointer(this));
 }
 
-void WebUIContentsContainerImpl::DocumentOnLoadCompletedInPrimaryMainFrame() {
+void GlicWebUIContentsManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
   TRACE_EVENT_INSTANT(
       "glic",
-      "WebUIContentsContainerImpl::DocumentOnLoadCompletedInPrimaryMainFrame",
+      "GlicWebUIContentsManager::DocumentOnLoadCompletedInPrimaryMainFrame",
       perfetto::Flow::FromPointer(this));
   base::UmaHistogramTimes("Glic.Contents.LoadCompleteTime",
                           base::TimeTicks::Now() - navigation_commit_time_);
 }
 
-void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
+void GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   TRACE_EVENT_INSTANT(
-      "glic", "WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone",
+      "glic", "GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone",
       perfetto::TerminatingFlow::FromPointer(this), "status", status);
   base::UmaHistogramEnumeration("Glic.Session.WebUiCrash.TerminationStatus",
                                 status, base::TERMINATION_STATUS_MAX_ENUM);
@@ -194,19 +160,19 @@ void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
   // WARNING: Do not do any more work, as `this` may have been destroyed.
 }
 
-void WebUIContentsContainerImpl::WebContentsDestroyed() {
+void GlicWebUIContentsManager::WebContentsDestroyed() {
   web_contents_ptr_ = nullptr;
 }
 
-void WebUIContentsContainerImpl::SetVisibility(content::Visibility visibility) {
+void GlicWebUIContentsManager::SetVisibility(content::Visibility visibility) {
   web_contents()->UpdateWebContentsVisibility(visibility);
 }
 
-content::WebContents* WebUIContentsContainerImpl::web_contents() const {
+content::WebContents* GlicWebUIContentsManager::web_contents() const {
   return web_contents_ptr_;
 }
 
-void WebUIContentsContainerImpl::OnActuatingChanged(bool actuating) {
+void GlicWebUIContentsManager::OnActuatingChanged(bool actuating) {
   if (!actuating) {
     // Cleanup the capturers even if the webcontents are gone.
     webui_capture_runner_.RunAndReset();
@@ -232,13 +198,13 @@ void WebUIContentsContainerImpl::OnActuatingChanged(bool actuating) {
   UpdateActuationTracker();
 }
 
-void WebUIContentsContainerImpl::OnTaskTabsVisibilityChanged(
+void GlicWebUIContentsManager::OnTaskTabsVisibilityChanged(
     bool has_visible_tab) {
   is_actuating_on_visible_tab_ = has_visible_tab;
   UpdateActuationTracker();
 }
 
-void WebUIContentsContainerImpl::UpdateActuationTracker() {
+void GlicWebUIContentsManager::UpdateActuationTracker() {
   auto* guest = GetGlicGuestWebContents(web_contents());
   if (!guest) {
     // Visibility might change before the guest is created or after it is
@@ -259,16 +225,35 @@ void WebUIContentsContainerImpl::UpdateActuationTracker() {
 }
 
 std::unique_ptr<content::WebContents>
-WebUIContentsContainerImpl::ReleaseWebContents() {
+GlicWebUIContentsManager::ReleaseWebContents() {
   CHECK(web_contents_);
   return std::move(web_contents_);
 }
 
-void WebUIContentsContainerImpl::ReclaimWebContents(
+void GlicWebUIContentsManager::ReclaimWebContents(
     std::unique_ptr<content::WebContents> web_contents) {
   CHECK(!web_contents_);
   CHECK(web_contents);
   web_contents_ = std::move(web_contents);
+}
+
+base::CallbackListSubscription
+GlicWebUIContentsManager::RegisterWebContentsChangedCallback(
+    WebContentsChangedCallback callback) {
+  return base::CallbackListSubscription();
+}
+
+GlicWebClientManager* GlicWebUIContentsManager::web_client_manager() {
+  // TODO: Move GlicWebClientManager ownership from GlicUI directly into
+  // GlicWebUIContentsManager for architectural symmetry.
+  if (auto* glic_ui = GlicUI::From(web_contents())) {
+    return glic_ui->web_client_manager();
+  }
+  return nullptr;
+}
+
+bool GlicWebUIContentsManager::IsCrashed() const {
+  return web_contents_ ? web_contents_->IsCrashed() : false;
 }
 
 }  // namespace glic

@@ -15,7 +15,7 @@
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
-#include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest, MAYBE_BackfillWarming) {
 
   // Take the container, which should clear it and schedule a new delayed
   // preload.
-  std::unique_ptr<WebUIContentsContainer> container = pool().TakeContainer();
+  std::unique_ptr<GlicWebContentsManager> container = pool().TakeContainer();
   EXPECT_TRUE(container);
   EXPECT_FALSE(pool().HasWarmedContainerForTesting());
 
