@@ -83,8 +83,7 @@ public class UrlBarCoordinator
      * @param keyboardVisibilityDelegate Delegate that allows querying and changing the keyboard's
      *     visibility.
      * @param isIncognitoBranded Whether incognito mode is initially enabled. This can later be
-     *     changed using {@link #setIncognitoColorsEnabled(boolean)}. @{@link OnLongClickListener}
-     *     for the url bar.
+     *     changed using {@link #setIncognitoColorsEnabled(boolean)}.
      * @param onLongClickListener The listener for long clicks.
      * @param textChangeListener The listener for text changes. Invoked every time omnibox content
      *     changes and used for autocomplete.
@@ -114,6 +113,7 @@ public class UrlBarCoordinator
                         .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
+                        .with(UrlBarProperties.KEY_DOWN_LISTENER, keyDownListener)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)
                         .with(UrlBarProperties.TEXT_WRAPPED_CALLBACK, mTextWrappedCallback)
                         .with(
@@ -122,13 +122,7 @@ public class UrlBarCoordinator
                         .build();
         PropertyModelChangeProcessor.create(mModel, urlBar, UrlBarViewBinder::bind);
 
-        mMediator =
-                new UrlBarMediator(
-                        context,
-                        mModel,
-                        textChangeListener,
-                        richTextChangeListener,
-                        keyDownListener);
+        mMediator = new UrlBarMediator(context, mModel, textChangeListener, richTextChangeListener);
         mKeyboardState =
                 mKeyboardVisibilityDelegate.isKeyboardShowing(urlBar)
                         ? KeyboardState.SHOWN
@@ -252,7 +246,7 @@ public class UrlBarCoordinator
 
     /** Set the state of "Always Show AI Mode" option. */
     public void setShowAiMode(boolean showAiMode) {
-        mModel.set(UrlBarProperties.IS_AI_MODE_PREF_ENABLED, showAiMode);
+        mModel.set(UrlBarProperties.AI_MODE_PREF_ENABLED, showAiMode);
     }
 
     /** Set the callback when "Always Show AI Mode" is toggled. */
@@ -465,7 +459,9 @@ public class UrlBarCoordinator
             // directly from omnibox to web content's form field. Therefore, we hide keyboard on
             // focus blur indiscriminately here. Note that hiding keyboard may lower FPS of other
             // animation effects, but we found it tolerable in an experiment.
-            if (imm.isActive(mUrlBar)) setKeyboardVisibility(false, false);
+            if (imm.isActive(mUrlBar)) {
+                setKeyboardVisibility(/* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+            }
             // Manually set that the URL bar is no longer showing suggestions when focus is lost as
             // this won't happen automatically.
             mMediator.onUrlBarSuggestionsChanged(false);

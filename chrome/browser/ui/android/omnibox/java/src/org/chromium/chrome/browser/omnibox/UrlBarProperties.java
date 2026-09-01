@@ -27,21 +27,22 @@ import java.util.Locale;
 class UrlBarProperties {
     /** Contains the necessary information to update the text shown in the UrlBar. */
     static class UrlBarTextState {
-        /** Text to be shown. */
+        /** The text to be shown. */
         public final CharSequence text;
 
-        /** Text for Autofill services. */
+        /** The text for Autofill services. */
         public final CharSequence textForAutofillServices;
 
         /** Specifies how the text should be scrolled in the unfocused state. */
         public final @ScrollType int scrollType;
 
-        /** Specifies the index to scroll to if {@link UrlBar#SCROLL_TO_TLD} is specified. */
-        public int scrollToIndex;
+        /** Specifies the index to scroll to if {@link ScrollType#SCROLL_TO_TLD} is specified. */
+        public final int scrollToIndex;
 
         /** Specifies how the text should be selected in the focused state. */
         public final TextSelection selection;
 
+        /** Whether the origin has changed since the last update. */
         public final boolean originChanged;
 
         public UrlBarTextState(
@@ -81,7 +82,7 @@ class UrlBarProperties {
 
         /**
          * This string is displayed adjacent to the omnibox if this match is the default. Will
-         * usually be URL when autocompleting a title, and empty otherwise.
+         * usually be a URL when autocompleting a title, and empty otherwise.
          */
         public final @Nullable String additionalText;
 
@@ -113,12 +114,20 @@ class UrlBarProperties {
         }
     }
 
-    /** String to append to the end of the URL bar text during talkback readout. */
+    /** The string to append to the end of the URL bar text during TalkBack readout. */
     public static final WritableObjectPropertyKey<String> ACCESSIBILITY_WARNING =
             new WritableObjectPropertyKey<>();
 
-    /** The callback for contextual action modes (cut, copy, etc...). */
-    public static final WritableObjectPropertyKey<ActionMode.Callback> ACTION_MODE_CALLBACK =
+    /** The callback for contextual action modes (cut, copy, etc.). */
+    public static final ReadableObjectPropertyKey<ActionMode.Callback> ACTION_MODE_CALLBACK =
+            new ReadableObjectPropertyKey<>();
+
+    /** Whether the AI Mode preference is currently enabled. */
+    public static final WritableBooleanPropertyKey AI_MODE_PREF_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** The callback to run when the "Always Show AI Mode" menu item is toggled. */
+    public static final WritableObjectPropertyKey<Callback<Boolean>> AI_MODE_PREF_TOGGLE_CALLBACK =
             new WritableObjectPropertyKey<>();
 
     /** Whether focus should be allowed on the view. */
@@ -128,13 +137,13 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey ALLOW_MULTILINE_INPUT =
             new WritableBooleanPropertyKey();
 
-    /** Specified the autocomplete text to be shown to the user. */
+    /** Specifies the autocomplete text to be shown to the user. */
     public static final WritableObjectPropertyKey<AutocompleteText> AUTOCOMPLETE_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** The main delegate that provides additional capabilities to the UrlBar. */
-    public static final WritableObjectPropertyKey<UrlBarDelegate> DELEGATE =
-            new WritableObjectPropertyKey<>();
+    public static final ReadableObjectPropertyKey<UrlBarDelegate> DELEGATE =
+            new ReadableObjectPropertyKey<>();
 
     /** The callback to be notified on focus changes. */
     public static final ReadableObjectPropertyKey<Callback<UrlBarFocusChangeInfo>>
@@ -144,11 +153,11 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey HAS_URL_SUGGESTIONS =
             new WritableBooleanPropertyKey();
 
-    /** Specifies the url bar hint text. */
+    /** Specifies the URL bar hint text. */
     public static final WritableObjectPropertyKey<CharSequence> HINT_TEXT =
             new WritableObjectPropertyKey<>();
 
-    /** Specifies the color for url bar hint text. */
+    /** Specifies the color for URL bar hint text. */
     public static final WritableIntPropertyKey HINT_TEXT_COLOR = new WritableIntPropertyKey();
 
     /**
@@ -158,27 +167,19 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey INCOGNITO_COLORS_ENABLED =
             new WritableBooleanPropertyKey();
 
-    /** The callback to be notified on url key events. */
-    public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_DOWN_LISTENER =
-            new WritableObjectPropertyKey<>();
+    /** The callback to be notified on URL key events. */
+    public static final ReadableObjectPropertyKey<View.OnKeyListener> KEY_DOWN_LISTENER =
+            new ReadableObjectPropertyKey<>();
 
-    /** Handler receiving long-click events for the url bar. */
-    public static final WritableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
+    /** The handler receiving long-click events for the URL bar. */
+    public static final ReadableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
+            new ReadableObjectPropertyKey<>();
 
     /** The callback to run when the "Manage search engines" menu item is clicked. */
     public static final WritableObjectPropertyKey<Runnable> MANAGE_SEARCH_ENGINES_CALLBACK =
             new WritableObjectPropertyKey<>();
 
-    /** Whether the AI Mode pref is currently enabled. */
-    public static final WritableBooleanPropertyKey IS_AI_MODE_PREF_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    /** The callback to run when the "Always Show AI Mode" menu item is toggled. */
-    public static final WritableObjectPropertyKey<Callback<Boolean>> AI_MODE_PREF_TOGGLE_CALLBACK =
-            new WritableObjectPropertyKey<>();
-
-    /** The callback to be notified on raw url text changes (rich context). */
+    /** The callback to be notified on raw URL text changes (rich context). */
     public static final WritableObjectPropertyKey<Callback<UrlBarTextChangeInfo>>
             RICH_TEXT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
 
@@ -190,14 +191,14 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey SHOW_HINT_TEXT =
             new WritableBooleanPropertyKey();
 
-    /** The callback to be notified on url text changes. */
+    /** The callback to be notified on URL text changes. */
     public static final WritableObjectPropertyKey<Callback<String>> TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** Specifies the color for url bar text. */
+    /** Specifies the color for URL bar text. */
     public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
 
-    /** Delegate that provides additional functionality to the textual context actions. */
+    /** The delegate that provides additional functionality to the textual context actions. */
     public static final WritableObjectPropertyKey<UrlBarTextContextMenuDelegate>
             TEXT_CONTEXT_MENU_DELEGATE = new WritableObjectPropertyKey<>();
 
@@ -205,15 +206,15 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<UrlBarTextState> TEXT_STATE =
             new WritableObjectPropertyKey<>();
 
-    /** The callback to be notified when the url text wraps. */
-    public static final WritableObjectPropertyKey<Callback<Boolean>> TEXT_WRAPPED_CALLBACK =
-            new WritableObjectPropertyKey<>();
+    /** The callback to be notified when the URL text wraps. */
+    public static final ReadableObjectPropertyKey<Callback<Boolean>> TEXT_WRAPPED_CALLBACK =
+            new ReadableObjectPropertyKey<>();
 
     /** The listener to be notified of URL direction changes. */
     public static final WritableObjectPropertyKey<Callback<Integer>> URL_DIRECTION_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** Whether the url bar should use a small text size. */
+    /** Whether the URL bar should use a small text size. */
     public static final WritableBooleanPropertyKey USE_SMALL_TEXT =
             new WritableBooleanPropertyKey();
 
@@ -221,6 +222,8 @@ class UrlBarProperties {
             new PropertyKey[] {
                 ACCESSIBILITY_WARNING,
                 ACTION_MODE_CALLBACK,
+                AI_MODE_PREF_ENABLED,
+                AI_MODE_PREF_TOGGLE_CALLBACK,
                 ALLOW_FOCUS,
                 ALLOW_MULTILINE_INPUT,
                 AUTOCOMPLETE_TEXT,
@@ -233,8 +236,6 @@ class UrlBarProperties {
                 KEY_DOWN_LISTENER,
                 LONG_CLICK_LISTENER,
                 MANAGE_SEARCH_ENGINES_CALLBACK,
-                IS_AI_MODE_PREF_ENABLED,
-                AI_MODE_PREF_TOGGLE_CALLBACK,
                 RICH_TEXT_CHANGE_LISTENER,
                 SELECT_ALL_ON_FOCUS,
                 SHOW_HINT_TEXT,

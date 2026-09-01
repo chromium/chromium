@@ -29,7 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class UrlBarViewBinder {
     /**
-     * @see PropertyModelChangeProcfessor.ViewBinder#bind(Object, Object, Object)
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, UrlBar view, PropertyKey propertyKey) {
         if (UrlBarProperties.ACCESSIBILITY_WARNING.equals(propertyKey)) {
@@ -38,6 +38,10 @@ class UrlBarViewBinder {
             ActionMode.Callback callback = model.get(UrlBarProperties.ACTION_MODE_CALLBACK);
             if (callback == null && view.getCustomSelectionActionModeCallback() == null) return;
             view.setCustomSelectionActionModeCallback(callback);
+        } else if (UrlBarProperties.AI_MODE_PREF_ENABLED.equals(propertyKey)) {
+            view.setShowAiMode(model.get(UrlBarProperties.AI_MODE_PREF_ENABLED));
+        } else if (UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK.equals(propertyKey)) {
+            view.setShowAiModeCallback(model.get(UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK));
         } else if (UrlBarProperties.ALLOW_FOCUS.equals(propertyKey)) {
             view.setAllowFocus(model.get(UrlBarProperties.ALLOW_FOCUS));
         } else if (UrlBarProperties.ALLOW_MULTILINE_INPUT.equals(propertyKey)) {
@@ -56,15 +60,44 @@ class UrlBarViewBinder {
             view.setDelegate(model.get(UrlBarProperties.DELEGATE));
         } else if (UrlBarProperties.FOCUS_CHANGE_CALLBACK.equals(propertyKey)) {
             view.setFocusChangeCallback(model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK));
-        } else if (UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE.equals(propertyKey)) {
-            view.setTextContextMenuDelegate(model.get(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE));
+        } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                view.setHandwritingBoundsOffsets(
+                        view.getHandwritingBoundsOffsetLeft(),
+                        view.getHandwritingBoundsOffsetTop(),
+                        view.getHandwritingBoundsOffsetRight(),
+                        model.get(UrlBarProperties.HAS_URL_SUGGESTIONS)
+                                ? view.getHandwritingBoundsOffsetTop()
+                                : 0);
+            }
+        } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)) {
+            view.setHint(getHintForModelState(model));
+        } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
+            view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
+        } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
+            final boolean incognitoColorsEnabled =
+                    model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
+            updateHighlightColor(view, incognitoColorsEnabled);
+            updateCursorAndSelectHandleColor(view, incognitoColorsEnabled);
+        } else if (UrlBarProperties.KEY_DOWN_LISTENER.equals(propertyKey)) {
+            view.setKeyDownListener(model.get(UrlBarProperties.KEY_DOWN_LISTENER));
+        } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
+            view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
         } else if (UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK.equals(propertyKey)) {
             view.setManageSearchEnginesCallback(
                     model.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK));
-        } else if (UrlBarProperties.IS_AI_MODE_PREF_ENABLED.equals(propertyKey)) {
-            view.setShowAiMode(model.get(UrlBarProperties.IS_AI_MODE_PREF_ENABLED));
-        } else if (UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK.equals(propertyKey)) {
-            view.setShowAiModeCallback(model.get(UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK));
+        } else if (UrlBarProperties.RICH_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
+            view.setRichTextChangeListener(model.get(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER));
+        } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
+            view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
+        } else if (UrlBarProperties.SHOW_HINT_TEXT.equals(propertyKey)) {
+            view.setHint(getHintForModelState(model));
+        } else if (UrlBarProperties.TEXT_CHANGE_LISTENER.equals(propertyKey)) {
+            view.setTextChangeListener(model.get(UrlBarProperties.TEXT_CHANGE_LISTENER));
+        } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {
+            view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));
+        } else if (UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE.equals(propertyKey)) {
+            view.setTextContextMenuDelegate(model.get(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE));
         } else if (UrlBarProperties.TEXT_STATE.equals(propertyKey)) {
             UrlBarTextState state = model.get(UrlBarProperties.TEXT_STATE);
             view.setIgnoreTextChangesForAutocomplete(true);
@@ -89,8 +122,11 @@ class UrlBarViewBinder {
                 view.setSelection(selection.from, selection.to);
                 view.requestAccessibilityFocus();
             }
-        } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {
-            view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));
+        } else if (UrlBarProperties.TEXT_WRAPPED_CALLBACK.equals(propertyKey)) {
+            view.setUrlTextWrappingChangeListener(
+                    model.get(UrlBarProperties.TEXT_WRAPPED_CALLBACK));
+        } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
+            view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
         } else if (UrlBarProperties.USE_SMALL_TEXT.equals(propertyKey)) {
             boolean useSmallText = model.get(UrlBarProperties.USE_SMALL_TEXT);
             // Small text mode is used in a state where available vertical space is much lower and
@@ -109,41 +145,6 @@ class UrlBarViewBinder {
                     (ConstraintLayout.LayoutParams) view.getLayoutParams();
             layoutParams.width =
                     useSmallText ? LayoutParams.WRAP_CONTENT : LayoutParams.MATCH_CONSTRAINT;
-        } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
-            view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
-        } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
-            final boolean incognitoColorsEnabled =
-                    model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
-            updateHighlightColor(view, incognitoColorsEnabled);
-            updateCursorAndSelectHandleColor(view, incognitoColorsEnabled);
-        } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
-            view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
-        } else if (UrlBarProperties.TEXT_CHANGE_LISTENER.equals(propertyKey)) {
-            view.setTextChangeListener(model.get(UrlBarProperties.TEXT_CHANGE_LISTENER));
-        } else if (UrlBarProperties.RICH_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
-            view.setRichTextChangeListener(model.get(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER));
-        } else if (UrlBarProperties.TEXT_WRAPPED_CALLBACK.equals(propertyKey)) {
-            view.setUrlTextWrappingChangeListener(
-                    model.get(UrlBarProperties.TEXT_WRAPPED_CALLBACK));
-        } else if (UrlBarProperties.KEY_DOWN_LISTENER.equals(propertyKey)) {
-            view.setKeyDownListener(model.get(UrlBarProperties.KEY_DOWN_LISTENER));
-        } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                view.setHandwritingBoundsOffsets(
-                        view.getHandwritingBoundsOffsetLeft(),
-                        view.getHandwritingBoundsOffsetTop(),
-                        view.getHandwritingBoundsOffsetRight(),
-                        model.get(UrlBarProperties.HAS_URL_SUGGESTIONS)
-                                ? view.getHandwritingBoundsOffsetTop()
-                                : 0);
-            }
-        } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
-            view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
-        } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
-            view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
-        } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)
-                || UrlBarProperties.SHOW_HINT_TEXT.equals(propertyKey)) {
-            view.setHint(getHintForModelState(model));
         }
     }
 
@@ -186,7 +187,7 @@ class UrlBarViewBinder {
     }
 
     private static @Nullable CharSequence getHintForModelState(PropertyModel model) {
-        // Android TextView's set a desired size based on the max of the hint text size and the
+        // Android TextViews set a desired size based on the max of the hint text size and the
         // "regular" size. In small text mode, where we don't intend to show the hint, we set it to
         // null to avoid over-allocating space for text that will never be shown.
         // Similarly, we set SHOW_HINT_TEXT to false in other cases when we don't intend to show the

@@ -9,12 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -28,7 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
+import org.mockito.quality.Strictness;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -56,7 +58,9 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link UrlBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UrlBarMediatorUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private Clipboard mClipboard;
     @Mock private PropertyObserver mPropertyObserver;
     @Mock private SettingsNavigation mSettingsNavigation;
@@ -72,21 +76,22 @@ public class UrlBarMediatorUnitTest {
         OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
         Clipboard.setInstanceForTesting(mClipboard);
         mContext = ContextUtils.getApplicationContext();
-        mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
+        mDelegate = mUrlBarDelegate;
+        mModel =
+                new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
+                        .with(UrlBarProperties.DELEGATE, mDelegate)
+                        .build();
         mMediator =
                 new UrlBarMediator(
                         ContextUtils.getApplicationContext(),
                         mModel,
                         /* textChangeListener= */ null,
-                        /* richTextChangeListener= */ null,
-                        /* keyDownListener= */ null) {
+                        /* richTextChangeListener= */ null) {
                     @Override
                     protected String sanitizeTextForPaste(String text) {
                         return text.trim();
                     }
                 };
-        mDelegate = mUrlBarDelegate;
-        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
     }
 
     @Test
@@ -119,7 +124,7 @@ public class UrlBarMediatorUnitTest {
                         baseData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
 
         mModel.addObserver(mPropertyObserver);
-        reset(mPropertyObserver);
+        clearInvocations(mPropertyObserver);
 
         assertTrue(
                 mMediator.setUrlBarData(
@@ -163,7 +168,7 @@ public class UrlBarMediatorUnitTest {
                         data1, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
 
         mModel.addObserver(mPropertyObserver);
-        reset(mPropertyObserver);
+        clearInvocations(mPropertyObserver);
 
         assertFalse(
                 mMediator.setUrlBarData(
@@ -172,7 +177,7 @@ public class UrlBarMediatorUnitTest {
                 mMediator.setUrlBarData(
                         data2, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
 
-        verifyNoMoreInteractions(mPropertyObserver);
+        verify(mPropertyObserver, never()).onPropertyChanged(any(), any());
     }
 
     @Test
@@ -508,9 +513,15 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
     public void testManageSearchEnginesCallback_tablet_featureEnabled() {
+        RuntimeEnvironment.setQualifiers("sw600dp");
+        mMediator =
+                new UrlBarMediator(
+                        mContext,
+                        mModel,
+                        /* textChangeListener= */ null,
+                        /* richTextChangeListener= */ null);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
@@ -521,9 +532,15 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
     public void testManageSearchEnginesCallback_tablet_featureDisabled() {
+        RuntimeEnvironment.setQualifiers("sw600dp");
+        mMediator =
+                new UrlBarMediator(
+                        mContext,
+                        mModel,
+                        /* textChangeListener= */ null,
+                        /* richTextChangeListener= */ null);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
@@ -535,6 +552,13 @@ public class UrlBarMediatorUnitTest {
 
     @Test
     public void testManageSearchEnginesCallback_phone() {
+        RuntimeEnvironment.setQualifiers("sw360dp");
+        mMediator =
+                new UrlBarMediator(
+                        mContext,
+                        mModel,
+                        /* textChangeListener= */ null,
+                        /* richTextChangeListener= */ null);
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
         assertNull(callback);
     }
@@ -607,9 +631,7 @@ public class UrlBarMediatorUnitTest {
                                 sessionState
                                         .getAutocompleteInput()
                                         .setUserText(text, typedSelection),
-                        /* richTextChangeListener= */ null,
-                        /* keyDownListener= */ null);
-        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
+                        /* richTextChangeListener= */ null);
         mMediator.beginInput(sessionState);
 
         // User types "hello", which triggers textChangeListener to update AutocompleteInput
@@ -639,9 +661,7 @@ public class UrlBarMediatorUnitTest {
                                 sessionState
                                         .getAutocompleteInput()
                                         .setUserText(text, rangeSelection),
-                        /* richTextChangeListener= */ null,
-                        /* keyDownListener= */ null);
-        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
+                        /* richTextChangeListener= */ null);
         mMediator.beginInput(sessionState);
 
         mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("selected");
@@ -710,7 +730,6 @@ public class UrlBarMediatorUnitTest {
         doReturn(UrlBarData.forNonUrlText("typed text"))
                 .when(mDelegate)
                 .getUrlBarDataForCurrentInput();
-        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
 
         mMediator.beginInput(session);
         assertTrue(mMediator.isInInputSession());
