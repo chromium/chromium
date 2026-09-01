@@ -6903,7 +6903,15 @@ END_METADATA
 
 }  // namespace
 
-TEST_F(WidgetTest, ThemeChangedShortCircuitRedundantUpdates) {
+// TODO(crbug.com/555907780): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ThemeChangedShortCircuitRedundantUpdates \
+  DISABLED_ThemeChangedShortCircuitRedundantUpdates
+#else
+#define MAYBE_ThemeChangedShortCircuitRedundantUpdates \
+  ThemeChangedShortCircuitRedundantUpdates
+#endif
+TEST_F(WidgetTest, MAYBE_ThemeChangedShortCircuitRedundantUpdates) {
   base::test::ScopedFeatureList feature_list(
       ::features::kThemeChangeOptimization);
 
