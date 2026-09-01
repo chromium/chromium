@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -294,11 +295,63 @@ public class SettingsSearchCoordinatorUnitTest {
         // margins.
         int itemMargin =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
-        int expectedMargin = (1000 - 600) / 2 + itemMargin;
+        int expectedMargin = (1000 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 + itemMargin;
         lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
         assertEquals(expectedMargin, lp.getMarginStart());
         assertEquals(expectedMargin, lp.getMarginEnd());
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, lp.width);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testSingleColumnSearchUiWidth_withSettingsInTab_accountsForToolbarPadding() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+
+        // Give toolbar padding, insets, and an initial non-zero end margin.
+        mToolbar.setPaddingRelative(16, 0, 16, 0);
+        mToolbar.setContentInsetsRelative(16, 16);
+        var toolbarLp = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+        toolbarLp.setMarginEnd(24);
+        mToolbar.setLayoutParams(toolbarLp);
+
+        mCoordinator.initializeSearchUi(null);
+
+        // Simulate tablet in portrait (800dp width < 840dp multi-column threshold).
+        int rootWidth = 800;
+        int rootHeight = 100;
+        View rootView = mActivity.findViewById(R.id.settings_activity);
+        assertNotNull(rootView);
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(rootWidth, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(rootHeight, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, rootWidth, rootHeight);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        View query = mActivity.findViewById(R.id.search_query_container);
+        assertNotNull(query);
+
+        // Toolbar margins should be reset to 0 in single-column mode.
+        toolbarLp = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+        assertEquals(0, toolbarLp.getMarginStart());
+        assertEquals(0, toolbarLp.getMarginEnd());
+
+        int itemMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
+        int expectedMargin =
+                (rootWidth - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 + itemMargin;
+
+        var searchBoxLp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        assertEquals(expectedMargin, searchBoxLp.getMarginStart());
+        assertEquals(expectedMargin, searchBoxLp.getMarginEnd());
+
+        int endPadding = Math.max(mToolbar.getPaddingEnd(), mToolbar.getContentInsetEnd());
+        var queryLp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
+        assertEquals(expectedMargin - mToolbar.getPaddingStart(), queryLp.getMarginStart());
+        assertEquals(expectedMargin - endPadding, queryLp.getMarginEnd());
     }
 
     /** Regression test for https://crbug.com/545872336. */
