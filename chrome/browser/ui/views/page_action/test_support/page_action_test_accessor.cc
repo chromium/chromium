@@ -29,6 +29,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/button_test_api.h"
@@ -290,6 +291,21 @@ bool PageActionTestAccessor::IsAnimating() {
     return false;
   }
   return pav->is_animating_label();
+}
+
+bool PageActionTestAccessor::HasIconHighlight() {
+  if (auto* pav = GetPageActionView()) {
+    return views::InkDrop::Get(pav)->GetInkDrop()->GetTargetInkDropState() ==
+           views::InkDropState::ACTIVATED;
+  }
+
+  const char kScript[] = R"(
+    (el) => {
+      return el.hasAttribute('is-menu-open');
+    }
+  )";
+
+  return EvaluateWebUI(kScript);
 }
 
 std::u16string PageActionTestAccessor::GetText() {

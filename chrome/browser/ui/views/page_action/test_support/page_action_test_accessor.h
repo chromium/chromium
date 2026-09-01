@@ -49,6 +49,7 @@ class PageActionTestAccessor {
   bool IsIconVisible();
   bool IsAnimating();
   bool HasFocus();
+  bool HasIconHighlight();
   std::u16string GetText();
   std::u16string GetTooltipText();
   std::u16string GetAccessibleName();
