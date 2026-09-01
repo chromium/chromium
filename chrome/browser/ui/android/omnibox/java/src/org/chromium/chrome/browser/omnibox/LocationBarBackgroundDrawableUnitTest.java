@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
@@ -110,7 +110,7 @@ public class LocationBarBackgroundDrawableUnitTest {
     @Test
     public void testSetInsets() {
         mDrawable.setBounds(0, 0, 100, 100);
-        reset(mGradientDrawable);
+        clearInvocations(mGradientDrawable);
 
         mDrawable.setInsets(10, 20, 30, 40);
         verify(mGradientDrawable).setBounds(new Rect(10, 20, 70, 60));

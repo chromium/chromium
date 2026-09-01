@@ -12,10 +12,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -629,8 +629,8 @@ public class FuseboxAttachmentModelListUnitTest {
 
         // Add an attachment before starting the batch edit.
         mFuseboxAttachmentModelList.add(attachment1);
-        // Reset the listener to ignore the notification from the previous add.
-        reset(mListener);
+        // Clear invocations on listener to ignore the notification from the previous add.
+        clearInvocations(mListener);
 
         try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
             mFuseboxAttachmentModelList.add(attachment2);

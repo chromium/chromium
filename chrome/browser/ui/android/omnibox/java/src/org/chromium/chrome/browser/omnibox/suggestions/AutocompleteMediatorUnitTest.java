@@ -20,7 +20,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -577,14 +576,14 @@ public class AutocompleteMediatorUnitTest {
                 AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
 
         // With fully concealed elements, scroll should trigger keyboard hide.
-        reset(mAutocompleteDelegate);
+        clearInvocations(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownScroll();
         verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(false), anyBoolean());
         verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
 
         // Pretend that the user scrolled back to top with an overscroll.
         // This should bring back the soft keyboard.
-        reset(mAutocompleteDelegate);
+        clearInvocations(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownOverscrolledToTop();
         verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true), anyBoolean());
         verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false), anyBoolean());
@@ -2579,7 +2578,7 @@ public class AutocompleteMediatorUnitTest {
                 .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS);
         mMediator.beginInput(session);
 
-        reset(mAutocompleteDelegate);
+        clearInvocations(mAutocompleteDelegate);
         var animator = mMediator.setupSuggestionsListShowAnimation();
         animator.start();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -2595,7 +2594,7 @@ public class AutocompleteMediatorUnitTest {
                 .setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
         mMediator.beginInput(session);
 
-        reset(mAutocompleteDelegate);
+        clearInvocations(mAutocompleteDelegate);
         var animator = mMediator.setupSuggestionsListShowAnimation();
         animator.start();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

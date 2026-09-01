@@ -16,8 +16,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -132,7 +130,7 @@ public class SearchEngineServiceUnitTest {
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
         searchEngineService.addIconObserver(mEngineIconObserver);
         verify(mEngineIconObserver).onSearchEngineIconChanged(null);
-        reset(mEngineIconObserver);
+        clearInvocations(mEngineIconObserver);
 
         // SearchEngineService retrieves logo when it's first created, and whenever the DSE changes.
         verify(mFaviconHelper)
@@ -155,7 +153,7 @@ public class SearchEngineServiceUnitTest {
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
         searchEngineService.addIconObserver(mEngineIconObserver);
         verify(mEngineIconObserver).onSearchEngineIconChanged(null);
-        reset(mEngineIconObserver);
+        clearInvocations(mEngineIconObserver);
 
         // Simulate DSE change to Google.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -344,7 +342,7 @@ public class SearchEngineServiceUnitTest {
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
         searchEngineService.addIconObserver(mEngineIconObserver);
         verify(mEngineIconObserver).onSearchEngineIconChanged(null);
-        reset(mEngineIconObserver);
+        clearInvocations(mEngineIconObserver);
 
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
@@ -384,7 +382,7 @@ public class SearchEngineServiceUnitTest {
         searchEngineService.addIconObserver(mEngineIconObserver);
 
         verify(mEngineIconObserver).onSearchEngineIconChanged(null);
-        reset(mEngineIconObserver);
+        clearInvocations(mEngineIconObserver);
 
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
@@ -432,13 +430,13 @@ public class SearchEngineServiceUnitTest {
                 .needToCheckForSearchEnginePromo();
         assertFalse(searchEngineService.needToCheckForSearchEnginePromo());
 
-        reset(mLocaleManagerDelegate);
+        clearInvocations(mLocaleManagerDelegate);
 
         doReturn(true).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
 
         assertTrue(searchEngineService.needToCheckForSearchEnginePromo());
 
-        reset(mLocaleManagerDelegate);
+        clearInvocations(mLocaleManagerDelegate);
 
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
 
@@ -446,7 +444,7 @@ public class SearchEngineServiceUnitTest {
         assertFalse(searchEngineService.needToCheckForSearchEnginePromo());
         assertFalse(searchEngineService.needToCheckForSearchEnginePromo());
 
-        verify(mLocaleManagerDelegate, times(1)).needToCheckForSearchEnginePromo();
+        verify(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
     }
 
     @Test

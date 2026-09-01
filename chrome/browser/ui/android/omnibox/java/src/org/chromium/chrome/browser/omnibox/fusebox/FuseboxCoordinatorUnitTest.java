@@ -18,7 +18,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -296,7 +295,7 @@ public class FuseboxCoordinatorUnitTest {
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
                 pageClass <= PageClassification.MAX_VALUE;
                 pageClass++) {
-            reset(mMediator);
+            clearInvocations(mMediator);
             mAutocompleteInput.setPageClassification(pageClass);
 
             mCoordinator.beginInput(createSession());
