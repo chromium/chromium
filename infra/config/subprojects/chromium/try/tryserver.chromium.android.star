@@ -428,6 +428,20 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-annotator-rel",
+    mirrors = ["ci/android-annotator-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-annotator-rel",
+            "try_builder",
+            "no_symbols",
+        ],
+    ),
+    contact_team_email = "cbe-compliance@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-arm-compile-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],

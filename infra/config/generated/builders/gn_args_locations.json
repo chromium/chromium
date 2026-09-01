@@ -571,6 +571,7 @@
     "android-16-x64-leakcanary-rel": "try/android-16-x64-leakcanary-rel/gn-args.json",
     "android-16-x64-rel": "try/android-16-x64-rel/gn-args.json",
     "android-17-x64-fyi-rel": "try/android-17-x64-fyi-rel/gn-args.json",
+    "android-annotator-rel": "try/android-annotator-rel/gn-args.json",
     "android-arm-compile-dbg": "try/android-arm-compile-dbg/gn-args.json",
     "android-arm64-compile-dbg": "try/android-arm64-compile-dbg/gn-args.json",
     "android-arm64-rel": "try/android-arm64-rel/gn-args.json",

@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/android-annotator-rel/gn-args.json"
+        "infra/config/generated/builders/try/android-annotator-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -45,25 +45,22 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-annotator-rel",
-          "group": "tryserver.chromium.android"
-        }
-      ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/android-annotator-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/android-annotator-rel/targets"
     }
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "keep_going": 3,
+    "output_local_strategy": "greedy",
     "profile_mode": "cloud",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -72,6 +69,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.fyi",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }
