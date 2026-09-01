@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 namespace autofill {
-struct MemorySearchResult;
+struct Suggestion;
 }  // namespace autofill
 
 // Represents an item in the AtMemory table view diffable data source.
@@ -27,11 +27,10 @@ struct MemorySearchResult;
 // Index of the search result item.
 @property(nonatomic, assign, readonly) NSInteger index;
 
-// Initializes the item from a memory search `result` and its `index`.
-- (instancetype)initWithMemorySearchResult:
-                    (const autofill::MemorySearchResult&)result
-                                     index:(NSInteger)index
-    NS_DESIGNATED_INITIALIZER;
+// Initializes the item from an autofill `suggestion` and its `index`.
+- (instancetype)initWithSuggestion:(const autofill::Suggestion&)suggestion
+                             index:(NSInteger)index NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
