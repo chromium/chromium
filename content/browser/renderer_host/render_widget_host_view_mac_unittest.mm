@@ -6,9 +6,11 @@
 
 #include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
+#import <objc/runtime.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <string>
 #include <tuple>
 
@@ -84,6 +86,22 @@
 using testing::_;
 using testing::Bool;
 using testing::Combine;
+
+@interface InvalidReplacementRangeRenderWidgetHostViewCocoa
+    : RenderWidgetHostViewCocoa
+@end
+
+@implementation InvalidReplacementRangeRenderWidgetHostViewCocoa
+
+- (void)interpretKeyEvents:(NSArray<NSEvent*>*)eventArray {
+  const NSUInteger invalid_location =
+      static_cast<NSUInteger>(std::numeric_limits<uint32_t>::max()) + 1;
+  [self setMarkedText:@"x"
+         selectedRange:NSMakeRange(0, 1)
+      replacementRange:NSMakeRange(invalid_location, 0)];
+}
+
+@end
 
 // Helper class with methods used to mock -[NSEvent phase], used by
 // |MockScrollWheelEventWithPhase()|.
@@ -1999,6 +2017,21 @@ TEST_F(InputMethodMacTest, SetMarkedText) {
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
   EXPECT_EQ("SetComposition", GetMessageNames(events));
+}
+
+TEST_F(InputMethodMacTest, SetMarkedTextWithInvalidRangeDuringKeyDown) {
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+
+  RenderWidgetHostViewCocoa* view = tab_GetInProcessNSView();
+  Class original_class = object_setClass(
+      view, [InvalidReplacementRangeRenderWidgetHostViewCocoa class]);
+  [view keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                     0, 'x', NSEventTypeKeyDown, 0)];
+  object_setClass(view, original_class);
+
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("RawKeyDown SetComposition", GetMessageNames(events));
 }
 
 // This test makes sure that selectedRange and markedRange are updated correctly

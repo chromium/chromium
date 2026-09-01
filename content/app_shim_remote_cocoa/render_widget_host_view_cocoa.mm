@@ -2677,7 +2677,8 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // automatically cancels an ongoing composition when we send an empty text.
   // So, it is OK to send an empty text to the renderer.)
   if ([self isHandlingKeyDown] && !_isReconversionTriggered) {
-    _setMarkedTextReplacementRange = gfx::Range(replacementRange);
+    _setMarkedTextReplacementRange =
+        gfx::Range::FromPossiblyInvalidNSRange(replacementRange);
   } else {
     _host->ImeSetComposition(
         _markedText, _imeTextSpans,
