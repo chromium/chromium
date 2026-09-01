@@ -539,6 +539,33 @@ export class AutomationUtil {
     }
     return null;
   }
+
+  /**
+   * Determines whether a node is resident in the desktop tree hierarchy (i.e.,
+   * reachable up to the root desktop node).
+   * @param node The node to test.
+   * @param desktop Optional desktop node. If provided, ensures the ancestry
+   *     reaches this specific desktop node.
+   * @return Whether the node is connected to the desktop tree.
+   */
+  static isDesktopTreeResident(
+      node: AutomationNode|null|undefined,
+      desktop?: AutomationNode|null): boolean {
+    if (!node) {
+      return false;
+    }
+    let root: AutomationNode|undefined = node.root;
+    while (root) {
+      if (desktop ? root === desktop : root.role === RoleType.DESKTOP) {
+        return true;
+      }
+      if (!root.parent) {
+        break;
+      }
+      root = root.parent.root;
+    }
+    return false;
+  }
 }
 
 /**

@@ -158,6 +158,44 @@ AX_TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', async function() {
   this.assertSameRect(focusRings[0].rects[0], expected);
 });
 
+// Verifies that hit test events targeting detached or unparented nodes that are
+// not connected to the desktop tree hierarchy do not trigger focus rings or
+// scrollable bounds updates.
+AX_TEST_F('AutoclickE2ETest', 'IgnoresDetachedHitTestNodes', async function() {
+  await this.runWithLoadedTree(
+      'data:text/html;charset=utf-8,<p id="target">Hit Target</p>');
+
+  // Clear any existing focus rings or bounds in mock API.
+  this.mockAccessibilityPrivate.focusRings_ = [];
+  this.mockAccessibilityPrivate.scrollableBounds_ = null;
+
+  const autoclick = accessibilityCommon.getAutoclickForTest();
+
+  // Test 1: Event with a detached / unparented node.
+  const detachedNode = {
+    role: RoleType.STATIC_TEXT,
+    location: {left: 100, top: 100, width: 200, height: 50},
+  };
+  autoclick.onAutomationHitTestResult_({target: detachedNode});
+
+  assertEquals(this.mockAccessibilityPrivate.getFocusRings().length, 0);
+  assertEquals(this.mockAccessibilityPrivate.getScrollableBounds(), null);
+
+  // Test 2: Event with a detached tree branch (parent chain not reaching
+  // desktop).
+  const detachedRoot = {role: RoleType.ROOT_WEB_AREA, parent: null};
+  const detachedChild = {
+    role: RoleType.GENERIC_CONTAINER,
+    root: detachedRoot,
+    parent: detachedRoot,
+    location: {left: 50, top: 50, width: 100, height: 100},
+  };
+  autoclick.onAutomationHitTestResult_({target: detachedChild});
+
+  assertEquals(this.mockAccessibilityPrivate.getFocusRings().length, 0);
+  assertEquals(this.mockAccessibilityPrivate.getScrollableBounds(), null);
+});
+
 // TODO(crbug.com/41467584): Add tests for when the scrollable area is scrolled
 // all the way up or down, left or right. Add tests for nested scrollable areas.
 // Add tests for root types like toolbar, dialog, and window to ensure

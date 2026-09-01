@@ -12,7 +12,6 @@ import '/common/automation_predicate.js';
 // Required for AccessibilityExtensionAutomationTreeWalkerTest.
 import '/common/tree_walker.js';
 // Required for AccessibilityExtensionAutomationUtilE2ETest.
-import '/common/automation_util.js';
 import '/common/rect_util.js';
 // Required for AccessibilityExtensionCursorsTest.
 import '/common/cursors/cursor.js';
@@ -24,6 +23,7 @@ import '/common/keep_alive.js';
 // Required for AccessibilityExtensionLocalStorageTest.
 import '/common/local_storage.js';
 
+import {AutomationUtil} from '/common/automation_util.js';
 import {EventHandler} from '/common/event_handler.js';
 
 /**
@@ -149,9 +149,17 @@ export class Autoclick {
    */
   private onAutomationHitTestResult_(event: chrome.automation.AutomationEvent):
       void {
-    // Walk up to the nearest scrollale area containing the point.
-    let node = event.target;
-    while (node.parent && node.role !== chrome.automation.RoleType.WINDOW &&
+    // Only process hit test results for nodes that are resident within the
+    // desktop tree hierarchy.
+    if (!this.desktop_ || !event.target ||
+        !AutomationUtil.isDesktopTreeResident(event.target, this.desktop_)) {
+      return;
+    }
+
+    // Walk up to the nearest scrollable area containing the point.
+    let node: chrome.automation.AutomationNode|undefined = event.target;
+    while (node && node.parent &&
+           node.role !== chrome.automation.RoleType.WINDOW &&
            node.role !== chrome.automation.RoleType.ROOT_WEB_AREA &&
            node.role !== chrome.automation.RoleType.DESKTOP &&
            node.role !== chrome.automation.RoleType.DIALOG &&
@@ -162,7 +170,7 @@ export class Autoclick {
       }
       node = node.parent;
     }
-    if (!node.location) {
+    if (!node || !node.location) {
       return;
     }
     const bounds = node.location;

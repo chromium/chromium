@@ -337,7 +337,9 @@ class MockAccessibilityPrivate {
    */
   handleScrollableBoundsForPointFound(bounds) {
     this.scrollableBounds_ = bounds;
-    this.handleScrollableBoundsForPointFoundCallback_();
+    if (this.handleScrollableBoundsForPointFoundCallback_) {
+      this.handleScrollableBoundsForPointFoundCallback_();
+    }
   }
 
   /**

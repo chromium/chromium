@@ -242,3 +242,37 @@ AX_TEST_F(
               .findLastNode(r, n => n.role === RoleType.GENERIC_CONTAINER)
               .name);
     });
+
+AX_TEST_F(
+    'AccessibilityExtensionAutomationUtilE2ETest', 'IsDesktopTreeResident',
+    async function() {
+      const desktop = await new Promise(
+          resolve => chrome.automation.getDesktop(resolve));
+      assertTrue(AutomationUtil.isDesktopTreeResident(desktop));
+      assertTrue(AutomationUtil.isDesktopTreeResident(desktop, desktop));
+
+      const r = await this.runWithLoadedTree(this.basicDoc());
+      assertTrue(AutomationUtil.isDesktopTreeResident(r));
+      assertTrue(AutomationUtil.isDesktopTreeResident(r, desktop));
+
+      const iframeRoot = await this.runWithLoadedTree(this.iframeDoc());
+      const iframeNode = iframeRoot.find({role: RoleType.IFRAME});
+      assertNotNullNorUndefined(iframeNode);
+      assertTrue(AutomationUtil.isDesktopTreeResident(iframeNode, desktop));
+
+      // Detached / mock node
+      const detachedNode = {
+        role: RoleType.STATIC_TEXT,
+        root: {
+          role: RoleType.ROOT_WEB_AREA,
+          parent: undefined,
+        },
+      };
+      assertFalse(AutomationUtil.isDesktopTreeResident(detachedNode));
+      assertFalse(AutomationUtil.isDesktopTreeResident(detachedNode, desktop));
+
+      // Null / undefined
+      assertFalse(AutomationUtil.isDesktopTreeResident(null));
+      assertFalse(AutomationUtil.isDesktopTreeResident(undefined));
+      assertFalse(AutomationUtil.isDesktopTreeResident(null, desktop));
+    });
