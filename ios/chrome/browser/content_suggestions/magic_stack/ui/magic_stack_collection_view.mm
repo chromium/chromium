@@ -10,7 +10,6 @@
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/safe_conversions.h"
-#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/edit_button_config.h"
@@ -454,13 +453,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       [self.diffableDataSource.snapshot itemIdentifiers];
   closestPage = std::clamp<CGFloat>(closestPage, 0, [items count] - 1);
   _magicStackPage = closestPage;
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kSegmentationPlatformEphemeralCardRanker)) {
-    if ([items count] > 0 && !_hasSeenEphemeralCard &&
-        [self isCardEphemeral:items[_magicStackPage]]) {
-      [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
-    }
+  if ([items count] > 0 && !_hasSeenEphemeralCard &&
+      [self isCardEphemeral:items[_magicStackPage]]) {
+    [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
   }
   return _magicStackPage * (moduleWidth + kMagicStackSpacing) -
          [self peekOffsetForMagicStackPage:_magicStackPage];
@@ -502,15 +497,11 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)logNavigationToPage:(NSUInteger)page {
   UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackScrollToIndexHistogram, page,
                              kMaxModuleHistogramIndex);
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kSegmentationPlatformEphemeralCardRanker)) {
-    NSArray<MagicStackModule*>* items =
-        [self.diffableDataSource.snapshot itemIdentifiers];
-    if ([items count] > page && !_hasSeenEphemeralCard &&
-        [self isCardEphemeral:items[page]]) {
-      [self.audience logEphemeralCardVisibility:items[page].type];
-    }
+  NSArray<MagicStackModule*>* items =
+      [self.diffableDataSource.snapshot itemIdentifiers];
+  if ([items count] > page && !_hasSeenEphemeralCard &&
+      [self isCardEphemeral:items[page]]) {
+    [self.audience logEphemeralCardVisibility:items[page].type];
   }
 }
 

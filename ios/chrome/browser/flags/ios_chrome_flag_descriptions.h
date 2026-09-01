@@ -1848,12 +1848,6 @@ inline constexpr char kSearchEngineChoiceScreenSnackbarName[] =
 inline constexpr char kSearchEngineChoiceScreenSnackbarDescription[] =
     "Enables a snackbar after the search engine choice screen.";
 
-inline constexpr char kSegmentationPlatformEphemeralCardRankerName[] =
-    "Enable Segmentation Ranking for Ephemeral Cards";
-inline constexpr char kSegmentationPlatformEphemeralCardRankerDescription[] =
-    "Enables the segmentation platform to rank ephemeral cards in the Magic "
-    "Stack";
-
 inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
     "Send Tab To Self enhanced handoff";
 inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =

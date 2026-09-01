@@ -6557,11 +6557,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "ios-segmentation-ephemeral-card-ranker",
-    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "ios-settings-default-browser-promo-v2",
     "owners": [
       "cheickcisse@google.com",

@@ -73,8 +73,6 @@
 #import "components/safe_browsing/ios/browser/web_ui/features.h"
 #import "components/search/ntp_features.h"
 #import "components/search_engines/search_engines_switches.h"
-#import "components/segmentation_platform/embedder/home_modules/constants.h"
-#import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -610,175 +608,6 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
 const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
     {"Small model", {}, "3379590"},
     {"Full model", {}, "3380197"},
-};
-
-const FeatureEntry::FeatureParam kPriceTrackingPromoForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kPriceTrackingNotificationPromo},
-};
-const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kPriceTrackingNotificationPromo},
-};
-
-// Address Bar Position
-const FeatureEntry::FeatureParam kTipsAddressBarPositionForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kAddressBarPositionEphemeralModule},
-};
-const FeatureEntry::FeatureParam kTipsAddressBarPositionForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kAddressBarPositionEphemeralModule},
-};
-
-// Autofill Passwords
-const FeatureEntry::FeatureParam kTipsAutofillPasswordsForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kAutofillPasswordsEphemeralModule},
-};
-const FeatureEntry::FeatureParam kTipsAutofillPasswordsForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kAutofillPasswordsEphemeralModule},
-};
-
-// Enhanced Safe Browsing
-const FeatureEntry::FeatureParam kTipsEnhancedSafeBrowsingForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kEnhancedSafeBrowsingEphemeralModule},
-};
-const FeatureEntry::FeatureParam kTipsEnhancedSafeBrowsingForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kEnhancedSafeBrowsingEphemeralModule},
-};
-
-// Lens Search
-const FeatureEntry::FeatureParam kTipsLensSearchForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kLensEphemeralModuleSearchVariation},
-};
-const FeatureEntry::FeatureParam kTipsLensSearchForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kLensEphemeralModuleSearchVariation},
-};
-
-// Lens Shop
-const FeatureEntry::FeatureParam kTipsLensShopForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kLensEphemeralModuleShopVariation},
-};
-const FeatureEntry::FeatureParam kTipsLensShopForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kLensEphemeralModuleShopVariation},
-};
-
-// Lens Translate
-const FeatureEntry::FeatureParam kTipsLensTranslateForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kLensEphemeralModuleTranslateVariation},
-};
-const FeatureEntry::FeatureParam kTipsLensTranslateForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kLensEphemeralModuleTranslateVariation},
-};
-
-// Save Passwords
-const FeatureEntry::FeatureParam kTipsSavePasswordsForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kSavePasswordsEphemeralModule},
-};
-const FeatureEntry::FeatureParam kTipsSavePasswordsForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kSavePasswordsEphemeralModule},
-};
-
-// Send Tab Promo
-const FeatureEntry::FeatureParam kSendTabPromoForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kSendTabNotificationPromo},
-};
-const FeatureEntry::FeatureParam kSendTabPromoForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kSendTabNotificationPromo},
-};
-
-// App Bundle Promo
-const FeatureEntry::FeatureParam kAppBundlePromoForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kAppBundlePromoEphemeralModule},
-};
-const FeatureEntry::FeatureParam kAppBundlePromoForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kAppBundlePromoEphemeralModule},
-};
-
-// Default Browser Promo
-const FeatureEntry::FeatureParam kDefaultBrowserPromoForceShowArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::kDefaultBrowserPromoEphemeralModule},
-};
-const FeatureEntry::FeatureParam kDefaultBrowserPromoForceHideArm[] = {
-    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::kDefaultBrowserPromoEphemeralModule},
-};
-
-const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
-    {
-        {"- Force Show Price Tracking Notification",
-         kPriceTrackingPromoForceShowArm, nullptr},
-        {"- Force Hide Price Tracking Notification",
-         kPriceTrackingPromoForceHideArm, nullptr},
-
-        // Address Bar Position
-        {"- Force Show Address Bar Position Tip",
-         kTipsAddressBarPositionForceShowArm, nullptr},
-        {"- Force Hide Address Bar Position Tip",
-         kTipsAddressBarPositionForceHideArm, nullptr},
-
-        // Autofill Passwords
-        {"- Force Show Autofill Passwords Tip",
-         kTipsAutofillPasswordsForceShowArm, nullptr},
-        {"- Force Hide Autofill Passwords Tip",
-         kTipsAutofillPasswordsForceHideArm, nullptr},
-
-        // Enhanced Safe Browsing
-        {"- Force Show Enhanced Safe Browsing Tip",
-         kTipsEnhancedSafeBrowsingForceShowArm, nullptr},
-        {"- Force Hide Enhanced Safe Browsing Tip",
-         kTipsEnhancedSafeBrowsingForceHideArm, nullptr},
-
-        // Lens Search
-        {"- Force Show Lens Search Tip", kTipsLensSearchForceShowArm, nullptr},
-        {"- Force Hide Lens Search Tip", kTipsLensSearchForceHideArm, nullptr},
-
-        // Lens Shop
-        {"- Force Show Lens Shop Tip", kTipsLensShopForceShowArm, nullptr},
-        {"- Force Hide Lens Shop Tip", kTipsLensShopForceHideArm, nullptr},
-
-        // Lens Translate
-        {"- Force Show Lens Translate Tip", kTipsLensTranslateForceShowArm,
-         nullptr},
-        {"- Force Hide Lens Translate Tip", kTipsLensTranslateForceHideArm,
-         nullptr},
-
-        // Save Passwords
-        {"- Force Show Save Passwords Tip", kTipsSavePasswordsForceShowArm,
-         nullptr},
-        {"- Force Hide Save Passwords Tip", kTipsSavePasswordsForceHideArm,
-         nullptr},
-
-        // Send Tab Promo.
-        {"- Force Show Send Tab Promo", kSendTabPromoForceShowArm, nullptr},
-        {"- Force Hide Send Tab Promo", kSendTabPromoForceHideArm, nullptr},
-
-        // App Bundle Promo.
-        {"- Force Show App Bundle Promo", kAppBundlePromoForceShowArm, nullptr},
-        {"- Force Hide App Bundle Promo", kAppBundlePromoForceHideArm, nullptr},
-
-        // Default Browser Promo.
-        {"- Force Show Default Browser Promo", kDefaultBrowserPromoForceShowArm,
-         nullptr},
-        {"- Force Hide Default Browser Promo", kDefaultBrowserPromoForceHideArm,
-         nullptr},
 };
 
 // Soft Lock
@@ -1871,15 +1700,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableTraitCollectionRegistrationName,
      flag_descriptions::kEnableTraitCollectionRegistrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableTraitCollectionRegistration)},
-    {"ios-segmentation-ephemeral-card-ranker",
-     flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
-     flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::
-             kSegmentationPlatformEphemeralCardRanker,
-         kEphemeralCardRankerCardOverrideOptions,
-         "SegmentationPlatformEphemeralCardRanker")},
     {"lens-overlay-enable-landscape-compatibility",
      flag_descriptions::kLensOverlayEnableLandscapeCompatibilityName,
      flag_descriptions::kLensOverlayEnableLandscapeCompatibilityDescription,

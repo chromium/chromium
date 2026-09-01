@@ -37,7 +37,6 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/segmentation_platform/public/constants.h"
-#import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/pref_names.h"
@@ -252,12 +251,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   _magicStackOrderFromSegmentationReceived = NO;
   _magicStackOrderFromSegmentation = nil;
   _latestMagicStackConfigOrder = nil;
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kSegmentationPlatformEphemeralCardRanker)) {
-    _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
-    [self fetchEphemeralCardFromSegmentationPlatform];
-  }
+  _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
+  [self fetchEphemeralCardFromSegmentationPlatform];
   [self fetchMagicStackModuleRankingFromSegmentationPlatform];
 }
 
@@ -901,53 +896,49 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   }
   // Currently assume ephemeral cards are always added to the front of the Magic
   // Stack when it can show.
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kSegmentationPlatformEphemeralCardRanker)) {
-    switch (_ephemeralCardToShow) {
-      case ContentSuggestionsModuleType::kPriceTrackingPromo:
-        if (_priceTrackingPromoMediator &&
-            _priceTrackingPromoMediator.priceTrackingPromoConfigToShow) {
-          [magicStackOrder addObject:_priceTrackingPromoMediator
-                                         .priceTrackingPromoConfigToShow];
-        }
-        break;
-      case ContentSuggestionsModuleType::kSendTabPromo:
-        if (_sendTabPromoMediator &&
-            _sendTabPromoMediator.sendTabPromoConfigToShow) {
-          [magicStackOrder
-              addObject:_sendTabPromoMediator.sendTabPromoConfigToShow];
-        }
-        break;
-      case ContentSuggestionsModuleType::kTips:
-      case ContentSuggestionsModuleType::kTipsWithProductImage: {
-        if (_tipsMediator && _tipsMediator.config) {
-          [magicStackOrder addObject:_tipsMediator.config];
-        }
-        break;
+  switch (_ephemeralCardToShow) {
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      if (_priceTrackingPromoMediator &&
+          _priceTrackingPromoMediator.priceTrackingPromoConfigToShow) {
+        [magicStackOrder addObject:_priceTrackingPromoMediator
+                                       .priceTrackingPromoConfigToShow];
       }
-      case ContentSuggestionsModuleType::kAppBundlePromo:
-        if (_appBundlePromoMediator && _appBundlePromoMediator.config) {
-          [magicStackOrder addObject:_appBundlePromoMediator.config];
-        }
-        break;
-      case ContentSuggestionsModuleType::kDefaultBrowser:
-        if (_defaultBrowserMediator) {
-          [magicStackOrder addObject:_defaultBrowserMediator.config];
-        }
-        break;
-      case ContentSuggestionsModuleType::kLevelUp: {
-        if (IsLevelUpEnabled()) {
-          LevelUpConfig* config = [self createLevelUpConfig];
-          if (config) {
-            [magicStackOrder addObject:config];
-          }
-        }
-        break;
+      break;
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      if (_sendTabPromoMediator &&
+          _sendTabPromoMediator.sendTabPromoConfigToShow) {
+        [magicStackOrder
+            addObject:_sendTabPromoMediator.sendTabPromoConfigToShow];
       }
-      default:
-        break;
+      break;
+    case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kTipsWithProductImage: {
+      if (_tipsMediator && _tipsMediator.config) {
+        [magicStackOrder addObject:_tipsMediator.config];
+      }
+      break;
     }
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+      if (_appBundlePromoMediator && _appBundlePromoMediator.config) {
+        [magicStackOrder addObject:_appBundlePromoMediator.config];
+      }
+      break;
+    case ContentSuggestionsModuleType::kDefaultBrowser:
+      if (_defaultBrowserMediator) {
+        [magicStackOrder addObject:_defaultBrowserMediator.config];
+      }
+      break;
+    case ContentSuggestionsModuleType::kLevelUp: {
+      if (IsLevelUpEnabled()) {
+        LevelUpConfig* config = [self createLevelUpConfig];
+        if (config) {
+          [magicStackOrder addObject:config];
+        }
+      }
+      break;
+    }
+    default:
+      break;
   }
   for (NSNumber* moduleNumber in _magicStackOrderFromSegmentation) {
     ContentSuggestionsModuleType moduleType =

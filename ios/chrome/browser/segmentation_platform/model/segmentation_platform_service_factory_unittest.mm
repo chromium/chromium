@@ -175,8 +175,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{optimization_guide::features::kOptimizationTargetPrediction, {}},
          {features::kSegmentationPlatformFeature, {}},
-         {features::kSegmentationPlatformUkmEngine, {}},
-         {features::kSegmentationPlatformEphemeralCardRanker, {}}},
+         {features::kSegmentationPlatformUkmEngine, {}}},
         {});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         kSegmentationPlatformRefreshResultsSwitch);
