@@ -1376,7 +1376,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   resource_request.SetFromOriginDirtyStyleSheet(
       params.IsFromOriginDirtyStyleSheet());
   TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
-                    perfetto::Track(identifier), "url", resource_request.Url());
+                    perfetto::NamedTrack("BlinkResourceID", identifier), "url",
+                    resource_request.Url());
   absl::Cleanup record_times = [start = base::TimeTicks::Now(), &params] {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start;
     base::UmaHistogramMicrosecondsTimes("Blink.Fetch.RequestResourceTime2",
@@ -1648,7 +1649,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   if (resource->InspectorId() != identifier ||
       (!resource->StillNeedsLoad() && !resource->IsLoading())) {
     TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("network"),
-                    perfetto::Track(identifier), "outcome", "Fail");
+                    perfetto::NamedTrack("BlinkResourceID", identifier),
+                    "outcome", "Fail");
   }
   return resource;
 }
@@ -3026,10 +3028,10 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
               resource->GetResourceRequest().Priority());
     resource->DidChangePriority(computed_load_priority,
                                 resource_priority.intra_priority_value);
-    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("network"),
-                        "ResourcePrioritySet",
-                        perfetto::Track(resource->InspectorId()), "data",
-                        CreateTracedValueWithPriority(computed_load_priority));
+    TRACE_EVENT_INSTANT(
+        TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
+        perfetto::NamedTrack("BlinkResourceID", resource->InspectorId()),
+        "data", CreateTracedValueWithPriority(computed_load_priority));
     DCHECK(!IsDetached());
     resource_load_observer_->DidChangePriority(
         resource->InspectorId(), computed_load_priority,
@@ -3743,10 +3745,10 @@ ResourceFetcher::ResourcePrepareHelper::ComputeLoadPriority(
 
 void ResourceFetcher::ResourcePrepareHelper::RecordTrace() {
   const ResourceRequest& resource_request = params_.GetResourceRequest();
-  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "ResourcePrioritySet",
-                      perfetto::Track(resource_request.InspectorId()),
-                      "priority", resource_request.Priority());
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
+      perfetto::NamedTrack("BlinkResourceID", resource_request.InspectorId()),
+      "priority", resource_request.Priority());
 }
 
 }  // namespace blink
