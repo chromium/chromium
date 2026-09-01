@@ -11008,7 +11008,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ComposeboxDriveContextMenuOption"
+                        "ComposeboxConnectedAppsSetting",
+                        "ComposeboxDriveContextMenuOption",
+                        "ComposeboxDriveContextMenuOptionDisclaimer"
                     ]
                 }
             ]
