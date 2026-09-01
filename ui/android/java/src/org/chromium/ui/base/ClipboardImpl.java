@@ -800,6 +800,19 @@ public class ClipboardImpl extends Clipboard
     @Override
     public void onPrimaryClipChanged() {
         RecordUserAction.record("MobileClipboardChanged");
+        // Android delivers onPrimaryClipChanged for our own writes as well as
+        // for foreign clipboard changes. Our own write already bumped the native
+        // clipboard sequence number synchronously in CommitToAndroidClipboard
+        // and recorded its time as the last-modified time. Bumping the sequence
+        // number again would signal a false divergence for any listeners that captured
+        // it synchronously relative to the write. Only foreign changes,
+        // which carry a newer timestamp, should notify.
+        ClipDescription clipDescription = mClipboardManager.getPrimaryClipDescription();
+        if (clipDescription != null
+                && clipDescription.getTimestamp() > 0
+                && clipDescription.getTimestamp() <= getLastModifiedTimeMs()) {
+            return;
+        }
         notifyPrimaryClipChanged();
     }
 

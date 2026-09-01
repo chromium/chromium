@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -80,6 +82,8 @@ public class ClipboardAndroidTest {
 
     @Mock private PackageManager mMockPm;
     @Mock private Context mMockContext;
+    @Mock private ClipDescription mMockClipDescription;
+    @Mock private ClipboardManager mMockClipboardManager;
 
     @BeforeClass
     public static void setupSuite() {
@@ -165,6 +169,54 @@ public class ClipboardAndroidTest {
                                     sActivity.getSystemService(Context.CLIPBOARD_SERVICE);
                     clipboardManager.removePrimaryClipChangedListener(clipboardChangedListener);
                 });
+    }
+
+    /**
+     * Taking ownership of the clipboard bumps the native sequence number synchronously, and Android
+     * then delivers an asynchronous onPrimaryClipChanged echo for that same write. That echo must
+     * NOT bump the sequence number a second time, otherwise a listener that captures the sequence
+     * number synchronously with respect to the write would observe a false divergence. A genuine
+     * foreign change, which carries a newer timestamp, must still bump the sequence number.
+     */
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void selfWriteClipChangedEchoDoesNotBumpSequenceNumber() {
+        ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
+
+        // Install a mock ClipboardManager so the primary clip's timestamp can be controlled
+        // deterministically relative to the native last-modified time.
+        when(mMockClipboardManager.getPrimaryClipDescription()).thenReturn(mMockClipDescription);
+        ClipboardManager originalClipboardManager =
+                clipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
+
+        try {
+            // A native write bumps the sequence number synchronously and records its time as the
+            // last-modified time.
+            Assert.assertTrue(ClipboardAndroidTestSupport.writeHtml("foo"));
+            long lastModifiedMs = clipboard.getLastModifiedTimeMs();
+            String seqAfterWrite = ClipboardAndroidTestSupport.getSequenceNumber();
+
+            // Android echoes our own write back as onPrimaryClipChanged carrying the same timestamp
+            // we just recorded. That echo must be swallowed and must NOT bump the sequence number
+            // again.
+            when(mMockClipDescription.getTimestamp()).thenReturn(lastModifiedMs);
+            clipboard.onPrimaryClipChanged();
+            Assert.assertEquals(
+                    "The echo of our own write must not bump the sequence number.",
+                    seqAfterWrite,
+                    ClipboardAndroidTestSupport.getSequenceNumber());
+
+            // A genuine foreign change carries a newer timestamp and must bump the sequence number.
+            when(mMockClipDescription.getTimestamp()).thenReturn(lastModifiedMs + 100000);
+            clipboard.onPrimaryClipChanged();
+            Assert.assertNotEquals(
+                    "A foreign clipboard change must bump the sequence number.",
+                    seqAfterWrite,
+                    ClipboardAndroidTestSupport.getSequenceNumber());
+        } finally {
+            clipboard.overrideClipboardManagerForTesting(originalClipboardManager);
+        }
     }
 
     @Test

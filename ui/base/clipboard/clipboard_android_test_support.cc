@@ -12,6 +12,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 
@@ -115,6 +116,14 @@ static bool JNI_ClipboardAndroidTestSupport_NativeTestClipboardNotifications(
     JNIEnv* env) {
   int notification_count = WriteTextAndCountNotifications(u"test notification");
   return notification_count == 1;
+}
+
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_ClipboardAndroidTestSupport_NativeGetSequenceNumber(JNIEnv* env) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  return base::android::ConvertUTF8ToJavaString(
+      env,
+      clipboard->GetSequenceNumber(ClipboardBuffer::kCopyPaste).ToString());
 }
 
 }  // namespace ui
