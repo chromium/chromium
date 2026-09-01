@@ -775,9 +775,10 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     /**
-     * Set the listener to be notified when the URL text wraps.
+     * Sets the listener to be notified when the URL text wraps.
      *
-     * @param listener The listener to be notified.
+     * @param listener The listener to be notified, or null to unregister any previously registered
+     *     listener.
      */
     /* package */ void setUrlTextWrappingChangeListener(@Nullable Callback<Boolean> listener) {
         if (mDetectAndNotifyOnTextWrappingChanges != null) {

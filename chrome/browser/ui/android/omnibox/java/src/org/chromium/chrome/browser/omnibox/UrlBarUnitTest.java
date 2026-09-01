@@ -86,7 +86,6 @@ import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.test.util.MockitoHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -144,6 +143,7 @@ public class UrlBarUnitTest {
     @Mock private AutocompleteEditTextModelBase mAutocompleteEditTextModelBase;
     @Mock private Runnable mRunnable;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private Callback<Boolean> mTextWrappingCallback;
     @Captor private ArgumentCaptor<SpannableStringBuilder> mHaveUrlCaptor;
 
     private ActivityController<TestActivity> mController;
@@ -1278,79 +1278,83 @@ public class UrlBarUnitTest {
 
     @Test
     public void testTextWrappingCallback() {
-        Callback<Boolean> callback = MockitoHelper.mockCallback();
-        mUrlBar.setUrlTextWrappingChangeListener(callback);
+        mUrlBar.setUrlTextWrappingChangeListener(mTextWrappingCallback);
         doReturn(mLayout).when(mUrlBar).getLayout();
 
         mUrlBar.setAllowMultilineInput(true);
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         measureAndLayoutUrlBar();
 
         // No single-line report (implied initial state).
         doReturn(1).when(mLayout).getLineCount();
-        mUrlBar.onTextChanged("text", 0, 0, 4);
+        mUrlBar.onTextChanged("text", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 4);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback, never()).onResult(anyBoolean());
-        clearInvocations(callback);
+        verify(mTextWrappingCallback, never()).onResult(anyBoolean());
+        clearInvocations(mTextWrappingCallback);
 
         // Report multi-line.
         doReturn(2).when(mLayout).getLineCount();
-        mUrlBar.onTextChanged("longer text", 0, 0, 11);
+        mUrlBar.onTextChanged(
+                "longer text", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 11);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback).onResult(true);
-        clearInvocations(callback);
+        verify(mTextWrappingCallback).onResult(true);
+        clearInvocations(mTextWrappingCallback);
 
         // No repeated callbacks.
-        mUrlBar.onTextChanged("longer text 2", 0, 0, 13);
+        mUrlBar.onTextChanged(
+                "longer text 2", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 13);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback, never()).onResult(anyBoolean());
+        verify(mTextWrappingCallback, never()).onResult(anyBoolean());
 
         // Report single-line again.
         doReturn(1).when(mLayout).getLineCount();
-        mUrlBar.onTextChanged("text", 0, 0, 4);
+        mUrlBar.onTextChanged("text", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 4);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback).onResult(false);
-        clearInvocations(callback);
+        verify(mTextWrappingCallback).onResult(false);
+        clearInvocations(mTextWrappingCallback);
 
         // No repeated callbacks.
-        mUrlBar.onTextChanged("text 2", 0, 0, 6);
+        mUrlBar.onTextChanged(
+                "text 2", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 6);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback, never()).onResult(anyBoolean());
+        verify(mTextWrappingCallback, never()).onResult(anyBoolean());
     }
 
     @Test
     public void testTextWrappingCallback_deduplicatesRapidTextChanges() {
-        Callback<Boolean> callback = MockitoHelper.mockCallback();
-        mUrlBar.setUrlTextWrappingChangeListener(callback);
+        mUrlBar.setUrlTextWrappingChangeListener(mTextWrappingCallback);
         doReturn(mLayout).when(mUrlBar).getLayout();
 
         mUrlBar.setAllowMultilineInput(true);
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         measureAndLayoutUrlBar();
 
         doReturn(2).when(mLayout).getLineCount();
-        mUrlBar.onTextChanged("a", 0, 0, 1);
-        mUrlBar.onTextChanged("ab", 0, 0, 2);
-        mUrlBar.onTextChanged("abc", 0, 0, 3);
+        mUrlBar.onTextChanged("a", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 1);
+        mUrlBar.onTextChanged("ab", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 2);
+        mUrlBar.onTextChanged("abc", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 3);
 
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback).onResult(true);
+        verify(mTextWrappingCallback).onResult(true);
     }
 
     @Test
     public void testTextWrappingCallback_clearedOnDestroy() {
-        Callback<Boolean> callback = MockitoHelper.mockCallback();
-        mUrlBar.setUrlTextWrappingChangeListener(callback);
+        mUrlBar.setUrlTextWrappingChangeListener(mTextWrappingCallback);
 
         mUrlBar.setAllowMultilineInput(true);
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         measureAndLayoutUrlBar();
 
-        mUrlBar.onTextChanged("longer text", 0, 0, 11);
+        mUrlBar.onTextChanged(
+                "longer text", /* start= */ 0, /* lengthBefore= */ 0, /* lengthAfter= */ 11);
         mUrlBar.destroy();
 
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(callback, never()).onResult(anyBoolean());
+        verify(mTextWrappingCallback, never()).onResult(anyBoolean());
     }
 
     @Test
