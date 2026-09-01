@@ -46,9 +46,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link EducationalTipSetupListBottomSheetCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 public class EducationalTipSetupListBottomSheetCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

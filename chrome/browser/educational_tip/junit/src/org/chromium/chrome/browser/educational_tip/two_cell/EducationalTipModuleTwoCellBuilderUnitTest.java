@@ -46,9 +46,7 @@ import java.util.List;
 
 /** Test relating to {@link EducationalTipModuleTwoCellBuilder} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

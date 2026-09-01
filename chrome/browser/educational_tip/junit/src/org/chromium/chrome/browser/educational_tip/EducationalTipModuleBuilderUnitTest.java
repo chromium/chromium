@@ -54,9 +54,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
 public class EducationalTipModuleBuilderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

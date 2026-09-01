@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.R;
@@ -41,7 +40,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link EducationalTipModuleTwoCellViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

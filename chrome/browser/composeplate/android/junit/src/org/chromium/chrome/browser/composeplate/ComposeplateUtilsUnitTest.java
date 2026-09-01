@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for {@link ComposeplateUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ComposeplateUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -54,9 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Test relating to {@link SetupListManager} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_SETUP_LIST)
 public class SetupListManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

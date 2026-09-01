@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,7 +51,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Unit tests for {@link EducationalTipCardProviderSignalHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EducationalTipCardProviderSignalHandlerUnitTest {
     private static final String SYNC_ID = "sync_id";
     private static final @TabId int TAB_ID = 1;

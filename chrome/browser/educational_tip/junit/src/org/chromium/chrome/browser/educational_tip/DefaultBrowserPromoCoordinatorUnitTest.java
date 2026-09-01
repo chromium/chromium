@@ -38,9 +38,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** Test relating to {@link DefaultBrowserPromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 public class DefaultBrowserPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

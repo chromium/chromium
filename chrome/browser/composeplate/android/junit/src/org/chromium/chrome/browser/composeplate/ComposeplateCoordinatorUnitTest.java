@@ -43,7 +43,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link ComposeplateCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ComposeplateCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -59,9 +59,7 @@ import java.util.Set;
 
 /** Unit tests for {@link EducationalTipModuleMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 @EnableFeatures({
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT

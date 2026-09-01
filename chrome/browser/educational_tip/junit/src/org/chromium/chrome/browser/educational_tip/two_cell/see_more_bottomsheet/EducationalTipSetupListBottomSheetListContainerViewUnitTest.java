@@ -33,9 +33,7 @@ import java.util.List;
 
 /** Unit tests for {@link EducationalTipSetupListBottomSheetListContainerView} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 public class EducationalTipSetupListBottomSheetListContainerViewUnitTest {
     private static final int EDUCATIONAL_TIP_MODULES_SIZE = 5;
 

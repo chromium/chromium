@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 /** Test relating to {@link SetupListCompletable} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SetupListCompletableUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
