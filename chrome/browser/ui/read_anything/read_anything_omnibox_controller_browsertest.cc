@@ -173,17 +173,6 @@ class ReadAnythingOmniboxControllerTestBase
     read_anything_controller->SetPresentationState(
         ReadAnythingController::PresentationState::kInactive);
   }
-
-  void DeactivateSidePanel(SidePanelEntryHideReason reason) {
-    auto* read_anything_controller =
-        ReadAnythingController::From(browser()->GetActiveTabInterface());
-    CHECK(read_anything_controller);
-    auto* side_panel_controller =
-        read_anything_controller->GetSidePanelControllerForTesting();
-    side_panel_controller->OnEntryWillHide(read_anything_entry(), reason);
-    read_anything_controller->SetPresentationState(
-        ReadAnythingController::PresentationState::kInactive);
-  }
 };
 
 class ReadAnythingOmniboxControllerBrowserTest
@@ -669,17 +658,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
   ExpectPageActionStateImmediate(false);
 
   Deactivate(ReadAnythingCloseReason::kClosedByUser);
-
-  ExpectPageActionStateImmediate(true);
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
-                       DeactivateSidePanelByUser_ShowsOmnibox) {
-  RegisterPageActionObserver();
-  Activate(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
-  ExpectPageActionStateImmediate(false);
-
-  DeactivateSidePanel(SidePanelEntryHideReason::kSidePanelClosed);
 
   ExpectPageActionStateImmediate(true);
 }

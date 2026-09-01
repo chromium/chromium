@@ -491,8 +491,6 @@ void ReadAnythingController::CloseSidePanelUI(ReadAnythingCloseReason reason) {
     return;
   }
 
-  pending_side_panel_close_reason_ = reason;
-
   if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
     SidePanelEntryHideReason hide_reason =
         (reason == ReadAnythingCloseReason::kTabSwitched)
@@ -501,20 +499,6 @@ void ReadAnythingController::CloseSidePanelUI(ReadAnythingCloseReason reason) {
     side_panel_ui->Close(hide_reason,
                          /*suppress_animations=*/true);
   }
-}
-
-void ReadAnythingController::OnSidePanelWillHide(
-    SidePanelEntryHideReason side_panel_reason) {
-  ReadAnythingCloseReason reason;
-  if (pending_side_panel_close_reason_.has_value()) {
-    reason = *pending_side_panel_close_reason_;
-    pending_side_panel_close_reason_.reset();
-  } else if (side_panel_reason == SidePanelEntryHideReason::kBackgrounded) {
-    reason = ReadAnythingCloseReason::kTabSwitched;
-  } else {
-    reason = ReadAnythingCloseReason::kClosedByUser;
-  }
-  observers_.Notify(&ReadAnythingLifecycleObserver::OnWillClose, reason);
 }
 
 void ReadAnythingController::ShowInPreferredUI(

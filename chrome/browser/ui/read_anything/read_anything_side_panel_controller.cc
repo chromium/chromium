@@ -100,6 +100,13 @@ ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
     web_view_->contents_wrapper()->web_contents()->RemoveUserData(
         ReadAnythingSidePanelControllerGlue::UserDataKey());
   }
+  if (omnibox_controller_) {
+    RemoveObserver(omnibox_controller_.get());
+    omnibox_controller_.reset();
+  }
+
+  // Inform observers when |this| is destroyed so they can do their own cleanup.
+  observers_.Notify(&Observer::OnDestroyed);
 }
 
 void ReadAnythingSidePanelController::RemoveReadAnythingControllerGlue() {
@@ -107,6 +114,24 @@ void ReadAnythingSidePanelController::RemoveReadAnythingControllerGlue() {
     web_view_->contents_wrapper()->web_contents()->RemoveUserData(
         ReadAnythingControllerGlue::UserDataKey());
   }
+}
+
+void ReadAnythingSidePanelController::AddPageHandlerAsObserver(
+    base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
+  AddObserver(page_handler.get());
+}
+
+void ReadAnythingSidePanelController::RemovePageHandlerAsObserver(
+    base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
+  RemoveObserver(page_handler.get());
+}
+
+void ReadAnythingSidePanelController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ReadAnythingSidePanelController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
@@ -173,10 +198,6 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 void ReadAnythingSidePanelController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
-  auto* controller = ReadAnythingController::From(tab_);
-  CHECK(controller);
-  controller->OnSidePanelWillHide(reason);
-
   if (reason == SidePanelEntryHideReason::kSidePanelClosed ||
       reason == SidePanelEntryHideReason::kReplaced) {
     ReturnWebUIToController();
@@ -184,6 +205,12 @@ void ReadAnythingSidePanelController::OnEntryWillHide(
   if (reason == SidePanelEntryHideReason::kReplaced) {
     should_clear_cached_view_on_hidden_ = true;
   }
+
+  auto read_anything_close_reason =
+      reason == SidePanelEntryHideReason::kBackgrounded
+          ? ReadAnythingCloseReason::kTabSwitched
+          : ReadAnythingCloseReason::kClosedByUser;
+  observers_.Notify(&Observer::OnWillClose, read_anything_close_reason);
 }
 
 void ReadAnythingSidePanelController::ReturnWebUIToController() {
@@ -315,3 +342,9 @@ void ReadAnythingSidePanelController::UpdateIphVisibility() {
   }
 }
 
+void ReadAnythingSidePanelController::SetDwellTimeForTesting(
+    base::TimeTicks test_time) {
+  if (omnibox_controller_) {
+    omnibox_controller_->SetDwellTimeForTesting(test_time);
+  }
+}
