@@ -49,7 +49,8 @@ public final class PendingSelectionMenu {
         LogicalGroup.SECONDARY_ASSIST_ITEMS,
         LogicalGroup.TEXT_PROCESSING_ITEMS
     })
-    private @interface LogicalGroup {
+    @VisibleForTesting
+    public @interface LogicalGroup {
         int ASSIST_ITEMS = 0;
         int DEFAULT_ITEMS = 1;
         int SECONDARY_ASSIST_ITEMS = 2;
@@ -74,7 +75,7 @@ public final class PendingSelectionMenu {
 
     public void addMenuItem(SelectionMenuItem menuItem) {
         int group = determineGroup(menuItem);
-        mGroupsWithIcon[group] |= menuItem.isEnabled && menuItem.getIcon(mContext) != null;
+        mGroupsWithIcon[group] |= menuItem.getIcon(mContext) != null;
         mGroupTotals[group]++;
         mItems.add(menuItem);
     }
@@ -92,7 +93,7 @@ public final class PendingSelectionMenu {
      * groupId in the SelectionMenuItem.
      *
      * @param delegate used to create ListItems from the SelectionMenuItem data.
-     * @return a model list populated with all enabled items in mItems.
+     * @return a model list populated with all items in mItems.
      */
     public MVCListAdapter.ModelList getMenuAsDropdown(SelectionDropdownMenuDelegate delegate) {
         MVCListAdapter.ModelList items = new MVCListAdapter.ModelList();
@@ -200,7 +201,7 @@ public final class PendingSelectionMenu {
                             item.getIcon(mContext),
                             item.isIconTintable,
                             mGroupsWithIcon[group],
-                            true,
+                            item.isEnabled,
                             item.intent,
                             item.order));
         }
