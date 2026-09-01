@@ -31,6 +31,11 @@
 #import "ios/public/provider/chrome/browser/privacy_primitive/privacy_primitive_api.h"
 #import "ios/public/provider/chrome/browser/privacy_primitive/privacy_primitive_configuration.h"
 
+namespace {
+// The ConsentKit product ID for Chrome on iOS.
+constexpr int kChromeIOSProductId = 71720513;
+}  // namespace
+
 @interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
                                          UIDocumentPickerDelegate,
                                          UIImagePickerControllerDelegate,
@@ -189,7 +194,7 @@
         [[PrivacyPrimitiveConfiguration alloc] init];
     config.identity = identity;
     config.flowID = omnibox::kComposeboxDriveConsentFlowId.Get();
-    config.productID = omnibox::kComposeboxDriveConsentProductId.Get();
+    config.productID = kChromeIOSProductId;
     config.productSurface =
         omnibox::kComposeboxDriveConsentProductSurface.Get();
 
