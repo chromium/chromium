@@ -1106,7 +1106,7 @@ BASE_FEATURE(kGlicActorAutofillOneTimePassword,
 
 // Whether to click a field before filling it in Glic actor autofill.
 // This feature is also gated by |autofill::features::kGlicActorAutofill|.
-BASE_FEATURE(kGlicActorAutofillPreClick, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActorAutofillPreClick, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to enable the section label in Glic actor autofill.
 // This feature is also gated by |autofill::features::kGlicActorAutofill|.

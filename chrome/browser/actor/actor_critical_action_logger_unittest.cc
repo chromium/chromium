@@ -206,8 +206,8 @@ TEST_F(ActorCriticalActionLoggerTest, LogsFormFillActionWithMetadata) {
   AttemptFormFillingToolRequest::FormFillingRequest sub_req2;
   sub_req2.requested_data = autofill::ActorFormFillingRequestedData::kAddress;
 
-  AttemptFormFillingToolRequest request(CreateTabHandle(),
-                                        {sub_req1, sub_req2});
+  AttemptFormFillingToolRequest request(CreateTabHandle(), {sub_req1, sub_req2},
+                                        /*enqueued_click=*/true);
   mojom::ActionResultPtr result = MakeOkResult();
 
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,

@@ -116,19 +116,28 @@ FormFillingRequest CreateFormFillingRequest(
   return request;
 }
 
+// Creates an AttemptFormFillingToolRequest for testing.
+// `enqueued_click` defaults to true so that most tests can bypass the
+// pre-click enqueuing logic and test the core form filling behavior directly.
+// Tests that specifically verify the pre-click behavior (e.g. enqueuing click
+// and follow-up fill) should pass `false` explicitly.
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
-    std::vector<FormFillingRequest> requests) {
-  return std::make_unique<AttemptFormFillingToolRequest>(tab.GetHandle(),
-                                                         std::move(requests));
+    std::vector<FormFillingRequest> requests,
+    bool enqueued_click = true) {
+  return std::make_unique<AttemptFormFillingToolRequest>(
+      tab.GetHandle(), std::move(requests), enqueued_click);
 }
 
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
-    std::vector<PageTarget> trigger_fields) {
+    std::vector<PageTarget> trigger_fields,
+    bool enqueued_click = true) {
   return MakeAttemptFormFillingRequest(
-      tab, {CreateFormFillingRequest(RequestedData::kUnknown,
-                                     std::move(trigger_fields))});
+      tab,
+      {CreateFormFillingRequest(RequestedData::kUnknown,
+                                std::move(trigger_fields))},
+      enqueued_click);
 }
 
 // Gets the dom node or returns nullopt when the node id or document token
@@ -1104,7 +1113,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolPreClickTest,
       .WillOnce(MoveArg<0>(&enqueued_click));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
-      *active_tab(), {PageTarget(*address_home_line1)});
+      *active_tab(), {PageTarget(*address_home_line1)},
+      /*enqueued_click=*/false);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectOkResult(result);
@@ -1150,7 +1160,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolNoPreClickTest,
           base::unexpected(autofill::ActorFormFillingError::kNoSuggestions)));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
-      *active_tab(), {PageTarget(*address_home_line1)});
+      *active_tab(), {PageTarget(*address_home_line1)},
+      /*enqueued_click=*/false);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(
