@@ -37,7 +37,7 @@ class StatusChangeChecker {
   // becomes true. Checkers should call CheckExitCondition upon changes, which
   // can cause Wait() to immediately return true if IsExitConditionSatisfied(),
   // and continue to block if not. Returns false if and only if timeout occurs.
-  bool Wait(const base::Location& location = FROM_HERE);
+  [[nodiscard]] bool Wait(const base::Location& location = FROM_HERE);
 
   // Returns true if the blocking wait was exited because of a timeout.
   bool TimedOut() const;

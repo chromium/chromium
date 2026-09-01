@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // The account-storage opt-in is still present, so PASSWORDS should become
   // active.
-  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+  ASSERT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
 
   // Now the password should be in both stores: The profile store does *not* get
   // cleared when Sync gets disabled.
@@ -567,18 +567,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
       password_manager::FromPasswordForm(form1));
 
   // The passwords are still existing locally.
-  PasswordFormsChecker(0, {form0, form1},
-                       password_manager::PasswordForm::Store::kProfileStore)
-      .Wait();
+  ASSERT_TRUE(
+      PasswordFormsChecker(0, {form0, form1},
+                           password_manager::PasswordForm::Store::kProfileStore)
+          .Wait());
 
   // Fix the authentication error, sync is available again.
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // `form0` has been deleted locally, only `form1` remains.
-  PasswordFormsChecker(0, {form1},
-                       password_manager::PasswordForm::Store::kProfileStore)
-      .Wait();
+  ASSERT_TRUE(
+      PasswordFormsChecker(0, {form1},
+                           password_manager::PasswordForm::Store::kProfileStore)
+          .Wait());
 
   // `form1` was updated on the server.
   EXPECT_TRUE(ServerPasswordsEqualityChecker(
@@ -653,16 +655,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
       passwords_helper::GetAccountPasswordStoreInterface(0);
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 
-  PasswordFormsChecker(0, {form1, form2},
-                       password_manager::PasswordForm::Store::kProfileStore)
-      .Wait();
+  ASSERT_TRUE(
+      PasswordFormsChecker(0, {form1, form2},
+                           password_manager::PasswordForm::Store::kProfileStore)
+          .Wait());
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 0).Wait());
 
   GetSyncService(0)->TriggerLocalDataMigration({syncer::PASSWORDS});
 
-  PasswordFormsChecker(0, {},
-                       password_manager::PasswordForm::Store::kProfileStore)
-      .Wait();
+  ASSERT_TRUE(PasswordFormsChecker(
+                  0, {}, password_manager::PasswordForm::Store::kProfileStore)
+                  .Wait());
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
 
   EXPECT_THAT(
@@ -711,17 +714,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
       passwords_helper::GetAccountPasswordStoreInterface(0);
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 
-  PasswordFormsChecker(0, {form1, form2},
-                       password_manager::PasswordForm::Store::kProfileStore)
-      .Wait();
+  ASSERT_TRUE(
+      PasswordFormsChecker(0, {form1, form2},
+                           password_manager::PasswordForm::Store::kProfileStore)
+          .Wait());
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 0).Wait());
 
   GetSyncService(0)->TriggerLocalDataMigrationForItems(
       {{syncer::PASSWORDS, {PasswordFormUniqueKey(form1)}}});
 
-  PasswordFormsChecker(0, {form2},
-                       password_manager::PasswordForm::Store::kProfileStore)
-      .Wait();
+  ASSERT_TRUE(
+      PasswordFormsChecker(0, {form2},
+                           password_manager::PasswordForm::Store::kProfileStore)
+          .Wait());
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
 
   EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS),
@@ -918,7 +923,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   ASSERT_TRUE(SetupClients());
 
   ASSERT_TRUE(SetupSync());
-  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+  ASSERT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
 
   // The local store should contain the note since the client should read the
   // backup when the note in the specifics data isn't set.

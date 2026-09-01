@@ -1195,7 +1195,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncParamTest,
 
   ASSERT_TRUE(SignIn());
 
-  PasskeySyncActiveChecker(GetSyncService(0)).Wait();
+  ASSERT_TRUE(PasskeySyncActiveChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile,
                                         ElementsAre(PasskeyHasSyncId(sync_id)))
                   .Wait());

@@ -1502,7 +1502,7 @@ class ProfileMenuViewBookmarksLimitExceededTest
 
     // Wait for the error to appear in SyncService.
     BookmarksLimitExceededChecker checker(GetSyncService(0));
-    checker.Wait();
+    ASSERT_TRUE(checker.Wait());
   }
 
  private:

@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientIncomingPasswordSharingInvitationTest,
   // to become active.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
-  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+  ASSERT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
 
   // Double check that both Passwords and Sharing Invitations are enabled.
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));

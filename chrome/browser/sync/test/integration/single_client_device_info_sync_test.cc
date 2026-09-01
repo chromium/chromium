@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitInvalidationsStatus(/*expected_status=*/true));
 
   // Ensure any pending local changes are committed.
-  CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait();
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
 
   // Verify that no DeviceInfo has been committed to the server.
   const std::vector<sync_pb::SyncEntity> entities_after =
