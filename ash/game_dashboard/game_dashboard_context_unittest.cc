@@ -384,8 +384,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   }
 
   void CloseGameWindow() {
-    game_window_.reset();
     test_api_.reset();
+    game_window_.reset();
     frame_header_height_ = 0;
   }
 
