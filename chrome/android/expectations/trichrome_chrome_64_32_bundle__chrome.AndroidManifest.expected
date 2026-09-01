@@ -698,6 +698,18 @@
         android:name="com.google.android.apps.chrome.webapps.WebappManager"
         android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
     </activity-alias>  # DIFF-ANCHOR: 8e23336d
+    <activity-alias  # DIFF-ANCHOR: ce2724b6
+        android:name="org.chromium.chrome.browser.document.PdfLauncherActivityAlias"
+        android:enabled="false"
+        android:exported="true"
+        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="application/pdf"/>
+        <data android:scheme="content"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+    </activity-alias>  # DIFF-ANCHOR: ce2724b6
     <activity-alias  # DIFF-ANCHOR: 5c83a464
         android:name="org.chromium.chrome.browser.download.DownloadActivity"
         android:exported="false"

@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurements
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.AllPreferenceKeyRegistries;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -696,6 +697,7 @@ public class ProcessInitializationHandler {
 
         tasks.add(() -> BackgroundTaskSchedulerFactory.getScheduler().doMaintenance());
 
+        tasks.add(PdfUtils::updatePdfLauncherActivityEnabled);
         tasks.add(MediaViewerUtils::updateMediaLauncherActivityEnabled);
 
         tasks.add(WebApkUninstallTracker::runDeferredTasks);

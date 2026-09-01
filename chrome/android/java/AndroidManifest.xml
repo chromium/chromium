@@ -400,6 +400,19 @@ by a child template that "extends" this file.
                 android:resource="@xml/searchable" />
         </activity-alias>
 
+        <!-- PDF viewing support. -->
+        <activity-alias android:name="org.chromium.chrome.browser.document.PdfLauncherActivityAlias"
+            android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity"
+            android:exported="true"
+            android:enabled="false"><!-- This will be selectively enabled at runtime. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+                <data android:scheme="content" />
+            </intent-filter>
+        </activity-alias>
+
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
