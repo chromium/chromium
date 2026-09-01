@@ -6,6 +6,7 @@
 
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
@@ -21,13 +22,37 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Spacing before icon in opt out confirmation sheet.
+constexpr CGFloat kOptOutSheetSpacingAboveIcon = 24;
+
+// Spacing between content in opt out confirmation sheet.
+constexpr CGFloat kOptOutSheetContentSpacing = 16;
+
+// Corner radius for the icon container in opt out confirmation sheet.
+constexpr CGFloat kOptOutSheetIconContainerCornerRadius = 12;
+
+// Point size for the icon symbol image in opt out confirmation sheet.
+constexpr CGFloat kOptOutSheetIconPointSize = 24;
+
+// Width and height of the icon container in opt out confirmation sheet.
+constexpr CGFloat kOptOutSheetIconContainerSize = 56;
+
+// Maximum height detent ratio for the opt out confirmation sheet.
+constexpr double kOptOutSheetMaxDetentRatio = 0.75;
 
 void RunPendingAction(TaskInfo::NavigationAction pending_action,
                       base::WeakPtr<Browser> weak_browser) {
@@ -39,7 +64,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 
 }  // namespace
 
-@interface LevelUpCoordinator () <LevelUpAllTasksViewControllerDelegate,
+@interface LevelUpCoordinator () <ConfirmationAlertActionHandler,
+                                  LevelUpAllTasksViewControllerDelegate,
                                   LevelUpMediatorDelegate,
                                   LevelUpViewControllerDelegate>
 
@@ -51,6 +77,7 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 
 @implementation LevelUpCoordinator {
   TaskInfo::NavigationAction _pendingNavigationAction;
+  ConfirmationAlertViewController* _optOutConfirmationViewController;
 }
 
 - (void)start {
@@ -99,6 +126,12 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 }
 
 - (void)stop {
+  if (_optOutConfirmationViewController) {
+    [_optOutConfirmationViewController dismissViewControllerAnimated:NO
+                                                          completion:nil];
+    _optOutConfirmationViewController = nil;
+  }
+
   TaskInfo::NavigationAction pendingAction = _pendingNavigationAction;
   base::WeakPtr<Browser> weakBrowser =
       self.browser ? self.browser->AsWeakPtr() : nullptr;
@@ -134,12 +167,106 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 }
 
 - (void)didTapTurnOffLevelUp:(LevelUpViewController*)controller {
-  [self.mediator turnOffLevelUp];
+  ButtonStackConfiguration* config = [[ButtonStackConfiguration alloc] init];
+  config.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TURN_OFF_LEVEL_UP);
+  config.primaryButtonStyle = ChromeButtonStylePrimaryDestructive;
+  config.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+
+  ConfirmationAlertViewController* confirmationAlert =
+      [[ConfirmationAlertViewController alloc] initWithConfiguration:config];
+  confirmationAlert.titleString =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TURN_OFF_LEVEL_UP);
+  confirmationAlert.subtitleString =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TURN_OFF_CONFIRMATION_SUBTITLE);
+  confirmationAlert.actionHandler = self;
+  confirmationAlert.topAlignedLayout = YES;
+  confirmationAlert.customSpacingBeforeImage = kOptOutSheetSpacingAboveIcon;
+  confirmationAlert.customSpacing = kOptOutSheetContentSpacing;
+  confirmationAlert.addsContentViewBottomInset = NO;
+
+  // Use a full-width wrapper view so the icon container is centered
+  // horizontally without being stretched by the stack view's fill alignment.
+  UIView* iconWrapper = [[UIView alloc] init];
+  iconWrapper.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIView* iconContainer = [[UIView alloc] init];
+  iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  iconContainer.backgroundColor = [UIColor colorNamed:kRed100Color];
+  iconContainer.layer.cornerRadius = kOptOutSheetIconContainerCornerRadius;
+
+  UIImageView* iconImageView = [[UIImageView alloc]
+      initWithImage:SymbolTemplateWithPointSize(SymbolArrowshapeUp,
+                                                kOptOutSheetIconPointSize)];
+  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconImageView.tintColor = [UIColor colorNamed:kRed500Color];
+  [iconContainer addSubview:iconImageView];
+  [iconWrapper addSubview:iconContainer];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainer.widthAnchor
+        constraintEqualToConstant:kOptOutSheetIconContainerSize],
+    [iconContainer.heightAnchor
+        constraintEqualToConstant:kOptOutSheetIconContainerSize],
+    [iconContainer.topAnchor constraintEqualToAnchor:iconWrapper.topAnchor],
+    [iconContainer.bottomAnchor
+        constraintEqualToAnchor:iconWrapper.bottomAnchor],
+    [iconContainer.centerXAnchor
+        constraintEqualToAnchor:iconWrapper.centerXAnchor],
+
+    [iconImageView.centerXAnchor
+        constraintEqualToAnchor:iconContainer.centerXAnchor],
+    [iconImageView.centerYAnchor
+        constraintEqualToAnchor:iconContainer.centerYAnchor],
+  ]];
+
+  confirmationAlert.aboveTitleView = iconWrapper;
+  confirmationAlert.modalPresentationStyle = UIModalPresentationPageSheet;
+
+  UISheetPresentationController* sheet =
+      confirmationAlert.sheetPresentationController;
+  sheet.prefersGrabberVisible = NO;
+
+  __weak ConfirmationAlertViewController* weakAlert = confirmationAlert;
+
+  auto preferredHeightForSheetContent = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    CGFloat height = [weakAlert preferredHeightForContent];
+    // Make sure detent is not too large, but also make
+    // sure it looks like a sheet, not a full screen card.
+    return MIN(height, kOptOutSheetMaxDetentRatio * context.maximumDetentValue);
+  };
+  sheet.detents = @[ [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:nil
+                        resolver:preferredHeightForSheetContent] ];
+
+  _optOutConfirmationViewController = confirmationAlert;
+  [self.navigationController presentViewController:confirmationAlert
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)levelUpViewController:(LevelUpViewController*)controller
                    didTapTask:(LevelUpTask*)task {
   [self didTapTask:task];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  __weak __typeof(self) weakSelf = self;
+  [_optOutConfirmationViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf.mediator turnOffLevelUp];
+                         }];
+  _optOutConfirmationViewController = nil;
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [_optOutConfirmationViewController dismissViewControllerAnimated:YES
+                                                        completion:nil];
+  _optOutConfirmationViewController = nil;
 }
 
 #pragma mark - LevelUpMediatorDelegate
