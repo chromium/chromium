@@ -24,6 +24,7 @@ const int kMaxCacheSizeKb = 1024 * 300; /* 300MB */
 const int kMaxCacheMetadataCount = 1000;
 
 constexpr char kEventsHistogram[] = "ImageFetcher.Events";
+constexpr char kEventsClientHistogram[] = "ImageFetcher.Events2";
 constexpr char kImageLoadFromCacheHistogram[] =
     "ImageFetcher.ImageLoadFromCacheTime";
 constexpr char kImageLoadFromCacheJavaHistogram[] =
@@ -72,12 +73,8 @@ void ImageFetcherMetricsReporter::ReportEvent(const std::string& client_name,
                                               ImageFetcherEvent event) {
   DCHECK(!client_name.empty());
   UMA_HISTOGRAM_ENUMERATION(kEventsHistogram, event);
-  base::LinearHistogram::FactoryGet(
-      kEventsHistogram + std::string(".") + client_name, 0,
-      static_cast<int>(ImageFetcherEvent::kMaxValue),
-      static_cast<int>(ImageFetcherEvent::kMaxValue),
-      base::Histogram::kUmaTargetedHistogramFlag)
-      ->Add(static_cast<int>(event));
+  base::UmaHistogramEnumeration(
+      kEventsClientHistogram + std::string(".") + client_name, event);
 }
 
 // static

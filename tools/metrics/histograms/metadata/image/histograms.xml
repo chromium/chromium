@@ -440,7 +440,18 @@ chromium-metrics-reviews@google.com.
   <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy"/>
 </histogram>
 
-<histogram name="ImageFetcher.Events{ImageFetcherClients}"
+<histogram name="ImageFetcher.Events" enum="ImageFetcherEvent"
+    expires_after="2027-02-07">
+  <owner>wylieb@google.com</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    Events that track the lifecycle and performance of the cached_image_fetcher.
+    The events reported include: success/failure conditions, various recoverable
+    errors and a couple of dead-end errors.
+  </summary>
+</histogram>
+
+<histogram name="ImageFetcher.Events2{ImageFetcherClients}"
     enum="ImageFetcherEvent" expires_after="2027-02-07">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
@@ -449,9 +460,6 @@ chromium-metrics-reviews@google.com.
     The events reported include: success/failure conditions, various recoverable
     errors and a couple of dead-end errors. {ImageFetcherClients}
   </summary>
-  <token key="ImageFetcherClients" variants="ImageFetcherClients">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTimeJava{ImageFetcherClients}"
