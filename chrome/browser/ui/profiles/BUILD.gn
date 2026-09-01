@@ -180,8 +180,14 @@ source_set("unit_tests") {
       "profile_picker_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/startup",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
     ]
   }
 }

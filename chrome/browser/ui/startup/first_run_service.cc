@@ -21,7 +21,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -118,7 +117,7 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
   }
 
   if (const std::optional<ProfilePicker::FirstRunFinishReason> skip_reason =
-          ComputeFirstRunSkipReason(*profile_, *identity_manager_);
+          ProfilePicker::ComputeFirstRunSkipReason(*profile_);
       skip_reason.has_value()) {
     FinishFirstRun(*skip_reason);
     return;

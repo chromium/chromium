@@ -350,6 +350,11 @@ class ProfilePicker {
   // MacOS when there are no windows, or from Windows tray icon.
   static StartupProfileMode GetStartupMode();
 
+  // Computes the skip reason for the First Run experience, if any. Returns
+  // `std::nullopt` if the First Run experience should proceed.
+  static std::optional<FirstRunFinishReason> ComputeFirstRunSkipReason(
+      Profile& profile);
+
   // Opens the command line urls in the next profile that is opened.
   static void SetOpenCommandLineUrlsInNextProfileOpened(bool value);
   static bool GetOpenCommandLineUrlsInNextProfileOpened();

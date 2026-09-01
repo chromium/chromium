@@ -6,9 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_UTILS_H_
 
 #include <memory>
-#include <optional>
-
-#include "chrome/browser/ui/profiles/profile_picker.h"
 
 namespace blink::mojom {
 class WindowFeatures;
@@ -16,10 +13,6 @@ class WindowFeatures;
 
 namespace content {
 class WebContents;
-}
-
-namespace signin {
-class IdentityManager;
 }
 
 class GURL;
@@ -34,11 +27,5 @@ void OpenLearnMorePopup(Profile* profile,
                         std::unique_ptr<content::WebContents> contents,
                         const GURL& target_url,
                         const blink::mojom::WindowFeatures& window_features);
-
-// Computes the skip reason for the First Run experience, if any. Returns
-// std::nullopt if the First Run experience should proceed.
-std::optional<ProfilePicker::FirstRunFinishReason> ComputeFirstRunSkipReason(
-    Profile& profile,
-    signin::IdentityManager& identity_manager);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_UTILS_H_

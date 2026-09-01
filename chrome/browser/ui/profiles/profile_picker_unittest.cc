@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/profiles/profile_picker.h"
 
+#include <memory>
+#include <string>
+#include <string_view>
+
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -13,6 +18,9 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -21,7 +29,14 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,18 +47,43 @@ class ProfilePickerTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
 
-  ProfileAttributesEntry* GetProfileAttributes(Profile* profile) {
-    return testing_profile_manager()
-        ->profile_attributes_storage()
-        ->GetProfileAttributesWithPath(profile->GetPath());
+  ProfileAttributesEntry& GetProfileAttributes(Profile& profile) {
+    return CHECK_DEREF(
+        CHECK_DEREF(testing_profile_manager().profile_attributes_storage())
+            .GetProfileAttributesWithPath(profile.GetPath()));
   }
 
-  TestingProfileManager* testing_profile_manager() {
-    return &testing_profile_manager_;
+  ProfileAttributesEntry& GetProfileAttributes(Profile* profile) {
+    return GetProfileAttributes(CHECK_DEREF(profile));
   }
 
-  PrefService* local_state() {
-    return TestingBrowserProcess::GetGlobal()->local_state();
+  TestingProfileManager& testing_profile_manager() {
+    return testing_profile_manager_;
+  }
+
+  PrefService& local_state() {
+    return CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state());
+  }
+
+  signin::IdentityManager& GetIdentityManager(Profile& profile) {
+    return CHECK_DEREF(IdentityManagerFactory::GetForProfile(&profile));
+  }
+
+  syncer::TestSyncService& GetSyncService(Profile& profile) {
+    return CHECK_DEREF(static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(&profile)));
+  }
+
+  TestingProfile& CreateTestingProfileWithSyncService(
+      std::string_view name = "test_profile") {
+    return CHECK_DEREF(testing_profile_manager().CreateTestingProfile(
+        std::string(name),
+        TestingProfile::TestingFactories{TestingProfile::TestingFactory{
+            SyncServiceFactory::GetInstance(),
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<syncer::TestSyncService>();
+                })}}));
   }
 
  private:
@@ -51,49 +91,49 @@ class ProfilePickerTest : public testing::Test {
   TestingProfileManager testing_profile_manager_;
 };
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Default) {
-  testing_profile_manager()->CreateTestingProfile("profile1");
-  testing_profile_manager()->CreateTestingProfile("profile2");
+TEST_F(ProfilePickerTest, ShouldShowAtLaunchMultipleProfilesDefault) {
+  testing_profile_manager().CreateTestingProfile("profile1");
+  testing_profile_manager().CreateTestingProfile("profile2");
   ASSERT_TRUE(
-      local_state()->GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
+      local_state().GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
 
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kProfilePicker);
 }
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_DisabledStartup) {
-  testing_profile_manager()->CreateTestingProfile("profile1");
-  testing_profile_manager()->CreateTestingProfile("profile2");
-  local_state()->SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
+TEST_F(ProfilePickerTest, ShouldShowAtLaunchMultipleProfilesDisabledStartup) {
+  testing_profile_manager().CreateTestingProfile("profile1");
+  testing_profile_manager().CreateTestingProfile("profile2");
+  local_state().SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
 
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kBrowserWindow);
 }
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile) {
-  testing_profile_manager()->CreateTestingProfile("profile1");
+TEST_F(ProfilePickerTest, ShouldShowAtLaunchSingleProfile) {
+  testing_profile_manager().CreateTestingProfile("profile1");
   ASSERT_TRUE(
-      local_state()->GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
+      local_state().GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
 
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kBrowserWindow);
 }
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile_DisabledStartup) {
-  testing_profile_manager()->CreateTestingProfile("profile1");
-  local_state()->SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
+TEST_F(ProfilePickerTest, ShouldShowAtLaunchSingleProfileDisabledStartup) {
+  testing_profile_manager().CreateTestingProfile("profile1");
+  local_state().SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
 
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kBrowserWindow);
 }
 
 TEST_F(ProfilePickerTest,
-       ShouldShowAtLaunch_ProfileEmailSwitchCreateProfileNoMatchingProfile) {
+       ShouldShowAtLaunchProfileEmailSwitchCreateProfileNoMatchingProfile) {
   {
     TestingProfile* profile1 =
-        testing_profile_manager()->CreateTestingProfile("profile1");
-    GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"),
-                                                u"personal@gmail.com", true);
+        testing_profile_manager().CreateTestingProfile("profile1");
+    GetProfileAttributes(profile1).SetAuthInfo(GaiaId("foo"),
+                                               u"personal@gmail.com", true);
 
     EXPECT_EQ(ProfilePicker::GetStartupMode(),
               StartupProfileMode::kBrowserWindow);
@@ -111,12 +151,12 @@ TEST_F(ProfilePickerTest,
 }
 
 TEST_F(ProfilePickerTest,
-       ShouldNotShowAtLaunch_ProfileEmailSwitchCreateProfileExistingProfile) {
+       ShouldNotShowAtLaunchProfileEmailSwitchCreateProfileExistingProfile) {
   {
     TestingProfile* profile1 =
-        testing_profile_manager()->CreateTestingProfile("profile1");
-    GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
-                                                true);
+        testing_profile_manager().CreateTestingProfile("profile1");
+    GetProfileAttributes(profile1).SetAuthInfo(GaiaId("foo"), u"test@corp.com",
+                                               true);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kProfileEmail, "test@corp.com");
@@ -127,18 +167,17 @@ TEST_F(ProfilePickerTest,
   }
 }
 
-TEST_F(
-    ProfilePickerTest,
-    ShouldNotShowAtLaunch_ProfileEmailSwitchCreateProfileMultipleProfiles) {
+TEST_F(ProfilePickerTest,
+       ShouldNotShowAtLaunchProfileEmailSwitchCreateProfileMultipleProfiles) {
   {
     TestingProfile* profile1 =
-        testing_profile_manager()->CreateTestingProfile("profile1");
-    GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
-                                                true);
+        testing_profile_manager().CreateTestingProfile("profile1");
+    GetProfileAttributes(profile1).SetAuthInfo(GaiaId("foo"), u"test@corp.com",
+                                               true);
     TestingProfile* profile2 =
-        testing_profile_manager()->CreateTestingProfile("profile2");
-    GetProfileAttributes(profile2)->SetAuthInfo(GaiaId("foo"),
-                                                u"test2@corp.com", true);
+        testing_profile_manager().CreateTestingProfile("profile2");
+    GetProfileAttributes(profile2).SetAuthInfo(GaiaId("foo"), u"test2@corp.com",
+                                               true);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kProfileEmail, "test@corp.com");
@@ -164,7 +203,7 @@ class ProfilePickerParamsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(ProfilePickerParamsTest, FromEntryPoint_ProfilePath) {
+TEST_F(ProfilePickerParamsTest, FromEntryPointProfilePath) {
   ProfilePicker::Params params = ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   EXPECT_EQ(base::FilePath(chrome::kSystemProfileDir),
@@ -205,4 +244,73 @@ TEST_F(ProfilePickerParamsTest, CanReuse) {
   EXPECT_TRUE(glic_manager_params.CanReusePickerWindow(glic_manager_params));
   EXPECT_FALSE(params.CanReusePickerWindow(glic_manager_params));
   EXPECT_FALSE(glic_manager_params.CanReusePickerWindow(params));
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonDefault) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile), std::nullopt);
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonForceSignin) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  signin_util::ScopedForceSigninSetterForTesting scoped_force_signin(true);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kForceSignin);
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonProfileAlreadySetUp) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  signin::MakePrimaryAccountAvailable(&GetIdentityManager(profile),
+                                      "user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kProfileAlreadySetUp);
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonPromotionsDisabled) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  local_state().SetBoolean(prefs::kPromotionsEnabled, false);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kSkippedByPolicies);
+  local_state().ClearPref(prefs::kPromotionsEnabled);
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonSyncDisabled) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  GetSyncService(profile).SetAllowedByEnterprisePolicy(false);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kSkippedByPolicies);
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonSigninDisallowed) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  profile.GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kSkippedByPolicies);
+}
+
+TEST_F(ProfilePickerTest,
+       ComputeFirstRunSkipReasonSigninDisallowedOnNextStartup) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+  profile.GetPrefs()->SetBoolean(prefs::kSigninAllowedOnNextStartup, false);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kSkippedByPolicies);
+}
+
+TEST_F(ProfilePickerTest, ComputeFirstRunSkipReasonPrecedence) {
+  TestingProfile& profile = CreateTestingProfileWithSyncService();
+
+  // Both signed in and policy disabled: already set up should take precedence
+  // over policy skip.
+  signin::MakePrimaryAccountAvailable(&GetIdentityManager(profile),
+                                      "user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  GetSyncService(profile).SetAllowedByEnterprisePolicy(false);
+  ASSERT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kProfileAlreadySetUp);
+
+  // Force signin should take precedence over already set up.
+  signin_util::ScopedForceSigninSetterForTesting scoped_force_signin(true);
+  EXPECT_EQ(ProfilePicker::ComputeFirstRunSkipReason(profile),
+            ProfilePicker::FirstRunFinishReason::kForceSignin);
 }

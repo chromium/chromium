@@ -330,18 +330,11 @@ source_set("profile_picker_utils") {
   sources = [ "profile_picker_utils.cc" ]
   public_deps = [
     "//base",
-    "//chrome/browser/ui/profiles",
     "//content/public/browser",
   ]
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/signin",
-    "//chrome/browser/sync",
     "//chrome/browser/ui/navigator",
-    "//chrome/common:constants",
-    "//components/prefs",
-    "//components/signin/public/base",
     "//ui/base",
   ]
 }

@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
@@ -1102,10 +1101,8 @@ bool FirstRunFlowController::is_feature_showcase_eligible() const {
 }
 
 void FirstRunFlowController::OnWelcomeCompleted() {
-  signin::IdentityManager& identity_manager =
-      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile_));
   if (const std::optional<ProfilePicker::FirstRunFinishReason> skip_reason =
-          ComputeFirstRunSkipReason(*profile_, identity_manager);
+          ProfilePicker::ComputeFirstRunSkipReason(*profile_);
       skip_reason.has_value()) {
     finish_reason_ = *skip_reason;
     FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
