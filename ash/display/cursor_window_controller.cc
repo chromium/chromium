@@ -400,7 +400,7 @@ CursorWindowController::CursorWindowController()
     : delegate_(new CursorWindowDelegate()) {}
 
 CursorWindowController::~CursorWindowController() {
-  SetContainer(NULL);
+  SetContainer(nullptr);
 }
 
 void CursorWindowController::AddObserver(Observer* observer) {
@@ -594,8 +594,8 @@ void CursorWindowController::OnDockedMagnifierResizingStateChanged(
   }
   const int container_id = is_active ? kShellWindowId_DockedMagnifierContainer
                                      : kShellWindowId_MouseCursorContainer;
-  SetContainer(
-      RootWindowController::ForWindow(container_)->GetContainer(container_id));
+  SetContainer(RootWindowController::ForWindow(container_.get())
+                   ->GetContainer(container_id));
 }
 
 void CursorWindowController::OnFullscreenMagnifierEnabled(bool enabled) {
@@ -661,7 +661,7 @@ void CursorWindowController::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  DCHECK_EQ(container_, window);
+  DCHECK_EQ(container_.get(), window);
 
   if (cursor_view_widget_) {
     UpdateCursorView();
@@ -669,13 +669,13 @@ void CursorWindowController::OnWindowBoundsChanged(
 }
 
 void CursorWindowController::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(container_, window);
-
+  DCHECK_EQ(container_.get(), window);
+  SetContainer(nullptr);
   scoped_container_observer_.Reset();
 }
 
 const aura::Window* CursorWindowController::GetContainerForTest() const {
-  return container_;
+  return container_.get();
 }
 
 SkColor CursorWindowController::GetCursorColorForTest() const {
@@ -707,7 +707,7 @@ const aura::Window* CursorWindowController::GetCursorHostWindowForTest() const {
 }
 
 void CursorWindowController::SetContainer(aura::Window* container) {
-  if (container_ == container) {
+  if (container_ && container_.get() == container) {
     return;
   }
 
@@ -721,7 +721,7 @@ void CursorWindowController::SetContainer(aura::Window* container) {
     return;
   }
 
-  scoped_container_observer_.Observe(container_);
+  scoped_container_observer_.Observe(container_.get());
 
   bounds_in_screen_ = display_.bounds();
   rotation_ = display_.rotation();
@@ -860,7 +860,7 @@ void CursorWindowController::UpdateCursorView() {
   }
 
   cursor_view_widget_ = CursorView::Create(
-      aura::Env::GetInstance()->last_mouse_location(), container_);
+      aura::Env::GetInstance()->last_mouse_location(), container_.get());
   UpdateCursorImage();
 }
 
