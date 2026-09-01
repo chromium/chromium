@@ -83,5 +83,6 @@ cr-searchbox-dropdown {
 }
 
 .dropdownContainer:has(omnibox-popup-contextual-entrypoint[show-context-entrypoint_]) {
+  --cr-searchbox-results-padding-bottom: 0;
   padding-bottom: 10px;
 }
