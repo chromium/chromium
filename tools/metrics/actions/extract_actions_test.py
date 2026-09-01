@@ -86,17 +86,6 @@ NO_DESCRIPTION_EXPECTED_XML = (
   '</actions>\n'
 )
 
-OBSOLETE_EXPECTED_XML = (
-  '<actions>\n\n'
-  '<action name="action1">\n'
-  '  <obsolete>Not used anymore. Replaced by action2.</obsolete>\n'
-  '  <owner>name1@google.com</owner>\n'
-  '  <owner>name2@google.com</owner>\n'
-  '  <description>Description.</description>\n'
-  '</action>\n\n'
-  '</actions>\n'
-)
-
 ADD_ACTION_EXPECTED_XML = (
   '<actions>\n\n'
   '<action name="action1">\n'
@@ -162,17 +151,16 @@ XML_WITH_TOKEN_PRETTY_PRINTED = """<actions>
 
 
 class TestActionXmlValidation(unittest.TestCase):
-  def testTwoObsoletes(self):
+  def testObsoleteForbidden(self):
     current_xml = ACTIONS_XML.format(
       owners=TWO_OWNERS,
-      obsolete=TWO_OBSOLETE,
+      obsolete=OBSOLETE,
       description=DESCRIPTION,
       comment=NO_VALUE,
       not_user_triggered=NO_VALUE,
     )
 
-    # Since there are two obsolete tags, the function ParseActionFile will
-    # raise ValueError.
+    # Obsolete tags are forbidden, so ParseActionFile will raise ValueError.
     with self.assertRaises(ValueError) as error_ctx:
       action_utils.ParseActionFile(current_xml)
     self.assertIn('obsolete', str(error_ctx.exception))
@@ -255,15 +243,6 @@ class TestActionXmlPrettyPrint(unittest.TestCase):
         'testNoDescription',
         _TestScenario.Create(
           owner=TWO_OWNERS, expected_xml=NO_DESCRIPTION_EXPECTED_XML
-        ),
-      ),
-      (
-        'testObsolete',
-        _TestScenario.Create(
-          owner=TWO_OWNERS,
-          description=DESCRIPTION,
-          obsolete=OBSOLETE,
-          expected_xml=OBSOLETE_EXPECTED_XML,
         ),
       ),
       (

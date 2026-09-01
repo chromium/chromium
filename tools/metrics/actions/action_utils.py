@@ -50,7 +50,6 @@ class Action(object):
     description: description of the action.
     owners: list of action owners
     not_user_triggered: if action is not user triggered
-    obsolete: explanation on why user action is not being used anymore
     from_suffix: If True, this action was computed via a suffix.
   """
 
@@ -60,7 +59,6 @@ class Action(object):
     description: str | None,
     owners: List[str] | None,
     not_user_triggered: bool = False,
-    obsolete: str | None = None,
     tokens: List | None = [],
     from_suffix: bool | None = False,
   ):
@@ -68,7 +66,6 @@ class Action(object):
     self.description = description
     self.owners = owners
     self.not_user_triggered = not_user_triggered
-    self.obsolete = obsolete
     self.from_suffix = from_suffix
     self.tokens = tokens or []
 
@@ -78,7 +75,6 @@ class Action(object):
       self.description,
       self.owners,
       self.not_user_triggered,
-      self.obsolete,
       self.from_suffix,
       # Basic token comparison: number of tokens
       len(self.tokens or []),
@@ -282,20 +278,20 @@ def ParseActionFile(
       )
     description = description_list[0] if description_list else None
 
-    # There is at most one obsolete tag for each user action.
-    obsolete_list = _ExtractText(action_dom, 'obsolete')
-    if len(obsolete_list) > 1:
+    # Explicitly check for 'obsolete' tag and raise an error. This is needed
+    # because ParseActionFile uses minidom and doesn't validate against the
+    # actions_model schema. Without this check, pretty_print.py would silently
+    # strip obsolete tags instead of failing.
+    if _ExtractText(action_dom, 'obsolete'):
       raise ValueError(
-        f'User action "{action_name}" has more than one obsolete tag. At'
-        f' most one obsolete tag can be added for each user action. Please'
-        f' fix.'
+        f'User action "{action_name}" has an obsolete tag. '
+        f'Obsolete tags are no longer supported. Please remove the action instead.'
       )
-    obsolete = obsolete_list[0] if obsolete_list else None
 
     tokens = _ExtractTokens(action_dom, variants_dict)
 
     actions_dict[action_name] = Action(
-      action_name, description, owners, not_user_triggered, obsolete, tokens
+      action_name, description, owners, not_user_triggered, tokens=tokens
     )
 
   return actions_dict, comment_nodes, variants_dict
@@ -337,8 +333,7 @@ def _CreateActionFromVariant(
     new_action_description,
     action.owners,
     action.not_user_triggered,
-    action.obsolete,
-    new_tokens,
+    tokens=new_tokens,
   )
 
 

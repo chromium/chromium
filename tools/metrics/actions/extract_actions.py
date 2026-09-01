@@ -621,7 +621,6 @@ def _CreateActionTag(
 
   Format of an action tag:
   <action name="name.{tokenName}" not_user_triggered="true">
-    <obsolete>Deprecated.</obsolete>
     <owner>Owner</owner>
     <description>Description.</description>
     <token key="tokenName">
@@ -633,9 +632,6 @@ def _CreateActionTag(
   not_user_triggered is an optional attribute. If set, it implies that the
   belonging action is not a user action. A user action is an action that
   is logged exactly once right after a user has made an action.
-
-  <obsolete> is an optional tag. It's added to actions that are no longer used
-  any more.
 
   If action_name is in actions_dict, the values to be inserted are based on the
   corresponding Action object. If action_name is not in actions_dict, the
@@ -655,11 +651,6 @@ def _CreateActionTag(
   if action.not_user_triggered:
     action_dom.setAttribute('not_user_triggered', 'true')
 
-  # Create obsolete tag.
-  if action.obsolete:
-    obsolete_dom = doc.createElement('obsolete')
-    action_dom.appendChild(obsolete_dom)
-    obsolete_dom.appendChild(doc.createTextNode(action.obsolete))
 
   # Create owner tag.
   if action.owners:

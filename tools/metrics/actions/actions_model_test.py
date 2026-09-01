@@ -19,13 +19,11 @@ PRETTY_XML = """
 </action>
 
 <action name="Action2" not_user_triggered="true">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <description>Description2</description>
 </action>
 
 <action name="Action3">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <description>Description3</description>
@@ -55,13 +53,11 @@ XML_WITH_WRONG_INDENT = """
   </action>
 
 <action name="Action2" not_user_triggered="true">
-    <obsolete>Obsolete text</obsolete>
     <owner>owner@chromium.org</owner>
     <description>Description2</description>
 </action>
 
 <action name="Action3">
-<obsolete>Obsolete text</obsolete>
 <owner>owner@chromium.org</owner>
 <owner>owner2@chromium.org</owner>
 <description>Description3</description>
@@ -93,15 +89,13 @@ XML_WITH_WRONG_SINGLELINE = """
 </action>
 
 <action name="Action2" not_user_triggered="true">
-  <obsolete>
-    Obsolete text
-  </obsolete>
-  <owner>owner@chromium.org</owner>
+  <owner>
+    owner@chromium.org
+  </owner>
   <description>Description2</description>
 </action>
 
 <action name="Action3">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <description>
@@ -132,12 +126,10 @@ XML_WITH_WRONG_LINE_BREAK = """
 </action>
 
 <action name="Action2" not_user_triggered="true">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <description>Description2</description>
 </action>
 <action name="Action3">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
 
   <owner>owner2@chromium.org</owner>
@@ -163,7 +155,6 @@ XML_WITH_WRONG_ORDER = """
 <actions>
 
 <action name="Action2" not_user_triggered="true">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <description>Description2</description>
 </action>
@@ -174,7 +165,6 @@ XML_WITH_WRONG_ORDER = """
 </action>
 
 <action name="Action3">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <description>Description3</description>
@@ -204,13 +194,11 @@ XML_WITH_WRONG_CHILDREN_ORDER = """
 </action>
 
 <action name="Action2" not_user_triggered="true">
-  <owner>owner@chromium.org</owner>
-  <obsolete>Obsolete text</obsolete>
   <description>Description2</description>
+  <owner>owner@chromium.org</owner>
 </action>
 
 <action name="Action3">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <description>Description3</description>
   <owner>owner2@chromium.org</owner>
@@ -240,13 +228,11 @@ XML_WITH_WRONG_ATTRIBUTE_ORDER = """
 </action>
 
 <action not_user_triggered="true" name="Action2">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <description>Description2</description>
 </action>
 
 <action name="Action3">
-  <obsolete>Obsolete text</obsolete>
   <owner>owner@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <description>Description3</description>
@@ -282,7 +268,7 @@ class ActionXmlTest(unittest.TestCase):
       ('SingleLine', XML_WITH_WRONG_SINGLELINE, PRETTY_XML),
       ('LineBreak', XML_WITH_WRONG_LINE_BREAK, PRETTY_XML),
       ('Order', XML_WITH_WRONG_ORDER, PRETTY_XML),
-      # The children of <action> should be sorted in the order of <obsolete>,
+      # The children of <action> should be sorted in the order of
       # <owner> and <description>
       ('ChildrenOrder', XML_WITH_WRONG_CHILDREN_ORDER, PRETTY_XML),
     ]

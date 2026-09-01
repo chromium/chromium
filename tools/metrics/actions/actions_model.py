@@ -12,7 +12,6 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.models as models
 
-_OBSOLETE_TYPE = models.TextNodeType('obsolete', single_line=True)
 _OWNER_TYPE = models.TextNodeType('owner', single_line=True)
 _DESCRIPTION_TYPE = models.TextNodeType('description', single_line=True)
 
@@ -85,14 +84,12 @@ _ACTION_TYPE = models.ObjectNodeType(
   ],
   required_attributes=['name'],
   alphabetization=[
-    (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
     (_OWNER_TYPE.tag, _KEEP_ORDER),
     (_DESCRIPTION_TYPE.tag, _KEEP_ORDER),
     (_TOKEN_TYPE.tag, _KEEP_ORDER),
   ],
   extra_newlines=(1, 1, 1),
   children=[
-    models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
     models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
     models.ChildType(_DESCRIPTION_TYPE.tag, _DESCRIPTION_TYPE, multiple=False),
     models.ChildType(_TOKEN_TYPE.tag, _TOKEN_TYPE, multiple=True),
