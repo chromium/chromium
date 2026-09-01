@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
@@ -124,6 +125,8 @@ public class ToolbarTablet extends ToolbarLayout {
     private View.@Nullable OnClickListener mGlicClickListener;
     private View.@Nullable OnLongClickListener mGlicLongClickListener;
 
+    private @Nullable AiOverlayMicrophoneButtonView mAiOverlayMicrophoneButton;
+
     private final @Nullable ToolbarWidthConsumer[] mToolbarWidthConsumers =
             new ToolbarWidthConsumer[ToolbarComponentId.COUNT];
 
@@ -154,6 +157,7 @@ public class ToolbarTablet extends ToolbarLayout {
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mFixedHeightBackground = findViewById(R.id.toolbar_tablet_fixed_height_bg);
         mToolbarTabletLayout = findViewById(R.id.toolbar_tablet_layout);
+        mAiOverlayMicrophoneButton = findViewById(R.id.ai_overlay_microphone_button);
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
         // changes.
@@ -296,6 +300,9 @@ public class ToolbarTablet extends ToolbarLayout {
         }
         if (mGlicActionChip != null) {
             ImageViewCompat.setImageTintList(mGlicActionChip, activityFocusTint);
+        }
+        if (mAiOverlayMicrophoneButton != null) {
+            mAiOverlayMicrophoneButton.setIconTint(activityFocusTint);
         }
     }
 
@@ -464,6 +471,10 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
                 new ToolbarPaddingWidthConsumer(mToolbarTabletLayout, mStartPaddingWithButtons);
+        if (ToolbarFeatures.isAiOverlayDialogEnabled()) {
+            mToolbarWidthConsumers[ToolbarComponentId.AI_OVERLAY_MICROPHONE_BUTTON] =
+                    new AiOverlayMicrophoneButtonWidthConsumer();
+        }
     }
 
     @Override
@@ -906,6 +917,38 @@ public class ToolbarTablet extends ToolbarLayout {
             int width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
             mHasSpaceToShow = availableWidth >= width;
             setOptionalButtonVisibility(mHasSpaceToShow);
+            return Math.min(availableWidth, width);
+        }
+
+        @Override
+        public int updateVisibilityWithAnimation(
+                int availableWidth, Collection<Animator> animators) {
+            return updateVisibility(availableWidth);
+        }
+    }
+
+    private class AiOverlayMicrophoneButtonWidthConsumer implements ToolbarWidthConsumer {
+        private boolean mHasSpaceToShow;
+
+        @Override
+        public boolean isVisible() {
+            return mAiOverlayMicrophoneButton != null
+                    && mAiOverlayMicrophoneButton.getVisibility() == View.VISIBLE;
+        }
+
+        @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
+        }
+
+        @Override
+        public int updateVisibility(int availableWidth) {
+            if (mAiOverlayMicrophoneButton == null || !ToolbarFeatures.isAiOverlayDialogEnabled()) {
+                return 0;
+            }
+            int width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            mHasSpaceToShow = availableWidth >= width;
+            mAiOverlayMicrophoneButton.setVisibility(mHasSpaceToShow ? View.VISIBLE : View.GONE);
             return Math.min(availableWidth, width);
         }
 

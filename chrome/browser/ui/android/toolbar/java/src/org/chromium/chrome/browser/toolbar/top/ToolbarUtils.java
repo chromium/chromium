@@ -49,6 +49,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.EXTENSIONS_REQUEST_ACCESS_BUTTON,
                 ToolbarComponentId.EXTENSION_ACTION_LIST,
                 ToolbarComponentId.GLIC_PINNED_MOVED,
+                ToolbarComponentId.AI_OVERLAY_MICROPHONE_BUTTON,
                 ToolbarComponentId.OMNIBOX_BOOKMARK,
                 ToolbarComponentId.OMNIBOX_CHIP_COLLAPSED,
                 ToolbarComponentId.OMNIBOX_ZOOM,
@@ -93,6 +94,7 @@ public class ToolbarUtils {
         ToolbarComponentId.MENU,
         ToolbarComponentId.PADDING,
         ToolbarComponentId.SIGNIN_BUTTON,
+        ToolbarComponentId.AI_OVERLAY_MICROPHONE_BUTTON,
         ToolbarComponentId.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -120,7 +122,8 @@ public class ToolbarUtils {
         int SIGNIN_BUTTON = 20;
         int EXTENSIONS_REQUEST_ACCESS_BUTTON = 21;
         int GLIC_PINNED_MOVED = 22;
-        int COUNT = 23;
+        int AI_OVERLAY_MICROPHONE_BUTTON = 23;
+        int COUNT = 24;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/res/layout/toolbar_tablet.xml:toolbar_tablet_components|//chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml:toolbar_tablet_components)

@@ -10970,15 +10970,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayTranslateLanguagesName,
      flag_descriptions::kLensOverlayTranslateLanguagesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateLanguages)},
-    {"ai-overlay-dialog", flag_descriptions::kAiOverlayDialogName,
-     flag_descriptions::kAiOverlayDialogDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kAiOverlayDialog)},
     {"ai-overlay-disable-navigation-context",
      flag_descriptions::kAiOverlayDisableNavigationContextName,
      flag_descriptions::kAiOverlayDisableNavigationContextDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAiOverlayDisableNavigationContext)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"ai-overlay-dialog", flag_descriptions::kAiOverlayDialogName,
+     flag_descriptions::kAiOverlayDialogDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAiOverlayDialog)},
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(features::kGlic)},

@@ -137,6 +137,16 @@ found in the LICENSE file.
             android:layout_height="?attr/toolbarButtonHeight"
             android:visibility="gone" />
 
+        <org.chromium.chrome.browser.toolbar.top.AiOverlayMicrophoneButtonView
+            android:id="@+id/ai_overlay_microphone_button"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_mic_white_24dp"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_toolbar_btn_ai_overlay_mic"
+            android:tooltipText="@string/accessibility_toolbar_btn_ai_overlay_mic" />
+
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarHoverableButton.AdaptiveDensity"

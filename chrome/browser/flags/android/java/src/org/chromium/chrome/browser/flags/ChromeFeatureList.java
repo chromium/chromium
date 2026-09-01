@@ -245,6 +245,7 @@ public abstract class ChromeFeatureList {
     public static final String ACTOR_LOGIN_PERMISSIONS_UI = "ActorLoginPermissionsUi";
     public static final String ACTOR_NOTIFICATION_INTENT_ROUTING = "ActorNotificationIntentRouting";
     public static final String ACTOR_STEP_PROGRESS_NOTIFICATION = "ActorStepProgressNotification";
+    public static final String AI_OVERLAY_DIALOG = "AiOverlayDialog";
     public static final String ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE =
             "AllocInstanceIdIncreasedDefaultRange";
     // Don't clean up this flag yet, BCIV is launched, so this needs to be enabled by
@@ -900,6 +901,7 @@ public abstract class ChromeFeatureList {
                     ACCOUNT_PICKER_DIALOG,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sAiOverlayDialog = newCachedFlag(AI_OVERLAY_DIALOG, false);
     public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =
             newCachedFlag(ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
@@ -1454,6 +1456,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     // keep-sorted start
                     sAccountPickerDialog,
+                    sAiOverlayDialog,
                     sAllocInstanceIdIncreasedDefaultRange,
                     sAndroidAnimatedProgressBarInBrowser,
                     sAndroidApb144Patch1,

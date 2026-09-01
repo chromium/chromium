@@ -35,6 +35,11 @@ public final class ToolbarFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.NAVIGATION_LIST_MENU);
     }
 
+    /** Returns whether the AI overlay dialog is enabled. */
+    public static boolean isAiOverlayDialogEnabled() {
+        return ChromeFeatureList.sAiOverlayDialog.isEnabled();
+    }
+
     /**
      * Returns if app header customization is supported. This feature enables rendering the tab
      * strip in the caption bar when applicable.
