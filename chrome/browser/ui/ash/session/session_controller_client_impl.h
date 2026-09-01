@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/user_manager/user_manager.h"
 
 class Profile;
@@ -33,10 +32,6 @@ namespace session_manager {
 class SessionManager;
 }
 
-namespace supervised_user {
-class SupervisedUserService;
-}
-
 namespace user_manager {
 class User;
 }
@@ -49,7 +44,6 @@ class SessionControllerClientImpl
       public user_manager::UserManager::Observer,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver,
-      public SupervisedUserServiceObserver,
       public policy::off_hours::DeviceOffHoursController::Observer {
  public:
   explicit SessionControllerClientImpl(PrefService& local_state);
@@ -120,9 +114,6 @@ class SessionControllerClientImpl
   void OnUserProfileLoaded(const AccountId& account_id) override;
   void OnUserSessionStartUpTaskCompleted() override;
 
-  // SupervisedUserServiceObserver:
-  void OnCustodianInfoChanged() override;
-
   // DeviceOffHoursController::Observer:
   void OnOffHoursEndTimeChanged() override;
 
@@ -137,7 +128,6 @@ class SessionControllerClientImpl
  private:
   FRIEND_TEST_ALL_PREFIXES(SessionControllerClientImplTest, CyclingThreeUsers);
   FRIEND_TEST_ALL_PREFIXES(SessionControllerClientImplTest, SendUserSession);
-  FRIEND_TEST_ALL_PREFIXES(SessionControllerClientImplTest, SupervisedUser);
   FRIEND_TEST_ALL_PREFIXES(SessionControllerClientImplTest, UserPrefsChange);
   FRIEND_TEST_ALL_PREFIXES(SessionControllerClientImplTest, SessionLengthLimit);
   FRIEND_TEST_ALL_PREFIXES(SessionControllerClientImplTest, DeviceOwner);
@@ -174,10 +164,6 @@ class SessionControllerClientImpl
   // Tracks users whose profiles are being loaded.
   std::set<AccountId> pending_users_;
 
-  // If the session is for a supervised user, the profile of that user.
-  // Chrome OS only supports a single supervised user in a session.
-  raw_ptr<Profile> supervised_user_profile_ = nullptr;
-
   base::CallbackListSubscription subscription_;
 
   // Pref change observers to update session info when a relevant user pref
@@ -204,9 +190,6 @@ class SessionControllerClientImpl
   base::ScopedObservation<policy::off_hours::DeviceOffHoursController,
                           policy::off_hours::DeviceOffHoursController::Observer>
       device_off_hours_controller_observation_{this};
-  base::ScopedObservation<supervised_user::SupervisedUserService,
-                          SupervisedUserServiceObserver>
-      supervised_user_service_observation_{this};
 
   base::WeakPtrFactory<SessionControllerClientImpl> weak_ptr_factory_{this};
 };

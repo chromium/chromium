@@ -32,7 +32,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -44,7 +43,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
@@ -544,15 +542,6 @@ void SessionControllerClientImpl::OnUserSessionStartUpTaskCompleted() {
   session_controller_->NotifyFirstSessionReady();
 }
 
-void SessionControllerClientImpl::OnCustodianInfoChanged() {
-  DCHECK(supervised_user_profile_);
-  User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(supervised_user_profile_);
-  if (user) {
-    SendUserSession(*user);
-  }
-}
-
 void SessionControllerClientImpl::OnAppTerminating() {
   session_controller_->NotifyChromeTerminating();
 }
@@ -560,16 +549,6 @@ void SessionControllerClientImpl::OnAppTerminating() {
 void SessionControllerClientImpl::OnLoginUserProfilePrepared(Profile* profile) {
   const User* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
-
-  if (profile->IsChild()) {
-    // There can be only one supervised user per session.
-    DCHECK(!supervised_user_profile_);
-    supervised_user_profile_ = profile;
-
-    // Watch for changes to supervised user manager/custodians.
-    supervised_user_service_observation_.Observe(
-        supervised_user::SupervisedUserServiceFactory::GetForProfile(supervised_user_profile_));
-  }
 
   base::RepeatingClosure session_info_changed_closure = base::BindRepeating(
       &SessionControllerClientImpl::SendSessionInfoIfChanged,
