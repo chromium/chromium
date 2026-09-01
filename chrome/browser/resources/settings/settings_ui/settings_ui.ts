@@ -34,6 +34,7 @@ import {listenOnce} from 'chrome://resources/js/util.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ActiveTimer} from '../active_timer.js';
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -106,6 +107,8 @@ export class SettingsUiElement extends SettingsUiElementBase {
   declare private narrow_: boolean;
   declare private lastSearchQuery_: string;
 
+  private activeTimer_: ActiveTimer|null = null;
+
   constructor() {
     super();
 
@@ -168,6 +171,12 @@ export class SettingsUiElement extends SettingsUiElementBase {
     // Preload bold Roboto so it doesn't load and flicker the first time used.
     document.fonts.load('bold 12px Roboto');
     setGlobalScrollTarget(this.$.container);
+
+    this.activeTimer_ = new ActiveTimer((duration) => {
+      chrome.metricsPrivate.recordLongTime(
+          'WebUI.Settings.ActiveDuration', duration);
+    });
+    this.activeTimer_.start();
   }
 
   override disconnectedCallback() {
@@ -175,6 +184,11 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
     Router.getInstance().resetRouteForTesting();
     resetGlobalScrollTargetForTesting();
+
+    if (this.activeTimer_) {
+      this.activeTimer_.stop();
+      this.activeTimer_ = null;
+    }
   }
 
   override currentRouteChanged(route: Route) {

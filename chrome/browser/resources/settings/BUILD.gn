@@ -255,6 +255,7 @@ build_webui("build") {
     "about_page/about_page_browser_proxy.ts",
     "about_page/about_page.html.ts",
     "about_page/about_page.ts",
+    "active_timer.ts",
     "ai_page/ai_learn_more_url_util.ts",
     "ai_page/constants.ts",
     "ai_page/dictation_browser_proxy.ts",

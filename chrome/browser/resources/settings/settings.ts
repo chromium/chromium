@@ -61,6 +61,7 @@ export type {AboutPageBrowserProxy} from './about_page/about_page_browser_proxy.
 export type {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';
 // </if>
 // clang-format on
+export {ActiveTimer} from './active_timer.js';
 export {SettingsAiInfoCardElement} from './ai_page/ai_info_card.js';
 export {SettingsAiLoggingInfoBullet} from './ai_page/ai_logging_info_bullet.js';
 export {SettingsAiPageElement} from './ai_page/ai_page.js';
