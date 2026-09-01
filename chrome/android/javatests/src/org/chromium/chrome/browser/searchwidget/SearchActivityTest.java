@@ -239,6 +239,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/555777715")
     public void testStartsBrowserAfterUrlSubmitted_aboutblank() throws Exception {
         verifyUrlLoads(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }
