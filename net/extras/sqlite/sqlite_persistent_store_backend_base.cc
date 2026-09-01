@@ -78,7 +78,8 @@ void SQLitePersistentStoreBackendBase::SetBeforeCommitCallback(
 
 bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
   TRACE_EVENT("net",
-              "SQLitePersistentCookieStoreBackendBase::InitializeDatabase");
+              "SQLitePersistentCookieStoreBackendBase::InitializeDatabase",
+              perfetto::Flow::FromPointer(this));
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (closed_) {
     return false;

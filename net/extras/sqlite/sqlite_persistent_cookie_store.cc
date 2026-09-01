@@ -696,6 +696,10 @@ bool CreateV24Schema(sql::Database* db) {
 }  // namespace
 
 void SQLitePersistentCookieStore::Backend::MaybeInitializeDatabaseEarly() {
+  TRACE_EVENT(
+      "net",
+      "SQLitePersistentCookieStore::Backend::MaybeInitializeDatabaseEarly",
+      perfetto::Flow::FromPointer(this));
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (features::kSQLitePersistentCookieStoreEarlyInitCheckDisk.Get() &&
       !base::PathExists(path())) {
@@ -719,6 +723,9 @@ void SQLitePersistentCookieStore::Backend::MaybeInitializeDatabaseEarly() {
 }
 
 void SQLitePersistentCookieStore::Backend::InitializeDatabaseEarly() {
+  TRACE_EVENT("net",
+              "SQLitePersistentCookieStore::Backend::InitializeDatabaseEarly",
+              perfetto::Flow::FromPointer(this));
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   const bool is_initialized = InitializeDatabase();
   base::UmaHistogramBoolean("Cookie.CreateDatabaseEarly", is_initialized);
@@ -821,6 +828,9 @@ bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
+  TRACE_EVENT("net",
+              "SQLitePersistentCookieStore::Backend::DoInitializeDatabase",
+              perfetto::Flow::FromPointer(this));
   DCHECK(db());
 
   // Retrieve all the domains
@@ -1538,6 +1548,8 @@ SQLitePersistentCookieStore::SQLitePersistentCookieStore(
                                              restore_old_session_cookies,
                                              std::move(crypto_delegate),
                                              enable_exclusive_access)) {
+  TRACE_EVENT("net", "SQLitePersistentCookieStore::SQLitePersistentCookieStore",
+              perfetto::Flow::FromPointer(backend_.get()));
   if (base::FeatureList::IsEnabled(
           features::kSQLitePersistentCookieStoreEarlyInit)) {
     background_task_runner->PostTask(
