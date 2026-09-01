@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Izbrisat ćete više lozinki ({password_count}) i listu web lokacija i aplikacija za koje ste odabrali da nikada ne pohranjuju podatke za prijavu. Račun kreiran za web lokacije i aplikacije se neće izbrisati.</translation>
 <translation id="1076421457278169141">Kôd je skeniran</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} kartica}one{{count} kartica}few{{count} kartice}other{{count} kartica}}</translation>
+<translation id="1081948304372277788">Isključi Level Up</translation>
 <translation id="1082554859195167538">Recenzije proizvoda za vas</translation>
 <translation id="1084365883616172403">Objava na Facebooku je završena.</translation>
 <translation id="108485301461714610">AI način rada Google Pretraživanja i povezane aplikacije</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Sigurno pregledanje</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="164673457281113247">{count,plural, =1{Oznaka je sačuvana}one{Oznake su sačuvane}few{Oznake su sačuvane}other{Oznake su sačuvane}}</translation>
+<translation id="1650979352027263879">Uklonjene su postavke izgleda</translation>
 <translation id="1651260071709244114">Aplikacije</translation>
 <translation id="1652051421944182562">Uključivanje obavještenja o sigurnosnoj provjeri…</translation>
 <translation id="1652333207707886577">Prilagodite meni</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Oznaka je sačuvana na Google računu {email}}one{Oznake su sačuvane na Google računu {email}}few{Oznake su sačuvane na Google računu {email}}other{Oznake su sačuvane na Google računu {email}}}</translation>
 <translation id="1838089197478136166">Otvoriti u Novčaniku?</translation>
 <translation id="183878838231635348">Kartica prikazuje probleme s privatnošću ili sigurnošću koje je sigurnosna provjera automatski otkrila za vas.</translation>
-<translation id="1840320537320704887">Uklonjene su postavke stranice Nova kartica</translation>
 <translation id="1845230888742614096">Zadrži grupu</translation>
 <translation id="1853558655412913122">Sada možete promijeniti položaj trake za adresu u odjeljku "Postavke", a zatim "Traka za adresu"</translation>
 <translation id="1853692000353488670">Nova anonimna kartica</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Radi zaštite vaše privatnosti, Chrome neće automatski popunjavati vašu lozinku u ovoj rubrici.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 web lokacija (i druge na sinhroniziranim uređajima)}one{# web lokacija (i druge na sinhroniziranim uređajima)}few{# web lokacije (i druge na sinhroniziranim uređajima)}other{# web lokacija (i druge na sinhroniziranim uređajima)}}</translation>
+<translation id="286473047976978798">Primijeniti postavke izgleda?</translation>
 <translation id="2865392654629180917">Pitajte bilo šta i dobijte odgovore s primjenom AI-ja</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2876369937070532032">Šalje Googleu URL-ove nekih stranica koje posjetite kada vam je sigurnost ugrožena</translation>
@@ -1119,7 +1121,6 @@
 
        Odaberite radnju koju treba poduzeti s postojećim podacima o pregledanju na uređaju.</translation>
 <translation id="4675298276894277358">Ova web lokacija se više neće prikazivati</translation>
-<translation id="4676647168422678078">Primijeniti postavke stranice Nova kartica?</translation>
 <translation id="4682496302933121474">Prevesti stranicu?</translation>
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
 <translation id="4697240968720007067">Nabavite Googleove najbolje aplikacije jednim dodirom</translation>
@@ -1806,6 +1807,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6806550742467879742">Alati stranice</translation>
 <translation id="6807287147325542056">Lozinke u drugim aplikacijama</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
+<translation id="6815692190508268848">Primijenjene su postavke izgleda</translation>
 <translation id="681631578600400068">Sačuvajte vozačku dozvolu</translation>
 <translation id="6825078212112407882">{count,plural, =1{Oznaka je sačuvana na Google račun {email}}one{{count} oznaka je sačuvana na Google račun {email}}few{{count} oznake su sačuvane na Google račun {email}}other{{count} oznaka je sačuvano na Google račun {email}}}</translation>
 <translation id="6826004672264649705">Trenutno praćenje proizvoda. Otvaranje radi prikaza historije cijena</translation>
@@ -2189,7 +2191,6 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="8059312861912872211">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
 <translation id="8059533439631660104">Sužavanje odjeljka.</translation>
 <translation id="8061584726507121204">Historija</translation>
-<translation id="8064946459644399612">Primijenjene su postavke stranice Nova kartica</translation>
 <translation id="8065136076319366194">Pohranjivanje se ne preporučuje</translation>
 <translation id="8065556469005366939">Dobijajte relevantnije odgovore dijeljenjem kartica</translation>
 <translation id="8069394452933076548">Odaberite kada se kartice koje niste nedavno koristili premještaju u odjeljak neaktivnih kartica.</translation>

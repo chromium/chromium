@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Налаштуйте й контролюйте Google Chrome. Доступне оновлення.</translation>
 <translation id="1028061813283459617">Щоб видалити дані вебперегляду лише на цьому пристрої, але зберегти їх в обліковому записі Google, <ph name="BEGIN_LINK" />вийдіть із Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Користуйтеся найкращими функціями безпеки Google, де б ви не були, за допомогою додатка Chrome на телефоні</translation>
+<translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1042270987544905725">Натисніть, щоб закрити вікно входу в Chrome</translation>
 <translation id="1051793555070215510">Пройдіть опитування, щоб допомогти нам покращити анонімний режим. Це займе 1 хвилину.</translation>
 <translation id="1055295352198814912">Показувати Gemini у Chrome на панелі меню Mac і ввімкнути комбінацію клавіш</translation>
@@ -242,6 +243,7 @@
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="3292333338048274092">Потім вам потрібно буде перезапустити Chrome.</translation>
+<translation id="3294686910656423119">Статистика використання та звіти про аварійне завершення роботи</translation>
 <translation id="3327226547491422998">Пізніше Chrome пропонуватиме вам автоматично заповнювати форми за допомогою збереженої інформації</translation>
 <translation id="3352986031709923790">правий верхній кут області пошуку: <ph name="RIGHT" />% праворуч, <ph name="TOP" />% згори</translation>
 <translation id="3360895254066713204">Помічник Chrome</translation>
@@ -471,6 +473,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5824893331272123205">Не вдалося завантажити цю панель. Повторіть спробу.</translation>
 <translation id="5825922397106002626">Вилучити розширення <ph name="EXTENSION_NAME" /> з Chrome</translation>
 <translation id="5858486459377137936">Якщо ви закриєте всі вікна Chrome, то вийдете з облікових записів на більшості сайтів, але не з облікового запису Google (за умови, що ви ввійшли в Chrome). Щоб дозволити сайтам запам’ятовувати вас, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Увімкнути</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome попереджає<ph name="END_LINK" /> про небезпечні сайти й завантаження</translation>
 <translation id="5894164573378901688">Щоб використовувати Gemini у Chrome, увійдіть в інший обліковий запис Google</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -511,6 +514,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6166185671393271715">Імпортувати паролі в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
+<translation id="6177442314419606057">Пошук у Chrome</translation>
 <translation id="6180522807229584611">Ця вкладка використовує додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити її неактивною.</translation>
 <translation id="6182736845697986886">Не вдалося встановити через внутрішню помилку сервера оновлень.</translation>
 <translation id="6192058120268468905">Ваш обліковий запис у Chrome</translation>

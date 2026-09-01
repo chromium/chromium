@@ -561,6 +561,7 @@
 <translation id="3232754137068452469">ဝဘ် အက်ပ်</translation>
 <translation id="3236059992281584593">၁ မိနစ် ကျန်သည်</translation>
 <translation id="3237087289225714896">ပုံမှန် ကြိုဖွင့်မှု-</translation>
+<translation id="3243650379537999343">ပုံဆွဲရန်</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Chrome အသုံးပြမှုအစီရင်ခံစာများ မျှဝေပါကလည်း ထိုအစီရင်ခံစာများတွင် သင်ဝင်ကြည့်သော URL များ ပါဝင်သည်</translation>
 <translation id="3250563604907490871">Wi-Fi သို့ ချိတ်ဆက်လိုက်သောအခါ ပုံအကြောင်းအရာများကို ဆက်ပြပါမည်</translation>
@@ -963,7 +964,6 @@
 <translation id="480990236307250886">ပင်မ စာမျက်နှာဖွင့်</translation>
 <translation id="4816492930507672669">စာမျက်နှာ ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> တဘ်အုပ်စုကို ပိတ်ပြီး သိမ်းလိုက်သည်</translation>
-<translation id="4834250788637067901">Google Pay ကို သုံးထားသော ငွေပေးချေနည်းလမ်း၊ ကမ်းလှမ်းချက်နှင့် လိပ်စာများ</translation>
 <translation id="4835385943915508971">တောင်းဆိုထားသည့် အရင်းမြစ်ကို Chrome သည် အသုံးပြုခွင့်မရှိပါ။</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခုပါသော <ph name="COLOR_NAME" /> ရောင် တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခုပါသော <ph name="COLOR_NAME" /> ရောင် တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}}</translation>
 <translation id="4849731766219625109">သင်၏ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> အကောင့် သုံးရန်</translation>

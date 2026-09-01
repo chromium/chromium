@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="164673457281113247">{count,plural, =1{ブックマークを保存しました}other{ブックマークを保存しました}}</translation>
+<translation id="1650979352027263879">デザインの設定を削除しました</translation>
 <translation id="1651260071709244114">アプリ</translation>
 <translation id="1652051421944182562">安全チェックの通知をオンにする…</translation>
 <translation id="1652333207707886577">メニューをカスタマイズ</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）にブックマークを保存しました}}</translation>
 <translation id="1838089197478136166">ウォレットで開きますか？</translation>
 <translation id="183878838231635348">このカードには、安全チェックで自動検出されたプライバシーやセキュリティの問題が表示されます。</translation>
-<translation id="1840320537320704887">新しいタブページの設定を削除しました</translation>
 <translation id="1845230888742614096">グループを保持</translation>
 <translation id="1853558655412913122">[設定] &gt; [アドレスバー] でアドレスバーの位置を変更できるようになりました</translation>
 <translation id="1853692000353488670">新しいシークレット タブ</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">プライバシー保護のため、Chrome ではこの欄のパスワードの自動入力は行われません。</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 件のサイト（同期デバイスではそれ以上のサイト）}other{# 件のサイト（同期デバイスではそれ以上のサイト）}}</translation>
+<translation id="286473047976978798">デザインの設定を適用しますか？</translation>
 <translation id="2865392654629180917">AI に何でも聞いて、回答を得ましょう</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2876369937070532032">セキュリティ上のリスクがある場合に、アクセスした一部のページの URL が Google に送信されます</translation>
@@ -1120,7 +1121,6 @@
 
        このデバイスの既存の閲覧データの処理方法を選択してください。</translation>
 <translation id="4675298276894277358">このサイトは今後表示されません</translation>
-<translation id="4676647168422678078">新しいタブページの設定を適用しますか？</translation>
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="4682686630151240767">1. iPhone の [設定] を開く</translation>
 <translation id="4697240968720007067">ワンタップで Google の便利なアプリを入手</translation>
@@ -1507,7 +1507,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} 個の新しいタブ}other{{count} 個の新しいタブ}}</translation>
 <translation id="5911030830365207728">Google 翻訳</translation>
 <translation id="5912796581727968237">Google ウォレットを開く</translation>
-<translation id="5922999516621365983">ここにタブをドラッグして固定します。</translation>
+<translation id="5922999516621365983">タブをここにドラッグすると固定されます。</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{追加できるファイル、タブ、または画像は最大 1 個です}other{追加できるファイル、タブ、または画像は最大 {COUNT} 個です}}</translation>
 <translation id="5936006948844852401">ストレージを管理</translation>
 <translation id="5936065461722368675">ページ全体を翻訳</translation>
@@ -1807,6 +1807,7 @@
 <translation id="6806550742467879742">ページツール</translation>
 <translation id="6807287147325542056">他のアプリのパスワード</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
+<translation id="6815692190508268848">デザインの設定を適用しました</translation>
 <translation id="681631578600400068">運転免許証を保存</translation>
 <translation id="6825078212112407882">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）に　{count}　件のブックマークを保存しました}}</translation>
 <translation id="6826004672264649705">現在この商品を追跡しています。開くと価格の推移を確認できます。</translation>
@@ -2190,7 +2191,6 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} 件のブックマーク}other{{count} 件のブックマーク}}</translation>
 <translation id="8059533439631660104">セクションを折りたたみます。</translation>
 <translation id="8061584726507121204">履歴</translation>
-<translation id="8064946459644399612">新しいタブページの設定を適用しました</translation>
 <translation id="8065136076319366194">保存は推奨されません</translation>
 <translation id="8065556469005366939">タブを共有すると、より関連性の高い回答が得られます</translation>
 <translation id="8069394452933076548">最近使用していないタブを無効なタブセクションにいつ移動するかを選択します。</translation>

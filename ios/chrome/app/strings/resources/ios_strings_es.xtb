@@ -214,6 +214,7 @@
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
+<translation id="1650979352027263879">Se han eliminado tus preferencias de aspecto</translation>
 <translation id="1651260071709244114">Aplicaciones</translation>
 <translation id="1652051421944182562">Activar notificaciones de Comprobación de seguridad…</translation>
 <translation id="1652333207707886577">Personalizar el menú</translation>
@@ -276,7 +277,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Marcador guardado en tu cuenta de Google ({email})}other{Marcadores guardados en tu cuenta de Google ({email})}}</translation>
 <translation id="1838089197478136166">¿Abrir en Wallet?</translation>
 <translation id="183878838231635348">Esta tarjeta muestra los problemas de privacidad o seguridad que haya detectado automáticamente la comprobación de seguridad.</translation>
-<translation id="1840320537320704887">Se han eliminado tus preferencias de la página Nueva pestaña</translation>
 <translation id="1845230888742614096">Conservar grupo</translation>
 <translation id="1853558655412913122">Ahora puedes cambiar la posición de la barra de direcciones en Configuración &gt; Barra de direcciones</translation>
 <translation id="1853692000353488670">Nueva pestaña de Incógnito</translation>
@@ -590,6 +590,7 @@
 <translation id="2858204748079866344">Para proteger tu privacidad, Chrome no autocompletará tu contraseña en este campo.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sitio (más en dispositivos sincronizados)}other{# sitios (más en dispositivos sincronizados)}}</translation>
+<translation id="286473047976978798">¿Aplicar tus preferencias de aspecto?</translation>
 <translation id="2865392654629180917">Pregunta lo que quieras y recibe respuestas basadas en IA</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Envía a Google las URL de algunas de las páginas que visitas cuando tu seguridad corre peligro</translation>
@@ -1119,7 +1120,6 @@
 
        Elige qué hacer con los datos de navegación de este dispositivo.</translation>
 <translation id="4675298276894277358">Este sitio no se volverá a mostrar</translation>
-<translation id="4676647168422678078">¿Aplicar tus preferencias de la página Nueva pestaña?</translation>
 <translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4697240968720007067">Consigue las mejores apps de Google con un toque</translation>
@@ -1806,6 +1806,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6806550742467879742">Herramientas de página</translation>
 <translation id="6807287147325542056">Contraseñas en otras aplicaciones</translation>
 <translation id="681368974849482173">Elemento creado</translation>
+<translation id="6815692190508268848">Se han aplicado tus preferencias de aspecto</translation>
 <translation id="681631578600400068">Guardar carné de conducir</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado en tu cuenta de Google ({email})}other{{count} marcadores guardados en tu cuenta de Google ({email})}}</translation>
 <translation id="6826004672264649705">Estás siguiendo este producto. Abre para ver el historial de precios.</translation>
@@ -2189,7 +2190,6 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8059312861912872211">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8059533439631660104">Oculta la sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
-<translation id="8064946459644399612">Se han aplicado tus preferencias de la página Nueva pestaña</translation>
 <translation id="8065136076319366194">No se recomienda guardar</translation>
 <translation id="8065556469005366939">Comparte tus pestañas para obtener respuestas más pertinentes</translation>
 <translation id="8069394452933076548">Elige cuándo se moverán las pestañas que no se han usado recientemente a la sección de pestañas inactivas.</translation>

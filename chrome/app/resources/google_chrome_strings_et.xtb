@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Kohandage ja juhtige Google Chrome'i. Saadaval on värskendus.</translation>
 <translation id="1028061813283459617">Sirvimisandmete kustutamiseks ainult sellest seadmest, kuid jättes need oma Google'i kontole alles, <ph name="BEGIN_LINK" />logige Chrome'ist välja<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Chrome'i telefonirakendusega kaitsevad Google'i parimaid ohutusfunktsioonid teid ka liikvel olles</translation>
+<translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1042270987544905725">Klõpsake, et Chrome'i sisselogimise dialoog sulgeda</translation>
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
 <translation id="1055295352198814912">Kuva Gemini Chrome'is Maci menüüribal ja lülita sisse klaviatuuri otseteed</translation>
@@ -244,6 +245,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
 <translation id="3292333338048274092">Seejärel peate Chrome'i taaskäivitama.</translation>
+<translation id="3294686910656423119">Kasutusstatistika ja krahhiaruanded</translation>
 <translation id="3327226547491422998">Hiljem võib Chrome teilt küsida, kas soovite salvestatud teavet vormide automaattäitmiseks kasutada</translation>
 <translation id="3352986031709923790">otsinguala parem ülanurk: <ph name="RIGHT" />% paremal, <ph name="TOP" />% üleval</translation>
 <translation id="3360895254066713204">Chrome'i abistaja</translation>
@@ -475,6 +477,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5824893331272123205">Seda paneeli ei õnnestunud laadida. Proovige uuesti</translation>
 <translation id="5825922397106002626">Eemalda <ph name="EXTENSION_NAME" /> Chrome'ist</translation>
 <translation id="5858486459377137936">Kõikide Chrome’i akende sulgemise korral logitakse teid välja enamikust saitidest, v.a Google’i kontolt, kui olete Chrome’is sisse logitud. Kui soovite lubada saitidel ennast meelde jätta, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome hoiatab teid<ph name="END_LINK" /> ebaturvaliste saitide ja allalaadimiste eest</translation>
 <translation id="5894164573378901688">Teenuse Gemini Chrome'is kasutamiseks logige sisse teise Google'i kontoga</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
@@ -515,6 +518,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6166185671393271715">Paroolide importimine Chrome'i</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome'i beetaversioon</translation>
+<translation id="6177442314419606057">Otsing Chrome'ist</translation>
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
 <translation id="6192058120268468905">Teie konto Chrome'is</translation>

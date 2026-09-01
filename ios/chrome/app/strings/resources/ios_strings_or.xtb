@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">ଆପଣ {password_count} ପାସୱାର୍ଡ ଏବଂ ସାଇନ-ଇନ କେବେ ବି ସେଭ ନକରିବାକୁ ବାଛିଥିବା ସାଇଟ ଏବଂ ଆପର ତାଲିକାକୁ ଡିଲିଟ କରିବାକୁ ଯାଉଛନ୍ତି। ଆପଣ ସାଇଟ କିମ୍ବା ଆପ ପାଇଁ ତିଆରି କରିଥିବା ଯେ କୌଣସି ଆକାଉଣ୍ଟ ଡିଲିଟ ହେବ ନାହିଁ।</translation>
 <translation id="1076421457278169141">ସ୍କାନ୍ କରାଯାଇଥିବା କୋଡ୍</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ଟାବ}other{{count} ଟାବ}}</translation>
+<translation id="1081948304372277788">ଲେଭେଲ ଅପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1082554859195167538">ଆପଣଙ୍କ ପାଇଁ ପ୍ରଡକ୍ଟ ସମୀକ୍ଷା</translation>
 <translation id="1084365883616172403">Facebookରେ ପୋଷ୍ଟ ଶେଷ ହୋଇଛି।</translation>
 <translation id="108485301461714610">Google Search AI ମୋଡ ଏବଂ କନେକ୍ଟ ହୋଇଥିବା ଆପ୍ସ</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
 <translation id="1644574205037202324">ଇତିହାସ</translation>
 <translation id="164673457281113247">{count,plural, =1{ବୁକମାର୍କ ସେଭ କରାଯାଇଛି}other{ବୁକମାର୍କଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି}}</translation>
+<translation id="1650979352027263879">ଆପଣଙ୍କ ଦେଖାଯିବା ପସନ୍ଦଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="1651260071709244114">ଆପ୍ସ</translation>
 <translation id="1652051421944182562">ସୁରକ୍ଷା ଯାଞ୍ଚ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ…</translation>
 <translation id="1652333207707886577">ଆପଣଙ୍କ ମେନୁକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, {email}ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି}other{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, {email}ରେ ବୁକମାର୍କଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି}}</translation>
 <translation id="1838089197478136166">Walletରେ ଖୋଲିବେ?</translation>
 <translation id="183878838231635348">ଏହି କାର୍ଡ ଯେ କୌଣସି ଗୋପନୀୟତା କିମ୍ବା ସୁରକ୍ଷା ସମସ୍ୟା ଦେଖାଏ ଯାହା ସୁରକ୍ଷା ଯାଞ୍ଚ ସ୍ୱତଃ ଆପଣଙ୍କ ପାଇଁ ଚିହ୍ନଟ କରେ।</translation>
-<translation id="1840320537320704887">ଆପଣଙ୍କ ନୂଆ ଟାବ ପୃଷ୍ଠା ପସନ୍ଦଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="1845230888742614096">ଗ୍ରୁପକୁ ରଖନ୍ତୁ</translation>
 <translation id="1853558655412913122">ଆପଣ ବର୍ତ୍ତମାନ "ସେଟିଂସ" ଏବଂ ତା'ପରେ "ଠିକଣା ବାର"ରେ ଠିକଣା ବାରର ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="1853692000353488670">ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">ଆପଣଙ୍କର ଗୋପନୀୟତାର ସୁରକ୍ଷା ପାଇଁ ଏହି ଫିଲ୍ଡରେ Chrome ଆପଣଙ୍କର ପାସୱର୍ଡକୁ ସ୍ୱତଃପୂରଣ କରିବ ନାହିଁ।</translation>
 <translation id="2858951819750638913">Gemini ଲାଇଭ</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 ସାଇଟ (ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅଧିକ)}other{# ସାଇଟ (ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅଧିକ)}}</translation>
+<translation id="286473047976978798">ଆପଣଙ୍କ ଆପିଅରେନ୍ସ ପସନ୍ଦଗୁଡ଼ିକୁ ଲାଗୁ କରିବେ?</translation>
 <translation id="2865392654629180917">ଯେ କୌଣସି ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ ଏବଂ AI-ପରିଚାଳିତ ଉତ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="2870560284913253234">ସାଇଟ୍</translation>
 <translation id="2876369937070532032">ଆପଣଙ୍କର ସୁରକ୍ଷା ବିପଦରେ ଥିବା ବେଳେ, Googleକୁ ଆପଣ ଯାଇଥିବା କିଛି ପୃଷ୍ଠାର URL ପଠାଏ</translation>
@@ -1119,7 +1121,6 @@
 
        ଏହି ଡିଭାଇସରେ ପୂର୍ବରୁ ଥିବା ବ୍ରାଉଜିଂ ଡାଟା ସହ କଣ କରିବେ ତାହା ବାଛନ୍ତୁ।</translation>
 <translation id="4675298276894277358">ଏହି ସାଇଟ ପୁଣି ଦେଖାଯିବ ନାହିଁ</translation>
-<translation id="4676647168422678078">ଆପଣଙ୍କ ନୂଆ ଟାବ ପୃଷ୍ଠା ପସନ୍ଦଗୁଡ଼ିକୁ ଲାଗୁ କରିବେ?</translation>
 <translation id="4682496302933121474">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବେ?</translation>
 <translation id="4682686630151240767">1. iPhone ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="4697240968720007067">ଗୋଟିଏ ଟାପରେ Googleର ସର୍ବୋତ୍ତମ ଆପ୍ସ ପାଆନ୍ତୁ</translation>
@@ -1806,6 +1807,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="6806550742467879742">ପୃଷ୍ଠା ଟୁଲ</translation>
 <translation id="6807287147325542056">ଅନ୍ୟ ଆପ୍ସରେ ପାସୱାର୍ଡ</translation>
 <translation id="681368974849482173">ଆଇଟମ୍ ତିଆରି ହୋଇଛି</translation>
+<translation id="6815692190508268848">ଆପଣଙ୍କ ଏପିଏରେନ୍ସ ପସନ୍ଦଗୁଡ଼ିକୁ ଲାଗୁ କରାଯାଇଛି</translation>
 <translation id="681631578600400068">ଡ୍ରାଇଭର ଲାଇସେନ୍ସ ସେଭ କରନ୍ତୁ</translation>
 <translation id="6825078212112407882">{count,plural, =1{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, {email}ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି}other{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ {email}ରେ {count} ବୁକମାର୍କ ସେଭ କରାଯାଇଛି}}</translation>
 <translation id="6826004672264649705">ବର୍ତ୍ତମାନ ଏହି ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କରାଯାଉଛି। ମୂଲ୍ୟ ଇତିହାସ ଦେଖିବାକୁ ଖୋଲନ୍ତୁ</translation>
@@ -2189,7 +2191,6 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8059312861912872211">{count,plural, =1{{count} ବୁକମାର୍କ}other{{count} ବୁକମାର୍କ}}</translation>
 <translation id="8059533439631660104">ଅବଧି ସଙ୍କୁଚିତ କରନ୍ତୁ।</translation>
 <translation id="8061584726507121204">ଇତିହାସ</translation>
-<translation id="8064946459644399612">ଆପଣଙ୍କ ନୂଆ ଟାବ ପୃଷ୍ଠା ପସନ୍ଦଗୁଡ଼ିକୁ ଲାଗୁ କରାଯାଇଛି</translation>
 <translation id="8065136076319366194">ସେଭ କରିବାକୁ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="8065556469005366939">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ସେୟାର କରି ଅଧିକ ପ୍ରାସଙ୍ଗିକ ଉତ୍ତର ପାଆନ୍ତୁ</translation>
 <translation id="8069394452933076548">ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଇନଥିବା ଟାବଗୁଡ଼ିକୁ କେତେବେଳେ ନିଷ୍କ୍ରିୟ ଟାବ ବିଭାଗକୁ ମୁଭ କରାଯିବ ତାହା ବାଛନ୍ତୁ।</translation>

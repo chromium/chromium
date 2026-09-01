@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">{password_count} jelszót, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="1076421457278169141">Kód beolvasva</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} lap}other{{count} lap}}</translation>
+<translation id="1081948304372277788">Level Up kikapcsolása</translation>
 <translation id="1082554859195167538">Termékvélemények Önnek</translation>
 <translation id="1084365883616172403">A Facebook-bejegyzés kész.</translation>
 <translation id="108485301461714610">A Google Kereső AI-módja és az összekapcsolt alkalmazások</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="164673457281113247">{count,plural, =1{Könyvjelző mentve}other{Könyvjelzők mentve}}</translation>
+<translation id="1650979352027263879">Megjelenési beállítások eltávolítva</translation>
 <translation id="1651260071709244114">Alkalmazások</translation>
 <translation id="1652051421944182562">A biztonsági ellenőrzés értesítéseinek bekapcsolása…</translation>
 <translation id="1652333207707886577">A menü testreszabása</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{A könyvjelzők mentve a Google-fiókjába ({email})}}</translation>
 <translation id="1838089197478136166">Megnyitja a Walletban?</translation>
 <translation id="183878838231635348">Ez a kártya azokat az adatvédelmi és biztonsági problémákat jeleníti meg, amelyeket a biztonsági ellenőrzés automatikusan észlelt.</translation>
-<translation id="1840320537320704887">Az Új lap oldal beállításai eltávolítva</translation>
 <translation id="1845230888742614096">Csoport megtartása</translation>
 <translation id="1853558655412913122">Mostantól módosíthatja a címsáv helyét a „Beállítások” menün belüli „Címsáv” pontban.</translation>
 <translation id="1853692000353488670">Új inkognitó lap</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Adatai védelme érdekében a Chrome nem tölti ki automatikusan a jelszavát ebben a mezőben.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 webhely (még több a szinkronizált eszközökön)}other{# webhely (még több a szinkronizált eszközökön)}}</translation>
+<translation id="286473047976978798">Alkalmazza a megjelenési beállításokat?</translation>
 <translation id="2865392654629180917">Bármit megkérdezhet, és AI-alapú válaszokat kaphat</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2876369937070532032">Elküldi egyes felkeresett oldalak URL-jét a Google-nak, ha veszélyben van az Ön biztonsága</translation>
@@ -1119,7 +1121,6 @@
 
        Válassza ki, hogy mit szeretne tenni az eszközön meglévő böngészési adatokkal.</translation>
 <translation id="4675298276894277358">Ez a webhely nem fog újra megjelenni</translation>
-<translation id="4676647168422678078">Alkalmazza az Új lap oldal beállításait?</translation>
 <translation id="4682496302933121474">Lefordítja az oldalt?</translation>
 <translation id="4682686630151240767">1. Nyissa meg az iPhone Beállítások menüjét.</translation>
 <translation id="4697240968720007067">A Google legjobb appjai – egy koppintással</translation>
@@ -1806,6 +1807,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6806550742467879742">Oldaleszközök</translation>
 <translation id="6807287147325542056">Más alkalmazásoknál használt jelszavak</translation>
 <translation id="681368974849482173">Elem létrehozva</translation>
+<translation id="6815692190508268848">A megjelenési beállítások alkalmazva</translation>
 <translation id="681631578600400068">Vezetői engedély mentése</translation>
 <translation id="6825078212112407882">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{{count} könyvjelző mentve a Google-fiókjába ({email})}}</translation>
 <translation id="6826004672264649705">Jelenleg nyomon követi ezt a terméket. Az árelőzmények megtekintéséhez nyissa meg</translation>
@@ -2189,7 +2191,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8059312861912872211">{count,plural, =1{{count} könyvjelző}other{{count} könyvjelző}}</translation>
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
 <translation id="8061584726507121204">Előzmények</translation>
-<translation id="8064946459644399612">Az Új lap oldal beállításai alkalmazva</translation>
 <translation id="8065136076319366194">A mentés nem javasolt</translation>
 <translation id="8065556469005366939">Relevánsabb válaszokat kaphat, ha megosztja a lapjait</translation>
 <translation id="8069394452933076548">Válassza ki, hogy mikor kerüljenek a legutóbb nem használt lapok az inaktív lapok szakaszba.</translation>

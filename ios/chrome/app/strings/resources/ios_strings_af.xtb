@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Jy is op die punt om {password_count} wagwoorde en die lys werwe en apps uit te vee wat jy gekies het om nooit aanmeldinligting voor te stoor nie. Enige rekening wat jy vir werwe en apps geskep het, sal nie uitgevee word nie.</translation>
 <translation id="1076421457278169141">Kode is geskandeer</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} oortjie}other{{count} oortjies}}</translation>
+<translation id="1081948304372277788">Skakel Level Up af</translation>
 <translation id="1082554859195167538">Produkresensies vir jou</translation>
 <translation id="1084365883616172403">Facebook-plasing is voltooi.</translation>
 <translation id="108485301461714610">Google Search KI-modus en gekoppelde apps</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="164673457281113247">{count,plural, =1{Boekmerk is gestoor}other{Boekmerke is gestoor}}</translation>
+<translation id="1650979352027263879">Jou voorkomsvoorkeure is verwyder</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">Skakel kennisgewings vir veiligheidskontrole aan …</translation>
 <translation id="1652333207707886577">Pasmaak jou kieslys</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{Boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
 <translation id="1838089197478136166">Maak in Wallet oop?</translation>
 <translation id="183878838231635348">Hierdie kaart wys enige privaatheid- of sekuriteitkwessies wat veiligheidskontrole outomaties vir jou bespeur.</translation>
-<translation id="1840320537320704887">Jou Nuwe Oortjie-bladsy se voorkeure is verwyder</translation>
 <translation id="1845230888742614096">Hou groep</translation>
 <translation id="1853558655412913122">Jy kan nou die posisie van die adresbalk verander in “Instellings” en dan “Adresbalk”</translation>
 <translation id="1853692000353488670">Nuwe incognito-oortjie</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Om jou privaatheid te beskerm, sal Chrome nie outomaties jou wagwoord in hierdie veld invul nie.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 werf (meer op gesinkroniseerde toestelle)}other{# werwe (meer op gesinkroniseerde toestelle)}}</translation>
+<translation id="286473047976978798">Pas jou voorkomsvoorkeure toe?</translation>
 <translation id="2865392654629180917">Vra enigiets en kry KI-aangedrewe antwoorde</translation>
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2876369937070532032">Stuur URL'e van sommige bladsye wat jy besoek aan Google wanneer jou sekuriteit bedreig word</translation>
@@ -1119,7 +1121,6 @@
 
        Kies wat om met bestaande blaaierdata op hierdie toestel te doen.</translation>
 <translation id="4675298276894277358">Hierdie werf sal nie weer gewys word nie</translation>
-<translation id="4676647168422678078">Wil jy jou Nuwe Oortjie-bladsy se voorkeure toepas?</translation>
 <translation id="4682496302933121474">Vertaal bladsy?</translation>
 <translation id="4682686630151240767">1. Maak iPhone Settings oop</translation>
 <translation id="4697240968720007067">Kry Google se beste apps, met een tik</translation>
@@ -1806,6 +1807,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6806550742467879742">Bladsynutsgoed</translation>
 <translation id="6807287147325542056">Wagwoorde in ander apps</translation>
 <translation id="681368974849482173">Item is geskep</translation>
+<translation id="6815692190508268848">Jou voorkomsvoorkeure is toegepas</translation>
 <translation id="681631578600400068">Stoor rybewys</translation>
 <translation id="6825078212112407882">{count,plural, =1{Boekmerk is gestoor in jou Google-rekening, {email}}other{{count} boekmerke is gestoor in jou Google-rekening, {email}}}</translation>
 <translation id="6826004672264649705">Spoor tans hierdie produk na. Maak oop om prysgeskiedenis te sien</translation>
@@ -2189,7 +2191,6 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8059312861912872211">{count,plural, =1{{count} boekmerke}other{{count} boekmerke}}</translation>
 <translation id="8059533439631660104">Vou die afdeling in.</translation>
 <translation id="8061584726507121204">Geskiedenis</translation>
-<translation id="8064946459644399612">Jou Nuwe Oortjie-bladsy se voorkeure is toegepas</translation>
 <translation id="8065136076319366194">Stoor word nie aanbeveel nie</translation>
 <translation id="8065556469005366939">Kry meer relevante antwoorde deur jou oortjies te deel</translation>
 <translation id="8069394452933076548">Kies wanneer oortjies wat nie onlangs gebruik is nie na die afdeling vir onaktiewe oortjies toe geskuif word.</translation>

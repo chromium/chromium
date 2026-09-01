@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark saved}other{Bookmarks saved}}</translation>
+<translation id="1650979352027263879">Removed your appearance preferences</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">Turn on safety check notifications…</translation>
 <translation id="1652333207707886577">Customise your menu</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{Bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="1838089197478136166">Open in Wallet?</translation>
 <translation id="183878838231635348">This card shows any privacy or security issues that Safety Check automatically detects for you.</translation>
-<translation id="1840320537320704887">Removed your New Tab page preferences</translation>
 <translation id="1845230888742614096">Keep group</translation>
 <translation id="1853558655412913122">You can now change the position of the address bar in 'Settings' and then 'Address bar'</translation>
 <translation id="1853692000353488670">New incognito tab</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (more on synced devices)}other{# sites (more on synced devices)}}</translation>
+<translation id="286473047976978798">Apply your appearance preferences?</translation>
 <translation id="2865392654629180917">Ask anything and get AI-powered responses</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
@@ -1120,7 +1121,6 @@
 
        Choose what to do with the existing browsing data on this device.</translation>
 <translation id="4675298276894277358">This site won't be shown again</translation>
-<translation id="4676647168422678078">Apply your New Tab page preferences?</translation>
 <translation id="4682496302933121474">Translate page?</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
 <translation id="4697240968720007067">Get Google's best apps, in one tap</translation>
@@ -1807,6 +1807,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6806550742467879742">Page tools</translation>
 <translation id="6807287147325542056">Passwords in other apps</translation>
 <translation id="681368974849482173">Item created</translation>
+<translation id="6815692190508268848">Applied your appearance preferences</translation>
 <translation id="681631578600400068">Save driving licence</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="6826004672264649705">Currently tracking this product. Open to see price history</translation>
@@ -2190,7 +2191,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8059312861912872211">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="8059533439631660104">Collapses the section.</translation>
 <translation id="8061584726507121204">History</translation>
-<translation id="8064946459644399612">Applied your New tab page preferences</translation>
 <translation id="8065136076319366194">Saving not recommended</translation>
 <translation id="8065556469005366939">Get more relevant answers by sharing your tabs</translation>
 <translation id="8069394452933076548">Choose when tabs that haven't been used recently are moved to the inactive tabs section.</translation>

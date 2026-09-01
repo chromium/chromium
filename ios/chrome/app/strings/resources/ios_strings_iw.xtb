@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="164673457281113247">{count,plural, =1{הסימנייה נשמרה}one{סימניות נשמרו}two{סימניות נשמרו}other{סימניות נשמרו}}</translation>
+<translation id="1650979352027263879">העדפות העיצוב הוסרו</translation>
 <translation id="1651260071709244114">אפליקציות</translation>
 <translation id="1652051421944182562">הפעלת ההתראות של בדיקת האבטחה…</translation>
 <translation id="1652333207707886577">התאמה אישית של התפריט</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{‏הסימנייה נשמרה בחשבון Google שלך, {email}}one{‏הסימניות נשמרו בחשבון Google שלך, {email}}two{‏הסימניות נשמרו בחשבון Google שלך, {email}}other{‏הסימניות נשמרו בחשבון Google שלך, {email}}}</translation>
 <translation id="1838089197478136166">‏לפתוח ב-Wallet?</translation>
 <translation id="183878838231635348">בכרטיס הזה מוצגות כל הבעיות בפרטיות או באבטחה שזוהו באופן אוטומטי בבדיקת האבטחה.</translation>
-<translation id="1840320537320704887">ההעדפות של דף הכרטיסייה החדשה הוסרו</translation>
 <translation id="1845230888742614096">שמירת הקבוצה</translation>
 <translation id="1853558655412913122">עכשיו אפשר לשנות את המיקום של סרגל הכתובות ב"הגדרות" ואז ב"סרגל הכתובות"</translation>
 <translation id="1853692000353488670">כרטיסייה אנונימית חדשה</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת באופן אוטומטי את הסיסמה שלך בשדה הזה.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{אתר אחד (עוד במכשירים מסונכרנים)}one{‫# אתרים (עוד במכשירים מסונכרנים)}two{‫# אתרים (עוד במכשירים מסונכרנים)}other{‫# אתרים (עוד במכשירים מסונכרנים)}}</translation>
+<translation id="286473047976978798">להחיל את העדפות העיצוב?</translation>
 <translation id="2865392654629180917">‏אפשר לשאול כל שאלה שרוצים ולקבל תשובות מבוססות-AI</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2876369937070532032">‏שולחת ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, אם מתגלה סיכון אבטחה</translation>
@@ -1120,7 +1121,6 @@
 
        יש לך אפשרות לבחור מה לעשות עם נתוני הגלישה הקיימים במכשיר הזה.</translation>
 <translation id="4675298276894277358">האתר הזה לא יוצג שוב</translation>
-<translation id="4676647168422678078">איך מפעילים את ההעדפות של דף הכרטיסייה החדשה</translation>
 <translation id="4682496302933121474">לתרגם את הדף?</translation>
 <translation id="4682686630151240767">‏1. פותחים את הגדרות ה-iPhone</translation>
 <translation id="4697240968720007067">‏בלחיצה אחת: מיטב האפליקציות של Google</translation>
@@ -1807,6 +1807,7 @@
 <translation id="6806550742467879742">כלים בדף</translation>
 <translation id="6807287147325542056">סיסמאות ששמורות באפליקציות אחרות</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
+<translation id="6815692190508268848">העדפות העיצוב הוחלו</translation>
 <translation id="681631578600400068">לשמור את רישיון הנהיגה?</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏נשמרה סימנייה בחשבון Google שלך, {email}}one{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}two{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}other{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}}</translation>
 <translation id="6826004672264649705">נכון לעכשיו מתבצע מעקב אחרי המוצר הזה. כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
@@ -2190,7 +2191,6 @@
 <translation id="8059312861912872211">{count,plural, =1{‫{count} סימניות}one{{count} bookmarks}two{‫{count} סימניות}other{‫{count} סימניות}}</translation>
 <translation id="8059533439631660104">מכווץ את הקטע.</translation>
 <translation id="8061584726507121204">היסטוריה</translation>
-<translation id="8064946459644399612">ההעדפות של דף הכרטיסייה החדשה הופעלו</translation>
 <translation id="8065136076319366194">לא מומלץ לשמור את הקובץ</translation>
 <translation id="8065556469005366939">כדי לקבל תשובות רלוונטיות יותר, כדאי לשתף את הכרטיסיות</translation>
 <translation id="8069394452933076548">אפשר לבחור מתי כרטיסיות שלא השתמשו בהן לאחרונה יועברו לקטע הכרטיסיות הלא פעילות.</translation>

@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Приспособете го и контролирајте го Google Chrome. Достапно е ажурирање.</translation>
 <translation id="1028061813283459617">За да ги избришете податоците од прелистување само од овој уред, а притоа да ги задржите во сметката на Google, <ph name="BEGIN_LINK" />одјавете се од Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Добијте ги најдобрите безбедносни функции на Google во движење со апликацијата Chrome на телефонот</translation>
+<translation id="1036348656032585052">Исклучи</translation>
 <translation id="1042270987544905725">Кликнете за да се затвори дијалогот за најавување на Chrome</translation>
 <translation id="1051793555070215510">Помогнете ни да ја подобриме „Инкогнито“ така што ќе ја пополните анкетава што ќе ви одземе 1 минута.</translation>
 <translation id="1055295352198814912">Прикажи го Gemini во Chrome во лентата со менија на Mac и вклучи ја кратенката од тастатура</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
 <translation id="3292333338048274092">Потоа ќе треба да го рестартирате Chrome.</translation>
+<translation id="3294686910656423119">Статистика на користење и извештаи за падовите</translation>
 <translation id="3327226547491422998">Подоцна, Chrome може да прашува дали сакате да ги користи зачуваните податоци за да ги пополнува формуларите автоматски за вас</translation>
 <translation id="3352986031709923790">горен десен агол на областа за пребарување: десно <ph name="RIGHT" /> %, горе <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Помошник на Chrome</translation>
@@ -479,6 +481,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5824893331272123205">Таблава не можеше да се вчита, обидете се повторно</translation>
 <translation id="5825922397106002626">Отстрани ја <ph name="EXTENSION_NAME" /> од Chrome</translation>
 <translation id="5858486459377137936">Ќе се одјавите од повеќето сајтови кога ќе ги затворите сите прозорци во Chrome, со исклучок на вашата сметка на Google ако сте најавени на Chrome. За да овозможите да ве помнат сајтовите, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Вклучи</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ве предупредува<ph name="END_LINK" /> за небезбедни сајтови и преземања</translation>
 <translation id="5894164573378901688">За да го користите Gemini во Chrome, најавете се со друга сметка на Google</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -519,6 +522,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6166185671393271715">Увоз на лозинки во Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6180522807229584611">Картичкава користи дополнителни ресурси. За да се подобри изведбата, дозволете му на Chrome да ја деактивира.</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
 <translation id="6192058120268468905">Вашата сметка во Chrome</translation>

@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome কে কাস্টমাইজ এবং নিয়ন্ত্রণ করুন৷ আপডেট পাওয়া যাবে৷</translation>
 <translation id="1028061813283459617">শুধুমাত্র এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছে দিতে, তা নিজের Google অ্যাকাউন্টে রেখে দেওয়ার সময়, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="1028770388543831319">ফোনে Chrome অ্যাপের মাধ্যমে যখন যেখানে খুশি Google-এর সেরা সব নিরাপত্তা ফিচার অ্যাক্সেস করুন</translation>
+<translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1042270987544905725">Chrome-এ সাইন-ইন করার জন্য ডায়ালগ বন্ধ করতে, ক্লিক করুন</translation>
 <translation id="1051793555070215510">এই ১-মিনিটের সমীক্ষায় অংশ নিয়ে ছদ্মবেশী মোড উন্নত করতে আমাদের সাহায্য করুন।</translation>
 <translation id="1055295352198814912">Mac মেনু বারে Chrome-এ Gemini দেখানো এবং কীবোর্ড শর্টকাট চালু করা</translation>
@@ -244,6 +245,7 @@
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3286538390144397061">এখন পুর্নসূচনা করবেন</translation>
 <translation id="3292333338048274092">আপনাকে তারপরে Chrome আবার চালু করতে হবে।</translation>
+<translation id="3294686910656423119">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ সম্পর্কিত রিপোর্ট</translation>
 <translation id="3327226547491422998">পরে, ফর্ম আপনার জন্য অটোফিল করতে সেভ করা তথ্য ব্যবহার করতে চান কিনা Chrome তা আপনাকে জিজ্ঞাসা করবে</translation>
 <translation id="3352986031709923790">সার্চের উপরের ডানদিকের কোণা: ডানদিক থেকে <ph name="RIGHT" />%, উপরের দিকে <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome সহায়তাকারী</translation>
@@ -475,6 +477,7 @@
 <translation id="5824893331272123205">এই প্যানেলটি লোড করা যায়নি, আবার চেষ্টা করুন</translation>
 <translation id="5825922397106002626">Chrome থেকে <ph name="EXTENSION_NAME" /> সরান</translation>
 <translation id="5858486459377137936">আপনি সব Chrome উইন্ডো বন্ধ করে দিলে আপনাকে বেশিরভাগ সাইট থেকে সাইন-আউট করে দেওয়া হবে, তবে আপনি Chrome-এ সাইন-ইন করে থাকলে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। সাইট যাতে আপনাকে চিনতে পারে তার জন্য <ph name="SETTINGS_LINK" />।</translation>
+<translation id="5860491529813859533">চালু করুন</translation>
 <translation id="586971344380992563">নিরাপদ নয় এমন সাইট ও ডাউনলোড সম্পর্কে <ph name="BEGIN_LINK" />Chrome আপনাকে সতর্ক করে দেয়<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chrome-এ Gemini ব্যবহার করতে, অন্য কোনও Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
@@ -515,6 +518,7 @@
 <translation id="6166185671393271715">Chrome এ পাসওয়ার্ড আমদানি করুন</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
+<translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6180522807229584611">এই ট্যাব অতিরিক্ত রিসোর্ট ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chrome-কে এটি নিষ্ক্রিয় করতে দিন।</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
 <translation id="6192058120268468905">Chrome-এ আপনার অ্যাকাউন্ট</translation>

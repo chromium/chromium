@@ -8,6 +8,7 @@
 <translation id="102763973188675173">I-customize at kontrolin ang Google Chrome. May available na update.</translation>
 <translation id="1028061813283459617">Para ma-delete ang data mula sa pag-browse sa device lang na ito, habang pinapanatili ito sa iyong Google Account, <ph name="BEGIN_LINK" />mag-sign out sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Makuha ang pinakamahuhusay na pangkaligtasang feature ng Google on the go, gamit ang Chrome app sa iyong telepono</translation>
+<translation id="1036348656032585052">I-off</translation>
 <translation id="1042270987544905725">I-click para isara ang dialog ng pag-sign in sa Chrome</translation>
 <translation id="1051793555070215510">Tulungan kaming pahusayin ang Incognito sa pamamagitan ng pagsagot sa 1 minutong survey na ito.</translation>
 <translation id="1055295352198814912">Ipakita ang Gemini sa Chrome sa menu bar ng Mac at i-on ang keyboard shortcut</translation>
@@ -246,6 +247,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
 <translation id="3292333338048274092">Pagkatapos, kakailanganin mong i-restart ang Chrome.</translation>
+<translation id="3294686910656423119">Mga istatistika sa paggamit at ulat ng pag-crash</translation>
 <translation id="3327226547491422998">Itatanong sa iyo ng Chrome sa ibang pagkakataon kung gusto mong gamitin ang naka-save na impormasyon para i-autofill ang mga form para sa iyo</translation>
 <translation id="3352986031709923790">kanang sulok sa itaas ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, itaas <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -479,6 +481,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5824893331272123205">Hindi ma-load ang panel na ito, subukan ulit</translation>
 <translation id="5825922397106002626">Alisin ang <ph name="EXTENSION_NAME" /> sa Chrome</translation>
 <translation id="5858486459377137936">Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chrome, maliban sa iyong Google Account kung naka-sign in ka sa Chrome. Para payagan ang mga site na matandaan ka, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">I-on</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Babalaan ka ng Chrome<ph name="END_LINK" /> tungkol sa mga hindi ligtas na site at download</translation>
 <translation id="5894164573378901688">Para magamit ang Gemini sa Chrome, mag-sign in gamit ang ibang Google Account</translation>
 <translation id="5895138241574237353">I-restart</translation>
@@ -519,6 +522,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6166185671393271715">Mag-import ng Mga Password sa Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6180522807229584611">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chrome na gawin itong hindi aktibo.</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6192058120268468905">Iyong Account sa Chrome</translation>

@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">તમે {password_count} પાસવર્ડ અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
+<translation id="1081948304372277788">Level Up સુવિધા બંધ કરો</translation>
 <translation id="1082554859195167538">તમારા માટે પ્રોડક્ટના રિવ્યૂ</translation>
 <translation id="1084365883616172403">Facebook પોસ્ટ પૂર્ણ કરી છે.</translation>
 <translation id="108485301461714610">Google Search AI મોડ અને કનેક્ટ થયેલી ઍપ</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="164673457281113247">{count,plural, =1{બુકમાર્ક સાચવ્યું}one{બુકમાર્ક સાચવ્યું}other{બુકમાર્ક સાચવ્યા}}</translation>
+<translation id="1650979352027263879">તમારી દેખાવ સંબંધિત પસંદગીઓ કાઢી નાખી</translation>
 <translation id="1651260071709244114">ઍપ</translation>
 <translation id="1652051421944182562">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન ચાલુ કરો…</translation>
 <translation id="1652333207707886577">તમારું મેનૂ કસ્ટમાઇઝ કરો</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="1838089197478136166">Walletમાં ખોલીએ?</translation>
 <translation id="183878838231635348">આ કાર્ડ, સલામતી માટે તપાસની સુવિધા દ્વારા તમારા માટે ઑટોમૅટિક રીતે ભાળ મેળવવામાં આવેલી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યા બતાવે છે.</translation>
-<translation id="1840320537320704887">તમારા નવા ટૅબ પેજની પસંદગીઓ કાઢી નાખી</translation>
 <translation id="1845230888742614096">ગ્રૂપ રાખો</translation>
 <translation id="1853558655412913122">તમે હવે "સેટિંગ" અને પછી "ઍડ્રેસ બાર"માં જઈને ઍડ્રેસ બારની સ્થિતિ બદલી શકો છો</translation>
 <translation id="1853692000353488670">નવી છુપી ટેબ</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડમાં તમારો પાસવર્ડ સ્વતઃ નહીં ભરે.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 સાઇટ (સિંક કરેલા ડિવાઇસ પર બીજી ઘણી બધી)}one{# સાઇટ (સિંક કરેલા ડિવાઇસ પર બીજી ઘણી બધી)}other{# સાઇટ (સિંક કરેલા ડિવાઇસ પર બીજી ઘણી બધી)}}</translation>
+<translation id="286473047976978798">તમારી દેખાવ સંબંધિત પસંદગીઓ લાગુ કરીએ?</translation>
 <translation id="2865392654629180917">કંઈ પણ પૂછો અને AI-સંચાલિત જવાબો મેળવો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2876369937070532032">તમારી સુરક્ષા જોખમમાં હોય ત્યારે, તમે મુલાકાત લેતા હો તે કેટલાક પેજના URLs Googleને મોકલે છે</translation>
@@ -1119,7 +1121,6 @@
 
        આ ડિવાઇસ પરના વર્તમાન બ્રાઉઝિંગ ડેટા સાથે શું કરવું તે પસંદ કરો.</translation>
 <translation id="4675298276894277358">આ સાઇટ ફરીથી બતાવવામાં આવશે નહીં</translation>
-<translation id="4676647168422678078">તમારા નવા ટૅબ પેજની પસંદગીઓ લાગુ કરીએ?</translation>
 <translation id="4682496302933121474">પેજનો અનુવાદ કરીએ?</translation>
 <translation id="4682686630151240767">1. iPhone સેટિંગ ખોલો</translation>
 <translation id="4697240968720007067">માત્ર એક ટૅપમાં, Googleની શ્રેષ્ઠ ઍપ મેળવો</translation>
@@ -1806,6 +1807,7 @@
 <translation id="6806550742467879742">પેજના ટૂલ</translation>
 <translation id="6807287147325542056">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
+<translation id="6815692190508268848">તમારી દેખાવ સંબંધિત પસંદગીઓ લાગુ કરી</translation>
 <translation id="681631578600400068">ડ્રાઇવિંગ લાઇસન્સની માહિતી સાચવો</translation>
 <translation id="6825078212112407882">{count,plural, =1{તમારા Google એકાઉન્ટ, {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="6826004672264649705">હાલમાં આ પ્રોડક્ટ ટ્રૅક કરી રહ્યાં છીએ. કિંમતનો ઇતિહાસ જોવા માટે ખોલો</translation>
@@ -2189,7 +2191,6 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} બુકમાર્ક}one{{count} બુકમાર્ક}other{{count} બુકમાર્ક}}</translation>
 <translation id="8059533439631660104">વિભાગને સંકુચિત કરે છે.</translation>
 <translation id="8061584726507121204">ઇતિહાસ</translation>
-<translation id="8064946459644399612">તમારા નવા ટૅબ પેજની પસંદગીઓ લાગુ કરી</translation>
 <translation id="8065136076319366194">સાચવવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="8065556469005366939">તમારા ટૅબ શેર કરીને વધુ સંબંધિત જવાબો મેળવો</translation>
 <translation id="8069394452933076548">તાજેતરમાં જે ટૅબનો ઉપયોગ કરવામાં આવ્યો ન હોય, તેમને નિષ્ક્રિય ટૅબના વિભાગમાં ક્યારે ખસેડવામાં આવે તે પસંદ કરો.</translation>

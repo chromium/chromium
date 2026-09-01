@@ -8,6 +8,7 @@
 <translation id="102763973188675173">គ្រប់គ្រង និង​ប្ដូរ Google Chrome តាម​បំណង​។ មាន​កំណែថ្មី​ហើយ។</translation>
 <translation id="1028061813283459617">ដើម្បី​លុប​ទិន្នន័យរុករក​ចេញពី​ឧបករណ៍​នេះតែប៉ុណ្ណោះ ប៉ុន្តែរក្សា​វានៅក្នុង​គណនី Google របស់អ្នក សូម<ph name="BEGIN_LINK" />ចេញពីគណនីលើ Chrome<ph name="END_LINK" />។</translation>
 <translation id="1028770388543831319">ទទួលបានមុខងារសុវត្ថិភាពល្អបំផុតរបស់ Google ពេលធ្វើដំណើរតាមរយៈកម្មវិធី Chrome នៅលើទូរសព្ទរបស់អ្នក</translation>
+<translation id="1036348656032585052">បិទ</translation>
 <translation id="1042270987544905725">ចុចដើម្បីបិទប្រអប់ចូលគណនី Chrome</translation>
 <translation id="1051793555070215510">ជួយយើង​ក្នុងការ​កែលម្អ​មុខងារ​ឯកជន​ដោយ​ចូលរួម​ការស្ទង់មតិ​រយៈពេល 1 នាទីនេះ។</translation>
 <translation id="1055295352198814912">បង្ហាញ Gemini ក្នុង Chrome នៅក្នុង​របារម៉ឺនុយ Mac និងបើក​ផ្លូវកាត់​ក្ដារ​ចុច</translation>
@@ -74,6 +75,7 @@
 <translation id="1640672724030957280">កំពុងទាញ​យក...</translation>
 <translation id="1651617469580841801">នៅពេលអ្នកប្រើ Google Lens នោះចំណងជើងទំព័រ, URL និងខ្លឹមសារ រួមទាំង PDF នឹងត្រូវបានបញ្ជូនទៅ Google។ <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">អំពី ChromeOS Flex</translation>
+<translation id="1664094661346151467">ស្វែងរក និងសួរសំណួរពីទីណាក៏បាន ទោះបីជា Chrome ត្រូវបានបង្រួមក៏ដោយ</translation>
 <translation id="1674870198290878346">បើក​តំណ​នៅក្នុងវិនដូ​ឯកជន Chrome</translation>
 <translation id="1682634494516646069">Google Chrome មិនអាចអាន និងសរសេរទៅថតឯកសារទិន្នន័យរបស់វាបានទេ៖
 
@@ -111,6 +113,7 @@
 <translation id="2034233344106846793">Chrome ដំឡើងកម្រិត​នៃការតភ្ជាប់​ដែលគ្មាន​សុវត្ថិភាព​ទៅ HTTPS ដោយ​ស្វ័យប្រវត្តិ នៅពេល​ដែលអាច</translation>
 <translation id="2039417478970545937">ការកំណត់។</translation>
 <translation id="2040220733769034247">ស្កេនកូដ QR ដោយប្រើទូរសព្ទរបស់អ្នក ដើម្បីទាញយក Chrome និងចូលគណនី Google របស់អ្នក។</translation>
+<translation id="2044908892530830113">បង្ហាញការស្វែងរកតាមរយៈ Chrome នៅក្នុងរបារម៉ឺនុយ Mac និងបើកផ្លូវកាត់​ក្ដារ​ចុច</translation>
 <translation id="2050189601866423230">អ្នកអាចខ្ទាស់មុខងារ AI របស់ម៉ាស៊ីនស្វែងរកនៅលើ Google ដើម្បីសួរសំណួរ នៅពេលអ្នករុករក</translation>
 <translation id="2091012649849228750">ដើម្បីទទួលបានកំណែថ្មីរបស់ Google Chrome នាពេលខាងមុខ អ្នកនឹងត្រូវការ Windows 10 ឬកំណែក្រោយនេះ។ កុំព្យូទ័រ​នេះ​កំពុងប្រើ Windows 8។</translation>
 <translation id="2094648590148273905">លក្ខខណ្ឌ ChromeOS Flex</translation>
@@ -138,6 +141,7 @@
 <translation id="2284380654876659752">នៅពេលអ្នក​ចូលមើល​គេហទំព័រ Chrome បញ្ជូនផ្នែក​ដែលបាន​បំភ័ន្ត​ណាមួយ​របស់ URL ទៅ<ph name="BEGIN_LINK" />ការរុករកដោយសុវត្ថិភាព​នៅលើ Google<ph name="END_LINK" /> តាមរយៈ​ម៉ាស៊ីនមេរក្សាឯកជនភាព​ដែលលាក់​អាសយដ្ឋាន IP របស់អ្នក។ ប្រសិនបើ​គេហទំព័រ​ធ្វើអ្វីម្យ៉ាង​ដែលគួរឱ្យសង្ស័យ URL ពេញលេញ និងផ្នែក​នៃខ្លឹមសារ​ទំព័រ​ក៏ត្រូវបានបញ្ជូនផងដែរ។</translation>
 <translation id="2290014774651636340">សោ Google API បានបាត់។ មុខងារមួយចំនួននៃ Google Chrome នឹងត្រូវបានបិទដំណើរការ។</translation>
 <translation id="2290095356545025170">តើអ្នកប្រាកដថាចង់លុបការតំឡើង Google Chrome ទេ?</translation>
+<translation id="2295218613066132598">បង្ហាញផ្លូវ​កាត់គេហទំព័រ Chrome</translation>
 <translation id="2301513536169703857">ដើម្បី​ទទួលបាន​ពាក្យ​សម្ងាត់ ចំណាំ​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក សូម​ចូលគណនី Chrome</translation>
 <translation id="2307973900865360088">រក្សាទុក​នៅក្នុង​ធ្នើរ</translation>
 <translation id="2309047409763057870">នេះគឺជាការដំឡើេង Google Chrome បន្ទាប់បន្សំ ហើយវាមិនអាចធ្វើជាកម្មវិធីរុករកលំនាំដើមរបស់អ្នកបានទេ។</translation>
@@ -246,6 +250,7 @@
 <translation id="3282568296779691940">ចូលទៅ Chrome</translation>
 <translation id="3286538390144397061">ចាប់ផ្ដើមឡើងវិញឥឡូវនេះ</translation>
 <translation id="3292333338048274092">បន្ទាប់មក អ្នកនឹងត្រូវ​ចាប់ផ្ដើម Chrome ឡើងវិញ។</translation>
+<translation id="3294686910656423119">ស្ថិតិ​ប្រើប្រាស់ និងរបាយការណ៍អំពីការគាំង</translation>
 <translation id="3327226547491422998">នៅពេល​ក្រោយ Chrome អាចសួរ​ថាតើអ្នក​ចង់ប្រើ​ព័ត៌មាន​ដែលបាន​រក្សាទុក ដើម្បី​បំពេញ​ទម្រង់បែបបទ​ដោយស្វ័យប្រវត្តិ​សម្រាប់​អ្នកឬអត់</translation>
 <translation id="3352986031709923790">ជ្រុង​ខាងលើ​ផ្នែក​ខាងស្ដាំ​នៃ​តំបន់​ស្វែងរក៖ ស្ដាំ <ph name="RIGHT" />% លើ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">ជំនួយការ Chrome</translation>
@@ -478,6 +483,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="5824893331272123205">មិនអាច​ផ្ទុក​ផ្ទាំងនេះ​បានទេ សូម​ព្យាយាម​ម្ដងទៀត</translation>
 <translation id="5825922397106002626">ដក <ph name="EXTENSION_NAME" /> ចេញពី Chrome</translation>
 <translation id="5858486459377137936">អ្នកនឹង​ត្រូវបាន​នាំចេញពី​គណនីលើគេហទំព័រ​ភាគច្រើន នៅពេល​ដែលអ្នក​បិទវិនដូ Chrome ទាំងអស់ លើកលែងតែ​គណនី Google របស់អ្នក ប្រសិនបើ​អ្នកចូល Chrome។ ដើម្បីឱ្យ​គេហទំព័រ​ចងចាំអ្នក សូម<ph name="SETTINGS_LINK" />។</translation>
+<translation id="5860491529813859533">បើក</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ប្រាប់ឱ្យអ្នកប្រុងប្រយ័ត្ន<ph name="END_LINK" />ចំពោះ​ការទាញយក និង​គេហទំព័រ​ដែលគ្មានសុវត្ថិភាព</translation>
 <translation id="5894164573378901688">ដើម្បីប្រើ Gemini ក្នុង Chrome សូមចូល​ដោយប្រើ​គណនី Google ផ្សេង</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
@@ -518,9 +524,11 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6166185671393271715">នាំចូលពាក្យសម្ងាត់ទៅ Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">ការស្វែងរកនៅក្នុង Chrome</translation>
 <translation id="6180522807229584611">ផ្ទាំងនេះ​កំពុង​ប្រើប្រាស់​ធនធាន​បន្ថែម។ ដើម្បី​កែលម្អ​ប្រតិបត្តិការ​របស់អ្នក សូមអនុញ្ញាតឱ្យ Chrome ធ្វើឱ្យ​ផ្ទាំងនេះ​ប្រែជា​អសកម្ម។</translation>
 <translation id="6182736845697986886">ការដំឡើងមិនបានសម្រេចទេ ដោយសារមានបញ្ហាផ្នែកខាងក្នុងម៉ាស៊ីនមេដំឡើងកំណែ។</translation>
 <translation id="6192058120268468905">គណនី​របស់អ្នក​នៅក្នុង Chrome</translation>
+<translation id="6195202018542972563">បង្ហាញការស្វែងរកតាមរយៈ Chrome នៅក្នុងរបារម៉ឺនុយ និងបើកផ្លូវកាត់​ក្ដារ​ចុច</translation>
 <translation id="6235018212288296708">វិន័យត្រលប់ចូលសម្រាប់ Google Chrome ដើម្បីអនុញ្ញាតចរាចរណ៍ mDNS។</translation>
 <translation id="624230925347970731">Chrome នឹង​បិទ​ក្នុង​ពេល​ឆាប់ៗ​នេះ</translation>
 <translation id="6247557882553405851">កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google</translation>
@@ -562,6 +570,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="652948702951888897">ប្រវត្តិ Chrome</translation>
 <translation id="6532945796722480006">បើក Gemini ក្នុង Chrome Canary</translation>
 <translation id="6539493053177300926">ងាយស្រួល​ចូលប្រើ Gemini ក្នុង Chrome នៅលើ​ឧបករណ៍​របស់អ្នក ទោះបីជា Chrome ត្រូវបាន​បង្រួម​ក៏ដោយ។</translation>
+<translation id="6556755379298048869">ស្វែងរកដោយប្រើផ្លូវកាត់​ក្ដារ​ចុច។</translation>
 <translation id="6585124893636629274">បិទ Gemini ក្នុង Chrome</translation>
 <translation id="659498884637196217">នៅក្នុង​កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="6613949864921837107">បន្តធ្វើ​សមកាលកម្ម​ពាក្យសម្ងាត់ ចំណាំ និង​ប្រវត្តិ​របស់អ្នក​បានយ៉ាងល្អ​ឥតខ្ចោះ​នៅលើ​ឧបករណ៍​នានា​ដោយកំណត់ Chrome ជា​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​លំនាំដើម​របស់អ្នក។</translation>
@@ -588,6 +597,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="683440813066116847">វិន័យត្រលប់ចូលសម្រាប់  Google Chrome Canary ដើម្បីអនុញ្ញាតចរាចរណ៍ mDNS។</translation>
 <translation id="684888714667046800">មិនអាចភ្ជាប់ទៅអ៊ីនធឺណិតបានទេ។ ប្រសិនបើអ្នក​ប្រើជញ្ជាំង​ភ្លើង សូម​ប្រាកដថា <ph name="PRODUCT_EXE_NAME" /> ស្ថិត​នៅក្នុង​បញ្ជីអនុញ្ញាត។</translation>
 <translation id="6859580922007887573">ចុច Tab ដើម្បីបន្ត</translation>
+<translation id="6869568587896659271">ងាយស្រួលចូលប្រើគេហទំព័រនៅខាងក្រោមរបារអាសយដ្ឋាន</translation>
 <translation id="6877155553248388166">ជ្រុង​ខាងក្រោម​ផ្នែក​ខាងស្ដាំ​នៃ​តំបន់​ស្វែងរក៖ ស្ដាំ <ph name="RIGHT" />%, ក្រោម <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">កំពុង​ដំឡើង​កំណែ Chrome</translation>
 <translation id="6885412569789873916">កម្មវិធី Chrome បេតា</translation>
@@ -680,6 +690,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7736869414036750079">ស្ថាប័ន​របស់អ្នក​តម្រូវឱ្យអ្នក​ចូលគណនី Chrome</translation>
 <translation id="7747138024166251722">កម្មវិធីតំឡើងមិនអាចបង្កើតថតឯកសារបណ្តោះអាសន្នទេ។ សូមពិនិត្យមើលចន្លោះផ្ទុកទិន្នន័យ និងអនុញ្ញាតក្នុងការតំឡើងកម្មវិធី។</translation>
 <translation id="7748969056734910029">អ្នក​មិនបាន​ចូលមើល​នាពេល​ថ្មីៗនេះទេ។ Chrome បានដក​ការអនុញ្ញាត​ឱ្យប្រើ<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" />ចេញ។</translation>
+<translation id="7759944311003584891">ស្វែងរកដោយប្រើ Chrome</translation>
 <translation id="7761834446675418963">ចុចឈ្មោះរបស់អ្នកដើម្បីបើក Chrome ហើយចាប់ផ្តើមការរុករក។</translation>
 <translation id="7777080907402804672">ប្រសិនបើ​រូបភាព​មិនមាន​ការពណ៌នា​ដែលមានប្រយោជន៍ Chrome នឹង​ព្យាយាមផ្ដល់​ការពណ៌នា​ដែលមានប្រយោជន៍សម្រាប់​អ្នក។ រូបភាព​ត្រូវបានផ្ញើ​ទៅ Google ដើម្បី​បង្កើត​ការពណ៌នា។ អ្នកអាចបិទ​សកម្មភាពនេះ​នៅក្នុងការកំណត់​បានគ្រប់ពេល។</translation>
 <translation id="778331955594035129">Chrome ត្រូវការ​ការអនុញ្ញាត​ទីតាំង​សម្រាប់​គេហទំព័រនេះ</translation>

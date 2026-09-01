@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema biru</translation>
 <translation id="1070329623210597193">Fail yang boleh dilihat atau diedit oleh laman ini</translation>
 <translation id="1074758928858737435">Anda boleh meminta untuk melihat versi desktop laman</translation>
+<translation id="1089791933924803646">Dapatkan cadangan Chrome pada apl lain</translation>
 <translation id="1109482864356262001">Ciri yang memerlukan penderia gerakan atau cahaya tidak akan berfungsi</translation>
 <translation id="1126523729897810826">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chrome sepenuhnya</translation>
 <translation id="113098737392899175">Navigasi halaman dengan kursor teks apabila papan kekunci disambungkan</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Mengatasi permintaan laman web untuk menghalang zum masuk</translation>
 <translation id="5668843533782548925">Laman lebih perlahan tetapi lebih selamat</translation>
 <translation id="5677928146339483299">Disekat</translation>
+<translation id="5679089750838794164">Kini Chrome boleh menunjukkan cadangan kepada anda pada apl lain berdasarkan data semakan imbas anda, seperti sejarah penyemakan imbas terbaharu. Data ini diproses dengan selamat pada peranti anda. Anda boleh mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5690795753582697420">Kamera dimatikan dalam tetapan Android</translation>
 <translation id="5700761515355162635">Kuki pihak ketiga dibenarkan</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Padamkan kebenaran pengeditan fail? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Apabila dihidupkan, laman boleh memasukkan gambar dalam gambar secara automatik. Apabila dimatikan, laman tidak dapat memasukkan gambar dalam gambar secara automatik.</translation>
 <translation id="6120483543004435978">Apabila dihidupkan, laman dapat meminta untuk mengetahui waktu anda menggunakan peranti secara aktif. Apabila dimatikan, laman tidak dapat mengetahui waktu anda menggunakan peranti secara aktif.</translation>
+<translation id="612871598708395517">Sembunyikan Dapatkan cadangan Chrome dalam apl lain</translation>
 <translation id="6132075343662013154">Chrome akan menawarkan untuk menyimpan kata laluan anda</translation>
 <translation id="615886654739818377">Jangan benarkan laman mengurus tetingkap pada semua paparan anda</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>

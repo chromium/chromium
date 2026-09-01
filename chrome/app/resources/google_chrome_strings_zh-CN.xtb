@@ -8,6 +8,7 @@
 <translation id="102763973188675173">有可用的更新。欢迎自定义和控制 Google Chrome。</translation>
 <translation id="1028061813283459617">若要仅删除此设备中的浏览数据而保留您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chrome 中退出账号<ph name="END_LINK" />。</translation>
 <translation id="1028770388543831319">借助手机上的 Chrome 应用，随时随地畅享 Google 的最佳安全功能</translation>
+<translation id="1036348656032585052">关闭</translation>
 <translation id="1042270987544905725">点击即可关闭 Chrome 登录对话框</translation>
 <translation id="1051793555070215510">请花 1 分钟时间填写调查问卷，帮助我们改进无痕模式。</translation>
 <translation id="1055295352198814912">在 Mac 菜单栏中显示 Chrome 中的 Gemini 并开启键盘快捷键</translation>
@@ -242,6 +243,7 @@
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="3292333338048274092">然后，您需要重启 Chrome。</translation>
+<translation id="3294686910656423119">使用情况统计信息和崩溃报告</translation>
 <translation id="3327226547491422998">Chrome 以后可以询问您是否要使用已保存的信息为您自动填写表单</translation>
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 浏览器帮助应用</translation>
@@ -470,6 +472,7 @@
 <translation id="5824893331272123205">无法加载此面板，请重试</translation>
 <translation id="5825922397106002626">从 Chrome 中移除“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="5858486459377137936">关闭所有 Chrome 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chrome，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="586971344380992563">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chrome 会向您发出警告<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">如需使用 Chrome 中的 Gemini，请使用其他 Google 账号登录</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -510,6 +513,7 @@
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
+<translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6192058120268468905">设置 Chrome 账号</translation>

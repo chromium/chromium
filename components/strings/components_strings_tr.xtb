@@ -1066,7 +1066,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Ödeme için hazırlanıyor</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784795832957740711">Şifreler · Geçiş Anahtarları</translation>
+<translation id="2784795832957740711">Şifreler · Geçiş anahtarları</translation>
 <translation id="2784949926578158345">Bağlantı sıfırlandı.</translation>
 <translation id="2792012897584536778">Bu cihazın yöneticileri, ziyaret ettiğiniz web sitelerinin içeriğini görmelerine izin verebilecek güvenlik sertifikaları ayarladı.</translation>
 <translation id="2793425367785017642">Formları daha iyi anlamak ve doldurmak için, ziyaret ettiğiniz sayfaların içeriği ve URL'leri buluttaki özel bir alanda işlenebilir.</translation>
@@ -4812,7 +4812,7 @@ Ek ayrıntılar:
 <translation id="9210152531668884481">İstiyorum</translation>
 <translation id="9213433120051936369">Görünümü özelleştir</translation>
 <translation id="9215416866750762878">Bir uygulama, Chrome'un bu siteye güvenli bir şekilde bağlanmasını engelliyor</translation>
-<translation id="9217513960785028513"><ph name="ENGINE_NAME" /> arama motoruna sorun veya URL yazın</translation>
+<translation id="9217513960785028513"><ph name="ENGINE_NAME" /> ile sorun veya URL yazın</translation>
 <translation id="92178312226016010">Bu ürünü takip ediyorsunuz.</translation>
 <translation id="9218430445555521422">Varsayılan olarak ayarla</translation>
 <translation id="9219103736887031265">Resimler</translation>

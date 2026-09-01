@@ -41,6 +41,7 @@ Nəzərə alın ki:
 <translation id="1580570086594302477">Yeni anonim Chrome tabı açır.</translation>
 <translation id="1605168141396675642">Kopiyalamaqla bağlı problemlərin qarşısını alın. Keçidləri birbaşa Chrome-da başladın.</translation>
 <translation id="1646463005043273333">Chrome-u defolt brauzer təyin etmək üçün Chrome ayarını açır.</translation>
+<translation id="1668930590094369898">Chrome-u defolt olaraq istifadə edin</translation>
 <translation id="1670609221633730681">Chrome tövsiyəsi: Ünvan panelinin yerini seçin</translation>
 <translation id="1683863426423719967">Chrome-dan tab xatırladıcıları qəbul etmək üçün iOS ayarlarında bildirişləri yandırın.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +58,7 @@ Nəzərə alın ki:
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ayarlarında "Chrome"-u yandırın</translation>
 <translation id="1984705450038014246">Chrome datasını sinxronizasiya edin</translation>
 <translation id="1987779152850321833">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilənləri tamamlayın.</translation>
+<translation id="2049569996960148258">"Chrome-u defolt olaraq istifadə edin" seçimini gizlədin</translation>
 <translation id="2055826352861631739">Defolt olaraq iPad üçün Chrome istifadə edin</translation>
 <translation id="2056123005618757196">Sadə, etibarlı və həmişəkindən daha sürətli bir Google Chrome ilə daha çox iş görün.</translation>
 <translation id="2120238739383482109">Chrome əlfəcinlərini açır.</translation>
@@ -262,6 +264,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 Chrome təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən digər ayarlar üçün <ph name="BEGIN_LINK" />Google Xidmətlərinə<ph name="END_LINK" /> keçin.</translation>
 <translation id="6922332667202044570">Chrome-da baxış datasını silin.</translation>
 <translation id="6924922227983877439">Keçidləri defolt olaraq Chrome-da açın</translation>
+<translation id="6926395711547387358">Chrome-u defolt olaraq ayarlayın</translation>
 <translation id="6975725306479268850">Avtodoldurma üçün Chrome'u seçin</translation>
 <translation id="7001031184470316752">Chrome-u dokunuza köçürün</translation>
 <translation id="7038674195294813388">iOS-da Defolt tətbiqlər ayarlarını açın, sonra "Brauzer tətbiqi" seçiminə toxunun və Chrome seçin.</translation>

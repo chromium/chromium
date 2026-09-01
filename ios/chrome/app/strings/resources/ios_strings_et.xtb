@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Jätkates kustutate {password_count} parooli ning loendi saitidest ja rakendustest, mille sisselogimisteabe salvestamise olete keelanud. Saitidel ja rakendustel loodud kontosid ei kustutata.</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} vaheleht}other{{count} vahelehte}}</translation>
+<translation id="1081948304372277788">Lülita Level Up välja</translation>
 <translation id="1082554859195167538">Tootearvustused teile</translation>
 <translation id="1084365883616172403">Facebooki postitus on valmis.</translation>
 <translation id="108485301461714610">Google'i otsingu AI-režiim ja ühendatud rakendused</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Google'i ohutu sirvimine</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="164673457281113247">{count,plural, =1{Järjehoidja salvestati}other{Järjehoidjad salvestati}}</translation>
+<translation id="1650979352027263879">Teie välimuse eelistused on eemaldatud.</translation>
 <translation id="1651260071709244114">Rakendused</translation>
 <translation id="1652051421944182562">Lülitage ohutuskontrolli märguanded sisse …</translation>
 <translation id="1652333207707886577">Kohandage menüüd</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{Järjehoidjad salvestati teie Google'i kontole {email}}}</translation>
 <translation id="1838089197478136166">Kas avada rakenduses Wallet?</translation>
 <translation id="183878838231635348">Sellel kaardil kuvatakse kõik privaatsus- või turvaohud, mille ohutuskontroll teie eest automaatselt tuvastab.</translation>
-<translation id="1840320537320704887">Teie uue vahelehe eelistused on eemaldatud.</translation>
 <translation id="1845230888742614096">Säilita grupp</translation>
 <translation id="1853558655412913122">Nüüd saate aadressiriba asukohta muuta, kui valite „Seaded“ ja seejärel „Aadressiriba“</translation>
 <translation id="1853692000353488670">Uus inkognito vaheleht</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Teie privaatsuse kaitsmiseks ei sisesta Chrome sellele väljale automaatselt parooli.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sait (rohkem sünkroonitud seadmetes)}other{# saiti (rohkem sünkroonitud seadmetes)}}</translation>
+<translation id="286473047976978798">Kas rakendada teie välimuse eelistused?</translation>
 <translation id="2865392654629180917">AI-põhised vastused mis tahes küsimustele</translation>
 <translation id="2870560284913253234">Sait</translation>
 <translation id="2876369937070532032">Saadab mõnede teie külastatud lehtede URL-id Google'ile, kui teie turvalisus ohtu satub</translation>
@@ -1119,7 +1121,6 @@
 
        Valige, mida teha selles seadmes olemasolevate sirvimisandmetega.</translation>
 <translation id="4675298276894277358">Seda saiti ei kuvata enam</translation>
-<translation id="4676647168422678078">Kas rakendada teie uue vahelehe eelistused?</translation>
 <translation id="4682496302933121474">Kas tõlkida leht?</translation>
 <translation id="4682686630151240767">1. Avage iPhone'i rakendus Settings</translation>
 <translation id="4697240968720007067">Hankige Google’i parimad rakendused vaid ühe puudutusega</translation>
@@ -1806,6 +1807,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6806550742467879742">Lehe tööriistad</translation>
 <translation id="6807287147325542056">Paroolid muudes rakendustes</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
+<translation id="6815692190508268848">Teie välimuse eelistused on rakendatud.</translation>
 <translation id="681631578600400068">Salvesta juhiluba</translation>
 <translation id="6825078212112407882">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{{count} järjehoidjat salvestati teie Google'i kontole {email}.}}</translation>
 <translation id="6826004672264649705">Jälgite praegu seda toodet. Avage hinnaajaloo vaatamiseks.</translation>
@@ -2189,7 +2191,6 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="8059312861912872211">{count,plural, =1{{count} järjehoidja}other{{count} järjehoidjat}}</translation>
 <translation id="8059533439631660104">Ahendab jaotist.</translation>
 <translation id="8061584726507121204">Ajalugu</translation>
-<translation id="8064946459644399612">Teie uue vahelehe eelistused on rakendatud.</translation>
 <translation id="8065136076319366194">Salvestamine pole soovitatav.</translation>
 <translation id="8065556469005366939">Jagage oma vahelehti, et saada asjakohasemaid vastuseid</translation>
 <translation id="8069394452933076548">Valige, millal vahelehed, mida hiljuti pole kasutatud, teisaldatakse inaktiivsete vahelehtede jaotisse.</translation>

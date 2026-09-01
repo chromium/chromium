@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome ഇഷ്ടാനുസൃതമാക്കി നിയന്ത്രിക്കുക. അപ്‌ഡേറ്റ് ലഭ്യമാണ്.</translation>
 <translation id="1028061813283459617">നിങ്ങളുടെ Google Account-ൽ ബ്രൗസിംഗ് ഡാറ്റ നിലനിർത്തിക്കൊണ്ട് ഈ ഉപകരണത്തിൽ നിന്ന് മാത്രം അത് ഇല്ലാതാക്കാൻ, <ph name="BEGIN_LINK" />Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">നിങ്ങളുടെ ഫോണിലെ Chrome ആപ്പ് ഉപയോഗിച്ച് എവിടെയായിരുന്നാലും Google-ന്റെ മികച്ച സുരക്ഷാ ഫീച്ചറുകൾ നേടൂ</translation>
+<translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1042270987544905725">Chrome സൈൻ ഇൻ ഡയലോഗ് അടയ്ക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="1051793555070215510">ഈ ഒരു മിനിറ്റ് സർവേയിൽ പങ്കെടുത്ത്, അദൃശ്യ മോഡ് മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കുക.</translation>
 <translation id="1055295352198814912">Mac മെനു ബാറിൽ Chrome-ലെ Gemini കാണിക്കുക, കീബോർഡ് കുറുക്കുവഴി ഓണാക്കുക</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3286538390144397061">ഇപ്പോള്‍ പുനരാരംഭിക്കുക</translation>
 <translation id="3292333338048274092">തുടർന്ന്, നിങ്ങൾ Chrome റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
+<translation id="3294686910656423119">ഉപയോഗ വിവരക്കണക്കും ക്രാഷ് റിപ്പോർട്ടുകളും</translation>
 <translation id="3327226547491422998">പിന്നീട്, സംരക്ഷിച്ച വിവരങ്ങൾ സ്വയമേവ ഫോമുകൾ പൂരിപ്പിക്കാൻ ഉപയോഗിക്കണമെന്നുണ്ടോ എന്ന് Chrome നിങ്ങളോട് ചോദിക്കും</translation>
 <translation id="3352986031709923790">തിരയൽ ഏരിയയുടെ മുകളിലെ വലത് മൂല: വലതുഭാഗത്ത് <ph name="RIGHT" />%, മുകളിൽ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome സഹായി‌</translation>
@@ -479,6 +481,7 @@
 <translation id="5824893331272123205">ഈ പേജ് ലോഡ് ചെയ്യാനായില്ല, വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="5825922397106002626">Chrome-ൽ നിന്ന് <ph name="EXTENSION_NAME" /> നീക്കം ചെയ്യുക</translation>
 <translation id="5858486459377137936">Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തിട്ടുണ്ടെങ്കിൽ എല്ലാ Chrome വിൻഡോകളും അടയ്ക്കുമ്പോൾ, നിങ്ങളുടെ Google Account ഒഴികെ മിക്ക സൈറ്റുകളിൽ നിന്നും നിങ്ങൾ സൈൻ ഔട്ട് ആകും. നിങ്ങളെ ഓർക്കാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന്, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="586971344380992563">സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളെയും ഡൗൺലോഡുകളെയും കുറിച്ച് <ph name="BEGIN_LINK" />Chrome നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chrome-ലെ Gemini ഉപയോഗിക്കാൻ, മറ്റൊരു Google Account ഉപയോഗിച്ച് സൈൻ ചെയ്യുക</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
@@ -519,6 +522,7 @@
 <translation id="6166185671393271715">Chrome-ലേക്ക് പാസ്‌വേഡുകൾ ഇമ്പോർട്ടുചെയ്യുക</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ബീറ്റ</translation>
+<translation id="6177442314419606057">Chrome-ൽ തിരയുക</translation>
 <translation id="6180522807229584611">ഈ ടാബ് അധിക ഉറവിടങ്ങൾ ഉപയോഗിക്കുന്നു. നിങ്ങളുടെ പ്രകടനം മെച്ചപ്പെടുത്താനായി അതിനെ നിഷ്ക്രിയമാക്കാൻ Chrome-നെ അനുവദിക്കുക.</translation>
 <translation id="6182736845697986886">അപ്‌ഡേറ്റ് സെർവർ ആന്തരിക പിശക് കാരണം ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
 <translation id="6192058120268468905">Chrome-ലെ നിങ്ങളുടെ അക്കൗണ്ട്</translation>

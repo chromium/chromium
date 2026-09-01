@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
+<translation id="1081948304372277788">关闭 Level Up</translation>
 <translation id="1082554859195167538">为您推荐的商品评价</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="108485301461714610">Google 搜索 AI 模式和关联的应用</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
+<translation id="1650979352027263879">已移除外观偏好设置</translation>
 <translation id="1651260071709244114">App</translation>
 <translation id="1652051421944182562">开启安全检查通知…</translation>
 <translation id="1652333207707886577">自定义菜单</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{书签已保存到您的 Google 账号 {email}}}</translation>
 <translation id="1838089197478136166">在“钱包”中打开？</translation>
 <translation id="183878838231635348">此卡片会显示安全检查功能自动为您检测到的所有隐私问题或安全问题。</translation>
-<translation id="1840320537320704887">已移除“新标签页”页面偏好设置</translation>
 <translation id="1845230888742614096">保留分组</translation>
 <translation id="1853558655412913122">现在，您可以在“设置”&gt;“地址栏”中更改地址栏的位置</translation>
 <translation id="1853692000353488670">打开新的无痕式标签页</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 个网站（在已同步的设备上还有更多网站）}other{# 个网站（在已同步的设备上还有更多网站）}}</translation>
+<translation id="286473047976978798">要应用外观偏好设置吗？</translation>
 <translation id="2865392654629180917">随心提问，获得 AI 生成的回答</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
@@ -1119,7 +1121,6 @@
 
        选择如何处理此设备上现有的浏览数据。</translation>
 <translation id="4675298276894277358">此网站不会再显示</translation>
-<translation id="4676647168422678078">要应用“新标签页”页面偏好设置吗？</translation>
 <translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4697240968720007067">点按一下，即可获取 Google 精选应用</translation>
@@ -1806,6 +1807,7 @@
 <translation id="6806550742467879742">网页工具</translation>
 <translation id="6807287147325542056">其他应用中的密码</translation>
 <translation id="681368974849482173">书签已创建</translation>
+<translation id="6815692190508268848">已应用外观偏好设置</translation>
 <translation id="681631578600400068">保存驾照信息</translation>
 <translation id="6825078212112407882">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
 <translation id="6826004672264649705">正在跟踪此商品。打开即可查看价格历史记录</translation>
@@ -2189,7 +2191,6 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>
 <translation id="8061584726507121204">历史记录</translation>
-<translation id="8064946459644399612">已应用“新标签页”页面偏好设置</translation>
 <translation id="8065136076319366194">不建议保存</translation>
 <translation id="8065556469005366939">分享标签页，以获得更贴合需求的回答</translation>
 <translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分中。</translation>

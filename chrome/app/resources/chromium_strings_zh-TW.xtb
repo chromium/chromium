@@ -631,6 +631,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如果這項服務停用，瀏覽器建立的效能追蹤記錄就不會包含內容轉換和就緒執行緒事件等系統層級事件。</translation>
 <translation id="7745317241717453663">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
+<translation id="7747820849741499258">在 Chromium 中搜尋</translation>
 <translation id="7750130090210923118">重設為預設的 Chromium</translation>
 <translation id="7752521946322750699">為確保你在 Chromium 上的工作資料安全無虞，當你登入 Chromium 時，貴機構將可查看或管理特定資訊。</translation>
 <translation id="7781047659465034537">將 Chromium 設為預設瀏覽器，並釘選到工作列</translation>

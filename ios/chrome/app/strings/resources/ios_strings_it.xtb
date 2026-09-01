@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Stai per eliminare {password_count} password e l'elenco di siti e app per cui hai scelto di non salvare mai i dati di accesso. Gli account creati per siti e app non verranno eliminati.</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
+<translation id="1081948304372277788">Disattiva Level Up</translation>
 <translation id="1082554859195167538">Recensioni prodotto per te</translation>
 <translation id="1084365883616172403">Pubblicazione su Facebook completata.</translation>
 <translation id="108485301461714610">AI Mode della Ricerca Google e app connesse</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="164673457281113247">{count,plural, =1{Preferito salvato}other{Preferiti salvati}}</translation>
+<translation id="1650979352027263879">Preferenze dell'aspetto rimosse</translation>
 <translation id="1651260071709244114">App</translation>
 <translation id="1652051421944182562">Attiva le notifiche del controllo di sicurezza…</translation>
 <translation id="1652333207707886577">Personalizza il menu</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Preferito salvato nel tuo Account Google {email}}other{Preferiti salvati nel tuo Account Google {email}}}</translation>
 <translation id="1838089197478136166">Aprire in Wallet?</translation>
 <translation id="183878838231635348">In questa scheda vengono mostrati eventuali problemi di privacy o di sicurezza che il controllo di sicurezza rileva automaticamente per te.</translation>
-<translation id="1840320537320704887">Preferenze della pagina Nuova scheda rimosse</translation>
 <translation id="1845230888742614096">Mantieni gruppo</translation>
 <translation id="1853558655412913122">Ora puoi modificare la posizione della barra degli indirizzi in "Impostazioni" e poi in "Barra degli indirizzi"</translation>
 <translation id="1853692000353488670">Nuova scheda Incognito</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo con la tua password.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sito (altro sui dispositivi sincronizzati)}other{# siti (altro sui dispositivi sincronizzati)}}</translation>
+<translation id="286473047976978798">Vuoi applicare le tue preferenze per l'aspetto?</translation>
 <translation id="2865392654629180917">Chiedi qualsiasi cosa e ricevi risposte basate sull'AI</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2876369937070532032">Invia a Google gli URL di alcune pagine che visiti quando la tua sicurezza è a rischio</translation>
@@ -1119,7 +1121,6 @@
 
        Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo.</translation>
 <translation id="4675298276894277358">Questo sito non verrà più mostrato</translation>
-<translation id="4676647168422678078">Applicare le preferenze della pagina Nuova scheda?</translation>
 <translation id="4682496302933121474">Vuoi tradurre la pagina?</translation>
 <translation id="4682686630151240767">1. Apri le Impostazioni dell'iPhone</translation>
 <translation id="4697240968720007067">Le migliori app Google in un tocco</translation>
@@ -1806,6 +1807,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6806550742467879742">Strumenti per le pagine</translation>
 <translation id="6807287147325542056">Password in altre app</translation>
 <translation id="681368974849482173">Elemento creato</translation>
+<translation id="6815692190508268848">Preferenze dell'aspetto applicate</translation>
 <translation id="681631578600400068">Salva la patente di guida</translation>
 <translation id="6825078212112407882">{count,plural, =1{Preferito salvato nel tuo Account Google, {email}}other{{count} preferiti salvati nel tuo Account Google, {email}}}</translation>
 <translation id="6826004672264649705">Stai monitorando questo prodotto. Apri per visualizzare la cronologia dei prezzi</translation>
@@ -2189,7 +2191,6 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8059312861912872211">{count,plural, =1{{count} preferito}other{{count} preferiti}}</translation>
 <translation id="8059533439631660104">Viene compressa la sezione.</translation>
 <translation id="8061584726507121204">Cronologia</translation>
-<translation id="8064946459644399612">Preferenze della pagina Nuova scheda applicate</translation>
 <translation id="8065136076319366194">Salvataggio non consigliato</translation>
 <translation id="8065556469005366939">Ricevi risposte più pertinenti condividendo le tue schede</translation>
 <translation id="8069394452933076548">Scegli quando spostare nella sezione Schede non attive le schede che non sono state utilizzate di recente.</translation>

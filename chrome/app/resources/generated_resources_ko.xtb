@@ -688,7 +688,6 @@
 <translation id="1539248305642687917">사이트에서 키보드 입력을 재정의하도록 허용하지 않음</translation>
 <translation id="1539727654733007771">설정된 모바일 네트워크가 없습니다. 새 <ph name="BEGIN_LINK" />프로필<ph name="END_LINK" />을 다운로드하세요.</translation>
 <translation id="1540265419569299117">ChromeOS 앱 서비스</translation>
-<translation id="1540543470504988112">macOS에서 가져온 인증서 관리</translation>
 <translation id="1541346352678737112">네트워크 없음</translation>
 <translation id="154198613844929213">{0,plural, =0{지금 삭제 중입니다.}=1{1초 후 삭제됨}other{#초 후 삭제됨}}</translation>
 <translation id="1542137295869176367">로그인 데이터를 업데이트할 수 없습니다.</translation>
@@ -1342,7 +1341,6 @@
 <translation id="2026367923222947564">전체 페이지</translation>
 <translation id="2026377162111110983">영역 음성</translation>
 <translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
-<translation id="2028479214883337535">MacOS에서 가져옴</translation>
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
 <translation id="2030455719695904263">트랙패드</translation>
 <translation id="2030803782168502207">기기에서 구독 삭제</translation>
@@ -5253,7 +5251,6 @@
 <translation id="5017250179386090956">기본 노드 주석 파일 다운로드 중</translation>
 <translation id="5017529052065664584">지난 15분</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
-<translation id="5019487038187875030">macOS에서 가져온 인증서 보기</translation>
 <translation id="5020008942039547742">다른 기간 선택</translation>
 <translation id="5020146655450187658">오프라인 상태입니다. 인터넷 연결을 확인하여 Gemini가 자동으로 로그인할 수 있는 사이트를 관리하세요.</translation>
 <translation id="5020651427400641814">음성 로깅 사용</translation>
@@ -8352,7 +8349,6 @@
 <translation id="7460045493116006516">내가 설치한 현재 테마입니다.</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="7462644385455960321">탭을 가로로 표시하려면 전체 화면을 종료하세요</translation>
-<translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">조직에서 이러한 기능으로 수집한 데이터를 사용하는 방식을 관리합니다.</translation>
 <translation id="7464645554245611385">이 탭의 최종 업데이트</translation>
 <translation id="7465777686629334728">관리형 개발 환경(<ph name="SPECIFIC_NAME" />) 삭제</translation>

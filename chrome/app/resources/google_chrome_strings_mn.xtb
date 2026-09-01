@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome-г тохируулж, хянана уу. Шинэчлэх боломжтой.</translation>
 <translation id="1028061813283459617">Интернэтээр үзсэн өгөгдлийг Google Бүртгэлдээ үлдээнгээ зөвхөн энэ төхөөрөмжөөс устгахын тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Утсан дээрээ Chrome аппыг ашиглан явж байх зуураа Google-н аюулгүй байдлын шилдэг онцлогуудыг аваарай</translation>
+<translation id="1036348656032585052">Унтраа</translation>
 <translation id="1042270987544905725">Chrome-н нэвтрэх харилцах цонхыг хаахын тулд товшино уу</translation>
 <translation id="1051793555070215510">Бидэнд энэ 1 минутын судалгааг бөглөж Нууцлалтай горимыг сайжруулахад тусална уу.</translation>
 <translation id="1055295352198814912">Mac-н цэсийн мөрд Chrome дахь Gemini-г харуулж, товчлуурын шууд холбоосыг асаана уу</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="3292333338048274092">Та тэгээд Chrome-г дахин эхлүүлэх шаардлагатай болно.</translation>
+<translation id="3294686910656423119">Статистик хэрэглээ болон гэмтлийн тайлан</translation>
 <translation id="3327226547491422998">Дараа нь Chrome танаас хадгалсан мэдээллийг танд зориулж маягтыг автоматаар бөглөхөд ашигламаар байгаа эсэхийг асууж болно</translation>
 <translation id="3352986031709923790">хайлтын хэсгийн баруун дээд булан: баруун <ph name="RIGHT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -479,6 +481,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5824893331272123205">Энэ түр зуурын самбарыг ачаалж чадсангүй. Дахин оролдоно уу</translation>
 <translation id="5825922397106002626"><ph name="EXTENSION_NAME" />-г Chrome-с хасах</translation>
 <translation id="5858486459377137936">Хэрэв та Chrome-д нэвтэрсэн бол таныг Chrome-н бүх цонхыг хаах үед Google Бүртгэлээс тань бусад ихэнх сайтаас гаргана. Сайтад таныг санахыг зөвшөөрөхийн тулд <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Асаах</translation>
 <translation id="586971344380992563">Аюултай сайт болон татаж авсан файлын талаар <ph name="BEGIN_LINK" />Chrome танд сануулна<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chrome дахь Gemini-г ашиглахын тулд өөр Google Бүртгэлээр нэвтэрнэ үү</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
@@ -519,6 +522,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6166185671393271715">Нууц үгийг Chrome-д импортлох</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Бета</translation>
+<translation id="6177442314419606057">Chrome-с хайх</translation>
 <translation id="6180522807229584611">Энэ таб нэмэлт нөөц ашиглаж байна. Гүйцэтгэлээ сайжруулахын тулд Chrome-д энэ табыг идэвхгүй болгохыг зөвшөөрнө үү.</translation>
 <translation id="6182736845697986886">Шинэчлэлтийн серверийн дотоод алдааны улмаас суулгалт амжилтгүй болсон.</translation>
 <translation id="6192058120268468905">Таны Chrome дахь бүртгэл</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">អនាមិក</translation>
 <translation id="1053651653201045802">បានចេញពីគណនី។ ចូលគណនី​វិញ ដើម្បីប្រើ​ចំណាំ ពាក្យ​សម្ងាត់ និងអ្វីៗជាច្រើនទៀត​នៅក្នុង​គណនី​របស់អ្នក។</translation>
 <translation id="1054745118061919935">ប្រសិនបើ​បន្ត មានន័យថា​អ្នកយល់ព្រមតាម​<ph name="BEGIN_LINK" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK" />។</translation>
+<translation id="1056818261333183659">តើខ្ញុំគួរទិញមួយណា?</translation>
 <translation id="10614374240317010">មិនដែលបានរក្សាទុក</translation>
 <translation id="1062138828266376352">កូដ PIN របស់អ្នក​មិនត្រូវបាន​ផ្លាស់ប្ដូរទេ។ សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត</translation>
 <translation id="1063070031224282617">ជ្រើសរើស​កន្លែង​រក្សាទុក "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -215,6 +216,7 @@
 <translation id="1641113438599504367">ការរុករកសុវត្ថិភាព</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
 <translation id="164673457281113247">{count,plural, =1{បាន​រក្សាទុក​ចំណាំ}other{បាន​រក្សាទុក​ចំណាំ}}</translation>
+<translation id="1650979352027263879">បានដក​ចំណូលចិត្ត​រូបរាង​របស់អ្នក​ចេញ</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">បើកការជូន​ដំណឹង​អំពី​ការពិនិត្យ​សុវត្ថិភាព…</translation>
 <translation id="1652333207707886577">ប្ដូរ​ម៉ឺនុយ​របស់អ្នក​តាមបំណង</translation>
@@ -277,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{ចំណាំ​ដែលបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក {email}}other{ចំណាំ​ដែលបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក {email}}}</translation>
 <translation id="1838089197478136166">បើក​នៅក្នុង Wallet ឬ?</translation>
 <translation id="183878838231635348">កាតនេះ​បង្ហាញបញ្ហា​ឯកជនភាព ឬ​សុវត្ថិភាព​ទាំងឡាយ​ដែលការពិនិត្យ​សុវត្ថិភាព​រកឃើញ​ដោយស្វ័យប្រវត្តិ​សម្រាប់អ្នក។</translation>
-<translation id="1840320537320704887">បានដក​ចំណូលចិត្ត​ទំព័រផ្ទាំងថ្មី​របស់អ្នក​ចេញ</translation>
 <translation id="1845230888742614096">រក្សា​ក្រុម</translation>
 <translation id="1853558655412913122">ឥឡូវនេះ អ្នកអាចប្ដូរទីតាំងរបស់របារអាសយដ្ឋាននៅក្នុង "ការកំណត់" បន្ទាប់មក "របារអាសយដ្ឋាន"</translation>
 <translation id="1853692000353488670">ផ្ទាំងឯកជនថ្មី</translation>
@@ -591,6 +592,7 @@
 <translation id="2858204748079866344">ដើម្បី​ការពារ​ឯកជនភាព​របស់អ្នក Chrome នឹងមិន​បំពេញពាក្យសម្ងាត់​របស់អ្នក​ដោយស្វ័យប្រវត្តិ​នៅក្នុងកន្លែង​បញ្ចូលនេះទេ។</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{គេហទំព័រ 1 (ច្រើនជាងនេះនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)}other{គេហទំព័រ # (ច្រើនជាងនេះនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)}}</translation>
+<translation id="286473047976978798">ប្រើ​ចំណូលចិត្ត​រូបរាង​របស់អ្នក​ឬ?</translation>
 <translation id="2865392654629180917">សួរអ្វីក៏បាន ហើយទទួលបានការឆ្លើយតបដែលដំណើរការ​ដោយ AI</translation>
 <translation id="2870560284913253234">គេហទំព័រ</translation>
 <translation id="2876369937070532032">ផ្ញើ​ URL​ របស់​ទំព័រ​មួយចំនួន​ដែលអ្នក​ចូលមើល​ទៅ Google នៅពេលអ្នកជួបហានិភ័យ​ផ្នែកសុវត្ថិភាព</translation>
@@ -1120,7 +1122,6 @@
 
        ជ្រើសរើស​អ្វី​ដែលត្រូវ​ធ្វើជាមួយ​ទិន្នន័យរុករក​ដែលមាន​ស្រាប់​នៅលើ​ឧបករណ៍​នេះ។</translation>
 <translation id="4675298276894277358">គេហទំព័រនេះ​នឹងមិន​បង្ហាញ​ទៀត​ទេ</translation>
-<translation id="4676647168422678078">ប្រើ​ចំណូលចិត្ត​ទំព័រផ្ទាំងថ្មី​របស់អ្នក​ឬ?</translation>
 <translation id="4682496302933121474">បកប្រែ​ទំព័រឬ?</translation>
 <translation id="4682686630151240767">1. បើក​ការកំណត់ iPhone</translation>
 <translation id="4697240968720007067">យកកម្មវិធីល្អៗបំផុតរបស់ Google ដោយចុចម្ដង</translation>
@@ -1505,6 +1506,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5898848375214731122">ម៉ាស</translation>
 <translation id="5899314093904173337">ដើម្បីចែករំលែក​ជាមួយមនុស្ស​នៅជិត សូមអនុញ្ញាត​ឱ្យពួកគេ​ស្កេនកូដ QR នេះដោយប្រើ​កាមេរ៉ា ឬកម្មវិធី​ស្កេន QR របស់ពួកគេ</translation>
 <translation id="5902752768726620872">{count,plural, =1{ផ្ទាំងថ្មី {count}}other{ផ្ទាំងថ្មីៗ {count}}}</translation>
+<translation id="5906163261248594192">ថ្ងៃកំណើតរបស់ Dan</translation>
 <translation id="5911030830365207728">កម្មវិធីបកប្រែ Google</translation>
 <translation id="5912796581727968237">បើក Google Wallet</translation>
 <translation id="5922999516621365983">អូស​ផ្ទាំង​មកទីនេះ ដើម្បី​ខ្ទាស់​វា។</translation>
@@ -1807,6 +1809,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6806550742467879742">ឧបករណ៍​ទំព័រ</translation>
 <translation id="6807287147325542056">ពាក្យសម្ងាត់​នៅក្នុង​កម្មវិធី​ផ្សេងទៀត</translation>
 <translation id="681368974849482173">ធាតុត្រូវបានបង្កើត</translation>
+<translation id="6815692190508268848">បានប្រើ​ចំណូលចិត្ត​រូបរាង​របស់អ្នក</translation>
 <translation id="681631578600400068">រក្សាទុក​បណ្ណ​បើកបរ</translation>
 <translation id="6825078212112407882">{count,plural, =1{បានរក្សាទុកចំណាំនៅក្នុង​គណនី Google {email} របស់អ្នក}other{បានរក្សាទុកចំណាំចំនួន {count} នៅក្នុងគណនី Google {email} របស់អ្នក}}</translation>
 <translation id="6826004672264649705">បច្ចុប្បន្ន កំពុង​តាមដាន​ផលិតផលនេះ។ សូមបើក​ដើម្បីមើល​ប្រវត្តិ​តម្លៃ</translation>
@@ -1923,6 +1926,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="720399613139435155">ការបកប្រែមិនបានសម្រេចទេ</translation>
 <translation id="7204922488054642675">ព័ត៌មានដែលមានលក្ខណៈផ្ទាល់ខ្លួន</translation>
 <translation id="7206979415662233817">លក្ខខណ្ឌ​ប្រើប្រាស់</translation>
+<translation id="721218676460477064">សង្ខេបអត្ថបទនេះ</translation>
 <translation id="7215621211572884440">បានអនុញ្ញាតផ្ទាំងលោតឡើង</translation>
 <translation id="7218491361283758048">លេខកូដ​តំបន់</translation>
 <translation id="7221173315674413369">រុករក​មុខងារ និង​គន្លឹះ​ថ្មីៗ​នៅក្នុង "អ្វីដែលថ្មី"</translation>
@@ -2184,13 +2188,13 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8035133914807600019">ថតឯកសារថ្មី…</translation>
 <translation id="8035412398498507358">រូបថត</translation>
 <translation id="8037713009824540257">បន្ថែមគេហទំព័រ</translation>
+<translation id="8038078082340255234">របាយការណ៍ទីផ្សារ</translation>
 <translation id="8040407350301524547">ដើម្បីទទួលបានជម្រើសផ្លូវ សូមចុច “ទទួលទិសដៅ”។</translation>
 <translation id="804427445359061970">អ្នក​នឹង​ឃើញ​ផ្ទាំង​របស់អ្នក​ពី​ឧបករណ៍​ផ្សេងទៀត​នៅទីនេះ</translation>
 <translation id="8058655154417507695">ឆ្នាំផុតកំណត់</translation>
 <translation id="8059312861912872211">{count,plural, =1{ចំណាំ {count}}other{ចំណាំ {count}}}</translation>
 <translation id="8059533439631660104">បង្រួមផ្នែកនេះ</translation>
 <translation id="8061584726507121204">ប្រវត្តិ</translation>
-<translation id="8064946459644399612">បានប្រើ​ចំណូលចិត្ត​ទំព័រផ្ទាំងថ្មី​របស់អ្នក</translation>
 <translation id="8065136076319366194">មិនណែនាំឱ្យរក្សាទុកទេ</translation>
 <translation id="8065556469005366939">ទទួលបានចម្លើយកាន់តែពាក់ព័ន្ធដោយចែករំលែកផ្ទាំងរបស់អ្នក</translation>
 <translation id="8069394452933076548">ជ្រើសរើស​ពេលណាត្រូវផ្លាស់ទី​ផ្ទាំង​ដែល​មិន​បាន​ប្រើ​ថ្មីៗ​នេះ​ទៅ​ផ្នែក​ផ្ទាំង​​អសកម្ម។</translation>
@@ -2242,6 +2246,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8232956427053453090">រក្សាទុក​ទិន្នន័យ</translation>
 <translation id="8233237502828137700">បិទ​ការផ្សព្វផ្សាយ​លើ​ផ្ទាំងបដា</translation>
 <translation id="823339794112333264">បើកមីក្រូហ្វូន</translation>
+<translation id="8240217649914883113">បញ្ចូលវាទៅក្នុងប្រតិទិនរបស់ខ្ញុំ</translation>
 <translation id="8250920743982581267">ឯកសារ</translation>
 <translation id="8252980988000695656">បានបញ្ចប់កិច្ចការ Google Lens!</translation>
 <translation id="8258734532103758067">I've exported my data</translation>
@@ -2286,6 +2291,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8368198938968349418">បើក​ការបំពេញ​ស្វ័យប្រវត្តិ…</translation>
 <translation id="8370406443343902172">ចូលទៅកាន់ការកំណត់...</translation>
 <translation id="8370929854657845191">ពង្រីក​ទៅ​មធ្យម</translation>
+<translation id="8371494817541821097">បានបង្កើតកូដសម្ងាត់នៅថ្ងៃទី <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{លុបអាសយដ្ឋាន}other{លុបអាសយដ្ឋាន}}</translation>
 <translation id="8378714024927312812">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក</translation>
 <translation id="8385363453480067273">ស្វែងរកអ្វី​ដែលអ្នក​មើលឃើញ​ដោយប្រើ Google Lens</translation>

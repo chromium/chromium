@@ -561,6 +561,7 @@
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
 <translation id="3236059992281584593">Απομένει 1 λεπτό</translation>
 <translation id="3237087289225714896">Βασική προφόρτωση:</translation>
+<translation id="3243650379537999343">Σχέδιο</translation>
 <translation id="3244271242291266297">ΜΜ</translation>
 <translation id="3245429137663807393">Εάν κοινοποιείτε επίσης αναφορές χρήσης του Chrome, αυτές περιλαμβάνουν τα URL που επισκέπτεστε</translation>
 <translation id="3250563604907490871">Οι περιγραφές εικόνων θα συνεχιστούν όταν συνδεθείτε σε δίκτυο Wi-Fi.</translation>
@@ -963,7 +964,6 @@
 <translation id="480990236307250886">Άνοιγμα της αρχικής σελίδας</translation>
 <translation id="4816492930507672669">Προσαρμογή στη σελίδα</translation>
 <translation id="4822710610088666676">Η ομάδα καρτελών <ph name="TAB_GROUP_TITLE" /> έκλεισε και αποθηκεύτηκε</translation>
-<translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
 <translation id="4835385943915508971">Το Chrome δεν έχει πρόσβαση στον πόρο που ζητήθηκε</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_ONE" /> καρτέλα και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}other{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_MANY" /> καρτέλες και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}}</translation>
 <translation id="4849731766219625109">Χρήση του λογαριασμού σας <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

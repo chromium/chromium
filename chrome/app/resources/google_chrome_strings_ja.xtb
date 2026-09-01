@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="1028061813283459617">閲覧履歴データをこのデバイスからのみ削除して、Google アカウントに残すには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="1028770388543831319">スマートフォンの Chrome アプリで、Google の優れた安全機能を外出先でも利用できます</translation>
+<translation id="1036348656032585052">オフにする</translation>
 <translation id="1042270987544905725">クリックすると、Chrome のログイン ダイアログを閉じます</translation>
 <translation id="1051793555070215510">シークレット モードの改善のため、1 分程度のアンケートにご協力ください。</translation>
 <translation id="1055295352198814912">Gemini in Chrome を Mac のメニューバーに表示して、キーボード ショートカットをオンにする</translation>
@@ -240,6 +241,7 @@
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="3292333338048274092">その後、Chrome を再起動する必要があります。</translation>
+<translation id="3294686910656423119">使用統計データと障害レポート</translation>
 <translation id="3327226547491422998">今後、Chrome で保存した情報を使用してフォームに自動入力するかどうかを確認するメッセージが表示されます</translation>
 <translation id="3352986031709923790">検索範囲の右上隅: 右 <ph name="RIGHT" />%、上 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -468,6 +470,7 @@
 <translation id="5824893331272123205">このパネルを読み込めませんでした。もう一度お試しください</translation>
 <translation id="5825922397106002626">Chrome から <ph name="EXTENSION_NAME" /> を削除</translation>
 <translation id="5858486459377137936">Chrome のウィンドウをすべて閉じると、ほとんどのサイトからログアウトします。ただし Chrome にログインしている場合、Google アカウントからはログアウトしません。サイトにあなたの情報を記憶させるには、<ph name="SETTINGS_LINK" />します。</translation>
+<translation id="5860491529813859533">オンにする</translation>
 <translation id="586971344380992563">安全でないサイトやダウンロードが見つかると <ph name="BEGIN_LINK" />Chrome が警告<ph name="END_LINK" />します</translation>
 <translation id="5894164573378901688">Gemini in Chrome を使用するには、別の Google アカウントでログインしてください</translation>
 <translation id="5895138241574237353">再起動</translation>
@@ -508,6 +511,7 @@
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Chrome で検索</translation>
 <translation id="6180522807229584611">このタブでは追加のリソースが使用されています。パフォーマンスを改善するには、このタブを非アクティブにしてください。</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6192058120268468905">Chrome のアカウント設定</translation>

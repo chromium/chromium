@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Հասանելի է Google Chrome-ի նոր տարբերակը։</translation>
 <translation id="1028061813283459617">Այցելությունների պատմությունը միայն այս սարքից ջնջելու, սակայն Google հաշվում պահպանելու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>
 <translation id="1028770388543831319">Ցանկացած պահի օգտվեք Google-ի անվտանգության լավագույն գործառույթներից հեռախոսի Chrome հավելվածի օգնությամբ</translation>
+<translation id="1036348656032585052">Անջատել</translation>
 <translation id="1042270987544905725">Սեղմեք՝ Chrome մտնելու երկխոսության պատուհանը փակելու համար</translation>
 <translation id="1051793555070215510">Օգնեք մեզ բարելավել ինկոգնիտո ռեժիմը՝ անցնելով այս 1 րոպեանոց հարցումը։</translation>
 <translation id="1055295352198814912">Ցույց տալ «Gemini-ը Chrome-ում» հավելվածը Mac-ի ընտրացանկի գոտում և միացնել ստեղնային դյուրանցումը</translation>
@@ -244,6 +245,7 @@
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
 <translation id="3286538390144397061">Վերագործարկել հիմա</translation>
 <translation id="3292333338048274092">Այնուհետև անհրաժեշտ կլինի վերագործարկել Chrome-ը։</translation>
+<translation id="3294686910656423119">Օգտագործման վիճակագրություն և խափանման հաշվետվություններ</translation>
 <translation id="3327226547491422998">Հետագայում Chrome-ը կարող է հարցնել, թե արդյոք ուզում եք օգտագործել պահված տեղեկությունները ձևերի ավտոմատ լրացման համար</translation>
 <translation id="3352986031709923790">որոնման տարածքի վերևի աջ անկյուն՝ <ph name="RIGHT" />% աջից, <ph name="TOP" />% վերևից</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -476,6 +478,7 @@ Google Chrome-ը չի կարողանում վերականգնել ձեր կար�
 <translation id="5824893331272123205">Չհաջողվեց բեռնել այս վահանակը։ Նորից փորձեք։</translation>
 <translation id="5825922397106002626">Հեռացնել <ph name="EXTENSION_NAME" /> ընդլայնումը Chrome-ից</translation>
 <translation id="5858486459377137936">Դուք դուրս կգրվեք կայքերի մեծամասնությունից, երբ փակեք Chrome-ի բոլոր պատուհանները, սակայն կմնաք ձեր Google հաշվում, եթե մուտք եք գործել Chrome։ Որպեսզի թույլ տաք կայքերին հիշել ձեզ, <ph name="SETTINGS_LINK" />։</translation>
+<translation id="5860491529813859533">Միացնել</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome-ը զգուշացնում է ձեզ<ph name="END_LINK" /> վտանգավոր կայքերի և ներբեռնումների մասին</translation>
 <translation id="5894164573378901688">Gemini-ը Chrome-ում օգտագործելու համար մտեք այլ Google հաշիվ</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
@@ -516,6 +519,7 @@ Google Chrome-ը չի կարողանում վերականգնել ձեր կար�
 <translation id="6166185671393271715">Գաղտնաբառերի ներմուծում Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome բետա</translation>
+<translation id="6177442314419606057">Որոնում Chrome-ում</translation>
 <translation id="6180522807229584611">Այս ներդիրն օգտագործում է լրացուցիչ ռեսուրսներ։ Թույլատրեք Chrome-ին ապակտիվացնել այն, և աշխատանքի արդյունավետությունը կբարձրանա։</translation>
 <translation id="6182736845697986886">Չհաջողվեց տեղադրել հավելվածը թարմացումն իրականացնող սերվերի ներքին սխալի պատճառով։</translation>
 <translation id="6192058120268468905">Ձեր հաշիվը Chrome-ում</translation>

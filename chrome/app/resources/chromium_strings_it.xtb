@@ -632,6 +632,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="77283119132245232">Fornisce servizi di tracciamento del sistema per <ph name="BROWSER_NAME" />. Se questo servizio viene disattivato, le tracce delle prestazioni create dal browser non includeranno eventi a livello di sistema, ad esempio eventi di commutazione di contesto e di thread pronti.</translation>
 <translation id="7745317241717453663">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
+<translation id="7747820849741499258">Cerca in Chromium</translation>
 <translation id="7750130090210923118">Ripristina Chromium predefinito</translation>
 <translation id="7752521946322750699">Per proteggere il tuo lavoro su Chromium, la tua organizzazione potrà visualizzare o gestire determinate informazioni quando accedi a Chromium.</translation>
 <translation id="7781047659465034537">Imposta Chromium come browser predefinito e fissalo alla barra delle app</translation>

@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
+<translation id="1081948304372277788">Désactiver Level Up</translation>
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
 <translation id="108485301461714610">Mode IA de la recherche Google et applis connectées</translation>
@@ -108,7 +109,7 @@
 <translation id="132683371494960526">Appuyez deux fois pour modifier le dossier parent.</translation>
 <translation id="1333455942675373522">Clavier</translation>
 <translation id="1334485477792811969">Services Web</translation>
-<translation id="1335767868357998043">Choisir la position de la barre d'adresse</translation>
+<translation id="1335767868357998043">Choisissez la position de la barre d'adresse</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1353169676553627502">Désactiver les notifications sur la progression</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="164673457281113247">{count,plural, =1{Favori enregistré}one{Favori enregistré}other{Favoris enregistrés}}</translation>
+<translation id="1650979352027263879">Vos préférences d'apparence ont été supprimées</translation>
 <translation id="1651260071709244114">Applis</translation>
 <translation id="1652051421944182562">Activer les notifications du contrôle de sécurité…</translation>
 <translation id="1652333207707886577">Personnaliser le menu</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google ({email})}one{Favori enregistré dans votre compte Google ({email})}other{Favoris enregistrés dans votre compte Google ({email})}}</translation>
 <translation id="1838089197478136166">Ouvrir dans Cartes ?</translation>
 <translation id="183878838231635348">Cette fiche présente les problèmes de confidentialité ou de sécurité que le contrôle de sécurité détecte automatiquement pour vous.</translation>
-<translation id="1840320537320704887">Vos préférences pour la page "Nouvel onglet" ont été supprimées</translation>
 <translation id="1845230888742614096">Conserver le groupe</translation>
 <translation id="1853558655412913122">Vous pouvez désormais modifier la position de la barre d'adresse en accédant à "Paramètres", puis "Barre d'adresse"</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement le champ du mot de passe.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (plus sur les appareils synchronisés)}one{# site (plus sur les appareils synchronisés)}other{# sites (plus sur les appareils synchronisés)}}</translation>
+<translation id="286473047976978798">Appliquer vos préférences d'apparence ?</translation>
 <translation id="2865392654629180917">Posez des questions et obtenez des réponses optimisées par l'IA</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoyer à Google les URL des pages que vous consultez présentant un risque pour votre sécurité</translation>
@@ -1119,7 +1121,6 @@
 
        Choisissez ce que vous souhaitez faire des données de navigation existantes sur cet appareil.</translation>
 <translation id="4675298276894277358">Ce site ne sera plus affiché</translation>
-<translation id="4676647168422678078">Appliquer vos préférences pour la page "Nouvel onglet" ?</translation>
 <translation id="4682496302933121474">Traduire la page ?</translation>
 <translation id="4682686630151240767">1. Ouvrez les réglages de l'iPhone</translation>
 <translation id="4697240968720007067">Obtenez les meilleures applis de Google, en un geste</translation>
@@ -1806,6 +1807,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6806550742467879742">Outils de page</translation>
 <translation id="6807287147325542056">Mots de passe dans d'autres applis</translation>
 <translation id="681368974849482173">Élément créé</translation>
+<translation id="6815692190508268848">Vos préférences d'apparence ont été appliquées</translation>
 <translation id="681631578600400068">Enregistrer le permis de conduire</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google {email}}one{{count} favori enregistré dans votre compte Google {email}}other{{count} favoris enregistrés dans votre compte Google {email}}}</translation>
 <translation id="6826004672264649705">Vous suivez actuellement ce produit. Ouvrir pour voir l'historique des prix.</translation>
@@ -2189,7 +2191,6 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8059312861912872211">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8061584726507121204">Historique</translation>
-<translation id="8064946459644399612">Vos préférences pour la page "Nouvel onglet" ont été appliquées</translation>
 <translation id="8065136076319366194">Enregistrement non recommandé</translation>
 <translation id="8065556469005366939">Obtenez des réponses plus pertinentes en partageant vos onglets</translation>
 <translation id="8069394452933076548">Indiquez quand déplacer les onglets non utilisés récemment vers la section des onglets inactifs.</translation>

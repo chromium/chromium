@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chromeను అనుకూలంగా మార్చండి మరియు నియంత్రించండి. అప్‌డేట్ అందుబాటులో ఉంది.</translation>
 <translation id="1028061813283459617">ఈ పరికరం నుండి మాత్రమే బ్రౌజింగ్ డేటాను తొలగించడానికి, దీన్ని మీ Google ఖాతాలో ఉంచుతూ, <ph name="BEGIN_LINK" />Chrome నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">మీ ఫోన్‌లోని Chrome యాప్‌తో, ప్రయాణంలో ఉన్నప్పుడు కూడా అత్యుత్తమ Google సేఫ్టీ ఫీచర్‌లను పొందండి</translation>
+<translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1042270987544905725">క్లిక్ చేసి, Chrome సైన్ ఇన్ డైలాగ్‌ను మూసివేయండి</translation>
 <translation id="1051793555070215510">ఈ 1 నిమిషం సర్వేను పూర్తి చేసి అజ్ఞాత మోడ్‌ను మెరుగుపరచడంలో మాకు సహాయపడండి.</translation>
 <translation id="1055295352198814912">Mac మెనూ బార్‌లో Chromeలోని Geminiని కనిపించేలా చేసి, కీబోర్డ్ షార్ట్‌కట్‌ను ఆన్ చేయండి</translation>
@@ -242,6 +243,7 @@
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
 <translation id="3292333338048274092">ఆపై మీరు Chromeను రీస్టార్ట్ చేయాలి.</translation>
+<translation id="3294686910656423119">వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లు</translation>
 <translation id="3327226547491422998">తర్వాత, మీ కోసం ఫారమ్‌లను ఆటోఫిల్ చేయడానికి సేవ్ చేసిన సమాచారాన్ని ఉపయోగించాలనుకుంటున్నారా అని Chrome అడగవచ్చు</translation>
 <translation id="3352986031709923790">సెర్చ్ ఏరియాకు ఎగువ కుడి మూలన: కుడి వైపు <ph name="RIGHT" />%, ఎగువ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome సహాయకారుడు</translation>
@@ -471,6 +473,7 @@
 <translation id="5824893331272123205">ఈ ప్యానెల్‌ను లోడ్ చేయడం సాధ్యపడలేదు, మళ్లీ ట్రై చేయండి</translation>
 <translation id="5825922397106002626">Chrome నుండి <ph name="EXTENSION_NAME" />‌ను తీసివేయండి</translation>
 <translation id="5858486459377137936">మీరు Chromeకు సైన్ ఇన్ చేసినట్లయితే, Chrome విండోలన్నింటినీ మూసివేసినప్పుడు, మీ Google ఖాతా మినహా, దాదాపుగా అన్ని సైట్‌ల నుండి సైన్ అవుట్ అవుతారు. మిమ్మల్ని సైట్‌లు గుర్తుంచుకోవడానికి, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="586971344380992563">సురక్షితం కాని సైట్‌లు, డౌన్‌లోడ్‌ల గురించి <ph name="BEGIN_LINK" />Chrome మిమ్మల్ని హెచ్చరిస్తుంది<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chromeలో Geminiని ఉపయోగించడానికి, వేరే Google ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
@@ -511,6 +514,7 @@
 <translation id="6166185671393271715">Chromeకి పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome బీటా</translation>
+<translation id="6177442314419606057">Chromeలో వెతకండి</translation>
 <translation id="6180522807229584611">ఈ ట్యాబ్ అదనపు రిసోర్స్‌లను ఉపయోగిస్తోంది. మీ పనితీరును మెరుగుపరచడానికి, దాన్ని ఇన్‌యాక్టివ్‌గా ఉంచడానికి Chromeకు అనుమతినివ్వండి.</translation>
 <translation id="6182736845697986886">అప్‌డేట్ సర్వర్ అంతర్గత ఎర్రర్ కారణంగా ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="6192058120268468905">Chromeలో మీ ఖాతా</translation>

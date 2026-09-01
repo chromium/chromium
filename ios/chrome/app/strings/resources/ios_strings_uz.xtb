@@ -216,6 +216,7 @@
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="164673457281113247">{count,plural, =1{Bukmark saqlandi}other{Bukmarklar saqlandi}}</translation>
+<translation id="1650979352027263879">Mavzu sozlamalari olib tashlandi</translation>
 <translation id="1651260071709244114">Ilovalar</translation>
 <translation id="1652051421944182562">Xavfsizlik tekshiruvi bildirishnomalarini yoqing…</translation>
 <translation id="1652333207707886577">Menyuni moslang</translation>
@@ -278,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Bukmark Google hisobingizga saqlandi, {email}}other{Bukmarklar Google hisobingizga saqlandi, {email}}}</translation>
 <translation id="1838089197478136166">Walletda ochilsinmi?</translation>
 <translation id="183878838231635348">Bu bildirgida Xavfsizlik tekshiruvi avtomatik aniqlagan maxfiylik yoki xavfsizlik muammolari chiqadi.</translation>
-<translation id="1840320537320704887">Yangi varaq sahifasi sozlamalari olib tashlandi</translation>
 <translation id="1845230888742614096">Guruh qolsin</translation>
 <translation id="1853558655412913122">Endi manzil qatori joylashuvini “Sozlamalar”, keyin “Manzil qatori” ruknida oʻzgartirish mumkin.</translation>
 <translation id="1853692000353488670">Yangi inkognito varaq</translation>
@@ -592,6 +592,7 @@
 <translation id="2858204748079866344">Maxfiyligingizni muhofaza qilish uchun Chrome parolingizni bu maydonga kiritmaydi.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 ta sayt (qolgani sinxronlangan qurilmalarda)}other{# ta sayt (qolgani sinxronlangan qurilmalarda)}}</translation>
+<translation id="286473047976978798">Mavzu sozlamalari tatbiq etilsinmi?</translation>
 <translation id="2865392654629180917">Istalgan narsani soʻrang va AI imkoniyatli javoblar oling</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2876369937070532032">Xavfli vaziyatlarda siz tashrif buyurgan ayrim URL manzillarni Google serverlariga yuboradi</translation>
@@ -1121,7 +1122,6 @@
 
        Bu qurilmada mavjud brauzer maʼlumotlari bilan qaysi amalni bajarishni tanlang.</translation>
 <translation id="4675298276894277358">Bu sayt boshqa chiqmaydi</translation>
-<translation id="4676647168422678078">Yangi varaq sahifasi sozlamalari tatbiq qilinsinmi?</translation>
 <translation id="4682496302933121474">Sahifa tarjima qilinsinmi?</translation>
 <translation id="4682686630151240767">1. iPhone sozlamalarini oching</translation>
 <translation id="4697240968720007067">Eng yaxshi Google ilovalarini bir teginishda yuklab oling</translation>
@@ -1809,6 +1809,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6806550742467879742">Sahifani boshqarish vositalari</translation>
 <translation id="6807287147325542056">Boshqa ilovalardagi parollar</translation>
 <translation id="681368974849482173">Saqlandi</translation>
+<translation id="6815692190508268848">Mavzu sozlamalari tatbiq etildi</translation>
 <translation id="681631578600400068">Haydovchilik guvohnomasini saqlash</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bukmark Google hisobingizga ({email}) saqlandi}other{{count} ta bukmark Google hisobingizga ({email}) saqlandi}}</translation>
 <translation id="6826004672264649705">Hozirda bu mahsulot kuzatilmoqda. Narxlar tarixini koʻrish uchun oching</translation>
@@ -2194,7 +2195,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8059312861912872211">{count,plural, =1{{count} ta bukmark}other{{count} ta bukmark}}</translation>
 <translation id="8059533439631660104">Bo‘limni yig‘adi.</translation>
 <translation id="8061584726507121204">Tarix</translation>
-<translation id="8064946459644399612">Yangi varaq sahifasi sozlamalari tatbiq qilindi</translation>
 <translation id="8065136076319366194">Saqlash tavsiya etilmaydi</translation>
 <translation id="8065556469005366939">Varaqlarni ulashish yanada mos javoblarni olish imkonini beradi</translation>
 <translation id="8069394452933076548">Yaqinda foydalanilmagan varaqlarni qachon nofaol varaqlar boʻlimiga koʻchirishni tanlang.</translation>

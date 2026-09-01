@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">{password_count} पासवर्ड और उन साइटों और ऐप्लिकेशन की सूची को मिटाया जाएगा जिनके लिए, आपने साइन-इन करने के क्रेडेंशियल कभी भी सेव न करने का विकल्प चुना है. साइटों और ऐप्लिकेशन के लिए बनाए गए किसी भी खाते को नहीं मिटाया जाएगा.</translation>
 <translation id="1076421457278169141">कोड स्कैन किया गया</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} टैब}one{{count} टैब}other{{count} टैब}}</translation>
+<translation id="1081948304372277788">'लेवल अप' सुविधा को बंद करें</translation>
 <translation id="1082554859195167538">आपके लिए प्रॉडक्ट की समीक्षाएं</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूरी हुई.</translation>
 <translation id="108485301461714610">Google Search AI mode and connected apps</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="164673457281113247">{count,plural, =1{बुकमार्क सेव किया गया}one{बुकमार्क सेव किया गया}other{बुकमार्क सेव किए गए}}</translation>
+<translation id="1650979352027263879">दिखने से जुड़ी पिछली सेटिंग हटाई गईं</translation>
 <translation id="1651260071709244114">ऐप्लिकेशन</translation>
 <translation id="1652051421944182562">सुरक्षा जांच से जुड़ी सूचनाएं चालू करें…</translation>
 <translation id="1652333207707886577">मेन्यू को पसंद के मुताबिक बनाएं</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{आपके Google खाते में सेव किया गया बुकमार्क, {email}}one{आपके Google खाते में सेव किया गया बुकमार्क, {email}}other{आपके Google खाते में सेव किए गए बुकमार्क, {email}}}</translation>
 <translation id="1838089197478136166">क्या Wallet में फ़ाइल खोलनी है?</translation>
 <translation id="183878838231635348">इस कार्ड में निजता या सुरक्षा से जुड़ी वे सभी समस्याएं दिखती हैं जिनका सुरक्षा जांच में अपने-आप पता चलता है.</translation>
-<translation id="1840320537320704887">'नया टैब' पेज के लिए चुनी गई सेटिंग हटाई गईं</translation>
 <translation id="1845230888742614096">ग्रुप को सेव करें</translation>
 <translation id="1853558655412913122">अब पता बार की जगह को बदला जा सकता है. इसके लिए, "सेटिंग" और फिर "पता बार" पर जाएं</translation>
 <translation id="1853692000353488670">नया गुप्त टैब</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">आपकी निजता को सुरक्षित रखने के लिए, Chrome इस फ़ील्ड में आपके पासवर्ड को ऑटोमैटिक नहीं भरेगा.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 साइट (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}one{# साइट (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}other{# साइटें (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}}</translation>
+<translation id="286473047976978798">क्या आपको दिखने से जुड़ी अपनी पिछली सेटिंग लागू करनी हैं?</translation>
 <translation id="2865392654629180917">कोई भी सवाल पूछें और एआई की मदद से जवाब पाएं</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">आपकी सुरक्षा को खतरा होने पर उन पेज के यूआरएल भेजे जाते हैं जिन पर आप Google के ज़रिए जाते हैं.</translation>
@@ -1119,7 +1121,6 @@
 
        यह चुनें कि इस डिवाइस पर मौजूद ब्राउज़िंग डेटा के साथ क्या करना है.</translation>
 <translation id="4675298276894277358">यह साइट दोबारा नहीं दिखाई जाएगी</translation>
-<translation id="4676647168422678078">क्या आपको 'नया टैब' पेज के लिए चुनी गई सेटिंग लागू करनी हैं?</translation>
 <translation id="4682496302933121474">पेज का अनुवाद पाना है?</translation>
 <translation id="4682686630151240767">1. iPhone की सेटिंग खोलें</translation>
 <translation id="4697240968720007067">बस एक टैप में Google के बेहतरीन ऐप्लिकेशन डाउनलोड करें</translation>
@@ -1806,6 +1807,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6806550742467879742">पेज टूल</translation>
 <translation id="6807287147325542056">दूसरे ऐप्लिकेशन में सेव किए गए पासवर्ड</translation>
 <translation id="681368974849482173">आइटम बनाया गया</translation>
+<translation id="6815692190508268848">दिखने से जुड़ी पिछली सेटिंग लागू की गईं</translation>
 <translation id="681631578600400068">ड्राइविंग लाइसेंस की जानकारी सेव करें</translation>
 <translation id="6825078212112407882">{count,plural, =1{आपके Google खाते, {email} में बुकमार्क सेव किया गया}one{आपके Google खाते, {email} में {count} बुकमार्क सेव किया गया}other{आपके Google खाते, {email} में {count} बुकमार्क सेव किए गए}}</translation>
 <translation id="6826004672264649705">फ़िलहाल, इस प्रॉडक्ट को ट्रैक किया जा रहा है. कीमत का इतिहास देखने के लिए खोलें</translation>
@@ -2189,7 +2191,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8059312861912872211">{count,plural, =1{{count} बुकमार्क}one{{count} बुकमार्क}other{{count} बुकमार्क}}</translation>
 <translation id="8059533439631660104">अनुभाग को संक्षिप्त करें.</translation>
 <translation id="8061584726507121204">इतिहास</translation>
-<translation id="8064946459644399612">'नया टैब' पेज के लिए चुनी गई सेटिंग लागू की गईं</translation>
 <translation id="8065136076319366194">सेव करने का सुझाव नहीं दिया गया</translation>
 <translation id="8065556469005366939">अपने टैब शेयर करके, ज़्यादा काम के जवाब पाएं</translation>
 <translation id="8069394452933076548">यह चुनें कि जिन टैब का हाल ही में इस्तेमाल नहीं किया गया है उन्हें इनऐक्टिव टैब सेक्शन में कब ले जाया जाए.</translation>

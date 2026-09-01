@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark opgeslagen}other{Bookmarks opgeslagen}}</translation>
+<translation id="1650979352027263879">Je weergavevoorkeuren zijn verwijderd</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">Meldingen van Veiligheidscheck aanzetten…</translation>
 <translation id="1652333207707886577">Je menu aanpassen</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{Bookmarks opgeslagen in je Google-account {email}}}</translation>
 <translation id="1838089197478136166">Openen in Wallet?</translation>
 <translation id="183878838231635348">Deze kaart toont eventuele privacy- of beveiligingsproblemen die de Veiligheidscheck automatisch voor je opspoort.</translation>
-<translation id="1840320537320704887">Je voorkeuren voor de pagina Nieuw tabblad verwijderd</translation>
 <translation id="1845230888742614096">Groep behouden</translation>
 <translation id="1853558655412913122">Je kunt nu de positie van de adresbalk wijzigen via Instellingen en dan Adresbalk</translation>
 <translation id="1853692000353488670">Nieuw incognitotabblad</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">Ter bescherming van je privacy wordt je wachtwoord niet automatisch in dit veld ingevuld door Chrome.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (meer op gesynchroniseerde apparaten)}other{# sites (meer op gesynchroniseerde apparaten)}}</translation>
+<translation id="286473047976978798">Je weergavevoorkeuren toepassen?</translation>
 <translation id="2865392654629180917">Stel vragen en krijg AI-gestuurde reacties</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Verzendt URL's van bepaalde pagina's die je bezoekt naar Google wanneer je beveiliging risico loopt</translation>
@@ -1120,7 +1121,6 @@
 
        Kies wat je wilt doen met de bestaande browsegegevens op dit apparaat.</translation>
 <translation id="4675298276894277358">Deze site wordt niet meer getoond</translation>
-<translation id="4676647168422678078">Je voorkeuren voor de pagina Nieuw tabblad toepassen?</translation>
 <translation id="4682496302933121474">Pagina vertalen?</translation>
 <translation id="4682686630151240767">1. Open de iPhone-instellingen</translation>
 <translation id="4697240968720007067">Download met één tik de beste apps van Google</translation>
@@ -1807,6 +1807,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6806550742467879742">Paginahulpmiddelen</translation>
 <translation id="6807287147325542056">Wachtwoorden in andere apps</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
+<translation id="6815692190508268848">Je weergavevoorkeuren zijn toegepast</translation>
 <translation id="681631578600400068">Rijbewijs opslaan</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{{count} bookmarks opgeslagen in je Google-account {email}}}</translation>
 <translation id="6826004672264649705">Dit product wordt op dit moment gevolgd. Openen om de prijsgeschiedenis te bekijken</translation>
@@ -2190,7 +2191,6 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8059312861912872211">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="8059533439631660104">Hiermee wordt het gedeelte samengevouwen.</translation>
 <translation id="8061584726507121204">Geschiedenis</translation>
-<translation id="8064946459644399612">Je voorkeuren voor de pagina Nieuw tabblad toegepast</translation>
 <translation id="8065136076319366194">Opslaan niet aanbevolen</translation>
 <translation id="8065556469005366939">Krijg relevantere antwoorden door je tabbladen te delen</translation>
 <translation id="8069394452933076548">Kies wanneer tabbladen die je niet recent hebt gebruikt, naar het gedeelte voor inactieve tabbladen worden verplaatst.</translation>

@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Je gati të fshish {password_count} fjalëkalime dhe listën e sajteve dhe aplikacioneve për të cilat ke zgjedhur që të mos i ruash asnjëherë informacionet e identifikimit. Nuk do të fshihet asnjë llogari që ke krijuar për sajtet dhe aplikacionet.</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} skedë}other{{count} skeda}}</translation>
+<translation id="1081948304372277788">Çaktivizo Level Up</translation>
 <translation id="1082554859195167538">Komentet për produktet për ty</translation>
 <translation id="1084365883616172403">Postimi në Facebook u krye.</translation>
 <translation id="108485301461714610">"Modaliteti i IA-së" i "Kërko në Google" dhe aplikacionet e lidhura</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="164673457281113247">{count,plural, =1{Faqeshënuesi u ruajt}other{Faqeshënuesit u ruajtën}}</translation>
+<translation id="1650979352027263879">Preferencat e tua për paraqitjen u hoqën</translation>
 <translation id="1651260071709244114">Aplikacionet</translation>
 <translation id="1652051421944182562">Aktivizo njoftimet e "Kontrollit të sigurisë"…</translation>
 <translation id="1652333207707886577">Personalizo menynë</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="1838089197478136166">Të hapet te "Portofoli"?</translation>
 <translation id="183878838231635348">Kjo kartë shfaq çdo problem me privatësinë ose sigurinë që "Kontrolli i sigurisë" zbulon automatikisht për ty.</translation>
-<translation id="1840320537320704887">Preferencat e tua për faqen e "Skedës së re" u hoqën</translation>
 <translation id="1845230888742614096">Mbaje grupin</translation>
 <translation id="1853558655412913122">Tani mund të ndryshosh pozicionin e shiritit të adresave te "Cilësimet" dhe më pas te "Shiriti i adresave"</translation>
 <translation id="1853692000353488670">Skedë e re e fshehtë</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Për të mbrojtur privatësinë tënde, Chrome nuk do ta plotësojë automatikisht fjalëkalimin tënd në këtë fushë.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sajt (më shumë në pajisjet e sinkronizuara)}other{# sajte (më shumë në pajisjet e sinkronizuara)}}</translation>
+<translation id="286473047976978798">Të zbatohen preferencat e tua për paraqitjen?</translation>
 <translation id="2865392654629180917">Pyet për çdo gjë dhe merr përgjigje të mundësuara nga IA-ja</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2876369937070532032">Dërgon URL-të e disa faqeve që viziton te Google, kur siguria jote është në rrezik</translation>
@@ -1119,7 +1121,6 @@
 
        Zgjidh se çfarë do të bësh me të dhënat ekzistuese të shfletimit në këtë pajisje.</translation>
 <translation id="4675298276894277358">Ky sajt nuk do të shfaqet më</translation>
-<translation id="4676647168422678078">Të zbatohen preferencat e tua për faqen e "Skedës së re"?</translation>
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="4682686630151240767">1. Hap "Cilësimet e iPhone"</translation>
 <translation id="4697240968720007067">Merr aplikacionet më të mira të Google me një trokitje</translation>
@@ -1806,6 +1807,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6806550742467879742">Veglat e faqes</translation>
 <translation id="6807287147325542056">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
+<translation id="6815692190508268848">Preferencat e tua për paraqitjen u zbatuan</translation>
 <translation id="681631578600400068">Ruaj lejen e drejtimit</translation>
 <translation id="6825078212112407882">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{{count} faqeshënues u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="6826004672264649705">Po e monitoron aktualisht këtë produkt. Hape për të parë historikun e çmimeve</translation>
@@ -2189,7 +2191,6 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8059312861912872211">{count,plural, =1{{count} faqeshënues}other{{count} faqeshënues}}</translation>
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8061584726507121204">Historiku</translation>
-<translation id="8064946459644399612">U zbatuan preferencat e tua për faqen e "Skedës së re"</translation>
 <translation id="8065136076319366194">Ruajtja nuk rekomandohet</translation>
 <translation id="8065556469005366939">Merr përgjigje më të përshtatshme duke ndarë skedat e tua</translation>
 <translation id="8069394452933076548">Zgjidh se kur zhvendosen te seksioni i skedave joaktive skedat që nuk janë përdorur së fundi.</translation>

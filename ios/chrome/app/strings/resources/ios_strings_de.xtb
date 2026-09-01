@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Du bist im Begriff, {password_count} Passwörter und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} Tab}other{{count} Tabs}}</translation>
+<translation id="1081948304372277788">Level Up deaktivieren</translation>
 <translation id="1082554859195167538">Rezensionen für dich</translation>
 <translation id="1084365883616172403">Facebook-Beitrag gepostet</translation>
 <translation id="108485301461714610">KI-Modus der Google Suche und verbundene Apps</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="164673457281113247">{count,plural, =1{Lesezeichen wurde gespeichert}other{Lesezeichen wurden gespeichert}}</translation>
+<translation id="1650979352027263879">Einstellungen für die Darstellung wurden entfernt</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">„Sicherheitscheck“-Benachrichtigungen aktivieren…</translation>
 <translation id="1652333207707886577">Menü anpassen</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto ({email}) gespeichert}other{Die Lesezeichen wurden in deinem Google-Konto ({email}) gespeichert}}</translation>
 <translation id="1838089197478136166">In Wallet öffnen?</translation>
 <translation id="183878838231635348">Auf dieser Karte werden alle Datenschutz- oder Sicherheitsprobleme angezeigt, die der Sicherheitscheck automatisch erkennt.</translation>
-<translation id="1840320537320704887">Einstellungen für die Seite „Neuer Tab“ wurden entfernt</translation>
 <translation id="1845230888742614096">Gruppe beibehalten</translation>
 <translation id="1853558655412913122">Du kannst die Position der Adressleiste jetzt in den Einstellungen unter „Adressleiste“ ändern</translation>
 <translation id="1853692000353488670">Neuer Inkognitotab</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch mit deinem Passwort aus.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 Website (weitere auf synchronisierten Geräten)}other{# Websites (weitere auf synchronisierten Geräten)}}</translation>
+<translation id="286473047976978798">Einstellungen für die Darstellung übernehmen?</translation>
 <translation id="2865392654629180917">Fragen stellen und KI-basierte Antworten erhalten</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">URLs einiger von mir besuchter Seiten an Google senden, wenn meine Sicherheit gefährdet ist</translation>
@@ -1119,7 +1121,6 @@
 
        Wähle aus, was mit den Browserdaten auf diesem Gerät geschehen soll.</translation>
 <translation id="4675298276894277358">Diese Website wird nicht mehr angezeigt</translation>
-<translation id="4676647168422678078">Einstellungen für die Seite „Neuer Tab“ übernehmen?</translation>
 <translation id="4682496302933121474">Seite übersetzen?</translation>
 <translation id="4682686630151240767">1. Öffne die iPhone-Einstellungen</translation>
 <translation id="4697240968720007067">Das Beste von Google im Bundle</translation>
@@ -1806,6 +1807,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6806550742467879742">Seitentools</translation>
 <translation id="6807287147325542056">Passwörter in anderen Apps</translation>
 <translation id="681368974849482173">Element erstellt</translation>
+<translation id="6815692190508268848">Einstellungen für die Darstellung wurden übernommen</translation>
 <translation id="681631578600400068">Führerschein speichern</translation>
 <translation id="6825078212112407882">{count,plural, =1{Lesezeichen in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen in deinem Google-Konto {email} gespeichert}}</translation>
 <translation id="6826004672264649705">Dieses Produkt wird derzeit beobachtet. Öffnen, um die Preisentwicklung zu sehen.</translation>
@@ -2189,7 +2191,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8059312861912872211">{count,plural, =1{{count} Lesezeichen}other{{count} Lesezeichen}}</translation>
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8061584726507121204">Verlauf</translation>
-<translation id="8064946459644399612">Einstellungen für die Seite „Neuer Tab“ wurden übernommen</translation>
 <translation id="8065136076319366194">Speichern nicht empfohlen</translation>
 <translation id="8065556469005366939">Tab teilen und relevantere Antworten erhalten</translation>
 <translation id="8069394452933076548">Lege fest, wann Tabs, die länger nicht verwendet wurden, in den Bereich „Inaktive Tabs“ verschoben werden sollen.</translation>

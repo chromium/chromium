@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Customise and control Google Chrome. Update is available.</translation>
 <translation id="1028061813283459617">To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Get Google's best safety features on the go, with the Chrome app on your phone</translation>
+<translation id="1036348656032585052">Turn off</translation>
 <translation id="1042270987544905725">Click to close the Chrome sign-in dialogue</translation>
 <translation id="1051793555070215510">Help us improve Incognito by taking this 1-minute survey.</translation>
 <translation id="1055295352198814912">Show Gemini in Chrome in Mac menu bar and turn on keyboard shortcut</translation>
@@ -246,6 +247,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="3292333338048274092">You'll then need to restart Chrome.</translation>
+<translation id="3294686910656423119">Usage statistics and crash reports</translation>
 <translation id="3327226547491422998">Later, Chrome can ask if you want to use saved info to autofill forms for you</translation>
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -479,6 +481,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5824893331272123205">Couldn't load this panel, try again</translation>
 <translation id="5825922397106002626">Remove <ph name="EXTENSION_NAME" /> from Chrome</translation>
 <translation id="5858486459377137936">You'll be signed out of most sites when you close all Chrome windows, except your Google Account if you're signed in to Chrome. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Turn on</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome warns you<ph name="END_LINK" /> about unsafe sites and downloads</translation>
 <translation id="5894164573378901688">To use Gemini in Chrome, sign in with a different Google Account</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -519,6 +522,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6166185671393271715">Import Passwords To Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6180522807229584611">This tab is using extra resources. To improve your performance, let Chrome make it inactive.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6192058120268468905">Your account in Chrome</translation>

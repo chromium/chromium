@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="164673457281113247">{count,plural, =1{북마크 저장됨}other{북마크 저장됨}}</translation>
+<translation id="1650979352027263879">모양 환경설정이 삭제되었습니다.</translation>
 <translation id="1651260071709244114">앱</translation>
 <translation id="1652051421944182562">안전 확인 알림 사용 설정…</translation>
 <translation id="1652333207707886577">메뉴 맞춤설정</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{북마크가 Google 계정({email})에 저장되었습니다.}other{북마크가 Google 계정({email})에 저장되었습니다.}}</translation>
 <translation id="1838089197478136166">월렛에서 여시겠습니까?</translation>
 <translation id="183878838231635348">이 카드에는 안전 확인 기능이 자동으로 감지한 개인 정보 보호 또는 보안 문제가 표시됩니다.</translation>
-<translation id="1840320537320704887">새 탭 페이지 환경설정이 삭제되었습니다.</translation>
 <translation id="1845230888742614096">그룹 유지</translation>
 <translation id="1853558655412913122">이제 '설정'으로 이동한 다음 '주소 표시줄'에서 주소 표시줄의 위치를 변경할 수 있습니다.</translation>
 <translation id="1853692000353488670">새 시크릿 탭</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{사이트 1개(동기화된 기기에는 그 이상)}other{사이트 #개(동기화된 기기에는 그 이상)}}</translation>
+<translation id="286473047976978798">모양 환경설정을 적용하시겠습니까?</translation>
 <translation id="2865392654629180917">무엇이든 물어보고 AI 기반 대답을 받아 보세요.</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2876369937070532032">보안상의 위험이 있을 때 일부 방문 페이지의 URL을 Google로 전송합니다.</translation>
@@ -1120,7 +1121,6 @@
 
        이 기기의 기존 인터넷 사용 기록을 어떻게 처리할지 선택하세요.</translation>
 <translation id="4675298276894277358">이 사이트가 다시 표시되지 않습니다.</translation>
-<translation id="4676647168422678078">새 탭 페이지 환경설정을 적용하시겠습니까?</translation>
 <translation id="4682496302933121474">페이지를 번역하시겠습니까?</translation>
 <translation id="4682686630151240767">1. iPhone 설정을 엽니다.</translation>
 <translation id="4697240968720007067">탭 한 번으로 Google 최고의 앱 이용하기</translation>
@@ -1807,6 +1807,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6806550742467879742">페이지 도구</translation>
 <translation id="6807287147325542056">다른 앱의 비밀번호</translation>
 <translation id="681368974849482173">북마크가 생성되었습니다.</translation>
+<translation id="6815692190508268848">모양 환경설정이 적용되었습니다.</translation>
 <translation id="681631578600400068">운전면허증 저장</translation>
 <translation id="6825078212112407882">{count,plural, =1{북마크가 Google 계정({email})에 저장되었습니다.}other{북마크 {count}개가 Google 계정({email})에 저장되었습니다.}}</translation>
 <translation id="6826004672264649705">현재 이 제품을 추적 중입니다. 가격 변동 내역을 보려면 여세요.</translation>
@@ -2190,7 +2191,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8059312861912872211">{count,plural, =1{북마크 {count}개}other{북마크 {count}개}}</translation>
 <translation id="8059533439631660104">섹션을 접습니다.</translation>
 <translation id="8061584726507121204">방문 기록</translation>
-<translation id="8064946459644399612">새 탭 페이지 환경설정이 적용되었습니다.</translation>
 <translation id="8065136076319366194">저장은 권장되지 않음</translation>
 <translation id="8065556469005366939">탭을 공유하여 더 관련성 높은 대답을 받아 보세요</translation>
 <translation id="8069394452933076548">최근에 사용하지 않은 탭을 비활성 탭 섹션으로 이동할 시점을 선택합니다</translation>

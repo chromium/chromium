@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Pasmaak en beheer Google Chrome. Opdatering is beskikbaar.</translation>
 <translation id="1028061813283459617"><ph name="BEGIN_LINK" />Meld af by Chrome<ph name="END_LINK" /> om blaaierdata net van hierdie toestel af uit te vee terwyl jy dit in jou Google-rekening hou.</translation>
 <translation id="1028770388543831319">Kry Google se beste veiligheidkenmerke terwyl jy aan die beweeg is met die Chrome-app op jou foon</translation>
+<translation id="1036348656032585052">Skakel af</translation>
 <translation id="1042270987544905725">Klik om die Chrome-aanmeldingdialoog toe te maak</translation>
 <translation id="1051793555070215510">Voltooi hierdie 1-minuutopname om ons te help om Incognito te verbeter.</translation>
 <translation id="1055295352198814912">Wys Gemini in Chrome in Mac-kieslysbalk en skakel kortpadsleutel aan</translation>
@@ -246,6 +247,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
 <translation id="3292333338048274092">Jy sal dan Chrome moet herbegin.</translation>
+<translation id="3294686910656423119">Gebruikstatistieke en omvalverslae</translation>
 <translation id="3327226547491422998">Chrome kan jou later vra of jy gestoorde inligting wil gebruik om vorms vir jou te outovul</translation>
 <translation id="3352986031709923790">boonste regterhoek van soekgebied: regs <ph name="RIGHT" />%, bo <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome-helper</translation>
@@ -479,6 +481,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5824893331272123205">Kon nie hierdie paneel laai nie, probeer weer</translation>
 <translation id="5825922397106002626">Verwyder <ph name="EXTENSION_NAME" /> uit Chrome</translation>
 <translation id="5858486459377137936">Jy sal by die meeste werwe afgemeld word wanneer jy alle Chrome-vensters toemaak, behalwe jou Google-rekening as jy by Chrome aangemeld is. Om werwe toe te laat om jou te onthou, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Skakel aan</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome waarsku jou<ph name="END_LINK" /> oor onveilige werwe en aflaaie</translation>
 <translation id="5894164573378901688">Meld met ’n ander Google-rekening aan om Gemini in Chrome te gebruik</translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -519,6 +522,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6166185671393271715">Voer wagwoorde na Chrome in</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6177442314419606057">Soek in Chrome</translation>
 <translation id="6180522807229584611">Hierdie oortjie gebruik ekstra hulpbronne. Laat Chrome dit onaktief maak om jou werkverrigting te verbeter.</translation>
 <translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6192058120268468905">Jou rekening in Chrome</translation>

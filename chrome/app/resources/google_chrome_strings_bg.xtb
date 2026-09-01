@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Персонализиране и управление на Google Chrome. Налице е актуализация.</translation>
 <translation id="1028061813283459617">За да изтриете данните за сърфирането само от това устройство, но да ги запазите в профила си в Google, <ph name="BEGIN_LINK" />излезте от профила си в Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Възползвайте се от най-добрите функции на Google за безопасност, докато сте в движение, с приложението Chrome на телефона ви</translation>
+<translation id="1036348656032585052">Изключване</translation>
 <translation id="1042270987544905725">Кликнете, за да затворите диалоговия прозорец за вход в Chrome</translation>
 <translation id="1051793555070215510">Помогнете ни да подобрим режима „инкогнито“, като попълните тази едноминутна анкета.</translation>
 <translation id="1055295352198814912">Показване на Gemini в Chrome в лентата с менюта на Mac и включване на клавишната комбинация</translation>
@@ -244,6 +245,7 @@
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3286538390144397061">Рестартиране сега</translation>
 <translation id="3292333338048274092">След това ще трябва да рестартирате Chrome.</translation>
+<translation id="3294686910656423119">Статистически данни за употребата и сигнали за сривове</translation>
 <translation id="3327226547491422998">По-късно Chrome може да ви попита дали искате да използвате запазената информация, за да попълва автоматично формуляри вместо вас.</translation>
 <translation id="3352986031709923790">горен десен ъгъл на областта за търсене: <ph name="RIGHT" />% отдясно, <ph name="TOP" />% отгоре</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -473,6 +475,7 @@
 <translation id="5824893331272123205">Този панел не бе зареден. Опитайте отново</translation>
 <translation id="5825922397106002626">Премахване на <ph name="EXTENSION_NAME" /> от Chrome</translation>
 <translation id="5858486459377137936">Когато затворите всички прозорци на Chrome, ще излезете от профилите си в повечето сайтове с изключение на профила си в Google, ако сте влезли в профила си в Chrome. За да позволите на сайтовете да ви помнят, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Включване</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ви предупреждава<ph name="END_LINK" /> за опасни сайтове и изтегляния</translation>
 <translation id="5894164573378901688">За да използвате Gemini в Chrome, влезте с друг профил в Google</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -513,6 +516,7 @@
 <translation id="6166185671393271715">Импортиране на пароли в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
+<translation id="6177442314419606057">Търсене в Chrome</translation>
 <translation id="6180522807229584611">Този раздел използва допълнителни ресурси. За да подобрите ефективността, разрешете на Chrome да го деактивира.</translation>
 <translation id="6182736845697986886">Инсталирането не бе успешно поради вътрешна грешка в сървъра за актуализиране.</translation>
 <translation id="6192058120268468905">Профилът ви в Chrome</translation>

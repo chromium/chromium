@@ -5179,6 +5179,22 @@ URL ทางลัดต้องไม่ซ้ำกัน
 <translation id="4363057787588706121">อนุญาตให้รวมนโยบายรายการจากแหล่งที่มาหลายแห่ง</translation>
 <translation id="4363101430102811068">เปิดใช้นโยบายการตรวจหาการรั่วไหลของข้อมูลเข้าสู่ระบบที่ป้อน</translation>
 <translation id="436581050240847513">รายงานอินเทอร์เฟซเครือข่ายของอุปกรณ์</translation>
+<translation id="4366420138981318392">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" />
+
+สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
+
+ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
+
+มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">สคริปต์สำหรับผู้ปฏิบัติงาน (Web Worker, Service Worker ฯลฯ) จะใช้การตรวจสอบประเภท MIME แบบ Lax สคริปต์สำหรับผู้ปฏิบัติงานที่มีประเภท MIME เดิม เช่น <ph name="MIMETYPE_TEXT_ASCII" /> จะใช้งานได้</translation>
 <translation id="4370937370030117032">ไม่อนุญาตให้ส่งชื่อผู้ใช้และชื่อไฟล์ไปยังเครื่องพิมพ์ที่มาพร้อมระบบ</translation>
 <translation id="4372704773119750918">ไม่อนุญาตให้ผู้ใช้องค์กรเป็นส่วนหนึ่งของหลายโปรไฟล์ (หลักหรือรอง)</translation>
@@ -5932,6 +5948,22 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="4826977043372474305">ระบบจะจัดเก็บข้อมูลเข้าสู่ระบบ Wi-Fi ของคีออสก์ไว้ในระดับคีออสก์</translation>
 <translation id="4827727182370777723">การตั้งค่าเริ่มต้นของสิทธิ์สำหรับแบบอักษรในเครื่อง</translation>
 <translation id="482803100714220060">แสดง URL แบบเต็ม</translation>
+<translation id="4830717535196994979">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะถูกบล็อกไม่ให้ส่งคําขอ<ph name="LOCAL_NETWORK_ACCESS" />
+
+สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
+
+ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
+
+มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">ควบคุมว่าจะให้โปรแกรมอ่าน PDF ใน <ph name="PRODUCT_NAME" /> รองรับแบบฟอร์ม XFA ในเอกสาร PDF หรือไม่
 
 หากตั้งค่านโยบายนี้เป็น "จริง" ระบบจะเปิดใช้การรองรับแบบฟอร์ม XFA
@@ -9080,6 +9112,15 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
 <translation id="6757613329154374267">การสำรองและกู้คืนข้อมูลเปิดใช้อยู่</translation>
 <translation id="6758659208493449452">นโยบายนี้ควบคุมว่าผู้ใช้ที่ลงทะเบียนในโปรแกรมการปกป้องขั้นสูงจะได้รับการปกป้องเพิ่มเติมหรือไม่ บางฟีเจอร์เหล่านี้อาจมีการแชร์ข้อมูลกับ Google (เช่น ผู้ใช้การปกป้องขั้นสูงจะส่งไฟล์ที่ดาวน์โหลดไปให้ Google สแกนหามัลแวร์ได้) หากตั้งค่าเป็น "จริง" หรือไม่ได้ตั้งค่า ผู้ใช้ที่ลงทะเบียนจะได้รับการปกป้องเพิ่มเติม หากตั้งค่าเป็น "เท็จ" ผู้ใช้การปกป้องขั้นสูงจะได้รับเฉพาะฟีเจอร์มาตรฐานสำหรับผู้ใช้ทั่วไป</translation>
 <translation id="6763023079133439068">อนุญาตใบรับรองที่ไม่มีส่วนขยาย subjectAlternativeName เมื่อออกโดย Trust Anchor ในพื้นที่</translation>
+<translation id="6765476642902721793">เมื่อตั้งค่านโยบายนี้เป็น "เปิดใช้" คำขอ <ph name="LOCAL_NETWORK_ACCESS" /> จะแสดงคำเตือนใน <ph name="CHROME_DEVTOOLS_NAME" /> เท่านั้นเนื่องจากการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" /> ล้มเหลว
+
+เมื่อตั้งค่านโยบายนี้เป็น "ปิดใช้" หรือไม่ได้ตั้งค่า คำขอ <ph name="LOCAL_NETWORK_ACCESS" /> จะใช้การจัดการเริ่มต้นสำหรับคำขอเหล่านี้
+
+ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
+
+นโยบายระดับองค์กรนี้เป็นนโยบายชั่วคราวและจะถูกนำออกหลังจาก M163
+
+ในระยะยาว คุณสามารถใช้นโยบาย <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> เพื่อสร้างรายการที่อนุญาตสำหรับรูปแบบ URL ที่ควรได้รับสิทธิ์ <ph name="LOCAL_NETWORK_ACCESS" /> โดยอัตโนมัติ</translation>
 <translation id="6766216162565713893">อนุญาตให้เว็บไซต์ขอสิทธิ์เข้าถึงอุปกรณ์บลูทูธที่อยู่ใกล้เคียงจากผู้ใช้</translation>
 <translation id="6770454900105963262">รายงานข้อมูลเกี่ยวกับเซสชันคีออสก์ที่ใช้งาน</translation>
 <translation id="6770703270685871935">การล้างข้อมูลในเครื่องโดยอัตโนมัติ</translation>

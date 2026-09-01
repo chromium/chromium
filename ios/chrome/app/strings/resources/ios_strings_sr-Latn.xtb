@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="164673457281113247">{count,plural, =1{Obeleživač je sačuvan}one{Obeleživači su sačuvani}few{Obeleživači su sačuvani}other{Obeleživači su sačuvani}}</translation>
+<translation id="1650979352027263879">Uklonjena su podešavanja izgleda</translation>
 <translation id="1651260071709244114">Apps (Aplikacije)</translation>
 <translation id="1652051421944182562">Uključi obaveštenja Provere bezbednosti…</translation>
 <translation id="1652333207707886577">Prilagodite meni</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Obeleživač je sačuvan na Google nalogu, {email}}one{Obeleživači su sačuvani na Google nalogu, {email}}few{Obeleživači su sačuvani na Google nalogu, {email}}other{Obeleživači su sačuvani na Google nalogu, {email}}}</translation>
 <translation id="1838089197478136166">Želite da otvorite u Novčaniku?</translation>
 <translation id="183878838231635348">Ova kartica prikazuje sve probleme u vezi sa privatnošću ili bezbednošću koje Provera bezbednosti automatski otkrije.</translation>
-<translation id="1840320537320704887">Uklonjena su podešavanja stranice nove kartice</translation>
 <translation id="1845230888742614096">Zadrži grupu</translation>
 <translation id="1853558655412913122">Sada možete da promenite položaj trake za adresu u odeljku Podešavanja, pa Traka za adresu</translation>
 <translation id="1853692000353488670">Nova kartica bez arhiviranja</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">Radi zaštite privatnosti Chrome neće automatski unositi vašu lozinku u ovo polje.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sajt (više na sinhronizovanim uređajima)}one{# sajt (više na sinhronizovanim uređajima)}few{# sajta (više na sinhronizovanim uređajima)}other{# sajtova (više na sinhronizovanim uređajima)}}</translation>
+<translation id="286473047976978798">Želite da primenite podešavanja izgleda?</translation>
 <translation id="2865392654629180917">Upitajte bilo šta i dobijajte odgovore koje omogućava veštačka inteligencija</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2876369937070532032">Šalje URL-ove nekih stranica koje posećujete Google-u kada je bezbednost ugrožena</translation>
@@ -1120,7 +1121,6 @@
 
        Odaberite šta želite da uradite sa postojećim podacima pregledanja na ovom uređaju.</translation>
 <translation id="4675298276894277358">Ovaj sajt se više neće prikazivati</translation>
-<translation id="4676647168422678078">Želite da primenite podešavanja stranice nove kartice?</translation>
 <translation id="4682496302933121474">Želite da prevedete stranicu?</translation>
 <translation id="4682686630151240767">1. Otvorite podešavanja iPhone-a</translation>
 <translation id="4697240968720007067">Preuzmite najbolje Google aplikacije jednim dodirom</translation>
@@ -1807,6 +1807,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6806550742467879742">Alatke za stranice</translation>
 <translation id="6807287147325542056">Lozinke u drugim aplikacijama</translation>
 <translation id="681368974849482173">Stavka je napravljena</translation>
+<translation id="6815692190508268848">Primenjena su podešavanja izgleda</translation>
 <translation id="681631578600400068">Sačuvajte vozačku dozvolu</translation>
 <translation id="6825078212112407882">{count,plural, =1{Obeleživač je sačuvan na Google nalogu, {email}}one{{count} obeleživač je sačuvan na Google nalogu, {email}}few{{count} obeleživača su sačuvana na Google nalogu, {email}}other{{count} obeleživača je sačuvano na Google nalogu, {email}}}</translation>
 <translation id="6826004672264649705">Trenutno pratite ovaj proizvod. Otvorite da biste videli istoriju cena</translation>
@@ -2190,7 +2191,6 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="8059312861912872211">{count,plural, =1{{count} obeleživač}one{{count} obeleživač}few{{count} obeleživača}other{{count} obeleživača}}</translation>
 <translation id="8059533439631660104">Skuplja odeljak.</translation>
 <translation id="8061584726507121204">Istorija</translation>
-<translation id="8064946459644399612">Primenjena su podešavanja stranice nove kartice</translation>
 <translation id="8065136076319366194">Čuvanje se ne preporučuje</translation>
 <translation id="8065556469005366939">Delite kartice da biste dobijali relevantnije odgovore</translation>
 <translation id="8069394452933076548">Odaberite kada se kartice koje nisu skoro korišćene premeštaju u odeljak sa neaktivnim karticama.</translation>

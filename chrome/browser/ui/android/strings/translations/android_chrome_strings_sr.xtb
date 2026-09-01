@@ -561,6 +561,7 @@
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3236059992281584593">Још 1 мин</translation>
 <translation id="3237087289225714896">Стандардно предучитавање:</translation>
+<translation id="3243650379537999343">Цртај</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3250563604907490871">Описи слика ће се наставити када се повежете на WiFi</translation>
@@ -963,7 +964,6 @@ Google налог можда има друге облике историје п�
 <translation id="480990236307250886">Отвори почетну страницу</translation>
 <translation id="4816492930507672669">Уклопи у страницу</translation>
 <translation id="4822710610088666676">Група картица <ph name="TAB_GROUP_TITLE" /> је затворена и сачувана</translation>
-<translation id="4834250788637067901">Начини плаћања, понуде и адресе који користе Google Pay</translation>
 <translation id="4835385943915508971">Chrome нема приступ захтеваном ресурсу.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Вратите групу картица са <ph name="TAB_COUNT_ONE" /> картицом, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}one{Вратите групу картица са <ph name="TAB_COUNT_MANY" /> картицом, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}few{Вратите групу картица са <ph name="TAB_COUNT_MANY" /> картице, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}other{Вратите групу картица са <ph name="TAB_COUNT_MANY" /> картица, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}}</translation>
 <translation id="4849731766219625109">Користите налог <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

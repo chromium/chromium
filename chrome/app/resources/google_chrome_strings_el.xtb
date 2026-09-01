@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Προσαρμόστε και ελέγξτε το Google Chrome. Υπάρχει διαθέσιμη ενημέρωση.</translation>
 <translation id="1028061813283459617">Για να διαγράψετε τα δεδομένα περιήγησης μόνο από αυτή τη συσκευή και να τα διατηρήσετε στον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Αποκτήστε τις καλύτερες λειτουργίες ασφάλειας της Google εν κινήσει, με την εφαρμογή Chrome στο τηλέφωνό σας</translation>
+<translation id="1036348656032585052">Απενεργοποίηση</translation>
 <translation id="1042270987544905725">Κάντε κλικ για να κλείσετε το παράθυρο διαλόγου σύνδεσης του Chrome</translation>
 <translation id="1051793555070215510">Βοηθήστε μας να βελτιώσουμε την ανώνυμη περιήγηση, συμμετέχοντας σε αυτή την έρευνα διάρκειας 1 λεπτού.</translation>
 <translation id="1055295352198814912">Εμφάνιση του Gemini στο Chrome στη γραμμή μενού του Mac και ενεργοποίηση συντόμευσης πληκτρολογίου</translation>
@@ -244,6 +245,7 @@
 <translation id="3282568296779691940">Σύνδεση στο Chrome</translation>
 <translation id="3286538390144397061">Άμεση επανεκκίνηση</translation>
 <translation id="3292333338048274092">Στη συνέχεια, θα πρέπει να επανεκκινήσετε το Chrome.</translation>
+<translation id="3294686910656423119">Στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων</translation>
 <translation id="3327226547491422998">Αργότερα, το Chrome μπορεί να σας ρωτήσει αν θέλετε να χρησιμοποιήσετε τα αποθηκευμένα στοιχεία για την αυτόματη συμπλήρωση φορμών για εσάς</translation>
 <translation id="3352986031709923790">επάνω δεξιά γωνία της περιοχής αναζήτησης: δεξιά <ph name="RIGHT" />%, επάνω <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -475,6 +477,7 @@
 <translation id="5824893331272123205">Δεν ήταν δυνατή η φόρτωση αυτού του πλαισίου. Δοκιμάστε ξανά.</translation>
 <translation id="5825922397106002626">Κατάργηση της επέκτασης <ph name="EXTENSION_NAME" /> από το Chrome</translation>
 <translation id="5858486459377137936">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους όταν κλείσετε όλα τα παράθυρα του Chrome, εκτός από τον Λογαριασμό σας Google εάν είστε συνδεδεμένοι στο Chrome. Για να επιτρέψετε στους ιστοτόπους να απομνημονεύουν τα στοιχεία σας, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Το Chrome σας προειδοποιεί<ph name="END_LINK" /> σχετικά με μη ασφαλείς ιστοτόπους και λήψεις</translation>
 <translation id="5894164573378901688">Για να χρησιμοποιήσετε το Gemini στο Chrome, συνδεθείτε με διαφορετικό Λογαριασμό Google</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
@@ -515,6 +518,7 @@
 <translation id="6166185671393271715">Εισαγωγή κωδικών πρόσβασης στο Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Αναζήτηση στο Chrome</translation>
 <translation id="6180522807229584611">Αυτή η καρτέλα χρησιμοποιεί επιπλέον πόρους. Για να βελτιώσετε την απόδοση, επιτρέψτε στο Chrome να την απενεργοποιήσει.</translation>
 <translation id="6182736845697986886">Η εγκατάσταση απέτυχε λόγω εσωτερικού σφάλματος στον διακομιστή ενημέρωσης.</translation>
 <translation id="6192058120268468905">Ο λογαριασμός σας στο Chrome</translation>

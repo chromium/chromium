@@ -634,6 +634,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="77283119132245232">Oferece serviços de rastreio do sistema para o <ph name="BROWSER_NAME" />. Se este serviço estiver desativado, os rastreios de desempenho criados pelo navegador não incluem eventos ao nível do sistema, como eventos de mudança de contexto e de thread pronta.</translation>
 <translation id="7745317241717453663">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>
+<translation id="7747820849741499258">Pesquisar no Chromium</translation>
 <translation id="7750130090210923118">Repor Chromium predefinido</translation>
 <translation id="7752521946322750699">Para proteger o seu trabalho no Chromium, a sua organização vai poder ver ou gerir determinadas informações quando tiver sessão iniciada no Chromium.</translation>
 <translation id="7781047659465034537">Defina o Chromium como navegador predefinido e afixe-o à barra de tarefas</translation>

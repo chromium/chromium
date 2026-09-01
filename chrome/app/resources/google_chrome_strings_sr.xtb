@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Прилагодите и контролишите Google Chrome. Доступно је ажурирање.</translation>
 <translation id="1028061813283459617">Да бисте избрисали податке прегледања само са овог уређаја, али не и са Google налога, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Користите најбоље Google безбедносне функције у покрету уз Chrome апликацију на телефону</translation>
+<translation id="1036348656032585052">Искључи</translation>
 <translation id="1042270987544905725">Кликните да бисте затворили дијалог за пријављивање у Chrome</translation>
 <translation id="1051793555070215510">Помозите нам да побољшамо режим без архивирања тако што ћете попунити ову једноминутну анкету.</translation>
 <translation id="1055295352198814912">Прикажи Gemini у Chrome-у на траци менија Mac-а и укључи тастерску пречицу</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
 <translation id="3292333338048274092">Затим треба да рестартујете Chrome.</translation>
+<translation id="3294686910656423119">Статистика коришћења и извештаји о отказивању</translation>
 <translation id="3327226547491422998">Chrome може касније да вас пита да ли желите да користите сачуване информације за аутоматско попуњавање образаца</translation>
 <translation id="3352986031709923790">горњи десни угао области претраге: удесно <ph name="RIGHT" />%, нагоре <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome помоћник</translation>
@@ -479,6 +481,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="5824893331272123205">Учитавање овог окна није успело. Пробајте поново</translation>
 <translation id="5825922397106002626">Уклони додатак <ph name="EXTENSION_NAME" /> из Chrome-а</translation>
 <translation id="5858486459377137936">Бићете одјављени са већине сајтова када затворите све Chrome прозоре, осим са Google налога ако сте пријављени у Chrome. Да бисте дозволили сајтовима да вас памте, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Укључи</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome вас упозорава<ph name="END_LINK" /> на небезбедне сајтове и преузимања</translation>
 <translation id="5894164573378901688">Да бисте користили Gemini у Chrome-у, пријавите се помоћу другог Google налога</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -519,6 +522,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6166185671393271715">Увезите лозинке у Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
+<translation id="6177442314419606057">Претражите у Chrome-у</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>

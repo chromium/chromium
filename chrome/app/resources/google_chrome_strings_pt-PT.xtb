@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Personalize e controle o Google Chrome. Está disponível uma atualização.</translation>
 <translation id="1028061813283459617">Para eliminar os dados de navegação apenas deste dispositivo e mantê-los na sua Conta Google, <ph name="BEGIN_LINK" />termine sessão no Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Obtenha as melhores funcionalidades de segurança da Google em qualquer lugar com a app Chrome no telemóvel</translation>
+<translation id="1036348656032585052">Desativar</translation>
 <translation id="1042270987544905725">Clicar para fechar a caixa de diálogo de início de sessão do Chrome</translation>
 <translation id="1051793555070215510">Responda a este inquérito de 1 minuto e ajude-nos a melhorar a Navegação anónima.</translation>
 <translation id="1055295352198814912">Mostrar o Gemini no Chrome na barra de menu do Mac e ativar o atalho de teclado</translation>
@@ -242,6 +243,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3292333338048274092">Em seguida, tem de reiniciar o Chrome.</translation>
+<translation id="3294686910656423119">Estatísticas de utilização e relatórios de falhas</translation>
 <translation id="3327226547491422998">Mais tarde, o Chrome pode perguntar-lhe se quer usar as informações guardadas para preencher automaticamente formulários</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
@@ -471,6 +473,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5824893331272123205">Não foi possível carregar este painel. Tente novamente</translation>
 <translation id="5825922397106002626">Remover <ph name="EXTENSION_NAME" /> do Chrome</translation>
 <translation id="5858486459377137936">A sua sessão é terminada na maioria dos sites quando fecha todas as janelas do Chrome, exceto na sua Conta Google se tiver sessão iniciada no Chrome. Para permitir que os sites se lembrem de si, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Ativar</translation>
 <translation id="586971344380992563">O <ph name="BEGIN_LINK" />Chrome avisa<ph name="END_LINK" /> sobre transferências e sites inseguros</translation>
 <translation id="5894164573378901688">Para usar o Gemini no Chrome, inicie sessão com uma Conta Google diferente</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -511,6 +514,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6166185671393271715">Importar palavras-passe para o Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6180522807229584611">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chrome o torne inativo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6192058120268468905">A sua conta no Chrome</translation>

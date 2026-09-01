@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Du er ved at slette {password_count} adgangskoder og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="1076421457278169141">Koden er scannet</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
+<translation id="1081948304372277788">Deaktiver Level Up</translation>
 <translation id="1082554859195167538">Produktanmeldelser til dig</translation>
 <translation id="1084365883616172403">Opslag delt på Facebook.</translation>
 <translation id="108485301461714610">AI-tilstand i Google Søgning og tilknyttede apps</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="164673457281113247">{count,plural, =1{Bogmærket er gemt}one{Bogmærket er gemt}other{Bogmærkerne er gemt}}</translation>
+<translation id="1650979352027263879">Dine præferencer for udseende er fjernet</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">Aktivér notifikationer om Sikkerhedstjek…</translation>
 <translation id="1652333207707886577">Tilpas din menu</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{Bogmærket er gemt på din Google-konto, {email}}other{Bogmærkerne er gemt på din Google-konto, {email}}}</translation>
 <translation id="1838089197478136166">Vil du åbne i Wallet?</translation>
 <translation id="183878838231635348">Dette kort viser eventuelle privatlivs- eller sikkerhedsproblemer, som Sikkerhedstjek automatisk registrerer for dig.</translation>
-<translation id="1840320537320704887">Dine præferencer for siden Ny fane er fjernet</translation>
 <translation id="1845230888742614096">Behold gruppen</translation>
 <translation id="1853558655412913122">Du kan nu ændre placeringen af adresselinjen ved at gå til "Indstillinger" og derefter "Adresselinje"</translation>
 <translation id="1853692000353488670">Ny inkognitofane</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke din adgangskode i dette felt.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 website (flere på synkroniserede enheder)}one{# website (flere på synkroniserede enheder)}other{# websites (flere på synkroniserede enheder)}}</translation>
+<translation id="286473047976978798">Vil du anvende dine præferencer for udseende?</translation>
 <translation id="2865392654629180917">Spørg om hvad som helst, og få AI-baserede svar</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">Sender webadresser på nogle sider, som du besøger, til Google, når din sikkerhed er truet</translation>
@@ -1119,7 +1121,6 @@
 
        Vælg, hvad der skal ske med de eksisterende browserdata på denne enhed.</translation>
 <translation id="4675298276894277358">Dette website vises ikke igen</translation>
-<translation id="4676647168422678078">Vil du anvende dine præferencer for siden Ny fane?</translation>
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="4682686630151240767">1. Åbn iPhone-indstillingerne</translation>
 <translation id="4697240968720007067">Få Googles bedste apps med ét tryk</translation>
@@ -1806,6 +1807,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6806550742467879742">Sideværktøjer</translation>
 <translation id="6807287147325542056">Adgangskoder i andre apps</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
+<translation id="6815692190508268848">Dine præferencer for udseende er anvendt</translation>
 <translation id="681631578600400068">Gem kørekort</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
 <translation id="6826004672264649705">Der holdes øje med dette produkt. Åbn for at se prishistorikken</translation>
@@ -2189,7 +2191,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8059312861912872211">{count,plural, =1{{count} bogmærke}one{{count} bookmarks}other{{count} bogmærker}}</translation>
 <translation id="8059533439631660104">Skjuler sektionen.</translation>
 <translation id="8061584726507121204">Historik</translation>
-<translation id="8064946459644399612">Dine præferencer for siden Ny fane er anvendt</translation>
 <translation id="8065136076319366194">Lagring anbefales ikke</translation>
 <translation id="8065556469005366939">Få mere relevante svar ved at dele dine faner</translation>
 <translation id="8069394452933076548">Vælg, hvornår faner, der ikke er blevet brugt for nylig, skal flyttes til sektionen for inaktive faner.</translation>

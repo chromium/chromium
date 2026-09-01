@@ -688,7 +688,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1539248305642687917">Não permitir que os sites substituam a entrada do teclado</translation>
 <translation id="1539727654733007771">Nenhuma rede móvel configurada. Baixe um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Serviço de app ChromeOS</translation>
-<translation id="1540543470504988112">Gerenciar certificados importados do MacOS</translation>
 <translation id="1541346352678737112">Nenhuma rede encontrada</translation>
 <translation id="154198613844929213">{0,plural, =0{Excluindo agora.}=1{Excluindo em 1 segundo}one{Excluindo em # segundo}other{Excluindo em # segundos}}</translation>
 <translation id="1542137295869176367">Não foi possível atualizar os dados de login</translation>
@@ -1341,7 +1340,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="2026367923222947564">Página inteira</translation>
 <translation id="2026377162111110983">Voz da área</translation>
 <translation id="2028449514182362831">Recursos que precisam de sensores de movimento não funcionarão</translation>
-<translation id="2028479214883337535">Importado do MacOS</translation>
 <translation id="202918510990975568">Insira sua senha para configurar a segurança e o login</translation>
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2030803782168502207">Remover assinatura do dispositivo</translation>
@@ -2463,6 +2461,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2887344147309501015">Converse com o Gemini no Chrome para receber respostas, ideias principais e muito mais enquanto navega</translation>
 <translation id="2889043468805635730">Nenhum problema encontrado</translation>
 <translation id="2889064240420137087">Abrir link com...</translation>
+<translation id="2889937141553641427">{0,plural, =1{Modo Isolado}one{# janela aberta no Modo Isolado}other{# janelas abertas no Modo Isolado}}</translation>
 <translation id="2891464434568738544">Nenhum site disponível no momento. Acesse um site para adicionar a esta lista.</translation>
 <translation id="2891922230654533301">Usar o dispositivo para fazer login em <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador padrão</translation>
@@ -2930,6 +2929,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="324205398936770726">Seu avatar</translation>
 <translation id="3243017971870859287">Ler números de série do componente e do dispositivo ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelamento de ruído</translation>
+<translation id="3243680258677029936">{0,plural, =1{Isolada}one{Isolada (#)}other{Isoladas (#)}}</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Continuar com o som desativado</translation>
 <translation id="3247649647204519958">Aqui, é possível consultar e gerenciar as permissões de extensão para o site em que você está</translation>
@@ -5254,7 +5254,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5017250179386090956">Baixando os arquivos de anotações do nó principal</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir o site da extensão</translation>
-<translation id="5019487038187875030">Ver certificados importados do MacOS</translation>
 <translation id="5020008942039547742">Escolher outra janela</translation>
 <translation id="5020146655450187658">Você está off-line. Verifique sua conexão de internet para gerenciar os sites em que o Gemini pode fazer login por você.</translation>
 <translation id="5020651427400641814">Ativar registros de fala</translation>
@@ -8357,7 +8356,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7460045493116006516">Tema instalado atualmente</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="7462644385455960321">Saia da tela cheia para mostrar as guias na horizontal</translation>
-<translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Sua organização gerencia como os dados coletados por esses recursos podem ser usados.</translation>
 <translation id="7464645554245611385">Última atualização desta guia</translation>
 <translation id="7465777686629334728">Remover ambiente de desenvolvimento gerenciado (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8587,6 +8585,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7651754152638505879">Tarefa pausada</translation>
 <translation id="7651784568388208829">Continuação da tarefa no recurso Seu smartphone</translation>
 <translation id="7652954539215530680">Criar um PIN</translation>
+<translation id="7653354650639364202">{0,plural, =1{Fechar janela isolada}one{Fechar isolada (# janela)}other{Fechar isoladas (# janelas)}}</translation>
 <translation id="7654941827281939388">Esta conta já está sendo utilizada neste computador.</translation>
 <translation id="7655411746932645568">Os sites podem pedir para se conectar a portas seriais</translation>
 <translation id="7657090467145778067">Pequena economia</translation>
@@ -9194,6 +9193,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8106114112474206597">Use a tecla “i” para pressionar um botão do mouse</translation>
 <translation id="810728361871746125">Resolução da tela</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> participantes</translation>
+<translation id="8108853197309181986">Você está em uma janela isolada</translation>
 <translation id="8109109153262930486">Avatar padrão</translation>
 <translation id="8109991406044913868">Tema criado por IA</translation>
 <translation id="8110393529211831722">A assinatura é instalada apenas neste dispositivo e não é sincronizada com outros dispositivos conectados à sua conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -9599,6 +9599,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8428634594422941299">Entendi</translation>
 <translation id="84297032718407999">Você será desconectado em <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Mais opções de <ph name="EXTENSION_NAME" /></translation>
+<translation id="8430438016498244645">Sessão isolada</translation>
 <translation id="8431977087510901105">As configurações do cursor foram redefinidas</translation>
 <translation id="8434109185104929038">Cantinho de leitura</translation>
 <translation id="8434837876193928924">Detalhes do grupo de guias</translation>

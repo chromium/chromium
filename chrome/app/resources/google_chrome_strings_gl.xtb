@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Personalizar e controlar Google Chrome. Hai unha actualización dispoñible.</translation>
 <translation id="1028061813283459617">Para eliminar os datos de navegación só deste dispositivo, pero non da túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Goza das mellores funcións de seguranza de Google esteas onde esteas coa aplicación de Chrome no teu teléfono</translation>
+<translation id="1036348656032585052">Desactivar</translation>
 <translation id="1042270987544905725">Fai clic para pechar o cadro de diálogo de inicio de sesión de Chrome</translation>
 <translation id="1051793555070215510">Dedica un minutiño a cubrir esta enquisa para axudarnos a mellorar o modo de incógnito.</translation>
 <translation id="1055295352198814912">Mostrar Gemini en Chrome na barra de menú de Mac e activar o atallo de teclado</translation>
@@ -246,6 +247,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3292333338048274092">Terás que reiniciar Chrome.</translation>
+<translation id="3294686910656423119">Estatísticas de uso e informes de fallos</translation>
 <translation id="3327226547491422998">Máis adiante Chrome pode preguntarche se queres usar a información gardada para autocompletar formularios por ti</translation>
 <translation id="3352986031709923790">esquina superior dereita da área de busca: <ph name="RIGHT" /> % á dereita, <ph name="TOP" /> % arriba</translation>
 <translation id="3360895254066713204">Axudante de Chrome</translation>
@@ -479,6 +481,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5824893331272123205">Non se puido cargar este panel; téntao de novo</translation>
 <translation id="5825922397106002626">Eliminar <ph name="EXTENSION_NAME" /> de Chrome</translation>
 <translation id="5858486459377137936">Pecharase a túa sesión na maioría dos sitios cando peches todas as ventás de Chrome, excepto a túa Conta de Google se tes a sesión iniciada en Chrome. Permitir que os sitios te lembren, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Activar</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome avísate<ph name="END_LINK" /> sobre descargas e sitios pouco seguros</translation>
 <translation id="5894164573378901688">Para usar Gemini en Chrome, inicia sesión cunha Conta de Google distinta</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -519,6 +522,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6166185671393271715">Importar contrasinais en Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
+<translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6180522807229584611">Esta pestana está usando recursos adicionais. Para mellorar o rendemento, permite que Chrome a desactive.</translation>
 <translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
 <translation id="6192058120268468905">A túa conta en Chrome</translation>

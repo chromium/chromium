@@ -561,6 +561,7 @@
 <translation id="3232754137068452469">ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="3236059992281584593">1 ನಿಮಿಷ ಉಳಿದಿದೆ</translation>
 <translation id="3237087289225714896">ಪ್ರಮಾಣಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ:</translation>
+<translation id="3243650379537999343">ಚಿತ್ರ ಬಿಡಿಸಿ</translation>
 <translation id="3244271242291266297">ಮಿಮೀ</translation>
 <translation id="3245429137663807393">ನೀವು Chrome ಬಳಕೆಯ ವರದಿಗಳನ್ನು ಸಹ ಹಂಚಿಕೊಂಡರೆ, ಆ ವರದಿಗಳು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತವೆ</translation>
 <translation id="3250563604907490871">ನೀವು ವೈಫೈಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ ಚಿತ್ರ ವಿವರಣೆಗಳು ಪುನರಾರಂಭಗೊಳ್ಳುತ್ತವೆ</translation>
@@ -962,7 +963,6 @@
 <translation id="480990236307250886">ಹೋಮ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4816492930507672669">ಪುಟಕ್ಕೆ ಹೊಂದಿಸು</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಮತ್ತು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="4834250788637067901">Google Pay ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಪಾವತಿ ವಿಧಾನಗಳು, ಆಫರ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳು</translation>
 <translation id="4835385943915508971">ವಿನಂತಿಸಿದ ಸಂಪನ್ಮೂಲದಲ್ಲಿ Chrome ಪ್ರವೇಶವನ್ನು ಹೊಂದಿಲ್ಲ.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}one{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}other{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}}</translation>
 <translation id="4849731766219625109">ನಿಮ್ಮ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>

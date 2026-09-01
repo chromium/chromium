@@ -8,6 +8,7 @@
 <translation id="102763973188675173">ປັບແຕ່ງ ແລະ ຄວບຄຸມ Google Chrome. ມີການອັບເດດແລ້ວ.</translation>
 <translation id="1028061813283459617">ເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບໃນອຸປະກອນນີ້ເທົ່ານັ້ນ, ແຕ່ຍັງຮັກສາຂໍ້ມູນດັ່ງກ່າວໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">ໃຊ້ຄຸນສົມບັດຄວາມປອດໄພທີ່ດີທີ່ສຸດຂອງ Google ໄດ້ທຸກບ່ອນທຸກເວລາດ້ວຍແອັບ Chrome ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
+<translation id="1036348656032585052">ປິດ</translation>
 <translation id="1042270987544905725">ຄລິກເພື່ອປິດກ່ອງໂຕ້ຕອບການເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1051793555070215510">ຊ່ວຍພວກເຮົາປັບປຸງໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໂດຍເຮັດແບບສຳຫຼວດ 1 ນາທີນີ້.</translation>
 <translation id="1055295352198814912">ສະແດງ Gemini ໃນ Chrome ໃນແຖບເມນູຂອງ Mac ແລະ ເປີດຄີລັດ</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome</translation>
 <translation id="3286538390144397061">ປິດເປີດໃໝ່ດຽວນີ້</translation>
 <translation id="3292333338048274092">ຈາກນັ້ນທ່ານຈະຕ້ອງຣີສະຕາດ Chrome.</translation>
+<translation id="3294686910656423119">ສະຖິຕິການນຳໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງ</translation>
 <translation id="3327226547491422998">ຕໍ່ມາ, Chrome ຈະສາມາດຖາມວ່າທ່ານຕ້ອງການໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໄວ້ເພື່ອຕື່ມແບບຟອມໃຫ້ທ່ານຫຼືບໍ່</translation>
 <translation id="3352986031709923790">ມຸມຂວາເທິງຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ເທິງ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">ຕົວຊ່ວຍ Chrome</translation>
@@ -479,6 +481,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5824893331272123205">ບໍ່ສາມາດໂຫຼດແຜງນີ້ໄດ້, ກະລຸນາລອງໃໝ່</translation>
 <translation id="5825922397106002626">ລຶບ <ph name="EXTENSION_NAME" /> ອອກຈາກ Chrome</translation>
 <translation id="5858486459377137936">ທ່ານຈະອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່ເມື່ອທ່ານປິດໜ້າຈໍ Chrome ທັງໝົດຍົກເວັ້ນບັນຊີ Google ຂອງທ່ານຫາກທ່ານເຂົ້າສູ່ລະບົບ Chrome. ເພື່ອໃຫ້ເວັບໄຊຈື່ທ່ານໄດ້, ກະລຸນາ <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">ເປີດ</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ຈະເຕືອນທ່ານ<ph name="END_LINK" /> ກ່ຽວກັບເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ບໍ່ປອດໄພ</translation>
 <translation id="5894164573378901688">ເພື່ອໃຊ້ Gemini ໃນ Chrome, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ອື່ນ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -519,6 +522,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6166185671393271715">ນໍາເຂົ້າລະຫັດຜ່ານຫາ Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">ຊອກຫາໃນ Chrome</translation>
 <translation id="6180522807229584611">ແຖບນີ້ກຳລັງໃຊ້ຊັບພະຍາກອນເພີ່ມເຕີມ. ເພື່ອປັບປຸງປະສິດທິພາບຂອງທ່ານ, ໃຫ້ Chrome ຊ່ວຍເຮັດໃຫ້ມັນບໍ່ເຮັດວຽກ.</translation>
 <translation id="6182736845697986886">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດເກີດຂໍ້ຜິດພາດພາຍໃນ.</translation>
 <translation id="6192058120268468905">ບັນຊີຂອງທ່ານໃນ Chrome</translation>
@@ -797,6 +801,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8747073452963259673">ມຸມຊ້າຍລຸ່ມຂອງພື້ນທີ່ຊອກຫາ: ຊ້າຍ <ph name="LEFT" />%, ລຸ່ມ <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome ຈະເພີ່ມໜ່ວຍຄວາມຈຳຈາກແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້. ເຊິ່ງນີ້ເຮັດໃຫ້ແຖບທີ່ນຳໃຊ້ຢູ່ ແລະ ແອັບອື່ນໆມີຊັບພະຍາກອນສຳລັບຄອມພິວເຕີເພີ່ມຂຶ້ນ ແລະ ຊ່ວຍໃຫ້ Chrome ເຮັດວຽກໄດ້ໄວ. ແຖບທີ່ບໍ່ມີການນຳໃຊ້ຂອງທ່ານຈະກັບມາເຮັດວຽກໂດຍອັດຕະໂນມັດອີກຄັ້ງເມື່ອທ່ານກັບຄືນໄປຫາແຖບເຫຼົ່ານັ້ນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວປະຢັດໜ່ວຍຄວາມຈຳ<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">ເມື່ອທ່ານພິມໃນແຖບທີ່ຢູ່ ຫຼື ກ່ອງຊອກຫາ, Chrome ຈະສົ່ງສິ່ງທີ່ທ່ານພິມໄປຫາໂປຣແກຣມຊອກຫາຄ່າເລີ່ມຕົ້ນຂອງທ່ານເພື່ອຮັບການແນະນຳທີ່ດີຍິ່ງຂຶ້ນ. ສິ່ງນີ້ຖືກປິດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
+<translation id="8771516687880083607">ເລືອກສິ່ງທີ່ຈະແບ່ງປັນກັບ Chrome</translation>
 <translation id="8781673607513845160">ເພື່ອໃຊ້ກ້ອງຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຜູ້ເບິ່ງແຍງລະບົບເຄືອຂ່າຍຂອງທ່ານໃຊ້ນະໂຍບາຍລະດັບກຸ່ມເຊິ່ງປ້ອງກັນການຕິດຕັ້ງ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">&amp;ປັບແຕ່ງ Chrome ຂອງທ່ານ</translation>

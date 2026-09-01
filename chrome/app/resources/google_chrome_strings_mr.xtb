@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome कस्टमाइझ करा आणि नियंत्रित करा. अपडेट उपलब्ध आहे.</translation>
 <translation id="1028061813283459617">तुमच्या Google खाते मध्ये ब्राउझिंग डेटा राखून ठेवून, तो फक्त या डिव्हाइसवरून हटवण्यासाठी, <ph name="BEGIN_LINK" />Chrome मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="1028770388543831319">तुमच्या फोनवरील Chrome अ‍ॅपसह, फिरतीवर असताना Google ची सर्वोत्तम सुरक्षितता वैशिष्ट्ये मिळवा</translation>
+<translation id="1036348656032585052">बंद करा</translation>
 <translation id="1042270987544905725">Chrome साइन-इन डायलॉग बंद करण्यासाठी क्लिक करा</translation>
 <translation id="1051793555070215510">हे १ मिनिटाचे सर्वेक्षण पूर्ण करून आम्हाला गुप्त मोड मध्ये सुधारणा करण्यात मदत करा.</translation>
 <translation id="1055295352198814912">Mac मेनू बारमध्ये Chrome मध्ये Gemini दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>
@@ -73,6 +74,7 @@
 <translation id="1640672724030957280">डाऊनलोड करीत आहे...</translation>
 <translation id="1651617469580841801">तुम्ही Google Lens वापरता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex बद्दल</translation>
+<translation id="1664094661346151467">Chrome लहान केलेले असतानादेखील कुठूनही शोधा आणि प्रश्न विचारा</translation>
 <translation id="1674870198290878346">लिंक Chrome गुप्त विंडोमध्ये उघडा</translation>
 <translation id="1682634494516646069">Google Chrome त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
@@ -110,6 +112,7 @@
 <translation id="2034233344106846793">Chrome हे शक्य असेल तेव्हा असुरक्षित कनेक्शन HTTPS वर आपोआप अपग्रेड करते</translation>
 <translation id="2039417478970545937">सेटिंग्ज.</translation>
 <translation id="2040220733769034247">Chrome डाउनलोड करण्यासाठी आणि तुमच्या Google खाते मध्ये साइन इन करण्यासाठी तुमचा फोन वापरून QR कोड स्कॅन करा.</translation>
+<translation id="2044908892530830113">Mac मेनू बारमध्ये Chrome मधील शोध दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>
 <translation id="2050189601866423230">ब्राउझिंग करताना प्रश्न विचारण्यासाठी तुम्ही Google Search AI मोड पिन करू शकता</translation>
 <translation id="2091012649849228750">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे Windows 10 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर Windows 8 वापरत आहे.</translation>
 <translation id="2094648590148273905">ChromeOS Flex अटी</translation>
@@ -137,6 +140,7 @@
 <translation id="2284380654876659752">तुम्ही साइटला भेट देता, तेव्हा Chrome तुमचा आयपी अ‍ॅड्रेस लपवणाऱ्या गोपनीयता सर्व्हरद्वारे <ph name="BEGIN_LINK" />Google सुरक्षित ब्राउझिंग<ph name="END_LINK" /> ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="2290014774651636340">Google API की गहाळ आहेत. Google Chrome ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
 <translation id="2290095356545025170">तुमची खात्री आहे की तुम्ही Google Chrome अनइंस्टॉल करू इच्छिता?</translation>
+<translation id="2295218613066132598">Chrome साइट शॉर्टकट दाखवा</translation>
 <translation id="2301513536169703857">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="2307973900865360088">डॉक मध्ये ठेवा</translation>
 <translation id="2309047409763057870">ही Google Chrome ची दुय्यम स्थापना असून त्यास तुमचा डीफॉल्ट ब्राउझर बनवू शकत नाही.</translation>
@@ -245,6 +249,7 @@
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
 <translation id="3292333338048274092">तुम्हाला त्यानंतर Chrome रीस्टार्ट करावे लागले.</translation>
+<translation id="3294686910656423119">वापरविषयक आकडेवारी आणि क्रॅश अहवाल</translation>
 <translation id="3327226547491422998">नंतर, तुमच्यासाठी फॉर्म ऑटोफिल करण्यासाठी तुम्हाला सेव्ह केलेली माहिती वापरायची आहे का हे Chrome विचारू शकते</translation>
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome मदतनीस</translation>
@@ -477,6 +482,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5824893331272123205">हे पॅनल लोड करता आले नाही, पुन्हा प्रयत्न करा</translation>
 <translation id="5825922397106002626">Chrome मधून <ph name="EXTENSION_NAME" /> काढून टाका</translation>
 <translation id="5858486459377137936">तुम्ही Chrome वर साइन इन केले असल्यास, सर्व Chrome विंडो बंद केल्यावर तुमचे Google खाते वगळता तुम्हाला बहुतांश साइटवरून साइन आउट केले जाईल. साइटना तुम्हाला लक्षात ठेवू देण्यासाठी, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">सुरू करा</translation>
 <translation id="586971344380992563">असुरक्षित साइट आणि डाउनलोडबद्दल <ph name="BEGIN_LINK" />Chrome तुम्हाला चेतावणी देते<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chrome मधील Gemini वापरण्यासाठी, वेगळे Google खाते वापरून साइन इन करा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
@@ -517,9 +523,11 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6166185671393271715">Chrome मध्ये पासवर्ड इंपोर्ट करा</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
+<translation id="6177442314419606057">Chrome मध्ये शोधा</translation>
 <translation id="6180522807229584611">हा टॅब अतिरिक्त स्रोत वापरत आहे. तुमच्या परफॉर्मन्समध्ये सुधारणा करण्यासाठी, Chrome ला तो इनॅक्टिव्ह करू द्या.</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
 <translation id="6192058120268468905">Chrome मधील तुमचे खाते</translation>
+<translation id="6195202018542972563">सिस्टीम ट्रेमध्ये Chrome वापरून शोध दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
 <translation id="624230925347970731">Chrome लवकरच बंद होईल</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -561,6 +569,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="652948702951888897">Chrome इतिहास</translation>
 <translation id="6532945796722480006">Chrome कॅनरी मधील Gemini उघडा</translation>
 <translation id="6539493053177300926">Chrome लहान केलेले असतानादेखील तुमच्या सर्व डिव्हाइसमध्ये Chrome मधील Gemini वापरण्यासाठी सहज अ‍ॅक्सेस.</translation>
+<translation id="6556755379298048869">कीबोर्ड शॉर्टकट वापरून शोधा.</translation>
 <translation id="6585124893636629274">Chrome मधील Gemini बंद करा</translation>
 <translation id="659498884637196217">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
 <translation id="6613949864921837107">Chrome ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करून तुमचे पासवर्ड, बुकमार्क आणि इतिहास या गोष्टी सर्व डिव्हाइसवर योग्यरीत्या सिंक केलेल्या ठेवा.</translation>
@@ -587,6 +596,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="683440813066116847">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome कॅनरी साठी अंतर्गामी नियम.</translation>
 <translation id="684888714667046800">इंटरनेटशी कनेक्ट करता आले नाही. तुम्ही फायरवॉल वापरल्यास, कृपया <ph name="PRODUCT_EXE_NAME" /> अनुमती सूचीमध्ये असल्याची खात्री करा.</translation>
 <translation id="6859580922007887573">पुढे सुरू ठेवण्यासाठी टॅब करा</translation>
+<translation id="6869568587896659271">अ‍ॅड्रेस बारच्या खालील वेबसाइटचा सुलभ अ‍ॅक्सेस</translation>
 <translation id="6877155553248388166">शोध क्षेत्राच्या तळाशी उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, तळाशी <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome अपडेट करत आहे</translation>
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>
@@ -679,6 +689,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7736869414036750079">तुमच्या संस्थेनुसार तुम्ही Chrome मध्ये साइन इन करणे आवश्यक आहे</translation>
 <translation id="7747138024166251722">इन्स्टॉलर तात्पुरती डिरेक्टरी तयार करू शकत नाही. कृपया सॉफ्टवेअर इंस्टॉल करण्यासाठी रिक्त डिस्क स्थान आणि परवानगी पहा.</translation>
 <translation id="7748969056734910029">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या आहेत.</translation>
+<translation id="7759944311003584891">Chrome वापरून शोधा</translation>
 <translation id="7761834446675418963">Chrome उघडण्यासाठी तुमचे नाव क्लिक करा आणि ब्राउझिंग सुरू करा.</translation>
 <translation id="7777080907402804672">इमेजचे उपयोगी वर्णन नसल्यास, Chrome तुमच्यासाठी ते देण्याचा प्रयत्न करेल. वर्णने तयार करण्यासाठी, इमेज Google ला पाठवल्या जातात. तुम्ही हे सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="778331955594035129">Chrome ला या साइटसाठी स्थानाशी संबंधित परवानगी आवश्यक आहे</translation>

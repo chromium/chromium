@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome'ду ыңгайлаштырып алып, көзөмөлдөңүз. Жаңыртуу бар.</translation>
 <translation id="1028061813283459617">Серептөө дайындарын ушул түзмөктөн өчүрүп, ал эми Google аккаунтуңузда сактап калуу үчүн <ph name="BEGIN_LINK" />Chrome'дон чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Телефонуңуздагы Chrome колдонмосу менен Google'дун мыкты коопсуздук функцияларын колдонуңуз</translation>
+<translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1042270987544905725">Chrome'го кирүү диалогун жабуу үчүн басыңыз</translation>
 <translation id="1051793555070215510">Бул 1 мүнөттүк сурамжылоого катышып, Жашыруун режимди жакшыртууга жардам бериңиз.</translation>
 <translation id="1055295352198814912">Mac меню тилкесинде Chrome'до Gemini'ды көрсөтүп, баскычтардын айкалышын күйгүзүңүз</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3286538390144397061">Азыр өчүрүп күйгүзүү</translation>
 <translation id="3292333338048274092">Андан кийин Chrome'ду өчүрүп күйгүзүшүңүз керек болот.</translation>
+<translation id="3294686910656423119">Колдонуу статистикасы жана каталар жөнүндө кабарлар</translation>
 <translation id="3327226547491422998">Кийинчерээк Chrome сакталган маалыматты формаларды автотолтуруу үчүн колдоносузбу деп сурайт</translation>
 <translation id="3352986031709923790">издөө аймагынын жогорку оң бурчу: оң жагы <ph name="RIGHT" />%, жогору жагы <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Жардамчысы</translation>
@@ -479,6 +481,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="5824893331272123205">Бул панель жүктөлгөн жок, кайталап көрүңүз</translation>
 <translation id="5825922397106002626"><ph name="EXTENSION_NAME" /> кеңейтүүсүн Chrome'дон чыгарып салуу</translation>
 <translation id="5858486459377137936">Chrome'го кирип турган болсоңуз, Google аккаунтуңуздан башка бардык Chrome терезелерин жапканыңызда көпчүлүк сайттардан чыгарыласыз. Сайттар сизди эстеп калышы үчүн, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="586971344380992563">Кооптуу сайттар жана жүктөп алуулар жөнүндө <ph name="BEGIN_LINK" />Chrome эскертет<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chrome'догу Gemini'ды колдонуу үчүн башка Google аккаунту менен кириңиз</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
@@ -519,6 +522,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6166185671393271715">Chrome'го сырсөздөрдү импорттоо</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета сынамык версиясы</translation>
+<translation id="6177442314419606057">Chrome'до издөө</translation>
 <translation id="6180522807229584611">Бул өтмөк кошумча ресурстарды колдонуп жатат. Иштин майнаптуулугун жакшыртуу үчүн Chrome'го аны жигерсиз кылууга уруксат бериңиз.</translation>
 <translation id="6182736845697986886">Орнотулган жок, анткени жаңыртуу серверинде ички ката кетти.</translation>
 <translation id="6192058120268468905">Chrome'догу аккаунтуңуз</translation>

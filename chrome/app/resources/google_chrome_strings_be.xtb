@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Наладжвайце Google Chrome і кіруйце ім. Ёсць абнаўленне.</translation>
 <translation id="1028061813283459617">Каб выдаліць даныя пра работу ў браўзеры толькі з гэтай прылады, але захаваць іх ва Уліковым запісе Google, <ph name="BEGIN_LINK" />выйдзіце з Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Усталюйце праграму Chrome на тэлефон і карыстайцеся ў дарозе найлепшымі функцыямі бяспекі ад Google</translation>
+<translation id="1036348656032585052">Выключыць</translation>
 <translation id="1042270987544905725">Націсніце, каб закрыць дыялогавае акно ўваходу ў Chrome</translation>
 <translation id="1051793555070215510">Прайдзіце апытанне, каб дапамагчы нам палепшыць рэжым інкогніта. Гэта зойме адну хвіліну.</translation>
 <translation id="1055295352198814912">Паказваць Gemini ў Chrome на панэлі меню прылады Mac і ўключыць спалучэнне клавіш</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Увайсці ў Chrome</translation>
 <translation id="3286538390144397061">Перазапусціць</translation>
 <translation id="3292333338048274092">Потым трэба будзе перазапусціць Chrome.</translation>
+<translation id="3294686910656423119">Статыстыка выкарыстання і справаздачы аб збоях</translation>
 <translation id="3327226547491422998">Пазней Chrome можа спытаць, ці хочаце вы выкарыстоўваць захаваную інфармацыю для аўтазапаўнення форм.</translation>
 <translation id="3352986031709923790">верхні правы вугал поля пошуку: <ph name="RIGHT" />% справа, <ph name="TOP" />% зверху</translation>
 <translation id="3360895254066713204">Памочнік Chrome</translation>
@@ -478,6 +480,7 @@
 <translation id="5824893331272123205">Не ўдалося загрузіць гэту панэль. Паўтарыце спробу.</translation>
 <translation id="5825922397106002626">Выдаліць <ph name="EXTENSION_NAME" /> з Chrome</translation>
 <translation id="5858486459377137936">Калі вы закрыеце ўсе вокны Chrome, то выйдзеце з большасці сайтаў, але застаняцеся ва Уліковым запісе Google, калі раней выканалі ўваход у Chrome. Каб дазволіць сайтам запамінаць вас, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Уключыць</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome папярэджвае<ph name="END_LINK" /> пра небяспечныя сайты і спампоўкі</translation>
 <translation id="5894164573378901688">Каб выкарыстоўваць Gemini ў Chrome, увайдзіце ў іншы Уліковы запіс Google</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
@@ -518,6 +521,7 @@
 <translation id="6166185671393271715">Імпарт пароляў у Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome (бэта-версія)</translation>
+<translation id="6177442314419606057">Шукаць у Chrome</translation>
 <translation id="6180522807229584611">Гэта ўкладка выкарыстоўвае дадатковыя рэсурсы. Дазвольце Chrome адключыць яе, каб павысіць прадукцыйнасць працы.</translation>
 <translation id="6182736845697986886">Выканаць усталяванне не ўдалося з-за ўнутранай памылкі сервера абнаўленняў.</translation>
 <translation id="6192058120268468905">Ваш уліковы запіс у Chrome</translation>

@@ -215,6 +215,7 @@
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Gardouse o marcador}other{Gardáronse os marcadores}}</translation>
+<translation id="1650979352027263879">Quitáronse as túas preferencias de aparencia</translation>
 <translation id="1651260071709244114">Apps (Aplicacións)</translation>
 <translation id="1652051421944182562">Activar notificacións de Comprobación de seguranza…</translation>
 <translation id="1652333207707886577">Personaliza o teu menú</translation>
@@ -277,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{Os marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="1838089197478136166">Queres abrilo en Wallet?</translation>
 <translation id="183878838231635348">Nesta tarxeta mostraranse os problemas de privacidade ou seguranza que detecte automaticamente Comprobación de seguranza.</translation>
-<translation id="1840320537320704887">Quitáronse as preferencias da páxina Nova pestana</translation>
 <translation id="1845230888742614096">Manter grupo</translation>
 <translation id="1853558655412913122">Agora podes cambiar a posición da barra de enderezos en Configuración e, a continuación, en Barra de enderezos</translation>
 <translation id="1853692000353488670">Nova pestana de incógnito</translation>
@@ -591,6 +591,7 @@
 <translation id="2858204748079866344">Para protexer a túa privacidade, Chrome non autocompletará o teu contrasinal neste campo.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sitio (máis nos dispositivos sincronizados)}other{# sitios (máis nos dispositivos sincronizados)}}</translation>
+<translation id="286473047976978798">Queres aplicar as túas preferencias de aparencia?</translation>
 <translation id="2865392654629180917">Fai preguntas e obtén respostas con tecnoloxía de IA</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
@@ -1120,7 +1121,6 @@
 
        Escolle que queres facer cos datos de navegación deste dispositivo.</translation>
 <translation id="4675298276894277358">Este sitio non se volverá mostrar</translation>
-<translation id="4676647168422678078">Queres aplicar as preferencias da páxina Nova pestana?</translation>
 <translation id="4682496302933121474">Queres traducir a páxina?</translation>
 <translation id="4682686630151240767">1. Abre a configuración do iPhone</translation>
 <translation id="4697240968720007067">As mellores aplicacións de Google, a un toque</translation>
@@ -1807,6 +1807,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6806550742467879742">Ferramentas de páxina</translation>
 <translation id="6807287147325542056">Contrasinais doutras aplicacións</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
+<translation id="6815692190508268848">Aplicáronse as túas preferencias de aparencia</translation>
 <translation id="681631578600400068">Garda o permiso de conducir</translation>
 <translation id="6825078212112407882">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{{count} marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="6826004672264649705">Estás facendo un seguimento deste produto. Accede para ver o historial de prezos</translation>
@@ -2190,7 +2191,6 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8059312861912872211">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
-<translation id="8064946459644399612">Aplicáronse as preferencias da páxina Nova pestana</translation>
 <translation id="8065136076319366194">Non se recomenda gardar o ficheiro</translation>
 <translation id="8065556469005366939">Comparte as pestanas para obter respostas máis relevantes</translation>
 <translation id="8069394452933076548">Selecciona cando queres que as pestanas que non se usasen recentemente se movan á sección de pestanas inactivas.</translation>

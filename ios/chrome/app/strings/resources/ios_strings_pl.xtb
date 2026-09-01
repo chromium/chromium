@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Nastąpi usunięcie {password_count} haseł oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} karta}few{{count} karty}many{{count} kart}other{{count} karty}}</translation>
+<translation id="1081948304372277788">Wyłącz Kolejny poziom</translation>
 <translation id="1082554859195167538">Opinie o produktach dla Ciebie</translation>
 <translation id="1084365883616172403">Post na Facebooku dodany.</translation>
 <translation id="108485301461714610">Tryb AI w wyszukiwarce Google i połączone aplikacje</translation>
@@ -214,6 +215,7 @@
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Zakładka została zapisana}few{Zakładki zostały zapisane}many{Zakładki zostały zapisane}other{Zakładki zostały zapisane}}</translation>
+<translation id="1650979352027263879">Ustawienia wyglądu zostały usunięte</translation>
 <translation id="1651260071709244114">Aplikacje</translation>
 <translation id="1652051421944182562">Włącz powiadomienia o kontroli zabezpieczeń…</translation>
 <translation id="1652333207707886577">Dostosuj menu</translation>
@@ -276,7 +278,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{Zakładki zostały zapisane na Twoim koncie Google {email}}many{Zakładki zostały zapisane na Twoim koncie Google {email}}other{Zakładki zostały zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="1838089197478136166">Otworzyć w Portfelu?</translation>
 <translation id="183878838231635348">Na tej karcie wyświetlają się wszelkie problemy związane z prywatnością i bezpieczeństwem, które zostały automatycznie wykryte przez kontrolę zabezpieczeń.</translation>
-<translation id="1840320537320704887">Ustawienia strony nowej karty zostały usunięte</translation>
 <translation id="1845230888742614096">Zachowaj grupę</translation>
 <translation id="1853558655412913122">Możesz teraz zmienić położenie paska adresu, klikając „Ustawienia”, a następnie „Pasek adresu”</translation>
 <translation id="1853692000353488670">Nowa karta incognito</translation>
@@ -590,6 +591,7 @@
 <translation id="2858204748079866344">Aby chronić Twoją prywatność, Chrome nie będzie autouzupełniać hasła w tym polu.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 witryna (więcej na zsynchronizowanych urządzeniach)}few{# witryny (więcej na zsynchronizowanych urządzeniach)}many{# witryn (więcej na zsynchronizowanych urządzeniach)}other{# witryny (więcej na zsynchronizowanych urządzeniach)}}</translation>
+<translation id="286473047976978798">Zastosować ustawienia wyglądu?</translation>
 <translation id="2865392654629180917">Pytaj o cokolwiek i otrzymuj odpowiedzi generowane przez AI</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2876369937070532032">Gdy Twoje bezpieczeństwo jest zagrożone, wysyła do Google adresy URL odwiedzanych stron</translation>
@@ -1119,7 +1121,6 @@
 
        Wybierz, co chcesz zrobić z dotychczasowymi danymi przeglądania na tym urządzeniu.</translation>
 <translation id="4675298276894277358">Ta witryna nie będzie już wyświetlana</translation>
-<translation id="4676647168422678078">Zastosować ustawienia strony nowej karty?</translation>
 <translation id="4682496302933121474">Przetłumaczyć stronę?</translation>
 <translation id="4682686630151240767">1. Otwórz Ustawienia na iPhonie.</translation>
 <translation id="4697240968720007067">Pobierz najlepsze aplikacje Google jednym kliknięciem</translation>
@@ -1806,6 +1807,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6806550742467879742">Narzędzia strony</translation>
 <translation id="6807287147325542056">Hasła w innych aplikacjach</translation>
 <translation id="681368974849482173">Utworzono element</translation>
+<translation id="6815692190508268848">Zastosowano ustawienia wyglądu</translation>
 <translation id="681631578600400068">Zapisz prawo jazdy</translation>
 <translation id="6825078212112407882">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{{count} zakładki zostały zapisane na Twoim koncie Google {email}}many{{count} zakładek zostało zapisanych na Twoim koncie Google {email}}other{{count} zakładki zostało zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="6826004672264649705">Obecnie śledzisz ten produkt. Otwórz, aby zobaczyć historię cen</translation>
@@ -2189,7 +2191,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8059312861912872211">{count,plural, =1{{count} zakładka}few{{count} zakładki}many{{count} zakładek}other{{count} zakładki}}</translation>
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8061584726507121204">Historia</translation>
-<translation id="8064946459644399612">Zastosowano ustawienia strony nowej karty</translation>
 <translation id="8065136076319366194">Zapisywanie nie jest zalecane</translation>
 <translation id="8065556469005366939">Udostępnij karty, aby otrzymywać trafniejsze odpowiedzi</translation>
 <translation id="8069394452933076548">Wybierz, kiedy nieużywane karty mają być przenoszone do sekcji kart nieaktywnych.</translation>
