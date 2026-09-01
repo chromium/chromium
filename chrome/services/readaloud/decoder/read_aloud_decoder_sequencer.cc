@@ -107,7 +107,6 @@ void ReadAloudDecoderSequencer::ReplenishBuffer() {
       const uint64_t sequence_id = prefetch_manager_->GetCurrentSequenceId();
       decoder_helper_->DecodeAndSlice(
           cached->opus_buffer, cached->timings,
-          {static_cast<int32_t>(chunk_index)},
           base::BindOnce(&ReadAloudDecoderSequencer::OnAudioDecoded,
                          weak_ptr_factory_.GetWeakPtr(), sequence_id,
                          chunk_index));

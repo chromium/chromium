@@ -34,10 +34,8 @@ class FakeOpusDecoderHelper : public OpusDecoderHelper {
   void DecodeAndSlice(
       scoped_refptr<media::DecoderBuffer> container_buffer,
       const std::vector<DecodedAudioSegment::WordTiming>& timings,
-      const std::vector<int32_t>& sentence_chunk_indices,
       DecodeCallback callback) override {
     last_callback_ = std::move(callback);
-    last_chunk_indices_ = sentence_chunk_indices;
     decode_call_count_++;
   }
 
@@ -51,13 +49,9 @@ class FakeOpusDecoderHelper : public OpusDecoderHelper {
   }
 
   size_t decode_call_count() const { return decode_call_count_; }
-  const std::vector<int32_t>& last_chunk_indices() const {
-    return last_chunk_indices_;
-  }
 
  private:
   DecodeCallback last_callback_;
-  std::vector<int32_t> last_chunk_indices_;
   size_t decode_call_count_ = 0;
 };
 

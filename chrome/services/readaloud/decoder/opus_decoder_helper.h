@@ -32,9 +32,8 @@ class OpusDecoderHelper {
   OpusDecoderHelper& operator=(const OpusDecoderHelper&) = delete;
 
   // Asynchronously decodes the compressed Ogg/Opus container bytes, slices the
-  // output raw audio into sentence-level segments at indices defined by
-  // `sentence_chunk_indices` and `timings`, and returns the segments via the
-  // `callback`.
+  // output raw audio into word-level segments based on the provided
+  // `timings`, and returns the segments via the `callback`.
   //
   // Calls the callback with an empty vector if `container_buffer` is empty.
   //
@@ -43,7 +42,6 @@ class OpusDecoderHelper {
   virtual void DecodeAndSlice(
       scoped_refptr<media::DecoderBuffer> container_buffer,
       const std::vector<DecodedAudioSegment::WordTiming>& timings,
-      const std::vector<int32_t>& sentence_chunk_indices,
       DecodeCallback callback);
 
  private:

@@ -9,12 +9,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/decoder_buffer.h"
 #include "media/media_buildflags.h"
 
@@ -42,7 +44,7 @@ scoped_refptr<media::AudioBuffer> DecodeOnBackgroundThread(
 
   // AudioFileReader decodes the audio data packet-by-packet, returning a list
   // of individual AudioBus objects. Since we need a single continuous audio
-  // stream to perform sentence slicing and timestamp shifting relative to the
+  // stream to perform word slicing and timestamp shifting relative to the
   // start, we concatenate all the chunks into a single output AudioBus.
   std::vector<std::unique_ptr<media::AudioBus>> decoded_buses;
   int total_frames = reader.Read(&decoded_buses);
@@ -82,7 +84,6 @@ OpusDecoderHelper::~OpusDecoderHelper() {
 void OpusDecoderHelper::DecodeAndSlice(
     scoped_refptr<media::DecoderBuffer> container_buffer,
     const std::vector<DecodedAudioSegment::WordTiming>& timings,
-    const std::vector<int32_t>& sentence_chunk_indices,
     DecodeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -115,14 +116,59 @@ void OpusDecoderHelper::OnDecodeFinished(
     scoped_refptr<media::AudioBuffer> decoded_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/527525634): Implement sentence slicing logic to divide the
-  // decoded buffer into multiple DecodedAudioSegments based on sentence chunk
-  // indices and word boundaries. For now, package the full buffer into a single
-  // DecodedAudioSegment.
   std::vector<scoped_refptr<DecodedAudioSegment>> result;
-  if (decoded_buffer) {
+  if (!decoded_buffer) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  if (timings.empty()) {
     result.push_back(base::MakeRefCounted<DecodedAudioSegment>(
         std::move(decoded_buffer), timings));
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  int channels = decoded_buffer->channel_count();
+  int sample_rate = decoded_buffer->sample_rate();
+
+  std::unique_ptr<media::AudioBus> decoded_bus =
+      media::AudioBuffer::WrapOrCopyToAudioBus(decoded_buffer);
+
+  for (const DecodedAudioSegment::WordTiming& timing : timings) {
+    int64_t start_frame = media::AudioTimestampHelper::TimeToFrames(
+        timing.start_time, sample_rate);
+    int64_t end_frame =
+        media::AudioTimestampHelper::TimeToFrames(timing.end_time, sample_rate);
+
+    start_frame = std::max<int64_t>(0, start_frame);
+    end_frame = std::min<int64_t>(end_frame, decoded_bus->frames());
+    if (start_frame >= end_frame) {
+      continue;
+    }
+
+    int num_frames = base::checked_cast<int>(end_frame - start_frame);
+
+    scoped_refptr<media::AudioBuffer> word_buffer =
+        media::AudioBuffer::CreateBuffer(media::kSampleFormatPlanarF32,
+                                         decoded_buffer->channel_layout(),
+                                         channels, sample_rate, num_frames);
+    word_buffer->set_timestamp(base::TimeDelta());
+
+    std::unique_ptr<media::AudioBus> word_bus =
+        media::AudioBuffer::WrapOrCopyToAudioBus(word_buffer);
+    decoded_bus->CopyPartialFramesTo(static_cast<int>(start_frame), num_frames,
+                                     0, word_bus.get());
+
+    DecodedAudioSegment::WordTiming localized_timing;
+    localized_timing.text = timing.text;
+    localized_timing.start_time = base::TimeDelta();
+    localized_timing.end_time =
+        media::AudioTimestampHelper::FramesToTime(num_frames, sample_rate);
+
+    result.push_back(base::MakeRefCounted<DecodedAudioSegment>(
+        std::move(word_buffer),
+        std::vector<DecodedAudioSegment::WordTiming>{localized_timing}));
   }
 
   std::move(callback).Run(std::move(result));

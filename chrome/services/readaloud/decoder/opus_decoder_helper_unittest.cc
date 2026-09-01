@@ -21,9 +21,30 @@
 
 namespace readaloud {
 
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Gt;
+using ::testing::NotNull;
+using ::testing::Pointee;
+using ::testing::Property;
+using ::testing::ResultOf;
 MATCHER_P(MatchesWordTiming, expected, "") {
   return arg.text == expected.text && arg.start_time == expected.start_time &&
          arg.end_time == expected.end_time;
+}
+
+MATCHER_P2(MatchesSegment, duration_matcher, timings_matcher, "") {
+  return ExplainMatchResult(
+      Pointee(AllOf(
+          Property(&DecodedAudioSegment::audio_buffer,
+                   AllOf(NotNull(),
+                         Pointee(AllOf(
+                             Property(&media::AudioBuffer::frame_count, Gt(0)),
+                             Property(&media::AudioBuffer::duration,
+                                      duration_matcher))))),
+          Property(&DecodedAudioSegment::word_timings, timings_matcher))),
+      arg, result_listener);
 }
 
 class OpusDecoderHelperTest : public testing::Test {
@@ -40,7 +61,7 @@ TEST_F(OpusDecoderHelperTest, DecodeReturnsEmptyListForEmptyBuffer) {
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(
-      empty_buffer, {}, {},
+      empty_buffer, {},
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
@@ -62,7 +83,7 @@ TEST_F(OpusDecoderHelperTest, DecodeInvalidAudioDataReturnsEmptyList) {
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(
-      invalid_buffer, {}, {},
+      invalid_buffer, {},
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
@@ -91,7 +112,7 @@ TEST_F(OpusDecoderHelperTest,
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(
-      truncated_buffer, {}, {},
+      truncated_buffer, {},
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
@@ -108,31 +129,109 @@ TEST_F(OpusDecoderHelperTest, DecodeValidOggOpusStream) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(file_path));
 
-  auto container_buffer = media::DecoderBuffer::CopyFrom(file.bytes());
-  ASSERT_NE(nullptr, container_buffer);
+  scoped_refptr<media::DecoderBuffer> container_buffer =
+      media::DecoderBuffer::CopyFrom(file.bytes());
+  ASSERT_NE(container_buffer, nullptr);
 
   OpusDecoderHelper helper;
   std::vector<DecodedAudioSegment::WordTiming> timings = {
-      {"Hello", base::Milliseconds(0), base::Milliseconds(200)},
-      {"World", base::Milliseconds(200), base::Milliseconds(500)}};
+      {"Hello", base::Milliseconds(0), base::Milliseconds(120)},
+      {"World", base::Milliseconds(120), base::Milliseconds(270)}};
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(
-      container_buffer, timings, {},
+      container_buffer, timings,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              const std::vector<DecodedAudioSegment::WordTiming>&
                  expected_timings,
              std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
-            ASSERT_EQ(1u, segments.size());
-            EXPECT_GT(segments[0]->audio_buffer()->frame_count(), 0);
+            ASSERT_EQ(segments.size(), expected_timings.size());
+            DecodedAudioSegment::WordTiming expected_timing0 = {
+                "Hello", base::Milliseconds(0), base::Milliseconds(120)};
+            DecodedAudioSegment::WordTiming expected_timing1 = {
+                "World", base::Milliseconds(0), base::Milliseconds(150)};
             EXPECT_THAT(
-                segments[0]->word_timings(),
-                testing::ElementsAre(MatchesWordTiming(expected_timings[0]),
-                                     MatchesWordTiming(expected_timings[1])));
+                segments,
+                ElementsAre(
+                    MatchesSegment(
+                        /*duration_matcher=*/Eq(base::Milliseconds(120)),
+                        /*timings_matcher=*/ElementsAre(
+                            MatchesWordTiming(expected_timing0))),
+                    MatchesSegment(
+                        /*duration_matcher=*/Eq(base::Milliseconds(150)),
+                        /*timings_matcher=*/ElementsAre(
+                            MatchesWordTiming(expected_timing1)))));
+
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure(), timings));
+
+  run_loop.Run();
+}
+
+TEST_F(OpusDecoderHelperTest, DecodeHandlesOutOfBoundsWordTimings) {
+  base::FilePath file_path = media::GetTestDataFilePath("sfx-opus.ogg");
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(file_path));
+
+  scoped_refptr<media::DecoderBuffer> container_buffer =
+      media::DecoderBuffer::CopyFrom(file.bytes());
+  ASSERT_NE(container_buffer, nullptr);
+
+  OpusDecoderHelper helper;
+  std::vector<DecodedAudioSegment::WordTiming> timings = {
+      {"Valid", base::Milliseconds(0), base::Milliseconds(50)},
+      {"StartsValidEndsPastEnd", base::Milliseconds(50),
+       base::Milliseconds(50000)},
+      {"Out", base::Milliseconds(50000), base::Milliseconds(60000)}};
+  base::RunLoop run_loop;
+
+  helper.DecodeAndSlice(
+      container_buffer, timings,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
+            ASSERT_EQ(segments.size(), 2u);
+            EXPECT_THAT(
+                segments,
+                ElementsAre(MatchesSegment(
+                                /*duration_matcher=*/Eq(base::Milliseconds(50)),
+                                /*timings_matcher=*/testing::_),
+                            MatchesSegment(
+                                /*duration_matcher=*/Gt(base::Milliseconds(0)),
+                                /*timings_matcher=*/testing::_)));
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
+TEST_F(OpusDecoderHelperTest, DecodeWithEmptyTimingsReturnsFullBuffer) {
+  base::FilePath file_path = media::GetTestDataFilePath("sfx-opus.ogg");
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(file_path));
+
+  scoped_refptr<media::DecoderBuffer> container_buffer =
+      media::DecoderBuffer::CopyFrom(file.bytes());
+  ASSERT_NE(container_buffer, nullptr);
+
+  OpusDecoderHelper helper;
+  base::RunLoop run_loop;
+
+  helper.DecodeAndSlice(
+      container_buffer, /*timings=*/{},
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
+            ASSERT_EQ(segments.size(), 1u);
+            ASSERT_TRUE(segments[0]->audio_buffer());
+            EXPECT_GT(segments[0]->audio_buffer()->frame_count(), 0);
+            EXPECT_TRUE(segments[0]->word_timings().empty());
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
 
   run_loop.Run();
 }
@@ -149,7 +248,7 @@ TEST_F(OpusDecoderHelperTest, DecodeWithoutFFmpegReturnsEmptyList) {
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(
-      buffer, {}, {},
+      buffer, {},
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
