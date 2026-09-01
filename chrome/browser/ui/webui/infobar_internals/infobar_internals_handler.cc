@@ -94,6 +94,8 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"  // nogncheck
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"  // nogncheck
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -143,6 +145,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kExtensionDevTools:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kDefaultBrowser:
+    case InfoBarType::kEnableLinkCapturing:
     case InfoBarType::kSessionRestore:
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -217,6 +220,13 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "shares a renderer process and offers a restart with "
             "process-per-site disabled. This trigger shows the infobar on the "
             "active tab.");
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  add_entry(InfoBarType::kEnableLinkCapturing, "Enable Link Capturing",
+            "The Enable Link Capturing infobar asks the user if they want to "
+            "open supported links in an installed web app. This trigger "
+            "shows the infobar.");
+#endif
 
   add_entry(InfoBarType::kExtensionDevTools, "Extension DevTools",
             "The Extension DevTools infobar is used to globally warn users "
@@ -393,6 +403,35 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
                  std::make_unique<ProcessSharingInfobarDelegate>(
                      web_contents))) != nullptr;
     }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    case InfoBarType::kEnableLinkCapturing: {
+      if (!infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE) ||
+          !browser_infobar_manager) {
+        return false;
+      }
+      std::u16string app_name = u"Example App";
+      if (auto* provider = web_app::WebAppProvider::GetForWebApps(profile)) {
+        const auto& app_ids = provider->registrar_unsafe().GetAppIds();
+        if (!app_ids.empty()) {
+          app_name = base::UTF8ToUTF16(
+              provider->registrar_unsafe().GetAppShortName(app_ids[0]));
+        }
+      }
+
+      infobars::InfoBarShowParams params;
+      params.message_text = l10n_util::GetStringFUTF16(
+          IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_MESSAGE, app_name);
+      params.ok_button_callback = base::DoNothing();
+      params.cancel_button_callback = base::DoNothing();
+      return browser_infobar_manager->Show(
+                 active_tab,
+                 infobars::InfoBarDelegate::
+                     ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE,
+                 std::move(params)) != nullptr;
+    }
+#endif
     case InfoBarType::kExtensionDevTools: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       if (infobars::IsInfoBarMigrated(

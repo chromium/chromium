@@ -28,6 +28,10 @@ enum InfoBarType {
   // DevTools process sharing infobar.
   kDevToolsSharedProcess,
 
+  // Enable link capturing infobar. Can only be triggered on Win, Mac and Linux.
+  [EnableIf=is_win|is_mac|is_linux]
+  kEnableLinkCapturing,
+
   // Extension DevTools infobar.
   kExtensionDevTools,
 

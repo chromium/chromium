@@ -85,6 +85,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/views/session_restore_infobar",
+      "//chrome/browser/web_applications",
     ]
   }
 
