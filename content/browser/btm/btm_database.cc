@@ -126,7 +126,7 @@ BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
   }
 
   if (Init() != sql::INIT_OK) {
-    LOG(WARNING) << "Failed to initialize the DIPS SQLite database.";
+    LOG(WARNING) << "Failed to initialize the BTM SQLite database.";
   }
 }
 

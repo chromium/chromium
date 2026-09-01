@@ -43,7 +43,10 @@ CONTENT_EXPORT base::cstring_view BtmDataAccessTypeToString(
 // read+write.
 using CookieOperation = network::mojom::CookieAccessDetails::Type;
 
-// The filename for the DIPS database.
+// The filename for the BTM database.
+//
+// Chromium's BTM implementation was originally called "DIPS"; the DB filepath
+// is an artifact of the original naming.
 const base::FilePath::CharType kBtmFilename[] = FILE_PATH_LITERAL("DIPS");
 
 // The FilePath for the ON-DISK BtmDatabase associated with a BrowserContext,
@@ -205,8 +208,8 @@ inline const GURL& GetFirstPartyURL(RenderFrameHost& rfh) {
 }
 
 // The amount of time since a page last received user activation before a
-// subsequent user activation event may be recorded to DIPS Storage for the
-// same page.
+// subsequent user activation event may be recorded to BTM Storage for the same
+// page.
 inline constexpr base::TimeDelta kBtmTimestampUpdateInterval = base::Minutes(1);
 
 [[nodiscard]] CONTENT_EXPORT bool UpdateTimestamp(
@@ -267,7 +270,7 @@ enum class BtmErrorCode {
 };
 
 // BtmDeletionAction is used in UMA enum histograms to record the actual
-// deletion action taken on DIPS-eligible (incidental) site.
+// deletion action taken on BTM-eligible (incidental) site.
 //
 // When adding an action to this enum, update the DIPSDeletionAction enum in
 // tools/metrics/histograms/enums.xml as well.

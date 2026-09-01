@@ -20,10 +20,10 @@ const char kIdentityProviderDomain[] = "google.com";
 
 BtmBrowserSigninDetector::BtmBrowserSigninDetector(
     base::PassKey<BtmBrowserSigninDetectorFactory>,
-    content::BtmService* dips_service,
+    content::BtmService* btm_service,
     signin::IdentityManager* identity_manager)
-    : dips_service_(dips_service), identity_manager_(identity_manager) {
-  CHECK(dips_service_);
+    : btm_service_(btm_service), identity_manager_(identity_manager) {
+  CHECK(btm_service_);
   if (!identity_manager_) {
     // If there's no identity manager, then don't try to observe it.
     return;
@@ -50,11 +50,11 @@ BtmBrowserSigninDetector::~BtmBrowserSigninDetector() = default;
 
 void BtmBrowserSigninDetector::Shutdown() {
   scoped_observation_.Reset();
-  dips_service_ = nullptr;
+  btm_service_ = nullptr;
   identity_manager_ = nullptr;
 }
 
-// Evaluates whether an information is relevant for DIPS. An info is relevant if
+// Evaluates whether an information is relevant for BTM. An info is relevant if
 // its core infos are non empty and the |hosted_domain| info is provided.
 bool IsInfoRelevant(const AccountInfo& info) {
   // Note: extended infos such as |hosted_domain| are filled asynchronously.
@@ -72,7 +72,7 @@ void BtmBrowserSigninDetector::RecordUserActivationsIfRelevant(
   // Note: All accounts in the identity manager are GAIA accounts. Thus,
   // non-enterprise accounts (ex. "gmail.com", "yahoo.com") will be treated as
   // having a user activation with `kIdentityProviderDomain`.
-  dips_service_->RecordBrowserSignIn(kIdentityProviderDomain);
+  btm_service_->RecordBrowserSignIn(kIdentityProviderDomain);
 
   // Skip handled cases.
   if (std::optional<std::string_view> hosted_domain = info.GetHostedDomain();
@@ -82,7 +82,7 @@ void BtmBrowserSigninDetector::RecordUserActivationsIfRelevant(
 
   // Record a user activation for the |info.host_domain| of all enterprise
   // accounts.
-  dips_service_->RecordBrowserSignIn(*info.GetHostedDomain());
+  btm_service_->RecordBrowserSignIn(*info.GetHostedDomain());
 }
 
 void BtmBrowserSigninDetector::OnExtendedAccountInfoUpdated(

@@ -24,7 +24,7 @@
 
 namespace content {
 
-// Encapsulates an SQL database that holds DIPS info.
+// Encapsulates an SQL database that holds BTM info.
 class CONTENT_EXPORT BtmDatabase {
  public:
   enum class BounceFilterType {
@@ -38,7 +38,7 @@ class CONTENT_EXPORT BtmDatabase {
 
   // Version number of the database schema.
   // NOTE: When changing the version, add a new golden file for the new version
-  // at `//chrome/test/data/dips/v<N>.sql`.
+  // at `//content/test/data/btm/v<N>.sql`.
   static constexpr int kLatestSchemaVersion = 11;
 
   // The minimum database schema version this Chrome code is compatible with.
@@ -49,7 +49,7 @@ class CONTENT_EXPORT BtmDatabase {
   // The length of time that will be waited between emitting db health metrics.
   static constexpr base::TimeDelta kMetricsInterval = base::Hours(24);
 
-  // How long DIPS maintains popups in storage (for recording Popup Heuristic
+  // How long BTM maintains popups in storage (for recording Popup Heuristic
   // storage accesses).
   static constexpr base::TimeDelta kPopupTtl = base::Days(60);
 
@@ -65,7 +65,7 @@ class CONTENT_EXPORT BtmDatabase {
   BtmDatabase(const BtmDatabase&) = delete;
   BtmDatabase& operator=(const BtmDatabase&) = delete;
 
-  // DIPS Bounce table functions -----------------------------------------------
+  // BTM Bounce table functions ------------------------------------------------
   bool Write(const std::string& site,
              const TimestampRange& user_activation_times,
              const TimestampRange& bounce_times,
@@ -98,7 +98,7 @@ class CONTENT_EXPORT BtmDatabase {
   std::set<std::string> FilterSites(const std::set<std::string>& sites,
                                     BounceFilterType filter);
 
-  // Returns all sites which bounced the user and aren't protected from DIPS.
+  // Returns all sites which bounced the user and aren't protected from BTM.
   //
   // A site can be protected in several ways:
   // - it's still in its grace period after the first bounce
@@ -112,12 +112,12 @@ class CONTENT_EXPORT BtmDatabase {
 
   // Deletes all rows in the database whose interactions have expired out.
   //
-  // When an interaction happens before a DIPS-triggering action or during the
+  // When an interaction happens before a BTM-triggering action or during the
   // following grace-period, it protects that site from its data being cleared
-  // by DIPS. Further interactions will prolong that protection until the last
+  // by BTM. Further interactions will prolong that protection until the last
   // one reaches the `interaction_ttl`.
   //
-  // Clearing expired interactions effectively restarts the DIPS procedure for
+  // Clearing expired interactions effectively restarts the BTM procedure for
   // determining if a site is a tracker for sites that are cleared.
   //
   // Returns the number of rows that are removed.

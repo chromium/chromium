@@ -276,31 +276,30 @@ class StateClearer : public BrowsingDataRemover::Observer {
   base::OnceClosure callback_;
 };
 
-class DipsTimerStorage : public PersistentRepeatingTimer::Storage {
+class BtmTimerStorage : public PersistentRepeatingTimer::Storage {
  public:
-  explicit DipsTimerStorage(base::SequenceBound<BtmStorage>* dips_storage);
-  ~DipsTimerStorage() override;
+  explicit BtmTimerStorage(base::SequenceBound<BtmStorage>* btm_storage);
+  ~BtmTimerStorage() override;
 
-  // Reads the timestamp from the DIPS DB.
+  // Reads the timestamp from the BTM DB.
   void GetLastFired(TimeCallback callback) const override {
-    dips_storage_->AsyncCall(&BtmStorage::GetTimerLastFired)
+    btm_storage_->AsyncCall(&BtmStorage::GetTimerLastFired)
         .Then(std::move(callback));
   }
-  // Write the timestamp to the DIPS DB.
+  // Write the timestamp to the BTM DB.
   void SetLastFired(base::Time time) override {
-    dips_storage_->AsyncCall(base::IgnoreResult(&BtmStorage::SetTimerLastFired))
+    btm_storage_->AsyncCall(base::IgnoreResult(&BtmStorage::SetTimerLastFired))
         .WithArgs(time);
   }
 
  private:
-  raw_ref<base::SequenceBound<BtmStorage>> dips_storage_;
+  raw_ref<base::SequenceBound<BtmStorage>> btm_storage_;
 };
 
-DipsTimerStorage::DipsTimerStorage(
-    base::SequenceBound<BtmStorage>* dips_storage)
-    : dips_storage_(CHECK_DEREF(dips_storage)) {}
+BtmTimerStorage::BtmTimerStorage(base::SequenceBound<BtmStorage>* btm_storage)
+    : btm_storage_(CHECK_DEREF(btm_storage)) {}
 
-DipsTimerStorage::~DipsTimerStorage() = default;
+BtmTimerStorage::~BtmTimerStorage() = default;
 
 }  // namespace
 
@@ -346,7 +345,7 @@ std::unique_ptr<PersistentRepeatingTimer> BtmServiceImpl::CreateTimer() {
   // base::Unretained(this) is safe here since the timer that is created has the
   // same lifetime as this service.
   return std::make_unique<PersistentRepeatingTimer>(
-      std::make_unique<DipsTimerStorage>(&storage_),
+      std::make_unique<BtmTimerStorage>(&storage_),
       features::kBtmTimerDelay.Get(),
       base::BindRepeating(&BtmServiceImpl::OnTimerFired,
                           base::Unretained(this)));
@@ -592,7 +591,7 @@ void BtmServiceImpl::DeleteBtmEligibleState(
     }
     UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kEnforced);
 
-    const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
+    const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForBtmSite(
         base::PassKey<BtmServiceImpl>(), site);
     ukm::builders::DIPS_Deletion(source_id)
         // These settings are checked at bounce time, before logging the bounce.

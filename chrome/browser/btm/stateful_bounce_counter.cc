@@ -13,21 +13,21 @@
 namespace btm {
 
 StatefulBounceCounter::StatefulBounceCounter(PassKey,
-                                             content::BtmService* dips_service)
-    : dips_service_(dips_service) {
-  dips_service_->AddObserver(this);
+                                             content::BtmService* btm_service)
+    : btm_service_(btm_service) {
+  btm_service_->AddObserver(this);
 }
 
 StatefulBounceCounter::~StatefulBounceCounter() {
-  dips_service_->RemoveObserver(this);
+  btm_service_->RemoveObserver(this);
 }
 
 /*static*/
-void StatefulBounceCounter::CreateFor(content::BtmService* dips_service) {
-  CHECK(!dips_service->GetUserData(&kUserDataKey));
-  dips_service->SetUserData(
+void StatefulBounceCounter::CreateFor(content::BtmService* btm_service) {
+  CHECK(!btm_service->GetUserData(&kUserDataKey));
+  btm_service->SetUserData(
       &kUserDataKey,
-      std::make_unique<StatefulBounceCounter>(PassKey(), dips_service));
+      std::make_unique<StatefulBounceCounter>(PassKey(), btm_service));
 }
 
 void StatefulBounceCounter::OnStatefulBounce(

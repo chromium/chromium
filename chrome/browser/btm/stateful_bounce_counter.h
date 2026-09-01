@@ -25,14 +25,14 @@ class StatefulBounceCounter : public content::BtmService::Observer,
   StatefulBounceCounter(PassKey, content::BtmService*);
   ~StatefulBounceCounter() override;
 
-  // Create a StatefulBounceCounter that observes `dips_service` and will be
+  // Create a StatefulBounceCounter that observes `btm_service` and will be
   // destroyed automatically.
-  static void CreateFor(content::BtmService* dips_service);
+  static void CreateFor(content::BtmService* btm_service);
 
   void OnStatefulBounce(content::WebContents*) override;
 
  private:
-  raw_ptr<content::BtmService> dips_service_;
+  raw_ptr<content::BtmService> btm_service_;
 
   // For SupportsUserData:
   static const int kUserDataKey = 0;

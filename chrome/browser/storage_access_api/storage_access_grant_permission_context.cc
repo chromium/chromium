@@ -498,9 +498,9 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   // We haven't found a reason to auto-grant permission, but before we prompt
   // there's one more hurdle: the user must have interacted with the requesting
   // site in a top-level context recently.
-  content::BtmService* dips_service =
+  content::BtmService* btm_service =
       content::BtmService::Get(browser_context());
-  if (!dips_service ||
+  if (!btm_service ||
       kStorageAccessAPITopLevelUserInteractionBound == base::TimeDelta()) {
     // If we don't have access to this kind of historical info or the time bound
     // is empty, we waive the requirement, and show the prompt.
@@ -510,7 +510,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   }
 
   GURL site(request_data->requesting_origin);
-  dips_service->DidSiteHaveUserActivationSince(
+  btm_service->DidSiteHaveUserActivationSince(
       site, base::Time::Now() - kStorageAccessAPITopLevelUserInteractionBound,
       base::BindOnce(&StorageAccessGrantPermissionContext::
                          OnCheckedUserInteractionHeuristic,

@@ -28,7 +28,7 @@ class BtmBrowserSigninDetector : public KeyedService,
                                  signin::IdentityManager::Observer {
  public:
   BtmBrowserSigninDetector(base::PassKey<BtmBrowserSigninDetectorFactory>,
-                           content::BtmService* dips_service,
+                           content::BtmService* btm_service,
                            signin::IdentityManager* identity_manager);
   BtmBrowserSigninDetector(const BtmBrowserSigninDetector&) = delete;
   BtmBrowserSigninDetector& operator=(const BtmBrowserSigninDetector&) = delete;
@@ -46,11 +46,11 @@ class BtmBrowserSigninDetector : public KeyedService,
   void Shutdown() override;
   // End KeyedService overrides.
 
-  // Processes account |info| and records user activation(s) in the DIPS
+  // Processes account |info| and records user activation(s) in the BTM
   // Database if the account |info| is relevant.
   void RecordUserActivationsIfRelevant(const AccountInfo& info);
 
-  raw_ptr<content::BtmService> dips_service_;
+  raw_ptr<content::BtmService> btm_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

@@ -177,9 +177,9 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
   // given domain. This method should only be called in the BtmServiceImpl
-  // class for sites in the DIPS database. `site` must be a registrable domain.
-  static SourceId GetSourceIdForDipsSite(base::PassKey<content::BtmServiceImpl>,
-                                         const std::string& site);
+  // class for sites in the BTM database. `site` must be a registrable domain.
+  static SourceId GetSourceIdForBtmSite(base::PassKey<content::BtmServiceImpl>,
+                                        const std::string& site);
 
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only
   // used for recording ChromeOS website stats.

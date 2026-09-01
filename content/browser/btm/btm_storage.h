@@ -55,7 +55,7 @@ class CONTENT_EXPORT BtmStorage {
   // event is a user activation or successful WebAuthn assertion.
   void RemoveRowsWithoutProtectiveEvent(const std::set<std::string>& sites);
 
-  // DIPS Helper Method Impls --------------------------------------------------
+  // BTM Helper Method Impls ---------------------------------------------------
 
   // Record that there was a user activation on `url`.
   void RecordUserActivation(const GURL& url, base::Time time);
@@ -79,7 +79,7 @@ class CONTENT_EXPORT BtmStorage {
   std::set<std::string> FilterSitesWithoutProtectiveEvent(
       std::set<std::string> sites) const;
 
-  // Returns all sites that did a bounce that aren't protected from DIPS.
+  // Returns all sites that did a bounce that aren't protected from BTM.
   std::vector<std::string> GetSitesThatBounced(
       base::TimeDelta grace_period) const;
 

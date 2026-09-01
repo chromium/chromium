@@ -104,13 +104,13 @@ void BtmStorage::RemoveEvents(base::Time delete_begin,
     db_->RemoveEventsByTime(delete_begin, delete_end, type);
   } else if (type == BtmEventRemovalType::kStorage && filter->origins.empty()) {
     // Site-filtered deletion is only supported for cookie-related
-    // DIPS events, since only cookie deletion allows domains but not hosts.
+    // BTM events, since only cookie deletion allows domains but not hosts.
     //
     // TODO(jdh): Assess the use of cookie deletions with both a time range and
     // a list of domains to determine whether supporting time ranges here is
     // necessary.
     // Time ranges aren't currently supported for site-filtered
-    // deletion of DIPS Events.
+    // deletion of BTM Events.
     if (delete_begin != base::Time::Min() || delete_end != base::Time::Max()) {
       // TODO (kaklilu@): Add a UMA metric to record if this happens.
       return;

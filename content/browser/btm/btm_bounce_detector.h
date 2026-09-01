@@ -353,7 +353,7 @@ class CONTENT_EXPORT BtmBounceDetector {
  private:
   // Whether or not the `last_time` timestamp should be updated yet. This is
   // used to enforce throttling of timestamp updates, reducing the number of
-  // writes to the DIPS db.
+  // writes to the BTM db.
   bool ShouldUpdateTimestamp(base::optional_ref<const base::Time> last_time,
                              base::Time now);
 
@@ -510,7 +510,7 @@ class CONTENT_EXPORT BtmWebContentsObserver
 
  private:
   BtmWebContentsObserver(WebContents* web_contents,
-                         BtmServiceImpl* dips_service);
+                         BtmServiceImpl* btm_service);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class WebContentsUserData<BtmWebContentsObserver>;
 

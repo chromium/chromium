@@ -84,13 +84,13 @@ ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
 }
 
 // static
-ukm::SourceId UkmRecorder::GetSourceIdForDipsSite(
+ukm::SourceId UkmRecorder::GetSourceIdForBtmSite(
     base::PassKey<content::BtmServiceImpl>,
     const std::string& site) {
-  // Use REDIRECT_ID because DIPS sites are bounce trackers that redirected the
-  // user (see go/dips). This method is used for background reporting of such
+  // Use REDIRECT_ID because BTM sites are bounce trackers that redirected the
+  // user (see go/btm-dd). This method is used for background reporting of such
   // sites, so there's no RenderFrameHost to get a SourceId from, or even a full
-  // URL to report on -- only the eTLD+1 stored by the DIPS Service.
+  // URL to report on -- only the eTLD+1 stored by the BTM Service.
   DCHECK(net::IsCanonicalizedHostCompliant(site)) << "Invalid site: " << site;
   return UkmRecorder::GetSourceIdFromScopeImpl(GURL("http://" + site),
                                                SourceIdType::REDIRECT_ID);

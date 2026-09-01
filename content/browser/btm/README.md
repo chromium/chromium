@@ -46,6 +46,12 @@ automatically deletes the site's storage (eTLD+1) after a brief grace period.
   focuses on incidental parties (sites without meaningful user interaction) and
   may not be effective against sites with substantial first-party engagement.
 
+## Previous Name
+
+Chromium's BTM implementation was originally called "DIPS". As such, there are
+artifacts of the original name in BTM code, where changing names would be
+difficult, such as in histogram and enum names and the BTM database filepath.
+
 ## Further Reading
 
 - BTM Spec: https://privacycg.github.io/nav-tracking-mitigations/#bounce-tracking-mitigations

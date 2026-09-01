@@ -1119,7 +1119,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldEnableBtm(content::BrowserContext* browser_context) override;
   void OnBtmServiceCreated(content::BrowserContext* browser_context,
-                           content::BtmService* dips_service) override;
+                           content::BtmService* btm_service) override;
   uint64_t GetBtmRemoveMask() override;
   bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) override;
 
