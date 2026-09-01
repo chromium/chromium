@@ -66,13 +66,16 @@ inline constexpr std::string_view kSeedRejectionReasonHistogram =
 struct MisconfiguredEntropyResult {
   bool is_misconfigured;
 
-  // These fields provide additional information about the seed's layers
-  // They are std::nullopt if `is_misconfigured` is true, as the conditions they
+  // These fields provide additional information about the seed's layers. They
+  // are std::nullopt if `is_misconfigured` is true, as the conditions they
   // represent may not have been fully evaluated. Otherwise, when
-  // `is_misconfigured` is false, these fields are set. It is an error for both
+  // `is_misconfigured` is false, these fields are set. On platforms on which
+  // limited entropy randomization has launched, it is an error for both
   // `seed_has_active_limited_layer` and `seed_has_active_low_layer` to be true
-  // at the same time, that scenario should result in `is_misconfigured` being
-  // true.
+  // at the same time. That scenario should result in `is_misconfigured` being
+  // true. On platforms on which limited entropy randomization is being
+  // experimented with (on Android WebView), at most one bit's worth of
+  // entropy-consuming studies can be constrained to a limited layer.
   std::optional<bool> seed_has_active_limited_layer;
   std::optional<bool> seed_has_active_low_layer;
 };

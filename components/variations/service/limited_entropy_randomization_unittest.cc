@@ -585,6 +585,74 @@ TEST_F(LimitedEntropyRandomizationTest,
 }
 
 TEST_F(LimitedEntropyRandomizationTest,
+       AllowSimultaneousLowEntropyAndOneBitOfLimitedEntropyOnAndroidWebView) {
+  // Create LOW and LIMITED entropy layers.
+  std::vector<Layer> test_layers;
+  test_layers.push_back(CreateLayer(
+      kLowEntropyLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LOW,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
+  test_layers.push_back(CreateLayer(
+      kLimitedEntropyLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LIMITED,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
+
+  std::vector<Study> test_studies;
+  // Create a LOW-layer-constrained, entropy-consuming study.
+  test_studies.push_back(CreateTestStudy(
+      CreateExperimentsWithTwoBitsOfEntropy(),
+      CreateLayerMemberReference(kLowEntropyLayerId, {kTestLayerMemberId})));
+  // Create a layerless, entropy-consuming study.
+  test_studies.push_back(
+      CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy()));
+  // Create a limited-layer-constrained study with a single weighted group with
+  // an experiment ID. 1 bit of entropy is consumed because the study applies to
+  // half of the client population.
+  test_studies.push_back(
+      CreateTestStudy({CreateGoogleWebExperiment(100, 100001)},
+                      CreateLayerMemberReference(kLimitedEntropyLayerId,
+                                                 {kTestLayerMemberId})));
+
+  client_state_.platform = Study::PLATFORM_ANDROID_WEBVIEW;
+  MisconfiguredEntropyResult result = SeedHasMisconfiguredEntropy(
+      client_state_, CreateTestSeed(test_layers, test_studies),
+      GetMaxLimitedEntropyInBits(client_state_.platform));
+  EXPECT_FALSE(result.is_misconfigured);
+  ASSERT_TRUE(result.seed_has_active_low_layer.has_value());
+  EXPECT_TRUE(result.seed_has_active_low_layer.value());
+  ASSERT_TRUE(result.seed_has_active_limited_layer.has_value());
+  EXPECT_TRUE(result.seed_has_active_limited_layer.value());
+  histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
+}
+
+TEST_F(LimitedEntropyRandomizationTest,
+       SeedIsMisconfiguredWhenUsingOverOneBitOfLimitedEntropyOnAndroidWebView) {
+  // Create a LIMITED entropy layer with a 20-slot layer member.
+  std::vector<Layer> test_layers;
+  test_layers.push_back(CreateLayer(
+      kLimitedEntropyLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LIMITED,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 19}})}));
+
+  std::vector<Study> test_studies;
+  // Create a limited-layer-constrained study with a single weighted group with
+  // an experiment ID. Roughly -log2(20/100) = 2.32 bits of entropy are consumed
+  // because the study applies to 20% of the client population.
+  test_studies.push_back(
+      CreateTestStudy({CreateGoogleWebExperiment(100, 100001)},
+                      CreateLayerMemberReference(kLimitedEntropyLayerId,
+                                                 {kTestLayerMemberId})));
+
+  client_state_.platform = Study::PLATFORM_ANDROID_WEBVIEW;
+  MisconfiguredEntropyResult result = SeedHasMisconfiguredEntropy(
+      client_state_, CreateTestSeed(test_layers, test_studies),
+      GetMaxLimitedEntropyInBits(client_state_.platform));
+  EXPECT_TRUE(result.is_misconfigured);
+  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
+                                       kHighEntropyUsageBucket, 1);
+}
+
+TEST_F(LimitedEntropyRandomizationTest,
        SeedRejection_AllowNonActiveSimultaneousLowAndLimitedLayers_LOW) {
   std::vector<Layer> test_layers;
   std::vector<Study> test_studies;

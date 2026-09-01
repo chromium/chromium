@@ -189,6 +189,8 @@ double GetMaxLimitedEntropyInBits(Study::Platform platform) {
     case Study::PLATFORM_CHROMEOS:
       return 16.0;
     default:
+      // TODO(crbug.com/546673601): Return 13 bits for Android WebView once
+      // limited entropy experimentation (with just 1 bit) has concluded.
       return 1.0;
   }
 }
@@ -278,8 +280,14 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
 #undef LOOP_SCOPED_CRASH_KEYS
   }
 
-  // Limited and low entropy systems should not be active at the same time.
-  if (active_limited_layer && (active_low_layer || num_legacy_studies > 0)) {
+  // Entropy-consuming studies can be randomized with low entropy or limited
+  // entropy on only Android WebView while experimentation is underway.
+  //
+  // TODO(crbug.com/546673601): Disallow entropy-consuming Android WebView
+  // studies from using low entropy when the seed has limited-layer-constrained
+  // studies.
+  if (client_state.platform != Study::PLATFORM_ANDROID_WEBVIEW &&
+      active_limited_layer && (active_low_layer || num_legacy_studies > 0)) {
     SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "legacy_studies", num_legacy_studies);
     LogSeedRejectionReason(SeedRejectionReason::kActiveLowAndLimitedEntropy,
                            /*study=*/nullptr, active_limited_layer,
