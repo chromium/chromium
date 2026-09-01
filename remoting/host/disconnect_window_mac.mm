@@ -335,6 +335,12 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
     // Pull the window up to Status Level so that it always displays.
     [self setLevel:NSStatusWindowLevel];
+
+    // Allow the window to join all spaces, appear with full-screen windows, and
+    // remain stationary during Mission Control / Exposé.
+    self.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
+                              NSWindowCollectionBehaviorFullScreenAuxiliary |
+                              NSWindowCollectionBehaviorStationary;
   }
   return self;
 }

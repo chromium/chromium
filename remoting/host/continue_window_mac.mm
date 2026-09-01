@@ -114,6 +114,9 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
     // Leave the dock and menu bar exposed so the user has some basic level
     // of control (like they can quit Chromium).
     shade.level = NSModalPanelWindowLevel - 1;
+    shade.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
+                               NSWindowCollectionBehaviorFullScreenAuxiliary |
+                               NSWindowCollectionBehaviorStationary;
     [shade orderFront:nil];
     [_shades addObject:shade];
   }
@@ -142,6 +145,10 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   NSWindow* continue_window = _continue_alert.window;
   [continue_window center];
   continue_window.level = NSModalPanelWindowLevel;
+  continue_window.collectionBehavior =
+      NSWindowCollectionBehaviorCanJoinAllSpaces |
+      NSWindowCollectionBehaviorFullScreenAuxiliary |
+      NSWindowCollectionBehaviorStationary;
   [continue_window orderWindow:NSWindowAbove
                     relativeTo:_shades.lastObject.windowNumber];
   [continue_window makeKeyWindow];
