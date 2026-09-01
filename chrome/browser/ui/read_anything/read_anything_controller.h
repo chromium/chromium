@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -200,6 +202,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   void OnSoftNavigation();
 
+  // Called when the Reading Mode side panel entry is about to be hidden.
+  void OnSidePanelWillHide(SidePanelEntryHideReason side_panel_reason);
+
  private:
   // Saves the presentation state to the user's preferences.
   void SavePresentationPreference(PresentationState state);
@@ -252,6 +257,14 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Used to ensure we keep transitions between RM UI states ( Immersive -> SP
   // and vice-versa) as part of the same RM session.
   bool is_presentation_transitioning_ = false;
+
+  // Stores the specific reason why this controller is closing the side panel
+  // programmatically (e.g. renderer crash or presentation mode switch).
+  // This ensures observers receive the accurate ReadAnythingCloseReason when
+  // OnSidePanelWillHide() is invoked. If this value is empty at that time, then
+  // the side panel was closed a different way, determined by the
+  // SidePanelEntryHideReason.
+  std::optional<ReadAnythingCloseReason> pending_side_panel_close_reason_;
 
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<
