@@ -40,3 +40,29 @@ source_set("unit_tests") {
     "//ui/views",
   ]
 }
+
+source_set("save_to_memory_bank_bubble_controller") {
+  public = [ "save_to_memory_bank_bubble_controller.h" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+}
+
+source_set("save_to_memory_bank_bubble_controller_impl") {
+  sources = [ "save_to_memory_bank_bubble_controller.cc" ]
+  public_deps = [
+    ":save_to_memory_bank_bubble_controller",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":save_to_memory_bank_bubble_view",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+}

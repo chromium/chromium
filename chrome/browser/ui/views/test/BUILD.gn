@@ -25,6 +25,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/views/frame:multi_contents_drop_target_view",
+      "//chrome/browser/ui/views/frame:multi_contents_resize_area",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/tabs:tab_strip",
       "//chrome/browser/ui/views/tabs/common",

@@ -10,8 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -114,8 +115,8 @@ void PostCallbackOnBrowserActivation(
     const BrowserWindowInterface* browser,
     ui::ElementIdentifier id,
     base::OnceCallback<void(bool)> view_and_element_activated_callback) {
-  views::Widget* widget =
-      BrowserView::GetBrowserViewForBrowser(browser)->GetWidget();
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      browser->GetWindow()->GetNativeWindow());
   base::WeakPtr<ViewVisibleInActiveWidgetNotifier> notifier =
       ViewVisibleInActiveWidgetNotifier::Create(
           widget, id, std::move(view_and_element_activated_callback));

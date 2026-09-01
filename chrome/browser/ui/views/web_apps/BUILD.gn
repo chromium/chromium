@@ -290,10 +290,15 @@ source_set("image_carousel_view") {
 
 source_set("view_visible_in_active_widget_notifier") {
   public = [ "view_visible_in_active_widget_notifier.h" ]
+  sources = [ "view_visible_in_active_widget_notifier.cc" ]
   public_deps = [
     "//base",
     "//ui/base",
     "//ui/base/interaction",
     "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/web_applications",
   ]
 }

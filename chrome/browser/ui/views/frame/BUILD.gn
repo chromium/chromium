@@ -413,3 +413,81 @@ source_set("contents_border_controller") {
   public = [ "contents_border_controller.h" ]
   public_deps = [ "//base" ]
 }
+
+source_set("multi_contents_background_view") {
+  public = [ "multi_contents_background_view.h" ]
+  public_deps = [ "//ui/views" ]
+}
+
+source_set("multi_contents_background_view_impl") {
+  sources = [ "multi_contents_background_view.cc" ]
+  public_deps = [
+    ":multi_contents_background_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//ui/base/metadata",
+    "//ui/compositor",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("multi_contents_resize_area") {
+  public = [ "multi_contents_resize_area.h" ]
+  public_deps = [
+    "//base",
+    "//components/split_tabs",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
+  ]
+}
+
+source_set("multi_contents_resize_area_impl") {
+  sources = [ "multi_contents_resize_area.cc" ]
+  public_deps = [
+    ":multi_contents_resize_area",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/split_tabs",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+if (is_win) {
+  source_set("windows_caption_button") {
+    public = [ "windows_caption_button.h" ]
+    public_deps = [
+      ":windows_icon_painter",
+      "//base",
+      "//chrome/browser/ui:view_ids",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+
+  source_set("windows_caption_button_impl") {
+    sources = [ "windows_caption_button.cc" ]
+    public_deps = [
+      ":windows_caption_button",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_view_layout_params",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/frame",
+      "//ui/base",
+      "//ui/gfx",
+    ]
+  }
+}

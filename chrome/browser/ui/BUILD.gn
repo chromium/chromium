@@ -2384,8 +2384,6 @@ static_library("ui") {
       "views/frame/browser_native_widget_factory_aura.cc",
       "views/frame/browser_window_property_manager_win.cc",
       "views/frame/browser_window_property_manager_win.h",
-      "views/frame/windows_caption_button.cc",
-      "views/frame/windows_caption_button.h",
       "views/frame/windows_taskbar_icon_updater.cc",
       "views/frame/windows_taskbar_icon_updater.h",
       "views/network_profile_bubble_view.cc",
@@ -2491,8 +2489,6 @@ static_library("ui") {
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
       "views/constrained_web_dialog_delegate_views.cc",
-      "views/context_hub/save_to_memory_bank_bubble_controller.cc",
-      "views/context_hub/save_to_memory_bank_bubble_controller.h",
       "views/extensions/extension_install_dialog_view.cc",
       "views/extensions/extension_install_dialog_view.h",
       "views/extensions/extension_view_utils.cc",
@@ -2556,10 +2552,6 @@ static_library("ui") {
       "views/frame/layout/browser_view_tabbed_layout_impl.h",
       "views/frame/main_background_region_view.cc",
       "views/frame/main_background_region_view.h",
-      "views/frame/multi_contents_background_view.cc",
-      "views/frame/multi_contents_background_view.h",
-      "views/frame/multi_contents_resize_area.cc",
-      "views/frame/multi_contents_resize_area.h",
       "views/frame/multi_contents_view.cc",
       "views/frame/multi_contents_view.h",
       "views/frame/multi_contents_view_mini_toolbar.cc",
@@ -2610,7 +2602,6 @@ static_library("ui") {
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_impl.cc",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_impl.h",
-      "views/web_apps/view_visible_in_active_widget_notifier.cc",
       "views/web_apps/web_app_detailed_install_dialog.cc",
       "views/web_apps/web_app_diy_install_dialog.cc",
       "views/web_apps/web_app_install_dialog_delegate.cc",
@@ -2764,6 +2755,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/commerce",
       "//chrome/browser/ui/views/commerce:impl",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_controller",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_controller_impl",
       "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
       "//chrome/browser/ui/views/desktop_capture",
       "//chrome/browser/ui/views/desktop_capture:impl",
@@ -2792,7 +2785,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:contents_separator",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_stub",
+      "//chrome/browser/ui/views/frame:multi_contents_background_view",
+      "//chrome/browser/ui/views/frame:multi_contents_background_view_impl",
       "//chrome/browser/ui/views/frame:multi_contents_drop_target_view",
+      "//chrome/browser/ui/views/frame:multi_contents_resize_area",
+      "//chrome/browser/ui/views/frame:multi_contents_resize_area_impl",
       "//chrome/browser/ui/views/frame:multi_contents_view_delegate",
       "//chrome/browser/ui/views/frame:multi_contents_view_drop_target_controller",
       "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout_delegate",
@@ -2948,7 +2945,14 @@ static_library("ui") {
       "//chrome/browser/ui/views:global_error_bubble_view",
       "//chrome/browser/ui/views:incognito_clear_browsing_data_dialog",
       "//chrome/browser/ui/views:upgrade_notification_controller",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_controller",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_controller_impl",
       "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
+      "//chrome/browser/ui/views/frame:multi_contents_background_view",
+      "//chrome/browser/ui/views/frame:multi_contents_background_view_impl",
+      "//chrome/browser/ui/views/frame:multi_contents_resize_area",
+      "//chrome/browser/ui/views/frame:multi_contents_resize_area_impl",
+      "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
@@ -3295,7 +3299,11 @@ static_library("ui") {
       deps += [
         ":accessibility_util",
         "//chrome/browser/ui/views/frame:system_menu_insertion_delegate_win",
+        "//chrome/browser/ui/views/frame:windows_caption_button",
+        "//chrome/browser/ui/views/frame:windows_caption_button_impl",
       ]
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/views/frame:windows_caption_button_impl" ]
     }
 
     if (is_chromeos) {
