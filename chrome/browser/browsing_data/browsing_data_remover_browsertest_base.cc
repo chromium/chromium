@@ -25,6 +25,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -85,6 +87,10 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   ~DownloadManagerWaiter() override { download_manager_->RemoveObserver(this); }
 
   void WaitForInitialized() {
+    if (auto* service = DownloadCoreServiceFactory::GetForBrowserContext(
+            download_manager_->GetBrowserContext())) {
+      service->InitializeHistory();
+    }
     initialized_ = download_manager_->IsManagerInitialized();
     if (initialized_)
       return;
