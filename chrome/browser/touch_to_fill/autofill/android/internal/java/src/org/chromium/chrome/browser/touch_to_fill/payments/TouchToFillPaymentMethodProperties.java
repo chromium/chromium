@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /** Properties defined here reflect the visible state of the TouchToFillPaymentMethod component. */
-class TouchToFillPaymentMethodProperties {
+final class TouchToFillPaymentMethodProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
     static final PropertyModel.WritableIntPropertyKey CURRENT_SCREEN =
@@ -165,7 +165,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Metadata associated with a card's image. */
-    static class CardImageMetaData {
+    static final class CardImageMetaData {
         public final int iconId;
         public final GURL artUrl;
 
@@ -183,7 +183,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for a credit card suggestion entry in the TouchToFill sheet for payments. */
-    static class CreditCardSuggestionProperties {
+    static final class CreditCardSuggestionProperties {
         static final PropertyModel.WritableObjectPropertyKey<Drawable> CARD_IMAGE =
                 new PropertyModel.WritableObjectPropertyKey<>("card_image");
         static final PropertyModel.ReadableObjectPropertyKey<GURL> CARD_ART_URL =
@@ -226,7 +226,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for an IBAN entry in the TouchToFill sheet for payments. */
-    static class IbanProperties {
+    static final class IbanProperties {
         static final PropertyModel.ReadableObjectPropertyKey<String> IBAN_VALUE =
                 new PropertyModel.ReadableObjectPropertyKey<>("iban_value");
         static final PropertyModel.ReadableObjectPropertyKey<String> IBAN_NICKNAME =
@@ -242,7 +242,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for a loyalty card entry in the TouchToFill sheet for payments. */
-    static class LoyaltyCardProperties {
+    static final class LoyaltyCardProperties {
         static final PropertyModel.ReadableObjectPropertyKey<LoyaltyCard> LOYALTY_CARD =
                 new PropertyModel.ReadableObjectPropertyKey<>("loyalty_card");
         static final PropertyModel.WritableObjectPropertyKey<Drawable> LOYALTY_CARD_ICON =
@@ -260,7 +260,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for the "All your loyalty cards" item in the TouchToFill sheet for payments. */
-    static class AllLoyaltyCardsItemProperties {
+    static final class AllLoyaltyCardsItemProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("all_loyalty_cards_on_click_action");
 
@@ -270,7 +270,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for the BNPL ToS screen item in the TouchToFill sheet for payments. */
-    static class BnplIssuerTosTextItemProperties {
+    static final class BnplIssuerTosTextItemProperties {
         static final PropertyModel.ReadableIntPropertyKey BNPL_TOS_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("bnpl_tos_icon_id");
         static final PropertyModel.ReadableObjectPropertyKey<CharSequence> DESCRIPTION_TEXT =
@@ -285,7 +285,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of the terms message in the TouchToFill
      * sheet for payments.
      */
-    static class TermsLabelProperties {
+    static final class TermsLabelProperties {
         static final PropertyModel.ReadableIntPropertyKey TERMS_LABEL_TEXT_ID =
                 new PropertyModel.ReadableIntPropertyKey("terms_label_text_id");
         static final PropertyKey[] ALL_TERMS_LABEL_KEYS = {TERMS_LABEL_TEXT_ID};
@@ -294,7 +294,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for a BNPL entry in the TouchToFill sheet for payments. */
-    static class BnplSuggestionProperties {
+    static final class BnplSuggestionProperties {
         static final PropertyModel.ReadableIntPropertyKey BNPL_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("bnpl_icon_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> PRIMARY_TEXT =
@@ -322,7 +322,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for a progress icon entry in the TouchToFill sheet for payments. */
-    static class ProgressIconProperties {
+    static final class ProgressIconProperties {
         static final PropertyModel.ReadableIntPropertyKey PROGRESS_CONTENT_DESCRIPTION_ID =
                 new PropertyModel.ReadableIntPropertyKey("progress_content_description_id");
 
@@ -332,7 +332,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for a BNPL issuer entry in the TouchToFill sheet for payments. */
-    static class BnplIssuerContextProperties {
+    static final class BnplIssuerContextProperties {
         static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("issuer_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_SELECTION_TEXT =
@@ -362,7 +362,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of the header in the TouchToFill sheet for
      * payments.
      */
-    static class HeaderProperties {
+    static final class HeaderProperties {
         static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
         static final PropertyModel.ReadableIntPropertyKey TITLE_ID =
@@ -383,7 +383,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of the BNPL ToS header in the TouchToFill
      * sheet for payments.
      */
-    static class BnplTosHeaderProperties {
+    static final class BnplTosHeaderProperties {
         static final PropertyModel.ReadableIntPropertyKey ISSUER_IMAGE_DRAWABLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("issuer_image_drawable_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_TITLE_STRING =
@@ -403,7 +403,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of the BNPL header for selection and
      * progress screen in the TouchToFill sheet for payments.
      */
-    static class BnplSelectionProgressHeaderProperties {
+    static final class BnplSelectionProgressHeaderProperties {
         static final PropertyModel.ReadableBooleanPropertyKey BNPL_BACK_BUTTON_ENABLED =
                 new PropertyModel.ReadableBooleanPropertyKey("bnpl_back_button_enabled");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> BNPL_ON_BACK_BUTTON_CLICKED =
@@ -417,7 +417,7 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /** Properties for an error description entry in the TouchToFill sheet for payments. */
-    static class ErrorDescriptionProperties {
+    static final class ErrorDescriptionProperties {
         static final PropertyModel.ReadableObjectPropertyKey<String> ERROR_DESCRIPTION_STRING =
                 new PropertyModel.ReadableObjectPropertyKey<>("error_description_string");
 
@@ -430,7 +430,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of a button in the TouchToFill sheet for
      * payments.
      */
-    static class ButtonProperties {
+    static final class ButtonProperties {
         static final PropertyModel.ReadableIntPropertyKey TEXT_ID =
                 new PropertyModel.ReadableIntPropertyKey("text_id");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
@@ -445,7 +445,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of the footer in the TouchToFill sheet for
      * payments.
      */
-    static class FooterProperties {
+    static final class FooterProperties {
         static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SCAN_CREDIT_CARD =
                 new PropertyModel.WritableBooleanPropertyKey("should_show_scan_credit_card");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
@@ -469,7 +469,7 @@ class TouchToFillPaymentMethodProperties {
      * Properties defined here reflect the visible state of the BNPL terms for selection and
      * progress screen in the TouchToFill sheet for payments.
      */
-    static class BnplSelectionProgressTermsProperties {
+    static final class BnplSelectionProgressTermsProperties {
         static final PropertyModel.ReadableObjectPropertyKey<CharSequence> TERMS_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey<>("terms_text");
         static final PropertyModel.ReadableBooleanPropertyKey TERMS_LINK_ENABLED =
@@ -482,7 +482,7 @@ class TouchToFillPaymentMethodProperties {
     /** Properties defined here reflect the visible state of the footer showing legal messages. */
     // TODO(crbug.com/486199794): Change TosFooterProperties to only contain a CharSequence
     // PropertyModel.
-    static class TosFooterProperties {
+    static final class TosFooterProperties {
         static final PropertyModel.ReadableObjectPropertyKey<List<LegalMessageLine>>
                 LEGAL_MESSAGE_LINES =
                         new PropertyModel.ReadableObjectPropertyKey<>("legal_message_lines");

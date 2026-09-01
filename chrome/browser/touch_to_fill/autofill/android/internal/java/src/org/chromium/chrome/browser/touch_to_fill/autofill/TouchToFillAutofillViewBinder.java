@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * PropertyModel} to the suitable method in {@link TouchToFillAutofillView}.
  */
 @NullMarked
-class TouchToFillAutofillViewBinder {
+final class TouchToFillAutofillViewBinder {
     static void bind(PropertyModel model, TouchToFillAutofillView view, PropertyKey propertyKey) {
         if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));

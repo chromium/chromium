@@ -100,7 +100,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Provides functions that map {@link TouchToFillPaymentMethodProperties} changes in a {@link
  * PropertyModel} to the suitable method in {@link TouchToFillPaymentMethodView}.
  */
-class TouchToFillPaymentMethodViewBinder {
+final class TouchToFillPaymentMethodViewBinder {
     static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
     static final float COMPLETE_OPACITY_ALPHA = 1.0f;
 

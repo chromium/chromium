@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Properties defined here reflect the visible state of the TouchToFillAutofill component. */
 @NullMarked
-class TouchToFillAutofillProperties {
+final class TouchToFillAutofillProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
     static final ReadableObjectPropertyKey<Runnable> ACKNOWLEDGE_HANDLER =
             new ReadableObjectPropertyKey<>("acknowledge_handler");
