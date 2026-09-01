@@ -16,6 +16,7 @@
 #include "components/sessions/content/navigation_task_id.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_entry_restore_context.h"
@@ -105,6 +106,32 @@ void SetExtendedInfoForTest(content::NavigationEntry* entry) {
                      std::make_unique<TestData>(kExtendedInfoValue1));
   entry->SetUserData(kExtendedInfoKey2,
                      std::make_unique<TestData>(kExtendedInfoValue2));
+}
+
+// Stands in for a real URL rewrite (such as the New Tab Page one), which is
+// registered by the embedder and so is not present in a components-level unit
+// test. ToNavigationEntry() reaches the handler through the process-wide
+// BrowserURLHandler singleton, which has no removal API, so the handler is
+// scoped to sentinel URLs and cannot affect any other test.
+constexpr char kRewriteFromUrl[] = "https://sentinel.example.test/";
+constexpr char kRewriteToUrl[] = "https://rewritten.example.test/target";
+
+// A second sentinel whose handler rewrites to an empty GURL, to exercise the
+// fallback for that case.
+constexpr char kRewriteToEmptyFromUrl[] =
+    "https://sentinel-empty.example.test/";
+
+bool RewriteSentinelUrlForTest(GURL* url,
+                               content::BrowserContext* browser_context) {
+  if (*url == GURL(kRewriteFromUrl)) {
+    *url = GURL(kRewriteToUrl);
+    return true;
+  }
+  if (*url == GURL(kRewriteToEmptyFromUrl)) {
+    *url = GURL();
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -380,6 +407,61 @@ TEST_F(ContentSerializedNavigationBuilderTest, SetPasswordState) {
                                entry.get());
   EXPECT_EQ(SerializedNavigationEntry::NO_PASSWORD_FIELD,
             GetPasswordStateFromNavigation(entry.get()));
+}
+
+// A restored entry with no PageState must keep the URL that
+// BrowserURLHandler rewrote it to, rather than reverting to the virtual URL.
+// Otherwise the entry navigates to the unrewritten URL, and re-serializes that
+// state into the next session. See https://crbug.com/40244589.
+TEST_F(ContentSerializedNavigationBuilderTest,
+       ToNavigationEntryWithoutPageStateKeepsRewrittenUrl) {
+  content::BrowserTaskEnvironment test_environment;
+  content::TestBrowserContext browser_context;
+
+  content::BrowserURLHandler::GetInstance()->AddHandlerPair(
+      &RewriteSentinelUrlForTest, content::BrowserURLHandler::null_handler());
+
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  navigation.set_virtual_url(GURL(kRewriteFromUrl));
+  navigation.set_encoded_page_state(std::string());
+
+  std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
+      content::NavigationEntryRestoreContext::Create();
+  const std::unique_ptr<content::NavigationEntry> entry(
+      ContentSerializedNavigationBuilder::ToNavigationEntry(
+          &navigation, &browser_context, restore_context.get()));
+
+  // The rewritten URL is what the entry navigates to; the virtual URL is what
+  // the user sees.
+  EXPECT_EQ(GURL(kRewriteToUrl), entry->GetURL());
+  EXPECT_EQ(GURL(kRewriteFromUrl), entry->GetVirtualURL());
+}
+
+// If a handler rewrites to an empty URL, the virtual URL is still used. Nothing
+// is expected to do this; the fallback exists so that synthesizing from the
+// entry's URL can never produce a less valid PageState than synthesizing from
+// the virtual URL would have.
+TEST_F(ContentSerializedNavigationBuilderTest,
+       ToNavigationEntryWithoutPageStateFallsBackWhenRewriteIsEmpty) {
+  content::BrowserTaskEnvironment test_environment;
+  content::TestBrowserContext browser_context;
+
+  content::BrowserURLHandler::GetInstance()->AddHandlerPair(
+      &RewriteSentinelUrlForTest, content::BrowserURLHandler::null_handler());
+
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  navigation.set_virtual_url(GURL(kRewriteToEmptyFromUrl));
+  navigation.set_encoded_page_state(std::string());
+
+  std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
+      content::NavigationEntryRestoreContext::Create();
+  const std::unique_ptr<content::NavigationEntry> entry(
+      ContentSerializedNavigationBuilder::ToNavigationEntry(
+          &navigation, &browser_context, restore_context.get()));
+
+  EXPECT_EQ(GURL(kRewriteToEmptyFromUrl), entry->GetURL());
 }
 
 }  // namespace sessions

@@ -115,9 +115,27 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   if (navigation->encoded_page_state_.empty()) {
     // Ensure that the deserialized/restored content::NavigationEntry (and
     // the content::FrameNavigationEntry underneath) has a valid PageState.
-    entry->SetPageState(
-        blink::PageState::CreateFromURL(navigation->virtual_url_),
-        restore_context);
+    //
+    // Synthesize the PageState from the entry's URL rather than from
+    // |navigation->virtual_url_|. CreateNavigationEntry() above ran the URL
+    // through BrowserURLHandler::RewriteURLIfNecessary(), so |entry| already
+    // holds the rewritten URL (e.g. the concrete New Tab Page that
+    // chrome://newtab maps to) while its virtual URL stays the URL the user
+    // sees. Building the PageState from the virtual URL discards that rewrite:
+    // SetPageState() regenerates the FrameNavigationEntry from the PageState,
+    // so the entry ends up with the unrewritten URL as its actual URL and
+    // navigates to it. That state also persists, because GetPageState()
+    // re-serializes it into the next session.
+    //
+    // For a URL that no handler rewrites the two are the same, so this is a
+    // no-op. It differs only for rewritten URLs, and the rewritten URL is what
+    // a PageState is meant to describe. Falls back to the virtual URL if a
+    // handler produced an empty one, so this cannot build a less valid
+    // PageState than using the virtual URL unconditionally would.
+    const GURL& page_state_url =
+        entry->GetURL().is_empty() ? navigation->virtual_url_ : entry->GetURL();
+    entry->SetPageState(blink::PageState::CreateFromURL(page_state_url),
+                        restore_context);
 
     // The |navigation|-based referrer set below might be inconsistent with the
     // referrer embedded inside the PageState set above.  Nevertheless, to
