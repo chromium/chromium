@@ -712,31 +712,60 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
   // Merge tags from every suitable on-standby candidate for this key, matching
   // the browser-driven path (MaybePrefetch), so the enacted preload carries
   // all applicable Sec-Speculation-Tags rather than just this candidate's.
-  candidate->tags = GetMergedSpeculationTagsFromSuitableCandidates(
-      key, enacting_predictor, confidence, eagerness_to_exclude);
+  std::vector<std::optional<std::string>> merged_tags =
+      GetMergedSpeculationTagsFromSuitableCandidates(
+          key, enacting_predictor, confidence, eagerness_to_exclude);
+
+  // An empty merge means the browser considered none of the on-standby
+  // candidates under `key` suitable, even though the key itself is on standby.
+  // The renderer picks candidates using its own mirror of the browser's
+  // eagerness sets, so the two normally agree, but IsSuitableCandidate() also
+  // applies browser-only state the renderer cannot see (today: the ML model
+  // superseding the hover heuristic), and the mirrors can drift. Neither is a
+  // reason to crash, so treat "nothing suitable" as a first-class outcome and
+  // decline, as the browser-driven path does when
+  // GetMatchedPreloadingCandidate() returns nullopt. Enacting anyway would
+  // leave `candidate->tags` empty, which violates the non-empty invariant
+  // documented on blink.mojom.SpeculationCandidate and trips a CHECK() in the
+  // SpeculationRulesTags constructor.
+  const bool suitable_candidate_found = !merged_tags.empty();
 
   bool enacted = false;
-  switch (candidate->action) {
-    case blink::mojom::SpeculationAction::kPrefetch:
-      AddPreloadingPrediction(url, enacting_predictor, confidence);
-      // The renderer may enact both a prefetch and a prerender for one
-      // pointerdown; an in-progress prerender wins, so skip the prefetch.
-      if (ShouldWaitForPrerenderResult(url)) {
-        return;
-      }
-      enacted =
-          prefetcher_.MaybePrefetch(std::move(candidate), enacting_predictor);
-      break;
-    case blink::mojom::SpeculationAction::kPrerender:
-    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
-      enacted = prerenderer_->MaybePrerender(candidate, enacting_predictor,
-                                             confidence);
-      // Avoid a duplicate prediction when one is already recorded against
-      // another WebContents.
-      if (!enacted || !PredictionOccursInOtherWebContents(*candidate)) {
+  if (!suitable_candidate_found) {
+    // Still record the prediction. A PreloadingPrediction says a predictor
+    // expected this navigation, which is scored against where the user actually
+    // went; that is a separate axis from whether a preload was attempted, and
+    // the heuristic really did fire here. It also has to be recorded here:
+    // OnPointerDown()/OnPointerHover() return early once the renderer reports
+    // that it enacted, so HandleRendererOwnedHeuristic() -- which records the
+    // prediction on the "renderer did not enact" path -- never runs. Dropping
+    // it would lose the prediction entirely and undercount this predictor
+    // relative to both the browser-driven and not-enacted paths.
+    AddPreloadingPrediction(url, enacting_predictor, confidence);
+  } else {
+    candidate->tags = std::move(merged_tags);
+    switch (candidate->action) {
+      case blink::mojom::SpeculationAction::kPrefetch:
         AddPreloadingPrediction(url, enacting_predictor, confidence);
-      }
-      break;
+        // The renderer may enact both a prefetch and a prerender for one
+        // pointerdown; an in-progress prerender wins, so skip the prefetch.
+        if (ShouldWaitForPrerenderResult(url)) {
+          return;
+        }
+        enacted =
+            prefetcher_.MaybePrefetch(std::move(candidate), enacting_predictor);
+        break;
+      case blink::mojom::SpeculationAction::kPrerender:
+      case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+        enacted = prerenderer_->MaybePrerender(candidate, enacting_predictor,
+                                               confidence);
+        // Avoid a duplicate prediction when one is already recorded against
+        // another WebContents.
+        if (!enacted || !PredictionOccursInOtherWebContents(*candidate)) {
+          AddPreloadingPrediction(url, enacting_predictor, confidence);
+        }
+        break;
+    }
   }
 
   // If nothing more aggressive started (e.g. blocked by eligibility or resource
@@ -748,8 +777,14 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
     preconnector_.MaybePreconnect(url);
   }
 
-  // Mark as processed so other heuristics don't re-enact it.
-  MarkCandidateAsProcessed(key);
+  // Mark as processed so other heuristics don't re-enact it. If the browser
+  // found nothing suitable, leave the candidate on standby instead, so a later
+  // heuristic can still enact it: a heuristic the browser declined must not
+  // consume the candidate on its way out. Both MaybePrerenderForAction() and
+  // MaybePrefetch() skip the mark the same way.
+  if (suitable_candidate_found) {
+    MarkCandidateAsProcessed(key);
+  }
 }
 
 std::vector<std::optional<std::string>>

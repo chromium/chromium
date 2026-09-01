@@ -68,7 +68,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
                    const PrefetchType& prefetch_type,
                    const PreloadingPredictor& enacting_predictor,
                    const blink::mojom::Referrer& referrer,
-                   std::optional<SpeculationRulesTags> speculation_rules_tags,
+                   SpeculationRulesTags speculation_rules_tags,
                    const network::mojom::NoVarySearchPtr& no_vary_search_hint,
                    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);
 

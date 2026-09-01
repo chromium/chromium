@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -103,6 +105,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
             shell()->web_contents()->GetPrimaryMainFrame());
     auto candidate = blink::mojom::SpeculationCandidate::New();
+    candidate->tags = {std::nullopt};
     candidate->url = url;
     candidate->action = blink::mojom::SpeculationAction::kPrefetch;
     candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
