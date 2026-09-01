@@ -12,14 +12,12 @@
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
-#include "content/browser/bad_message.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -749,73 +747,6 @@ IN_PROC_BROWSER_TEST_P(BlobURLBrowserTestP,
 
   bool handle_null = EvalJs(shell(), "handle === null;").ExtractBool();
   EXPECT_FALSE(handle_null);
-}
-
-// Verifies that PDF processes cannot bind to BlobURLStore, using the associated
-// interface that is used by frames. See https://crbug.com/540051167.
-IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, BlobUrlBlockedForPdfProcess) {
-  WebContentsImpl* tab = static_cast<WebContentsImpl*>(shell()->web_contents());
-  GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
-
-  // Commit `url` as PDF content so that the resulting frame runs in a process
-  // whose SiteInfo has `is_pdf` set.
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
-
-  RenderFrameHostImpl* frame =
-      static_cast<RenderFrameHostImpl*>(tab->GetPrimaryMainFrame());
-  ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
-
-  // Listen for the renderer kill and bad message reason.
-  RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
-
-  // Executing `URL.createObjectURL` triggers PublicURLManager in the renderer
-  // to bind blink.mojom.BlobURLStore via the associated interface on
-  // RenderFrameHost. The browser must reject this and terminate the process.
-  std::ignore = ExecJs(frame, "URL.createObjectURL(new Blob(['payload']))");
-
-  EXPECT_EQ(bad_message::RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED,
-            kill_waiter.Wait());
-}
-
-// Verifies that PDF processes cannot bind to BlobURLStore, using the interface
-// broker that is used by threaded worklets. See https://crbug.com/540051167.
-IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
-                       BlobUrlWorkletReceiverBlockedForPdfProcess) {
-  WebContentsImpl* tab = static_cast<WebContentsImpl*>(shell()->web_contents());
-  // AudioWorklet requires a secure context (e.g., localhost).
-  GURL url = embedded_test_server()->GetURL("localhost", "/empty.html");
-
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  params.is_pdf = true;
-  NavigateToURLBlockUntilNavigationsComplete(
-      tab, params, 1, /*ignore_uncommitted_navigations=*/false);
-  ASSERT_TRUE(IsLastCommittedEntryOfPageType(tab, PAGE_TYPE_NORMAL));
-  ASSERT_EQ(url, tab->GetLastCommittedURL());
-
-  RenderFrameHostImpl* frame =
-      static_cast<RenderFrameHostImpl*>(tab->GetPrimaryMainFrame());
-  ASSERT_TRUE(frame->GetSiteInstance()->GetSiteInfo().is_pdf());
-
-  RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
-
-  // Creating an AudioWorklet triggers the renderer to request
-  // blink.mojom.BlobURLStore for the worklet via the BrowserInterfaceBroker.
-  std::ignore =
-      ExecJs(frame,
-             "const context = new OfflineAudioContext(1, 1, 44100);"
-             "context.audioWorklet.addModule('data:text/javascript,');");
-
-  EXPECT_EQ(bad_message::RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED,
-            kill_waiter.Wait());
 }
 
 }  // namespace content

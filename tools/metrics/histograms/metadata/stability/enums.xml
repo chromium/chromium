@@ -549,8 +549,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="369" label="BIBI_BIND_VIBRATION_MANAGER_FOR_FENCED_FRAME"/>
   <int value="370" label="RFH_BEGIN_NAVIGATION_NO_INITIATOR_TOKENS"/>
   <int value="371" label="RFHI_INVALID_CLIENT_SIDE_REDIRECT_URL"/>
-  <int value="372" label="RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED"/>
-  <int value="373" label="RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED"/>
+  <int value="372"
+      label="OBSOLETE_RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED"/>
+  <int value="373"
+      label="OBSOLETE_RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED"/>
   <int value="374" label="RFH_DOWNLOAD_URL_INVALID_REFERRER"/>
 </enum>
 

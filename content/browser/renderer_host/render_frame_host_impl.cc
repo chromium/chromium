@@ -13689,16 +13689,6 @@ bool RenderFrameHostImpl::IsFullCookieAccessAllowed() {
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Do not allow PDF renderers to access blob URLs, since they should never
-  // need them. Note that is_sandboxed() processes are legitimately allowed to
-  // create blob URLs with null origins, so CanAccessDataForOrigin() can't be
-  // used here. See also BindBlobUrlStoreReceiver.
-  if (GetSiteInstance()->GetSiteInfo().is_pdf()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED);
-    return;
-  }
 
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
@@ -13742,14 +13732,6 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
 void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Do not bind blink.mojom.BlobURLStore for PDF renderers (see comment in
-  // BindBlobUrlStoreAssociatedReceiver).
-  if (GetSiteInstance()->GetSiteInfo().is_pdf()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED);
-    return;
-  }
 
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
