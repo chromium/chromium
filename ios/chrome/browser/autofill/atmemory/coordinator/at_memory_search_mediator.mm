@@ -14,9 +14,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/at_memory/at_memory_manager.h"
+#import "components/autofill/core/browser/autofill_trigger_source.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
-#import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -180,7 +180,16 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 }
 
 - (void)openGranularFillForSearchResultAtIndex:(NSInteger)index {
-  // TODO(crbug.com/551917131) open granular fill
+  if (index < 0 || static_cast<size_t>(index) >= _suggestions.size()) {
+    return;
+  }
+
+  const autofill::Suggestion& suggestion = _suggestions[index];
+  if (suggestion.type != autofill::SuggestionType::kAtMemorySearchResult) {
+    return;
+  }
+
+  [self.searchResultHandler showAtMemoryGranularFill:suggestion];
 }
 
 #pragma mark - Private

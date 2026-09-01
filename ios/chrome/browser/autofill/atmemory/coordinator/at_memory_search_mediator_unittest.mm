@@ -81,6 +81,19 @@ class FakePersonalContextFirstRunService
 
 }  // namespace
 
+// Fake implementation of AtMemorySearchResultCommands to intercept granular
+// fill requests and verify it was called.
+@interface FakeAtMemorySearchResultHandler
+    : NSObject <AtMemorySearchResultCommands>
+@property(nonatomic, assign) BOOL wasCalled;
+@end
+
+@implementation FakeAtMemorySearchResultHandler
+- (void)showAtMemoryGranularFill:(const autofill::Suggestion&)suggestion {
+  self.wasCalled = YES;
+}
+@end
+
 class AtMemorySearchMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -259,6 +272,34 @@ TEST_F(AtMemorySearchMediatorTest,
 
   EXPECT_OCMOCK_VERIFY(mock_fill_handler);
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
+}
+
+// Tests that opening granular fill for a search result item forwards the
+// Suggestion to searchResultHandler.
+TEST_F(AtMemorySearchMediatorTest, OpenGranularFillAtIndex) {
+  CreateMediator();
+
+  FakeAtMemorySearchResultHandler* fake_handler =
+      [[FakeAtMemorySearchResultHandler alloc] init];
+  mediator_.searchResultHandler = fake_handler;
+
+  autofill::MemorySearchResults fake_results(
+      autofill::MemorySearchStatus::kFinalResponseSuccess);
+  fake_results.entries.push_back(
+      autofill::MemorySearchResult(autofill::MemoryDataType::kPassportNumber,
+                                   base::SysNSStringToUTF16(kPassportTypeName),
+                                   base::SysNSStringToUTF16(kPassportValue)));
+
+  std::u16string query_string = base::SysNSStringToUTF16(kSearchQuery);
+  EXPECT_CALL(*mock_query_service_, Query(std::u16string_view(query_string),
+                                          testing::_, testing::_, testing::_))
+      .WillOnce(base::test::RunCallback<3>(fake_results));
+
+  [mediator_ startSearchWithQuery:kSearchQuery];
+
+  [mediator_ openGranularFillForSearchResultAtIndex:0];
+
+  EXPECT_TRUE(fake_handler.wasCalled);
 }
 
 // Parameters for AtMemorySearchMediatorErrorTest.

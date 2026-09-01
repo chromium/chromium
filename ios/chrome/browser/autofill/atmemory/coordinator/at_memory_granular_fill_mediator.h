@@ -14,7 +14,7 @@
 @protocol AtMemoryGranularFillConsumer;
 
 namespace autofill {
-struct MemorySearchResult;
+struct Suggestion;
 }
 
 // Mediator for AtMemory granular fill.
@@ -29,8 +29,8 @@ struct MemorySearchResult;
 // Handler for AtMemory commands.
 @property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;
 
-// Initializes the mediator by moving `result`.
-- (instancetype)initWithResult:(autofill::MemorySearchResult&&)result
+// Initializes the mediator by moving `suggestion`.
+- (instancetype)initWithSuggestion:(autofill::Suggestion&&)suggestion
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

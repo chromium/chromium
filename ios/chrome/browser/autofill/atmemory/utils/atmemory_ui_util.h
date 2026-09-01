@@ -10,16 +10,16 @@
 @class AtMemoryGranularFillItem;
 
 namespace autofill {
-struct MemorySearchResult;
+struct Suggestion;
 }
 
-// Returns the granular fill title for `result`.
-NSString* GetAtMemoryGranularFillTitle(
-    const autofill::MemorySearchResult& result);
+// Returns the granular fill title for `suggestion`.
+NSString* GetAtMemoryGranularFillTitle(const autofill::Suggestion& suggestion);
 
-// Returns an array of AtMemoryGranularFillItem objects created from `result`.
-NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSearchResult(
-    const autofill::MemorySearchResult& result);
+// Returns an array of AtMemoryGranularFillItem objects created from
+// `suggestion`.
+NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSuggestion(
+    const autofill::Suggestion& suggestion);
 
 // Returns the accessibility identifier for the granular fill cell
 // corresponding to `attribute_name`.

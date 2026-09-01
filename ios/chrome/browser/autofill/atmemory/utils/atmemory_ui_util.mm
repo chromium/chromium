@@ -4,50 +4,45 @@
 
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 
+#import <variant>
+
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
-#import "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
-#import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 
-namespace {
+using autofill::Suggestion;
+using autofill::SuggestionType;
 
-// Resolves the attribute name string, falling back to i18n data type name.
-NSString* GetAttributeName(const std::u16string& type_name,
-                           autofill::MemoryDataType type) {
-  std::u16string name = type_name.empty()
-                            ? autofill::GetMemoryDataTypeNameForI18n(type)
-                            : type_name;
-  return base::SysUTF16ToNSString(name);
-}
-
-}  // namespace
-
-NSString* GetAtMemoryGranularFillTitle(
-    const autofill::MemorySearchResult& result) {
-  if (std::optional<autofill::AttributeType> attribute_type =
-          autofill::ToAttributeType(result.type)) {
-    return base::SysUTF16ToNSString(
-        attribute_type->entity_type().GetNameForI18n());
+NSString* GetAtMemoryGranularFillTitle(const Suggestion& suggestion) {
+  const Suggestion::AtMemoryPayload* payload =
+      std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload);
+  if (!payload) {
+    return @"";
   }
-  return GetAttributeName(result.type_name, result.type);
+  return base::SysUTF16ToNSString(payload->type_name);
 }
 
-NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSearchResult(
-    const autofill::MemorySearchResult& result) {
+NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSuggestion(
+    const Suggestion& suggestion) {
   NSMutableArray<AtMemoryGranularFillItem*>* items =
       [[NSMutableArray alloc] init];
 
-  for (const auto& metadata : result.metadata_list) {
-    if (!metadata.value.empty()) {
-      [items addObject:[[AtMemoryGranularFillItem alloc]
-                           initWithAttributeName:GetAttributeName(
-                                                     metadata.type_name,
-                                                     metadata.type)
-                                  attributeValue:base::SysUTF16ToNSString(
-                                                     metadata.value)]];
+  for (const Suggestion& child : suggestion.children) {
+    if (child.type != SuggestionType::kAtMemorySearchResult) {
+      continue;
     }
+    const Suggestion::AtMemoryPayload* child_payload =
+        std::get_if<Suggestion::AtMemoryPayload>(&child.payload);
+    if (!child_payload || child_payload->value.empty()) {
+      continue;
+    }
+    [items addObject:[[AtMemoryGranularFillItem alloc]
+                         initWithAttributeName:base::SysUTF16ToNSString(
+                                                   child_payload->type_name)
+                                attributeValue:base::SysUTF16ToNSString(
+                                                   child_payload->value)]];
   }
 
   return [items copy];

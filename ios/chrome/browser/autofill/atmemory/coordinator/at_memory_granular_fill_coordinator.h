@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace autofill {
-struct MemorySearchResult;
+struct Suggestion;
 }
 
 @protocol AtMemoryFillCommands;
@@ -23,11 +23,11 @@ struct MemorySearchResult;
 // Handler for fill commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
 
-- (instancetype)
-    initWithBaseNavigationController:
-        (UINavigationController*)navigationController
-                             browser:(Browser*)browser
-                              result:(const autofill::MemorySearchResult&)result
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser
+                                      suggestion:(const autofill::Suggestion&)
+                                                     suggestion
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
