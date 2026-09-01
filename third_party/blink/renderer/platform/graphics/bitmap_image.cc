@@ -365,7 +365,7 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
     }
   }
 
-  uint32_t stable_id = image.stable_id();
+  PaintImage::Id stable_id = image.stable_id();
   bool is_lazy_generated = image.IsLazyGenerated();
 
   const cc::PaintFlags* image_flags = &flags;

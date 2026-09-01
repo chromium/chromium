@@ -173,8 +173,9 @@ struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
     auto first =
         HashInts(blink::GetHash(const_cast<ImageFrameGenerator*>(p.gen_.get())),
                  blink::GetHash(p.size_));
-    auto second = HashInts(
-        blink::GetHash(static_cast<uint8_t>(p.alpha_option_)), p.client_id_);
+    auto second =
+        HashInts(blink::GetHash(static_cast<uint8_t>(p.alpha_option_)),
+                 blink::GetHash(p.client_id_));
     return HashInts(first, second);
   }
 

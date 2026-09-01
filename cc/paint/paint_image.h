@@ -150,7 +150,7 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
 // scale or animation frame.
 class CC_PAINT_EXPORT PaintImage {
  public:
-  using Id = int;
+  using Id = int64_t;
   using AnimationSequenceId = uint32_t;
   enum class AnimationSyncSequence : AnimationSequenceId {
     // All instances of the image animation together on a shared timeline.
@@ -164,7 +164,7 @@ class CC_PAINT_EXPORT PaintImage {
   // stays constant for the same image, the content id can be updated when the
   // backing encoded data for this image changes. For instance, in the case of
   // images which can be progressively updated as more encoded data is received.
-  using ContentId = int;
+  using ContentId = int64_t;
 
   // A GeneratorClientId can be used to namespace different clients that are
   // using the output of a PaintImageGenerator.
@@ -176,7 +176,7 @@ class CC_PAINT_EXPORT PaintImage {
   // parallel. This is particularly important for animated images, where
   // compositors displaying the same image can request decodes for different
   // frames from this image.
-  using GeneratorClientId = int;
+  using GeneratorClientId = int64_t;
   static const GeneratorClientId kDefaultGeneratorClientId;
 
   // The default frame index to use if no index is provided. For multi-frame

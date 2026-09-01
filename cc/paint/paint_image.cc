@@ -36,9 +36,9 @@
 
 namespace cc {
 namespace {
-base::AtomicSequenceNumber g_next_image_id;
-base::AtomicSequenceNumber g_next_image_content_id;
-base::AtomicSequenceNumber g_next_generator_client_id;
+base::AtomicSequenceNumberT<int64_t> g_next_image_id;
+base::AtomicSequenceNumberT<int64_t> g_next_image_content_id;
+base::AtomicSequenceNumberT<int64_t> g_next_generator_client_id;
 }  // namespace
 
 const PaintImage::Id PaintImage::kNonLazyStableId = -1;
