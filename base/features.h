@@ -34,12 +34,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kRecordLockAcquisitionTimeAllowedThreads);
 
-// PPM: Poor performance moment.
-//
-// This feature covers fixes to many egregious performance problems and the goal
-// is to measure their aggregated impact.
-BASE_EXPORT BASE_DECLARE_FEATURE(kReducePPMs);
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kScopedBestEffortExecutionFenceForTaskQueue);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Encode);
@@ -93,12 +87,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSpinCountX86);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSpinCountArm);
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 #endif  // BUILDFLAG(IS_POSIX)
-
-// Whether the ReducePPMs feature is enabled. Unlike
-// `FeatureList::IsEnabled(base::features::kReducePPMs)`, this can be called
-// racily with initializing the FeatureList (although the return value might not
-// reflect the state of the feature in the FeatureList in that case).
-BASE_EXPORT bool IsReducePPMsEnabled();
 
 // Initializes global variables that depend on `FeatureList`. Must be invoked
 // early on process startup, but after `FeatureList` initialization. Different

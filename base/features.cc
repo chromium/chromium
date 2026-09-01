@@ -42,16 +42,6 @@
 
 namespace base::features {
 
-namespace {
-
-// An atomic is used because this can be queried racily by a thread checking if
-// an optimization is enabled and a thread initializing this from the
-// FeatureList. All operations use std::memory_order_relaxed because there are
-// no dependent memory operations.
-std::atomic_bool g_is_reduce_ppms_enabled{false};
-
-}  // namespace
-
 // Alphabetical:
 
 // Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled
@@ -93,8 +83,6 @@ BASE_FEATURE_PARAM(std::string,
                    &kRecordLockAcquisitionTime,
                    "RecordLockAcquisitionTimeAllowedThreads",
                    "CrBrowserMain,CrRendererMain");
-
-BASE_FEATURE(kReducePPMs, FEATURE_ENABLED_BY_DEFAULT);
 
 // Apply base::ScopedBestEffortExecutionFence to registered task queues as well
 // as the thread pool.
@@ -240,13 +228,7 @@ BASE_FEATURE_PARAM(int, kSpinCountArm, &kBaseLockTrySpin, "spin_count_arm", 0);
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 #endif  // BUILDFLAG(IS_POSIX)
 
-bool IsReducePPMsEnabled() {
-  return g_is_reduce_ppms_enabled.load(std::memory_order_relaxed);
-}
-
 void Init() {
-  g_is_reduce_ppms_enabled.store(FeatureList::IsEnabled(kReducePPMs),
-                                 std::memory_order_relaxed);
   strings_internal::InitializeUtfStringConversionsFeatures();
 #if BUILDFLAG(IS_POSIX)
   base::Lock::InitializeFeatures();
