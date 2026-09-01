@@ -157,24 +157,6 @@ inline constexpr char kBrowserLaunchUmaMetricName[] =
 inline constexpr char kUnknownUmaMetricName[] =
     "Enterprise.ReportingEvent.Unknown.";
 
-// Mapping from event name to UMA metric name.
-inline constexpr auto kEventNameToUmaMetricNameMap =
-    base::MakeFixedFlatMap<std::string_view, std::string_view>(
-        {{kKeyPasswordReuseEvent, kPasswordReuseUmaMetricName},
-         {kKeyPasswordChangedEvent, kPasswordChangedUmaMetricName},
-         {kKeyDangerousDownloadEvent, kDangerousDownloadUmaMetricName},
-         {kKeyInterstitialEvent, kInterstitialUmaMetricName},
-         {kKeySensitiveDataEvent, kSensitiveDataUmaMetricName},
-         {kKeyUnscannedFileEvent, kUnscannedFileUmaMetricName},
-         {kKeyLoginEvent, kLoginUmaMetricName},
-         {kKeyPasswordBreachEvent, kPasswordBreachUmaMetricName},
-         {kKeyUrlFilteringInterstitialEvent,
-          kUrlFilteringInterstitialUmaMetricName},
-         {kExtensionInstallEvent, kExtensionInstallUmaMetricName},
-         {kBrowserCrashEvent, kBrowserCrashUmaMetricName},
-         {kExtensionTelemetryEvent, kExtensionTelemetryUmaMetricName},
-         {kKeySaasUsageEvent, kSaasUsageUmaMetricName},
-         {kKeyBrowserLaunchEvent, kBrowserLaunchUmaMetricName}});
 
 // Mapping from event case to UMA metric name.
 inline constexpr auto kEventCaseToUmaMetricNameMap =
@@ -215,8 +197,6 @@ inline constexpr auto kEventCaseToEventNameMap =
          {EventCase::kExtensionTelemetryEvent, kExtensionTelemetryEvent},
          {EventCase::kSaasUsageReportEvent, kKeySaasUsageEvent},
          {EventCase::kBrowserLaunchEvent, kKeyBrowserLaunchEvent}});
-
-std::string GetPayloadSizeUmaMetricName(std::string_view event_name);
 
 std::string GetPayloadSizeUmaMetricName(EventCase event_case);
 

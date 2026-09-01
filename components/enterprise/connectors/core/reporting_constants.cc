@@ -9,13 +9,6 @@
 
 namespace enterprise_connectors {
 
-std::string GetPayloadSizeUmaMetricName(std::string_view event_name) {
-  auto* metric_name =
-      base::FindOrNull(kEventNameToUmaMetricNameMap, event_name);
-  return metric_name ? base::StrCat({*metric_name, "UploadSize"})
-                     : base::StrCat({kUnknownUmaMetricName, "UploadSize"});
-}
-
 std::string GetPayloadSizeUmaMetricName(EventCase event_case) {
   auto* metric_name =
       base::FindOrNull(kEventCaseToUmaMetricNameMap, event_case);
