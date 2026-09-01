@@ -259,6 +259,7 @@ public class SendTabToSelfCoordinatorTest {
     // This test asserts the old bottom sheet UI and must run with the enhanced
     // bottom sheet feature disabled.
     @DisableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET})
+    @DisabledTest(message = "crbug.com/555079457")
     public void testShowSigninPromoIfSignedOut_activitylessSignin() {
         // An account must be added to the device so the promo is offered.
         mSyncTestRule.addAccount(TestAccounts.ACCOUNT1);
