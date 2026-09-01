@@ -497,14 +497,9 @@ HRESULT MakeUsernameForAccount(const base::DictValue& result,
 
   // First try to detect if this gaia account has been used to create an OS
   // user already.  If so, return the OS username of that user.
-  HRESULT hr = GetSidFromId(*gaia_id, sid, sid_length);
+  HRESULT hr = GetSidFromIdAndEmail(*gaia_id, email, sid, sid_length);
   if (FAILED(hr)) {
-    LOGFN(VERBOSE) << "Failed fetching Sid from Id : " << putHR(hr);
-    // If there is no gaia id user property available in the registry,
-    // fallback to email address mapping.
-    hr = GetSidFromEmail(email, sid, sid_length);
-    if (FAILED(hr))
-      LOGFN(VERBOSE) << "Failed fetching Sid from email : " << putHR(hr);
+    LOGFN(VERBOSE) << "Failed fetching Sid from Id and email: " << putHR(hr);
   }
 
   // Check if the machine is domain joined and get the domain name if domain

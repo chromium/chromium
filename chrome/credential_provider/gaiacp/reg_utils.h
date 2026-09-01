@@ -214,20 +214,12 @@ struct UserTokenHandleInfo {
 HRESULT GetUserTokenHandles(
     std::map<std::wstring, UserTokenHandleInfo>* sid_to_handle_info);
 
-// Gets the SID associated with the given gaia id.  If none exists, returns
-// HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
-HRESULT GetSidFromId(const std::wstring& id, wchar_t* sid, ULONG length);
-
-// Gets the SID associated with the given email.  If none exists, returns
-// HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
-HRESULT GetSidFromEmail(const std::wstring& email, wchar_t* sid, ULONG length);
-
-// Gets the SID associated with the given input key. If none exists, returns
-// HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
-HRESULT GetSidFromKey(const wchar_t* key,
-                      const std::wstring& value,
-                      wchar_t* sid,
-                      ULONG length);
+// Gets the SID associated with the given gaia id and email. If none exists,
+// returns HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
+HRESULT GetSidFromIdAndEmail(const std::wstring& id,
+                             const std::wstring& email,
+                             wchar_t* sid,
+                             ULONG length);
 
 // Returns the SID corresponding to given domain user from the user properties.
 HRESULT GetSidFromDomainAccountInfo(const std::wstring& domain,

@@ -23,6 +23,7 @@ namespace testing {
 class ExperimentsManagerTest : public GlsRunnerTestBase {
  protected:
   void SetUp() override;
+  void TearDown() override;
 };
 
 void ExperimentsManagerTest::SetUp() {
@@ -30,15 +31,21 @@ void ExperimentsManagerTest::SetUp() {
 
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"experiments_enabled", 1));
   FakesForTesting fakes;
+  fakes.os_user_manager_for_testing = fake_os_user_manager();
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
   WinHttpUrlFetcher::SetCreatorForTesting(
       fakes.fake_win_http_url_fetcher_creator);
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);
 
   // Set token result a valid access token.
   fake_http_url_fetcher_factory()->SetFakeResponse(
       GURL(GaiaUrls::GetInstance()->oauth2_token_url().spec().c_str()),
       FakeWinHttpUrlFetcher::Headers(), "{\"access_token\": \"dummy_token\"}");
+}
+
+void ExperimentsManagerTest::TearDown() {
+  GlsRunnerTestBase::TearDown();
 }
 
 TEST_F(ExperimentsManagerTest, DefaultValues) {
@@ -70,9 +77,10 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
 
   // Create a fake user that has the same gaia id as the test gaia id.
   base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      L"foo", L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, L"user@company.com", sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                L"foo", L"password", L"Full Name", L"comment", kDefaultGaiaId,
+                base::UTF8ToWide(kDefaultEmail), sid.Receive()));
 
   std::wstring device_resource_id = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(sid.Get(), L"device_resource_id",
@@ -149,9 +157,10 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
 
   // Create a fake user that has the same gaia id as the test gaia id.
   base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      L"foo", L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, L"user@company.com", sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                L"foo", L"password", L"Full Name", L"comment", kDefaultGaiaId,
+                base::UTF8ToWide(kDefaultEmail), sid.Receive()));
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken(sid.Get()));
 

@@ -432,22 +432,30 @@ HRESULT GetUserTokenHandles(
   return S_OK;
 }
 
-HRESULT GetSidFromKey(const wchar_t* key,
-                      const std::wstring& value,
-                      wchar_t* sid,
-                      ULONG length) {
+HRESULT GetSidFromIdAndEmail(const std::wstring& id,
+                             const std::wstring& email,
+                             wchar_t* sid,
+                             ULONG length) {
   DCHECK(sid);
   bool result_found = false;
   base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE, kGcpUsersRootKeyName);
   for (; iter.Valid(); ++iter) {
     const wchar_t* user_sid = iter.Name();
-    wchar_t result[256];
-    ULONG result_length = std::size(result);
-    HRESULT hr = GetUserProperty(user_sid, key, result, &result_length);
-    if (SUCCEEDED(hr) && value == result) {
+    wchar_t user_id[256];
+    ULONG user_id_length = std::size(user_id);
+    wchar_t user_email[256];
+    ULONG user_email_length = std::size(user_email);
+
+    if (SUCCEEDED(
+            GetUserProperty(user_sid, kUserId, user_id, &user_id_length)) &&
+        id == user_id &&
+        SUCCEEDED(GetUserProperty(user_sid, kUserEmail, user_email,
+                                  &user_email_length)) &&
+        email == user_email) {
       // Make sure there are not 2 users with the same SID.
-      if (result_found)
+      if (result_found) {
         return HRESULT_FROM_WIN32(ERROR_USER_EXISTS);
+      }
 
       UNSAFE_TODO(wcsncpy_s(sid, length, user_sid, wcslen(user_sid)));
       result_found = true;
@@ -457,33 +465,39 @@ HRESULT GetSidFromKey(const wchar_t* key,
   return result_found ? S_OK : HRESULT_FROM_WIN32(ERROR_NONE_MAPPED);
 }
 
-HRESULT GetSidFromEmail(const std::wstring& email, wchar_t* sid, ULONG length) {
-  return GetSidFromKey(kUserEmail, email, sid, length);
-}
-
-HRESULT GetSidFromId(const std::wstring& id, wchar_t* sid, ULONG length) {
-  return GetSidFromKey(kUserId, id, sid, length);
-}
-
 HRESULT GetSidFromDomainAccountInfo(const std::wstring& domain,
                                     const std::wstring& username,
                                     wchar_t* sid,
                                     ULONG length) {
-  // Max SID length is 256 characters.
-  // https://docs.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-shell-setup-offlineuseraccounts-offlinedomainaccounts-offlinedomainaccount-sid
-  wchar_t sid1[256];
-  wchar_t sid2[256];
+  DCHECK(sid);
+  bool result_found = false;
+  base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE, kGcpUsersRootKeyName);
+  for (; iter.Valid(); ++iter) {
+    const wchar_t* user_sid = iter.Name();
+    wchar_t user_domain[256];
+    ULONG user_domain_length = std::size(user_domain);
+    wchar_t user_username[256];
+    ULONG user_username_length = std::size(user_username);
 
-  if (SUCCEEDED(GetSidFromKey(base::UTF8ToWide(kKeyDomain).c_str(), domain,
-                              sid1, length)) &&
-      SUCCEEDED(GetSidFromKey(base::UTF8ToWide(kKeyUsername).c_str(), username,
-                              sid2, length)) &&
-      UNSAFE_TODO(wcsicmp(sid1, sid2) == 0)) {
-    UNSAFE_TODO(wcscpy_s(sid, length, sid1));
-    return S_OK;
-  } else {
-    return E_FAIL;
+    if (SUCCEEDED(GetUserProperty(user_sid,
+                                  base::UTF8ToWide(kKeyDomain).c_str(),
+                                  user_domain, &user_domain_length)) &&
+        domain == user_domain &&
+        SUCCEEDED(GetUserProperty(user_sid,
+                                  base::UTF8ToWide(kKeyUsername).c_str(),
+                                  user_username, &user_username_length)) &&
+        username == user_username) {
+      // Make sure there are not 2 users with the same SID.
+      if (result_found) {
+        return HRESULT_FROM_WIN32(ERROR_USER_EXISTS);
+      }
+
+      UNSAFE_TODO(wcsncpy_s(sid, length, user_sid, wcslen(user_sid)));
+      result_found = true;
+    }
   }
+
+  return result_found ? S_OK : E_FAIL;
 }
 
 HRESULT GetIdFromSid(const wchar_t* sid, std::wstring* id) {

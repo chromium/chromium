@@ -131,13 +131,13 @@ TEST_P(GcpReauthCredentialGetStringValueTest, FidDescription) {
   if (!is_sid_empty && is_user_domain_joined) {
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         username.Get(), password.Get(), full_name.Get(),
-                        L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                        email.Get(), L"domain", sid.Receive()));
+                        L"comment", GaiaId("custom-gaia-id"), email.Get(),
+                        L"domain", sid.Receive()));
   } else if (!is_sid_empty) {
-    ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                        username.Get(), password.Get(), full_name.Get(),
-                        L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                        email.Get(), sid.Receive()));
+    ASSERT_EQ(S_OK,
+              fake_os_user_manager()->CreateTestOSUser(
+                  username.Get(), password.Get(), full_name.Get(), L"comment",
+                  GaiaId("custom-gaia-id"), email.Get(), sid.Receive()));
   }
 
   if (!is_sid_empty) {
@@ -225,10 +225,10 @@ TEST_P(GcpReauthCredentialEnforceAuthReasonGetStringValueTest,
   // Create a fake user to reauth.
   base::win::ScopedBstr sid;
 
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      email.Get(), sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                username.Get(), password.Get(), full_name.Get(), L"comment",
+                GaiaId("custom-gaia-id"), email.Get(), sid.Receive()));
 
   if (store_encrypted_data) {
     std::wstring store_key = GetUserPasswordLsaStoreKey(sid.Get());
@@ -335,10 +335,10 @@ TEST_P(GcpReauthCredentialGlsTest, GetUserGlsCommandLine) {
 
   // Create a fake user to reauth.
   base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      std::wstring(), sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                username.Get(), password.Get(), full_name.Get(), L"comment",
+                GaiaId("custom-gaia-id"), std::wstring(), sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -435,10 +435,10 @@ TEST_F(GcpReauthCredentialGlsRunnerTest, NoGaiaIdOrEmailAvailable) {
 
   // Create a fake user to reauth.
   base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      std::wstring(), sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                username.Get(), password.Get(), full_name.Get(), L"comment",
+                GaiaId("custom-gaia-id"), std::wstring(), sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -537,10 +537,10 @@ TEST_F(GcpReauthCredentialGlsRunnerTest, UserGaiaIdMismatch) {
   // Create two fake users to reauth. One associated with the valid Gaia id
   // and the other associated to the invalid gaia id.
   base::win::ScopedBstr first_sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      std::wstring(), first_sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                username.Get(), password.Get(), full_name.Get(), L"comment",
+                GaiaId("custom-gaia-id"), std::wstring(), first_sid.Receive()));
 
   base::win::ScopedBstr second_sid;
   ASSERT_EQ(S_OK,
@@ -601,8 +601,8 @@ TEST_P(GcpNormalReauthCredentialUserSidMismatch, ShouldFail) {
   base::win::ScopedBstr sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      email.Get(), domain.Get(), sid.Receive()));
+                      L"comment", GaiaId("custom-gaia-id"), email.Get(),
+                      domain.Get(), sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -685,10 +685,10 @@ TEST_P(GcpNormalReauthCredentialGlsRunnerTest, WithGemFeatures) {
 
   // Create a fake user to reauth.
   base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      email.Get(), sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                username.Get(), password.Get(), full_name.Get(), L"comment",
+                GaiaId("custom-gaia-id"), email.Get(), sid.Receive()));
 
   if (is_gem_features_enabled) {
     // Set |kKeyEnableGemFeatures| registry entry to 1.
@@ -727,80 +727,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Combine(::testing::Bool(),
                                             ::testing::Bool()));
 
-TEST_F(GcpReauthCredentialGlsRunnerTest, NormalReauthWithoutEmail) {
-  CredentialProviderSigninDialogTestDataStorage test_data_storage;
-
-  base::win::ScopedBstr username(L"foo_bar");
-  base::win::ScopedBstr full_name(
-      base::UTF8ToWide(test_data_storage.GetSuccessFullName()).c_str());
-  base::win::ScopedBstr password(
-      base::UTF8ToWide(test_data_storage.GetSuccessPassword()).c_str());
-  base::win::ScopedBstr email(
-      base::UTF8ToWide(test_data_storage.GetSuccessEmail()).c_str());
-
-  // Create a fake user to reauth with no e-mail specified.
-  base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      std::wstring(), sid.Receive()));
-
-  // Create provider and start logon.
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
-
-  // Create with invalid token handle response so that a reauth occurs.
-  SetDefaultTokenHandleResponse(kDefaultInvalidTokenHandleResponse);
-  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(1, &cred));
-
-  Microsoft::WRL::ComPtr<ITestCredential> test;
-  ASSERT_EQ(S_OK, cred.As(&test));
-
-  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
-
-  // Email associated should be the default one
-  EXPECT_EQ(test->GetFinalEmail(), kDefaultEmail);
-
-  // Teardown of the test should confirm that the logon was successful.
-}
-
-TEST_F(GcpReauthCredentialGlsRunnerTest, NormalReauthWithoutGaiaId) {
-  CredentialProviderSigninDialogTestDataStorage test_data_storage;
-
-  base::win::ScopedBstr username(L"foo_bar");
-  base::win::ScopedBstr full_name(
-      base::UTF8ToWide(test_data_storage.GetSuccessFullName()).c_str());
-  base::win::ScopedBstr password(
-      base::UTF8ToWide(test_data_storage.GetSuccessPassword()).c_str());
-
-  // Create a fake user to reauth with no gaia-id specified.
-  base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                username.Get(), password.Get(), full_name.Get(), L"comment",
-                GaiaId(), base::UTF8ToWide(kDefaultEmail), sid.Receive()));
-
-  // Create provider and start logon.
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
-
-  // Create with invalid token handle response so that a reauth occurs.
-  SetDefaultTokenHandleResponse(kDefaultInvalidTokenHandleResponse);
-  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(1, &cred));
-
-  Microsoft::WRL::ComPtr<ITestCredential> test;
-  ASSERT_EQ(S_OK, cred.As(&test));
-
-  // Don't send a forced e-mail. It will be sent from the user that was
-  // updated during the last sign in.
-  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(std::string()));
-
-  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
-
-  // Email associated should be the default one
-  EXPECT_EQ(test->GetFinalEmail(), kDefaultEmail);
-
-  // Teardown of the test should confirm that the logon was successful.
-}
-
 TEST_F(GcpReauthCredentialGlsRunnerTest, GaiaIdMismatch) {
   CredentialProviderSigninDialogTestDataStorage test_data_storage;
 
@@ -814,10 +740,10 @@ TEST_F(GcpReauthCredentialGlsRunnerTest, GaiaIdMismatch) {
 
   // Create a fake user to reauth.
   base::win::ScopedBstr sid;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      username.Get(), password.Get(), full_name.Get(),
-                      L"comment", GaiaId(test_data_storage.GetSuccessId()),
-                      email.Get(), sid.Receive()));
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                username.Get(), password.Get(), full_name.Get(), L"comment",
+                GaiaId("custom-gaia-id"), email.Get(), sid.Receive()));
 
   std::string unexpected_gaia_id = "unexpected-gaia-id";
 

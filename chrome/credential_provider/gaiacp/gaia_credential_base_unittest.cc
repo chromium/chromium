@@ -469,7 +469,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
   std::wstring username(L"foo");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"name", L"comment",
-                      kDefaultGaiaId, std::wstring(), first_sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", first_sid.Receive()));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -555,7 +555,7 @@ TEST_P(GcpGaiaCredentialBaseForceResetRegistryTest,
   base::win::ScopedBstr windows_password(L"password2");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo", windows_password.Get(), L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -610,7 +610,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
   base::win::ScopedBstr windows_password(L"password2");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo", windows_password.Get(), L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -679,7 +679,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
   base::win::ScopedBstr windows_password(L"password2");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo", windows_password.Get(), L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -724,7 +724,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
   base::win::ScopedBstr windows_password(L"password2");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo", windows_password.Get(), L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -1112,7 +1112,7 @@ TEST_F(GcpGaiaCredentialBaseTest, NewUserDisabledThroughMdm) {
   ASSERT_EQ(S_OK,
             fake_os_user_manager()->CreateTestOSUser(
                 L"foo_registered", L"password", L"name", L"comment",
-                GaiaId("gaia-id-registered"), std::wstring(), sid.Receive()));
+                GaiaId("gaia-id-registered"), L"foo@gmail.com", sid.Receive()));
 
   // Populate the associated users list. The created user's token handle
   // should be valid so that no reauth credential is created.
@@ -1146,7 +1146,7 @@ TEST_F(GcpGaiaCredentialBaseTest, InvalidUserUnlockedAfterSignin) {
   std::wstring username(L"foo");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
 
   // Create provider and start logon.
@@ -1200,7 +1200,7 @@ TEST_F(GcpGaiaCredentialBaseTest, SigninNotBlockedWhenValidChromeNotFound) {
   std::wstring username(L"foo");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
 
   // Create provider and start logon.
@@ -1225,7 +1225,7 @@ TEST_F(GcpGaiaCredentialBaseTest, DenySigninBlockedDuringSignin) {
   std::wstring username(L"foo");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"name", L"comment",
-                      kDefaultGaiaId, std::wstring(), first_sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", first_sid.Receive()));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
 
   UserPolicies user_policies;
@@ -1313,7 +1313,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
   std::wstring username(L"foo");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"name", L"comment",
-                      kDefaultGaiaId, std::wstring(), first_sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", first_sid.Receive()));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
 
   std::vector<std::wstring> reauth_sids;
@@ -3066,7 +3066,7 @@ TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, DISABLED_PasswordRecovery) {
   constexpr wchar_t kOldPassword[] = L"password";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, kOldPassword, L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Change token response to an invalid one.
   SetDefaultTokenHandleResponse(kDefaultInvalidTokenHandleResponse);
@@ -3298,7 +3298,7 @@ TEST_P(GcpGaiaCredentialBasePasswordChangeFailureTest, Fail) {
   constexpr wchar_t kOldPassword[] = L"password";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, kOldPassword, L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Change token response to an invalid one.
   SetDefaultTokenHandleResponse(kDefaultInvalidTokenHandleResponse);
@@ -3451,7 +3451,7 @@ TEST_P(GcpGaiaCredentialBasePasswordRecoveryDisablingTest,
   constexpr wchar_t kOldPassword[] = L"password";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, kOldPassword, L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Change token response to an invalid one.
   SetDefaultTokenHandleResponse(kDefaultInvalidTokenHandleResponse);
@@ -3587,7 +3587,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   base::win::ScopedBstr sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), domain, sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", domain, sid.Receive()));
 
   std::string dm_token = base::Uuid::GenerateRandomV4().AsLowercaseString();
   FakeTokenGenerator fake_token_generator;
@@ -3835,7 +3835,7 @@ TEST_P(GcpGaiaCredentialBaseUploadEventLogsTest, UploadEventViewerLogs) {
   base::win::ScopedBstr sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Change token response to an valid one.
   SetDefaultTokenHandleResponse(kDefaultValidTokenHandleResponse);
@@ -3917,7 +3917,7 @@ TEST_P(GcpGaiaCredentialBaseChromeAvailabilityTest, CustomChromeSpecified) {
   std::wstring username(L"foo");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       username, L"password", L"name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
 
   // Create provider.
@@ -3973,7 +3973,7 @@ TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
   base::win::ScopedBstr sid_str;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid_str.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid_str.Receive()));
   std::wstring sid = sid_str.Get();
 
   if (cloud_policies_enabled) {
@@ -4117,7 +4117,7 @@ TEST_P(GcpGaiaCredentialBaseOmahaUpdatePolicyTest, EnforceUpdatePolicy) {
   base::win::ScopedBstr sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, std::wstring(), sid.Receive()));
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
 
   // Change token response to an valid one.
   SetDefaultTokenHandleResponse(kDefaultValidTokenHandleResponse);

@@ -26,6 +26,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/values.h"
 #include "base/win/access_token.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/security_util.h"
@@ -35,6 +36,7 @@
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -714,6 +716,128 @@ TEST_F(GcpUtilsSecureCreateDirectoryTest, FailOnReparsePoint) {
     // reject it.
     EXPECT_FALSE(SecureCreateDirectory(link_dir));
   }
+}
+
+class GcpRegUtilsTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    InitializeRegistryOverrideForTesting(&registry_override_);
+  }
+
+  registry_util::RegistryOverrideManager registry_override_;
+  FakeOSUserManager fake_os_user_manager_;
+};
+
+TEST_F(GcpRegUtilsTest, GetSidFromIdAndEmail) {
+  const std::wstring gaia_id = L"gaia_id";
+  const std::wstring email = L"user@gmail.com";
+  const std::wstring username = L"username";
+  const std::wstring password = L"password";
+  base::win::ScopedBstr sid;
+
+  ASSERT_EQ(S_OK, fake_os_user_manager_.CreateTestOSUser(
+                      username, password, L"Full Name", L"Comment",
+                      GaiaId(base::WideToUTF8(gaia_id)), email, sid.Receive()));
+
+  wchar_t found_sid[256];
+  ASSERT_EQ(S_OK, GetSidFromIdAndEmail(gaia_id, email, found_sid,
+                                       std::size(found_sid)));
+  EXPECT_EQ(std::wstring(sid.Get()), std::wstring(found_sid));
+
+  // Different email should fail.
+  ASSERT_EQ(HRESULT_FROM_WIN32(ERROR_NONE_MAPPED),
+            GetSidFromIdAndEmail(gaia_id, L"other@gmail.com", found_sid,
+                                 std::size(found_sid)));
+
+  // Different id should fail.
+  ASSERT_EQ(HRESULT_FROM_WIN32(ERROR_NONE_MAPPED),
+            GetSidFromIdAndEmail(L"other_id", email, found_sid,
+                                 std::size(found_sid)));
+}
+
+TEST_F(GcpRegUtilsTest, GetSidFromIdAndEmail_Duplicate) {
+  const std::wstring gaia_id = L"gaia_id";
+  const std::wstring email = L"user@gmail.com";
+  base::win::ScopedBstr sid1;
+  base::win::ScopedBstr sid2;
+
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager_.CreateTestOSUser(
+                L"user1", L"pass1", L"Full Name 1", L"Comment 1",
+                GaiaId(base::WideToUTF8(gaia_id)), email, sid1.Receive()));
+
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager_.CreateTestOSUser(
+                L"user2", L"pass2", L"Full Name 2", L"Comment 2",
+                GaiaId(base::WideToUTF8(gaia_id)), email, sid2.Receive()));
+
+  wchar_t found_sid[256];
+  ASSERT_EQ(
+      HRESULT_FROM_WIN32(ERROR_USER_EXISTS),
+      GetSidFromIdAndEmail(gaia_id, email, found_sid, std::size(found_sid)));
+}
+
+TEST_F(GcpRegUtilsTest, GetSidFromDomainAccountInfo) {
+  const std::wstring domain = L"domain";
+  const std::wstring username = L"username";
+  const std::wstring password = L"password";
+  base::win::ScopedBstr sid;
+
+  ASSERT_EQ(S_OK, fake_os_user_manager_.CreateTestOSUser(
+                      username, password, L"Full Name", L"Comment", GaiaId(),
+                      L"", domain, sid.Receive()));
+
+  // Manually set domain and username properties, as CreateTestOSUser doesn't.
+  ASSERT_EQ(S_OK,
+            SetUserProperty(sid.Get(), base::UTF8ToWide(kKeyDomain), domain));
+  ASSERT_EQ(S_OK, SetUserProperty(sid.Get(), base::UTF8ToWide(kKeyUsername),
+                                  username));
+
+  wchar_t found_sid[256];
+  ASSERT_EQ(S_OK, GetSidFromDomainAccountInfo(domain, username, found_sid,
+                                              std::size(found_sid)));
+  EXPECT_EQ(std::wstring(sid.Get()), std::wstring(found_sid));
+
+  // Different domain should fail.
+  ASSERT_EQ(E_FAIL,
+            GetSidFromDomainAccountInfo(L"other_domain", username, found_sid,
+                                        std::size(found_sid)));
+
+  // Different username should fail.
+  ASSERT_EQ(E_FAIL,
+            GetSidFromDomainAccountInfo(domain, L"other_user", found_sid,
+                                        std::size(found_sid)));
+}
+
+TEST_F(GcpRegUtilsTest, GetSidFromDomainAccountInfo_Duplicate) {
+  const std::wstring domain = L"domain";
+  const std::wstring username = L"username";
+  base::win::ScopedBstr sid1;
+  base::win::ScopedBstr sid2;
+
+  ASSERT_EQ(S_OK, fake_os_user_manager_.CreateTestOSUser(
+                      L"user1", L"pass1", L"Full Name 1", L"Comment 1",
+                      GaiaId(), L"", domain, sid1.Receive()));
+
+  ASSERT_EQ(S_OK, fake_os_user_manager_.CreateTestOSUser(
+                      L"user2", L"pass2", L"Full Name 2", L"Comment 2",
+                      GaiaId(), L"", domain, sid2.Receive()));
+
+  // Manually set domain and username properties for both.
+  ASSERT_EQ(S_OK,
+            SetUserProperty(sid1.Get(), base::UTF8ToWide(kKeyDomain), domain));
+  ASSERT_EQ(S_OK, SetUserProperty(sid1.Get(), base::UTF8ToWide(kKeyUsername),
+                                  username));
+
+  ASSERT_EQ(S_OK,
+            SetUserProperty(sid2.Get(), base::UTF8ToWide(kKeyDomain), domain));
+  ASSERT_EQ(S_OK, SetUserProperty(sid2.Get(), base::UTF8ToWide(kKeyUsername),
+                                  username));
+
+  wchar_t found_sid[256];
+  ASSERT_EQ(HRESULT_FROM_WIN32(ERROR_USER_EXISTS),
+            GetSidFromDomainAccountInfo(domain, username, found_sid,
+                                        std::size(found_sid)));
 }
 
 }  // namespace credential_provider

@@ -180,7 +180,11 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
 }  // namespace
 
 AssociatedUserValidator::TokenHandleInfo::TokenHandleInfo() = default;
-AssociatedUserValidator::TokenHandleInfo::~TokenHandleInfo() = default;
+AssociatedUserValidator::TokenHandleInfo::~TokenHandleInfo() {
+  if (pending_query_thread.is_valid()) {
+    ::WaitForSingleObject(pending_query_thread.get(), INFINITE);
+  }
+}
 
 AssociatedUserValidator::TokenHandleInfo::TokenHandleInfo(
     const std::wstring& token_handle)
