@@ -1456,6 +1456,12 @@ void GeminiBrowserAgent::DismissGeminiFromOtherWindows(
 }
 
 void GeminiBrowserAgent::DismissFloaty() {
+  // No-op if the floaty is not currently invoked. This can happen when
+  // `SceneCoordinator` attempts to dismiss all active modals.
+  if (!is_floaty_invoked_) {
+    return;
+  }
+
   // If the floaty is temporarily hidden i.e. as part of a view controller being
   // shown underneath the Gemini floaty, don't clean up and reset internal
   // Gemini properties. Clean up should occur if a user taps the floaty to
@@ -1488,10 +1494,8 @@ void GeminiBrowserAgent::DismissFloaty() {
   RecordFloatyDismissedState(last_shown_view_state_);
 
   // Record and reset tab switch metrics for the ending Floaty session.
-  if (is_floaty_invoked_) {
-    RecordSessionTabSwitchCount(floaty_tab_switch_count_);
-    floaty_tab_switch_count_ = 0;
-  }
+  RecordSessionTabSwitchCount(floaty_tab_switch_count_);
+  floaty_tab_switch_count_ = 0;
 
   is_floaty_invoked_ = false;
   for (auto& observer : observers_) {
