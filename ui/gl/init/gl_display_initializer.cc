@@ -42,8 +42,6 @@ void GetEGLInitDisplays(bool supports_angle,
   // made. If we check too late, it will appear that some users are missing from
   // the group if they are falling back to another path due to crashes or
   // missing support.
-  bool default_angle_metal =
-      base::FeatureList::IsEnabled(features::kDefaultANGLEMetal);
   bool default_angle_vulkan = features::IsDefaultANGLEVulkan();
 
   // If we're already requesting software GL, make sure we don't fallback to the
@@ -75,7 +73,7 @@ void GetEGLInitDisplays(bool supports_angle,
     return;
   }
 
-  if (supports_angle_metal && use_angle_default && default_angle_metal &&
+  if (supports_angle_metal && use_angle_default &&
       !GetGlWorkarounds().disable_metal) {
     AddInitDisplay(init_displays, ANGLE_METAL);
   }

@@ -293,9 +293,6 @@ BASE_FEATURE(kEGLDualGPURendering,
 // Allow overlay swapchain to use Intel video processor for super resolution.
 BASE_FEATURE(kIntelVpSuperResolution, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default to using ANGLE's Metal backend.
-BASE_FEATURE(kDefaultANGLEMetal, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default to using ANGLE's Vulkan backend.
 BASE_FEATURE(kDefaultANGLEVulkan,
              base::FEATURE_DISABLED_BY_DEFAULT);
