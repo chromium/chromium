@@ -297,7 +297,8 @@ std::string SerializeInnerList(
 // Dictionary, as defined in Step 3 of Section 2.5 of RFC9421
 // (https://www.rfc-editor.org/rfc/rfc9421#section-2.5).
 std::string SerializeSignatureParams(
-    const net::structured_headers::ParameterizedMember& input) {
+    const std::vector<net::structured_headers::ParameterizedItem>& inner_list,
+    const net::structured_headers::Parameters& params) {
   std::stringstream signature_params;
 
   // 3.   Append the signature parameters component (Section 2.3) ...
@@ -308,8 +309,7 @@ std::string SerializeSignatureParams(
 
   // 3.4. Append the signature parameters' canonicalized component values as
   //      defined in Section 2.3.
-  DCHECK(input.member_is_inner_list);
-  signature_params << SerializeInnerList(input.member);
+  signature_params << SerializeInnerList(inner_list);
 
   // 4. Determine an order for any signature parameters.
   //
@@ -318,7 +318,7 @@ std::string SerializeSignatureParams(
   // 5. Append the parameters to the inner list in order ... skipping
   //    parameters that are not available or not used for this message
   //    signature.
-  signature_params << SerializeParams(input.params);
+  signature_params << SerializeParams(params);
 
   return std::move(signature_params).str();
 }
@@ -430,11 +430,12 @@ const std::string* GetSignatureValue(
     const net::structured_headers::ParameterizedMember& signature_entry
         LIFETIME_BOUND,
     std::vector<mojom::SRIMessageSignatureIssuePtr>& issues) {
+  const auto item_and_params = signature_entry.GetWithParamsIfItem();
+
   // The value must be an unparameterized byte-sequence:
   const std::string* signature =
-      (signature_entry.member.empty() || signature_entry.member_is_inner_list)
-          ? nullptr
-          : signature_entry.member[0].item.GetIfByteSequence();
+      item_and_params.has_value() ? item_and_params->first.GetIfByteSequence()
+                                  : nullptr;
 
   if (!signature) {
     AddIssueFromErrorEnum(
@@ -541,8 +542,9 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
       continue;
     }
 
-    const auto& input_entry = input_it->second;
-    if (!input_entry.member_is_inner_list) {
+    const auto input_entry_and_params =
+        input_it->second.GetWithParamsIfInnerList();
+    if (!input_entry_and_params.has_value()) {
       AddIssueFromErrorEnum(mojom::SRIMessageSignatureError::
                                 kSignatureInputHeaderValueNotInnerList,
                             parsed_headers->issues);
@@ -559,16 +561,17 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     // perform those first.
     //
     // https://wicg.github.io/signature-based-sri/#abstract-opdef-validating-an-integrity-signature
-    if (!std::ranges::any_of(input_entry.params, [](const auto& param) {
-          const std::string* v = param.second.GetIfString();
-          return param.first == "tag" && v &&
-                 (*v == "ed25519-integrity" || *v == "sri");
-        })) {
+    if (!std::ranges::any_of(
+            input_entry_and_params->second, [](const auto& param) {
+              const std::string* v = param.second.GetIfString();
+              return param.first == "tag" && v &&
+                     (*v == "ed25519-integrity" || *v == "sri");
+            })) {
       continue;
     }
 
     // Process the components.
-    for (const auto& component : input_entry.member) {
+    for (const auto& component : input_entry_and_params->first) {
       // If any declared component is invalid, skip the signature (but not the
       // entire header; if both valid and invalid signatures are delivered,
       // we'll retain the former while ignoring the latter).
@@ -595,7 +598,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
 
     // Process the parameters, according to the validation requirements at
     // https://wicg.github.io/signature-based-sri/#profile
-    for (const auto& [key, value] : input_entry.params) {
+    for (const auto& [key, value] : input_entry_and_params->second) {
       bool ok = true;
 
       if (key == "created") {
@@ -674,8 +677,8 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
       // the structured field's parameterized member value that we processed
       // above, rather than storing the ordering of the parameters for
       // serialization later.
-      message_signature->serialized_signature_params =
-          SerializeSignatureParams(input_entry);
+      message_signature->serialized_signature_params = SerializeSignatureParams(
+          input_entry_and_params->first, input_entry_and_params->second);
 
       // Otherwise, we're good! Save the signature and move on.
       parsed_headers->signatures.push_back(std::move(message_signature));

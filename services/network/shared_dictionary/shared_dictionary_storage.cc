@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
@@ -53,6 +54,19 @@ class DictionaryHeaderInfo {
   std::optional<base::TimeDelta> ttl;
 };
 
+net::structured_headers::Item* GetIfItem(
+    net::structured_headers::ParameterizedMember& member LIFETIME_BOUND) {
+  auto item_and_params = member.GetWithParamsIfItem();
+  return item_and_params.has_value() ? &item_and_params->first : nullptr;
+}
+
+std::vector<net::structured_headers::ParameterizedItem>* GetIfInnerList(
+    net::structured_headers::ParameterizedMember& member LIFETIME_BOUND) {
+  auto inner_list_and_params = member.GetWithParamsIfInnerList();
+  return inner_list_and_params.has_value() ? &inner_list_and_params->first
+                                           : nullptr;
+}
+
 base::TimeDelta CalculateExpiration(const net::HttpResponseHeaders& headers,
                                     const base::Time request_time,
                                     const base::Time response_time,
@@ -93,20 +107,20 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
   std::optional<base::TimeDelta> ttl;
   for (auto& [key, value] : dictionary.value()) {
     if (key == shared_dictionary::kOptionNameMatch) {
-      match_value = (value.member_is_inner_list || value.member.size() != 1u)
-                        ? nullptr
-                        : value.member.front().item.GetIfString();
+      auto* item = GetIfItem(value);
+      match_value = item ? item->GetIfString() : nullptr;
       if (!match_value) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonStringMatchField);
       }
     } else if (key == shared_dictionary::kOptionNameMatchDest) {
-      if (!value.member_is_inner_list) {
+      const auto* inner_list = GetIfInnerList(value);
+      if (!inner_list) {
         // `match-dest` must be a list.
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonListMatchDestField);
       }
-      for (const auto& item : value.member) {
+      for (const auto& item : *inner_list) {
         const std::string* str = item.item.GetIfString();
         if (!str) {
           return base::unexpected(mojom::SharedDictionaryError::
@@ -123,22 +137,20 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
       }
       // A list that is entirely made up of unknown destinations will never
       // match anything.
-      if (!value.member.empty() && match_dest_values.empty()) {
+      if (!inner_list->empty() && match_dest_values.empty()) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorInvalidMatchDestList);
       }
     } else if (key == shared_dictionary::kOptionNameType) {
-      type_value = (value.member_is_inner_list || value.member.size() != 1u)
-                       ? nullptr
-                       : value.member.front().item.GetIfToken();
+      auto* item = GetIfItem(value);
+      type_value = item ? item->GetIfToken() : nullptr;
       if (!type_value) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonTokenTypeField);
       }
     } else if (key == shared_dictionary::kOptionNameId) {
-      id_value = (value.member_is_inner_list || value.member.size() != 1u)
-                     ? nullptr
-                     : value.member.front().item.GetIfString();
+      auto* item = GetIfItem(value);
+      id_value = item ? item->GetIfString() : nullptr;
       if (!id_value) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonStringIdField);
@@ -150,10 +162,8 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
     } else if (key == shared_dictionary::kOptionNameTTL &&
                base::FeatureList::IsEnabled(
                    features::kCompressionDictionaryTTL)) {
-      const int64_t* ttl_seconds =
-          (value.member_is_inner_list || value.member.size() != 1u)
-              ? nullptr
-              : value.member.front().item.GetIfInteger();
+      const auto* item = GetIfItem(value);
+      const int64_t* ttl_seconds = item ? item->GetIfInteger() : nullptr;
       if (!ttl_seconds) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonIntegerTTLField);

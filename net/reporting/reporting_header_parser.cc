@@ -281,10 +281,10 @@ std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
   }
   base::flat_map<std::string, std::string> parsed_header;
   for (const structured_headers::DictionaryMember& entry : *header_dict) {
+    const auto item_and_params = entry.second.GetWithParamsIfItem();
     const std::string* endpoint_url_string =
-        entry.second.member_is_inner_list
-            ? nullptr
-            : entry.second.member.front().item.GetIfString();
+        item_and_params.has_value() ? item_and_params->first.GetIfString()
+                                    : nullptr;
     if (!endpoint_url_string) {
       ReportingHeaderParser::RecordReportingHeaderType(
           ReportingHeaderParser::ReportingHeaderType::

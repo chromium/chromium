@@ -26,9 +26,9 @@ std::optional<std::vector<std::string>> ParseAvailLanguage(
   }
 
   for (const auto& list_item : maybe_list.value()) {
+    const auto item_and_params = list_item.GetWithParamsIfItem();
     // Make sure not a nested list.
-    if (list_item.member_is_inner_list || list_item.member.size() != 1 ||
-        !list_item.member.front().item.is_token()) {
+    if (!item_and_params.has_value() || !item_and_params->first.is_token()) {
       return std::nullopt;
     }
   }
@@ -39,15 +39,15 @@ std::optional<std::vector<std::string>> ParseAvailLanguage(
   std::vector<std::string> non_default_languages;
 
   for (auto& list_item : maybe_list.value()) {
-    // Dereferencing this is safe due to the `is_token` check and early return
+    // Dereferencing these is safe due to the `is_token` check and early return
     // above.
-    std::string* token_value = list_item.member.front().item.GetIfToken();
+    auto [item, params] = *list_item.GetWithParamsIfItem();
+    std::string* token_value = item.GetIfToken();
     // If the language is default like `en;d`, insert the language `en` into the
     // beginning of the list.
-    const bool* is_default =
-        (list_item.params.size() == 1 && list_item.params.front().first == "d")
-            ? list_item.params.front().second.GetIfBoolean()
-            : nullptr;
+    const bool* is_default = (params.size() == 1 && params.front().first == "d")
+                                 ? params.front().second.GetIfBoolean()
+                                 : nullptr;
 
     if (is_default && *is_default) {
       result.emplace_back(std::move(*token_value));

@@ -24,12 +24,13 @@ void HandleKeyValue(const std::string_view key,
                     net::structured_headers::ParameterizedMember&& value,
                     const std::string_view header_name,
                     IntegrityPolicy& policy) {
-  if (!value.member_is_inner_list) {
+  auto inner_list_with_params = value.GetWithParamsIfInnerList();
+  if (!inner_list_with_params.has_value()) {
     policy.parsing_errors.emplace_back(
         base::StringPrintf("The %s value is not a list.", header_name));
     return;
   }
-  for (auto& parameter : value.member) {
+  for (auto& parameter : inner_list_with_params->first) {
     std::string* parameter_value = parameter.item.GetIfToken();
     if (!parameter_value) {
       std::string serialized =

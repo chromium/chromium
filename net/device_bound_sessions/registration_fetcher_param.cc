@@ -45,9 +45,9 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 
 std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
 ParseSupportedAlgorithms(
-    const net::structured_headers::ParameterizedMember& session_registration) {
+    const std::vector<net::structured_headers::ParameterizedItem>& member) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
-  for (const auto& algo_token : session_registration.member) {
+  for (const auto& algo_token : member) {
     if (const std::string* token = algo_token.item.GetIfToken()) {
       std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
           AlgoFromString(*token);
@@ -158,8 +158,14 @@ RegistrationFetcherParam::RegistrationFetcherParam(
 std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     const GURL& request_url,
     const structured_headers::ParameterizedMember& session_registration) {
+  const auto inner_list_and_params =
+      session_registration.GetWithParamsIfInnerList();
+  if (!inner_list_and_params.has_value()) {
+    return std::nullopt;
+  }
+
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos =
-      ParseSupportedAlgorithms(session_registration);
+      ParseSupportedAlgorithms(inner_list_and_params->first);
   if (supported_algos.empty()) {
     return std::nullopt;
   }
@@ -171,7 +177,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   std::optional<GURL> provider_url;
   std::optional<Session::Id> provider_session_id;
   bool aik_required = false;
-  for (const auto& [key, value] : session_registration.params) {
+  for (const auto& [key, value] : inner_list_and_params->second) {
     // The keys for the parameters are unique and must be lower case.
     // Quiche (https://quiche.googlesource.com/quiche), used here,
     // will currently pick the last if there is more than one.
@@ -278,12 +284,10 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
   }
 
   for (const auto& item : *list) {
-    if (item.member_is_inner_list) {
-      std::optional<RegistrationFetcherParam> fetcher_param =
-          ParseItem(request_url, item);
-      if (fetcher_param) {
-        params.push_back(std::move(*fetcher_param));
-      }
+    std::optional<RegistrationFetcherParam> fetcher_param =
+        ParseItem(request_url, item);
+    if (fetcher_param) {
+      params.push_back(std::move(*fetcher_param));
     }
   }
 

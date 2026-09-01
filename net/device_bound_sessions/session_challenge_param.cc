@@ -36,21 +36,21 @@ SessionChallengeParam::SessionChallengeParam(
 // static
 std::optional<SessionChallengeParam> SessionChallengeParam::ParseItem(
     const structured_headers::ParameterizedMember& session_challenge) {
-  if (session_challenge.member_is_inner_list ||
-      session_challenge.member.empty()) {
+  const auto item_and_params = session_challenge.GetWithParamsIfItem();
+  if (!item_and_params.has_value()) {
     return std::nullopt;
   }
 
-  const std::string* challenge = session_challenge.member[0].item.GetIfString();
+  const std::string* challenge = item_and_params->first.GetIfString();
   if (!challenge || challenge->empty()) {
     return std::nullopt;
   }
 
   std::optional<std::string> session_id;
   if (auto it = std::ranges::find(
-          session_challenge.params, kSessionIdKey,
+          item_and_params->second, kSessionIdKey,
           &std::pair<std::string, structured_headers::Item>::first);
-      it != session_challenge.params.end()) {
+      it != item_and_params->second.end()) {
     const std::string* string = it->second.GetIfString();
     if (!string) {
       return std::nullopt;
