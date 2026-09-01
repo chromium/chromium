@@ -683,16 +683,14 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void requestShowPopup(
-            String actionId, long nativeHostPtr, boolean inspectWithDevTools) {
+            String actionId,
+            ExtensionActionPopupContents popupContents,
+            boolean inspectWithDevTools) {
         closeHoverCard();
         closePopup();
         closeContextMenu();
 
-        mActionState =
-                new ActionState.PopupPending(
-                        actionId,
-                        ExtensionActionPopupContents.create(nativeHostPtr, inspectWithDevTools),
-                        inspectWithDevTools);
+        mActionState = new ActionState.PopupPending(actionId, popupContents, inspectWithDevTools);
 
         requestActionVisibility(actionId, () -> showPopupOnAnchor());
     }
@@ -903,8 +901,11 @@ class ExtensionActionListMediator implements Destroyable {
 
     private class ToolbarDelegate implements ExtensionsToolbarBridge.ActionListDelegate {
         @Override
-        public void triggerPopup(String actionId, long nativeHostPtr, boolean inspectWithDevTools) {
-            requestShowPopup(actionId, nativeHostPtr, inspectWithDevTools);
+        public void triggerPopup(
+                String actionId,
+                ExtensionActionPopupContents popupContents,
+                boolean inspectWithDevTools) {
+            requestShowPopup(actionId, popupContents, inspectWithDevTools);
         }
 
         @Override

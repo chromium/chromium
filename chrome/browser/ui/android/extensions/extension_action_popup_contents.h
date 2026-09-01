@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/extensions/extension_view.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -36,8 +37,10 @@ class ExtensionViewHost;
 class ExtensionActionPopupContents : public content::WebContentsObserver,
                                      public ExtensionView {
  public:
-  ExtensionActionPopupContents(std::unique_ptr<ExtensionViewHost> popup_host,
-                               bool inspect_with_devtools);
+  ExtensionActionPopupContents(
+      std::unique_ptr<ExtensionViewHost> popup_host,
+      bool inspect_with_devtools,
+      ShowPopupCallback callback = ShowPopupCallback());
   ExtensionActionPopupContents(const ExtensionActionPopupContents&) = delete;
   ExtensionActionPopupContents& operator=(const ExtensionActionPopupContents&) =
       delete;
@@ -71,6 +74,7 @@ class ExtensionActionPopupContents : public content::WebContentsObserver,
 
   std::unique_ptr<ExtensionViewHost> host_;
   const bool inspect_with_devtools_;
+  ShowPopupCallback shown_callback_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
