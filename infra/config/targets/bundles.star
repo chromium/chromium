@@ -4297,7 +4297,6 @@ targets.bundle(
         # Android/ARM only runs Ganesh tests since older devices that we
         # typically use for 32-bit testing do not have good Vulkan support
         # for Graphite.
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
@@ -4317,6 +4316,7 @@ targets.bundle(
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_ganesh_tests",
         "screenshot_sync_passthrough_tests",
+        "webgl2_conformance_gles_passthrough_tests",
     ],
 )
 
@@ -4355,7 +4355,6 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_webrtc_telemetry_test",
         "gpu_webcodecs_telemetry_test",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
@@ -4367,6 +4366,7 @@ targets.bundle(
         "gpu_process_launch_tests",
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_tests",
+        "webgl2_conformance_gles_passthrough_tests",
     ],
 )
 
@@ -4424,8 +4424,12 @@ targets.bundle(
     name = "gpu_fyi_linux_wayland_release_telemetry_tests",
     targets = [
         "gpu_fyi_linux_release_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "webgl2_conformance_gles_passthrough_tests",
     ],
     per_test_modifications = {
         "webgl_conformance_gl_passthrough_tests": targets.remove(

@@ -51,15 +51,6 @@ targets.variant(
 )
 
 targets.variant(
-    name = "CROS_JACUZZI_RELEASE_LKGM",
-    identifier = "JACUZZI_RELEASE_LKGM",
-    skylab = targets.skylab(
-        cros_board = "jacuzzi",
-        use_lkgm = True,
-    ),
-)
-
-targets.variant(
     name = "CROS_GPU_BRYA_RELEASE_LKGM",
     identifier = "GPU_BRYA_RELEASE_LKGM",
     skylab = targets.skylab(

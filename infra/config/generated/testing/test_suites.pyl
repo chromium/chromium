@@ -2038,35 +2038,6 @@
       },
     },
 
-    'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
-      'webgl2_conformance_gles_passthrough_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'gpu_force_command_decoder_passthrough',
-            'gpu_force_angle_gles',
-            'gpu_force_high_performance_gpu',
-            'gpu_integration_test_webgl2_args',
-            'gpu_integration_test_common_args',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'webgl2_conformance',
-        'swarming': {
-          'shards': 5,
-        },
-        'android_swarming': {
-          'shards': 20,
-        },
-        'chromeos_swarming': {
-          'shards': 20,
-        },
-        'skylab': {
-          'shards': 20,
-        },
-      },
-    },
-
     'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests': {
       'webgl2_conformance_metal_passthrough_graphite_tests': {
         'test_common': {
@@ -3508,54 +3479,6 @@
         ],
         'variants': [
           'CROS_GPU_CORSOLA_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'gpu_fyi_chromeos_release_telemetry_tests_jacuzzi_skylab': {
-      'gpu_common_and_optional_telemetry_tests': {
-        'mixins': [
-          'skylab-rdb-native',
-          'skylab-tauto-chromium-graphics',
-        ],
-        'variants': [
-          'CROS_JACUZZI_RELEASE_LKGM',
-        ],
-      },
-      'gpu_passthrough_telemetry_tests': {
-        'mixins': [
-          'skylab-rdb-native',
-          'skylab-tauto-chromium-graphics',
-        ],
-        'variants': [
-          'CROS_JACUZZI_RELEASE_LKGM',
-        ],
-      },
-      'gpu_webcodecs_telemetry_test': {
-        'mixins': [
-          'skylab-rdb-native',
-          'skylab-tauto-chromium-graphics',
-        ],
-        'variants': [
-          'CROS_JACUZZI_RELEASE_LKGM',
-        ],
-      },
-      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
-        'mixins': [
-          'skylab-rdb-native',
-          'skylab-tauto-chromium-graphics',
-        ],
-        'variants': [
-          'CROS_JACUZZI_RELEASE_LKGM',
-        ],
-      },
-      'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
-        'mixins': [
-          'skylab-rdb-native',
-          'skylab-tauto-chromium-graphics',
-        ],
-        'variants': [
-          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
     },

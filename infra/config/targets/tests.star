@@ -2858,6 +2858,22 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl2_args",
         "gpu_integration_test_common_args",
+        targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+            android_swarming = targets.swarming(
+                # These tests currently take about an hour and fifteen minutes
+                # to run. Split them into roughly 5-minute shards.
+                shards = 20,
+            ),
+            chromeos_swarming = targets.swarming(
+                shards = 20,
+            ),
+            skylab = targets.skylab(
+                shards = 20,
+            ),
+        ),
     ],
     module_scheme = "flat",
 )

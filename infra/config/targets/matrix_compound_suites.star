@@ -741,57 +741,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_chromeos_release_telemetry_tests_jacuzzi_skylab",
-    basic_suites = {
-        "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-rdb-native",
-                "skylab-tauto-chromium-graphics",
-            ],
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-        "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-rdb-native",
-                "skylab-tauto-chromium-graphics",
-            ],
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-        "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-rdb-native",
-                "skylab-tauto-chromium-graphics",
-            ],
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-rdb-native",
-                "skylab-tauto-chromium-graphics",
-            ],
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-rdb-native",
-                "skylab-tauto-chromium-graphics",
-            ],
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_skyrim_telemetry_tests",
     basic_suites = {
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
