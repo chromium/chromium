@@ -8,6 +8,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,9 +46,9 @@ public class HomepagePolicyManager implements PrefObserver {
 
     private static @Nullable PrefService sPrefServiceForTesting;
     private static @Nullable GURL sHomepageUrlForTesting;
-    private static @Nullable Boolean sHomepageIsNtpForTesting;
-    private static @Nullable Boolean sIsHomepageManagedForTesting;
-    private static @Nullable Boolean sIsInitializedWithNativeForTesting;
+    private static @TriState int sHomepageIsNtpForTesting;
+    private static @TriState int sIsHomepageManagedForTesting;
+    private static @TriState int sIsInitializedWithNativeForTesting;
 
     private boolean mIsHomepageLocationManaged;
     private GURL mHomepageUrl;
@@ -71,14 +73,14 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     public static void setHomepageForTesting(boolean isManaged, GURL homepageUrl, boolean isNtp) {
-        sIsHomepageManagedForTesting = isManaged;
+        sIsHomepageManagedForTesting = TriStateUtils.from(isManaged);
         sHomepageUrlForTesting = homepageUrl;
-        sHomepageIsNtpForTesting = isNtp;
+        sHomepageIsNtpForTesting = TriStateUtils.from(isNtp);
         ResettersForTesting.register(
                 () -> {
-                    sIsHomepageManagedForTesting = null;
+                    sIsHomepageManagedForTesting = TriState.NOT_SET;
                     sHomepageUrlForTesting = null;
-                    sHomepageIsNtpForTesting = null;
+                    sHomepageIsNtpForTesting = TriState.NOT_SET;
                 });
     }
 
@@ -89,8 +91,8 @@ public class HomepagePolicyManager implements PrefObserver {
      * @return True if the current home page is managed by enterprise policy.
      */
     public static boolean isHomepageLocationManaged() {
-        if (sIsHomepageManagedForTesting != null) {
-            return sIsHomepageManagedForTesting;
+        if (sIsHomepageManagedForTesting != TriState.NOT_SET) {
+            return sIsHomepageManagedForTesting == TriState.TRUE;
         }
         return getInstance().isHomepageLocationPolicyManaged();
     }
@@ -200,8 +202,8 @@ public class HomepagePolicyManager implements PrefObserver {
      * Returns true if HomepageIsNewTabPage policy is managed and has a value of true, else false.
      */
     public static boolean isHomepageNewTabPageEnabled() {
-        if (sHomepageIsNtpForTesting != null) {
-            return sHomepageIsNtpForTesting;
+        if (sHomepageIsNtpForTesting != TriState.NOT_SET) {
+            return sHomepageIsNtpForTesting == TriState.TRUE;
         }
         return isHomepageNewTabPageManaged() && getHomepageNewTabPageValue();
     }
@@ -211,15 +213,15 @@ public class HomepagePolicyManager implements PrefObserver {
      * HomepagePolicyManager can only return valid result after initialing with native.
      */
     public static boolean isInitializedWithNative() {
-        if (sIsInitializedWithNativeForTesting != null) {
-            return sIsInitializedWithNativeForTesting;
+        if (sIsInitializedWithNativeForTesting != TriState.NOT_SET) {
+            return sIsInitializedWithNativeForTesting == TriState.TRUE;
         }
         return getInstance().isInitialized();
     }
 
     public static void setIsInitializedWithNativeForTesting(boolean isInitialized) {
-        sIsInitializedWithNativeForTesting = isInitialized;
-        ResettersForTesting.register(() -> sIsInitializedWithNativeForTesting = null);
+        sIsInitializedWithNativeForTesting = TriStateUtils.from(isInitialized);
+        ResettersForTesting.register(() -> sIsInitializedWithNativeForTesting = TriState.NOT_SET);
     }
 
     /**

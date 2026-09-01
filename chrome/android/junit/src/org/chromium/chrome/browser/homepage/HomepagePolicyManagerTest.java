@@ -615,4 +615,26 @@ public class HomepagePolicyManagerTest {
         HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
         mHomepagePolicyManager.getHomepageLocationPolicyUrl(); // Should throw
     }
+
+    @Test
+    public void testSetHomepageForTesting() {
+        HomepagePolicyManager.setHomepageForTesting(true, JUnitTestGURLs.EXAMPLE_URL, false);
+        Assert.assertTrue(HomepagePolicyManager.isHomepageLocationManaged());
+        Assert.assertEquals(JUnitTestGURLs.EXAMPLE_URL, HomepagePolicyManager.getHomepageUrl());
+        Assert.assertFalse(HomepagePolicyManager.isHomepageNewTabPageEnabled());
+
+        HomepagePolicyManager.setHomepageForTesting(false, GURL.emptyGURL(), true);
+        Assert.assertFalse(HomepagePolicyManager.isHomepageLocationManaged());
+        Assert.assertEquals(GURL.emptyGURL(), HomepagePolicyManager.getHomepageUrl());
+        Assert.assertTrue(HomepagePolicyManager.isHomepageNewTabPageEnabled());
+    }
+
+    @Test
+    public void testSetIsInitializedWithNativeForTesting() {
+        HomepagePolicyManager.setIsInitializedWithNativeForTesting(true);
+        Assert.assertTrue(HomepagePolicyManager.isInitializedWithNative());
+
+        HomepagePolicyManager.setIsInitializedWithNativeForTesting(false);
+        Assert.assertFalse(HomepagePolicyManager.isInitializedWithNative());
+    }
 }
