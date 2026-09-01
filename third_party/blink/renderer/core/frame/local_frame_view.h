@@ -485,6 +485,7 @@ class CORE_EXPORT LocalFrameView final
   void SetIsVisuallyNonEmpty() { is_visually_non_empty_ = true; }
   void EnableAutoSizeMode(const gfx::Size& min_size, const gfx::Size& max_size);
   void DisableAutoSizeMode();
+  bool IsAutoSizeModeEnabled() const { return auto_size_info_; }
   bool IsBeingAutoSized() const { return is_being_auto_sized_; }
 
   void ForceLayoutForPagination(float maximum_shrink_factor);

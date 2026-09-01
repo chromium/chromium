@@ -73,11 +73,11 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded(bool should_reset_for_layout) {
     handled_post_load_reset_ = true;
   }
 
-  const bool should_reset_to_min_size =
-      uses_scroll_width && (is_first_autosize || should_reset_after_load);
   gfx::Size reset_size = size;
-  if (should_reset_to_min_size) {
+  if (uses_scroll_width && is_first_autosize) {
     reset_size = min_auto_size_;
+  } else if (should_reset_after_load) {
+    reset_size.set_width(min_auto_size_.width());
   } else if (is_first_autosize) {
     reset_size.set_height(min_auto_size_.height());
   }
