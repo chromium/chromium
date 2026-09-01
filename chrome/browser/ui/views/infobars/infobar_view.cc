@@ -41,7 +41,6 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 template <typename T>
@@ -102,6 +101,8 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   // animation.
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
+
+  SetBackground(views::CreateSolidBackground(kColorInfoBarBackground));
 
   const int kRefreshMargin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
@@ -277,30 +278,11 @@ gfx::Size InfoBarView::CalculatePreferredSize(
 
 void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const auto* cp = GetColorProvider();
-  const SkColor background_theme_color = cp->GetColor(kColorInfoBarBackground);
-  SetBackground(views::CreateSolidBackground(background_theme_color));
-
-  const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
-  for (views::View* child : content_container_->children()) {
-    auto* label = views::AsViewClass<views::Label>(child);
-    if (label) {
-      label->SetBackgroundColor(background_theme_color);
-      if (!views::IsViewClass<views::Link>(child)) {
-        label->SetEnabledColor(text_color);
-        label->SetAutoColorReadabilityEnabled(false);
-      }
-    }
-    auto* styled_label = views::AsViewClass<views::StyledLabel>(child);
-    if (styled_label) {
-      styled_label->SetDisplayedOnBackgroundColor(background_theme_color);
-    }
-  }
 
   // Set dark mode status so that it can be used to set a different icon image
   // that is more suitable for a dark background.
-  delegate()->set_dark_mode(
-      color_utils::IsDark(cp->GetColor(kColorInfoBarBackground)));
+  delegate()->set_dark_mode(color_utils::IsDark(
+      GetColorProvider()->GetColor(kColorInfoBarBackground)));
   if (icon_) {
     icon_->SetImage(delegate()->GetIcon());
   }
@@ -321,6 +303,9 @@ std::unique_ptr<views::Label> InfoBarView::CreateLabel(
     const std::u16string& text) const {
   auto label = std::make_unique<views::Label>(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT);
+  label->SetBackgroundColor(kColorInfoBarBackground);
+  label->SetEnabledColor(kColorInfoBarForeground);
+  label->SetAutoColorReadabilityEnabled(false);
   AssignLabelDetails(label.get());
   return label;
 }
@@ -330,6 +315,7 @@ std::unique_ptr<views::StyledLabel> InfoBarView::CreateStyledLabel(
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
   label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  label->SetDisplayedOnBackgroundColor(kColorInfoBarBackground);
   AssignLabelDetails(label.get());
   return label;
 }
@@ -339,6 +325,7 @@ std::unique_ptr<views::Link> InfoBarView::CreateLink(
     const std::optional<std::u16string>& accessible_text) {
   auto link = std::make_unique<views::Link>(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT);
+  link->SetBackgroundColor(kColorInfoBarBackground);
   AssignLabelDetails(link.get());
   link->SetCallback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
