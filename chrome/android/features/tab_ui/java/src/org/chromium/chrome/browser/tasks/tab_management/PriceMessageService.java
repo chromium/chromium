@@ -264,7 +264,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
                         "GridTabSwitcher.%s.DisableReason",
                         PriceMessageService.WELCOME_MESSAGE_METRICS_IDENTIFIER),
                 reason,
-                MessageDisableReason.MAX_VALUE);
+                MessageDisableReason.MAX_VALUE + 1);
     }
 
     @Nullable PriceTabData getPriceTabDataForTesting() {

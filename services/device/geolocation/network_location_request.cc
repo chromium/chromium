@@ -63,8 +63,7 @@ constexpr std::string_view kWifiAccessPointsKey = "wifiAccessPoints";
 
 void RecordUmaLocationRequestResult(NetworkLocationRequestResult result_code) {
   UMA_HISTOGRAM_ENUMERATION("Geolocation.NetworkLocationRequest.Result",
-                            result_code,
-                            NetworkLocationRequestResult::kMaxValue);
+                            result_code);
 }
 
 void RecordUmaResponseCode(int code) {

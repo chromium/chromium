@@ -62,8 +62,7 @@ BrowserDelegate* HelpAppSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     const GURL& url,
     const apps::AppLaunchParams& params) const {
   UMA_HISTOGRAM_ENUMERATION("Discover.Overall.AppLaunched",
-                            static_cast<int>(params.launch_source),
-                            static_cast<int>(apps::LaunchSource::kMaxValue));
+                            params.launch_source);
   return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
                                                              url, params);
 }

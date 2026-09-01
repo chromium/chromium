@@ -173,8 +173,7 @@ void AmbientBadgeManager::OnGotClassificationResult(
     const segmentation_platform::ClassificationResult& result) {
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
     UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
-                              SegmentationResult::kInvalid,
-                              SegmentationResult::kMaxValue);
+                              SegmentationResult::kInvalid);
     UpdateState(State::kSegmentationBlock);
     return;
   }
@@ -185,8 +184,7 @@ void AmbientBadgeManager::OnGotClassificationResult(
 
   UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
                             show ? SegmentationResult::kShowInstallPrompt
-                                 : SegmentationResult::kDontShow,
-                            SegmentationResult::kMaxValue);
+                                 : SegmentationResult::kDontShow);
 
   if (!show) {
     UpdateState(State::kSegmentationBlock);

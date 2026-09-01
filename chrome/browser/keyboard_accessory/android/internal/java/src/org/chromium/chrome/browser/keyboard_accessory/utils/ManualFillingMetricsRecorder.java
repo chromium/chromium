@@ -141,11 +141,11 @@ public class ManualFillingMetricsRecorder {
                 getHistogramForType(
                         UMA_KEYBOARD_ACCESSORY_SUGGESTION_SELECTED, AccessoryTabType.ALL),
                 suggestionType,
-                AccessorySuggestionType.MAX_VALUE);
+                AccessorySuggestionType.MAX_VALUE + 1);
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramForType(UMA_KEYBOARD_ACCESSORY_SUGGESTION_SELECTED, tabType),
                 suggestionType,
-                AccessorySuggestionType.MAX_VALUE);
+                AccessorySuggestionType.MAX_VALUE + 1);
     }
 
     /**

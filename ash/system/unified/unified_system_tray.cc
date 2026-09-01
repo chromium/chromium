@@ -280,8 +280,7 @@ void UnifiedSystemTray::MaybeRecordFirstInteraction(FirstInteractionType type) {
   }
   first_interaction_recorded_ = true;
 
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.SystemTray.FirstInteraction", type,
-                            FirstInteractionType::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("ChromeOS.SystemTray.FirstInteraction", type);
 }
 
 void UnifiedSystemTray::UpdateAfterLoginStatusChange() {

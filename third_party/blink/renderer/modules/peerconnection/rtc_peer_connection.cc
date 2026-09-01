@@ -584,8 +584,7 @@ void MeasureGenerateCertificateKeyType(
     }
   }
   UMA_HISTOGRAM_ENUMERATION(
-      "WebRTC.PeerConnection.GenerateCertificate.Algorithms", bucket,
-      GenerateCertificateAlgorithms::kMaxValue);
+      "WebRTC.PeerConnection.GenerateCertificate.Algorithms", bucket);
 }
 
 bool IsSignalingStateAllowedForType(

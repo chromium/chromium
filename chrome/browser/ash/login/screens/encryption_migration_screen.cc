@@ -604,9 +604,7 @@ void EncryptionMigrationScreen::OnDelayedRecordVisibleScreen(
 
   // If |current_ui_state_| is not changed for a second, record the current
   // screen as a "visible" screen.
-  UMA_HISTOGRAM_ENUMERATION(
-      kUmaNameVisibleScreen, ui_state,
-      screens_login::mojom::EncryptionMigrationPage::UIState::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION(kUmaNameVisibleScreen, ui_state);
 }
 
 bool EncryptionMigrationScreen::IsResumingIncompleteMigration() const {

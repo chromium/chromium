@@ -13,8 +13,7 @@ namespace blink {
 void RemotePlaybackMetrics::RecordRemotePlaybackLocation(
     RemotePlaybackInitiationLocation location) {
   UMA_HISTOGRAM_ENUMERATION("Cast.Sender.RemotePlayback.InitiationLocation",
-                            location,
-                            RemotePlaybackInitiationLocation::kMaxValue);
+                            location);
 }
 
 // static

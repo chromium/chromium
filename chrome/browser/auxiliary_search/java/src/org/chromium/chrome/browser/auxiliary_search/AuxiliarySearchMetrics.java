@@ -391,7 +391,8 @@ public class AuxiliarySearchMetrics {
             position = MAX_POSITION_INDEX;
         }
 
-        RecordHistogram.recordEnumeratedHistogram(builder.toString(), position, MAX_POSITION_INDEX);
+        RecordHistogram.recordEnumeratedHistogram(
+                builder.toString(), position, MAX_POSITION_INDEX + 1);
         return true;
     }
 

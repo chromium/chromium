@@ -458,22 +458,19 @@ class ShelfMenuModelAdapter : public AppMenuModelAdapter {
     UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Desktop",
                         user_journey_time);
     UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.Desktop",
-                              source_type(),
-                              ui::mojom::MenuSourceType::kMaxValue);
+                              source_type());
     if (is_tablet_mode()) {
       UMA_HISTOGRAM_TIMES(
           "Apps.ContextMenuUserJourneyTimeV2.Desktop.TabletMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSourceV2.Desktop.TabletMode", source_type(),
-          ui::mojom::MenuSourceType::kMaxValue);
+          "Apps.ContextMenuShowSourceV2.Desktop.TabletMode", source_type());
     } else {
       UMA_HISTOGRAM_TIMES(
           "Apps.ContextMenuUserJourneyTimeV2.Desktop.ClamshellMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSourceV2.Desktop.ClamshellMode", source_type(),
-          ui::mojom::MenuSourceType::kMaxValue);
+          "Apps.ContextMenuShowSourceV2.Desktop.ClamshellMode", source_type());
     }
   }
 };

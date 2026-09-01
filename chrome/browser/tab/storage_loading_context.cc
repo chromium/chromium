@@ -20,8 +20,7 @@ StorageLoadingContext& StorageLoadingContext::operator=(
 
 void StorageLoadingContext::AddWarning(StorageLoadWarningCode status,
                                        std::string message) {
-  UMA_HISTOGRAM_ENUMERATION("Tabs.TabStateStore.LoadWarning", status,
-                            StorageLoadWarningCode::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("Tabs.TabStateStore.LoadWarning", status);
   warnings_.push_back({status, std::move(message)});
 }
 

@@ -411,11 +411,10 @@ bool ShouldContextResponsePopulateHintCache(
 
 void RecordOptimizationFilterStatus(proto::OptimizationType optimization_type,
                                     OptimizationFilterStatus status) {
-  base::UmaHistogramExactLinear(
+  base::UmaHistogramEnumeration(
       base::StrCat({"OptimizationGuide.OptimizationFilterStatus.",
                     GetStringNameForOptimizationType(optimization_type)}),
-      static_cast<int>(status),
-      static_cast<int>(OptimizationFilterStatus::kMaxValue));
+      status);
 }
 
 GURL GetHintsURL() {

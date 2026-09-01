@@ -27,21 +27,17 @@
 - (void)recordHomeImpression:(IOSNTPImpressionType)impressionType
               isStartSurface:(BOOL)startSurface {
   if (startSurface) {
-    UMA_HISTOGRAM_ENUMERATION(kStartImpressionHistogram, impressionType,
-                              IOSNTPImpressionType::kMaxValue);
+    UMA_HISTOGRAM_ENUMERATION(kStartImpressionHistogram, impressionType);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType,
-                              IOSNTPImpressionType::kMaxValue);
+    UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType);
   }
-  UMA_HISTOGRAM_ENUMERATION(kHomeImpressionHistogram, impressionType,
-                            IOSNTPImpressionType::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION(kHomeImpressionHistogram, impressionType);
 }
 
 - (void)recordCustomizationState:
     (IOSNTPImpressionCustomizationState)impressionType {
   UMA_HISTOGRAM_ENUMERATION(kNTPImpressionCustomizationStateHistogram,
-                            impressionType,
-                            IOSNTPImpressionCustomizationState::kMaxValue);
+                            impressionType);
 }
 
 - (void)recordOverscrollActionForType:(OverscrollActionType)type {
@@ -93,8 +89,7 @@
 
 - (void)recordHomeCustomizationMenuOpenedFromEntrypoint:
     (HomeCustomizationEntrypoint)entrypoint {
-  UMA_HISTOGRAM_ENUMERATION(kHomeCustomizationOpenedHistogram, entrypoint,
-                            HomeCustomizationEntrypoint::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION(kHomeCustomizationOpenedHistogram, entrypoint);
 }
 
 @end
