@@ -155,10 +155,18 @@ enum PageTransition : int32_t {
   PAGE_TRANSITION_SERVER_REDIRECT = -2147483648,  // 0x80000000
 
   // Used to test whether a transition involves a redirect.
-  PAGE_TRANSITION_IS_REDIRECT_MASK = -1073741824,  // 0xC0000000
+  PAGE_TRANSITION_IS_REDIRECT_MASK =
+      PAGE_TRANSITION_CLIENT_REDIRECT | PAGE_TRANSITION_SERVER_REDIRECT,
 
   // General mask defining the bits used for the qualifiers.
   PAGE_TRANSITION_QUALIFIER_MASK = -256,  // 0xFFFFFF00
+
+  // Mask of qualifiers that the renderer is not allowed to add unless already
+  // set by the browser.
+  PAGE_TRANSITION_RENDERER_DISALLOWED_QUALIFIERS_MASK =
+      PAGE_TRANSITION_FORWARD_BACK | PAGE_TRANSITION_FROM_ADDRESS_BAR |
+      PAGE_TRANSITION_HOME_PAGE | PAGE_TRANSITION_FROM_API |
+      PAGE_TRANSITION_SERVER_REDIRECT,
 };
 
 // Compares two PageTransition types ignoring qualifiers. |rhs| is taken to

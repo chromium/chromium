@@ -64,6 +64,7 @@ sync_pb::SyncEnums_PageTransition ToSyncPageTransition(
     case ui::PAGE_TRANSITION_SERVER_REDIRECT:
     case ui::PAGE_TRANSITION_IS_REDIRECT_MASK:
     case ui::PAGE_TRANSITION_QUALIFIER_MASK:
+    case ui::PAGE_TRANSITION_RENDERER_DISALLOWED_QUALIFIERS_MASK:
       break;
   }
   NOTREACHED();

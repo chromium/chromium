@@ -559,6 +559,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="377" label="PSI_STORAGE_ACCESS_FROM_SANDBOXED_FRAME"/>
   <int value="378" label="HSI_PLAY_HAPTICS_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="379" label="RFH_CREATE_CHILD_FRAME_INVALID_INITIATOR_TOKEN"/>
+  <int value="380" label="RFH_COMMIT_NAVIGATION_INVALID_TRANSITION_TYPE"/>
+  <int value="381" label="RFH_COMMIT_NAVIGATION_NON_WEBBY_TRANSITION"/>
+  <int value="382"
+      label="RFH_COMMIT_NAVIGATION_TRANSITION_FRAME_TYPE_MISMATCH"/>
+  <int value="383" label="RFH_COMMIT_NAVIGATION_DISALLOWED_QUALIFIER"/>
+  <int value="384"
+      label="RFH_COMMIT_NAVIGATION_BROWSER_INITIATED_TRANSITION_MISMATCH"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
