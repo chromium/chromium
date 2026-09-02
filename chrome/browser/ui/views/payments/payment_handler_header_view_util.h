@@ -9,7 +9,10 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
@@ -96,11 +99,22 @@ struct PaymentHandlerHeaderViews {
   base::WeakPtr<PaymentHandlerCloseButton> close_button;
 };
 
-// Populates a header view containing the icon (if available), origin text, and
-// the close button.
+// Creates a disabled PageInfo icon for the splash screen when
+// kPaymentHandlerCameraAccessUx is enabled.
+std::unique_ptr<views::View> CreatePaymentHandlerLoadingIconView();
+
+// Creates a LocationIconView for the live payment handler web flow when
+// kPaymentHandlerCameraAccessUx is enabled.
+std::unique_ptr<LocationIconView> CreatePaymentHandlerLocationIconView(
+    IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+    LocationIconView::Delegate* location_icon_delegate);
+
+// Populates a header view containing the icon (icon_view if provided, or app
+// icon bitmap if available), origin text, and the close button.
 PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
     views::View* container,
-    const SkBitmap* app_icon_bitmap,
+    std::unique_ptr<views::View> icon_view,
+    const SkBitmap* icon_bitmap,
     const std::u16string& origin_text,
     views::Button::PressedCallback close_callback);
 
