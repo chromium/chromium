@@ -919,7 +919,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlTextChanged_resetsActivationChipFocus() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
 
         var input = mSessionState.getAutocompleteInput();
@@ -1305,7 +1305,8 @@ public class LocationBarMediatorUnitTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.ENABLED);
         Configuration config = new Configuration();
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true); // Adopt Desktop functionality.
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(
+                /* hasDesktopExperience= */ true); // Adopt Desktop functionality.
 
         mMediator.beginInput(input);
         mMediator.onConfigurationChanged(config);
@@ -1325,7 +1326,8 @@ public class LocationBarMediatorUnitTest {
         input.setAutocompleteState(AutocompleteState.ENABLED);
         Configuration config = new Configuration();
 
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(false); // non-Desktop functionality.
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(
+                /* hasDesktopExperience= */ false); // non-Desktop functionality.
         mMediator.onConfigurationChanged(config);
         verify(mUrlCoordinator, never()).clearFocus();
 
@@ -1948,13 +1950,13 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlFocusChange_isNotDesktopMode() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ false);
         testOnUrlFocusChange(/* expectDesktopMode= */ false);
     }
 
     @Test
     public void testOnUrlFocusChange_hasDesktopExperience() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         testOnUrlFocusChange(/* expectDesktopMode= */ true);
     }
 
@@ -1968,7 +1970,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testAnimateIconChanges_desktopPlatform() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         clearInvocations(mStatusCoordinator);
         mMediator.onUrlFocusChange(/* hasFocus= */ true);
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
@@ -2596,8 +2598,8 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
 
         mMediator.showUrlBarCursorWithoutFocusAnimations();
         assertEquals(
@@ -2617,8 +2619,8 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
 
         // Start session with hardware keyboard focus (goes to STANDBY)
         mMediator.showUrlBarCursorWithoutFocusAnimations();
@@ -2759,7 +2761,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testRestoringText() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mTabletMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -2800,7 +2802,7 @@ public class LocationBarMediatorUnitTest {
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
 
@@ -3131,7 +3133,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateButtonVisibility_suggestionsPopover() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mProfileSupplier.set(mProfile);
         mMediator.onFinishNativeInitialization();
         mMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
@@ -3155,7 +3157,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateButtonVisibility_suggestionsPopover_withQuery() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mProfileSupplier.set(mProfile);
         mTabletMediator.onFinishNativeInitialization();
         mTabletMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
@@ -3174,7 +3176,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateButtonVisibility_suggestionsPopover_toolbarMicEnabled() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mProfileSupplier.set(mProfile);
         mTabletMediator.onFinishNativeInitialization();
         mTabletMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
@@ -3639,14 +3641,14 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mScrimHandler);
 
         // Show scrim on mobile devices even if there are no suggestions to show.
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ false);
         mMediator.onSuggestionsChanged(null, false);
         verify(mScrimHandler).setVisibility(true);
         clearInvocations(mScrimHandler);
 
         // On desktop, we show no suggestions in select cases, e.g. on the NTP where the omnibox is
         // prefocused. We don't want to show the scrim in that scenario either.
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mMediator.suspendInput();
         mMediator.beginInput(
                 new AutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY));
@@ -3818,7 +3820,7 @@ public class LocationBarMediatorUnitTest {
     }
 
     private AutocompleteInput setupDesktopSuggestionsSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
@@ -3928,7 +3930,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnAttachmentListChanged_withAttachments_promotesDisplayStateToSuggestions() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         setupSession(DisplayState.DRAFTING, /* textDiffers= */ false);
 
         doReturn(false).when(mFuseboxAttachmentModelList).isEmpty();
@@ -3940,7 +3942,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnAttachmentListChanged_emptyAttachments_doesNotPromoteDisplayState() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         setupSession(DisplayState.DRAFTING, /* textDiffers= */ false);
 
         doReturn(true).when(mFuseboxAttachmentModelList).isEmpty();
@@ -3952,7 +3954,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testDeleteButton_mobile_doesNotRevertCustomToolToAiMode() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
@@ -3973,7 +3975,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testDeleteButtonVisibility_hasDesktopExperience() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mMediator.onFinishNativeInitialization();
         doReturn("google.com").when(mUrlCoordinator).getTextWithAutocomplete();
 
@@ -3985,7 +3987,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testDeleteButtonVisibility_hasDesktopExperience_aiMode_draftingNoPopover() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mMediator.onFinishNativeInitialization();
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
 
@@ -4000,7 +4002,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testDeleteButtonVisibility_hasDesktopExperience_aiMode_reparenting() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -4184,7 +4186,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void onUrlFocusChange_keyboardForward_entersStandbyNoPopover() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mMediator.onUrlFocusChange(new UrlBarFocusChangeInfo(true, View.FOCUS_FORWARD));
 
         verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(/* showFocusRing= */ true);
@@ -4593,8 +4595,8 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_disabledState_earlyReturns() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.DISABLED);
 
         mMediator.showUrlBarCursorWithoutFocusAnimations();
@@ -4605,8 +4607,8 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_enabledState_startsSession() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
 
         mMediator.showUrlBarCursorWithoutFocusAnimations();
@@ -4618,8 +4620,8 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_activeSession_preservesExistingInput() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mSessionState.getAutocompleteInput().setUserText("active text", TextSelection.SELECT_END);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
         assertTrue(mSessionState.isSessionActive());
@@ -4632,8 +4634,8 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndShowsScrim() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
 
         mMediator.showUrlBarCursorWithoutFocusAnimations();
@@ -4695,8 +4697,8 @@ public class LocationBarMediatorUnitTest {
     public void testTabSwitch_previouslyDeactivated_remainsDisabled() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
 
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
@@ -4721,8 +4723,8 @@ public class LocationBarMediatorUnitTest {
     public void testEscPress_transitionsStates() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
 
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
         mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
@@ -4756,8 +4758,8 @@ public class LocationBarMediatorUnitTest {
     public void testEscPress_transitionsStates_withRealTextChange() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         doAnswer(
                         invocation -> {
                             UrlBarData data = invocation.getArgument(0);
@@ -4982,7 +4984,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnScrimClicked_draftingTextMatches_clearsSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         setupSession(DisplayState.DRAFTING, /* textDiffers= */ false);
 
         mMediator.onScrimClicked();
@@ -4994,7 +4996,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnScrimClicked_draftingTextDiffers_enterDraftingNoFocus() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         setupSession(DisplayState.DRAFTING, /* textDiffers= */ true);
 
         mMediator.onScrimClicked();
@@ -5004,7 +5006,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnScrimClicked_suggestionsTextDiffers_enterDraftingNoFocus() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         beginInput(
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.SUGGESTIONS)
@@ -5018,7 +5020,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testEnterDraftingNoFocus_withPreviewText_commitsPreviewText() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         beginInput(
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.DRAFTING)
@@ -5034,7 +5036,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnScrimClicked_nonDesktop_endsInput() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         beginInput(
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.SUGGESTIONS)
@@ -5049,7 +5051,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlFocusChange_losingFocus_draftingTextDiffers_enterDraftingNoFocus() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         setupSession(DisplayState.DRAFTING, /* textDiffers= */ true);
 
         mMediator.onUrlFocusChange(/* hasFocus= */ false);
@@ -5059,7 +5061,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlFocusChange_losingFocus_draftingTextMatches_endsSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         setupSession(DisplayState.DRAFTING, /* textDiffers= */ false);
 
         mMediator.onUrlFocusChange(/* hasFocus= */ false);
@@ -5070,7 +5072,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlFocusChange_gainingFocus_fromDraftingNoFocus_resumeSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         beginInput(
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.DRAFTING_NO_FOCUS)
@@ -5114,7 +5116,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlChanged_desktop_endsDraftingSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         AutocompleteInput input =
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.DRAFTING_NO_FOCUS)
@@ -5137,7 +5139,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testOnUrlChanged_tabChanging_preservesDraftingNoFocusSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         beginInput(
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.DRAFTING_NO_FOCUS)
@@ -5410,14 +5412,14 @@ public class LocationBarMediatorUnitTest {
     @Test
     @Config(qualifiers = "w300dp")
     public void updatesActivationChipCompact_screenWidthTriggersCompact() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mMediator.updateActivationChipCompact();
         verify(mLocationBarLayout).setActivationChipCompact(true);
     }
 
     @Test
     public void updateActivationChipCompact_textOverflowTriggersCompact() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
         when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
         when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
@@ -5430,7 +5432,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void updateActivationChipCompact_safeAgainstOscillation() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(120);
         when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
 
@@ -5451,7 +5453,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void updateActivationChipCompact_isTextWrappingTriggersCompact() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
         when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(50);
         when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
@@ -5464,7 +5466,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void updateActivationChipCompact_urlBarWidthIncrease() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         verify(mLocationBarLayout)
                 .addOnLayoutChangeListener(mOnLayoutChangeListenerCaptor.capture());
         when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(120);
@@ -5490,7 +5492,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void updateActivationChipCompact_urlBarWidthDecrease() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         verify(mLocationBarLayout)
                 .addOnLayoutChangeListener(mOnLayoutChangeListenerCaptor.capture());
         when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(120);
