@@ -108,22 +108,6 @@ void ReportUmaTpmOperation(TPMOperation operation,
   }
 }
 
-constexpr sign::SignatureKind ToSignatureKind(
-    SignatureVerifier::SignatureAlgorithm alg) {
-  switch (alg) {
-    case SignatureVerifier::RSA_PKCS1_SHA1:
-      return sign::RSA_PKCS1_SHA1;
-    case SignatureVerifier::RSA_PKCS1_SHA256:
-      return sign::RSA_PKCS1_SHA256;
-    case SignatureVerifier::ECDSA_SHA256:
-      return sign::ECDSA_SHA256;
-    case SignatureVerifier::RSA_PSS_SHA256:
-      return sign::RSA_PSS_SHA256;
-  }
-
-  NOTREACHED();
-}
-
 bool VerifySignature(SignatureVerifier::SignatureAlgorithm alg,
                      base::span<const uint8_t> spki,
                      base::span<const uint8_t> data,
@@ -386,6 +370,22 @@ std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
     case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
       return "ECDSA";
   }
+}
+
+sign::SignatureKind ToSignatureKind(
+    SignatureVerifier::SignatureAlgorithm algorithm) {
+  switch (algorithm) {
+    case SignatureVerifier::RSA_PKCS1_SHA1:
+      return sign::RSA_PKCS1_SHA1;
+    case SignatureVerifier::RSA_PKCS1_SHA256:
+      return sign::RSA_PKCS1_SHA256;
+    case SignatureVerifier::ECDSA_SHA256:
+      return sign::ECDSA_SHA256;
+    case SignatureVerifier::RSA_PSS_SHA256:
+      return sign::RSA_PSS_SHA256;
+  }
+
+  NOTREACHED();
 }
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {

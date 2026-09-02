@@ -8,6 +8,7 @@
 #include <string>
 
 #include "crypto/crypto_export.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
@@ -53,6 +54,10 @@ CRYPTO_EXPORT std::string OperationToString(TPMOperation operation);
 
 // Converts the given `algorithm` to a string representation.
 CRYPTO_EXPORT std::string AlgorithmToString(
+    SignatureVerifier::SignatureAlgorithm algorithm);
+
+// Converts the given `algorithm` to a `sign::SignatureKind`.
+CRYPTO_EXPORT sign::SignatureKind ToSignatureKind(
     SignatureVerifier::SignatureAlgorithm algorithm);
 
 // Records UMA metrics of TPM availability, latency and successful usage.

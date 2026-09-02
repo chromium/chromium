@@ -135,23 +135,6 @@ class UnexportableKeyTest
   }
 
   crypto::sign::SignatureKind signature_kind() {
-#if BUILDFLAG(IS_WIN)
-    // On Windows, Platform Crypto Provider (PCP) attestation keys restrict
-    // ECDSA signature hashing to SHA-1 even for P-256 keys (see
-    // AttestationKeyWin::SignSlowly). Therefore, when verifying ECDSA
-    // attestation key signatures on Windows, we must verify against SHA-1
-    // (SignatureKind::ECDSA_SHA1) rather than SHA-256.
-    //
-    // TODO(crbug.com/531590259): Actually support ECDSA_SHA256 keys by
-    // implementing key creation in the TPM. If TPM-native key creation is ever
-    // extended to general signing keys, a Finch experiment will be mandatory to
-    // avoid breaking active keys.
-    if (provider_type() == Provider::kTPM &&
-        algorithm() ==
-            crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
-      return crypto::sign::SignatureKind::ECDSA_SHA1;
-    }
-#endif  // BUILDFLAG(IS_WIN)
     switch (algorithm()) {
       case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
         return crypto::sign::SignatureKind::ECDSA_SHA256;
@@ -370,11 +353,8 @@ TEST_P(UnexportableKeyTest, CertifySlowlySucceeds) {
 }
 
 TEST_P(UnexportableKeyTest, CertifySlowlyUsesSha256) {
-  if (provider_type() != Provider::kTPM ||
-      algorithm() !=
-          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
-    // TODO(crbug.com/531590259): Add support for ECDSA_SHA256 attestation keys.
-    GTEST_SKIP() << "Only for TPM RSA keys";
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
@@ -483,6 +463,10 @@ TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {
 
 TEST_P(UnexportableKeyTest,
        FromWrappedAttestationKeySucceedsForAttestationKey) {
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
+  }
+
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
   if (!CurrentAlgorithmSupported(provider.get())) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
@@ -502,7 +486,23 @@ TEST_P(UnexportableKeyTest,
   // 2. Load it as an attestation key. It should succeed.
   auto loaded_attestation_key =
       provider->FromWrappedAttestationKeySlowly(attestation_wrapped);
-  EXPECT_TRUE(loaded_attestation_key);
+  ASSERT_TRUE(loaded_attestation_key);
+  EXPECT_EQ(loaded_attestation_key->Algorithm(), algorithm());
+  EXPECT_EQ(loaded_attestation_key->GetSubjectPublicKeyInfo(),
+            attestation_key->GetSubjectPublicKeyInfo());
+  EXPECT_EQ(loaded_attestation_key->GetWrappedKey(), attestation_wrapped);
+
+  // 3. Verify that the loaded attestation key can sign and the signature
+  // verifies.
+  const uint8_t msg[] = {1, 2, 3, 4};
+  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> sig,
+                       loaded_attestation_key->SignSlowly(msg));
+
+  ASSERT_OK_AND_ASSIGN(auto public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           loaded_attestation_key->GetSubjectPublicKeyInfo()));
+
+  EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
 }
 
 TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
