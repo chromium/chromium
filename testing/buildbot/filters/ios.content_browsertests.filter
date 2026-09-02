@@ -466,6 +466,7 @@
 -All/IndexedDBBrowserTest.SchedulingPriority/WithLevelDb
 -All/IndexedDBBrowserTest.SchedulingPriority/WithSqlite
 -All/InlineScriptCodeCacheBrowserTest.NotProducedForShortScript/0
+-All/InlineScriptCodeCacheBrowserTest.NotProducedForShortScript/1
 
 # TODO(crbug.com/437957113): The test has been failing since
 # https://crrev.com/c/6566111.
@@ -526,6 +527,7 @@
 -All/ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest.FetchHandler_Wins_Redirect_PassThrough/0
 -All/ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest.FetchHandler_Wins_Redirect_PassThrough/2
 -All/ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest.NetworkRequest_Wins_Redirect_PassThrough/3
+-ServiceWorkerNoBestEffortTasksTest.ValidatePreconditions
 -All/SitePerProcessPerDocumentIsolatedSandboxedIframeTest.SiblingSrcdocIframesGetDifferentProcesses/1
 -All/SoapByDefaultVirtualBrowsingContextGroupTest.NoHeader/RDAllFrames_BFCacheEnabled
 -All/StartupTracingTest.TestEnableTracing/0
