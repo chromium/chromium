@@ -48,7 +48,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link AddToBookmarksToolbarButtonController} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AddToBookmarksToolbarButtonControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

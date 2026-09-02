@@ -79,7 +79,6 @@ import java.util.Collection;
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     BaseSwitches.DISABLE_NATIVE_INITIALIZATION

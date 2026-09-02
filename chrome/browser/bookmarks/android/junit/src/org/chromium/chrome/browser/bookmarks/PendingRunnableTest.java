@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -22,7 +21,6 @@ import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link PendingRunnable}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PendingRunnableTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

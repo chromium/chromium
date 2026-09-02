@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -30,7 +29,6 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** Unit tests for {BookmarkBarSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BookmarkBarSceneLayerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BookmarkBarSceneLayerJni mSceneLayerJni;

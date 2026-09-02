@@ -12,7 +12,6 @@ import androidx.annotation.StringRes;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +26,6 @@ import java.util.List;
 
 /** Unit tests for {@link ReadingListSectionHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ReadingListSectionHeaderTest {
     private static final int NEWER_CREATION_TIMESTAMP = 2;
     private static final int OLDER_CREATION_TIMESTAMP = 1;

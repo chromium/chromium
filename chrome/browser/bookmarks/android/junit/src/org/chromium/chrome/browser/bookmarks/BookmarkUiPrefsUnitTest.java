@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -32,7 +31,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link BookmarkUiPrefs}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BookmarkUiPrefsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

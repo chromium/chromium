@@ -48,9 +48,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link BookmarkSaveFlowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
 public class BookmarkSaveFlowMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

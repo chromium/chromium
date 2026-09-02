@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
@@ -26,7 +25,6 @@ import java.util.List;
 
 /** Unit tests for {@link BasicBookmarkQueryHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BasicBookmarkQueryHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

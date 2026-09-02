@@ -42,7 +42,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /** Unit tests for {@link BookmarkDesktopNavigationMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "w1000dp")
+@Config(qualifiers = "w1000dp")
 public class BookmarkDesktopNavigationMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
