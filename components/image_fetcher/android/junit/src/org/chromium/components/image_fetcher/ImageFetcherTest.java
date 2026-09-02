@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,7 +30,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Test for ImageFetcher.java. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImageFetcherTest {
     private static final GURL URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL URL_2 = JUnitTestGURLs.URL_2;

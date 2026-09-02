@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,7 +32,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Test for ImageFetcherBridge.java. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImageFetcherBridgeTest {
     private static final int WIDTH_PX = 10;
     private static final int HEIGHT_PX = 20;
