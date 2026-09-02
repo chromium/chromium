@@ -69,6 +69,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/swipe/HubPaneSwipeAnimator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/swipe/HubPaneSwipeCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/hub/swipe/HubPaneSwipeGestureHandler.java",
   ]
   deps = [
@@ -208,6 +209,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProviderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/swipe/HubPaneSwipeAnimatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/swipe/HubPaneSwipeCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/swipe/HubPaneSwipeGestureHandlerUnitTest.java",
   ]
   deps = [
