@@ -218,9 +218,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, Fullscreen) {
                       kTabId, GURL(chrome::kChromeUIUserEducationInternalsURL)),
                   WithElement(kTabId,
                               [this](ui::TrackedElement* tab) {
-                                browser()
-                                    ->GetFeatures()
-                                    .exclusive_access_manager()
+                                ExclusiveAccessManager::From(browser())
                                     ->fullscreen_controller()
                                     ->EnterFullscreenModeForTab(
                                         AsInstrumentedWebContents(tab)
@@ -229,9 +227,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, Fullscreen) {
                               }),
                   CheckResult(
                       [this]() {
-                        return browser()
-                            ->GetFeatures()
-                            .exclusive_access_manager()
+                        return ExclusiveAccessManager::From(browser())
                             ->fullscreen_controller()
                             ->IsTabFullscreen();
                       },
@@ -252,9 +248,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
-                    browser()
-                        ->GetFeatures()
-                        .exclusive_access_manager()
+                    ExclusiveAccessManager::From(browser())
                         ->fullscreen_controller()
                         ->EnterFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)
@@ -263,18 +257,14 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
                   }),
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
-                    browser()
-                        ->GetFeatures()
-                        .exclusive_access_manager()
+                    ExclusiveAccessManager::From(browser())
                         ->fullscreen_controller()
                         ->ExitFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)->web_contents());
                   }),
       CheckResult(
           [this]() {
-            return browser()
-                ->GetFeatures()
-                .exclusive_access_manager()
+            return ExclusiveAccessManager::From(browser())
                 ->fullscreen_controller()
                 ->IsTabFullscreen();
           },

@@ -597,10 +597,9 @@ bool MaximizeAndWaitUntilUIUpdateDone(BrowserWindowInterface& browser) {
 
 FullscreenWaiter::FullscreenWaiter(BrowserWindowInterface* browser,
                                    FullscreenWaiter::Expectation expectation)
-    : FullscreenWaiter(browser->GetFeatures()
-                           .exclusive_access_manager()
-                           ->fullscreen_controller(),
-                       std::move(expectation)) {}
+    : FullscreenWaiter(
+          ExclusiveAccessManager::From(browser)->fullscreen_controller(),
+          std::move(expectation)) {}
 
 FullscreenWaiter::FullscreenWaiter(FullscreenController* controller,
                                    FullscreenWaiter::Expectation expectation)
@@ -669,10 +668,8 @@ void ToggleFullscreenModeAndWait(BrowserWindowInterface* browser) {
   // The waiting condition is following the current implementation.
   // If the mode is either browser/tab fullscreen, it will be existed.
   // Otherwise, entering into browser fullscreen.
-  bool current = browser->GetFeatures()
-                     .exclusive_access_manager()
-                     ->context()
-                     ->IsFullscreen();
+  bool current =
+      ExclusiveAccessManager::From(browser)->context()->IsFullscreen();
   FullscreenWaiter waiter(browser, current ? FullscreenWaiter::kNoFullscreen
                                            : FullscreenWaiter::Expectation{
                                                  .browser_fullscreen = true});

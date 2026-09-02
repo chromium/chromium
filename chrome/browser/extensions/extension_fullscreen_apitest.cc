@@ -46,14 +46,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_ExtensionFullscreenAccessPass) {
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        MAYBE_FocusWindowDoesNotExitFullscreen) {
-  browser()
-      ->GetFeatures()
-      .exclusive_access_manager()
-      ->context()
-      ->EnterFullscreen(
-          url::Origin(),
-          EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-          FullscreenTabParams());
+  ExclusiveAccessManager::From(browser())->context()->EnterFullscreen(
+      url::Origin(),
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+      FullscreenTabParams());
   ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
   ASSERT_TRUE(RunExtensionTest("window_update/focus")) << message_;
   ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
@@ -62,14 +58,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 // Fails flakily: crbug.com/335640705.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        DISABLED_UpdateWindowSizeExitsFullscreen) {
-  browser()
-      ->GetFeatures()
-      .exclusive_access_manager()
-      ->context()
-      ->EnterFullscreen(
-          url::Origin(),
-          EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-          FullscreenTabParams());
+  ExclusiveAccessManager::From(browser())->context()->EnterFullscreen(
+      url::Origin(),
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+      FullscreenTabParams());
   ASSERT_TRUE(RunExtensionTest("window_update/sizing")) << message_;
   ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
 }

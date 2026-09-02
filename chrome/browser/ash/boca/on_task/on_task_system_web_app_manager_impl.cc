@@ -152,10 +152,9 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   // If the window is not pinned, and we don't want it pinned, check if we need
   // to exit standard fullscreen mode (e.g. after a session restore).
   if (!currently_pinned && !pinned) {
-    auto* const fullscreen_controller = browser->GetBrowser()
-                                            .GetFeatures()
-                                            .exclusive_access_manager()
-                                            ->fullscreen_controller();
+    auto* const fullscreen_controller =
+        ExclusiveAccessManager::From(&browser->GetBrowser())
+            ->fullscreen_controller();
     if (fullscreen_controller->IsFullscreenForBrowser()) {
       fullscreen_controller->ToggleBrowserFullscreenMode(
           /*user_initiated=*/false);

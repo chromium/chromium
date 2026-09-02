@@ -73,9 +73,7 @@ bool FullscreenKeyboardBrowserTestBase::IsActiveTabFullscreen() const {
 }
 
 bool FullscreenKeyboardBrowserTestBase::IsInBrowserFullscreen() const {
-  return GetActiveBrowser()
-      ->GetFeatures()
-      .exclusive_access_manager()
+  return ExclusiveAccessManager::From(GetActiveBrowser())
       ->fullscreen_controller()
       ->IsFullscreenForBrowser();
 }
@@ -196,9 +194,7 @@ void FullscreenKeyboardBrowserTestBase::SendShiftShortcut(
 void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
   // On MacOSX, entering and exiting fullscreen are not synchronous. So we wait
   // for the observer to notice the change of fullscreen state.
-  bool current = GetActiveBrowser()
-                     ->GetFeatures()
-                     .exclusive_access_manager()
+  bool current = ExclusiveAccessManager::From(GetActiveBrowser())
                      ->context()
                      ->IsFullscreen();
   ui_test_utils::FullscreenWaiter waiter(

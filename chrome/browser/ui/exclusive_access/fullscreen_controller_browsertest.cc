@@ -52,8 +52,7 @@ void WaitForDisplayed(BrowserWindowInterface* browser) {
   base::RunLoop outer_loop;
   auto wait_for_state = base::BindRepeating(
       [](base::RunLoop* outer_loop, BrowserWindowInterface* browser) {
-        ExclusiveAccessManager* manager =
-            browser->GetFeatures().exclusive_access_manager();
+        ExclusiveAccessManager* manager = ExclusiveAccessManager::From(browser);
         if (manager->context()->IsExclusiveAccessBubbleDisplayed()) {
           outer_loop->Quit();
         }

@@ -139,10 +139,8 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, TouchBarItems) {
   };
 
   // Set to tab fullscreen.
-  FullscreenController* fullscreen_controller = browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
   fullscreen_controller->set_is_tab_fullscreen_for_testing(true);
   EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
 

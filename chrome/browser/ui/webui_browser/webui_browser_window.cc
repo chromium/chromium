@@ -630,7 +630,7 @@ gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
 void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {
   widget_->SetFullscreen(fullscreen);
 
-  auto* manager = browser_->GetFeatures().exclusive_access_manager();
+  auto* manager = ExclusiveAccessManager::From(browser_);
   if (!manager) {
     return;
   }
@@ -651,8 +651,7 @@ void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {
     page->OnFullscreenModeChanged(fullscreen, context);
   }
 
-  browser_->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser_)
       ->fullscreen_controller()
       ->WindowFullscreenStateChanged();
 }

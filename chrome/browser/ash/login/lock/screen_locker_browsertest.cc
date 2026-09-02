@@ -151,9 +151,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestFullscreenExit) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
-    browser()
-        ->GetFeatures()
-        .exclusive_access_manager()
+    ExclusiveAccessManager::From(browser())
         ->fullscreen_controller()
         ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
     waiter.Wait();

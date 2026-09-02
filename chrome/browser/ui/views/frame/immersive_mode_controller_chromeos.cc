@@ -109,9 +109,7 @@ void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
 
   if (!fullscreen_subscription_) {
     fullscreen_subscription_ =
-        browser_view_->browser()
-            ->GetFeatures()
-            .exclusive_access_manager()
+        ExclusiveAccessManager::From(browser_view_->browser())
             ->fullscreen_controller()
             ->RegisterOnFullscreenStateChanged(base::BindRepeating(
                 &ImmersiveModeControllerChromeos::OnFullscreenStateChanged,
@@ -293,11 +291,10 @@ void ImmersiveModeControllerChromeos::OnFullscreenStateChanged() {
   }
 
   // Auto hide the shelf in immersive browser fullscreen.
-  bool in_tab_fullscreen = browser_view_->browser()
-                               ->GetFeatures()
-                               .exclusive_access_manager()
-                               ->fullscreen_controller()
-                               ->IsWindowFullscreenForTabOrPending();
+  bool in_tab_fullscreen =
+      ExclusiveAccessManager::From(browser_view_->browser())
+          ->fullscreen_controller()
+          ->IsWindowFullscreenForTabOrPending();
   browser_view_->GetNativeWindow()->SetProperty(
       chromeos::kHideShelfWhenFullscreenKey, in_tab_fullscreen);
 }

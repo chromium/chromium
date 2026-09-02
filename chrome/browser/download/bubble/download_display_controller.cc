@@ -137,8 +137,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
   if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
     // ExclusiveAccessContext can be null in tests.
-    if (auto* context =
-            browser_->GetFeatures().exclusive_access_manager()->context()) {
+    if (auto* context = ExclusiveAccessManager::From(browser_)->context()) {
       context->UpdateExclusiveAccessBubble(
           {.has_download = true, .force_update = true}, base::NullCallback());
     }
@@ -241,8 +240,7 @@ void DownloadDisplayController::HideBubble() {
 
 void DownloadDisplayController::ListenToFullScreenChanges() {
   fullscreen_subscription_ =
-      browser_->GetFeatures()
-          .exclusive_access_manager()
+      ExclusiveAccessManager::From(browser_)
           ->fullscreen_controller()
           ->RegisterOnFullscreenStateChanged(base::BindRepeating(
               &DownloadDisplayController::OnFullscreenStateChanged,

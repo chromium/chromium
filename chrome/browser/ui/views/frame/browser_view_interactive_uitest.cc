@@ -277,10 +277,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_BrowserFullscreenShowTopView) {
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
   // Enter into tab fullscreen mode from browser fullscreen mode.
-  FullscreenController* controller = browser()
-                                         ->GetFeatures()
-                                         .exclusive_access_manager()
-                                         ->fullscreen_controller();
+  FullscreenController* controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
@@ -297,8 +295,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_BrowserFullscreenShowTopView) {
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.windows_key_code = ui::VKEY_ESCAPE;
-  browser()->GetFeatures().exclusive_access_manager()->HandleUserKeyEvent(
-      event);
+  ExclusiveAccessManager::From(browser())->HandleUserKeyEvent(event);
   EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // This makes sure that the layout was updated accordingly.
@@ -323,10 +320,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
   EXPECT_TRUE(browser_view->GetTabStripVisible());
 
   // Enter into tab fullscreen mode.
-  FullscreenController* controller = browser()
-                                         ->GetFeatures()
-                                         .exclusive_access_manager()
-                                         ->fullscreen_controller();
+  FullscreenController* controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
@@ -361,10 +356,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenHideSplitView) {
   EXPECT_TRUE(browser_view->IsInSplitView());
 
   // Enter into tab fullscreen mode.
-  FullscreenController* controller = browser()
-                                         ->GetFeatures()
-                                         .exclusive_access_manager()
-                                         ->fullscreen_controller();
+  FullscreenController* controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
@@ -688,9 +681,7 @@ using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        ShowExclusiveAccessBubbleWhenNotLocked) {
   ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/false);
-  browser()
-      ->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser())
       ->context()
       ->UpdateExclusiveAccessBubble(
           {
@@ -710,9 +701,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        HideExclusiveAccessBubbleWhenLocked) {
   ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
-  browser()
-      ->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser())
       ->context()
       ->UpdateExclusiveAccessBubble(
           {.origin = url::Origin::Create(

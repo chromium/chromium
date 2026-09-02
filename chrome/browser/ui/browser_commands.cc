@@ -2851,8 +2851,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
 void ToggleFullscreenMode(BrowserWindowInterface* browser,
                           bool user_initiated) {
   DCHECK(browser);
-  browser->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser)
       ->fullscreen_controller()
       ->ToggleBrowserFullscreenMode(user_initiated);
 }

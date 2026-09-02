@@ -2296,8 +2296,7 @@ void BrowserView::FullscreenStateChanged() {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-  browser_->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser_)
       ->fullscreen_controller()
       ->WindowFullscreenStateChanged();
 
@@ -5203,7 +5202,7 @@ const views::View* BrowserView::GetViewByElementId(
 
 bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   NativeWebKeyboardEvent native_event(accelerator.ToKeyEvent());
-  if (browser_->GetFeatures().exclusive_access_manager()->HandleUserKeyEvent(
+  if (ExclusiveAccessManager::From(browser_)->HandleUserKeyEvent(
           native_event)) {
     return true;
   }

@@ -1388,10 +1388,8 @@ void WebAppIntegrationTestDriver::EnterFullScreenApp() {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  FullscreenController* fullscreen_controller = app_browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(app_browser())->fullscreen_controller();
   ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   ui_test_utils::ToggleFullscreenModeAndWait(app_browser());
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
@@ -1402,10 +1400,8 @@ void WebAppIntegrationTestDriver::ExitFullScreenApp() {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  FullscreenController* fullscreen_controller = app_browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(app_browser())->fullscreen_controller();
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
   ui_test_utils::ToggleFullscreenModeAndWait(app_browser());
   ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());

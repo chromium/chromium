@@ -240,8 +240,7 @@ protocol::Response TargetHandler::CreateTarget(
     } else if (*window_state == protocol::Target::WindowStateEnum::Maximized) {
       params.browser->GetWindow()->Maximize();
     } else if (*window_state == protocol::Target::WindowStateEnum::Fullscreen) {
-      params.browser->GetFeatures()
-          .exclusive_access_manager()
+      ExclusiveAccessManager::From(params.browser)
           ->fullscreen_controller()
           ->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
     } else {

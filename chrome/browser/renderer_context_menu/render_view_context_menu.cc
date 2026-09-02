@@ -1785,9 +1785,8 @@ bool RenderViewContextMenu::IsHTML5Fullscreen() const {
     return false;
   }
 
-  FullscreenController* controller = browser->GetFeatures()
-                                         .exclusive_access_manager()
-                                         ->fullscreen_controller();
+  FullscreenController* controller =
+      ExclusiveAccessManager::From(browser)->fullscreen_controller();
   return controller->IsTabFullscreen();
 }
 
@@ -1799,9 +1798,8 @@ bool RenderViewContextMenu::IsPressAndHoldEscRequiredToExitFullscreen() const {
     return false;
   }
 
-  KeyboardLockController* controller = browser->GetFeatures()
-                                           .exclusive_access_manager()
-                                           ->keyboard_lock_controller();
+  KeyboardLockController* controller =
+      ExclusiveAccessManager::From(browser)->keyboard_lock_controller();
   return controller->RequiresPressAndHoldEscToExit();
 }
 

@@ -126,8 +126,7 @@ class FakeBrowser {
   bool IsClosed() { return closed_future_.IsReady(); }
 
   bool IsFullscreen() {
-    return browser_->GetFeatures()
-        .exclusive_access_manager()
+    return ExclusiveAccessManager::From(browser_.get())
         ->fullscreen_controller()
         ->IsFullscreenForBrowser();
   }

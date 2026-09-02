@@ -135,9 +135,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
 
   void PressKeyAndWaitForPointerLockRequest(ui::KeyboardCode key_code) {
     base::RunLoop run_loop;
-    browser()
-        ->GetFeatures()
-        .exclusive_access_manager()
+    ExclusiveAccessManager::From(browser())
         ->pointer_lock_controller()
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key_code, false,
@@ -151,10 +149,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     }
 
     PointerLockController* pointer_lock_controller =
-        browser()
-            ->GetFeatures()
-            .exclusive_access_manager()
-            ->pointer_lock_controller();
+        ExclusiveAccessManager::From(browser())->pointer_lock_controller();
     base::RunLoop run_loop;
     pointer_lock_controller->set_bubble_hide_callback_for_test(
         base::BindRepeating(
@@ -172,10 +167,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
 
   void SetDisableFullscreenWithinTab(bool disable) {
     FullscreenController* fullscreen_controller =
-        browser()
-            ->GetFeatures()
-            .exclusive_access_manager()
-            ->fullscreen_controller();
+        ExclusiveAccessManager::From(browser())->fullscreen_controller();
     fullscreen_controller
         ->set_disable_entering_fullscreen_within_tab_for_testing(disable);
   }
@@ -745,9 +737,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   // Reload. Pointer lock request should be cleared.
   {
     base::RunLoop run_loop;
-    browser()
-        ->GetFeatures()
-        .exclusive_access_manager()
+    ExclusiveAccessManager::From(browser())
         ->pointer_lock_controller()
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     Reload();
@@ -787,10 +777,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  FullscreenController* fullscreen_controller = browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
 
   // Enter tab fullscreen.
   ToggleTabFullscreen(true);
@@ -829,10 +817,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  FullscreenController* fullscreen_controller = browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
 
   permissions::PermissionRequestObserver observer(web_contents);
 
@@ -868,10 +854,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  FullscreenController* fullscreen_controller = browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
 
   // Enter tab fullscreen.
   ToggleTabFullscreen(true);
@@ -2062,9 +2046,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   WebContents* active_tab =
       browser()->GetTabStripModel()->GetActiveWebContents();
 
-  browser()
-      ->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser())
       ->fullscreen_controller()
       ->EnterFullscreenModeForTab(active_tab->GetPrimaryMainFrame(), {});
 

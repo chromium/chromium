@@ -57,10 +57,7 @@ class FullscreenControllerStateInteractiveTest
 
   // FullscreenControllerStateTest:
   FullscreenController* GetFullscreenController() override {
-    return browser()
-        ->GetFeatures()
-        .exclusive_access_manager()
-        ->fullscreen_controller();
+    return ExclusiveAccessManager::From(browser())->fullscreen_controller();
   }
   content::WebContents* GetActiveWebContents() override {
     return browser()->GetTabStripModel()->GetActiveWebContents();

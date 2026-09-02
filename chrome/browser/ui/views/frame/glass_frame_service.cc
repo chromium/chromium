@@ -135,7 +135,7 @@ GlassFrameService::ActivationOrderedEligibleBrowsers() {
         }
         // Skip windows currently in fullscreen mode.
         auto* const exclusive_access_manager =
-            browser->GetFeatures().exclusive_access_manager();
+            ExclusiveAccessManager::From(browser);
         if (exclusive_access_manager &&
             exclusive_access_manager->fullscreen_controller() &&
             exclusive_access_manager->fullscreen_controller()
@@ -194,7 +194,7 @@ void GlassFrameService::MaybeTrackBrowser(BrowserWindowInterface* browser) {
   }
   if (!fullscreen_subscriptions_.contains(browser)) {
     if (auto* const exclusive_access_manager =
-            browser->GetFeatures().exclusive_access_manager()) {
+            ExclusiveAccessManager::From(browser)) {
       if (auto* const fullscreen_controller =
               exclusive_access_manager->fullscreen_controller()) {
         fullscreen_subscriptions_[browser] =
