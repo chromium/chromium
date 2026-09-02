@@ -2566,4 +2566,59 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->GetTabStripModel()->GetActiveWebContents());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       DispositionNewSplitViewActiveTabPinned) {
+  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                   /*foreground=*/false);
+  ASSERT_EQ(2, tab_strip_model->count());
+  tab_strip_model->SetTabPinned(0, true);
+  tab_strip_model->SetTabPinned(1, true);
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_EQ(0, tab_strip_model->active_index());
+
+  WebContents* const source_contents = tab_strip_model->GetWebContentsAt(0);
+  WebContents* const other_pinned_contents =
+      tab_strip_model->GetWebContentsAt(1);
+
+  content::OpenURLParams open_params(GetGoogleURL(), content::Referrer(),
+                                     WindowOpenDisposition::NEW_SPLIT_VIEW,
+                                     ui::PAGE_TRANSITION_LINK, false);
+  WebContents* const new_contents = source_contents->OpenURL(open_params, {});
+  ASSERT_TRUE(new_contents);
+  ASSERT_EQ(3, tab_strip_model->count());
+
+  // The new tab is placed directly after the source tab, pushing the other
+  // pinned tab to the right of the split.
+  ASSERT_EQ(source_contents, tab_strip_model->GetWebContentsAt(0));
+  ASSERT_EQ(new_contents, tab_strip_model->GetWebContentsAt(1));
+  ASSERT_EQ(other_pinned_contents, tab_strip_model->GetWebContentsAt(2));
+
+  tabs::TabInterface* const source_tab =
+      tabs::TabInterface::MaybeGetFromContents(source_contents);
+  tabs::TabInterface* const new_tab =
+      tabs::TabInterface::MaybeGetFromContents(new_contents);
+  tabs::TabInterface* const other_pinned_tab =
+      tabs::TabInterface::MaybeGetFromContents(other_pinned_contents);
+  ASSERT_TRUE(source_tab);
+  ASSERT_TRUE(new_tab);
+  ASSERT_TRUE(other_pinned_tab);
+
+  // Only the source tab and the new tab are split, and the new tab inherits
+  // the source tab's pinned state.
+  ASSERT_TRUE(source_tab->IsSplit());
+  ASSERT_TRUE(new_tab->IsSplit());
+  EXPECT_EQ(source_tab->GetSplit().value(), new_tab->GetSplit().value());
+  EXPECT_FALSE(other_pinned_tab->IsSplit());
+  EXPECT_TRUE(new_tab->IsPinned());
+  EXPECT_TRUE(other_pinned_tab->IsPinned());
+
+  // Focus stays inside the split: the new tab is active, the source tab is
+  // selected alongside it, and the other pinned tab is neither.
+  EXPECT_EQ(new_contents, tab_strip_model->GetActiveWebContents());
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
+  EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
+}
+
 }  // namespace

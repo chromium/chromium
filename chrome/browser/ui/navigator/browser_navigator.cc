@@ -982,13 +982,16 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
         params->tabstrip_add_types, group);
 
     // For NEW_SPLIT_VIEW, pair the new tab with the active tab. The
-    // "already split" case is handled in Browser::OpenURLFromTab().
+    // "already split" case is handled in
+    // BrowserWebContentsDelegate::OpenURLFromTab().
     if (params->disposition == WindowOpenDisposition::NEW_SPLIT_VIEW &&
         contents_to_navigate_or_insert) {
       TabStripModel* const tab_strip_model =
           params->browser->GetTabStripModel();
-      const int new_tab_index = tab_strip_model->GetIndexOfWebContents(
-          contents_to_navigate_or_insert);
+      tabs::TabInterface* const new_tab =
+          tabs::TabInterface::MaybeGetFromContents(
+              contents_to_navigate_or_insert);
+      const int new_tab_index = tab_strip_model->GetIndexOfTab(new_tab);
       tabs::TabInterface* const source_tab =
           params->source_contents ? tabs::TabInterface::MaybeGetFromContents(
                                         params->source_contents)
@@ -998,12 +1001,15 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
         tab_strip_model->AddToNewSplit(
             {new_tab_index}, split_tabs::SplitTabVisualData(),
             split_tabs::SplitTabCreatedSource::kLinkClick);
-        // Re-query the index after adding to split, as `AddToNewSplit()` may
-        // have moved the tab to a different position.
-        const int inserted_tab_index = tab_strip_model->GetIndexOfWebContents(
-            contents_to_navigate_or_insert);
-        CHECK_NE(inserted_tab_index, TabStripModel::kNoTab);
-        tab_strip_model->ActivateTabAt(inserted_tab_index);
+        // AddToNewSplit() makes the split contiguous and gives the new tab the
+        // active tab's pinned state and group, moving the new tab next to the
+        // active tab if it is not already there. In particular, when the
+        // active tab is pinned, the new (unpinned) tab was inserted after the
+        // pinned tabs, so after the move `new_tab_index` refers to whichever
+        // tab was shifted into its old slot, e.g. the pinned tab to the right
+        // of the split. Activate by tab rather than by index so that tab can
+        // never be focused instead of the new split tab.
+        tab_strip_model->ActivateTab(new_tab);
       }
     }
   }
