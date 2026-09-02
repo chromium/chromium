@@ -1,37 +1,8 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.GridView [contentTypes=UNDEFINED] on class_name=android.widget.GridView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid1, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid1, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.GridView [contentTypes=UNDEFINED] on class_name=android.widget.GridView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.GridView [contentTypes=UNDEFINED] on class_name=android.widget.GridView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid1, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid1, GridCell1] class_name=android.view.View
 TYPE_VIEW_CLICKED class_name=android.view.View on [Grid1, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.GridView [contentTypes=UNDEFINED] on class_name=android.widget.GridView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid2, GridCell2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid2, GridCell2] class_name=android.view.View
 TYPE_VIEW_CLICKED class_name=android.view.View on [Grid2, GridCell2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.GridView [contentTypes=UNDEFINED] on class_name=android.widget.GridView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid3, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid3, GridCell1] class_name=android.view.View
 TYPE_VIEW_CLICKED class_name=android.view.View on [Grid3, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.GridView [contentTypes=UNDEFINED] on class_name=android.widget.GridView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid4, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid4, GridCell1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Grid4, GridCell2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_CLICKED class_name=android.view.View on [Grid4, GridCell2] class_name=android.view.View
 TYPE_VIEW_CLICKED class_name=android.view.View on [Select1, Option1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Select2, Option2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Select2, Option2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Select2, Option2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Select2, Option2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_CLICKED class_name=android.view.View on [Select2, Option2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=UNDEFINED] on class_name=android.widget.ListView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [DivSelect, Option1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [DivSelect, Option1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [DivSelect, Option2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_CLICKED class_name=android.view.View on [DivSelect, Option2] class_name=android.view.View

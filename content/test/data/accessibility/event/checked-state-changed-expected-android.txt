@@ -1,11 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Treeitem] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [Treeitem] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Treeitem] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [My Checkbox] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [My Checkbox] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [My Checkbox] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on [My Checkbox] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView

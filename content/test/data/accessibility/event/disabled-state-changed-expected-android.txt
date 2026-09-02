@@ -1,9 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [Button 1 turns disabled on] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on [Button 1 turns disabled on] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [Button 1 turns disabled on] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [Button 1 turns disabled on] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [Button 1 turns disabled on] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on [Button 2 turns disabled off] class_name=android.widget.Button

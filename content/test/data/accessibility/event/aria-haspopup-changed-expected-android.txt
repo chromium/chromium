@@ -1,11 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input0] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input0] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input1] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input1] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input2] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input2] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input3] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [input3] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
