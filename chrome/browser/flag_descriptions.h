@@ -2384,6 +2384,12 @@ inline constexpr char kDownloadNotificationServiceUnifiedAPIDescription[] =
     "Migrate download notification service to use new unified API based on "
     "offline item and native persistence";
 
+inline constexpr char kEnableDownloadSaveAsSystemFileDialogName[] =
+    "Enable Save As system file dialog on Android";
+inline constexpr char kEnableDownloadSaveAsSystemFileDialogDescription[] =
+    "Enables using the system file dialog when user selects Save As on "
+    "Android.";
+
 inline constexpr char kEnablePerfettoSystemTracingName[] =
     "Enable Perfetto system tracing";
 inline constexpr char kEnablePerfettoSystemTracingDescription[] =

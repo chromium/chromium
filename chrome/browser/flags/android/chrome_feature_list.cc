@@ -178,6 +178,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &data_sharing::features::kDataSharingJoinOnly,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
     &download::features::kEnableDownloadSaveAsContextMenu,
+    &download::features::kEnableDownloadSaveAsSystemFileDialog,
     &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kOpenDownloadInFilesAppIfNoHandlerFound,
     &download::features::kOpenDownloadInNewTab,

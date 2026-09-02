@@ -508,6 +508,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/shell_dialogs",
+    "//ui/shell_dialogs:test_support",
     "//url",
   ]
 

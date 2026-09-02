@@ -7589,6 +7589,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          download::features::kDownloadNotificationServiceUnifiedAPI)},
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-download-save-as-system-file-dialog",
+     flag_descriptions::kEnableDownloadSaveAsSystemFileDialogName,
+     flag_descriptions::kEnableDownloadSaveAsSystemFileDialogDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         download::features::kEnableDownloadSaveAsSystemFileDialog)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-network-logging-to-file",
      flag_descriptions::kEnableNetworkLoggingToFileName,

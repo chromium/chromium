@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -311,6 +312,13 @@ class ChromeDownloadManagerDelegate
   // Called to show a file picker for download with |guid|
   void ShowFilePicker(
       const std::string& guid,
+      const base::FilePath& suggested_path,
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback);
+
+  // Displays the file picker for `download`, queueing or deferring to user
+  // takeover if another picker or execution engine takeover is active.
+  void ShowFilePickerWithUserTakeover(
+      download::DownloadItem* download,
       const base::FilePath& suggested_path,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback);
 

@@ -91,6 +91,9 @@ BASE_FEATURE(kOpenDownloadInNewTab, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableDownloadSaveAsContextMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableDownloadSaveAsSystemFileDialog,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kDeferredDownloadHistoryLoading,

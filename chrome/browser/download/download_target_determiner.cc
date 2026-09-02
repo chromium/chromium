@@ -49,6 +49,7 @@
 #include "net/http/http_content_disposition.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -76,6 +77,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
 #include "components/download/public/common/download_file.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #endif
@@ -725,6 +727,17 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+  if (!selected_file_info.display_name.empty()) {
+    display_name_ =
+        base::FilePath::FromUTF8Unsafe(selected_file_info.display_name)
+            .BaseName();
+  } else if (virtual_path_.IsContentUri()) {
+    std::u16string display_name_u16;
+    if (base::MaybeGetFileDisplayName(virtual_path_, &display_name_u16)) {
+      display_name_ =
+          base::FilePath::FromUTF16Unsafe(display_name_u16).BaseName();
+    }
+  }
   if (result == DownloadConfirmationResult::CONFIRMED_WITH_DIALOG) {
     // Double check the user-selected path is valid by looping back.
     is_checking_dialog_confirmed_path_ = true;
@@ -735,7 +748,13 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
   }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  if (!virtual_path_.IsContentUri()) {
+    download_prefs_->SetSaveFilePath(virtual_path_.DirName());
+  }
+#else
   download_prefs_->SetSaveFilePath(virtual_path_.DirName());
+#endif
   DoLoop();
 }
 
@@ -977,10 +996,10 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_DETERMINE_INTERMEDIATE_PATH, next_state_);
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  base::FilePath file_display_name = GetFileDisplayName();
   safe_browsing::RecordDownloadFileTypeAttributes(
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-          virtual_path_.BaseName(), download_->GetURL(),
-          GetProfile()->GetPrefs()),
+          file_display_name, download_->GetURL(), GetProfile()->GetPrefs()),
       download_->HasUserGesture(), visited_referrer_before,
       GetLastDownloadBypassTimestamp());
 #endif
@@ -1094,8 +1113,8 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
   target_info.intermediate_path = intermediate_path_;
 #if BUILDFLAG(IS_ANDROID)
   // If |virtual_path_| is content URI, there is no need to prompt the user.
-  if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
-    target_info.display_name = virtual_path_.BaseName();
+  if (local_path_.IsContentUri()) {
+    target_info.display_name = GetFileDisplayName();
   } else if (download_->GetDownloadFile() &&
              download_->GetDownloadFile()->IsMemoryFile()) {
     // Memory file doesn't have a proper display name. Generate one here.
@@ -1247,10 +1266,10 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  base::FilePath file_display_name = GetFileDisplayName();
   DownloadFileType::DangerLevel danger_level =
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-          virtual_path_.BaseName(), download_->GetURL(),
-          GetProfile()->GetPrefs());
+          file_display_name, download_->GetURL(), GetProfile()->GetPrefs());
   policy::DownloadRestriction download_restriction =
       static_cast<policy::DownloadRestriction>(
           GetProfile()->GetPrefs()->GetInteger(
@@ -1284,9 +1303,11 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   }
 
   // Anything the user has marked auto-open is OK if it's user-initiated.
-  if (download_prefs_->IsAutoOpenEnabled(download_->GetURL(), virtual_path_) &&
-      download_->HasUserGesture())
+  if (download_prefs_->IsAutoOpenEnabled(download_->GetURL(),
+                                         file_display_name) &&
+      download_->HasUserGesture()) {
     return DownloadFileType::NOT_DANGEROUS;
+  }
 
   // A danger level of ALLOW_ON_USER_GESTURE is used to label potentially
   // dangerous file types that have a high frequency of legitimate use. We would
@@ -1310,6 +1331,23 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
 #else
   return DownloadFileType::NOT_DANGEROUS;
 #endif
+}
+
+base::FilePath DownloadTargetDeterminer::GetFileDisplayName() const {
+  base::FilePath file_name = virtual_path_.BaseName();
+#if BUILDFLAG(IS_ANDROID)
+  if (virtual_path_.IsContentUri()) {
+    if (!display_name_.empty()) {
+      return display_name_;
+    }
+    std::u16string display_name_u16;
+    if (base::MaybeGetFileDisplayName(virtual_path_, &display_name_u16)) {
+      return base::FilePath::FromUTF16Unsafe(display_name_u16).BaseName();
+    }
+    return GenerateFileName();
+  }
+#endif
+  return file_name;
 }
 
 std::optional<base::Time>

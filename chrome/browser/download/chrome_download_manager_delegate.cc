@@ -12,6 +12,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1318,6 +1319,17 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
     return;
   }
 
+  if (base::android::device_info::is_desktop() &&
+      base::FeatureList::IsEnabled(
+          download::features::kEnableDownloadSaveAsContextMenu) &&
+      base::FeatureList::IsEnabled(
+          download::features::kEnableDownloadSaveAsSystemFileDialog)) {
+    new SavePackageFilePicker(web_contents, suggested_path, default_extension,
+                              can_save_as_complete, download_prefs_.get(),
+                              std::move(callback));
+    return;
+  }
+
   base::OnceCallback<void(bool)> confirm_callback =
       base::BindOnce(&ChromeDownloadManagerDelegate::
                          RequestIncognitoSavePackageConfirmationDone,
@@ -1334,7 +1346,7 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
   new SavePackageFilePicker(web_contents, suggested_path, default_extension,
                             can_save_as_complete, download_prefs_.get(),
                             std::move(callback));
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
@@ -1584,6 +1596,17 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     return;
   }
 
+  if (reason == DownloadConfirmationReason::SAVE_AS &&
+      base::android::device_info::is_desktop() &&
+      base::FeatureList::IsEnabled(
+          download::features::kEnableDownloadSaveAsContextMenu) &&
+      base::FeatureList::IsEnabled(
+          download::features::kEnableDownloadSaveAsSystemFileDialog)) {
+    ShowFilePickerWithUserTakeover(download, suggested_path,
+                                   std::move(callback));
+    return;
+  }
+
   if (!web_contents || reason == DownloadConfirmationReason::UNEXPECTED) {
     // If there are no web_contents and there are no errors (ie. location
     // dialog is only being requested because of a user preference),
@@ -1680,11 +1703,22 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
   return;
 
 #else   // BUILDFLAG(IS_ANDROID)
+  ShowFilePickerWithUserTakeover(download, suggested_path, std::move(callback));
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeDownloadManagerDelegate::ShowFilePickerWithUserTakeover(
+    DownloadItem* download,
+    const base::FilePath& suggested_path,
+    DownloadTargetDeterminerDelegate::ConfirmationCallback callback) {
   auto trigger_user_takeover = base::BindOnce(
       [](base::WeakPtr<ChromeDownloadManagerDelegate> download_manager_delegate,
          const std::string& guid, const base::FilePath& suggested_path,
          DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
          bool should_cancel) {
+        if (!download_manager_delegate) {
+          return;
+        }
         if (should_cancel) {
           download_manager_delegate->OnConfirmationCallbackComplete(
               std::move(callback), DownloadConfirmationResult::CANCELED,
@@ -1707,6 +1741,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       },
       weak_ptr_factory_.GetWeakPtr(), download->GetGuid(), suggested_path);
 
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           actor::kGlicDeferDownloadFilePickerToUserTakeover)) {
     if (actor::ExecutionEngine* execution_engine =
@@ -1722,10 +1757,10 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       return;
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::move(trigger_user_takeover)
       .Run(std::move(callback), /*should_cancel=*/false);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeDownloadManagerDelegate::OnConfirmationCallbackComplete(

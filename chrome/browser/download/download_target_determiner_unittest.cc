@@ -658,7 +658,13 @@ void MockDownloadTargetDeterminerDelegate::NullDetermineLocalPath(
     DownloadItem* download,
     const base::FilePath& virtual_path,
     download::LocalPathCallback& callback) {
-  std::move(callback).Run(virtual_path, virtual_path.BaseName());
+  base::FilePath file_name = virtual_path.BaseName();
+#if BUILDFLAG(IS_ANDROID)
+  if (virtual_path.IsContentUri()) {
+    file_name.clear();
+  }
+#endif
+  std::move(callback).Run(virtual_path, file_name);
 }
 
 // NotifyExtensions implementation that overrides the path so that the target
@@ -3171,6 +3177,139 @@ TEST_F(DownloadTargetDeterminerTest, DetermineLocalPathReturnsContentUri) {
 
   EXPECT_EQ(info.target_info.display_name.value(), "foor.txt");
   EXPECT_EQ(info.target_info.target_path.value(), "content://media/123");
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       ContentUri_PreservesDisplayNameAndDangerLevel) {
+  const DownloadTestCase kSaveAsTestCase = {
+      SAVE_AS,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "http://example.com/foo.txt",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL("content://media/123"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+      EXPECT_LOCAL_PATH};
+
+  // Safe display name.
+  {
+    std::unique_ptr<download::MockDownloadItem> item =
+        CreateActiveDownloadItem(0, kSaveAsTestCase);
+    ui::SelectedFileInfo selected_file_info(
+        base::FilePath(FILE_PATH_LITERAL("content://media/123")));
+    selected_file_info.display_name = FILE_PATH_LITERAL("safe.txt");
+
+    EXPECT_CALL(*delegate(), RequestConfirmation_(
+                                 _, _, DownloadConfirmationReason::SAVE_AS, _))
+        .WillOnce(WithArg<3>(ScheduleCallback2(
+            DownloadConfirmationResult::CONFIRMED, selected_file_info)));
+
+    TargetInfoAndDangerLevel info =
+        RunDownloadTargetDeterminer(base::FilePath(), item.get());
+
+    EXPECT_EQ(info.target_info.display_name.value(), "safe.txt");
+    EXPECT_EQ(info.target_info.target_path.value(), "content://media/123");
+    EXPECT_EQ(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+              info.target_info.danger_type);
+  }
+
+  // Dangerous display name under download restriction policy.
+  {
+    profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions,
+        static_cast<int>(policy::DownloadRestriction::DANGEROUS_FILES));
+
+    std::unique_ptr<download::MockDownloadItem> item =
+        CreateActiveDownloadItem(1, kSaveAsTestCase);
+    ui::SelectedFileInfo selected_file_info(
+        base::FilePath(FILE_PATH_LITERAL("content://media/123")));
+    selected_file_info.display_name = FILE_PATH_LITERAL("dangerous.bad");
+
+    EXPECT_CALL(*delegate(), RequestConfirmation_(
+                                 _, _, DownloadConfirmationReason::SAVE_AS, _))
+        .WillOnce(WithArg<3>(ScheduleCallback2(
+            DownloadConfirmationResult::CONFIRMED, selected_file_info)));
+
+    TargetInfoAndDangerLevel info =
+        RunDownloadTargetDeterminer(base::FilePath(), item.get());
+
+    EXPECT_EQ(info.target_info.display_name.value(), "dangerous.bad");
+    EXPECT_EQ(info.target_info.target_path.value(), "content://media/123");
+    EXPECT_EQ(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+              info.target_info.danger_type);
+  }
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       ContentUri_BypassesDownloadPrefsSaveFilePath) {
+  const DownloadTestCase kSaveAsTestCase = {
+      SAVE_AS,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "http://example.com/foo.txt",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL("content://media/123"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+      EXPECT_LOCAL_PATH};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kSaveAsTestCase);
+  base::FilePath initial_save_dir = download_prefs()->SaveFilePath();
+
+  ui::SelectedFileInfo selected_file_info(
+      base::FilePath(FILE_PATH_LITERAL("content://media/123")));
+  selected_file_info.display_name = FILE_PATH_LITERAL("custom.txt");
+
+  EXPECT_CALL(*delegate(), RequestConfirmation_(
+                               _, _, DownloadConfirmationReason::SAVE_AS, _))
+      .WillOnce(WithArg<3>(ScheduleCallback2(
+          DownloadConfirmationResult::CONFIRMED, selected_file_info)));
+
+  TargetInfoAndDangerLevel info =
+      RunDownloadTargetDeterminer(base::FilePath(), item.get());
+
+  EXPECT_EQ(initial_save_dir, download_prefs()->SaveFilePath());
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       ContentUri_EmptyDisplayNameFallsBackToGenerateFileName) {
+  profile()->GetTestingPrefService()->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::DANGEROUS_FILES));
+
+  const DownloadTestCase kSaveAsTestCase = {
+      SAVE_AS,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "http://example.com/foo.bad",
+      "application/octet-stream",
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL("content://media/123"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+      EXPECT_LOCAL_PATH};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kSaveAsTestCase);
+
+  ui::SelectedFileInfo selected_file_info(
+      base::FilePath(FILE_PATH_LITERAL("content://media/123")));
+  selected_file_info.display_name.clear();
+
+  EXPECT_CALL(*delegate(), RequestConfirmation_(
+                               _, _, DownloadConfirmationReason::SAVE_AS, _))
+      .WillOnce(WithArg<3>(ScheduleCallback2(
+          DownloadConfirmationResult::CONFIRMED, selected_file_info)));
+
+  TargetInfoAndDangerLevel info =
+      RunDownloadTargetDeterminer(base::FilePath(), item.get());
+
+  // Falls back to GenerateFileName(), which generates foo.bad.
+  EXPECT_EQ("foo.bad", info.target_info.display_name.value());
+  EXPECT_EQ("content://media/123", info.target_info.target_path.value());
+  EXPECT_EQ(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+            info.target_info.danger_type);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

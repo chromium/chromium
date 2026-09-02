@@ -16467,6 +16467,7 @@ from previous Chrome versions.
       label="AutofillEnableStickyManualFallbackForCards:disabled"/>
   <int value="549339477" label="EnableAIWriterAPI:enabled"/>
   <int value="549483647" label="EnableUnifiedMultiDeviceSettings:disabled"/>
+  <int value="550153450" label="EnableDownloadSaveAsSystemFileDialog:disabled"/>
   <int value="550378029" label="reset-app-list-install-state"/>
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
   <int value="550411207" label="enable-webgpu-developer-features"/>
@@ -16571,6 +16572,7 @@ from previous Chrome versions.
   <int value="582882261" label="ForceShowAppsCollections:disabled"/>
   <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
   <int value="583648374" label="AndroidWidgetFullscreenToast:disabled"/>
+  <int value="583840453" label="EnableDownloadSaveAsSystemFileDialog:enabled"/>
   <int value="584509342" label="TerminalTmuxIntegration:enabled"/>
   <int value="584541349" label="ContextualSearchSingleActions:disabled"/>
   <int value="584661108"

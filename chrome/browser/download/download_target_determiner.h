@@ -366,6 +366,11 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // headers and sniffed mime type.
   base::FilePath GenerateFileName() const;
 
+  // Returns the display name of the file. For regular file paths, this is
+  // `virtual_path_.BaseName()`. For Android content URIs, returns the
+  // selected or resolved display name, falling back to `GenerateFileName()`.
+  base::FilePath GetFileDisplayName() const;
+
   // download::DownloadItem::Observer
   void OnDownloadDestroyed(download::DownloadItem* download) override;
 
@@ -394,6 +399,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // enabled, we suppress warning based only on the file type since Play
   // Protect will give higher quality warnings.
   bool is_app_verification_enabled_;
+
+  // The display name selected by the user for Content URIs.
+  base::FilePath display_name_;
 #endif
 #if BUILDFLAG(IS_MAC)
   // A list of tags specified by the user to be set on the file upon the
