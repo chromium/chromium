@@ -4301,12 +4301,6 @@ targets.bundle(
         # Android/ARM only runs Ganesh tests since older devices that we
         # typically use for 32-bit testing do not have good Vulkan support
         # for Graphite.
-        "webcodecs_validating_ganesh_tests",
-        "webrtc_validating_ganesh_tests",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
         "android_webview_pixel_skia_gold_test",
         "context_lost_passthrough_ganesh_tests",
         "context_lost_passthrough_tests",
@@ -4316,11 +4310,13 @@ targets.bundle(
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_ganesh_tests",
         "screenshot_sync_passthrough_tests",
+        "webcodecs_validating_ganesh_tests",
         "webgl2_conformance_gles_passthrough_tests",
         "webgl2_conformance_validating_tests",
         "webgl_conformance_gles_passthrough_ganesh_tests",
         "webgl_conformance_gles_passthrough_tests",
         "webgl_conformance_validating_ganesh_tests",
+        "webrtc_validating_ganesh_tests",
     ],
 )
 
@@ -5901,47 +5897,6 @@ targets.bundle(
             ),
         ),
     },
-)
-
-targets.bundle(
-    name = "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
-    targets = [
-        targets.bundle(
-            targets = "gpu_common_and_optional_telemetry_tests",
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webcodecs_telemetry_test",
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webrtc_telemetry_test",
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-    ],
 )
 
 targets.bundle(
