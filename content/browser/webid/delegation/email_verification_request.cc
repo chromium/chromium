@@ -145,12 +145,15 @@ std::string CreateMessageSignature(
     authority += issuance_endpoint.port();
   }
 
+  auto inner_list_and_params = signature_params.GetWithParamsIfInnerList();
+  CHECK(inner_list_and_params.has_value());
+
   // We should include the cookie header, but it is not available at this point
   // in time.
   // https://github.com/dickhardt/email-verification/issues/11
   std::string signature_base;
   for (const net::structured_headers::ParameterizedItem& param :
-       signature_params.member) {
+       inner_list_and_params->first) {
     const std::string* component_name = param.item.GetIfString();
     CHECK(component_name);
     std::string_view component_value;

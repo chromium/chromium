@@ -5,6 +5,7 @@
 #include "content/browser/webid/navigation_interceptor.h"
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -36,14 +37,18 @@ namespace content::webid {
 
 namespace {
 
-std::string* GetIfString(net::structured_headers::Dictionary& dict,
+std::string* GetIfString(net::structured_headers::Dictionary& dict
+                             LIFETIME_BOUND,
                          std::string_view key) {
   auto it = dict.find(key);
-  if (it == dict.end() || it->second.member_is_inner_list ||
-      it->second.member.size() != 1) {
+  if (it == dict.end()) {
     return nullptr;
   }
-  return it->second.member.front().item.GetIfString();
+  auto item_and_params = it->second.GetWithParamsIfItem();
+  if (!item_and_params.has_value()) {
+    return nullptr;
+  }
+  return item_and_params->first.GetIfString();
 }
 
 std::optional<std::string> TakeIfString(
@@ -387,17 +392,18 @@ NavigationInterceptor::RequestBuilder::Build(
   idp_options->domain_hint = TakeIfString(dict, "domain_hint").value_or("");
   idp_options->params_json = TakeIfString(dict, "params");
 
-  if (auto it = dict.find("fields");
-      it != dict.end() && it->second.member_is_inner_list) {
-    std::vector<std::string> fields;
-    for (auto& member_item : it->second.member) {
-      std::string* field_str = member_item.item.GetIfString();
-      if (!field_str) {
-        return std::nullopt;
+  if (auto it = dict.find("fields"); it != dict.end()) {
+    if (auto inner_list_and_params = it->second.GetWithParamsIfInnerList()) {
+      std::vector<std::string> fields;
+      for (auto& member_item : inner_list_and_params->first) {
+        std::string* field_str = member_item.item.GetIfString();
+        if (!field_str) {
+          return std::nullopt;
+        }
+        fields.emplace_back(std::move(*field_str));
       }
-      fields.emplace_back(std::move(*field_str));
+      idp_options->fields = std::move(fields);
     }
-    idp_options->fields = std::move(fields);
   }
 
   blink::mojom::RpContext context = blink::mojom::RpContext::kSignIn;
