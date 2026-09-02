@@ -58,7 +58,11 @@ class JavaGrpcGenerator : public protobuf::compiler::CodeGenerator {
     return protobuf::Edition::EDITION_PROTO2;
   }
   protobuf::Edition GetMaximumEdition() const override {
+#if GOOGLE_PROTOBUF_VERSION >= 6032000
+    return protobuf::Edition::EDITION_2024;
+#else
     return protobuf::Edition::EDITION_2023;
+#endif
   }
   std::vector<const protobuf::FieldDescriptor*> GetFeatureExtensions()
       const override {
@@ -80,7 +84,7 @@ class JavaGrpcGenerator : public protobuf::compiler::CodeGenerator {
     java_grpc_generator::ProtoFlavor flavor =
         java_grpc_generator::ProtoFlavor::NORMAL;
     java_grpc_generator::GeneratedAnnotation generated_annotation =
-        java_grpc_generator::GeneratedAnnotation::JAVAX;
+        java_grpc_generator::GeneratedAnnotation::OMIT;
 
     bool disable_version = false;
     for (size_t i = 0; i < options.size(); i++) {

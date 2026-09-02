@@ -46,6 +46,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include "absl/strings/escaping.h"
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/io/printer.h>
@@ -143,11 +144,24 @@ static std::set<std::string> java_keywords = {
   "false",
 };
 
+// Methods on java.lang.Object that take no arguments.
+static std::set<std::string> java_object_methods = {
+    "clone",
+    "finalize",
+    "getClass",
+    "hashCode",
+    "notify",
+    "notifyAll",
+    "toString",
+    "wait",
+};
+
 // Adjust a method name prefix identifier to follow the JavaBean spec:
 //   - decapitalize the first letter
 //   - remove embedded underscores & capitalize the following letter
-//  Finally, if the result is a reserved java keyword, append an underscore.
-static std::string MixedLower(std::string word) {
+//  Finally, if the result is a reserved java keyword or an Object method,
+// append an underscore.
+static std::string MixedLower(std::string word, bool mangle_object_methods = false) {
   std::string w;
   w += tolower(word[0]);
   bool after_underscore = false;
@@ -159,7 +173,9 @@ static std::string MixedLower(std::string word) {
       after_underscore = false;
     }
   }
-  if (java_keywords.find(w) != java_keywords.end()) {
+  if (java_keywords.find(w) != java_keywords.end() ||
+      (mangle_object_methods &&
+       java_object_methods.find(w) != java_object_methods.end())) {
     return w + "_";
   }
   return w;
@@ -180,8 +196,9 @@ static std::string ToAllUpperCase(std::string word) {
   return w;
 }
 
-static inline std::string LowerMethodName(const MethodDescriptor* method) {
-  return MixedLower(std::string(method->name()));
+static inline std::string LowerMethodName(const MethodDescriptor* method,
+                                          bool mangle_object_methods = false) {
+  return MixedLower(std::string(method->name()), mangle_object_methods);
 }
 
 static inline std::string MethodPropertiesFieldName(const MethodDescriptor* method) {
@@ -197,7 +214,7 @@ static inline std::string MethodIdFieldName(const MethodDescriptor* method) {
 }
 
 static inline std::string MessageFullJavaName(const Descriptor* desc) {
-  return protobuf::compiler::java::ClassName(desc);
+  return protobuf::compiler::java::QualifiedClassName(desc);
 }
 
 // TODO(nmittler): Remove once protobuf includes javadoc methods in distribution.
@@ -676,10 +693,12 @@ static void PrintStub(
     const MethodDescriptor* method = service->method(i);
     (*vars)["input_type"] = MessageFullJavaName(method->input_type());
     (*vars)["output_type"] = MessageFullJavaName(method->output_type());
-    (*vars)["lower_method_name"] = LowerMethodName(method);
-    (*vars)["method_method_name"] = MethodPropertiesGetterName(method);
     bool client_streaming = method->client_streaming();
     bool server_streaming = method->server_streaming();
+    bool mangle_object_methods = (call_type == BLOCKING_V2_CALL && client_streaming)
+      || (call_type == BLOCKING_CALL && client_streaming && server_streaming);
+    (*vars)["lower_method_name"] = LowerMethodName(method, mangle_object_methods);
+    (*vars)["method_method_name"] = MethodPropertiesGetterName(method);
 
     if (call_type == BLOCKING_CALL && client_streaming) {
       // Blocking client interface with client streaming is not available
@@ -745,9 +764,10 @@ static void PrintStub(
               "    $lower_method_name$($input_type$ request)");
        } else {
           // Simple RPC
+          (*vars)["throws_decl"] = " throws io.grpc.StatusException";
           p->Print(
               *vars,
-              "$output_type$ $lower_method_name$($input_type$ request)");
+              "$output_type$ $lower_method_name$($input_type$ request)$throws_decl$");
        }
        break;
       case ASYNC_CALL:
@@ -827,7 +847,8 @@ static void PrintStub(
                if (server_streaming) {
                    (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall";
                 } else {
-                  (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingUnaryCall";
+                  (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingV2UnaryCall";
+                  (*vars)["throws_decl"] = " throws io.grpc.StatusException";
                 }
 
             p->Print(
@@ -1030,7 +1051,7 @@ static void PrintGetServiceDescriptorMethod(const ServiceDescriptor* service,
     (*vars)["proto_base_descriptor_supplier"] = service_name + "BaseDescriptorSupplier";
     (*vars)["proto_file_descriptor_supplier"] = service_name + "FileDescriptorSupplier";
     (*vars)["proto_method_descriptor_supplier"] = service_name + "MethodDescriptorSupplier";
-    (*vars)["proto_class_name"] = protobuf::compiler::java::ClassName(service->file());
+    (*vars)["proto_class_name"] = protobuf::compiler::java::QualifiedClassName(service->file());
     p->Print(
         *vars,
         "private static abstract class $proto_base_descriptor_supplier$\n"
@@ -1186,7 +1207,7 @@ static void PrintService(const ServiceDescriptor* service,
                          bool disable_version,
                          GeneratedAnnotation generated_annotation) {
   (*vars)["service_name"] = service->name();
-  (*vars)["file_name"] = service->file()->name();
+  (*vars)["file_name"] = absl::Utf8SafeCEscape(service->file()->name());
   (*vars)["service_class_name"] = ServiceClassName(service);
   (*vars)["grpc_version"] = "";
   #ifdef GRPC_VERSION
@@ -1364,7 +1385,7 @@ void GenerateService(const ServiceDescriptor* service,
 }
 
 std::string ServiceJavaPackage(const FileDescriptor* file) {
-  std::string result = protobuf::compiler::java::ClassName(file);
+  std::string result = protobuf::compiler::java::QualifiedClassName(file);
   size_t last_dot_pos = result.find_last_of('.');
   if (last_dot_pos != std::string::npos) {
     result.resize(last_dot_pos);

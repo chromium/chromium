@@ -2,8 +2,8 @@ Name: grpc-java
 URL: https://github.com/grpc/grpc-java
 License: Apache-2.0
 License File: LICENSE
-Version: v1.73.0
-Revision: b0794e4fb64faaf9af10fa86e85018edfd433056
+Version: v1.83.1
+Revision: 8f621c03b776eed114c39969ce1bf347625d2e9d
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: no
@@ -31,5 +31,5 @@ Steps to upgrade (e.g. after the gRPC runtime gets autorolled):
 - Update this file (README.chromium) with the new metadata (version, revision,
   source url and SHA-512 hash).
 
-Source: https://github.com/grpc/grpc-java/archive/refs/tags/v1.73.0.tar.gz
-SHA-512: 7c20980b0886fcb0febdcc2b5143beafe1321766687e213f9a37ae7a9f2e33d184037b727433255ee984a8b1ed3143594f2b53b894554652d71d8ddc512b22d8
+Source: https://github.com/grpc/grpc-java/archive/refs/tags/v1.83.1.tar.gz
+SHA-512: cd9a44c22c4820f10ae1670520e0558863725eb7eb8e7a7b82b04afa2b3aabd56b5b993cb70b55886104bdcbda212d917ce268aadcea80814cc9cd26548784ce
