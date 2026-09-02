@@ -281,17 +281,20 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // This check skips every internal context menu entry. This may need to be
   // changed to only affect entity detection entries.
   if (IsEntitySelectionAllowedForURL(webState)) {
+    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+    ContextMenuHandlers* contextMenuHandlers =
+        [[ContextMenuHandlers alloc] init];
+    contextMenuHandlers.miniMapHandler =
+        HandlerForProtocol(dispatcher, MiniMapCommands);
+    contextMenuHandlers.unitConversionHandler =
+        HandlerForProtocol(dispatcher, UnitConversionCommands);
+    contextMenuHandlers.enhancedCalendarHandler =
+        HandlerForProtocol(dispatcher, EnhancedCalendarCommands);
     // Insert any provided menu items. Do after Link and/or Image to allow
     // inserting at beginning or adding to end.
     ElementsToAddToContextMenu* result =
         ios::provider::GetContextMenuElementsToAdd(
-            webState, params, self.baseViewController,
-            HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               MiniMapCommands),
-            HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               UnitConversionCommands),
-            HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               EnhancedCalendarCommands));
+            webState, params, self.baseViewController, contextMenuHandlers);
     if (result && result.elements) {
       [menuElements addObjectsFromArray:result.elements];
       menuTitle = result.title;
