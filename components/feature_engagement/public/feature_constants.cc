@@ -366,6 +366,9 @@ BASE_FEATURE(kIPHAndroidBottomBarPromoDialog,
 BASE_FEATURE(kIPHAndroidTabDeclutter,
              "IPH_AndroidTabDeclutter",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAndroidVerticalTabsNewLabel,
+             "IPH_AndroidVerticalTabsNewLabel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAndroidVerticalTabsPromoFeature,
              "IPH_AndroidVerticalTabsPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);

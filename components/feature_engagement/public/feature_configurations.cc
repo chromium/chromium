@@ -840,6 +840,30 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAndroidVerticalTabsNewLabel.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+
+    // This is a "New" label, we always want it to show and we don't want it to
+    // be blocked by or block any other IPH, or contribute to session rate.
+    config.session_rate = Comparator(ANY, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
+    // "New" label only shows 3 times in its lifetime
+    config.trigger =
+        EventConfig("android_vertical_tabs_new_label_trigger",
+                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
+
+    // "New" label never shows once Vertical Tabs have been used at least once.
+    config.used =
+        EventConfig("android_vertical_tabs_promo_used", Comparator(EQUAL, 0),
+                    k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHFuseboxAttachmentFeature.name == feature->name) {
     // A config that allows measurement for user engagement on the fusebox
     // attachment button by checking:

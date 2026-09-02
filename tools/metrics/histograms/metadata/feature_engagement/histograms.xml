@@ -70,6 +70,8 @@ chromium-metrics-reviews@google.com.
       summary="Describes the promo dialog shown to introduce the bottom bar."/>
   <variant name="IPH_AndroidTabDeclutter"
       summary="Shows how to access tabs which have been archived."/>
+  <variant name="IPH_AndroidVerticalTabsNewLabel"
+      summary="Enables the 'New' label for Android Vertical Tabs."/>
   <variant name="IPH_AndroidVerticalTabsPromo"
       summary="Vertical Tabs promo on Android horizontal tab strip."/>
   <variant name="IPH_AppRatingPrompt" summary="App Rating Prompt action"/>

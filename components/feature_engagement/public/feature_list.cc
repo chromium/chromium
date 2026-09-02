@@ -38,6 +38,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAndroidBottomBarNewTab,
     &kIPHAndroidBottomBarPromoDialog,
     &kIPHAndroidTabDeclutter,
+    &kIPHAndroidVerticalTabsNewLabel,
     &kIPHAndroidVerticalTabsPromoFeature,
     &kIPHAppRatingPromptFeature,
     &kIPHAppSpecificHistory,

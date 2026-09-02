@@ -263,6 +263,8 @@ should be able to be added at any place in this file.
   <variant name="_AndroidBottomBarPromoDialog"
       summary="For the promo dialog shown to introduce the bottom bar."/>
   <variant name="_AndroidTabDeclutter" summary="For archived tabs on android."/>
+  <variant name="_AndroidVerticalTabsNewLabel"
+      summary="Enables the 'New' label for Android Vertical Tabs."/>
   <variant name="_AndroidVerticalTabsPromo"
       summary="For the vertical tabs promo on android horizontal tab strip."/>
   <variant name="_AppRatingPrompt" summary="For App Rating Prompt feature."/>
