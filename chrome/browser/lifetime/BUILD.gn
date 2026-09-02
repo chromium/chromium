@@ -212,6 +212,7 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/base/idle:test_support",
     ]
 
     if (is_chromeos) {

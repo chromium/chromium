@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/idle/scoped_set_idle_state.h"
 
 namespace smart_restart {
 namespace {
@@ -71,6 +72,7 @@ class SmartRestartMetricsObserverTest : public testing::Test {
   void set_browser_count(size_t count) { browser_count_ = count; }
 
  protected:
+  ui::ScopedSetIdleState scoped_idle_state_{ui::IDLE_STATE_ACTIVE};
   base::test::TaskEnvironment task_environment_;
   FakeUpgradeDetector upgrade_detector_;
   TestingProfileManager profile_manager_;
