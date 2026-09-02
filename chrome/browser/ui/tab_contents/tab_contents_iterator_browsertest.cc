@@ -9,6 +9,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/page_transition_types.h"
 
 using TabContentsIteratorBrowserTest = InProcessBrowserTest;
 

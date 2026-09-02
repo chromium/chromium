@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "content/public/browser/navigation_details.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
 using content::WebContents;

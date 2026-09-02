@@ -9,13 +9,12 @@
 
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/ozone/public/platform_session_manager.h"
 #endif
 

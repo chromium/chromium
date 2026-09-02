@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 
 CredentialProviderWebDialogViewWithModal::

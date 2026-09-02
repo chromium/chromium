@@ -8,7 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/permissions/permission_util.h"

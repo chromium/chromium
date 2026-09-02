@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_ANDROID)

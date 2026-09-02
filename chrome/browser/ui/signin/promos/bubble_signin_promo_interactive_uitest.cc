@@ -70,6 +70,7 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension.h"

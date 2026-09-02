@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
 namespace browser_sync {

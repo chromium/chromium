@@ -9,6 +9,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/common/content_navigation_policy.h"

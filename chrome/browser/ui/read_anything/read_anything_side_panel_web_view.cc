@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
@@ -17,6 +16,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using SidePanelWebUIViewT_ReadAnythingUntrustedUI =

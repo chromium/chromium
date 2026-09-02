@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/file_system_access/file_system_access_restricted_directory_dialog.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 

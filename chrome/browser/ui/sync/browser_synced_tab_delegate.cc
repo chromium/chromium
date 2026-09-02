@@ -6,6 +6,7 @@
 
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 DEFINE_USER_DATA(BrowserSyncedTabDelegate);

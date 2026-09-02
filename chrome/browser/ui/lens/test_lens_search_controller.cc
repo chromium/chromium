@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/variations_client.h"
+#include "content/public/browser/navigation_controller.h"
 
 namespace lens {
 

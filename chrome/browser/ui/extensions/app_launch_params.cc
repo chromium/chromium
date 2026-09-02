@@ -10,6 +10,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "ui/base/window_open_disposition.h"
 
 using extensions::ExtensionPrefs;
 

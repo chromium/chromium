@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/page_transition_types.h"
 
 using content::WebContents;
 using ui::PAGE_TRANSITION_TYPED;
