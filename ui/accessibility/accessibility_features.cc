@@ -288,13 +288,6 @@ bool IsAccessibilityDisableTouchpadEnabled() {
       ::features::kAccessibilityDisableTouchpad);
 }
 
-BASE_FEATURE(kAccessibilityFlashScreenFeature,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityFlashScreenFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityFlashScreenFeature);
-}
-
 BASE_FEATURE(kAccessibilityInvertedMouseCursor,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityInvertedMouseCursorEnabled() {

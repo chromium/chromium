@@ -1996,11 +1996,9 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
           prefs->GetInteger(prefs::kAccessibilityColorVisionCorrectionAmount));
     }
 
-    if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
-      base::UmaHistogramBoolean(
-          "Accessibility.CrosFlashNotifications",
-          prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
-    }
+    base::UmaHistogramBoolean(
+        "Accessibility.CrosFlashNotifications",
+        prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
 
     bool bounce_keys_enabled =
         prefs->GetBoolean(prefs::kAccessibilityBounceKeysEnabled);

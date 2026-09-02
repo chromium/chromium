@@ -3160,11 +3160,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "enable-accessibility-flash-screen-feature",
-    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 149
-  },
-  {
     "name": "enable-accessibility-google-tts-automatic-reconnect",
     "owners": [ "katydek@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 160

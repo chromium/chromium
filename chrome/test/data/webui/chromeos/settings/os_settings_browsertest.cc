@@ -121,12 +121,7 @@ class OSSettingsMochaTestGraduationEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kGraduation};
 };
 
-class OSSettingsMochaTestFlashNotificationsEnabled
-    : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityFlashScreenFeature};
-};
+using OSSettingsMochaTestFlashNotificationsEnabled = OSSettingsMochaTest;
 
 class OSSettingsMochaTestAppParentalControlsEnabled
     : public OSSettingsMochaTest {

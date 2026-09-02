@@ -622,10 +622,6 @@ bool IsAccessibilityDisableTouchpadEnabled() {
   return ::features::IsAccessibilityDisableTouchpadEnabled();
 }
 
-bool IsAccessibilityFlashNotificationFeatureEnabled() {
-  return ::features::IsAccessibilityFlashScreenFeatureEnabled();
-}
-
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -1605,9 +1601,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
                           IsAccessibilityMouseKeysEnabled());
 
-  html_source->AddBoolean("isAccessibilityFlashNotificationFeatureEnabled",
-                          IsAccessibilityFlashNotificationFeatureEnabled());
-
   html_source->AddBoolean(
       "isAccessibilityInvertedMouseCursorEnabled",
       ::features::IsAccessibilityInvertedMouseCursorEnabled());
@@ -2065,9 +2058,7 @@ void AccessibilitySection::UpdateSearchTags() {
   updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());
   updater.AddSearchTags(GetA11yOverscrollSettingSearchConcepts());
 
-  if (IsAccessibilityFlashNotificationFeatureEnabled()) {
-    updater.AddSearchTags(GetA11yFlashNotificationsSearchConcepts());
-  }
+  updater.AddSearchTags(GetA11yFlashNotificationsSearchConcepts());
 
   updater.AddSearchTags(GetA11yFaceGazeSearchConcepts());
 

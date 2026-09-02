@@ -8344,10 +8344,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityDisableTouchpadDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityDisableTouchpad)},
 
-    {"enable-accessibility-flash-screen-feature",
-     flag_descriptions::kAccessibilityFlashScreenFeatureName,
-     flag_descriptions::kAccessibilityFlashScreenFeatureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityFlashScreenFeature)},
     {"enable-accessibility-google-tts-automatic-reconnect",
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectName,
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectDescription,

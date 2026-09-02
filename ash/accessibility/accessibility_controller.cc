@@ -1536,10 +1536,8 @@ void AccessibilityController::RegisterProfilePrefs(
   RegisterAccessibilityPrefsWithConditionalSync(
       registry, GetSyncableAccessibilityPrefsBatch3());
 
-  if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
-    registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
-                                  kDefaultFlashNotificationsColor);
-  }
+  registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
+                                kDefaultFlashNotificationsColor);
 
   registry->RegisterBooleanPref(
       prefs::kAccessibilityAlwaysShowScrollbarsEnabled, false);
@@ -2779,13 +2777,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateCaretBlinkIntervalFromPrefs,
           base::Unretained(this)));
-  if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityFlashNotificationsColor,
-        base::BindRepeating(
-            &AccessibilityController::UpdateFlashNotificationsFromPrefs,
-            base::Unretained(this)));
-  }
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityFlashNotificationsColor,
+      base::BindRepeating(
+          &AccessibilityController::UpdateFlashNotificationsFromPrefs,
+          base::Unretained(this)));
   if (::features::IsAccessibilityDisableTouchpadEnabled()) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityDisableTrackpadMode,
@@ -2842,9 +2838,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
                           prefs::kAccessibilityFaceGazeActionsEnabledSentinel,
                           prefs::kAccessibilityFaceGazeActionsEnabled));
 
-  if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
-    UpdateFlashNotificationsFromPrefs();
-  }
+  UpdateFlashNotificationsFromPrefs();
   if (::features::IsAccessibilityDisableTouchpadEnabled()) {
     UpdateDisableTouchpadFromPrefs(/*notify=*/false);
   }
@@ -3129,9 +3123,6 @@ void AccessibilityController::UpdateFaceGazeFromPrefs() {
 }
 
 void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
-  if (!::features::IsAccessibilityFlashScreenFeatureEnabled()) {
-    return;
-  }
   flash_screen_controller_->set_enabled(active_user_prefs_->GetBoolean(
       prefs::kAccessibilityFlashNotificationsEnabled));
   flash_screen_controller_->set_color(active_user_prefs_->GetInteger(

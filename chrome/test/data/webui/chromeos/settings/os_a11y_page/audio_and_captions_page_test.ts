@@ -104,96 +104,78 @@ suite('<settings-audio-and-captions-page>', () => {
         settingMojom.Setting.kStartupSound, '#startupSoundEnabled');
   });
 
-  if (loadTimeData.getBoolean(
-          'isAccessibilityFlashNotificationFeatureEnabled')) {
-    test('flash notifications is deep-linkable', async () => {
-      await testDeepLink(
-          settingMojom.Setting.kFlashNotifications,
-          '#flashNotificationsToggle');
-    });
+  test('flash notifications is deep-linkable', async () => {
+    await testDeepLink(
+        settingMojom.Setting.kFlashNotifications,
+        '#flashNotificationsToggle');
+  });
 
-    test('flash notifications can be toggled', async () => {
-      await initPage();
-      const flashNotificationsToggle = getFlashNotificationsToggle();
+  test('flash notifications can be toggled', async () => {
+    await initPage();
+    const flashNotificationsToggle = getFlashNotificationsToggle();
 
-      let notificationColorDropdown =
-          page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-              '#notificationColorDropdown');
-      assertNull(notificationColorDropdown);
+    let notificationColorDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#notificationColorDropdown');
+    assertNull(notificationColorDropdown);
 
-      assertFalse(flashNotificationsToggle.checked);
-      assertFalse(flashNotificationsToggle.hasAttribute('checked'));
-      assertFalse(
-          page.getPref<boolean>('settings.a11y.flash_notifications_enabled')
-              .value);
+    assertFalse(flashNotificationsToggle.checked);
+    assertFalse(flashNotificationsToggle.hasAttribute('checked'));
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.flash_notifications_enabled')
+            .value);
 
-      flashNotificationsToggle.click();
-      await flushTasks();
+    flashNotificationsToggle.click();
+    await flushTasks();
 
-      assertTrue(flashNotificationsToggle.checked);
-      assertTrue(flashNotificationsToggle.hasAttribute('checked'));
-      assertTrue(
-          page.getPref<boolean>('settings.a11y.flash_notifications_enabled')
-              .value);
+    assertTrue(flashNotificationsToggle.checked);
+    assertTrue(flashNotificationsToggle.hasAttribute('checked'));
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.flash_notifications_enabled')
+            .value);
 
-      notificationColorDropdown = getNotificationColorDropdown();
-    });
+    notificationColorDropdown = getNotificationColorDropdown();
+  });
 
-    test('flash notification color can be changed', async () => {
-      await initPage();
-      const flashNotificationsToggle = getFlashNotificationsToggle();
-      flashNotificationsToggle.click();
-      await flushTasks();
+  test('flash notification color can be changed', async () => {
+    await initPage();
+    const flashNotificationsToggle = getFlashNotificationsToggle();
+    flashNotificationsToggle.click();
+    await flushTasks();
 
-      const notificationColorDropdown = getNotificationColorDropdown();
-      const colorSelectElement =
-          notificationColorDropdown.shadowRoot!.querySelector('select');
-      assert(!!colorSelectElement);
+    const notificationColorDropdown = getNotificationColorDropdown();
+    const colorSelectElement =
+        notificationColorDropdown.shadowRoot!.querySelector('select');
+    assert(!!colorSelectElement);
 
-      // Default: yellow.
-      assertEquals(
-          NotificationColor.YELLOW,
-          page.getPref('settings.a11y.flash_notifications_color').value);
-      assertEquals(String(NotificationColor.YELLOW), colorSelectElement.value);
+    // Default: yellow.
+    assertEquals(
+        NotificationColor.YELLOW,
+        page.getPref('settings.a11y.flash_notifications_color').value);
+    assertEquals(String(NotificationColor.YELLOW), colorSelectElement.value);
 
-      // Change to pink.
-      colorSelectElement.value = String(NotificationColor.PINK);
-      colorSelectElement.dispatchEvent(new CustomEvent('change'));
-      assertEquals(
-          NotificationColor.PINK,
-          page.getPref('settings.a11y.flash_notifications_color').value);
-    });
+    // Change to pink.
+    colorSelectElement.value = String(NotificationColor.PINK);
+    colorSelectElement.dispatchEvent(new CustomEvent('change'));
+    assertEquals(
+        NotificationColor.PINK,
+        page.getPref('settings.a11y.flash_notifications_color').value);
+  });
 
-    test('flash notifications preview', async () => {
-      await initPage();
-      const flashNotificationsToggle = getFlashNotificationsToggle();
-      flashNotificationsToggle.click();
-      await flushTasks();
+  test('flash notifications preview', async () => {
+    await initPage();
+    const flashNotificationsToggle = getFlashNotificationsToggle();
+    flashNotificationsToggle.click();
+    await flushTasks();
 
-      const previewButton = page.shadowRoot!.querySelector<CrButtonElement>(
-          '#notificationPreviewBtn');
-      assert(!!previewButton);
-      assertTrue(isVisible(previewButton));
-      assertEquals(0, browserProxy.getCallCount('previewFlashNotification'));
+    const previewButton = page.shadowRoot!.querySelector<CrButtonElement>(
+        '#notificationPreviewBtn');
+    assert(!!previewButton);
+    assertTrue(isVisible(previewButton));
+    assertEquals(0, browserProxy.getCallCount('previewFlashNotification'));
 
-      previewButton.click();
+    previewButton.click();
 
-      assertEquals(1, browserProxy.getCallCount('previewFlashNotification'));
-    });
-  } else {
-    test(
-        'flash notifications not shown when feature flag disabled',
-        async () => {
-          await initPage();
-          const flashNotificationsToggle =
-              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                  '#flashNotificationsToggle');
-          assertNull(flashNotificationsToggle);
-
-          const flashNotificationsColorOptionsRow =
-              page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-                  '#flashNotificationsColorOptionsRow');
-          assertNull(flashNotificationsColorOptionsRow);
-        });
-  }
+    assertEquals(1, browserProxy.getCallCount('previewFlashNotification'));
+  });
 });

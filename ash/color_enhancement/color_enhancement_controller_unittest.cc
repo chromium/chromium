@@ -15,9 +15,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -52,8 +50,6 @@ class ColorEnhancementControllerTest : public AshTestBase {
   ~ColorEnhancementControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFlashScreenFeature);
     AshTestBase::SetUp();
     normal_duration_.emplace(
         gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
@@ -102,7 +98,6 @@ class ColorEnhancementControllerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 

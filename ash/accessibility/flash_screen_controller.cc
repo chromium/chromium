@@ -6,7 +6,6 @@
 
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/shell.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
@@ -115,9 +114,6 @@ void FlashScreenController::PreviewFlash() {
 }
 
 void FlashScreenController::FlashOn() {
-  if (!::features::IsAccessibilityFlashScreenFeatureEnabled()) {
-    return;
-  }
   if (!enabled_) {
     // Don't flash if the pref is disabled.
     return;

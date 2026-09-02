@@ -39,37 +39,34 @@
       on-change="toggleStartupSoundEnabled_">
   </cr-toggle>
 </div>
+<settings-toggle-button id="flashNotificationsToggle"
+  class="hr"
+  pref="{{prefs.settings.a11y.flash_notifications_enabled}}"
+  label="$i18n{flashNotificationsLabel}"
+  sub-label="$i18n{flashNotificationsDescription}"
+  deep-link-focus-id$="[[Setting.kFlashNotifications]]">
+</settings-toggle-button>
 <template is="dom-if"
-    if="[[isAccessibilityFlashNotificationFeatureEnabled_]]">
-  <settings-toggle-button id="flashNotificationsToggle"
-    class="hr"
-    pref="{{prefs.settings.a11y.flash_notifications_enabled}}"
-    label="$i18n{flashNotificationsLabel}"
-    sub-label="$i18n{flashNotificationsDescription}"
-    deep-link-focus-id$="[[Setting.kFlashNotifications]]">
-  </settings-toggle-button>
-  <template is="dom-if"
-      if="[[prefs.settings.a11y.flash_notifications_enabled.value]]">
-    <div class="settings-box indented"
-        id="flashNotificationsColorOptionsRow">
-      <div class="start settings-box-text"
-          id="flashNotificationsColorOptionsLabel">
-        $i18n{flashNotificationsColorOptionsLabel}
-      </div>
-      <div class="button-container">
-        <cr-button id="notificationPreviewBtn"
-            on-click="previewFlashNotification_"
-            aria-label="$i18n{flashNotificationsPreviewButtonLabel}">
-          $i18n{flashNotificationsPreviewButton}
-        </cr-button>
-      </div>
-      <settings-dropdown-menu id="notificationColorDropdown"
-          pref="{{prefs.settings.a11y.flash_notifications_color}}"
-          label="$i18n{flashNotificationsColorOptionsLabel}"
-          menu-options="[[notificationColorOptions_]]">
-      </settings-dropdown-menu>
+    if="[[prefs.settings.a11y.flash_notifications_enabled.value]]">
+  <div class="settings-box indented"
+      id="flashNotificationsColorOptionsRow">
+    <div class="start settings-box-text"
+        id="flashNotificationsColorOptionsLabel">
+      $i18n{flashNotificationsColorOptionsLabel}
     </div>
-  </template>
+    <div class="button-container">
+      <cr-button id="notificationPreviewBtn"
+          on-click="previewFlashNotification_"
+          aria-label="$i18n{flashNotificationsPreviewButtonLabel}">
+        $i18n{flashNotificationsPreviewButton}
+      </cr-button>
+    </div>
+    <settings-dropdown-menu id="notificationColorDropdown"
+        pref="{{prefs.settings.a11y.flash_notifications_color}}"
+        label="$i18n{flashNotificationsColorOptionsLabel}"
+        menu-options="[[notificationColorOptions_]]">
+    </settings-dropdown-menu>
+  </div>
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <settings-captions prefs="{{prefs}}"

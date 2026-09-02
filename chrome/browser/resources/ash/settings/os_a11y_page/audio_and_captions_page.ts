@@ -89,15 +89,6 @@ export class SettingsAudioAndCaptionsPageElement extends
         },
       },
 
-      isAccessibilityFlashNotificationFeatureEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityFlashNotificationFeatureEnabled');
-        },
-      },
-
       notificationColorOptions_: {
         readOnly: true,
         type: Array,
@@ -149,8 +140,6 @@ export class SettingsAudioAndCaptionsPageElement extends
   ]);
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
-  declare private readonly isAccessibilityFlashNotificationFeatureEnabled_:
-      boolean;
   declare private isKioskModeActive_: boolean;
   declare private readonly notificationColorOptions_:
       Array<{value: number, name: string}>;
