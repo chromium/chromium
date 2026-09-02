@@ -2476,4 +2476,26 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('youtube.com', searchbox.inputKeywordModel?.keyword);
    assertEquals('', searchbox.getInputElement().inputElement.value);
  });
+
+ test('AimButtonUserInputState', async () => {
+   const composeButton = searchbox.$.composeButton;
+   assertTrue(!!composeButton);
+
+   // A prefilled URL without user input in progress should not set
+   // has-user-input.
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'https://example.com',
+     userInputInProgress: false,
+   }));
+   await microtasksFinished();
+   assertFalse(composeButton.hasAttribute('has-user-input'));
+
+   // When input is actively entered by the user, has-user-input should be set.
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'https://example.com/search',
+     userInputInProgress: true,
+   }));
+   await microtasksFinished();
+   assertTrue(composeButton.hasAttribute('has-user-input'));
+ });
 });

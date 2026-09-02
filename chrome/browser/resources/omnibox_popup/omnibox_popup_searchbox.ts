@@ -834,7 +834,7 @@ export class OmniboxPopupSearchboxElement extends
     const isTabSwitch = this.tabId_ !== state.tabId;
     this.$.input.setInputText(state.text);
     this.userInputInProgress_ = state.userInputInProgress;
-    this.hasUserInput_ = !!state.text.trim();
+    this.hasUserInput_ = state.userInputInProgress && !!state.text.trim();
     this.currentSequenceNum_ = state.sequenceNumber;
     this.tabId_ = state.tabId;
     this.fullUrl_ = state.fullUrl;
