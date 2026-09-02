@@ -621,6 +621,10 @@ void NetworkStateHandler::SetNetworkConnectRequested(
   if (!network) {
     return;
   }
+  if (network->connect_requested_ == connect_requested &&
+      network->shill_connect_error_.empty()) {
+    return;
+  }
   network->connect_requested_ = connect_requested;
   network->shill_connect_error_.clear();
   network_list_sorted_ = false;

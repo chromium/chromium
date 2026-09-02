@@ -2670,6 +2670,76 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
       active_networks, kShillManagerClientStubWifi2, &NetworkState::path));
 }
 
+TEST_F(NetworkStateHandlerTest,
+       SetNetworkConnectRequestedObserverNotifications) {
+  const std::string wifi2 = kShillManagerClientStubWifi2;
+  const NetworkState* network = network_state_handler_->GetNetworkState(wifi2);
+  ASSERT_TRUE(network);
+  EXPECT_FALSE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(0, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // No-op call when `connect_requested` is already false and
+  // `shill_connect_error` is empty. This should early-return and suppress
+  // observer notifications.
+  network_state_handler_->SetNetworkConnectRequested(wifi2, false);
+  EXPECT_FALSE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(0, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // Changing `connect_requested` to true should update state and notify
+  // observers.
+  network_state_handler_->SetNetworkConnectRequested(wifi2, true);
+  EXPECT_TRUE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(1, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // No-op call when `connect_requested` is already true and
+  // `shill_connect_error` is empty. This should early-return and suppress
+  // observer notifications.
+  network_state_handler_->SetNetworkConnectRequested(wifi2, true);
+  EXPECT_TRUE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(1, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // Set a non-empty shill_connect_error.
+  network_state_handler_->SetShillConnectError(wifi2,
+                                               shill::kErrorResultInProgress);
+  EXPECT_EQ(shill::kErrorResultInProgress, network->shill_connect_error());
+  EXPECT_EQ(1, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // Calling SetNetworkConnectRequested with `connect_requested` == true
+  // (matching the current `connect_requested` state) while
+  // `shill_connect_error` is non-empty should clear the error and notify
+  // observers as a consequence of that.
+  network_state_handler_->SetNetworkConnectRequested(wifi2, true);
+  EXPECT_TRUE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(2, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // Changing `connect_requested` back to false should update state and notify
+  // observers.
+  network_state_handler_->SetNetworkConnectRequested(wifi2, false);
+  EXPECT_FALSE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(3, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // Set a non-empty `shill_connect_error` again.
+  network_state_handler_->SetShillConnectError(wifi2,
+                                               shill::kErrorResultInProgress);
+  EXPECT_EQ(shill::kErrorResultInProgress, network->shill_connect_error());
+  EXPECT_EQ(3, test_observer_->ConnectionStateChangesForService(wifi2));
+
+  // Calling SetNetworkConnectRequested with `connect_requested` == false
+  // (matching the current connect_requested_ state) while `shill_connect_error`
+  // is non-empty should clear the error and notify observers as a consequence
+  // of that.
+  network_state_handler_->SetNetworkConnectRequested(wifi2, false);
+  EXPECT_FALSE(network->connect_requested());
+  EXPECT_TRUE(network->shill_connect_error().empty());
+  EXPECT_EQ(4, test_observer_->ConnectionStateChangesForService(wifi2));
+}
+
 TEST_F(NetworkStateHandlerTest, Hostname) {
   const std::string kTestHostname = "Test Hostname";
   network_state_handler_->SetHostname(kTestHostname);
