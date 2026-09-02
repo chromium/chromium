@@ -160,13 +160,14 @@ public class BackgroundTabPoolManagerTest {
         TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
 
         pool1.addLiveTab(new LiveBackgroundTab(pool1, tab, PLACEHOLDER_ID, /* taskId= */ null));
+        BackgroundTabDataStore.storePlaceholderTabId(TAB_ID_1, PLACEHOLDER_ID);
         // Destroy the pool directly so tab state remains persisted in cache
         pool1.destroy();
 
         // Acquire new pool for same profile - it has cold tabs in cache
         BackgroundTabPool pool2 = BackgroundTabPoolManager.acquire(mProfile);
         assertFalse(pool2.isEmpty());
-        assertFalse(pool2.getAllTabIds().isEmpty());
+        assertFalse(pool2.getAllPlaceholderTabIds().isEmpty());
 
         BackgroundTabPoolManager.release(pool2);
         // Lease count is 0, but cached tabs exist, so pool is retained and token is not cleared
@@ -199,7 +200,7 @@ public class BackgroundTabPoolManagerTest {
         BackgroundTabPoolManager.release(pool);
         assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
 
-        pool.removeTab(TAB_ID_1);
+        pool.removeTab(PLACEHOLDER_ID);
         assertTrue(pool.isEmpty());
         ShadowLooper.idleMainLooper();
         assertNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
@@ -268,7 +269,7 @@ public class BackgroundTabPoolManagerTest {
         BackgroundTabPoolManager.release(pool);
 
         // Removing the tab posts onEmptyCallback asynchronously to UI Looper
-        pool.removeTab(TAB_ID_1);
+        pool.removeTab(PLACEHOLDER_ID);
         assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
 
         // Re-acquire before the posted task drains

@@ -1291,9 +1291,9 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
         Tab realizedTab = mock(Tab.class);
         when(realizedTab.getId()).thenReturn(101);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(101));
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
         BackgroundPoolTab backgroundPoolTab = mock(BackgroundPoolTab.class);
-        when(mBackgroundTabPool.loadTab(101, 101)).thenReturn(backgroundPoolTab);
+        when(mBackgroundTabPool.loadTab(101)).thenReturn(backgroundPoolTab);
         when(backgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(realizedTab);
         when(mNormalTabModel.indexOf(realizedTab)).thenReturn(0);
 
@@ -1313,8 +1313,8 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTabs(true);
         mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
 
-        verify(mBackgroundTabPool).getAllTabIds();
-        verify(mBackgroundTabPool).loadTab(101, 101);
+        verify(mBackgroundTabPool).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool).loadTab(101);
         verify(backgroundPoolTab).attachTab(eq(mNormalTabModel), eq(0));
         verify(mNormalTabCreator, never()).createNewTab(any(), anyInt(), any(), anyInt());
     }
@@ -1329,7 +1329,7 @@ public class TabPersistentStoreUnitTest {
         when(newTab.getId()).thenReturn(101);
         when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(newTab);
         when(mNormalTabModel.indexOf(newTab)).thenReturn(0);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(101));
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
 
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1347,8 +1347,8 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTabs(true);
         mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
 
-        verify(mBackgroundTabPool, never()).getAllTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mNormalTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1379,8 +1379,8 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTabs(true);
         mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
 
-        verify(mBackgroundTabPool, never()).getAllTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mNormalTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1413,7 +1413,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTabs(true);
         mPersistentStore.restoreTab(details, tabState, /* setAsActive= */ false);
 
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mIncognitoTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
     }
 
@@ -1421,8 +1421,8 @@ public class TabPersistentStoreUnitTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreTab_poolLoadFailure_fallsBackToTabCreator() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(101));
-        when(mBackgroundTabPool.loadTab(101, 101)).thenReturn(null);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
+        when(mBackgroundTabPool.loadTab(101)).thenReturn(null);
 
         TabRestoreDetails details =
                 new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
@@ -1450,8 +1450,8 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTabs(true);
         mPersistentStore.restoreTab(details, tabState, /* setAsActive= */ false);
 
-        verify(mBackgroundTabPool).getAllTabIds();
-        verify(mBackgroundTabPool).loadTab(101, 101);
+        verify(mBackgroundTabPool).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool).loadTab(101);
         verify(mNormalTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
     }
 }

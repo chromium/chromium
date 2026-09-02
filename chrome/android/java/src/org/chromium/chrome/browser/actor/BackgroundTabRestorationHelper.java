@@ -67,12 +67,13 @@ public final class BackgroundTabRestorationHelper {
     }
 
     /**
-     * Fetches the set of background tab IDs currently held or cached in {@link BackgroundTabPool}.
+     * Fetches the set of background placeholder tab IDs currently held or cached in {@link
+     * BackgroundTabPool}.
      *
      * @param orchestratorType The orchestrator type for the caller.
      * @param selector The {@link TabModelSelector} to acquire pool from.
      * @param isIncognito Whether the caller is incognito.
-     * @return A {@link Set} of {@link TabId} integers.
+     * @return A {@link Set} of placeholder {@link TabId} integers.
      */
     public static Set<@TabId Integer> fetchBackgroundTabIds(
             @TabOrchestratorType int orchestratorType,
@@ -87,18 +88,19 @@ public final class BackgroundTabRestorationHelper {
         if (pool == null) return Collections.emptySet();
 
         try {
-            return pool.getAllTabIds();
+            return pool.getAllPlaceholderTabIds();
         } finally {
             BackgroundTabPoolManager.release(pool);
         }
     }
 
     /**
-     * Attempts to restore and attach a background tab from {@link BackgroundTabPool}.
+     * Attempts to restore and attach a background tab from {@link BackgroundTabPool} given its
+     * placeholder tab ID.
      *
      * @param orchestratorType The orchestrator type for the caller.
      * @param selector The {@link TabModelSelector} managing tab models.
-     * @param tabId The ID of the background tab to restore.
+     * @param placeholderTabId The placeholder tab ID of the background tab to restore.
      * @param index The index to insert the restored tab into the model.
      * @param tabState Optional placeholder {@link TabState} whose WebContentsState will be
      *     destroyed upon attachment.
@@ -107,7 +109,7 @@ public final class BackgroundTabRestorationHelper {
     public static @Nullable Tab maybeRestoreBackgroundTab(
             @TabOrchestratorType int orchestratorType,
             @Nullable TabModelSelector selector,
-            @TabId int tabId,
+            @TabId int placeholderTabId,
             int index,
             @Nullable TabState tabState) {
         assertOnUiThread();
@@ -119,7 +121,7 @@ public final class BackgroundTabRestorationHelper {
         if (pool == null) return null;
 
         try {
-            BackgroundPoolTab backgroundTab = pool.loadTab(tabId, tabId);
+            BackgroundPoolTab backgroundTab = pool.loadTab(placeholderTabId);
             if (backgroundTab == null) return null;
 
             if (tabState != null && tabState.contentsState != null) {

@@ -56,17 +56,17 @@ import java.util.Set;
 /** Unit tests for {@link TabRestorer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabRestorerUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabRestorerDelegate mDelegate;
-    @Mock private TabCreator mTabCreator;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mTabModel;
-    @Mock private StorageLoadedData mStorageLoadedData;
-    @Mock private ScopedStorageBatch mBatch;
-    @Mock private Profile mProfile;
-    @Mock private BackgroundTabPool mBackgroundTabPool;
-    @Mock private BackgroundPoolTab mBackgroundPoolTab;
+    private @Mock TabRestorerDelegate mDelegate;
+    private @Mock TabCreator mTabCreator;
+    private @Mock TabModelSelector mTabModelSelector;
+    private @Mock TabModel mTabModel;
+    private @Mock StorageLoadedData mStorageLoadedData;
+    private @Mock ScopedStorageBatch mBatch;
+    private @Mock Profile mProfile;
+    private @Mock BackgroundTabPool mBackgroundTabPool;
+    private @Mock BackgroundPoolTab mBackgroundPoolTab;
 
     private TabRestorer mRestorer;
 
@@ -98,8 +98,8 @@ public class TabRestorerUnitTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreTab_interceptedByBackgroundTabPool() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(1));
-        when(mBackgroundTabPool.loadTab(1, 1)).thenReturn(mBackgroundPoolTab);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(1));
+        when(mBackgroundTabPool.loadTab(1)).thenReturn(mBackgroundPoolTab);
 
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(1);
@@ -115,8 +115,8 @@ public class TabRestorerUnitTest {
         mRestorer.onDataLoaded(mStorageLoadedData);
         mRestorer.start(/* restoreActiveTabImmediately= */ true);
 
-        verify(mBackgroundTabPool).getAllTabIds();
-        verify(mBackgroundTabPool).loadTab(1, 1);
+        verify(mBackgroundTabPool).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool).loadTab(1);
         verify(mBackgroundPoolTab).attachTab(eq(mTabModel), eq(0));
         verify(contentsState).destroy();
         verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
@@ -141,8 +141,8 @@ public class TabRestorerUnitTest {
         mRestorer.onDataLoaded(mStorageLoadedData);
         mRestorer.start(/* restoreActiveTabImmediately= */ true);
 
-        verify(mBackgroundTabPool, never()).getAllTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mTabCreator).createFrozenTab(any(), eq(1), eq(0));
         assertTrue(state.isClaimedOrDestroyed());
     }
@@ -173,8 +173,8 @@ public class TabRestorerUnitTest {
         incognitoRestorer.onDataLoaded(mStorageLoadedData);
         incognitoRestorer.start(/* restoreActiveTabImmediately= */ true);
 
-        verify(mBackgroundTabPool, never()).getAllTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mTabCreator).createFrozenTab(any(), eq(1), eq(0));
         assertTrue(state.isClaimedOrDestroyed());
     }
@@ -192,7 +192,7 @@ public class TabRestorerUnitTest {
                         () -> mBatch,
                         mTabModelSelector,
                         /* isFromRecreating= */ false);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(1));
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(1));
 
         LoadedTabState state = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
         when(mStorageLoadedData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {state});
@@ -206,8 +206,8 @@ public class TabRestorerUnitTest {
         nonTabbedRestorer.onDataLoaded(mStorageLoadedData);
         nonTabbedRestorer.start(/* restoreActiveTabImmediately= */ true);
 
-        verify(mBackgroundTabPool, never()).getAllTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mTabCreator).createFrozenTab(any(), eq(1), eq(0));
         assertTrue(state.isClaimedOrDestroyed());
     }
@@ -216,8 +216,8 @@ public class TabRestorerUnitTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreTab_poolLoadFailure_fallsBackToCreateFrozenTab() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(1));
-        when(mBackgroundTabPool.loadTab(1, 1)).thenReturn(null);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(1));
+        when(mBackgroundTabPool.loadTab(1)).thenReturn(null);
 
         LoadedTabState state = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
         when(mStorageLoadedData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {state});
@@ -231,8 +231,8 @@ public class TabRestorerUnitTest {
         mRestorer.onDataLoaded(mStorageLoadedData);
         mRestorer.start(/* restoreActiveTabImmediately= */ true);
 
-        verify(mBackgroundTabPool).getAllTabIds();
-        verify(mBackgroundTabPool).loadTab(1, 1);
+        verify(mBackgroundTabPool).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool).loadTab(1);
         verify(mTabCreator).createFrozenTab(any(), eq(1), eq(0));
         assertTrue(state.isClaimedOrDestroyed());
     }
