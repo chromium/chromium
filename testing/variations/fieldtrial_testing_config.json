@@ -1491,21 +1491,6 @@
             ]
         }
     ],
-    "AppSwitcherAISummarization": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppSwitcherAISummarization"
-                    ]
-                }
-            ]
-        }
-    ],
     "ApplyDeviceChoiceRenewal": [
         {
             "platforms": [
@@ -11034,6 +11019,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IDBDatabaseDumpOnHighConnectionCount"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSAppSwitcherAISummarization": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppSwitcherAISummarization"
                     ]
                 }
             ]
