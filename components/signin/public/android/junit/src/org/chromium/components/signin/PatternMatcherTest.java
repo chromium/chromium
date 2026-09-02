@@ -6,6 +6,7 @@ package org.chromium.components.signin;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Test class for {@link PatternMatcher}. */

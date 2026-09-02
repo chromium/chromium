@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.TestDisplayableProfileData;
