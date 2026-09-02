@@ -85,18 +85,8 @@ perfetto::NamedTrack GetTracingTrack(
 
 SchedulerStateMachine::SchedulerStateMachine(const SchedulerSettings& settings)
     : settings_(settings),
-      repeated_no_damage_frame_throttling_threshold1_(
-          std::max(1,
-                   features::kThrottleRepeatedNoDamageFramesThreshold1.Get())),
-      repeated_no_damage_frame_throttling_threshold2_(
-          std::max(1,
-                   features::kThrottleRepeatedNoDamageFramesThreshold2.Get())),
-      repeated_no_damage_frame_throttling_factor1_(std::max(
-          1,
-          features::kThrottleRepeatedNoDamageFramesIntervalFactor1.Get())),
-      repeated_no_damage_frame_throttling_factor2_(std::max(
-          1,
-          features::kThrottleRepeatedNoDamageFramesIntervalFactor2.Get())) {}
+      throttle_repeated_no_damage_frames_(base::FeatureList::IsEnabled(
+          features::kThrottleRepeatedNoDamageFrames)) {}
 
 SchedulerStateMachine::~SchedulerStateMachine() = default;
 
@@ -640,7 +630,7 @@ bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   bool result = false;
   auto throttled_interval = MainFrameThrottledInterval();
 
-  if (base::FeatureList::IsEnabled(features::kThrottleRepeatedNoDamageFrames)) {
+  if (throttle_repeated_no_damage_frames_) {
     throttled_interval =
         std::max(throttled_interval,
                  main_frame_consecutive_no_damage_throttled_interval_);
@@ -1804,8 +1794,7 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
 
 
 void SchedulerStateMachine::UpdateConsecutiveNoDamageThrottlingInterval() {
-  if (!base::FeatureList::IsEnabled(
-          features::kThrottleRepeatedNoDamageFrames)) {
+  if (!throttle_repeated_no_damage_frames_) {
     return;
   }
 

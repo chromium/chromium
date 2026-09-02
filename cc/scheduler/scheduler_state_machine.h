@@ -480,10 +480,7 @@ class CC_EXPORT SchedulerStateMachine {
 
   int consecutive_checkerboard_animations_ = 0;
   int consecutive_no_damage_main_frames_ = 0;
-  const int repeated_no_damage_frame_throttling_threshold1_;
-  const int repeated_no_damage_frame_throttling_threshold2_;
-  const int repeated_no_damage_frame_throttling_factor1_;
-  const int repeated_no_damage_frame_throttling_factor2_;
+  const bool throttle_repeated_no_damage_frames_ = false;
   int pending_submit_frames_ = 0;
   int submit_frames_with_current_layer_tree_frame_sink_ = 0;
   bool needs_redraw_ = false;
