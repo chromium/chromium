@@ -83,10 +83,26 @@ void WebSocketQuicSpdyStream::OnCanWriteNewData() {
 }
 
 void WebSocketQuicSpdyStream::DetachDelegate() {
-  CHECK(!read_side_closed());
-  CHECK(!write_side_closed());
+  // Cleared first: closing the stream below notifies the delegate, which is
+  // going away.
   delegate_ = nullptr;
-  Reset(quic::QUIC_STREAM_CANCELLED);
+
+  if (fin_buffered() || write_side_closed()) {
+    // Nothing more can be written, so the closure has already been decided.
+    return;
+  }
+
+  // RFC 9220 section 3 makes HTTP/3 stream closure analogous to TCP connection
+  // closure: "Orderly TCP-level closures are represented as a FIN bit on the
+  // stream", while a stream error of type H3_REQUEST_CANCELLED represents an
+  // RST exception. If the peer's FIN has been consumed then the closing
+  // handshake ran to completion, so answer it with our own FIN. Otherwise the
+  // stream is being abandoned mid-flight, which is the RST exception.
+  if (read_side_closed()) {
+    WriteOrBufferBody("", /*fin=*/true);
+  } else {
+    Reset(quic::QUIC_STREAM_CANCELLED);
+  }
 }
 
 int WebSocketQuicSpdyStream::MapQuicErrorToNetError() {

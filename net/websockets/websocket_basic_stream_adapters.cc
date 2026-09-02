@@ -326,9 +326,33 @@ int WebSocketQuicStreamAdapter::Read(IOBuffer* buf,
     return stream_error_;
   }
 
+  // Consuming the last of the body can close the stream, and closing the
+  // stream can delete `this` from a callback, so nothing below may touch
+  // members without checking `weak_this` first.
+  base::WeakPtr<WebSocketQuicStreamAdapter> weak_this =
+      weak_factory_.GetWeakPtr();
   int rv = websocket_quic_spdy_stream_->Read(buf, buf_len);
+
+  // Consume the peer's FIN once it has been read, which closes the read side
+  // and lets the session retire the stream. Other byte stream readers over
+  // QUIC do the same, see WebTransportStreamAdapter::Read(). Our own FIN is
+  // not sent here: the peer's FIN only half-closes the stream, and the layer
+  // above still owes the peer a WebSocket Close frame in response to the one
+  // this read may have just delivered (RFC 6455 section 5.5.1). DetachDelegate
+  // sends the FIN once that layer is done with the stream.
+  if (weak_this && websocket_quic_spdy_stream_ &&
+      websocket_quic_spdy_stream_->IsDoneReading() &&
+      !websocket_quic_spdy_stream_->read_side_closed()) {
+    websocket_quic_spdy_stream_->OnFinRead();
+  }
+
   if (rv != ERR_IO_PENDING) {
     return rv;
+  }
+
+  // If we were torn down above then we can't store the callback.
+  if (!weak_this) {
+    return ERR_CONNECTION_CLOSED;
   }
 
   read_callback_ = std::move(callback);
@@ -348,6 +372,17 @@ int WebSocketQuicStreamAdapter::Write(
 
   if (!websocket_quic_spdy_stream_) {
     return stream_error_;
+  }
+
+  // The send side must still be open. A peer STOP_SENDING closes the write
+  // side while the stream stays alive and readable, and WriteOrBufferBody()
+  // would then drop the data with only a log line, leaving this to report a
+  // successful write of bytes that never left. A queued FIN cannot happen
+  // here, since DetachDelegate() only queues one as it drops the stream, but
+  // it is covered too because WriteOrBufferBody() would QUIC_BUG on it.
+  if (websocket_quic_spdy_stream_->fin_buffered() ||
+      websocket_quic_spdy_stream_->write_side_closed()) {
+    return ERR_CONNECTION_CLOSED;
   }
 
   // Queue data to the QUIC stream. WriteOrBufferBody() either sends the data
@@ -432,7 +467,9 @@ void WebSocketQuicStreamAdapter::OnBodyAvailable() {
     return;
   }
 
-  if (!websocket_quic_spdy_stream_->HasBytesToRead()) {
+  // Handle in the case there's bytes to read *or* an empty FIN body arrived.
+  if (!websocket_quic_spdy_stream_->HasBytesToRead() &&
+      !websocket_quic_spdy_stream_->IsDoneReading()) {
     return;
   }
 
@@ -444,15 +481,20 @@ void WebSocketQuicStreamAdapter::OnBodyAvailable() {
   DCHECK(read_buffer_);
   CHECK_GT(read_length_, 0);
 
-  int rv = websocket_quic_spdy_stream_->Read(read_buffer_, read_length_);
+  // Reset the member variables before calling `Read` to ensure any delete of
+  // `this` is safe.
+  CompletionOnceCallback read_callback = std::move(read_callback_);
+  IOBuffer* read_buffer = std::exchange(read_buffer_, nullptr);
+  int read_length = std::exchange(read_length_, 0);
 
-  if (rv == ERR_IO_PENDING) {
-    return;
-  }
+  // CAUTION: `this` may have been deleted by the time this returns, so only
+  // locals may be touched afterwards.
+  int rv = Read(read_buffer, read_length, CompletionOnceCallback());
 
-  read_buffer_ = nullptr;
-  read_length_ = 0;
-  std::move(read_callback_).Run(rv);
+  // There are either bytes to read or a FIN to report as EOF, so `Read()`
+  // cannot come back pending and never stores the null callback given above.
+  CHECK_NE(ERR_IO_PENDING, rv);
+  std::move(read_callback).Run(rv);
 }
 
 void WebSocketQuicStreamAdapter::OnClose(int status) {
