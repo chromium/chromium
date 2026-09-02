@@ -307,7 +307,10 @@ public class TabUtils {
      * Returns the {@link MediaState} corresponding to the given {@link TabAlert}.
      *
      * @param alertState The {@link TabAlert} for which to get the corresponding media state.
+     * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
+     *     TabAlert} directly instead.
      */
+    @Deprecated
     public static @MediaState int getMediaStateForAlert(@TabAlert int alertState) {
         return switch (alertState) {
             case TabAlert.AUDIO_PLAYING -> MediaState.AUDIBLE;
@@ -444,47 +447,6 @@ public class TabUtils {
     }
 
     // LINT.ThenChange(//chrome/browser/ui/tabs/alert/tab_alert_controller.cc:TabAlertPriority)
-
-    /**
-     * Returns the {@link DrawableRes} ID for a given media state.
-     *
-     * @param mediaState The {@link MediaState} for which to get the indicator.
-     * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
-     *     #getTabAlertDrawable(int)} instead.
-     */
-    @Deprecated
-    public static @DrawableRes int getMediaIndicatorDrawable(@MediaState int mediaState) {
-        return switch (mediaState) {
-            case MediaState.AUDIBLE -> R.drawable.volume_up_24dp;
-            case MediaState.MUTED -> R.drawable.volume_off_24dp;
-            case MediaState.RECORDING -> R.drawable.radio_button_checked_24dp;
-            case MediaState.SHARING -> R.drawable.capture_24dp;
-            case MediaState.PICTURE_IN_PICTURE -> R.drawable.picture_in_picture_24px;
-            default -> Resources.ID_NULL;
-        };
-    }
-
-    /**
-     * Returns the tint color for a given media state.
-     *
-     * @param context The {@link Context} used to retrieve color.
-     * @param mediaState The {@link MediaState} for which to get the tint.
-     * @param defaultTint The default tint to use.
-     * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
-     *     #getTabAlertTintColor(Context, int, int)} instead.
-     */
-    @Deprecated
-    public static @ColorInt int getMediaIndicatorTintColor(
-            Context context, @MediaState int mediaState, @ColorInt int defaultTint) {
-        if (mediaState == MediaState.RECORDING) {
-            return context.getColor(R.color.tab_recording_media_color);
-        } else if (mediaState == MediaState.SHARING) {
-            return context.getColor(R.color.tab_sharing_media_color);
-        } else if (mediaState == MediaState.PICTURE_IN_PICTURE) {
-            return context.getColor(R.color.tab_pip_media_color);
-        }
-        return defaultTint;
-    }
 
     private static int getThumbnailHeightDiff(Context context) {
         final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
