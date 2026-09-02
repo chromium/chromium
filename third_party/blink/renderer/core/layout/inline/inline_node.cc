@@ -2148,18 +2148,16 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
       const TabSize& tab_size = style.GetTabSize();
-      const Font* font = RuntimeEnabledFeatures::TabSizeAncestorEnabled()
-                             ? &node.FontForTab()
-                             : style.GetFont();
-      const SimpleFontData* font_data = font->PrimaryFontForTabSize();
+      const Font& font = node.FontForTab();
+      const SimpleFontData* font_data = font.PrimaryFontForTabSize();
       // Sync with `ShapeResult::CreateForTabulationCharacters()`.
       TextRunLayoutUnit glyph_advance = TextRunLayoutUnit::FromFloatRound(
-          font->TabWidth(font_data, tab_size, position));
+          font.TabWidth(font_data, tab_size, position));
       InlineLayoutUnit run_advance = glyph_advance;
       DCHECK_GE(length, 1u);
       if (length > 1u) {
         glyph_advance = TextRunLayoutUnit::FromFloatRound(
-            font->TabWidth(font_data, tab_size));
+            font.TabWidth(font_data, tab_size));
         run_advance += glyph_advance.To<InlineLayoutUnit>() * (length - 1);
       }
       position += run_advance.ToCeil<LayoutUnit>().ClampNegativeToZero();

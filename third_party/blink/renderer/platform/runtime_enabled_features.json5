@@ -6153,10 +6153,6 @@
       status: "test",
     },
     {
-      name: "TabSizeAncestor",
-      status: "stable",
-    },
-    {
       name: "TabSizeInRubyBase",
       status: "stable",
     },

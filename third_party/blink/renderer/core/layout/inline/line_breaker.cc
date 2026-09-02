@@ -2965,12 +2965,9 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
         HandleEmptyText(item, line_info);
         return;
       }
-      const Font* font = RuntimeEnabledFeatures::TabSizeAncestorEnabled()
-                             ? &node_.FontForTab()
-                             : style.GetFont();
       const ShapeResult* shape_result =
           ShapeResult::CreateForTabulationCharacters(
-              font, item.Direction(), style.GetTabSize(),
+              &node_.FontForTab(), item.Direction(), style.GetTabSize(),
               (RuntimeEnabledFeatures::TabAlignmentWithFloatsEnabled()
                    ? position_ + ComputeFloatOffset()
                    : position_) +
