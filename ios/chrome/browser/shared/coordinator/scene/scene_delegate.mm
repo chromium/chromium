@@ -240,11 +240,7 @@ void SyncBreadcrumbsLog() {
                                                sceneState:_sceneState
                                                   handler:completionHandler
                                               isColdStart:isColdStart];
-  MainApplicationDelegate* appDelegate =
-      base::apple::ObjCCastStrict<MainApplicationDelegate>(
-          UIApplication.sharedApplication.delegate);
-
-  [appDelegate.appState.taskOrchestrator addTaskRequest:request];
+  [self addTaskRequest:request];
 }
 
 - (void)addTaskRequestForURLContext:(UIOpenURLContext*)URLContext
@@ -252,11 +248,7 @@ void SyncBreadcrumbsLog() {
   TaskRequest* request = [TaskRequest taskForURLContext:URLContext
                                              sceneState:_sceneState
                                             isColdStart:isColdStart];
-  MainApplicationDelegate* appDelegate =
-      base::apple::ObjCCastStrict<MainApplicationDelegate>(
-          UIApplication.sharedApplication.delegate);
-
-  [appDelegate.appState.taskOrchestrator addTaskRequest:request];
+  [self addTaskRequest:request];
 }
 
 - (void)addTaskRequestForUserActivity:(NSUserActivity*)userActivity
@@ -264,6 +256,13 @@ void SyncBreadcrumbsLog() {
   TaskRequest* request = [TaskRequest taskForUserActivity:userActivity
                                                sceneState:_sceneState
                                               isColdStart:isColdStart];
+  [self addTaskRequest:request];
+}
+
+// Adds `request` to the task orchestrator.
+- (void)addTaskRequest:(TaskRequest*)request {
+  // Access `AppState` through the application delegate because during cold
+  // start the scene's `ProfileState` has not yet been connected.
   MainApplicationDelegate* appDelegate =
       base::apple::ObjCCastStrict<MainApplicationDelegate>(
           UIApplication.sharedApplication.delegate);
