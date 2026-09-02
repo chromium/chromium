@@ -86,6 +86,13 @@ The Chromium CQ supports a variety of options that can change what it checks.
   want to risk accidentally submitting it via the CQ. The CQ will immediately
   stop processing the change if it contains this option.
 
+* `Cq-Exclude-Trybots: <trybots>`
+
+    This flag allows you to specify trybots to exclude from running on this CL,
+    even if they would otherwise be triggered by default or by directory-based
+    rules (location filters). The format for the list of trybots is
+    "bucket:trybot1,trybot2;bucket2:trybot3".
+
 * `Cq-Include-Trybots: <trybots>`
 
   This flag allows you to specify some additional bots to run for this CL, in
