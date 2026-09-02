@@ -408,8 +408,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   ASSERT_TRUE(ui_controller);
   EXPECT_FALSE(test_api(*ui_controller).suggestion_state().has_value());
 
-  ToastController* toast_controller =
-      browser()->GetFeatures().toast_controller();
+  ToastController* toast_controller = ToastController::From(browser());
   EXPECT_FALSE(toast_controller->IsShowingToast());
 }
 #endif

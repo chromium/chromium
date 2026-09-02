@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, AddingToReadingListOpensToast) {
   GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
@@ -791,14 +791,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
         SidePanelEntryKey(SidePanelEntryId::kReadingList));
   }));
   chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_FALSE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CopyingUrlOpensToast) {
   GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   chrome::ExecuteCommand(browser(), IDC_COPY_URL);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
@@ -820,8 +820,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
   EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(2));
 
-  ToastController* const toast_controller =
-      browser()->GetFeatures().toast_controller();
+  ToastController* const toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
 
   // Attempting to close selected tabs when ALL are pinned triggers the toast
@@ -854,8 +853,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
   EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(2));
 
-  ToastController* const toast_controller =
-      browser()->GetFeatures().toast_controller();
+  ToastController* const toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
 
   // Attempting to close selected tabs when NOT ALL selected tabs are pinned

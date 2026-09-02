@@ -919,7 +919,7 @@ void GlicSelectionObserver::WriteLinkToClipboard(
       if (auto* tab_interface =
               tabs::TabInterface::MaybeGetFromContents(web_contents_ptr)) {
         if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-          if (auto* toast_controller = bwi->GetFeatures().toast_controller()) {
+          if (auto* toast_controller = ToastController::From(bwi)) {
             toast_controller->MaybeShowToast(
                 ToastParams(ToastId::kLinkToHighlightCopied));
           }

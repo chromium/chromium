@@ -129,7 +129,7 @@ void SafeBrowsingPrefChangeHandler::
   ToastController* const controller =
       toast_controller_for_testing_
           ? static_cast<ToastController*>(toast_controller_for_testing_)
-          : browser->GetFeatures().toast_controller();
+          : ToastController::From(browser);
   if (!controller) {
     return;
   }

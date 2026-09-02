@@ -85,11 +85,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 
   auto StopToastTimer() {
     return Do([this]() {
-      browser()
-          ->GetFeatures()
-          .toast_controller()
-          ->GetToastCloseTimerForTesting()
-          ->Stop();
+      ToastController::From(browser())->GetToastCloseTimerForTesting()->Stop();
     });
   }
 
@@ -99,7 +95,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
           toast_controller->MaybeShowToast(std::move(toast_params));
           toast_controller->GetToastCloseTimerForTesting()->Stop();
         },
-        browser()->GetFeatures().toast_controller(), std::move(params)));
+        ToastController::From(browser()), std::move(params)));
   }
 
   SendTabToSelfDevicePickerBubbleView* GetBubbleView() {

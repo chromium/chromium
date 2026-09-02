@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_CALL(cb, Run(true));
   observer()->DisplayInstantaneousMessage(message, cb.Get());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   EXPECT_TRUE(toast_controller->IsShowingToast());
 
   toast_controller->GetToastViewForTesting()
@@ -495,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_CALL(cb, Run(true));
   observer()->DisplayInstantaneousMessage(message, cb.Get());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   EXPECT_TRUE(toast_controller->IsShowingToast());
 }
 
@@ -530,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_CALL(cb, Run(true));
   observer()->DisplayInstantaneousMessage(message, cb.Get());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   EXPECT_TRUE(toast_controller->IsShowingToast());
 
   // Ensure tab group is closed.
@@ -568,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_CALL(cb, Run(true));
   observer()->DisplayInstantaneousMessage(message, cb.Get());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   EXPECT_TRUE(toast_controller->IsShowingToast());
 }
 

@@ -177,8 +177,8 @@ void SkillsUiWindowController::OnToastClosed(const std::string& skill_id) {
 }
 
 void SkillsUiWindowController::ShowSkillToast(ToastParams params) {
-  browser_window_interface_->GetFeatures().toast_controller()->MaybeShowToast(
-      std::move(params));
+  ToastController::From(browser_window_interface_)
+      ->MaybeShowToast(std::move(params));
 }
 
 void SkillsUiWindowController::InvokeLastSavedSkill() {

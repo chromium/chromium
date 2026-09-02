@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
                        ClearBrowsingData_ShowsToast) {
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_FALSE(ToastController::From(browser())->IsShowingToast());
 
   base::ListValue args;
   args.Append("fooCallback");
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
   args.Append(1);
   test_web_ui_.HandleReceivedMessage("clearBrowsingData", args);
 
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,

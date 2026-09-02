@@ -1490,7 +1490,7 @@ void CloseTab(BrowserWindowInterface* browser) {
   }
 #endif
 
-  ToastController* toast_controller = browser->GetFeatures().toast_controller();
+  ToastController* toast_controller = ToastController::From(browser);
   if (!toast_controller) {
     CloseSelectedTabAndRecordTabCountMetric(browser);
     return;
@@ -2175,8 +2175,7 @@ void MoveTabsToReadLater(BrowserWindowInterface* browser,
       return;
     }
 
-    ToastController* const toast_controller =
-        browser->GetFeatures().toast_controller();
+    ToastController* const toast_controller = ToastController::From(browser);
     if (toast_controller) {
       ToastParams params = ToastParams(ToastId::kAddedToReadingList);
       params.body_string_cardinality_param = added_to_read_later;
@@ -2880,8 +2879,7 @@ void CopyURL(BrowserWindowInterface* browser,
 
 #if !BUILDFLAG(IS_ANDROID)
   if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
-    ToastController* const toast_controller =
-        browser->GetFeatures().toast_controller();
+    ToastController* const toast_controller = ToastController::From(browser);
     if (toast_controller) {
       toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
     }

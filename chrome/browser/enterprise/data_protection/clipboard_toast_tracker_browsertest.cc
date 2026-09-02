@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
                        MaybeShowCopyToastShowsAndRecordsAudit) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
                        MaybeShowCopyToastShowsAndRecordsKeptInManagedChrome) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
                        ToastNotShownTwiceInSingleSession) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 

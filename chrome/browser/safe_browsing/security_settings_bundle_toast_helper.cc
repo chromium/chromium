@@ -99,7 +99,7 @@ ToastController* SecuritySettingsBundleToastHelper::GetToastController() {
   if (!browser) {
     return nullptr;
   }
-  return browser->GetFeatures().toast_controller();
+  return ToastController::From(browser);
 }
 
 }  // namespace safe_browsing

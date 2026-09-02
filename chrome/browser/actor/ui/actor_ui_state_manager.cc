@@ -117,7 +117,7 @@ void LogUiChangeError(bool result) {
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 bool MaybeShowToastViaController(BrowserWindowInterface* bwi) {
-  if (auto* controller = bwi->GetFeatures().toast_controller()) {
+  if (auto* controller = ToastController::From(bwi)) {
     return controller->MaybeShowToast(
         ToastParams(ToastId::kGeminiWorkingOnTask));
   }

@@ -365,8 +365,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
   fake_controller_->SetEnabled(true);
 
   // Get ToastController
-  ToastController* const toast_controller =
-      browser()->GetFeatures().toast_controller();
+  ToastController* const toast_controller = ToastController::From(browser());
   ASSERT_NE(toast_controller, nullptr);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
@@ -416,8 +415,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
   fake_controller_->SetEnabled(true);
 
   // Get ToastController
-  ToastController* const toast_controller =
-      browser()->GetFeatures().toast_controller();
+  ToastController* const toast_controller = ToastController::From(browser());
   ASSERT_NE(toast_controller, nullptr);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
@@ -470,8 +468,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       ->SetVerticalTabsEnabled(false);
 
   // Stop the timer so it doesn't auto-dismiss during test execution.
-  ToastController* const toast_controller =
-      browser()->GetFeatures().toast_controller();
+  ToastController* const toast_controller = ToastController::From(browser());
   toast_controller->GetToastCloseTimerForTesting()->Stop();
 
   // Verify that vertical tabs are STILL enabled because state is locked

@@ -1609,7 +1609,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ShowsToastOnLinkCopied) {
                                              GURL("http://www.google.com/"));
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
                        /*event_flags=*/0);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
@@ -1618,7 +1618,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
 
   auto menu = CreateContextMenuFromParams(params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ShowsToastOnVideoFrameCopied) {
@@ -1627,7 +1627,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ShowsToastOnVideoFrameCopied) {
 
   auto menu = CreateContextMenuFromParams(params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, /*event_flags=*/0);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
@@ -1859,7 +1859,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, /*event_flags=*/0);
 
   // The toast should NOT be showing.
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_FALSE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
@@ -1878,7 +1878,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, /*event_flags=*/0);
 
   // The toast should NOT show.
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_FALSE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
@@ -1897,7 +1897,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
 
   // The toast should NOT be showing.
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_FALSE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
@@ -1916,7 +1916,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
 
   // The toast should NOT show.
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_FALSE(ToastController::From(browser())->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -1934,7 +1934,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
       blink::mojom::ContextMenuDataMediaType::kCanvas,
       ui::mojom::MenuSourceType::kMouse);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

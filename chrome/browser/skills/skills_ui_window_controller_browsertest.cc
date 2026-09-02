@@ -96,7 +96,7 @@ class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void ClickToastActionButton() {
-    auto* toast_controller = browser()->GetFeatures().toast_controller();
+    auto* toast_controller = ToastController::From(browser());
     ASSERT_TRUE(toast_controller->IsShowingToast());
     auto* toast_view = toast_controller->GetToastViewForTesting();
     ASSERT_TRUE(toast_view);
@@ -133,7 +133,7 @@ class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
                        OnSkillSavedShowToast) {
   // Ensure no toast is initially showing.
-  const auto* toast_controller = browser()->GetFeatures().toast_controller();
+  const auto* toast_controller = ToastController::From(browser());
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   // Call OnSkillSaved with an empty skill ID.
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   const skills::Skill* skill = skills_service->AddSkill(
       /*source_skill_id=*/"", "Test Skill", "test-icon", "Test Prompt");
 
-  const auto* toast_controller = browser()->GetFeatures().toast_controller();
+  const auto* toast_controller = ToastController::From(browser());
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   window_controller()->OnSkillDeleted(skill->id);
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   std::string skill_id = skill->id;
   window_controller()->OnSkillDeleted(skill_id);
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   EXPECT_TRUE(toast_controller->IsShowingToast());
 
   // Close the toast widget directly to simulate it being dismissed.
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   // Save skill on active tab.
   window_controller()->OnSkillSaved(kSkillId);
   // Verify Toast is visible
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
   // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
   // creation.
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   NavigateParams params(browser(), GURL(chrome::kChromeUISkillsURL),
                         ui::PAGE_TRANSITION_TYPED);
   ui_test_utils::NavigateToURL(&params);
-  const auto* toast_controller = browser()->GetFeatures().toast_controller();
+  const auto* toast_controller = ToastController::From(browser());
   EXPECT_FALSE(toast_controller->IsShowingToast());
   tab_controller()->OnSkillSaved("");
   EXPECT_TRUE(toast_controller->IsShowingToast());
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   window_controller()->StoreLastSavedSkillMetadata(kSkillId, kSkillName,
                                                    kSkillIcon);
   window_controller()->ShowToast(ToastId::kSkillSaved);
-  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(ToastController::From(browser())->IsShowingToast());
 
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 

@@ -141,8 +141,8 @@ void FeedbackUI::CreatePageHandler(
         BrowserWindowInterface* browser =
             GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                 web_contents.get());
-        if (browser && browser->GetFeatures().toast_controller()) {
-          browser->GetFeatures().toast_controller()->MaybeShowToast(
+        if (browser && ToastController::From(browser)) {
+          ToastController::From(browser)->MaybeShowToast(
               ToastParams(ToastId::kReportUnsafeSiteConfirmation));
         }
       },

@@ -130,8 +130,7 @@ void DefaultBrowserController::OnSetterExecutionComplete(
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
     if (browser) {
-      ToastController* toast_controller =
-          browser->GetFeatures().toast_controller();
+      ToastController* toast_controller = ToastController::From(browser);
       if (toast_controller) {
         toast_controller->MaybeShowToast(
             ToastParams(ToastId::kDefaultBrowserUpdateSuccess));

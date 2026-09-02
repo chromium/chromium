@@ -292,7 +292,7 @@ void GlicShareImageHandler::MaybeShowErrorToast(tabs::TabInterface* tab) {
   }
 #if !BUILDFLAG(IS_ANDROID)  // TODO(b/478008740): Implement for android.
   if (BrowserWindowInterface* browser = tab->GetBrowserWindowInterface()) {
-    if (auto* controller = browser->GetFeatures().toast_controller()) {
+    if (auto* controller = ToastController::From(browser)) {
       controller->MaybeShowToast(ToastParams(ToastId::kGlicShareImageFailed));
     }
   }

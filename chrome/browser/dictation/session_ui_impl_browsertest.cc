@@ -116,7 +116,7 @@ class DictationSessionUiImplBrowserTest
   auto CheckShowingToast(ToastId toast_id, bool showing) {
     return Check([this, toast_id, showing]() {
       ToastController* const toast_controller =
-          browser()->GetFeatures().toast_controller();
+          ToastController::From(browser());
       CHECK(toast_controller);
       const bool is_showing_toast =
           toast_controller->IsShowingToast() &&

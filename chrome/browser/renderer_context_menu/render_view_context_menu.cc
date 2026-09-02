@@ -5836,7 +5836,7 @@ ToastController* RenderViewContextMenu::GetToastController() const {
   }
 #endif
 
-  return browser ? browser->GetFeatures().toast_controller() : nullptr;
+  return browser ? ToastController::From(browser) : nullptr;
 }
 
 bool RenderViewContextMenu::CanTranslate(bool menu_logging) {

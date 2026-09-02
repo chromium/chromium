@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
 
   // Wait until the warning creates the Toast.
@@ -2469,7 +2469,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
 
   // Wait until the warning creates the Toast.
@@ -2572,7 +2572,7 @@ IN_PROC_BROWSER_TEST_P(
 
   IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
 
   base::RunLoop().RunUntilIdle();
@@ -2725,7 +2725,7 @@ IN_PROC_BROWSER_TEST_P(
 
   IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
 
-  auto* toast_controller = browser()->GetFeatures().toast_controller();
+  auto* toast_controller = ToastController::From(browser());
   ASSERT_TRUE(toast_controller);
 
   base::RunLoop().RunUntilIdle();

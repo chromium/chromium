@@ -78,7 +78,7 @@ ToastController* SecuritySettingsBundlePrefChangeHandler::GetToastController() {
   if (!browser) {
     return nullptr;
   }
-  return browser->GetFeatures().toast_controller();
+  return ToastController::From(browser);
 }
 #endif
 }  // namespace safe_browsing

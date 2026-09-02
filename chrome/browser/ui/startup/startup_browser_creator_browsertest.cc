@@ -656,15 +656,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ShowNonMilestoneUpdateToast) {
   BrowserWindowInterface* new_browser = OpenNewBrowser(
       browser()->GetProfile(), chrome_version_string_for_testing);
   ASSERT_TRUE(new_browser);
-  ASSERT_TRUE(
-      new_browser->GetFeatures().toast_controller()->GetToastViewForTesting());
+  ASSERT_TRUE(ToastController::From(new_browser)->GetToastViewForTesting());
 
   // Open another new browser and verify the toast is not shown.
   BrowserWindowInterface* new_browser2 = OpenNewBrowser(
       browser()->GetProfile(), chrome_version_string_for_testing);
   ASSERT_TRUE(new_browser2);
-  ASSERT_FALSE(
-      new_browser2->GetFeatures().toast_controller()->GetToastViewForTesting());
+  ASSERT_FALSE(ToastController::From(new_browser2)->GetToastViewForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
