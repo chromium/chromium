@@ -3858,6 +3858,10 @@
       status: "stable",
     },
     {
+      name: "LineBreakBidiControlEnter",
+      status: "stable",
+    },
+    {
       name: "LineBreakerHanKerningEnd",
       status: "stable",
     },

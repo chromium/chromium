@@ -3036,8 +3036,13 @@ void LineBreaker::HandleBidiControlItem(const InlineItem& item,
       state_ = LineBreakState::kDone;
       return;
     }
-    InlineItemResult* item_result = AddItem(item, line_info);
-    DCHECK(!item_result->can_break_after);
+    if (!item_results->empty() &&
+        RuntimeEnabledFeatures::LineBreakBidiControlEnterEnabled()) {
+      InlineItemResult* item_result = AddItem(item, line_info);
+      ComputeCanBreakAfter(item_result, auto_wrap_, break_iterator_);
+    } else {
+      AddItem(item, line_info);
+    }
   }
   MoveToNextOf(item);
 }
