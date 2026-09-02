@@ -13067,6 +13067,26 @@
             ]
         }
     ],
+    "MetricsLogTrimmingLimitsWebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260901",
+                    "params": {
+                        "log_bytes_trim_threshold": "3145728",
+                        "max_ongoing_log_size_bytes": "1048576"
+                    },
+                    "enable_features": [
+                        "AwMetricsLogTrimming",
+                        "MetricsLogTrimming"
+                    ]
+                }
+            ]
+        }
+    ],
     "MigrateAccountManagerDelegate": [
         {
             "platforms": [
