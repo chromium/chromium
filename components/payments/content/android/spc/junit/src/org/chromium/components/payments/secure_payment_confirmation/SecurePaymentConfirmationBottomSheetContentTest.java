@@ -17,14 +17,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Unit tests for {@link SecurePaymentConfirmationBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SecurePaymentConfirmationBottomSheetContentTest {
     private Activity mActivity;
     private View mContentView;

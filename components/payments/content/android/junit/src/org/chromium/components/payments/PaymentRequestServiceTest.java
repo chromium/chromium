@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,7 +51,6 @@ import java.util.Set;
 
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION})
 @DisableFeatures({
     PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES,

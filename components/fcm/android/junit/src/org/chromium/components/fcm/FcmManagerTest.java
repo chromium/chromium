@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -32,7 +31,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link FcmManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FcmManagerTest {
     private static final String TEST_INSTALLATION_ID = "test-fid-abcdef";
 

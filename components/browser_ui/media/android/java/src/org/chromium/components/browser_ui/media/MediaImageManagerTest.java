@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 
 /** Robolectric tests for MediaImageManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MediaImageManagerTest {
     private static final int TINY_IMAGE_SIZE_PX = 50;
     private static final int MIN_IMAGE_SIZE_PX = 100;

@@ -13,13 +13,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for GCMMessage. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class GCMMessageTest {
     private void assertMessageEquals(GCMMessage m1, GCMMessage m2) {
         assertEquals(m1.getSenderId(), m2.getSenderId());

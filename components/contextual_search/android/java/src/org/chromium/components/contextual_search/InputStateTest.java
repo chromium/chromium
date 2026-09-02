@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
@@ -29,7 +28,6 @@ import java.util.Map;
 
 /** Unit tests for {@link InputState}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class InputStateTest {
     @Test
     public void testEqualsAndHashCode() {

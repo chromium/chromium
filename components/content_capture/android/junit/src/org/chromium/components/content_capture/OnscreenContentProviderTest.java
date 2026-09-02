@@ -31,7 +31,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link OnscreenContentProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.R)
 public class OnscreenContentProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -20,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link LegalMessage}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LegalMessageTest {
     @Test
     public void testLegalMessageConstructor_setsFieldsCorrectly() {

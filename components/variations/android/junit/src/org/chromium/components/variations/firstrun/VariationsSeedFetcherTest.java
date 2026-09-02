@@ -25,7 +25,6 @@ import android.util.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -49,7 +48,6 @@ import java.util.List;
 
 /** Tests for VariationsSeedFetcher */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class VariationsSeedFetcherTest {
     private HttpURLConnection mConnection;
     private VariationsSeedFetcher mFetcher;

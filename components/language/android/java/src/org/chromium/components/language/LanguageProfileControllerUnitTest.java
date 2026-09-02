@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for LanguageProfileController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LanguageProfileControllerUnitTest {
     @Before
     public void setUp() {

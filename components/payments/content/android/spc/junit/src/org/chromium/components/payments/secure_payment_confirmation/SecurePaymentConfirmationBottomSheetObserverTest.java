@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,7 +23,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 
 /** Unit tests for {@link SecurePaymentConfirmationBottomSheetObserver} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SecurePaymentConfirmationBottomSheetObserverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

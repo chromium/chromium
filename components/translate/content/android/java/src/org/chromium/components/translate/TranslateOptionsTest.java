@@ -9,14 +9,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
 /** Test for TranslateOptions. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TranslateOptionsTest {
     private static final boolean NEVER_LANGUAGE = false;
     private static final boolean NEVER_DOMAIN = false;

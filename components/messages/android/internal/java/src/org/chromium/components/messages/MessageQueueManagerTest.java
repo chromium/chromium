@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +42,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for MessageQueueManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS})
 public class MessageQueueManagerTest {
 

@@ -11,14 +11,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 // TODO(445677557): Add Java test coverage once internal logic is implemented
 /** Unit tests for AttestationBlobGenerator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class AttestationBlobGeneratorTest {
     @Test
     @SmallTest

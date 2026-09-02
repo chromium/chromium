@@ -7,13 +7,11 @@ package org.chromium.components.commerce.core;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for CommerceSubscription (particularly around equality and hashing). */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CommerceSubscriptionTest {
     @Test
     public void testEqualityForDifferentObjects() {

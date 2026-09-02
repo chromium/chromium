@@ -7,7 +7,6 @@ package org.chromium.components.tab_group_sync;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -16,7 +15,6 @@ import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 
 /** Test for both sub classes of EitherId. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EitherIdTest {
     @Test
     public void testCreatingLocalTabId() {

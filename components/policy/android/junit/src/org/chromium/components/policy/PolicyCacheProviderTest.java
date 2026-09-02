@@ -17,14 +17,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Robolectric test for PolicyCacheProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PolicyCacheProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String POLICY_NAME_1 = "policy-name-1";

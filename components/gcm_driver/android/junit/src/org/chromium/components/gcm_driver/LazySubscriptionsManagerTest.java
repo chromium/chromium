@@ -14,7 +14,6 @@ import android.os.Bundle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,7 +22,6 @@ import java.util.Set;
 
 /** Unit tests for LazySubscriptionsManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LazySubscriptionsManagerTest {
     /** Tests the persistence of the "hasPersistedMessages" flag. */
     @Test

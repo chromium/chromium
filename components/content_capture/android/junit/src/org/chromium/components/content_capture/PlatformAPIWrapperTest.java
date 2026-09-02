@@ -22,7 +22,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -38,7 +37,6 @@ import java.util.Arrays;
  * directly, and verified that all tasks catch the PlatformAPIException correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PlatformAPIWrapperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

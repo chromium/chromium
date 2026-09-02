@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -32,7 +31,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** A test for {@link ScopeChangeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(MessageFeatureList.DISMISS_NAVIGATION_MESSAGES_ON_PRIMARY_PAGE_CHANGED)
 public class ScopeChangeControllerTest {
     private static final boolean IS_SAME_DOCUMENT = true;
