@@ -59,9 +59,6 @@ tast.ui.WebUIJSErrors.field_trial_on
 tast.network.AllowCACertificateManagement
 tast.network.AllowClientCertificateManagement
 
-#b/400849446
-tast.network.ARCCreateWifiInShillByCmd.manual_proxy
-
 # b/408102591
 tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
 
