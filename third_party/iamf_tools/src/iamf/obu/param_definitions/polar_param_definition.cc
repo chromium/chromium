@@ -58,9 +58,11 @@ absl::Status PolarParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
   return absl::OkStatus();
 }
 
-std::unique_ptr<ParameterData> PolarParamDefinition::CreateParameterData()
-    const {
-  return std::make_unique<PolarParameterData>();
+absl::StatusOr<std::unique_ptr<ParameterData>>
+PolarParamDefinition::CreateParameterDataFromBuffer(ReadBitBuffer& rb) const {
+  return absl::UnimplementedError(
+      "CreateParameterDataFromBuffer for PolarParamDefinition is not "
+      "implemented yet.");
 }
 
 void PolarParamDefinition::Print() const {

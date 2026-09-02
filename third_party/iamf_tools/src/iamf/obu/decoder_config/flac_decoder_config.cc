@@ -27,6 +27,7 @@
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/utils/validation_utils.h"
 #include "iamf/common/write_bit_buffer.h"
+#include "iamf/obu/types.h"
 
 namespace iamf_tools {
 
@@ -275,6 +276,15 @@ absl::Status FlacDecoderConfig::ReadAndValidate(uint32_t num_samples_per_frame,
             std::get<FlacMetaBlockStreamInfo>(metadata_block.payload), rb));
         break;
       default: {
+        // Bound the allocation to the maximum OBU size before reserving, as
+        // the 24-bit length is otherwise attacker-controlled up to 16 MB with
+        // no relation to the bytes actually available. Mirrors the guards in
+        // the sibling decoder-config readers.
+        if (metadata_data_block_length > kEntireObuSizeMaxTwoMegabytes) {
+          return absl::InvalidArgumentError(absl::StrCat(
+              "metadata_data_block_length= ", metadata_data_block_length,
+              " exceeds maximum."));
+        }
         std::vector<uint8_t> payload(metadata_data_block_length);
         RETURN_IF_NOT_OK(rb.ReadUint8Span(MakeSpan(payload)));
         metadata_block.payload = std::move(payload);

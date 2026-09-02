@@ -29,10 +29,10 @@ namespace iamf_tools {
  * containers are equivalent.
  *
  * \param field_name Field name of the container to insert into the error
- *                   message.
+ *        message.
  * \param container Container to check the size of.
  * \param reported_size Size reported by associated fields (e.g. "*_size" fields
- *                      in the OBU).
+ *        in the OBU).
  * \return `absl::OkStatus()` if the size arguments are equivalent.
  *         `absl::InvalidArgumentError()` otherwise.
  */
@@ -95,7 +95,7 @@ absl::Status ValidateNotEqual(const T& lhs, const T& rhs,
  * \param context Context to insert into the error message for debugging
  *        purposes.
  * \return `absl::OkStatus()` if the arguments has a value.
- *        `absl::InvalidArgumentError()` if the argument does not have a value.
+ *         `absl::InvalidArgumentError()` if the argument does not have a value.
  */
 template <typename T>
 absl::Status ValidateHasValue(const std::optional<T>& argument,
@@ -114,7 +114,7 @@ absl::Status ValidateHasValue(const std::optional<T>& argument,
  * \param context Context to insert into the error message for debugging
  *        purposes.
  * \return `absl::OkStatus()` if the arguments is not NULL.
- *        `absl::InvalidArgumentError()` otherwise.
+ *         `absl::InvalidArgumentError()` otherwise.
  */
 template <typename T>
 absl::Status ValidateNotNull(const T& pointer, absl::string_view context) {
@@ -133,7 +133,7 @@ absl::Status ValidateNotNull(const T& pointer, absl::string_view context) {
  * \param context Context to insert into the error message for debugging
  *        purposes.
  * \return `absl::OkStatus()` if no duplicates are found while iterating.
- *        `absl::InvalidArgumentError()` if duplicates are found.
+ *         `absl::InvalidArgumentError()` if duplicates are found.
  */
 template <class InputIt>
 absl::Status ValidateUnique(InputIt first, InputIt last,

@@ -193,8 +193,10 @@ int64_t GetObuPayloadSize(DecodedUleb128 obu_size,
                           int8_t extension_header_size_size,
                           DecodedUleb128 extension_header_bytes_size) {
   return static_cast<int64_t>(obu_size) -
-         (num_samples_to_trim_at_end_size + num_samples_to_trim_at_start_size +
-          extension_header_size_size + extension_header_bytes_size);
+         (static_cast<int64_t>(num_samples_to_trim_at_end_size) +
+          static_cast<int64_t>(num_samples_to_trim_at_start_size) +
+          static_cast<int64_t>(extension_header_size_size) +
+          static_cast<int64_t>(extension_header_bytes_size));
 }
 
 absl::Status FillHeaderMetadata(ReadBitBuffer& rb,
@@ -210,8 +212,10 @@ absl::Status FillHeaderMetadata(ReadBitBuffer& rb,
   DecodedUleb128 obu_size;
   int8_t size_of_obu_size = 0;
   RETURN_IF_NOT_OK(rb.ReadULeb128(obu_size, size_of_obu_size));
+  RETURN_IF_NOT_OK(ValidateObuIsUnderTwoMegabytes(obu_size, size_of_obu_size));
   // The extra byte is for the `obu_type` field + the three boolean fields.
-  output_header_metadata.total_obu_size = obu_size + size_of_obu_size + 1;
+  output_header_metadata.total_obu_size =
+      static_cast<int64_t>(obu_size) + size_of_obu_size + 1;
   return absl::OkStatus();
 }
 
@@ -299,6 +303,10 @@ absl::Status ObuHeader::ReadAndValidate(
   if (obu_extension_flag) {
     RETURN_IF_NOT_OK(
         rb.ReadULeb128(extension_header_size, extension_header_size_size));
+    RETURN_IF_NOT_OK(
+        // Any extension cannot be more than 2MB also.
+        ValidateObuIsUnderTwoMegabytes(extension_header_size,
+                                       extension_header_size_size));
     // Avoid reading in the (possibly large) extension, until we know it is
     // plausible.
   }

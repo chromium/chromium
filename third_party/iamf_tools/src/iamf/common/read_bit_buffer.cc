@@ -418,6 +418,11 @@ MemoryBasedReadBitBuffer::CreateFromSpan(absl::Span<const uint8_t> source) {
 
 absl::Status MemoryBasedReadBitBuffer::LoadBytesToBuffer(int64_t starting_byte,
                                                          int64_t num_bytes) {
+  if (starting_byte < 0 || num_bytes < 0 ||
+      static_cast<uint64_t>(num_bytes) > bit_buffer_.size()) {
+    return absl::InvalidArgumentError(
+        "Invalid source position or destination buffer size");
+  }
   if (static_cast<uint64_t>(starting_byte) > source_vector_.size() ||
       (static_cast<uint64_t>(starting_byte) + num_bytes) >
           source_vector_.size()) {
@@ -465,6 +470,11 @@ FileBasedReadBitBuffer::CreateFromFilePath(
 
 absl::Status FileBasedReadBitBuffer::LoadBytesToBuffer(int64_t starting_byte,
                                                        int64_t num_bytes) {
+  if (starting_byte < 0 || num_bytes < 0 ||
+      static_cast<uint64_t>(num_bytes) > bit_buffer_.size()) {
+    return absl::InvalidArgumentError(
+        "Invalid source position or destination buffer size");
+  }
   source_ifs_.seekg(starting_byte);
   source_ifs_.read(reinterpret_cast<char*>(bit_buffer_.data()), num_bytes);
   if (!source_ifs_.good()) {
@@ -512,11 +522,15 @@ absl::Status StreamBasedReadBitBuffer::PushBytes(
 // space-efficient the buffer is (since it holds less data in the source vector)
 // while simultaneously being less time-efficient (since it takes time to remove
 // elements from the source vector).
-absl::Status StreamBasedReadBitBuffer::Flush(int64_t num_bytes) {
-  if (static_cast<uint64_t>(num_bytes) > source_vector_.size()) {
-    return absl::InvalidArgumentError(
-        "Cannot flush more bytes than are in the source.");
-  }
+void StreamBasedReadBitBuffer::Flush() {
+  // Intentionally a floored result from integer division. Any partially read
+  // byte will remain and be handled by `source_bit_offset_` internal
+  // bookkeeping.
+  const int64_t num_bytes = Tell() / 8;
+  // Tell should never return a value larger than the source vector size.
+  ABSL_CHECK_LE(static_cast<uint64_t>(num_bytes), source_vector_.size())
+      << "Tell() returned a value larger than the source vector size (in "
+         "bytes).";
   source_vector_.erase(source_vector_.begin(),
                        source_vector_.begin() + num_bytes);
   // Offset needs to be moved back as erase moves the elements of a vector that
@@ -526,7 +540,6 @@ absl::Status StreamBasedReadBitBuffer::Flush(int64_t num_bytes) {
   // Disable seeking as the position returned by a previous Tell() call is no
   // longer valid.
   is_position_valid_ = false;
-  return absl::OkStatus();
 }
 
 StreamBasedReadBitBuffer::StreamBasedReadBitBuffer(size_t capacity_bytes)

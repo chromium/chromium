@@ -27,13 +27,6 @@ struct ParameterData {
   /*!\brief Destructor.*/
   virtual ~ParameterData() = default;
 
-  /*!\brief Reads and validates the parameter data.
-   *
-   * \param rb Buffer to read from.
-   * \return `absl::OkStatus()`. Or a specific error code on failure.
-   */
-  virtual absl::Status ReadAndValidate(ReadBitBuffer& rb) = 0;
-
   /*!\brief Validates and writes to a buffer.
    *
    * \param wb Buffer to write to.

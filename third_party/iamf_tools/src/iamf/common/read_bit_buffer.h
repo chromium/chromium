@@ -368,8 +368,8 @@ class FileBasedReadBitBuffer : public ReadBitBuffer {
   /*!\brief Destructor.*/
   ~FileBasedReadBitBuffer() override = default;
 
- private:
-  /*!\brief Private constructor. Called by the factory method only.
+ protected:
+  /*!\brief Protected constructor. Called by the factory method or subclasses.
    *
    * \param capacity_bytes Capacity of the internal buffer in bytes.
    * \param source_size Total size of the file in bits.
@@ -390,6 +390,7 @@ class FileBasedReadBitBuffer : public ReadBitBuffer {
   absl::Status LoadBytesToBuffer(int64_t starting_byte,
                                  int64_t num_bytes) override;
 
+ private:
   // Source data stored in a file stream.
   std::ifstream source_ifs_;
 };
@@ -422,13 +423,9 @@ class StreamBasedReadBitBuffer : public MemoryBasedReadBitBuffer {
 
   /*!\brief Flush already processed data from StreamBasedReadBitBuffer.
    *
-   * Should be called whenever the caller no longer needs the first `num_bytes`
-   * of data.
-   *
-   * \param num_bytes Bytes to flush from StreamBasedReadBitBuffer
-   * \return `absl::OkStatus()` on success. Specific statuses on failure.
+   * Flushes any already processed data up to the most recently read byte.
    */
-  absl::Status Flush(int64_t num_bytes);
+  void Flush();
 
   /*!\brief Destructor.*/
   ~StreamBasedReadBitBuffer() override = default;

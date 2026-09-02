@@ -151,7 +151,8 @@ void PrintGainsForDebugging(
 std::unique_ptr<AudioElementRendererChannelToChannel>
 AudioElementRendererChannelToChannel::CreateFromScalableChannelLayoutConfig(
     const ScalableChannelLayoutConfig& scalable_channel_layout_config,
-    const Layout& playback_layout, size_t num_samples_per_frame) {
+    const Layout& playback_layout, size_t num_samples_per_frame,
+    const TrimmingSettings trimming_settings) {
   if (scalable_channel_layout_config.channel_audio_layer_configs.empty()) {
     ABSL_LOG(ERROR) << "No channel audio layer configs provided.";
     return nullptr;
@@ -197,7 +198,7 @@ AudioElementRendererChannelToChannel::CreateFromScalableChannelLayoutConfig(
 
   return absl::WrapUnique(new AudioElementRendererChannelToChannel(
       *input_key, *output_key, static_cast<size_t>(num_output_channels),
-      num_samples_per_frame, *ordered_labels, *gains));
+      num_samples_per_frame, trimming_settings, *ordered_labels, *gains));
 }
 
 absl::Status AudioElementRendererChannelToChannel::RenderSamples(

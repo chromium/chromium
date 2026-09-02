@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef API_ENCODER_TYPES_H_
-#define API_ENCODER_TYPES_H_
+#ifndef INCLUDE_IAMF_TOOLS_IAMF_TOOLS_ENCODER_API_TYPES_H_
+#define INCLUDE_IAMF_TOOLS_IAMF_TOOLS_ENCODER_API_TYPES_H_
 
 #include <cstdint>
 #include <string>
@@ -38,4 +38,4 @@ struct IamfTemporalUnitData {
 }  // namespace api
 }  // namespace iamf_tools
 
-#endif  // API_ENCODER_TYPES_H_
+#endif  // INCLUDE_IAMF_TOOLS_IAMF_TOOLS_ENCODER_API_TYPES_H_

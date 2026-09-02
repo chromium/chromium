@@ -104,7 +104,8 @@ class ArbitraryObu : public ObuBase {
    *
    * \param wb Buffer to write to.
    * \return `absl::OkStatus()` if the OBU is valid. A specific error if
-   * `    invalidates_bitstream_` is true. Other specific statuses on failure.
+   *         `invalidates_bitstream_` is true. Other specific statuses on
+   *         failure.
    */
   absl::Status ValidateAndWritePayload(WriteBitBuffer& wb) const override;
 

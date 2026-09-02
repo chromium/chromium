@@ -111,7 +111,7 @@ absl::Status SetFromMap(const absl::flat_hash_map<Key, Value>& map,
 /*!\brief Returns a map for static storage from a container of pairs.
  *
  * \param pairs Container of pairs to convert to a map. The first value must be
- *              unique among all pairs.
+ *        unique among all pairs.
  * \return Map suitable for static storage. Or an empty map if the first value
  *         of a pair is not unique.
  */
@@ -137,7 +137,7 @@ auto BuildStaticMapFromPairs(const InputContainer& pairs) {
 /*!\brief Returns a map for static storage from a container of inverted pairs.
  *
  * \param pairs Container of pairs to invert and to convert to a map. The second
- *              value must be unique among all pairs.
+ *        value must be unique among all pairs.
  * \return Map suitable for static storage. Or an empty map if the second value
  *         of a pair is not unique.
  */

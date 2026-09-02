@@ -12,14 +12,12 @@
 #ifndef COMMON_UTILS_MACROS_H_
 #define COMMON_UTILS_MACROS_H_
 
+#include "absl/status/status_macros.h"
+
 namespace iamf_tools {
 
 // For propagating errors when calling a function.
-#define RETURN_IF_NOT_OK(...)             \
-  do {                                    \
-    absl::Status _status = (__VA_ARGS__); \
-    if (!_status.ok()) return _status;    \
-  } while (0)
+#define RETURN_IF_NOT_OK(...) ABSL_RETURN_IF_ERROR((__VA_ARGS__))
 
 // For propagating errors when calling a function, but ignoring errors when
 // built with `-DIGNORE_ERRORS_USE_ONLY_FOR_IAMF_TEST_SUITE`. Beware that
@@ -32,7 +30,7 @@ namespace iamf_tools {
     (__VA_ARGS__).IgnoreError();    \
   } while (0)
 #else
-#define MAYBE_RETURN_IF_NOT_OK(...) RETURN_IF_NOT_OK(__VA_ARGS__)
+#define MAYBE_RETURN_IF_NOT_OK(...) ABSL_RETURN_IF_ERROR(__VA_ARGS__)
 #endif
 
 }  // namespace iamf_tools

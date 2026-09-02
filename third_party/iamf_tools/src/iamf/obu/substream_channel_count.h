@@ -19,7 +19,7 @@
 
 namespace iamf_tools {
 
-/**!\brief Class to represent a sanitized number of channels in a substream.
+/*!\brief Class to represent a sanitized number of channels in a substream.
  *
  * This class represents the number of channels in a substream. While IAMF
  * can support many channels, it is exclusively made with elementary substreams
@@ -27,7 +27,7 @@ namespace iamf_tools {
  */
 class SubstreamChannelCount {
  public:
-  /**!\brief Makes a singular substream channel count.
+  /*!\brief Makes a singular substream channel count.
    *
    * Convenience function to create a singular substream channel count (i.e. 1).
    *
@@ -35,7 +35,7 @@ class SubstreamChannelCount {
    */
   static SubstreamChannelCount MakeSingular();
 
-  /**!\brief Makes a coupled substream channel count.
+  /*!\brief Makes a coupled substream channel count.
    *
    * Convenience function to create a coupled substream channel count (i.e. 2).
    *
@@ -43,7 +43,7 @@ class SubstreamChannelCount {
    */
   static SubstreamChannelCount MakeCoupled();
 
-  /**!\brief Creates a substream channel count.
+  /*!\brief Creates a substream channel count.
    *
    * Function to create a substream channel count from the number of channels.
    *
@@ -53,14 +53,14 @@ class SubstreamChannelCount {
    */
   static absl::StatusOr<SubstreamChannelCount> Create(int num_channels);
 
-  /**!\brief Returns the number of channels in this substream.
+  /*!\brief Returns the number of channels in this substream.
    *
    * \return Number of channels in this substream.
    */
   size_t num_channels() const;
 
  private:
-  /**!\brief Private constructor.
+  /*!\brief Private constructor.
    *
    * \param num_channels Number of channels for this substream.
    */

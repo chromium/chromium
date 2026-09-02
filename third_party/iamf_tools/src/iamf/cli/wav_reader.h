@@ -56,6 +56,10 @@ class WavReader {
 
   /*!\brief Gets the bit-depth of the reader.
    *
+   * Reports the bit-depth of the source samples in the file. For IEEE float
+   * sources this is the container width (32 or 64), not the justification of
+   * the decoded samples in `buffers_`.
+   *
    * \return Bit-depth.
    */
   int bit_depth() const { return info_.bit_depth; }
@@ -78,8 +82,10 @@ class WavReader {
 
   /*!\brief Buffers storing samples in (channel, time) axes.
    *
-   * The samples are left-justified; the upper `bit_depth()` bits represent the
-   * sample, with the remaining lower bits set to 0.
+   * For integer sources the samples are left-justified; the upper
+   * `bit_depth()` bits represent the sample, with the remaining lower bits set
+   * to 0. For IEEE float sources the normalized samples are scaled to the full
+   * `int32_t` range regardless of `bit_depth()`.
    */
   std::vector<std::vector<int32_t>> buffers_;
 

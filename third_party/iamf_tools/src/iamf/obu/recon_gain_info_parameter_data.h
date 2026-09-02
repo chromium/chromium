@@ -14,10 +14,12 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/write_bit_buffer.h"
 #include "iamf/obu/parameter_data.h"
@@ -67,12 +69,26 @@ struct ReconGainInfoParameterData : public ParameterData {
   /*!\brief Overridden destructor.*/
   ~ReconGainInfoParameterData() override = default;
 
-  /*!\brief Reads and validates a `ReconGainInfoParameterData` from a buffer.
+  /*!\brief Creates a `ReconGainInfoParameterData` from a buffer.
    *
    * \param rb Buffer to read from.
-   * \return `absl::OkStatus()`. A specific error code on failure.
+   * \param input_recon_gain_is_present_flags Flags indicating layer presence.
+   * \return Deserialized `ReconGainInfoParameterData` or error.
    */
-  absl::Status ReadAndValidate(ReadBitBuffer& rb) override;
+  static absl::StatusOr<std::unique_ptr<ReconGainInfoParameterData>>
+  CreateFromBuffer(ReadBitBuffer& rb,
+                   const std::vector<bool>& input_recon_gain_is_present_flags);
+
+  /*!\brief Creates a `ReconGainInfoParameterData` with validation.
+   *
+   * \param input_recon_gain_elements Input recon gain elements.
+   * \param input_recon_gain_is_present_flags Flags indicating layer presence.
+   * \return Validated `ReconGainInfoParameterData` or error.
+   */
+  static absl::StatusOr<std::unique_ptr<ReconGainInfoParameterData>> Create(
+      const std::vector<std::optional<ReconGainElement>>&
+          input_recon_gain_elements,
+      const std::vector<bool>& input_recon_gain_is_present_flags);
 
   /*!\brief Validates and writes to a buffer.
    *
@@ -95,6 +111,20 @@ struct ReconGainInfoParameterData : public ParameterData {
   // Whether recon gain is present per layer; only used in `ReadAndValidate()`
   // and is not present in bitstreams.
   std::vector<bool> recon_gain_is_present_flags;
+
+ private:
+  /*!\brief Constructor.
+   *
+   * \param input_recon_gain_elements Input recon gain elements.
+   * \param input_recon_gain_is_present_flags Flags indicating layer presence.
+   */
+  ReconGainInfoParameterData(
+      const std::vector<std::optional<ReconGainElement>>&
+          input_recon_gain_elements,
+      const std::vector<bool>& input_recon_gain_is_present_flags)
+      : ParameterData(),
+        recon_gain_elements(input_recon_gain_elements),
+        recon_gain_is_present_flags(input_recon_gain_is_present_flags) {}
 };
 
 }  // namespace iamf_tools

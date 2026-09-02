@@ -10,8 +10,8 @@
  * www.aomedia.org/license/patent.
  */
 
-#ifndef CLI_DECODER_BASE_H_
-#define CLI_DECODER_BASE_H_
+#ifndef CLI_CODEC_DECODER_BASE_H_
+#define CLI_CODEC_DECODER_BASE_H_
 
 #include <cstdint>
 #include <vector>
@@ -74,4 +74,4 @@ class DecoderBase {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_DECODER_BASE_H_
+#endif  // CLI_CODEC_DECODER_BASE_H_

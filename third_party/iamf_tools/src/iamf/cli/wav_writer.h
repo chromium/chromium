@@ -54,6 +54,9 @@ class WavWriter : public SampleProcessorBase {
   /*!\brief Finalizes the wav header and closes the underlying file.*/
   ~WavWriter();
 
+  WavWriter(const WavWriter&) = delete;
+  WavWriter& operator=(const WavWriter&) = delete;
+
   /*!\brief Returns the bit-depth.*/
   int bit_depth() const { return bit_depth_; }
 
@@ -82,8 +85,8 @@ class WavWriter : public SampleProcessorBase {
    *        file when aborting.
    * \param num_channels Number of channels in the wav file, must be 1 or 2.
    * \param sample_rate_hz Sample rate of the wav file in Hz.
-   *  \param num_samples_per_frame Number of samples per frame. Subsequent
-   *         writes must use at most this number of samples.
+   * \param num_samples_per_frame Number of samples per frame. Subsequent
+   *        writes must use at most this number of samples.
    * \param bit_depth Bit-depth of the wav file, must be 16, 24, or 32.
    * \param file Pointer to the file to write to.
    * \param wav_header_writer Function that writes the header if non-empty.

@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef OBU_LEB128_H_
-#define OBU_LEB128_H_
+#ifndef OBU_TYPES_H_
+#define OBU_TYPES_H_
 
 #include <cstdint>
 
@@ -61,4 +61,4 @@ struct TrimmingSettings {
 
 }  // namespace iamf_tools
 
-#endif  // OBU_LEB128_H_
+#endif  // OBU_TYPES_H_

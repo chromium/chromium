@@ -53,7 +53,7 @@ class AmbisonicsMonoConfig {
    *
    * \param substream_count `substream_count` (N).
    * \param channel_mapping `channel_mapping`. Size implies
-   *     `output_channel_count` (C).
+   *        `output_channel_count` (C).
    * \return Config or a specific status on failure.
    */
   static absl::StatusOr<AmbisonicsMonoConfig> Create(
@@ -99,7 +99,7 @@ class AmbisonicsMonoConfig {
    *
    * \param substream_count `substream_count` (N).
    * \param channel_mapping `channel_mapping`. Size implies
-   *     `output_channel_count` (C).
+   *        `output_channel_count` (C).
    */
   AmbisonicsMonoConfig(uint8_t substream_count,
                        absl::Span<const uint8_t> channel_mapping);
@@ -129,7 +129,7 @@ class AmbisonicsProjectionConfig {
    * \param coupled_substream_count `coupled_substream_count` (M).
    * \param demixing_matrix Demixing matrix of size (N + M) * C.
    * \return `AmbisonicsProjectionConfig` config or a specific status on
-   * failure.
+   *         failure.
    */
   static absl::StatusOr<AmbisonicsProjectionConfig> Create(
       uint8_t output_channel_count, uint8_t substream_count,
@@ -141,7 +141,7 @@ class AmbisonicsProjectionConfig {
    *
    * \param rb Buffer from which to read variables.
    * \return `AmbisonicsProjectionConfig` config or a specific status on
-   * failure.
+   *         failure.
    */
   static absl::StatusOr<AmbisonicsProjectionConfig> CreateFromBuffer(
       ReadBitBuffer& rb);
@@ -240,8 +240,8 @@ struct AmbisonicsConfig {
   /*!\brief Gets a view of the demixing matrix.
    *
    * \return Span of demixing matrix elements stored in a 1D array in
-   *     column-major order for ambisonics projection mode. `std::nullopt` for
-   *     ambisonics mono mode.
+   *         column-major order for ambisonics projection mode. `std::nullopt`
+   *         for ambisonics mono mode.
    */
   std::optional<absl::Span<const int16_t>> GetDemixingMatrix() const;
 

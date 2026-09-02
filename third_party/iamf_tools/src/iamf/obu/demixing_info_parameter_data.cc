@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 
 #include "absl/base/no_destructor.h"
 #include "absl/container/flat_hash_map.h"
@@ -107,24 +108,33 @@ absl::Status DemixingInfoParameterData::Write(WriteBitBuffer& wb) const {
   }
 }
 
-absl::Status DemixingInfoParameterData::ReadAndValidate(ReadBitBuffer& rb) {
+absl::StatusOr<std::unique_ptr<DemixingInfoParameterData>>
+DemixingInfoParameterData::CreateFromBuffer(ReadBitBuffer& rb) {
   uint8_t dmixp_mode_int;
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(3, dmixp_mode_int));
-  dmixp_mode = static_cast<DMixPMode>(dmixp_mode_int);
+  const auto dmixp_mode = static_cast<DMixPMode>(dmixp_mode_int);
+  uint8_t reserved;
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(5, reserved));
 
+  return Create(dmixp_mode, reserved);
+}
+
+absl::StatusOr<std::unique_ptr<DemixingInfoParameterData>>
+DemixingInfoParameterData::Create(DMixPMode input_dmixp_mode,
+                                  uint8_t input_reserved) {
   // Validate that no reserved enums are used.
-  switch (dmixp_mode) {
+  switch (input_dmixp_mode) {
     case kDMixPMode1:
     case kDMixPMode2:
     case kDMixPMode3:
     case kDMixPMode1_n:
     case kDMixPMode2_n:
     case kDMixPMode3_n:
-      return absl::OkStatus();
+      return std::unique_ptr<DemixingInfoParameterData>(
+          new DemixingInfoParameterData(input_dmixp_mode, input_reserved));
     default:
       return absl::UnimplementedError(
-          absl::StrCat("Unsupported dmixp_mode= ", dmixp_mode));
+          absl::StrCat("Unsupported dmixp_mode= ", input_dmixp_mode));
   }
 }
 
@@ -142,14 +152,44 @@ absl::Status DefaultDemixingInfoParameterData::Write(WriteBitBuffer& wb) const {
   return absl::OkStatus();
 }
 
-absl::Status DefaultDemixingInfoParameterData::ReadAndValidate(
-    ReadBitBuffer& rb) {
-  RETURN_IF_NOT_OK(DemixingInfoParameterData::ReadAndValidate(rb));
+absl::StatusOr<std::unique_ptr<DefaultDemixingInfoParameterData>>
+DefaultDemixingInfoParameterData::CreateFromBuffer(ReadBitBuffer& rb) {
+  // Read base class parts: dmixp_mode and reserved
+  uint8_t dmixp_mode_int;
+  RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(3, dmixp_mode_int));
+  const auto dmixp_mode =
+      static_cast<DemixingInfoParameterData::DMixPMode>(dmixp_mode_int);
+  uint8_t reserved;
+  RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(5, reserved));
 
+  uint8_t default_w;
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(4, default_w));
+  uint8_t reserved_for_future_use;
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(4, reserved_for_future_use));
 
-  return absl::OkStatus();
+  return Create(dmixp_mode, reserved, default_w, reserved_for_future_use);
+}
+
+absl::StatusOr<std::unique_ptr<DefaultDemixingInfoParameterData>>
+DefaultDemixingInfoParameterData::Create(
+    DMixPMode input_dmixp_mode, uint8_t input_reserved, uint8_t input_default_w,
+    uint8_t input_reserved_for_future_use) {
+  // Validate that no reserved enums are used.
+  switch (input_dmixp_mode) {
+    case kDMixPMode1:
+    case kDMixPMode2:
+    case kDMixPMode3:
+    case kDMixPMode1_n:
+    case kDMixPMode2_n:
+    case kDMixPMode3_n:
+      return std::unique_ptr<DefaultDemixingInfoParameterData>(
+          new DefaultDemixingInfoParameterData(input_dmixp_mode, input_reserved,
+                                               input_default_w,
+                                               input_reserved_for_future_use));
+    default:
+      return absl::UnimplementedError(
+          absl::StrCat("Unsupported dmixp_mode= ", input_dmixp_mode));
+  }
 }
 
 void DefaultDemixingInfoParameterData::Print() const {

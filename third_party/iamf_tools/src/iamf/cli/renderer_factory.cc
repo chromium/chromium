@@ -55,7 +55,7 @@ std::unique_ptr<AudioElementRendererBase> MaybeCreateAmbisonicsRenderer(
     const SubstreamIdLabelsMap& substream_id_to_labels,
     const AudioElementObu::AudioElementConfig& config,
     const Layout& playback_layout, size_t num_samples_per_frame,
-    size_t sample_rate) {
+    size_t sample_rate, const TrimmingSettings trimming_settings) {
   const auto* ambisonics_config = std::get_if<AmbisonicsConfig>(&config);
   if (ambisonics_config == nullptr) {
     ABSL_LOG(ERROR)
@@ -67,7 +67,7 @@ std::unique_ptr<AudioElementRendererBase> MaybeCreateAmbisonicsRenderer(
 #ifndef IAMF_TOOLS_DISABLE_BINAURAL_RENDERING
     return AudioElementRendererBinaural::CreateFromAmbisonicsConfig(
         *ambisonics_config, audio_substream_ids, substream_id_to_labels,
-        num_samples_per_frame, sample_rate);
+        num_samples_per_frame, sample_rate, trimming_settings);
 #else
     ABSL_LOG(WARNING)
         << "Skipping creating an Ambisonics to binaural-based "
@@ -78,13 +78,13 @@ std::unique_ptr<AudioElementRendererBase> MaybeCreateAmbisonicsRenderer(
   }
   return AudioElementRendererAmbisonicsToChannel::CreateFromAmbisonicsConfig(
       *ambisonics_config, audio_substream_ids, substream_id_to_labels,
-      playback_layout, num_samples_per_frame);
+      playback_layout, num_samples_per_frame, trimming_settings);
 }
 
 std::unique_ptr<AudioElementRendererBase> MaybeCreateChannelRenderer(
     bool use_binaural, const AudioElementObu::AudioElementConfig& config,
     const Layout& playback_layout, size_t num_samples_per_frame,
-    size_t sample_rate) {
+    size_t sample_rate, const TrimmingSettings trimming_settings) {
   const auto* channel_config =
       std::get_if<ScalableChannelLayoutConfig>(&config);
   if (channel_config == nullptr) {
@@ -96,7 +96,8 @@ std::unique_ptr<AudioElementRendererBase> MaybeCreateChannelRenderer(
   // Lazily try to make a pass-through renderer.
   auto pass_through_renderer =
       AudioElementRendererPassThrough::CreateFromScalableChannelLayoutConfig(
-          *channel_config, playback_layout, num_samples_per_frame);
+          *channel_config, playback_layout, num_samples_per_frame,
+          trimming_settings);
   if (pass_through_renderer != nullptr) {
     return pass_through_renderer;
   }
@@ -104,7 +105,7 @@ std::unique_ptr<AudioElementRendererBase> MaybeCreateChannelRenderer(
   if (use_binaural) {
 #ifndef IAMF_TOOLS_DISABLE_BINAURAL_RENDERING
     return AudioElementRendererBinaural::CreateFromScalableChannelLayoutConfig(
-        *channel_config, num_samples_per_frame, sample_rate);
+        *channel_config, num_samples_per_frame, sample_rate, trimming_settings);
 #else
     ABSL_LOG(WARNING)
         << "Skipping creating a channel to binaural-based renderer.";
@@ -113,7 +114,8 @@ std::unique_ptr<AudioElementRendererBase> MaybeCreateChannelRenderer(
   }
   return AudioElementRendererChannelToChannel::
       CreateFromScalableChannelLayoutConfig(*channel_config, playback_layout,
-                                            num_samples_per_frame);
+                                            num_samples_per_frame,
+                                            trimming_settings);
 }
 
 }  // namespace
@@ -150,12 +152,12 @@ RendererFactory::CreateRendererForLayout(
       renderer = MaybeCreateAmbisonicsRenderer(
           use_binaural, audio_substream_ids, substream_id_to_labels,
           audio_element_config, playback_layout, num_samples_per_frame,
-          sample_rate);
+          sample_rate, trimming_settings_);
       break;
     case AudioElementObu::kAudioElementChannelBased:
-      renderer = MaybeCreateChannelRenderer(use_binaural, audio_element_config,
-                                            playback_layout,
-                                            num_samples_per_frame, sample_rate);
+      renderer = MaybeCreateChannelRenderer(
+          use_binaural, audio_element_config, playback_layout,
+          num_samples_per_frame, sample_rate, trimming_settings_);
       break;
     case AudioElementObu::kAudioElementObjectBased:
       ABSL_LOG(WARNING) << "Object-based audio elements are not supported.";
@@ -165,9 +167,6 @@ RendererFactory::CreateRendererForLayout(
       ABSL_LOG(WARNING) << "Unsupported audio_element_type_= "
                         << audio_element_type;
       break;
-  }
-  if (renderer != nullptr) {
-    renderer->SetTrimmingSettings(trimming_settings_);
   }
   return renderer;
 }

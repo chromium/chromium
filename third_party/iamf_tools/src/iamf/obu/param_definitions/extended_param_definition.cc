@@ -12,6 +12,7 @@
 #include "iamf/obu/param_definitions/extended_param_definition.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "absl/log/absl_log.h"
@@ -53,9 +54,14 @@ absl::Status ExtendedParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
   return absl::OkStatus();
 }
 
-std::unique_ptr<ParameterData> ExtendedParamDefinition::CreateParameterData()
-    const {
-  return std::make_unique<ExtensionParameterData>();
+absl::StatusOr<std::unique_ptr<ParameterData>>
+ExtendedParamDefinition::CreateParameterDataFromBuffer(
+    ReadBitBuffer& rb) const {
+  auto parameter_data = ExtensionParameterData::CreateFromBuffer(rb);
+  if (!parameter_data.ok()) {
+    return parameter_data.status();
+  }
+  return std::move(parameter_data.value());
 }
 
 void ExtendedParamDefinition::Print() const {

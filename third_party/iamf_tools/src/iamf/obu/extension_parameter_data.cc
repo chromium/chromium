@@ -11,6 +11,8 @@
  */
 #include "iamf/obu/extension_parameter_data.h"
 
+#include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "absl/log/absl_log.h"
@@ -23,12 +25,34 @@
 #include "iamf/obu/types.h"
 
 namespace iamf_tools {
+namespace {
 
-absl::Status ExtensionParameterData::ReadAndValidate(ReadBitBuffer& rb) {
+absl::Status ValidateSize(DecodedUleb128 size) {
+  if (size > kEntireObuSizeMaxTwoMegabytes) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "parameter_data_size= ", size, " exceeds maximum OBU size."));
+  }
+  return absl::OkStatus();
+}
+
+}  // namespace
+absl::StatusOr<std::unique_ptr<ExtensionParameterData>>
+ExtensionParameterData::CreateFromBuffer(ReadBitBuffer& rb) {
   DecodedUleb128 parameter_data_size;
   RETURN_IF_NOT_OK(rb.ReadULeb128(parameter_data_size));
+  RETURN_IF_NOT_OK(ValidateSize(parameter_data_size));
+  std::vector<uint8_t> parameter_data_bytes;
   parameter_data_bytes.resize(parameter_data_size);
-  return rb.ReadUint8Span(absl::MakeSpan(parameter_data_bytes));
+  RETURN_IF_NOT_OK(rb.ReadUint8Span(absl::MakeSpan(parameter_data_bytes)));
+  return Create(parameter_data_bytes);
+}
+
+absl::StatusOr<std::unique_ptr<ExtensionParameterData>>
+ExtensionParameterData::Create(
+    absl::Span<const uint8_t> input_parameter_data_bytes) {
+  RETURN_IF_NOT_OK(ValidateSize(input_parameter_data_bytes.size()));
+  return std::unique_ptr<ExtensionParameterData>(
+      new ExtensionParameterData(input_parameter_data_bytes));
 }
 
 absl::Status ExtensionParameterData::Write(WriteBitBuffer& wb) const {

@@ -36,7 +36,11 @@ absl::Status SampleProcessorBase::PushFrame(
   // Check the shape of the input data.
   RETURN_IF_NOT_OK(ValidateEqual(channel_time_samples.size(), num_channels_,
                                  "number of channels"));
+  const size_t num_ticks =
+      channel_time_samples.empty() ? 0 : channel_time_samples[0].size();
   for (size_t c = 0; c < num_channels_; c++) {
+    RETURN_IF_NOT_OK(ValidateEqual(channel_time_samples[c].size(), num_ticks,
+                                   "number of samples per channel"));
     if (channel_time_samples[c].size() > max_input_samples_per_frame_) {
       return absl::InvalidArgumentError(
           absl::StrCat("Too many samples per frame. ",

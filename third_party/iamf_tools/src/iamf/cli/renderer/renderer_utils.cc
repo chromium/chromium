@@ -11,6 +11,7 @@
  */
 #include "iamf/cli/renderer/renderer_utils.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -123,10 +124,6 @@ struct GetChannelLabelsFromAmbisonicsProjectionConfig {
   }
 };
 
-double Q15ToSignedDouble(const int16_t input) {
-  return static_cast<double>(input) / 32768.0;
-}
-
 }  // namespace
 
 absl::StatusOr<std::string> LookupOutputKeyFromPlaybackLayout(
@@ -220,8 +217,8 @@ absl::Status GetChannelLabelsForAmbisonics(
 
 absl::Status ProjectSamplesToRender(
     absl::Span<const absl::Span<const InternalSampleType>> input_samples,
-    absl::Span<const int16_t> demixing_matrix,
-    std::vector<std::vector<InternalSampleType>>& projected_samples) {
+    absl::Span<const InternalSampleType> demixing_matrix,
+    absl::Span<absl::Span<InternalSampleType>> projected_samples) {
   if (input_samples.empty() || demixing_matrix.empty()) {
     return absl::InvalidArgumentError(
         "Input samples or demixing matrix is empty.");
@@ -229,6 +226,13 @@ absl::Status ProjectSamplesToRender(
 
   const auto num_input_channels = input_samples.size();
   const auto num_ticks = input_samples[0].size();
+
+  for (const auto& input_channel : input_samples) {
+    if (input_channel.size() != num_ticks) {
+      return absl::InvalidArgumentError(
+          "All input channels must have the same number of samples.");
+    }
+  }
 
   const int num_elements_in_demixing_matrix = demixing_matrix.size();
   if (num_elements_in_demixing_matrix % num_input_channels != 0) {
@@ -241,18 +245,23 @@ absl::Status ProjectSamplesToRender(
 
   const int num_output_channels =
       num_elements_in_demixing_matrix / num_input_channels;
-  projected_samples.resize(num_output_channels);
+  RETURN_IF_NOT_OK(ValidateContainerSizeEqual(
+      "projected_samples", projected_samples, num_output_channels));
   for (int out_channel = 0; out_channel < num_output_channels; out_channel++) {
     auto& projected_samples_for_channel = projected_samples[out_channel];
-    projected_samples_for_channel.assign(num_ticks, 0.0);
+    RETURN_IF_NOT_OK(ValidateContainerSizeEqual("projected_samples_for_channel",
+                                                projected_samples_for_channel,
+                                                num_ticks));
+    std::fill(projected_samples_for_channel.begin(),
+              projected_samples_for_channel.end(), 0.0);
+
     for (size_t in_channel = 0; in_channel < num_input_channels; in_channel++) {
       const auto& input_sample_for_channel = input_samples[in_channel];
-      const auto demixing_value = Q15ToSignedDouble(
-          demixing_matrix[in_channel * num_output_channels + out_channel]);
+      const auto demixing_value =
+          demixing_matrix[in_channel * num_output_channels + out_channel];
 
       for (size_t t = 0; t < num_ticks; t++) {
-        // Project with `demixing_matrix`, which is encoded as Q15 and stored
-        // in column major.
+        // Project with `demixing_matrix`, which is stored in column major.
         projected_samples_for_channel[t] +=
             demixing_value * input_sample_for_channel[t];
       }

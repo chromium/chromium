@@ -20,23 +20,26 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "iamf/cli/itu_1770_4/loudness_calculator_factory_itu_1770_4.h"
+#include "iamf/cli/layout_renderer_factory.h"
 #include "iamf/cli/loudness_calculator_factory_base.h"
 #include "iamf/cli/obu_sequencer_base.h"
 #include "iamf/cli/obu_sequencer_iamf.h"
 #include "iamf/cli/proto/test_vector_metadata.pb.h"
 #include "iamf/cli/proto/user_metadata.pb.h"
 #include "iamf/cli/proto_conversion/proto_utils.h"
-#include "iamf/cli/renderer_factory.h"
+#include "iamf/obu/types.h"
+
 namespace iamf_tools {
 
 namespace {
 
 constexpr absl::string_view kOmitIamfFile = "";
+constexpr TrimmingSettings kDefaultTrimmingSettings{};
 
-}
+}  // namespace
 
-std::unique_ptr<RendererFactoryBase> CreateRendererFactory() {
-  return std::make_unique<RendererFactory>();
+std::unique_ptr<LayoutRendererFactory> CreateLayoutRendererFactory() {
+  return std::make_unique<LayoutRendererFactory>(kDefaultTrimmingSettings);
 }
 
 std::unique_ptr<LoudnessCalculatorFactoryBase>

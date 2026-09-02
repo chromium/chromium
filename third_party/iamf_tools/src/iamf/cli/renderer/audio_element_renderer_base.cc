@@ -27,10 +27,12 @@ namespace iamf_tools {
 
 AudioElementRendererBase::AudioElementRendererBase(
     absl::Span<const ChannelLabel::Label> ordered_labels,
-    const size_t num_samples_per_frame, const size_t num_output_channels)
+    const size_t num_samples_per_frame, const size_t num_output_channels,
+    const TrimmingSettings trimming_settings)
     : ordered_labels_(ordered_labels.begin(), ordered_labels.end()),
       num_samples_per_frame_(num_samples_per_frame),
       num_output_channels_(num_output_channels),
+      trimming_settings_(trimming_settings),
       samples_to_render_(ordered_labels_.size()),
       rendered_samples_(num_output_channels),
       kEmptyChannel(num_samples_per_frame_, 0.0) {}

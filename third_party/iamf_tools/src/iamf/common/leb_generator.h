@@ -10,8 +10,8 @@
  * www.aomedia.org/license/patent.
  */
 
-#ifndef CLI_LEB_GENERATOR_H_
-#define CLI_LEB_GENERATOR_H_
+#ifndef COMMON_LEB_GENERATOR_H_
+#define COMMON_LEB_GENERATOR_H_
 
 #include <cstdint>
 #include <memory>
@@ -91,4 +91,4 @@ class LebGenerator {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_LEB_GENERATOR_H_
+#endif  // COMMON_LEB_GENERATOR_H_

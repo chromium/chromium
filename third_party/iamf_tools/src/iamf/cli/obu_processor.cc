@@ -35,17 +35,18 @@
 #include "iamf/cli/audio_frame_decoder.h"
 #include "iamf/cli/audio_frame_with_data.h"
 #include "iamf/cli/cli_util.h"
-#include "iamf/cli/demixing_module.h"
+#include "iamf/cli/demixing_manager.h"
 #include "iamf/cli/descriptor_obu_parser.h"
 #include "iamf/cli/descriptor_obus.h"
 #include "iamf/cli/global_timing_module.h"
+#include "iamf/cli/layout_renderer_factory.h"
 #include "iamf/cli/obu_processor_utils.h"
 #include "iamf/cli/obu_with_data_generator.h"
 #include "iamf/cli/parameter_block_with_data.h"
 #include "iamf/cli/parameters_manager.h"
 #include "iamf/cli/profile_filter.h"
-#include "iamf/cli/renderer_factory.h"
 #include "iamf/cli/rendering_mix_presentation_finalizer.h"
+#include "iamf/cli/sample_processing_utils.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/utils/validation_utils.h"
@@ -692,7 +693,8 @@ ObuProcessor::RenderTemporalUnitAndMeasureLoudness(
 
   // Reconstruct the temporal unit and store the result in the output map.
   const auto& decoded_labeled_frames_for_temporal_unit =
-      rendering_models_->demixing_module.DemixDecodedAudioSamples(audio_frames);
+      rendering_models_->demixing_manager.DemixDecodedAudioSamples(
+          audio_frames);
   if (!decoded_labeled_frames_for_temporal_unit.ok()) {
     return decoded_labeled_frames_for_temporal_unit.status();
   }
@@ -713,6 +715,10 @@ ObuProcessor::RenderTemporalUnitAndMeasureLoudness(
   if (!rendered_samples.ok()) {
     return rendered_samples.status();
   }
+
+  RETURN_IF_NOT_OK(ValidateRenderedSamples(
+      *rendered_samples,
+      output_frame_size_.has_value() ? *output_frame_size_ : 0));
 
   // TODO(b/379122580): Add a call to `FinalizePushingTemporalUnits`, then a
   //                    final call to `GetPostProcessedSamplesAsSpan` when there
@@ -735,12 +741,12 @@ ObuProcessor::ConfigureSimplifiedAudioProcessingPipeline(
     }
   }
 
-  // Configure the `AudioFrameDecoder`, and prepare the strucutre which
-  // configures the `DemixingModule`. Filter out any irrelevant audio
+  // Configure the `AudioFrameDecoder`, and prepare the structure which
+  // configures the `DemixingManager`. Filter out any irrelevant audio
   // elements. Also cache any irrelevant substream IDs to be filtered out in
   // temporal units.
   AudioFrameDecoder audio_frame_decoder;
-  absl::flat_hash_map<DecodedUleb128, DemixingModule::ReconstructionConfig>
+  absl::flat_hash_map<DecodedUleb128, DemixingManager::ReconstructionConfig>
       id_to_reconstruction_config;
   absl::flat_hash_set<DecodedUleb128> relevant_substream_ids;
   for (const auto& [audio_element_id, audio_element_with_data] :
@@ -761,20 +767,20 @@ ObuProcessor::ConfigureSimplifiedAudioProcessingPipeline(
         .label_to_output_gain = audio_element_with_data.label_to_output_gain};
   }
 
-  absl::StatusOr<DemixingModule> demixing_module =
-      DemixingModule::CreateForReconstruction(id_to_reconstruction_config);
-  if (!demixing_module.ok()) {
-    return demixing_module.status();
+  absl::StatusOr<DemixingManager> demixing_manager =
+      DemixingManager::Create(id_to_reconstruction_config);
+  if (!demixing_manager.ok()) {
+    return demixing_manager.status();
   }
 
   // Create the mix presentation finalizer which is used to render the output
   // files. We neither trust the user-provided loudness, nor care about the
   // calculated loudness.
-  const RendererFactory renderer_factory(trimming_settings);
+  const LayoutRendererFactory layout_renderer_factory(trimming_settings);
   absl::StatusOr<RenderingMixPresentationFinalizer> mix_presentation_finalizer =
       RenderingMixPresentationFinalizer::Create(
-          /*renderer_factory=*/&renderer_factory,
-          /*loudness_calculator_factory=*/nullptr, audio_elements,
+          &layout_renderer_factory, /*loudness_calculator_factory=*/nullptr,
+          audio_elements,
           RenderingMixPresentationFinalizer::ProduceNoSampleProcessors,
           {simplified_mix_presentation});
   if (!mix_presentation_finalizer.ok()) {
@@ -784,7 +790,7 @@ ObuProcessor::ConfigureSimplifiedAudioProcessingPipeline(
   return RenderingModels{
       .relevant_substream_ids = std::move(relevant_substream_ids),
       .audio_frame_decoder = std::move(audio_frame_decoder),
-      .demixing_module = *std::move(demixing_module),
+      .demixing_manager = *std::move(demixing_manager),
       .mix_presentation_finalizer = *std::move(mix_presentation_finalizer),
   };
 }

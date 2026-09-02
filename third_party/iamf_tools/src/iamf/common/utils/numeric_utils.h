@@ -216,7 +216,7 @@ bool IsNativeBigEndian();
  * \param field_name Field name of the vector to insert into the error message.
  * \param vector_size Size of the vector.
  * \param reported_size Size reported by associated fields (e.g. "*_size" fields
- *                      in the OBU).
+ *        in the OBU).
  * \return `absl::OkStatus()` if the size arguments are equivalent.
  *         `absl::InvalidArgumentError()` otherwise.
  */

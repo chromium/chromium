@@ -12,6 +12,7 @@
 #include "iamf/obu/recon_gain_info_parameter_data.h"
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -26,15 +27,16 @@
 
 namespace iamf_tools {
 
-absl::Status ReconGainInfoParameterData::ReadAndValidate(ReadBitBuffer& rb) {
-  recon_gain_elements.resize(recon_gain_is_present_flags.size());
-  for (size_t i = 0; i < recon_gain_is_present_flags.size(); i++) {
+absl::StatusOr<std::unique_ptr<ReconGainInfoParameterData>>
+ReconGainInfoParameterData::CreateFromBuffer(
+    ReadBitBuffer& rb,
+    const std::vector<bool>& input_recon_gain_is_present_flags) {
+  std::vector<std::optional<ReconGainElement>> recon_gain_elements;
+  recon_gain_elements.resize(input_recon_gain_is_present_flags.size());
+  for (size_t i = 0; i < input_recon_gain_is_present_flags.size(); i++) {
     auto& recon_gain_element = recon_gain_elements[i];
 
-    // Each layer depends on the `recon_gain_is_present_flags` within the
-    // associated Audio Element OBU. The size of `recon_gain_is_present_flags`
-    // is equal to the number of layers.
-    if (!recon_gain_is_present_flags[i]) {
+    if (!input_recon_gain_is_present_flags[i]) {
       recon_gain_element = std::nullopt;
       continue;
     }
@@ -44,8 +46,6 @@ absl::Status ReconGainInfoParameterData::ReadAndValidate(ReadBitBuffer& rb) {
     const DecodedUleb128 recon_gain_flag = recon_gain_element->recon_gain_flag;
     DecodedUleb128 mask = 1;
 
-    // Apply bitmask to examine each bit in the flag. Only read elements with
-    // the flag implying they should be read.
     for (size_t j = 0; j < recon_gain_element->recon_gain.size(); j++) {
       if (recon_gain_flag & mask) {
         RETURN_IF_NOT_OK(
@@ -56,11 +56,22 @@ absl::Status ReconGainInfoParameterData::ReadAndValidate(ReadBitBuffer& rb) {
       mask <<= 1;
     }
   }
-  RETURN_IF_NOT_OK(ValidateEqual(recon_gain_elements.size(),
-                                 recon_gain_is_present_flags.size(),
+
+  return Create(recon_gain_elements, input_recon_gain_is_present_flags);
+}
+
+absl::StatusOr<std::unique_ptr<ReconGainInfoParameterData>>
+ReconGainInfoParameterData::Create(
+    const std::vector<std::optional<ReconGainElement>>&
+        input_recon_gain_elements,
+    const std::vector<bool>& input_recon_gain_is_present_flags) {
+  RETURN_IF_NOT_OK(ValidateEqual(input_recon_gain_elements.size(),
+                                 input_recon_gain_is_present_flags.size(),
                                  "size of `recon_gain_elements`"));
 
-  return absl::OkStatus();
+  return std::unique_ptr<ReconGainInfoParameterData>(
+      new ReconGainInfoParameterData(input_recon_gain_elements,
+                                     input_recon_gain_is_present_flags));
 }
 
 absl::Status ReconGainInfoParameterData::Write(WriteBitBuffer& wb) const {

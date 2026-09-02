@@ -27,7 +27,7 @@
 #include "iamf/cli/audio_element_with_data.h"
 #include "iamf/cli/audio_frame_decoder.h"
 #include "iamf/cli/audio_frame_with_data.h"
-#include "iamf/cli/demixing_module.h"
+#include "iamf/cli/demixing_manager.h"
 #include "iamf/cli/descriptor_obus.h"
 #include "iamf/cli/global_timing_module.h"
 #include "iamf/cli/parameter_block_with_data.h"
@@ -218,7 +218,7 @@ class ObuProcessor {
     // "Codec Decoder", according to Figure 2 in IAMF specification.
     AudioFrameDecoder audio_frame_decoder;
     // "Element Reconstructor", according to Figure 2 in IAMF specification.
-    DemixingModule demixing_module;
+    DemixingManager demixing_manager;
     // Combined "Renderer" and "Mixer", according to Figure 2 in IAMF
     // specification.
     RenderingMixPresentationFinalizer mix_presentation_finalizer;
@@ -257,7 +257,7 @@ class ObuProcessor {
    *        insufficient to process all descriptor OBUs and there is no other
    *        error.
    * \return `absl::OkStatus()` if initialization is successful. A specific
-   *        status on failure.
+   *         status on failure.
    */
   absl::Status InitializeInternal(bool is_exhaustive_and_exact,
                                   bool& output_insufficient_data);

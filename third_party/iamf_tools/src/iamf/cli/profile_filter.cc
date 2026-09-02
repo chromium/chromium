@@ -262,7 +262,7 @@ absl::Status FilterProfileForNumSubmixes(
     return ClearAndReturnError(
         absl::StrCat(mix_presentation_id_for_debugging, " has ",
                      num_sub_mixes_in_mix_presentation,
-                     " sub mixes, but the requested profiles "
+                     " sub-mixes, but the requested profiles "
                      "do not support this number of sub-mixes."),
         profile_versions);
   }
@@ -271,7 +271,7 @@ absl::Status FilterProfileForNumSubmixes(
     return absl::InvalidArgumentError(
         absl::StrCat(mix_presentation_id_for_debugging, " has ",
                      num_sub_mixes_in_mix_presentation,
-                     " sub mixes, but the requested profiles "
+                     " sub-mixes, but the requested profiles "
                      "do not support this number of sub-mixes."));
   }
   return absl::OkStatus();
@@ -309,7 +309,7 @@ absl::Status FilterProfileForHeadphonesRenderingMode(
             mix_presentation_id_for_debugging,
             " has an audio element with headphones rendering mode= ",
             sub_mix_audio_element.rendering_config.headphones_rendering_mode,
-            " sub mixes, but the requested profiles do support not this "
+            " sub-mixes, but the requested profiles do support not this "
             "mode."));
       }
     }

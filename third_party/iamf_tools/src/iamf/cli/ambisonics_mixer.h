@@ -20,6 +20,7 @@
 
 #include "absl/status/status.h"
 #include "absl/types/span.h"
+#include "iamf/cli/channel_label.h"
 #include "iamf/cli/sample_processor_base.h"
 #include "iamf/obu/ambisonics_config.h"
 #include "iamf/obu/codec_config.h"
@@ -69,6 +70,12 @@ class AmbisonicsMixer : public SampleProcessorBase {
    * \return Ambisonics configuration.
    */
   AmbisonicsConfig GetAmbisonicsConfig() const;
+
+  /*!\brief Returns the expected input channel labels in order.
+   *
+   * \return Vector of channel labels.
+   */
+  std::vector<ChannelLabel::Label> GetInputLabels() const;
 
  private:
   /*!\brief Private constructor.

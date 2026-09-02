@@ -26,7 +26,7 @@
 
 namespace iamf_tools {
 
-/*!brief Decoder for LPCM audio streams.
+/*!\brief Decoder for LPCM audio streams.
  *
  * Class designed to decode one audio substream per instance when the
  * `codec_config_id` is "ipcm" and formatted as per IAMF Spec §3.5 and §3.11.4.
@@ -34,7 +34,7 @@ namespace iamf_tools {
  */
 class LpcmDecoder : public DecoderBase {
  public:
-  /*!brief Factory function.
+  /*!\brief Factory function.
    *
    * \param decoder_config Decoder config for this stream.
    * \param channel_count Number of channels for this substream.
@@ -45,7 +45,7 @@ class LpcmDecoder : public DecoderBase {
       const LpcmDecoderConfig& decoder_config,
       SubstreamChannelCount channel_count, uint32_t num_samples_per_frame);
 
-  /*!brief Destructor. */
+  /*!\brief Destructor. */
   ~LpcmDecoder() override = default;
 
   /*!\brief Decodes an LPCM audio frame.

@@ -35,7 +35,7 @@ class IamfDecoder : public api::IamfDecoderInterface {
   struct Settings {
     // Specifies the desired output Mix Presentation ID and/or layout.
     //
-    // See MixRequest struct for details on how the contents are
+    // See `RequestedMix` struct for details on how the contents are
     // used and prioritized.
     //
     // The resulting Mix Presentation ID and layout will be retrievable after
@@ -137,7 +137,7 @@ class IamfDecoder : public api::IamfDecoderInterface {
    *        by GetOutputSampleType).
    * \param output_buffer_size Available size in bytes of the output buffer.
    * \param bytes_written Output param for the number of bytes written to the
-   * output_bytes.
+   *        output_bytes.
    * \return Ok status upon success. Other specific statuses on failure.
    */
   IamfStatus GetOutputTemporalUnit(uint8_t* output_buffer,
@@ -183,7 +183,7 @@ class IamfDecoder : public api::IamfDecoderInterface {
    * i.e. IsDescriptorProcessingComplete() returns true.
    *
    * \param output_num_channels Output param for the number of output channels
-   * upon success.
+   *        upon success.
    * \return Ok status upon success. Other specific statuses on failure.
    */
   IamfStatus GetNumberOfOutputChannels(int& output_num_channels) const override;

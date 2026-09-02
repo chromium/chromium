@@ -65,7 +65,7 @@ class ElementGainOffsetConfig {
   /*!\brief Creates an `ElementGainOffsetConfig` from a `ReadBitBuffer`.
    *
    * \param rb `ReadBitBuffer` where the `ElementGainOffsetConfig` data is
-   *     stored. Data read from the buffer is consumed.
+   *        stored. Data read from the buffer is consumed.
    * \return `ElementGainOffsetConfig` on success; a specific status on failure.
    */
   static absl::StatusOr<ElementGainOffsetConfig> CreateFromBuffer(
@@ -118,7 +118,7 @@ class ElementGainOffsetConfig {
    * For use by static factory functions only.
    *
    * \param element_gain_offset_config_data `ElementGainOffsetConfigVariant` to
-   *     construct from.
+   *        construct from.
    */
   explicit ElementGainOffsetConfig(
       ElementGainOffsetConfigVariant&& element_gain_offset_config_data)

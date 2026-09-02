@@ -25,6 +25,7 @@
 #include "iamf/cli/labeled_frame.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/utils/numeric_utils.h"
+#include "iamf/common/utils/validation_utils.h"
 #include "iamf/obu/types.h"
 
 namespace iamf_tools {
@@ -132,6 +133,44 @@ absl::Status ArrangeSamples(
         samples_to_trim_at_start, *common_num_trimmed_time_ticks);
   }
 
+  return absl::OkStatus();
+}
+
+absl::StatusOr<size_t> CheckPresenceAndGetCommonNumTicks(
+    const LabelSamplesMap& label_to_samples,
+    absl::Span<const ChannelLabel::Label> labels) {
+  size_t expected_size = 0;
+  for (size_t i = 0; i < labels.size(); ++i) {
+    auto it = label_to_samples.find(labels[i]);
+    if (it == label_to_samples.end()) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("Missing input channel: ", labels[i]));
+    }
+    if (i == 0) {
+      expected_size = it->second.size();
+    }
+    RETURN_IF_NOT_OK(ValidateContainerSizeEqual("Sample count across channels",
+                                                it->second, expected_size));
+  }
+  return expected_size;
+}
+
+absl::Status ValidateRenderedSamples(
+    absl::Span<const absl::Span<const InternalSampleType>> rendered_samples,
+    uint32_t expected_frame_size) {
+  if (rendered_samples.empty()) {
+    return absl::InvalidArgumentError("Rendered samples are empty.");
+  }
+  auto common_num_ticks = GetCommonNumTicks(rendered_samples);
+  if (!common_num_ticks.ok()) {
+    return common_num_ticks.status();
+  }
+  const size_t num_ticks = *common_num_ticks;
+  if (num_ticks > expected_frame_size) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "Sample count (", num_ticks, ") exceeds expected frame size (",
+        expected_frame_size, ")."));
+  }
   return absl::OkStatus();
 }
 

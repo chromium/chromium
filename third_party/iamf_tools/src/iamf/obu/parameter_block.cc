@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
@@ -29,6 +30,7 @@
 #include "iamf/common/utils/obu_util.h"
 #include "iamf/common/utils/validation_utils.h"
 #include "iamf/common/write_bit_buffer.h"
+#include "iamf/obu/animated_parameter_data.h"
 #include "iamf/obu/mix_gain_parameter_data.h"
 #include "iamf/obu/obu_base.h"
 #include "iamf/obu/obu_header.h"
@@ -104,43 +106,37 @@ absl::Status ParameterBlockObu::InterpolateMixGainParameterData(
     const MixGainParameterData* mix_gain_parameter_data,
     InternalTimestamp start_time, InternalTimestamp end_time,
     InternalTimestamp target_time, float& target_mix_gain_db) {
+  const auto& anim = mix_gain_parameter_data->param_data;
   return InterpolateMixGainValue(
-      mix_gain_parameter_data->GetAnimationType(),
-      MixGainParameterData::kAnimateStep, MixGainParameterData::kAnimateLinear,
-      MixGainParameterData::kAnimateBezier,
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationStepInt16>(mix_gain_parameter_data->param_data)
-            .start_point_value;
+      mix_gain_parameter_data->GetAnimationType(), AnimationType::kStep,
+      AnimationType::kLinear, AnimationType::kBezier,
+      [&anim]() {
+        ABSL_CHECK(anim.start_point_value().has_value());
+        return *anim.start_point_value();
       },
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationLinearInt16>(
-                   mix_gain_parameter_data->param_data)
-            .start_point_value;
+      [&anim]() {
+        ABSL_CHECK(anim.start_point_value().has_value());
+        return *anim.start_point_value();
       },
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationLinearInt16>(
-                   mix_gain_parameter_data->param_data)
-            .end_point_value;
+      [&anim]() {
+        ABSL_CHECK(anim.end_point_value().has_value());
+        return *anim.end_point_value();
       },
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationBezierInt16>(
-                   mix_gain_parameter_data->param_data)
-            .start_point_value;
+      [&anim]() {
+        ABSL_CHECK(anim.start_point_value().has_value());
+        return *anim.start_point_value();
       },
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationBezierInt16>(
-                   mix_gain_parameter_data->param_data)
-            .end_point_value;
+      [&anim]() {
+        ABSL_CHECK(anim.end_point_value().has_value());
+        return *anim.end_point_value();
       },
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationBezierInt16>(
-                   mix_gain_parameter_data->param_data)
-            .control_point_value;
+      [&anim]() {
+        ABSL_CHECK(anim.control_point_value().has_value());
+        return *anim.control_point_value();
       },
-      [&mix_gain_parameter_data]() {
-        return std::get<AnimationBezierInt16>(
-                   mix_gain_parameter_data->param_data)
-            .control_point_relative_time;
+      [&anim]() {
+        ABSL_CHECK(anim.control_point_relative_time().has_value());
+        return *anim.control_point_relative_time();
       },
       start_time, end_time, target_time, target_mix_gain_db);
 }
@@ -169,50 +165,50 @@ absl::StatusOr<DecodedUleb128> ParameterBlockObu::GetSubblockDuration(
                    subblock_index);
 }
 
-absl::Status ParameterBlockObu::GetLinearMixGain(
-    InternalTimestamp obu_relative_time, float& linear_mix_gain) const {
+absl::Status ParameterBlockObu::GetLinearMixGains(
+    std::vector<float>& linear_mix_gain_per_tick) const {
   if (param_definition_.GetType() !=
       ParamDefinition::kParameterDefinitionMixGain) {
     return absl::InvalidArgumentError("Expected Mix Gain Parameter Definition");
   }
-
   const DecodedUleb128 num_subblocks = GetNumSubblocks();
-  int target_subblock_index = -1;
-  InternalTimestamp subblock_relative_start_time = 0;
-  InternalTimestamp subblock_relative_end_time = 0;
-  for (DecodedUleb128 i = 0; i < num_subblocks; i++) {
-    const auto subblock_duration = GetSubblockDuration(i);
-    if (!subblock_duration.ok()) {
-      return subblock_duration.status();
-    }
-
-    if (subblock_relative_start_time <= obu_relative_time &&
-        obu_relative_time <
-            (subblock_relative_start_time + subblock_duration.value())) {
-      target_subblock_index = i;
-      subblock_relative_end_time =
-          subblock_relative_start_time + subblock_duration.value();
-      break;
-    }
-    subblock_relative_start_time += subblock_duration.value();
+  const size_t gains_size = linear_mix_gain_per_tick.size();
+  size_t subblock_i = 0;
+  auto subblock_duration = GetSubblockDuration(0);
+  if (!subblock_duration.ok()) {
+    return subblock_duration.status();
   }
+  InternalTimestamp current_subblock_start = 0;
+  InternalTimestamp current_subblock_end = subblock_duration.value();
 
-  if (target_subblock_index == -1) {
-    return absl::UnknownError(
-        absl::StrCat("Trying to get mix gain for target_subblock_index = -1, "
-                     "with num_subblocks = ",
-                     num_subblocks));
+  for (InternalTimestamp offset = 0;
+       offset < static_cast<InternalTimestamp>(gains_size); ++offset) {
+    while (offset >= current_subblock_end) {
+      // Get the next block if available.
+      ++subblock_i;
+      if (subblock_i >= num_subblocks) {
+        return absl::OkStatus();
+      }
+      subblock_duration = GetSubblockDuration(subblock_i);
+      if (!subblock_duration.ok()) {
+        return subblock_duration.status();
+      }
+      current_subblock_start = current_subblock_end;
+      current_subblock_end += subblock_duration.value();
+    }
+    float mix_gain_db = 0;
+    auto mix_gain_parameter_data =
+        static_cast<const MixGainParameterData*>(subblocks_[subblock_i].get());
+    if (mix_gain_parameter_data == nullptr) {
+      return absl::InvalidArgumentError("Expected Mix Gain Parameter Data");
+    }
+    RETURN_IF_NOT_OK(InterpolateMixGainParameterData(
+        mix_gain_parameter_data, current_subblock_start, current_subblock_end,
+        offset, mix_gain_db));
+
+    // Mix gain data is in dB and stored in Q7.8. Convert to the linear value.
+    linear_mix_gain_per_tick[offset] = std::pow(10.0f, mix_gain_db / 20.0f);
   }
-
-  float mix_gain_db = 0;
-  RETURN_IF_NOT_OK(InterpolateMixGainParameterData(
-      static_cast<const MixGainParameterData*>(
-          subblocks_[target_subblock_index].get()),
-      subblock_relative_start_time, subblock_relative_end_time,
-      obu_relative_time, mix_gain_db));
-
-  // Mix gain data is in dB and stored in Q7.8. Convert to the linear value.
-  linear_mix_gain = std::pow(10.0f, mix_gain_db / 20.0f);
   return absl::OkStatus();
 }
 
@@ -276,9 +272,11 @@ absl::Status ParameterBlockObu::ReadAndValidatePayloadDerived(
     subblocks_.clear();
     subblocks_.reserve(static_cast<size_t>(num_subblocks));
     for (DecodedUleb128 i = 0; i < num_subblocks; ++i) {
-      auto param_data = param_definition_.CreateParameterData();
-      RETURN_IF_NOT_OK(param_data->ReadAndValidate(rb));
-      subblocks_.push_back(std::move(param_data));
+      auto param_data = param_definition_.CreateParameterDataFromBuffer(rb);
+      if (!param_data.ok()) {
+        return param_data.status();
+      }
+      subblocks_.push_back(std::move(*param_data));
     }
     return absl::OkStatus();
   }
@@ -286,7 +284,10 @@ absl::Status ParameterBlockObu::ReadAndValidatePayloadDerived(
   // Mode 1 in the spec. Portions of the schedule are interlaced with the
   // parameter data in the block.
   auto schedule_and_data = SubblockSchedule::CreateFromBufferWithParameterData(
-      [this]() { return param_definition_.CreateParameterData(); }, rb);
+      [this](ReadBitBuffer& r) {
+        return param_definition_.CreateParameterDataFromBuffer(r);
+      },
+      rb);
   if (!schedule_and_data.ok()) {
     return schedule_and_data.status();
   }

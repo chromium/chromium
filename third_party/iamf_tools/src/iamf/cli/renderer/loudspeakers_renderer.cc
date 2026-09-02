@@ -117,6 +117,16 @@ absl::Status RenderSamplesUsingGains(
     std::vector<std::vector<InternalSampleType>>& rendered_samples) {
   const auto num_ticks = input_samples.empty() ? 0 : input_samples[0].size();
   const auto num_in_channels = input_samples.size();
+  if (gains.empty() || gains.size() < num_in_channels) {
+    return absl::InvalidArgumentError(
+        "Number of gain rows must be at least the number of input channels.");
+  }
+  for (const auto& input_channel : input_samples) {
+    if (input_channel.size() != num_ticks) {
+      return absl::InvalidArgumentError(
+          "All input channels must have the same number of samples.");
+    }
+  }
   const auto num_out_channels = gains[0].size();
   rendered_samples.resize(num_out_channels);
   for (size_t out_channel = 0; out_channel < num_out_channels; out_channel++) {

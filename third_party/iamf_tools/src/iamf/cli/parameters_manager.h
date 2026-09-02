@@ -95,7 +95,7 @@ class ParametersManager {
   /*!\brief Adds a new recon gain parameter block.
    *
    * \param parameter_block Pointer to the new recon gain parameter block to
-   * add.
+   *        add.
    */
   void AddReconGainParameterBlock(
       const ParameterBlockWithData* absl_nonnull parameter_block);

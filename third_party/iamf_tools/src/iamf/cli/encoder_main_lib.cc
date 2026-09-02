@@ -26,10 +26,10 @@
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/types/span.h"
-#include "iamf/cli/demixing_module.h"
 #include "iamf/cli/descriptor_obus.h"
 #include "iamf/cli/iamf_components.h"
 #include "iamf/cli/iamf_encoder.h"
+#include "iamf/cli/labeled_frame.h"
 #include "iamf/cli/parameter_block_partitioner.h"
 #include "iamf/cli/proto/encoder_control_metadata.pb.h"
 #include "iamf/cli/proto/temporal_delimiter.pb.h"
@@ -267,7 +267,7 @@ absl::Status TestMain(const UserMetadata& input_user_metadata,
   RenderingMixPresentationFinalizer::SampleProcessorFactory
       sample_processor_factory =
           [output_wav_file_prefix](DecodedUleb128 mix_presentation_id,
-                                   int sub_mix_index, int layout_index,
+                                   size_t sub_mix_index, size_t layout_index,
                                    const Layout&, int num_channels,
                                    int sample_rate, int bit_depth,
                                    size_t max_input_samples_per_frame)
@@ -294,7 +294,7 @@ absl::Status TestMain(const UserMetadata& input_user_metadata,
   };
 
   auto iamf_encoder =
-      IamfEncoder::Create(user_metadata, CreateRendererFactory().get(),
+      IamfEncoder::Create(user_metadata, CreateLayoutRendererFactory().get(),
                           CreateLoudnessCalculatorFactory().get(),
                           sample_processor_factory, obu_sequencer_factory);
   if (!iamf_encoder.ok()) {

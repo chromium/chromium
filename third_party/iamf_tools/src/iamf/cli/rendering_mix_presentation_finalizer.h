@@ -14,7 +14,6 @@
 #define CLI_RENDERING_MIX_PRESENTATION_FINALIZER_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <list>
 #include <memory>
 #include <utility>
@@ -26,17 +25,15 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/types/span.h"
-#include "iamf/cli/demixing_module.h"
+#include "iamf/cli/demixing_manager.h"
 #include "iamf/cli/descriptor_obus.h"
+#include "iamf/cli/layout_renderer_factory.h"
 #include "iamf/cli/loudness_calculator_base.h"
 #include "iamf/cli/loudness_calculator_factory_base.h"
 #include "iamf/cli/parameter_block_with_data.h"
-#include "iamf/cli/renderer/audio_element_renderer_base.h"
-#include "iamf/cli/renderer_factory.h"
+#include "iamf/cli/renderer/layout_renderer_base.h"
 #include "iamf/cli/sample_processor_base.h"
-#include "iamf/obu/codec_config.h"
 #include "iamf/obu/mix_presentation.h"
-#include "iamf/obu/param_definitions/mix_gain_param_definition.h"
 #include "iamf/obu/types.h"
 
 namespace iamf_tools {
@@ -70,22 +67,17 @@ class RenderingMixPresentationFinalizer {
  public:
   // Contains rendering metadata for all audio elements in a given layout.
   struct LayoutRenderingMetadata {
-    bool can_render;
+    // Renderer for this layout; may be `nullptr` if this layout cannot be
+    // rendered.
+    std::unique_ptr<LayoutRendererBase> layout_renderer;
+
     // Controlled by the `SampleProcessorFactory`; may be `nullptr` if the user
     // does not want post-processing this layout.
     std::unique_ptr<SampleProcessorBase> sample_processor;
+
     // Controlled by the `LoudnessCalculatorFactory`; may be `nullptr` if the
     // user does not want loudness calculated for this layout.
     std::unique_ptr<LoudnessCalculatorBase> loudness_calculator;
-
-    // Renderers for each audio element.
-    std::vector<std::unique_ptr<AudioElementRendererBase>> renderers;
-
-    // The number of channels in this layout.
-    int32_t num_channels;
-    // The start time stamp of the current frames to be rendered within this
-    // layout.
-    InternalTimestamp start_timestamp;
 
     // Reusable buffer for storing rendered samples.
     std::vector<std::vector<InternalSampleType>> rendered_samples;
@@ -95,22 +87,10 @@ class RenderingMixPresentationFinalizer {
     std::vector<absl::Span<const InternalSampleType>> valid_rendered_samples;
   };
 
-  // We need to store rendering metadata for each submix, layout, and audio
-  // element. This metadata will then be used to render the audio frames at each
-  // timestamp. Some metadata is common to all audio elements and all layouts
-  // within a submix. We also want to optionally support writing to a wav file
-  // and/or calculating loudness based on the rendered output.
-  struct SubmixRenderingMetadata {
-    uint32_t common_sample_rate;
-    std::vector<SubMixAudioElement> audio_elements_in_sub_mix;
-    std::vector<const CodecConfigObu*> codec_configs_in_sub_mix;
-
-    // Mix gain applied to the entire submix.
-    std::unique_ptr<MixGainParamDefinition> mix_gain;
-    // This vector will contain one LayoutRenderingMetadata per layout in the
-    // submix.
-    std::vector<LayoutRenderingMetadata> layout_rendering_metadata;
-  };
+  // Each sub-mix may have many layouts. Rendering metadata for layouts
+  // belonging to the same sub-mix are grouped and referred to as
+  // `SubMixRenderingMetadata`.
+  using SubMixRenderingMetadata = std::vector<LayoutRenderingMetadata>;
 
   /*!\brief Factory for a sample processor.
    *
@@ -121,8 +101,8 @@ class RenderingMixPresentationFinalizer {
    * select relevant layouts and mix presentations to create a `WavWriter` for.
    *
    * \param mix_presentation_id Mix presentation ID.
-   * \param sub_mix_index Index of the sub mix within the mix presentation.
-   * \param layout_index Index of the layout within the sub mix.
+   * \param sub_mix_index Index of the sub-mix within the mix presentation.
+   * \param layout_index Index of the layout within the sub-mix.
    * \param layout Associated layout.
    * \param prefix Prefix for the output file.
    * \param num_channels Number of channels.
@@ -133,9 +113,9 @@ class RenderingMixPresentationFinalizer {
    *         desired.
    */
   typedef absl::AnyInvocable<std::unique_ptr<SampleProcessorBase>(
-      DecodedUleb128 mix_presentation_id, int sub_mix_index, int layout_index,
-      const Layout& layout, int num_channels, int sample_rate, int bit_depth,
-      size_t num_samples_per_frame) const>
+      DecodedUleb128 mix_presentation_id, size_t sub_mix_index,
+      size_t layout_index, const Layout& layout, int num_channels,
+      int sample_rate, int bit_depth, size_t num_samples_per_frame) const>
       SampleProcessorFactory;
 
   /*!\brief Factory that never returns a sample processor.
@@ -143,8 +123,8 @@ class RenderingMixPresentationFinalizer {
    * For convenience to use with `Create`.
    */
   static std::unique_ptr<SampleProcessorBase> ProduceNoSampleProcessors(
-      DecodedUleb128 /*mix_presentation_id*/, int /*sub_mix_index*/,
-      int /*layout_index*/, const Layout& /*layout*/, int /*num_channels*/,
+      DecodedUleb128 /*mix_presentation_id*/, size_t /*sub_mix_index*/,
+      size_t /*layout_index*/, const Layout& /*layout*/, int /*num_channels*/,
       int /*sample_rate*/, int /*bit_depth*/,
       size_t /*num_samples_per_frame*/) {
     return nullptr;
@@ -155,18 +135,19 @@ class RenderingMixPresentationFinalizer {
    * Rendering metadata is extracted from the mix presentation OBUs, which will
    * be used to render the mix presentations in PushTemporalUnit.
    *
-   * \param renderer_factory Factory to create renderers, or `nullptr` to
-   *        disable rendering.
+   * \param layout_renderer_factory Factory to create layout renderers, or
+   *        `nullptr` to disable rendering.
    * \param loudness_calculator_factory Factory to create loudness calculators
    *        or `nullptr` to disable loudness calculation.
    * \param audio_elements Audio elements with data.
    * \param sample_processor_factory Factory to create sample processors for use
    *        after rendering.
    * \param mix_presentation_obus OBUs to render and measure the loudness of.
-   * \return `absl::OkStatus()` on success. A specific status on failure.
+   * \return Instance of `RenderingMixPresentationFinalizer` on success. A
+   *         specific status on failure.
    */
   static absl::StatusOr<RenderingMixPresentationFinalizer> Create(
-      const RendererFactoryBase* absl_nullable renderer_factory,
+      const LayoutRendererFactory* absl_nullable layout_renderer_factory,
       const LoudnessCalculatorFactoryBase* absl_nullable
           loudness_calculator_factory,
       const DescriptorObus::AudioElementsById& audio_elements,
@@ -203,7 +184,7 @@ class RenderingMixPresentationFinalizer {
 
   /*!\brief Retrieves cached post-processed samples.
    *
-   * Retrieves the post-processed samples for a given mix presentation, submix,
+   * Retrieves the post-processed samples for a given mix presentation, sub-mix,
    * and layout. Or the rendered samples if no post-processor is available. New
    * data is available after each call to `PushTemporalUnit` or
    * `FinalizePushingTemporalUnits`. The output span is invalidated by any
@@ -222,7 +203,7 @@ class RenderingMixPresentationFinalizer {
    *     to a file.
    *
    * \param mix_presentation_id Mix presentation ID
-   * \param submix_index Index of the sub mix to retrieve.
+   * \param sub_mix_index Index of the sub-mix to retrieve.
    * \param layout_index Index of the layout to retrieve.
    * \param Post-processed samples, or rendered samples if no post-processor is
    *        available. A specific status on failure.
@@ -264,13 +245,13 @@ class RenderingMixPresentationFinalizer {
    * Used only by the factory method.
    *
    * \param mix_presentation_id_to_sub_mix_rendering_metadata Mix presentation
-   *        ID to rendering metadata for each sub mix.
+   *        ID to rendering metadata for each sub-mix.
    * \param mix_presentation_obus Mix presentation OBUs to render and measure
    *        the loudness of.
    */
   RenderingMixPresentationFinalizer(
       absl::flat_hash_map<DecodedUleb128,
-                          std::vector<SubmixRenderingMetadata>>&&
+                          std::vector<SubMixRenderingMetadata>>&&
           mix_presentation_id_to_sub_mix_rendering_metadata,
       DescriptorObus::MixPresentationObus&& mix_presentation_obus)
       : mix_presentation_id_to_sub_mix_rendering_metadata_(
@@ -281,7 +262,7 @@ class RenderingMixPresentationFinalizer {
 
   // Mapping from Mix Presentation ID to rendering metadata. Slots are absent
   // for Mix Presentations that have no layouts which can be rendered.
-  absl::flat_hash_map<DecodedUleb128, std::vector<SubmixRenderingMetadata>>
+  absl::flat_hash_map<DecodedUleb128, std::vector<SubMixRenderingMetadata>>
       mix_presentation_id_to_sub_mix_rendering_metadata_;
 
   // Mix Presentation OBUs to render and measure the loudness of.

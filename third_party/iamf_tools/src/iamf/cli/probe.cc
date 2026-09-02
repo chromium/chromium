@@ -35,6 +35,7 @@
 #include "iamf/cli/descriptor_obus.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/obu/ambisonics_config.h"
+#include "iamf/obu/animated_parameter_data.h"
 #include "iamf/obu/audio_element.h"
 #include "iamf/obu/codec_config.h"
 #include "iamf/obu/decoder_config/aac_decoder_config.h"
@@ -808,14 +809,18 @@ std::string DMixPModeToString(DemixingInfoParameterData::DMixPMode m) {
   return absl::StrCat("reserved(", static_cast<int>(m), ")");
 }
 
-std::string AnimationTypeToString(MixGainParameterData::AnimationType t) {
+std::string AnimationTypeToString(AnimationType t) {
   switch (t) {
-    case MixGainParameterData::kAnimateStep:
+    case AnimationType::kStep:
       return "step";
-    case MixGainParameterData::kAnimateLinear:
+    case AnimationType::kLinear:
       return "linear";
-    case MixGainParameterData::kAnimateBezier:
+    case AnimationType::kBezier:
       return "bezier";
+    case AnimationType::kInterLinear:
+      return "inter_linear";
+    case AnimationType::kInterBezier:
+      return "inter_bezier";
   }
   return absl::StrCat("reserved(", static_cast<int>(t), ")");
 }
@@ -833,19 +838,18 @@ MixGainAnimationReport BuildMixGainAnimationReport(
     r.end_point_value_q7_8 = v;
     r.end_point_value = Q7_8ToFloat(v);
   };
-  if (const auto* step = std::get_if<AnimationStepInt16>(&data.param_data)) {
-    set_start(step->start_point_value);
-  } else if (const auto* linear =
-                 std::get_if<AnimationLinearInt16>(&data.param_data)) {
-    set_start(linear->start_point_value);
-    set_end(linear->end_point_value);
-  } else if (const auto* bezier =
-                 std::get_if<AnimationBezierInt16>(&data.param_data)) {
-    set_start(bezier->start_point_value);
-    set_end(bezier->end_point_value);
-    r.control_point_value_q7_8 = bezier->control_point_value;
-    r.control_point_value = Q7_8ToFloat(bezier->control_point_value);
-    r.control_point_relative_time = bezier->control_point_relative_time;
+  const auto& anim = data.param_data;
+  if (anim.animation_type() == AnimationType::kStep) {
+    set_start(*anim.start_point_value());
+  } else if (anim.animation_type() == AnimationType::kLinear) {
+    set_start(*anim.start_point_value());
+    set_end(*anim.end_point_value());
+  } else if (anim.animation_type() == AnimationType::kBezier) {
+    set_start(*anim.start_point_value());
+    set_end(*anim.end_point_value());
+    r.control_point_value_q7_8 = *anim.control_point_value();
+    r.control_point_value = Q7_8ToFloat(*anim.control_point_value());
+    r.control_point_relative_time = *anim.control_point_relative_time();
   }
   return r;
 }

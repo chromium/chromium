@@ -54,9 +54,12 @@ absl::Status DualCart16ParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
   return absl::OkStatus();
 }
 
-std::unique_ptr<ParameterData> DualCart16ParamDefinition::CreateParameterData()
-    const {
-  return std::make_unique<DualCart16ParameterData>();
+absl::StatusOr<std::unique_ptr<ParameterData>>
+DualCart16ParamDefinition::CreateParameterDataFromBuffer(
+    ReadBitBuffer& rb) const {
+  return absl::UnimplementedError(
+      "CreateParameterDataFromBuffer for DualCart16ParamDefinition is not "
+      "implemented yet.");
 }
 
 void DualCart16ParamDefinition::Print() const {

@@ -119,16 +119,20 @@ absl::StatusOr<SubblockSchedule> SubblockSchedule::CreateFromBuffer(
 
 absl::StatusOr<SubblockSchedule::ScheduleAndParameterData>
 SubblockSchedule::CreateFromBufferWithParameterData(
-    absl::FunctionRef<std::unique_ptr<ParameterData>()> create_parameter_data,
+    absl::FunctionRef<
+        absl::StatusOr<std::unique_ptr<ParameterData>>(ReadBitBuffer&)>
+        create_parameter_data,
     ReadBitBuffer& rb) {
   std::vector<std::unique_ptr<ParameterData> absl_nonnull> parameter_data;
 
-  const auto create_parameter_data_on_subblock = [&]() {
-    auto param_data = create_parameter_data();
-    RETURN_IF_NOT_OK(
-        ValidateNotNull(param_data, "Failed to create parameter data."));
-    RETURN_IF_NOT_OK(param_data->ReadAndValidate(rb));
-    parameter_data.push_back(std::move(param_data));
+  const auto create_parameter_data_on_subblock = [&]() -> absl::Status {
+    auto param_data = create_parameter_data(rb);
+    if (!param_data.ok()) {
+      return param_data.status();
+    }
+    RETURN_IF_NOT_OK(ValidateNotNull(param_data.value(),
+                                     "Failed to create parameter data."));
+    parameter_data.push_back(std::move(*param_data));
     return absl::OkStatus();
   };
 

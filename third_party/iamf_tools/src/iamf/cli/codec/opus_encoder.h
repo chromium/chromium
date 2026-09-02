@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef CLI_OPUS_ENCODER_DECODER_H_
-#define CLI_OPUS_ENCODER_DECODER_H_
+#ifndef CLI_CODEC_OPUS_ENCODER_H_
+#define CLI_CODEC_OPUS_ENCODER_H_
 
 #include <cstdint>
 #include <memory>
@@ -112,4 +112,4 @@ class OpusEncoder : public EncoderBase {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_OPUS_ENCODER_DECODER_H_
+#endif  // CLI_CODEC_OPUS_ENCODER_H_

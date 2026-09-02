@@ -10,8 +10,8 @@
  * www.aomedia.org/license/patent.
  */
 
-#ifndef API_DECODER_TYPES_H_
-#define API_DECODER_TYPES_H_
+#ifndef INCLUDE_IAMF_TOOLS_IAMF_TOOLS_API_TYPES_H_
+#define INCLUDE_IAMF_TOOLS_IAMF_TOOLS_API_TYPES_H_
 
 #include <cstdint>
 #include <optional>
@@ -190,4 +190,4 @@ struct TrimmingSettings {
 }  // namespace api
 }  // namespace iamf_tools
 
-#endif  // API_DECODER_TYPES_H_
+#endif  // INCLUDE_IAMF_TOOLS_IAMF_TOOLS_API_TYPES_H_

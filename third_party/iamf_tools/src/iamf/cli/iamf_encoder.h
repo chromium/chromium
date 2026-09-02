@@ -25,9 +25,11 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "iamf/cli/audio_frame_decoder.h"
-#include "iamf/cli/demixing_module.h"
+#include "iamf/cli/demixing_manager.h"
 #include "iamf/cli/descriptor_obus.h"
 #include "iamf/cli/global_timing_module.h"
+#include "iamf/cli/labeled_frame.h"
+#include "iamf/cli/layout_renderer_factory.h"
 #include "iamf/cli/loudness_calculator_factory_base.h"
 #include "iamf/cli/obu_sequencer_base.h"
 #include "iamf/cli/obu_sequencer_streaming_iamf.h"
@@ -46,6 +48,8 @@
 #include "iamf/obu/metadata_obu.h"
 #include "iamf/obu/param_definitions/param_definition_variant.h"
 #include "iamf/obu/types.h"
+
+ABSL_POINTERS_DEFAULT_NONNULL
 
 namespace iamf_tools {
 
@@ -87,22 +91,21 @@ namespace iamf_tools {
 class IamfEncoder : public api::IamfEncoderInterface {
  public:
   /*!\brief Factory to create `ObuSequencerBases`. */
-  typedef absl::AnyInvocable<
-      std::vector<std::unique_ptr<ObuSequencerBase> absl_nonnull>() const>
+  typedef absl::AnyInvocable<std::vector<std::unique_ptr<ObuSequencerBase>>()
+                                 const>
       ObuSequencerFactory;
 
   /*!\brief Factory that returns no `ObuSequencerBases`s.
    *
    * For convenience to use with `Create`.
    */
-  static std::vector<std::unique_ptr<ObuSequencerBase> absl_nonnull>
-  CreateNoObuSequencers();
+  static std::vector<std::unique_ptr<ObuSequencerBase>> CreateNoObuSequencers();
 
   /*!\brief Factory function to create an `IamfEncoder`.
    *
    * \param user_metadata Input user metadata describing the IAMF stream.
-   * \param renderer_factory Factory to create renderers for use in measuring
-   *        the loudness.
+   * \param layout_renderer_factory Factory to create layout renderers for use
+   *        in measuring the loudness.
    * \param loudness_calculator_factory Factory to create loudness calculators
    *        to measure the loudness of the output layouts.
    * \param sample_processor_factory Factory to create processors for use after
@@ -112,7 +115,7 @@ class IamfEncoder : public api::IamfEncoderInterface {
    */
   static absl::StatusOr<std::unique_ptr<IamfEncoder>> Create(
       const iamf_tools_cli_proto::UserMetadata& user_metadata,
-      const RendererFactoryBase* absl_nullable renderer_factory,
+      const LayoutRendererFactory* absl_nullable layout_renderer_factory,
       const LoudnessCalculatorFactoryBase* absl_nullable
           loudness_calculator_factory,
       const RenderingMixPresentationFinalizer::SampleProcessorFactory&
@@ -258,35 +261,33 @@ class IamfEncoder : public api::IamfEncoderInterface {
    * \param param_definition_variants Parameter definitions for the IA Sequence.
    * \param parameters_manager Manager to support internal querying
    *        of parameters.
-   * \param demixing_module Module to demix audio elements.
+   * \param demixing_manager Manager to demix audio elements.
    * \param audio_frame_generator Audio frame generator.
    * \param audio_frame_decoder Decodes the original audio frames, to facilitate
    *        recon gain computation.
    * \param global_timing_module Manages global timing information.
    */
-  IamfEncoder(bool validate_user_loudness,
-              IASequenceHeaderObu&& ia_sequence_header_obu,
-              std::list<MetadataObu>&& metadata_obus,
-              std::unique_ptr<DescriptorObus::CodecConfigsById> absl_nonnull
-              codec_config_obus,
-              std::unique_ptr<DescriptorObus::AudioElementsById> absl_nonnull
-              audio_elements,
-              DescriptorObus::MixPresentationObus&& mix_presentation_obus,
-              std::list<ArbitraryObu>&& descriptor_arbitrary_obus,
-              absl::btree_map<InternalTimestamp, std::list<ArbitraryObu>>&&
-                  timestamp_to_arbitrary_obus,
-              std::unique_ptr<
-                  absl::flat_hash_map<DecodedUleb128, ParamDefinitionVariant>>
-                  param_definition_variants,
-              ParameterBlockGenerator&& parameter_block_generator,
-              std::unique_ptr<ParametersManager> parameters_manager,
-              const DemixingModule& demixing_module,
-              std::unique_ptr<AudioFrameGenerator> audio_frame_generator,
-              AudioFrameDecoder&& audio_frame_decoder,
-              std::unique_ptr<GlobalTimingModule> global_timing_module,
-              RenderingMixPresentationFinalizer&& mix_presentation_finalizer,
-              std::vector<std::unique_ptr<ObuSequencerBase>>&& obu_sequencers,
-              ObuSequencerStreamingIamf&& streaming_obu_sequencer)
+  IamfEncoder(
+      bool validate_user_loudness, IASequenceHeaderObu&& ia_sequence_header_obu,
+      std::list<MetadataObu>&& metadata_obus,
+      std::unique_ptr<DescriptorObus::CodecConfigsById> codec_config_obus,
+      std::unique_ptr<DescriptorObus::AudioElementsById> audio_elements,
+      DescriptorObus::MixPresentationObus&& mix_presentation_obus,
+      std::list<ArbitraryObu>&& descriptor_arbitrary_obus,
+      absl::btree_map<InternalTimestamp, std::list<ArbitraryObu>>&&
+          timestamp_to_arbitrary_obus,
+      std::unique_ptr<
+          absl::flat_hash_map<DecodedUleb128, ParamDefinitionVariant>>
+          param_definition_variants,
+      ParameterBlockGenerator&& parameter_block_generator,
+      std::unique_ptr<ParametersManager> parameters_manager,
+      const DemixingManager& demixing_manager,
+      std::unique_ptr<AudioFrameGenerator> audio_frame_generator,
+      AudioFrameDecoder&& audio_frame_decoder,
+      std::unique_ptr<GlobalTimingModule> global_timing_module,
+      RenderingMixPresentationFinalizer&& mix_presentation_finalizer,
+      std::vector<std::unique_ptr<ObuSequencerBase>>&& obu_sequencers,
+      std::unique_ptr<ObuSequencerStreamingIamf> streaming_obu_sequencer)
       : validate_user_loudness_(validate_user_loudness),
         ia_sequence_header_obu_(std::move(ia_sequence_header_obu)),
         metadata_obus_(std::move(metadata_obus)),
@@ -298,7 +299,7 @@ class IamfEncoder : public api::IamfEncoderInterface {
         param_definition_variants_(std::move(param_definition_variants)),
         parameter_block_generator_(std::move(parameter_block_generator)),
         parameters_manager_(std::move(parameters_manager)),
-        demixing_module_(demixing_module),
+        demixing_manager_(demixing_manager),
         audio_frame_generator_(std::move(audio_frame_generator)),
         audio_frame_decoder_(std::move(audio_frame_decoder)),
         global_timing_module_(std::move(global_timing_module)),
@@ -313,13 +314,11 @@ class IamfEncoder : public api::IamfEncoderInterface {
   std::list<MetadataObu> metadata_obus_;
   // Held in a `unique_ptr`, so the underlying map can be moved without
   // invalidating pointers. At least `audio_elements_` depend on this.
-  std::unique_ptr<DescriptorObus::CodecConfigsById> absl_nonnull
-  codec_config_obus_;
+  std::unique_ptr<DescriptorObus::CodecConfigsById> codec_config_obus_;
   // Held in a `unique_ptr`, so the underlying map can be moved without
   // invalidating pointers. At least `audio_frame_generator_` and any output
   // `AudioFrameWithData` depend on this.
-  std::unique_ptr<DescriptorObus::AudioElementsById> absl_nonnull
-  audio_elements_;
+  std::unique_ptr<DescriptorObus::AudioElementsById> audio_elements_;
   DescriptorObus::MixPresentationObus mix_presentation_obus_;
   std::list<ArbitraryObu> descriptor_arbitrary_obus_;
 
@@ -333,7 +332,7 @@ class IamfEncoder : public api::IamfEncoderInterface {
   // Mapping from parameter IDs to parameter definitions.
   // Parameter block generator owns a reference to this map. Wrapped in
   // `std::unique_ptr` for reference stability after move.
-  absl_nonnull std::unique_ptr<
+  std::unique_ptr<
       const absl::flat_hash_map<DecodedUleb128, ParamDefinitionVariant>>
       param_definition_variants_;
 
@@ -352,11 +351,11 @@ class IamfEncoder : public api::IamfEncoderInterface {
   // Various generators and modules used when generating data OBUs iteratively.
   // Some are held in `unique_ptr` for reference stability after move.
   ParameterBlockGenerator parameter_block_generator_;
-  absl_nonnull std::unique_ptr<ParametersManager> parameters_manager_;
-  const DemixingModule demixing_module_;
-  absl_nonnull std::unique_ptr<AudioFrameGenerator> audio_frame_generator_;
+  std::unique_ptr<ParametersManager> parameters_manager_;
+  const DemixingManager demixing_manager_;
+  std::unique_ptr<AudioFrameGenerator> audio_frame_generator_;
   AudioFrameDecoder audio_frame_decoder_;
-  absl_nonnull std::unique_ptr<GlobalTimingModule> global_timing_module_;
+  std::unique_ptr<GlobalTimingModule> global_timing_module_;
 
   // Modules to render the output layouts and measure their loudness.
   RenderingMixPresentationFinalizer mix_presentation_finalizer_;
@@ -367,7 +366,7 @@ class IamfEncoder : public api::IamfEncoderInterface {
   std::vector<std::unique_ptr<ObuSequencerBase>> obu_sequencers_;
   // Backing sequencer, to back output of serialized OBUs. Held as a specific
   // class, because it has extra functions not available in the base class.
-  ObuSequencerStreamingIamf streaming_obu_sequencer_;
+  std::unique_ptr<ObuSequencerStreamingIamf> streaming_obu_sequencer_;
   // True after the sequencers have been finalized.
   bool sequencers_finalized_ = false;
 };

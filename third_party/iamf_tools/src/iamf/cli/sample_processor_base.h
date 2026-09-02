@@ -64,6 +64,12 @@ class SampleProcessorBase {
   /*!\brief Destructor. */
   virtual ~SampleProcessorBase() = 0;
 
+  /*!\brief Gets the number of channels.
+   *
+   * \return Number of channels.
+   */
+  size_t GetNumChannels() const { return num_channels_; }
+
   /*!\brief Pushes a frame of samples to the processor.
    *
    * \param channel_time_samples Samples to push arranged in (channel, time).

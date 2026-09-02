@@ -13,7 +13,6 @@
 #define CLI_RENDERER_AUDIO_ELEMENT_RENDERER_BINAURAL_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -62,7 +61,8 @@ class AudioElementRendererBinaural : public AudioElementRendererBase {
   static std::unique_ptr<AudioElementRendererBinaural>
   CreateFromScalableChannelLayoutConfig(
       const ScalableChannelLayoutConfig& scalable_channel_layout_config,
-      size_t num_samples_per_frame, size_t sample_rate);
+      size_t num_samples_per_frame, size_t sample_rate,
+      TrimmingSettings trimming_settings = {});
 
   /*!\brief Creates an ambisonics to binaural renderer.
    *
@@ -80,7 +80,8 @@ class AudioElementRendererBinaural : public AudioElementRendererBase {
       const AmbisonicsConfig& ambisonics_config,
       const std::vector<DecodedUleb128>& audio_substream_ids,
       const SubstreamIdLabelsMap& substream_id_to_labels,
-      size_t num_samples_per_frame, size_t sample_rate);
+      size_t num_samples_per_frame, size_t sample_rate,
+      TrimmingSettings trimming_settings = {});
 
   /*!\brief Destructor. */
   ~AudioElementRendererBinaural() override = default;
@@ -91,21 +92,22 @@ class AudioElementRendererBinaural : public AudioElementRendererBase {
   typedef float ObrSampleType;
 
   // Type for an optional demixing matrix.
-  typedef std::optional<const std::vector<int16_t>> OptionalDemixingMatrix;
+  typedef std::optional<std::vector<InternalSampleType>> OptionalDemixingMatrix;
 
   /*!\brief Constructor.
    *
    * \param ordered_labels Ordered list of channel labels to render.
    * \param demixing_matrix Demixing matrix used to project input samples.
-   *     Only active when rendering inputs in ambisonics projection mode. Pass
-   *     in `std::nullopt` otherwise.
+   *        Only active when rendering inputs in ambisonics projection mode.
+   *        Pass in `std::nullopt` otherwise.
    * \param obr Instance of an OBR renderer.
    * \param num_samples_per_frame Number of samples per frame.
    */
   AudioElementRendererBinaural(
       const std::vector<ChannelLabel::Label>& ordered_labels,
-      std::optional<absl::Span<const int16_t>> demixing_matrix,
-      std::unique_ptr<obr::ObrImpl> obr, size_t num_samples_per_frame);
+      const OptionalDemixingMatrix& demixing_matrix,
+      std::unique_ptr<obr::ObrImpl> obr, size_t num_samples_per_frame,
+      TrimmingSettings trimming_settings);
 
   /*!\brief Renders samples.
    *
@@ -123,10 +125,11 @@ class AudioElementRendererBinaural : public AudioElementRendererBase {
 
   // Only when ambisonics projection mode is used will this hold a value
   // other than `std::nullopt`.
-  OptionalDemixingMatrix demixing_matrix_;
+  const OptionalDemixingMatrix demixing_matrix_;
 
   // Buffer to store samples projected by the demixing matrix (if it exists).
   std::vector<std::vector<InternalSampleType>> projected_samples_;
+  std::vector<absl::Span<InternalSampleType>> projected_samples_spans_;
 };
 
 }  // namespace iamf_tools

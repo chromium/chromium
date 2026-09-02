@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef CLI_LPCM_ENCODER_H_
-#define CLI_LPCM_ENCODER_H_
+#ifndef CLI_CODEC_LPCM_ENCODER_H_
+#define CLI_CODEC_LPCM_ENCODER_H_
 
 #include <cstdint>
 #include <memory>
@@ -66,4 +66,4 @@ class LpcmEncoder : public EncoderBase {
 };
 }  // namespace iamf_tools
 
-#endif  // CLI_LPCM_ENCODER_H_
+#endif  // CLI_CODEC_LPCM_ENCODER_H_

@@ -67,9 +67,12 @@ absl::Status DualPolarParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
   return absl::OkStatus();
 }
 
-std::unique_ptr<ParameterData> DualPolarParamDefinition::CreateParameterData()
-    const {
-  return std::make_unique<DualPolarParameterData>();
+absl::StatusOr<std::unique_ptr<ParameterData>>
+DualPolarParamDefinition::CreateParameterDataFromBuffer(
+    ReadBitBuffer& rb) const {
+  return absl::UnimplementedError(
+      "CreateParameterDataFromBuffer for DualPolarParamDefinition is not "
+      "implemented yet.");
 }
 
 void DualPolarParamDefinition::Print() const {

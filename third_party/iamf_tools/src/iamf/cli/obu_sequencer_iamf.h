@@ -99,4 +99,4 @@ class ObuSequencerIamf : public ObuSequencerBase {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_OBU_SEQUENCER_H_
+#endif  // CLI_OBU_SEQUENCER_IAMF_H_

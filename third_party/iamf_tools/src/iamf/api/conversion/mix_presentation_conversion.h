@@ -10,8 +10,8 @@
  * www.aomedia.org/license/patent.
  */
 
-#ifndef API_CONVERSION_MIX_PRESENTATION_METADATA_H_
-#define API_CONVERSION_MIX_PRESENTATION_METADATA_H_
+#ifndef API_CONVERSION_MIX_PRESENTATION_CONVERSION_H_
+#define API_CONVERSION_MIX_PRESENTATION_CONVERSION_H_
 
 #include <optional>
 
@@ -30,4 +30,4 @@ absl::StatusOr<api::OutputLayout> InternalToApiType(Layout internal_layout);
 
 }  // namespace iamf_tools
 
-#endif  // API_CONVERSION_MIX_PRESENTATION_METADATA_H_
+#endif  // API_CONVERSION_MIX_PRESENTATION_CONVERSION_H_

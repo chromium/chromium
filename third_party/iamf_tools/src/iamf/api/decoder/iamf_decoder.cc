@@ -14,6 +14,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -79,6 +80,21 @@ struct IamfDecoder::DecoderState {
 
   /*!\brief Creates an ObuProcessor and maintains related bookkeeping. */
   absl::Status CreateObuProcessor();
+
+  // TODO(b/552011003): Replace with AudioBuffer instance once available.
+  /*!\brief Returns true iff the current rendered_samples are valid. */
+  bool IsRenderedSamplesValid() const {
+    uint32_t expected_frame_size = 0;
+    if (obu_processor != nullptr) {
+      auto output_frame_size = obu_processor->GetOutputFrameSize();
+      if (output_frame_size.ok()) {
+        expected_frame_size = *output_frame_size;
+      }
+    }
+    return ValidateRenderedSamples(absl::MakeConstSpan(rendered_samples),
+                                   expected_frame_size)
+        .ok();
+  }
 
   // Current status of the decoder.
   DecoderStatus status = DecoderStatus::kAcceptingData;
@@ -157,7 +173,7 @@ absl::Status IamfDecoder::DecoderState::CreateObuProcessor() {
   descriptor_obus.resize(num_bytes_read);
   RETURN_IF_NOT_OK(
       read_bit_buffer->ReadUint8Span(absl::MakeSpan(descriptor_obus)));
-  RETURN_IF_NOT_OK(read_bit_buffer->Flush(num_bytes_read));
+  read_bit_buffer->Flush();
 
   auto new_mix_presentation_id =
       temp_obu_processor->GetOutputMixPresentationId();
@@ -212,7 +228,6 @@ IamfStatus DecodeOneTemporalUnit(
   if (obu_processor == nullptr) {
     return IamfStatus::ErrorStatus("Internal Error: Obu processor is null.");
   }
-  const auto start_position_bits = read_bit_buffer->Tell();
   std::optional<ObuProcessor::OutputTemporalUnit> output_temporal_unit;
   bool unused_continue_processing = true;
   absl::Status absl_status = obu_processor->ProcessTemporalUnit(
@@ -238,11 +253,7 @@ IamfStatus DecodeOneTemporalUnit(
     }
   }
   // Empty the buffer of the data that was processed thus far.
-  const auto num_bits_read = read_bit_buffer->Tell() - start_position_bits;
-  absl::Status flush_status = read_bit_buffer->Flush(num_bits_read / 8);
-  if (!flush_status.ok()) {
-    return AbslToIamfStatus(flush_status);
-  }
+  read_bit_buffer->Flush();
   return IamfStatus::OkStatus();
 }
 
@@ -257,23 +268,58 @@ size_t BytesPerSample(OutputSampleType sample_type) {
   }
 }
 
-IamfStatus WriteFrameToSpan(
+IamfStatus ValidateWriteFrameToSpan(
     const std::vector<absl::Span<const InternalSampleType>>& frame,
-    OutputSampleType sample_type, absl::Span<uint8_t> output_bytes,
-    size_t& bytes_written) {
+    OutputSampleType sample_type, absl::Span<uint8_t> output_bytes) {
+  if (frame.empty()) {
+    return IamfStatus::ErrorStatus(
+        "Invalid Argument: Frame must contain at least one channel.");
+  }
   const size_t bytes_per_sample = BytesPerSample(sample_type);
-  const size_t bits_per_sample = bytes_per_sample * 8;
-  const size_t required_size =
-      frame.size() * frame[0].size() * bytes_per_sample;
+  if (bytes_per_sample == 0) {
+    return IamfStatus::ErrorStatus("Invalid Argument: Unknown sample type.");
+  }
+  const size_t num_ticks = frame[0].size();
+  for (const auto& channel : frame) {
+    if (channel.size() != num_ticks) {
+      return IamfStatus::ErrorStatus(
+          "Invalid Argument: All frame channels must have the same number of "
+          "samples.");
+    }
+  }
+  const bool is_overflow =
+      num_ticks != 0 && frame.size() > std::numeric_limits<size_t>::max() /
+                                           num_ticks / bytes_per_sample;
+
+  if (is_overflow) {
+    return IamfStatus::ErrorStatus(
+        "Invalid Argument: Output frame size overflows size_t.");
+  }
+  const size_t required_size = frame.size() * num_ticks * bytes_per_sample;
   if (output_bytes.size() < required_size) {
     return IamfStatus::ErrorStatus(
         "Invalid Argument: Span does not have enough space to write output "
         "bytes.");
   }
+  return IamfStatus::OkStatus();
+}
+
+IamfStatus WriteFrameToSpan(
+    const std::vector<absl::Span<const InternalSampleType>>& frame,
+    OutputSampleType sample_type, absl::Span<uint8_t> output_bytes,
+    size_t& bytes_written) {
+  if (const auto status =
+          ValidateWriteFrameToSpan(frame, sample_type, output_bytes);
+      !status.ok()) {
+    return status;
+  }
+  const size_t bytes_per_sample = BytesPerSample(sample_type);
+  const size_t bits_per_sample = bytes_per_sample * 8;
+  const size_t num_ticks = frame[0].size();
   const bool big_endian = false;
   size_t write_position = 0;
   uint8_t* data = output_bytes.data();
-  for (size_t t = 0; t < frame[0].size(); t++) {
+  for (size_t t = 0; t < num_ticks; t++) {
     for (size_t c = 0; c < frame.size(); ++c) {
       int32_t sample;
       absl::Status absl_status =
@@ -413,14 +459,20 @@ IamfStatus IamfDecoder::GetOutputTemporalUnit(uint8_t* output_buffer,
   if (state_->rendered_samples.empty()) {
     return IamfStatus::OkStatus();
   }
+  if (!state_->IsRenderedSamplesValid()) {
+    state_->rendered_samples.clear();
+    return IamfStatus::ErrorStatus(
+        "Invalid Argument: Decoded frame has mismatched or invalid sizes.");
+  }
   // Write decoded temporal unit to output buffer.
   OutputSampleType output_sample_type = GetOutputSampleType();
   IamfStatus status = WriteFrameToSpan(
       state_->rendered_samples, output_sample_type,
       absl::MakeSpan(output_buffer, output_buffer_size), bytes_written);
-  if (status.ok()) {
-    state_->rendered_samples.clear();
+  if (!status.ok()) {
+    return status;
   }
+  state_->rendered_samples.clear();
 
   // Refill the rendered samples with the next temporal unit.
   auto decode_status = DecodeOneTemporalUnit(
@@ -435,7 +487,7 @@ IamfStatus IamfDecoder::GetOutputTemporalUnit(uint8_t* output_buffer,
 }
 
 bool IamfDecoder::IsTemporalUnitAvailable() const {
-  return !state_->rendered_samples.empty();
+  return state_->IsRenderedSamplesValid();
 }
 
 bool IamfDecoder::IsDescriptorProcessingComplete() const {

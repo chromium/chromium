@@ -114,6 +114,13 @@ absl::StatusOr<bool> CanChannelAudioLayerConfigPassThroughToLayout(
     const ChannelAudioLayerConfig& channel_config, const Layout& layout) {
   switch (layout.layout_type) {
     case Layout::kLayoutTypeLoudspeakersSsConvention:
+      // Allow Binaural input to pass-through to Stereo (2.0) output.
+      if (channel_config.loudspeaker_layout == kLayoutBinaural &&
+          std::get<LoudspeakersSsConventionLayout>(layout.specific_layout)
+                  .sound_system ==
+              LoudspeakersSsConventionLayout::kSoundSystemA_0_2_0) {
+        return true;
+      }
       // Pass-through the associated demixed layer.
       if (channel_config.loudspeaker_layout == kLayoutExpanded) {
         RETURN_IF_NOT_OK(
@@ -123,12 +130,11 @@ absl::StatusOr<bool> CanChannelAudioLayerConfigPassThroughToLayout(
             *channel_config.expanded_loudspeaker_layout,
             std::get<LoudspeakersSsConventionLayout>(layout.specific_layout)
                 .sound_system);
-      } else {
-        return IsLoudspeakerLayoutEquivalentToSoundSystem(
-            channel_config.loudspeaker_layout,
-            std::get<LoudspeakersSsConventionLayout>(layout.specific_layout)
-                .sound_system);
       }
+      return IsLoudspeakerLayoutEquivalentToSoundSystem(
+          channel_config.loudspeaker_layout,
+          std::get<LoudspeakersSsConventionLayout>(layout.specific_layout)
+              .sound_system);
     case Layout::kLayoutTypeBinaural:
       // Pass-through binaural.
       return channel_config.loudspeaker_layout == kLayoutBinaural;
@@ -166,7 +172,8 @@ absl::StatusOr<ChannelAudioLayerConfig> FindEquivalentLayer(
 std::unique_ptr<AudioElementRendererPassThrough>
 AudioElementRendererPassThrough::CreateFromScalableChannelLayoutConfig(
     const ScalableChannelLayoutConfig& scalable_channel_layout_config,
-    const Layout& playback_layout, size_t num_samples_per_frame) {
+    const Layout& playback_layout, size_t num_samples_per_frame,
+    const TrimmingSettings trimming_settings) {
   const auto& equivalent_layer =
       FindEquivalentLayer(scalable_channel_layout_config, playback_layout);
   if (!equivalent_layer.ok()) {
@@ -181,7 +188,7 @@ AudioElementRendererPassThrough::CreateFromScalableChannelLayoutConfig(
   }
 
   return absl::WrapUnique(new AudioElementRendererPassThrough(
-      *ordered_labels, num_samples_per_frame));
+      *ordered_labels, num_samples_per_frame, trimming_settings));
 }
 
 absl::Status AudioElementRendererPassThrough::RenderSamples(

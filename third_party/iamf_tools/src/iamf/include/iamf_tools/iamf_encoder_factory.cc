@@ -59,7 +59,7 @@ IamfEncoderFactory::CreateFileGeneratingIamfEncoder(
     return obu_sequencers;
   };
   return IamfEncoder::Create(
-      user_metadata, CreateRendererFactory().get(),
+      user_metadata, CreateLayoutRendererFactory().get(),
       CreateLoudnessCalculatorFactory().get(),
       RenderingMixPresentationFinalizer::ProduceNoSampleProcessors,
       obu_sequencer_factory);
@@ -77,7 +77,7 @@ IamfEncoderFactory::CreateIamfEncoder(
   // Create an encoder, which is pre-configured with enough functionality to
   // measure loudness.
   return IamfEncoder::Create(
-      user_metadata, CreateRendererFactory().get(),
+      user_metadata, CreateLayoutRendererFactory().get(),
       CreateLoudnessCalculatorFactory().get(),
       RenderingMixPresentationFinalizer::ProduceNoSampleProcessors,
       IamfEncoder::CreateNoObuSequencers);

@@ -416,7 +416,7 @@ class MixPresentationObu : public ObuBase {
    *        `annotations_language`s in the OBU.
    * \param localized_presentation_annotations Vector representing all of the
    *        `localized_presentation_annotations`s in the OBU.
-   * \param sub_mixes Vector representing all of the sub mixes in the OBU.
+   * \param sub_mixes Vector representing all of the sub-mixes in the OBU.
    */
   MixPresentationObu(
       const ObuHeader& header, DecodedUleb128 mix_presentation_id,

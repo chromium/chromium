@@ -23,6 +23,7 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/types/span.h"
+#include "iamf/cli/channel_label.h"
 #include "iamf/cli/sample_processor_base.h"
 #include "iamf/obu/ambisonics_config.h"
 #include "iamf/obu/codec_config.h"
@@ -203,6 +204,16 @@ AmbisonicsMixer AmbisonicsMixer::MakeFromAmbisonicsConfig(
 
 AmbisonicsConfig AmbisonicsMixer::GetAmbisonicsConfig() const {
   return ambisonics_config_;
+}
+
+std::vector<ChannelLabel::Label> AmbisonicsMixer::GetInputLabels() const {
+  std::vector<ChannelLabel::Label> ordered_labels(GetNumChannels());
+  for (size_t i = 0; i < ordered_labels.size(); ++i) {
+    const auto label = ChannelLabel::AmbisonicsChannelNumberToLabel(i);
+    ABSL_CHECK_OK(label);
+    ordered_labels[i] = *label;
+  }
+  return ordered_labels;
 }
 
 absl::Status AmbisonicsMixer::PushFrameDerived(

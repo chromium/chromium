@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef CLI_OPUS_ENCODER_DECODER_H_
-#define CLI_OPUS_ENCODER_DECODER_H_
+#ifndef CLI_CODEC_OPUS_DECODER_H_
+#define CLI_CODEC_OPUS_DECODER_H_
 
 #include <cstdint>
 #include <memory>
@@ -29,7 +29,7 @@ namespace iamf_tools {
 
 class OpusDecoder : public DecoderBase {
  public:
-  /*!brief Factory function.
+  /*!\brief Factory function.
    *
    * \param decoder_config Decoder config for this stream.
    * \param channel_count Number of channels for this substream.
@@ -79,4 +79,4 @@ class OpusDecoder : public DecoderBase {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_OPUS_ENCODER_DECODER_H_
+#endif  // CLI_CODEC_OPUS_DECODER_H_

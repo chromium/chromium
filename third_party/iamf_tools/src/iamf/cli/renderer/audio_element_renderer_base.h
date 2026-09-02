@@ -83,15 +83,6 @@ class AudioElementRendererBase {
     return is_finalized_;
   }
 
-  /*!\brief Sets the trimming settings for this renderer.
-   *
-   * \param trimming_settings Trimming configuration to use.
-   */
-  void SetTrimmingSettings(TrimmingSettings trimming_settings) {
-    absl::MutexLock lock(mutex_);
-    trimming_settings_ = trimming_settings;
-  }
-
  protected:
   /*!\brief Constructor.
    *
@@ -101,7 +92,8 @@ class AudioElementRendererBase {
    */
   AudioElementRendererBase(absl::Span<const ChannelLabel::Label> ordered_labels,
                            size_t num_samples_per_frame,
-                           size_t num_output_channels);
+                           size_t num_output_channels,
+                           TrimmingSettings trimming_settings);
 
   /*!\brief Renders samples.
    *
@@ -116,6 +108,10 @@ class AudioElementRendererBase {
   const std::vector<ChannelLabel::Label> ordered_labels_;
   const size_t num_samples_per_frame_ = 0;
   const size_t num_output_channels_;
+
+  // Determines whether frame start/end sample trimming is applied when
+  // arranging samples.
+  const TrimmingSettings trimming_settings_;
 
   // Mutex to guard simultaneous access to data members.
   mutable absl::Mutex mutex_;
@@ -133,9 +129,6 @@ class AudioElementRendererBase {
 
   bool is_finalized_ ABSL_GUARDED_BY(mutex_) = false;
   const LabeledFrame* current_labeled_frame_ ABSL_GUARDED_BY(mutex_) = nullptr;
-  // Determines whether frame start/end sample trimming is applied when
-  // arranging samples.
-  TrimmingSettings trimming_settings_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace iamf_tools

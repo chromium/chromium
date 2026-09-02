@@ -33,9 +33,12 @@
 #include "iamf/cli/audio_frame_decoder.h"
 #include "iamf/cli/audio_frame_with_data.h"
 #include "iamf/cli/cli_util.h"
-#include "iamf/cli/demixing_module.h"
+#include "iamf/cli/demixing_manager.h"
 #include "iamf/cli/descriptor_obus.h"
+#include "iamf/cli/downmixer_manager.h"
 #include "iamf/cli/global_timing_module.h"
+#include "iamf/cli/labeled_frame.h"
+#include "iamf/cli/layout_renderer_factory.h"
 #include "iamf/cli/loudness_calculator_factory_base.h"
 #include "iamf/cli/obu_sequencer_base.h"
 #include "iamf/cli/obu_sequencer_streaming_iamf.h"
@@ -67,6 +70,8 @@
 #include "iamf/obu/metadata_obu.h"
 #include "iamf/obu/param_definitions/param_definition_variant.h"
 #include "iamf/obu/types.h"
+
+ABSL_POINTERS_DEFAULT_NONNULL
 
 namespace iamf_tools {
 
@@ -236,14 +241,14 @@ absl::Status FinalizeObuSequencers(
 
 }  // namespace
 
-std::vector<std::unique_ptr<ObuSequencerBase> absl_nonnull>
+std::vector<std::unique_ptr<ObuSequencerBase>>
 IamfEncoder::CreateNoObuSequencers() {
   return {};
 }
 
 absl::StatusOr<std::unique_ptr<IamfEncoder>> IamfEncoder::Create(
     const iamf_tools_cli_proto::UserMetadata& user_metadata,
-    const RendererFactoryBase* absl_nullable renderer_factory,
+    const LayoutRendererFactory* absl_nullable layout_renderer_factory,
     const LoudnessCalculatorFactoryBase* absl_nullable
         loudness_calculator_factory,
     const RenderingMixPresentationFinalizer::SampleProcessorFactory&
@@ -297,7 +302,7 @@ absl::StatusOr<std::unique_ptr<IamfEncoder>> IamfEncoder::Create(
   // Initialize a mix presentation mix presentation finalizer. Requires
   // rendering data for every submix to accurately compute loudness.
   auto mix_presentation_finalizer = RenderingMixPresentationFinalizer::Create(
-      renderer_factory, loudness_calculator_factory, *audio_elements,
+      layout_renderer_factory, loudness_calculator_factory, *audio_elements,
       sample_processor_factory, mix_presentation_obus);
   if (!mix_presentation_finalizer.ok()) {
     return mix_presentation_finalizer.status();
@@ -349,23 +354,26 @@ absl::StatusOr<std::unique_ptr<IamfEncoder>> IamfEncoder::Create(
   // Down-mix the audio samples and then demix audio samples while decoding
   // them. This is useful to create multi-layer audio elements and to determine
   // the recon gain parameters and to measuring loudness.
-  const absl::StatusOr<absl::flat_hash_map<
-      DecodedUleb128, DemixingModule::DownmixingAndReconstructionConfig>>
-      audio_element_id_to_demixing_metadata =
-          CreateAudioElementIdToDemixingMetadata(user_metadata,
+  absl::StatusOr<
+      absl::flat_hash_map<DecodedUleb128, DownmixerManager::DownmixingConfig>>
+      audio_element_id_to_downmixing_config =
+          CreateAudioElementIdToDownmixingConfig(user_metadata,
                                                  *audio_elements);
-  if (!audio_element_id_to_demixing_metadata.ok()) {
-    return audio_element_id_to_demixing_metadata.status();
+  if (!audio_element_id_to_downmixing_config.ok()) {
+    return audio_element_id_to_downmixing_config.status();
   }
-  auto demixing_module = DemixingModule::CreateForDownMixingAndReconstruction(
-      *std::move(audio_element_id_to_demixing_metadata));
-  if (!demixing_module.ok()) {
-    return demixing_module.status();
+
+  const auto reconstruction_config =
+      DemixingManager::CreateIdToReconstructionConfig(*audio_elements);
+  auto demixing_manager = DemixingManager::Create(reconstruction_config);
+  if (!demixing_manager.ok()) {
+    return demixing_manager.status();
   }
 
   auto audio_frame_generator = AudioFrameGenerator::Create(
       user_metadata.audio_frame_metadata(),
-      user_metadata.codec_config_metadata(), *audio_elements, *demixing_module,
+      user_metadata.codec_config_metadata(), *audio_elements,
+      DownmixerManager::Make(*std::move(audio_element_id_to_downmixing_config)),
       **parameters_manager, *global_timing_module);
   if (!audio_frame_generator.ok()) {
     return audio_frame_generator.status();
@@ -384,7 +392,7 @@ absl::StatusOr<std::unique_ptr<IamfEncoder>> IamfEncoder::Create(
   if (leb_generator == nullptr) {
     return absl::InvalidArgumentError("Failed to create LebGenerator.");
   }
-  ObuSequencerStreamingIamf streaming_obu_sequencer(
+  auto streaming_obu_sequencer = std::make_unique<ObuSequencerStreamingIamf>(
       user_metadata.temporal_delimiter_metadata().enable_temporal_delimiters(),
       *leb_generator);
 
@@ -399,7 +407,7 @@ absl::StatusOr<std::unique_ptr<IamfEncoder>> IamfEncoder::Create(
         *audio_elements, mix_presentation_obus, descriptor_arbitrary_obus));
   }
 
-  RETURN_IF_NOT_OK(streaming_obu_sequencer.PushDescriptorObus(
+  RETURN_IF_NOT_OK(streaming_obu_sequencer->PushDescriptorObus(
       *ia_sequence_header_obu, metadata_obus, *codec_config_obus,
       *audio_elements, mix_presentation_obus, descriptor_arbitrary_obus));
 
@@ -412,7 +420,7 @@ absl::StatusOr<std::unique_ptr<IamfEncoder>> IamfEncoder::Create(
       std::move(timestamp_to_arbitrary_obus),
       std::move(param_definition_variants),
       std::move(parameter_block_generator), std::move(*parameters_manager),
-      *demixing_module, *std::move(audio_frame_generator),
+      *demixing_manager, *std::move(audio_frame_generator),
       std::move(audio_frame_decoder), std::move(global_timing_module),
       std::move(*mix_presentation_finalizer), std::move(obu_sequencers),
       std::move(streaming_obu_sequencer)));
@@ -428,7 +436,7 @@ absl::Status IamfEncoder::GetDescriptorObus(
   }
   // Grab the latest from the streaming sequencer.
   const auto& descriptor_obus_span =
-      streaming_obu_sequencer_.GetSerializedDescriptorObus();
+      streaming_obu_sequencer_->GetSerializedDescriptorObus();
   descriptor_obus = {descriptor_obus_span.begin(), descriptor_obus_span.end()};
   output_obus_are_finalized = sequencers_finalized_;
   return absl::OkStatus();
@@ -585,7 +593,7 @@ absl::Status IamfEncoder::OutputTemporalUnit(
       if (!temporal_unit_arbitrary_obus.empty()) {
         RETURN_IF_NOT_OK(PushTemporalUnitToObuSequencers(
             parameter_blocks, audio_frames, temporal_unit_arbitrary_obus,
-            obu_sequencers_, streaming_obu_sequencer_, temporal_unit_obus));
+            obu_sequencers_, *streaming_obu_sequencer_, temporal_unit_obus));
       }
 
       if (!GeneratingTemporalUnits()) {
@@ -595,7 +603,7 @@ absl::Status IamfEncoder::OutputTemporalUnit(
             ia_sequence_header_obu_, metadata_obus_, *codec_config_obus_,
             *audio_elements_, mix_presentation_obus_,
             descriptor_arbitrary_obus_, obu_sequencers_,
-            streaming_obu_sequencer_, sequencers_finalized_);
+            *streaming_obu_sequencer_, sequencers_finalized_);
       }
     }
     return absl::OkStatus();
@@ -618,12 +626,12 @@ absl::Status IamfEncoder::OutputTemporalUnit(
   // Demix the original and decoded audio frames, differences between them are
   // useful to compute the recon gain parameters.
   const auto id_to_labeled_frame =
-      demixing_module_.DemixOriginalAudioSamples(audio_frames);
+      demixing_manager_.DemixOriginalAudioSamples(audio_frames);
   if (!id_to_labeled_frame.ok()) {
     return id_to_labeled_frame.status();
   }
   const auto id_to_labeled_decoded_frame =
-      demixing_module_.DemixDecodedAudioSamples(audio_frames);
+      demixing_manager_.DemixDecodedAudioSamples(audio_frames);
   if (!id_to_labeled_decoded_frame.ok()) {
     return id_to_labeled_decoded_frame.status();
   }
@@ -664,7 +672,7 @@ absl::Status IamfEncoder::OutputTemporalUnit(
       parameter_blocks));
   RETURN_IF_NOT_OK(PushTemporalUnitToObuSequencers(
       parameter_blocks, audio_frames, temporal_unit_arbitrary_obus,
-      obu_sequencers_, streaming_obu_sequencer_, temporal_unit_obus));
+      obu_sequencers_, *streaming_obu_sequencer_, temporal_unit_obus));
 
   if (GeneratingTemporalUnits()) {
     return absl::OkStatus();
@@ -677,7 +685,7 @@ absl::Status IamfEncoder::OutputTemporalUnit(
   return FinalizeObuSequencers(
       ia_sequence_header_obu_, metadata_obus_, *codec_config_obus_,
       *audio_elements_, mix_presentation_obus_, descriptor_arbitrary_obus_,
-      obu_sequencers_, streaming_obu_sequencer_, sequencers_finalized_);
+      obu_sequencers_, *streaming_obu_sequencer_, sequencers_finalized_);
 }
 
 absl::Status IamfEncoder::FinalizeEncode() {
@@ -700,7 +708,7 @@ absl::Status IamfEncoder::FinalizeEncode() {
   return FinalizeObuSequencers(
       ia_sequence_header_obu_, metadata_obus_, *codec_config_obus_,
       *audio_elements_, mix_presentation_obus_, descriptor_arbitrary_obus_,
-      obu_sequencers_, streaming_obu_sequencer_, sequencers_finalized_);
+      obu_sequencers_, *streaming_obu_sequencer_, sequencers_finalized_);
 }
 
 const DescriptorObus::AudioElementsById& IamfEncoder::GetAudioElements() const {

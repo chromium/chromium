@@ -44,7 +44,7 @@ absl::StatusOr<std::string> LookupOutputKeyFromPlaybackLayout(
  * \param order Output ambisonics order.
  * \return `absl::OkStatus()` on success. A specific status on failure.
  */
-absl::Status GetAmbisonicsOrder(const uint8_t channel_count, int& order);
+absl::Status GetAmbisonicsOrder(uint8_t channel_count, int& order);
 
 /*!\brief Gets channel labels from an ambisonics-based config.
  *
@@ -66,13 +66,14 @@ absl::Status GetChannelLabelsForAmbisonics(
  * \param demixing_matrix Demixing matrix to project the input samples. The
  *        shape is exptected to be (# input channels) x (# output channels),
  *        stored in a 1D array in column-major order.
- * \param projected_samples Output projected samples.
+ * \param projected_samples Output projected samples as a span of spans of a
+ *        pre-allocated buffer.
  * \return `absl::OkStatus()` on success. A specific status on failure.
  */
 absl::Status ProjectSamplesToRender(
     absl::Span<const absl::Span<const InternalSampleType>> input_samples,
-    absl::Span<const int16_t> demixing_matrix,
-    std::vector<std::vector<InternalSampleType>>& projected_samples);
+    absl::Span<const InternalSampleType> demixing_matrix,
+    absl::Span<absl::Span<InternalSampleType>> projected_samples);
 
 }  // namespace iamf_tools
 #endif  // CLI_RENDERER_RENDERER_UTILS_H_

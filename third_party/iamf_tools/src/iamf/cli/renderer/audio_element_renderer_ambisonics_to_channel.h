@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef CLI_INTERNAL_RENDERER_AUDIO_ELEMENT_RENDERER_AMBISONICS_TO_CHANNEL_H_
-#define CLI_INTERNAL_RENDERER_AUDIO_ELEMENT_RENDERER_AMBISONICS_TO_CHANNEL_H_
+#ifndef CLI_RENDERER_AUDIO_ELEMENT_RENDERER_AMBISONICS_TO_CHANNEL_H_
+#define CLI_RENDERER_AUDIO_ELEMENT_RENDERER_AMBISONICS_TO_CHANNEL_H_
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -60,7 +60,8 @@ class AudioElementRendererAmbisonicsToChannel
       const AmbisonicsConfig& ambisonics_config,
       const std::vector<DecodedUleb128>& audio_substream_ids,
       const SubstreamIdLabelsMap& substream_id_to_labels,
-      const Layout& playback_layout, size_t num_samples_per_frame);
+      const Layout& playback_layout, size_t num_samples_per_frame,
+      const TrimmingSettings trimming_settings = {});
 
   /*!\brief Destructor. */
   ~AudioElementRendererAmbisonicsToChannel() override = default;
@@ -78,9 +79,10 @@ class AudioElementRendererAmbisonicsToChannel
   AudioElementRendererAmbisonicsToChannel(
       size_t num_output_channels, size_t num_samples_per_frame,
       const std::vector<ChannelLabel::Label>& ordered_labels,
-      const std::vector<std::vector<double>>& gains)
+      const std::vector<std::vector<double>>& gains,
+      const TrimmingSettings trimming_settings)
       : AudioElementRendererBase(ordered_labels, num_samples_per_frame,
-                                 num_output_channels),
+                                 num_output_channels, trimming_settings),
         gains_(gains) {}
 
   /*!\brief Renders samples.
@@ -97,4 +99,4 @@ class AudioElementRendererAmbisonicsToChannel
 };
 
 }  // namespace iamf_tools
-#endif  // CLI_INTERNAL_RENDERER_AUDIO_ELEMENT_RENDERER_AMBISONICS_TO_CHANNEL_H_
+#endif  // CLI_RENDERER_AUDIO_ELEMENT_RENDERER_AMBISONICS_TO_CHANNEL_H_

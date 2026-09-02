@@ -38,7 +38,7 @@ class DescriptorObuParser {
    * \param output_insufficient_data Whether the bitstream provided is
    *        insufficient to process all descriptor OBUs.
    * \return `DescriptorObus` if the process is successful. A specific
-   *        status on failure.
+   *         status on failure.
    */
   static absl::StatusOr<DescriptorObus> ProcessDescriptorObus(
       bool is_exhaustive_and_exact, ReadBitBuffer& read_bit_buffer,

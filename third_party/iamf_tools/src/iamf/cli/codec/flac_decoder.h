@@ -26,11 +26,11 @@
 #include "include/FLAC/stream_decoder.h"
 namespace iamf_tools {
 
-/*!brief Decoder for FLAC audio streams.
+/*!\brief Decoder for FLAC audio streams.
  */
 class FlacDecoder : public DecoderBase {
  public:
-  /*!brief Factory function.
+  /*!\brief Factory function.
    *
    * \param channel_count Number of channels for this substream.
    * \param num_samples_per_frame Number of samples per frame.

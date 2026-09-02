@@ -21,7 +21,6 @@
 #include "absl/strings/string_view.h"
 #include "fuzztest/fuzztest.h"
 #include "gtest/gtest.h"
-// [internal] Placeholder for FLAC fuzzing include.
 #include "iamf/api/decoder/iamf_decoder.h"
 #include "iamf/cli/tests/portable/get_test_path.h"
 #include "iamf/include/iamf_tools/iamf_tools_api_types.h"

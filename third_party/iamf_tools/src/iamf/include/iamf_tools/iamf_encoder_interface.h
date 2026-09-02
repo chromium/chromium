@@ -9,8 +9,8 @@
  * source code in the PATENTS file, you can obtain it at
  * www.aomedia.org/license/patent.
  */
-#ifndef API_ENCODER_INTERFACE_H_
-#define API_ENCODER_INTERFACE_H_
+#ifndef INCLUDE_IAMF_TOOLS_IAMF_ENCODER_INTERFACE_H_
+#define INCLUDE_IAMF_TOOLS_IAMF_ENCODER_INTERFACE_H_
 
 #include <cstdint>
 #include <vector>
@@ -184,4 +184,4 @@ class IamfEncoderInterface {
 }  // namespace api
 }  // namespace iamf_tools
 
-#endif  // API_ENCODER_INTERFACE_H_
+#endif  // INCLUDE_IAMF_TOOLS_IAMF_ENCODER_INTERFACE_H_

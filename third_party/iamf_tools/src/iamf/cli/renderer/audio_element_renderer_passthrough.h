@@ -56,12 +56,14 @@ class AudioElementRendererPassThrough : public AudioElementRendererBase {
    *        layout.
    * \param playback_layout Layout of the audio element to be rendered
    * \param num_samples_per_frame Number of samples per frame.
+   * \param trimming_settings Trimming settings to use.
    * \return Render to use or `nullptr` if it would not be suitable for use.
    */
   static std::unique_ptr<AudioElementRendererPassThrough>
   CreateFromScalableChannelLayoutConfig(
       const ScalableChannelLayoutConfig& scalable_channel_layout_config,
-      const Layout& playback_layout, size_t num_samples_per_frame);
+      const Layout& playback_layout, size_t num_samples_per_frame,
+      const TrimmingSettings trimming_settings = {});
 
   /*!\brief Destructor. */
   ~AudioElementRendererPassThrough() override = default;
@@ -73,13 +75,13 @@ class AudioElementRendererPassThrough : public AudioElementRendererBase {
    */
   AudioElementRendererPassThrough(
       const std::vector<ChannelLabel::Label>& ordered_labels,
-      size_t num_samples_per_frame)
+      size_t num_samples_per_frame, const TrimmingSettings trimming_settings)
       : AudioElementRendererBase(
             ordered_labels,
             // For a passthrough renderer, (number of output channels)
             // is the same as (number of input channels).
             num_samples_per_frame,
-            /*num_output_channels=*/ordered_labels.size()) {}
+            /*num_output_channels=*/ordered_labels.size(), trimming_settings) {}
 
   /*!\brief Renders samples.
    *

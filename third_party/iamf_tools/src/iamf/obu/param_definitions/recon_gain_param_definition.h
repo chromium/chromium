@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/write_bit_buffer.h"
 #include "iamf/obu/param_definitions/param_definition_base.h"
@@ -37,7 +38,7 @@ struct ChannelNumbers {
   int bottom = 0;
 };
 
-/* !\brief Parameter definition for recon gain.
+/*!\brief Parameter definition for recon gain.
  */
 class ReconGainParamDefinition : public ParamDefinition {
  public:
@@ -57,7 +58,7 @@ class ReconGainParamDefinition : public ParamDefinition {
    *
    * \param base_args Arguments for `ParamDefinitionBase`.
    * \param audio_element_id ID of the Audio Element OBU that uses this
-   * parameter.
+   *        parameter.
    */
   ReconGainParamDefinition(const ParamDefinition::BaseArgs& base_args,
                            uint32_t audio_element_id)
@@ -82,13 +83,16 @@ class ReconGainParamDefinition : public ParamDefinition {
    */
   absl::Status ReadAndValidate(ReadBitBuffer& rb) override;
 
-  /*!\brief Creates a parameter data.
+  /*!\brief Creates parameter data from a buffer.
    *
    * The created instance will be of type `ReconGainInfoParameterData`.
    *
-   * \return Unique pointer to the created parameter data.
+   * \param rb Buffer to read from.
+   * \return Unique pointer to created parameter data, or specific error
+   *         on failure.
    */
-  std::unique_ptr<ParameterData> CreateParameterData() const override;
+  absl::StatusOr<std::unique_ptr<ParameterData>> CreateParameterDataFromBuffer(
+      ReadBitBuffer& rb) const override;
 
   /*!\brief Prints the parameter definition.
    */
@@ -108,4 +112,4 @@ class ReconGainParamDefinition : public ParamDefinition {
 
 }  // namespace iamf_tools
 
-#endif  // OBU_PARAM_DEFINITIONS_H_
+#endif  // OBU_PARAM_DEFINITIONS_RECON_GAIN_PARAM_DEFINITION_H_

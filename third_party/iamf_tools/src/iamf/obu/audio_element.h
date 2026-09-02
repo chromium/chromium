@@ -269,7 +269,7 @@ class AudioElementObu : public ObuBase {
                        ObjectsConfig, ExtensionConfig>
       AudioElementConfig;
 
-  /*!brief Creates a `AudioElementObu` for a scalable channel layout.
+  /*!\brief Creates a `AudioElementObu` for a scalable channel layout.
    *
    * \param header `ObuHeader` of the OBU.
    * \param audio_element_id ID of the audio element.
@@ -285,42 +285,23 @@ class AudioElementObu : public ObuBase {
       absl::Span<const DecodedUleb128> audio_substream_ids,
       const ScalableChannelLayoutConfig& scalable_channel_layout_config);
 
-  /*!brief Creates a `AudioElementObu` for a mono Ambisonics layout.
+  /*!\brief Creates a `AudioElementObu` for an Ambisonics layout.
    *
    * \param header `ObuHeader` of the OBU.
    * \param audio_element_id ID of the audio element.
    * \param reserved Reserved field.
    * \param codec_config_id ID of the associated codec config.
    * \param audio_substream_ids IDs of the substreams in the audio element.
-   * \param channel_mapping Channel mapping of the audio element.
+   * \param ambisonics_config Configuration of the audio element.
    * \return `AudioElementObu` on success. A specific status on failure.
    */
-  static absl::StatusOr<AudioElementObu> CreateForMonoAmbisonics(
+  static absl::StatusOr<AudioElementObu> CreateForAmbisonics(
       const ObuHeader& header, DecodedUleb128 audio_element_id,
       uint8_t reserved, DecodedUleb128 codec_config_id,
       absl::Span<const DecodedUleb128> audio_substream_ids,
-      absl::Span<const uint8_t> channel_mapping);
+      const AmbisonicsConfig& ambisonics_config);
 
-  /*!brief Creates a `AudioElementObu` for a projection Ambisonics layout.
-   *
-   * \param header `ObuHeader` of the OBU.
-   * \param audio_element_id ID of the audio element.
-   * \param reserved Reserved field.
-   * \param codec_config_id ID of the associated codec config.
-   * \param audio_substream_ids IDs of the substreams in the audio element.
-   * \param output_channel_count Number of output channels.
-   * \param coupled_substream_count Number of coupled substreams.
-   * \param demixing_matrix Demixing matrix of the audio element.
-   * \return `AudioElementObu` on success. A specific status on failure.
-   */
-  static absl::StatusOr<AudioElementObu> CreateForProjectionAmbisonics(
-      const ObuHeader& header, DecodedUleb128 audio_element_id,
-      uint8_t reserved, DecodedUleb128 codec_config_id,
-      absl::Span<const DecodedUleb128> audio_substream_ids,
-      uint8_t output_channel_count, uint8_t coupled_substream_count,
-      absl::Span<const int16_t> demixing_matrix);
-
-  /*!brief Creates a `AudioElementObu` for objects.
+  /*!\brief Creates a `AudioElementObu` for objects.
    *
    * \param header `ObuHeader` of the OBU.
    * \param audio_element_id ID of the audio element.
@@ -335,7 +316,7 @@ class AudioElementObu : public ObuBase {
       uint8_t reserved, DecodedUleb128 codec_config_id,
       DecodedUleb128 audio_substream_id, const ObjectsConfig& objects_config);
 
-  /*!brief Creates a `AudioElementObu` for an extension.
+  /*!\brief Creates a `AudioElementObu` for an extension.
    *
    * \param header `ObuHeader` of the OBU.
    * \param audio_element_id ID of the audio element.

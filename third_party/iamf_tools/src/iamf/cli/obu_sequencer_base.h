@@ -76,6 +76,12 @@ class ObuSequencerBase {
                    bool include_temporal_delimiters,
                    bool delay_descriptors_until_first_untrimmed_sample);
 
+  // Deleted move and copy operations.
+  ObuSequencerBase(ObuSequencerBase&&) = delete;
+  ObuSequencerBase& operator=(ObuSequencerBase&&) = delete;
+  ObuSequencerBase(const ObuSequencerBase&) = delete;
+  ObuSequencerBase& operator=(const ObuSequencerBase&) = delete;
+
   /*!\brief Destructor.*/
   virtual ~ObuSequencerBase() = 0;
 
@@ -259,4 +265,4 @@ class ObuSequencerBase {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_OBU_SEQUENCER_H_
+#endif  // CLI_OBU_SEQUENCER_BASE_H_

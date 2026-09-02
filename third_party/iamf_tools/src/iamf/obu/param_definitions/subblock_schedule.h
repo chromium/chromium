@@ -65,7 +65,7 @@ class SubblockSchedule {
    *
    * \param duration Total duration of the schedule.
    * \param constant_subblock_duration Constant subblock duration. Must not be
-   * 0.
+   *        0.
    * \return Validated SubblockSchedule or error status.
    */
   static absl::StatusOr<SubblockSchedule> CreateWithConstantSubblockDuration(
@@ -102,7 +102,9 @@ class SubblockSchedule {
    */
   static absl::StatusOr<ScheduleAndParameterData>
   CreateFromBufferWithParameterData(
-      absl::FunctionRef<std::unique_ptr<ParameterData>()> create_parameter_data,
+      absl::FunctionRef<
+          absl::StatusOr<std::unique_ptr<ParameterData>>(ReadBitBuffer&)>
+          create_parameter_data,
       ReadBitBuffer& rb);
 
   /*!\brief Writes the SubblockSchedule to a buffer.
@@ -127,7 +129,7 @@ class SubblockSchedule {
   /*!\brief Returns the constant subblock duration of the schedule.
    *
    * \return Constant subblock duration of the schedule, or 0 if the schedule
-   *     has variable subblock durations.
+   *         has variable subblock durations.
    */
   DecodedUleb128 GetConstantSubblockDuration() const {
     return constant_subblock_duration_;

@@ -26,6 +26,12 @@ namespace api {
  * The functions below constitute our IAMF Iterative Decoder API. Below is a
  * sample usage of the API.
  *
+ * Thread safety: a single decoder instance is not thread-safe. All calls on a
+ * given instance (Decode, GetOutputTemporalUnit, Reset, etc.) must be made from
+ * one thread at a time; they mutate shared internal state without locking.
+ * Distinct decoder instances are independent and may be used on separate
+ * threads concurrently.
+ *
  * Example Reconfigurable Standalone IAMF Usage
  * using iamf_tools::api::IamfDecoderFactory;
  * using iamf_tools::api::IamfDecoderInterface;
@@ -99,7 +105,7 @@ class IamfDecoderInterface {
    *        by GetOutputSampleType).
    * \param output_buffer_size Available size in bytes of the output buffer.
    * \param bytes_written Output param for the number of bytes written to the
-   * output_bytes.
+   *        output_bytes.
    * \return Ok status upon success. Other specific statuses on failure.
    */
   virtual IamfStatus GetOutputTemporalUnit(uint8_t* output_buffer,
@@ -130,7 +136,7 @@ class IamfDecoderInterface {
    * parsed, i.e. IsDescriptorProcessingComplete() returns true.
    *
    * \param output_num_channels Output param for the number of output channels
-   * upon success.
+   *        upon success.
    * \return Ok status upon success. Other specific statuses on failure.
    */
   virtual IamfStatus GetNumberOfOutputChannels(

@@ -107,4 +107,4 @@ class RendererFactory : public RendererFactoryBase {
 
 }  // namespace iamf_tools
 
-#endif  // CLI_LOUDNESS_CALCULATOR_H_
+#endif  // CLI_RENDERER_FACTORY_H_

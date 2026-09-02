@@ -422,9 +422,10 @@ MixPresentationOptionalFields::CreateFromBuffer(ReadBitBuffer& rb) {
   uint8_t preferred_binaural_renderer;
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, preferred_binaural_renderer));
 
-  const int num_remaining_bytes = optional_fields_size - 2;
+  const size_t num_remaining_bytes =
+      static_cast<size_t>(optional_fields_size) - 2;
   std::vector<uint8_t> optional_fields_remaining_bytes(num_remaining_bytes);
-  for (int i = 0; i < num_remaining_bytes; ++i) {
+  for (size_t i = 0; i < num_remaining_bytes; ++i) {
     RETURN_IF_NOT_OK(
         rb.ReadUnsignedLiteral(8, optional_fields_remaining_bytes[i]));
   }
@@ -448,7 +449,7 @@ absl::Status MixPresentationOptionalFields::ValidateAndWrite(
 
   RETURN_IF_NOT_OK(ValidateContainerSizeEqual(
       "optional_fields_remaining_bytes", optional_fields_remaining_bytes,
-      static_cast<int>(optional_fields_size) - 2));
+      static_cast<size_t>(optional_fields_size) - 2));
   RETURN_IF_NOT_OK(
       wb.WriteUint8Span(absl::MakeConstSpan(optional_fields_remaining_bytes)));
 

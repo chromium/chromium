@@ -24,7 +24,6 @@
 #include "absl/types/span.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
-#include "iamf/common/utils/numeric_utils.h"
 #include "iamf/common/utils/validation_utils.h"
 #include "iamf/common/write_bit_buffer.h"
 #include "iamf/obu/ambisonics_config.h"
@@ -396,54 +395,20 @@ absl::StatusOr<AudioElementObu> AudioElementObu::CreateForScalableChannelLayout(
                          scalable_channel_layout_config);
 }
 
-absl::StatusOr<AudioElementObu> AudioElementObu::CreateForMonoAmbisonics(
+absl::StatusOr<AudioElementObu> AudioElementObu::CreateForAmbisonics(
     const ObuHeader& header, DecodedUleb128 audio_element_id, uint8_t reserved,
     DecodedUleb128 codec_config_id,
     absl::Span<const DecodedUleb128> audio_substream_ids,
-    absl::Span<const uint8_t> channel_mapping) {
-  // The number of substreams must equal to the number of audio substream IDs.
-  uint8_t num_substreams;
-  RETURN_IF_NOT_OK(StaticCastIfInRange<size_t, uint8_t>(
-      "Audio substream count", audio_substream_ids.size(), num_substreams));
+    const AmbisonicsConfig& ambisonics_config) {
   RETURN_IF_NOT_OK(ValidateUnique(audio_substream_ids.begin(),
                                   audio_substream_ids.end(),
                                   "Audio substream IDs"));
-  absl::StatusOr<AmbisonicsMonoConfig> mono_config =
-      AmbisonicsMonoConfig::Create(num_substreams, channel_mapping);
-  if (!mono_config.ok()) {
-    return mono_config.status();
-  }
+  RETURN_IF_NOT_OK(
+      ValidateContainerSizeEqual("audio_substream_ids", audio_substream_ids,
+                                 ambisonics_config.GetNumSubstreams()));
   return AudioElementObu(header, audio_element_id, kAudioElementSceneBased,
                          reserved, codec_config_id, audio_substream_ids,
-                         AmbisonicsConfig{.ambisonics_config = *mono_config});
-}
-
-absl::StatusOr<AudioElementObu> AudioElementObu::CreateForProjectionAmbisonics(
-    const ObuHeader& header, DecodedUleb128 audio_element_id, uint8_t reserved,
-    DecodedUleb128 codec_config_id,
-    absl::Span<const DecodedUleb128> audio_substream_ids,
-    uint8_t output_channel_count, uint8_t coupled_substream_count,
-    absl::Span<const int16_t> demixing_matrix) {
-  // The number of substreams must equal to the number of audio substream
-  // IDs.
-  uint8_t substream_count;
-  RETURN_IF_NOT_OK(StaticCastIfInRange<size_t, uint8_t>(
-      "Audio substream count", audio_substream_ids.size(), substream_count));
-  RETURN_IF_NOT_OK(ValidateUnique(audio_substream_ids.begin(),
-                                  audio_substream_ids.end(),
-                                  "Audio substream IDs"));
-  absl::StatusOr<AmbisonicsProjectionConfig> projection_config =
-      AmbisonicsProjectionConfig::Create(output_channel_count, substream_count,
-                                         coupled_substream_count,
-                                         demixing_matrix);
-  if (!projection_config.ok()) {
-    return projection_config.status();
-  }
-
-  return AudioElementObu(
-      header, audio_element_id, kAudioElementSceneBased, reserved,
-      codec_config_id, audio_substream_ids,
-      AmbisonicsConfig{.ambisonics_config = *projection_config});
+                         ambisonics_config);
 }
 
 absl::StatusOr<AudioElementObu> AudioElementObu::CreateForObjects(
@@ -584,7 +549,6 @@ absl::Status AudioElementObu::ReadAndValidatePayloadDerived(
   RETURN_IF_NOT_OK(ValidateNumParameters(num_parameters));
 
   // Loop to read the parameter portion of the obu.
-  audio_element_params_.reserve(num_parameters);
   for (DecodedUleb128 i = 0; i < num_parameters; ++i) {
     AudioElementParam audio_element_param;
     RETURN_IF_NOT_OK(

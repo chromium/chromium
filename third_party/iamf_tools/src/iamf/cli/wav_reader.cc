@@ -13,10 +13,12 @@
 #include "iamf/cli/wav_reader.h"
 
 #include <cerrno>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +34,34 @@ namespace iamf_tools {
 
 namespace {
 const int kAudioToTactileFailure = 0;
+
+// Converts one sample of an IEEE float WAV to the left-justified int32
+// convention documented on `WavReader::buffers_`. For float sources
+// `ReadWavSamples` fills the 32-bit destination with raw float values
+// (`ReadWavInfo::sample_format == kFloat`), so `sample_bits` holds a float bit
+// pattern, not an integer sample. The scaling matches audio_to_tactile's
+// `InPlaceFloatToInt32Conversion` (which only runs on the whole-file
+// `ReadWavFile` path): NaN maps to 0 and out-of-range values are clamped.
+int32_t NormalizedFloatBitsToInt32(int32_t sample_bits) {
+  static_assert(sizeof(float) == sizeof(int32_t));
+  float sample_f32;
+  std::memcpy(&sample_f32, &sample_bits, sizeof(sample_f32));
+  if (std::isnan(sample_f32)) {
+    return 0;
+  }
+  sample_f32 *= 2147483648.0f;  // Scale [-1, 1] to the int32 range.
+  // Beware that a 32-bit float cannot represent INT32_MAX exactly;
+  // (float)INT32_MAX == 2147483648.0f, which would overflow if cast.
+  if (sample_f32 >= 2147483648.0f) {
+    return std::numeric_limits<int32_t>::max();
+  }
+  if (sample_f32 <= -2147483648.0f) {
+    return std::numeric_limits<int32_t>::min();
+  }
+  return static_cast<int32_t>(sample_f32);
 }
+
+}  // namespace
 
 absl::StatusOr<WavReader> WavReader::CreateFromFile(
     const std::string& wav_filename, const size_t num_samples_per_frame) {
@@ -49,6 +78,10 @@ absl::StatusOr<WavReader> WavReader::CreateFromFile(
 
   ReadWavInfo info;
   if (ReadWavHeader(file, &info) == kAudioToTactileFailure) {
+    // Ownership of `file` only transfers to the `WavReader` on the success
+    // path below, so it must be closed here to avoid leaking the descriptor
+    // on every malformed input.
+    std::fclose(file);
     return absl::FailedPreconditionError(
         absl::StrCat("Failed to read header of file: \"", wav_filename,
                      "\". Maybe it is not a valid RIFF WAV."));
@@ -108,7 +141,9 @@ size_t WavReader::ReadFrame() {
       break;
     }
     for (int c = 0; c < num_channels; c++) {
-      buffers_[c][t] = buffer_of_one_tick[c];
+      buffers_[c][t] = info_.sample_format == ReadWavInfo::kFloat
+                           ? NormalizedFloatBitsToInt32(buffer_of_one_tick[c])
+                           : buffer_of_one_tick[c];
     }
   }
 

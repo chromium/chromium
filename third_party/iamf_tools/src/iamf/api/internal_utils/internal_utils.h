@@ -26,7 +26,7 @@ namespace iamf_tools {
 /*!\ This file contains utility functions that use the public iamf_decoder
  * API to perform internal tasks. This is not intended to be used by external
  * clients.
- * /
+ */
 
 /*!\brief Configures the wav writer and output sample buffer.
  *

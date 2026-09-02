@@ -12,6 +12,7 @@
 #include "iamf/cli/parameters_manager.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -285,9 +286,24 @@ absl::Status ParametersManager::GetReconGainInfoParameterData(
       absl::StrCat("Getting recon gain parameters for audio element ID= ",
                    audio_element_id, ": ")));
 
+  if (recon_gain_parameter_block->obu->subblocks_.empty()) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "Recon gain parameter block for audio element ID= ", audio_element_id,
+        " has no subblocks."));
+  }
   auto recon_gain_info_parameter_data_in_obu =
       static_cast<ReconGainInfoParameterData*>(
           recon_gain_parameter_block->obu->subblocks_[0].get());
+  // Verify that the element count matches the layer count (if any).
+  if (num_layers > 0 &&
+      recon_gain_info_parameter_data_in_obu->recon_gain_elements.size() !=
+          static_cast<size_t>(num_layers)) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "Recon gain parameter block for audio element ID= ", audio_element_id,
+        " has ",
+        recon_gain_info_parameter_data_in_obu->recon_gain_elements.size(),
+        " elements but the audio element has ", num_layers, " layers."));
+  }
   recon_gain_info_parameter_data.recon_gain_elements =
       recon_gain_info_parameter_data_in_obu->recon_gain_elements;
   return absl::OkStatus();
