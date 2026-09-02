@@ -90,7 +90,7 @@ SequentialTaskGroup::SequentialTaskGroup(
 SequentialTaskGroup::~SequentialTaskGroup() = default;
 
 void SequentialTaskGroup::Start(base::OnceClosure done_callback) {
-  CHECK_EQ(current_task_index_, 0u);
+  CHECK_EQ(next_task_index_, 0u);
   done_callback_ = std::move(done_callback);
   RunNextTask();
 }
@@ -101,12 +101,21 @@ void SequentialTaskGroup::NotifySequenceCompleted(bool success) {
   }
 }
 
+std::optional<GlicTaskType> SequentialTaskGroup::GetLastActiveTaskType() const {
+  if (next_task_index_ == 0 || tasks_.empty()) {
+    return std::nullopt;
+  }
+  // Retrieve the task that is currently executing or just stopped.
+  size_t idx = next_task_index_ - 1;
+  return tasks_[idx]->GetType();
+}
+
 void SequentialTaskGroup::RunNextTask() {
-  if (current_task_index_ >= tasks_.size()) {
+  if (next_task_index_ >= tasks_.size()) {
     std::move(done_callback_).Run();
     return;
   }
-  auto& task = tasks_[current_task_index_++];
+  auto& task = tasks_[next_task_index_++];
   task->Start(base::BindOnce(&SequentialTaskGroup::RunNextTask,
                              weak_ptr_factory_.GetWeakPtr()));
 }
@@ -598,6 +607,70 @@ void PastePolicyCheckTask::OnPastePolicyCheckComplete(
     return;
   }
   std::move(done_callback_).Run();
+}
+
+std::optional<GlicTaskType> GlicInvokeTask::GetType() const {
+  return std::nullopt;
+}
+
+std::optional<GlicTaskType> SequentialTaskGroup::GetType() const {
+  return GlicTaskType::kSequentialTaskGroup;
+}
+
+std::optional<GlicTaskType> ParallelTaskGroup::GetType() const {
+  return GlicTaskType::kParallelTaskGroup;
+}
+
+std::optional<GlicTaskType> WaitForNavigationTask::GetType() const {
+  return GlicTaskType::kWaitForNavigation;
+}
+
+std::optional<GlicTaskType> SetTabPendingActuationTask::GetType() const {
+  return GlicTaskType::kSetTabPendingActuation;
+}
+
+std::optional<GlicTaskType> ShowInstanceTask::GetType() const {
+  return GlicTaskType::kShowInstance;
+}
+
+std::optional<GlicTaskType> SetupHiddenPanelTask::GetType() const {
+  return GlicTaskType::kSetupHiddenPanel;
+}
+
+std::optional<GlicTaskType> MaybeInitializeHiddenClientTask::GetType() const {
+  return GlicTaskType::kMaybeInitializeHiddenClient;
+}
+
+std::optional<GlicTaskType> WaitForClientConnectedTask::GetType() const {
+  return GlicTaskType::kWaitForClientConnected;
+}
+
+std::optional<GlicTaskType> PostCallbackTask::GetType() const {
+  return GlicTaskType::kPostCallback;
+}
+
+std::optional<GlicTaskType> StabilizationTask::GetType() const {
+  return GlicTaskType::kStabilization;
+}
+
+std::optional<GlicTaskType> WaitForFreCompletionTask::GetType() const {
+  return GlicTaskType::kWaitForFreCompletion;
+}
+
+std::optional<GlicTaskType> SendToClientTask::GetType() const {
+  return GlicTaskType::kSendToClient;
+}
+
+std::optional<GlicTaskType> WaitForActuationTask::GetType() const {
+  return GlicTaskType::kWaitForActuation;
+}
+
+std::optional<GlicTaskType> CopyPolicyTask::GetType() const {
+  return GlicTaskType::kCopyPolicy;
+}
+
+std::optional<GlicTaskType> PastePolicyCheckTask::GetType() const {
+  return GlicTaskType::kPastePolicyCheck;
 }
 
 }  // namespace glic

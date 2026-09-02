@@ -32,6 +32,25 @@ class Profile;
 
 namespace glic {
 
+enum class GlicTaskType : int {
+  kSequentialTaskGroup = 1,
+  kParallelTaskGroup = 2,
+  kWaitForNavigation = 3,
+  kSetTabPendingActuation = 4,
+  kShowInstance = 5,
+  kSetupHiddenPanel = 6,
+  kMaybeInitializeHiddenClient = 7,
+  kWaitForClientConnected = 8,
+  kPostCallback = 9,
+  kStabilization = 10,
+  kWaitForFreCompletion = 11,
+  kSendToClient = 12,
+  kWaitForActuation = 13,
+  kClipboardPolicy = 14,
+  kCopyPolicy = 15,
+  kPastePolicyCheck = 16,
+};
+
 class GlicInvokeTask {
  public:
   virtual ~GlicInvokeTask() = default;
@@ -39,6 +58,7 @@ class GlicInvokeTask {
   // Called when the sequence of tasks completes (successfully or not).
   // This is where tasks should do cleanup.
   virtual void OnSequenceCompleted(bool success) {}
+  virtual std::optional<GlicTaskType> GetType() const;
 };
 
 // Executes tasks sequentially in the order they were added.
@@ -46,6 +66,8 @@ class GlicInvokeTask {
 // It cannot be executed more than once.
 class SequentialTaskGroup : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   SequentialTaskGroup();
   explicit SequentialTaskGroup(
       std::vector<std::unique_ptr<GlicInvokeTask>> tasks);
@@ -56,10 +78,15 @@ class SequentialTaskGroup : public GlicInvokeTask {
   // Notifies all tasks in the group that the sequence has completed.
   void NotifySequenceCompleted(bool success);
 
+  // Returns the type of the task that is currently executing, or the last
+  // executed task if the group has finished/errored. If no tasks have started,
+  // returns std::nullopt.
+  std::optional<GlicTaskType> GetLastActiveTaskType() const;
+
  private:
   void RunNextTask();
   std::vector<std::unique_ptr<GlicInvokeTask>> tasks_;
-  size_t current_task_index_ = 0;
+  size_t next_task_index_ = 0;
   base::OnceClosure done_callback_;
   base::WeakPtrFactory<SequentialTaskGroup> weak_ptr_factory_{this};
 };
@@ -69,6 +96,8 @@ class SequentialTaskGroup : public GlicInvokeTask {
 // It cannot be executed more than once.
 class ParallelTaskGroup : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   ParallelTaskGroup();
   explicit ParallelTaskGroup(
       std::vector<std::unique_ptr<GlicInvokeTask>> tasks);
@@ -87,6 +116,8 @@ class GlicInstanceImpl;
 class WaitForNavigationTask : public GlicInvokeTask,
                               public content::WebContentsObserver {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   explicit WaitForNavigationTask(content::WebContents* web_contents);
   ~WaitForNavigationTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -101,6 +132,8 @@ class WaitForNavigationTask : public GlicInvokeTask,
 // indicator.
 class SetTabPendingActuationTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   SetTabPendingActuationTask(Profile* profile, tabs::TabHandle tab_handle);
   ~SetTabPendingActuationTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -114,6 +147,8 @@ class SetTabPendingActuationTask : public GlicInvokeTask {
 // Task that shows the Glic instance.
 class ShowInstanceTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   ShowInstanceTask(GlicInstanceImpl& instance, ShowOptions options);
   ~ShowInstanceTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -128,6 +163,8 @@ class ShowInstanceTask : public GlicInvokeTask {
 // Task that sets up the instance for a hidden panel.
 class SetupHiddenPanelTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   SetupHiddenPanelTask(GlicInstanceImpl& instance, tabs::TabInterface& tab);
   ~SetupHiddenPanelTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -139,6 +176,8 @@ class SetupHiddenPanelTask : public GlicInvokeTask {
 
 class MaybeInitializeHiddenClientTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   MaybeInitializeHiddenClientTask(GlicInstanceImpl* instance,
                                   mojom::InvocationSource invocation_source,
                                   mojom::FreOverride fre_override);
@@ -157,6 +196,8 @@ class MaybeInitializeHiddenClientTask : public GlicInvokeTask {
 class WaitForClientConnectedTask : public GlicInvokeTask,
                                    public Host::Observer {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   explicit WaitForClientConnectedTask(Host& host);
   ~WaitForClientConnectedTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -174,6 +215,8 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
 // Task that posts a callback asynchronously.
 class PostCallbackTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   explicit PostCallbackTask(base::OnceClosure callback);
   ~PostCallbackTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -186,6 +229,8 @@ class PostCallbackTask : public GlicInvokeTask {
 class StabilizationTask : public GlicInvokeTask,
                           public content::WebContentsObserver {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   explicit StabilizationTask(content::WebContents* web_contents);
   ~StabilizationTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -201,6 +246,8 @@ class StabilizationTask : public GlicInvokeTask,
 // necessary.
 class WaitForFreCompletionTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   WaitForFreCompletionTask(::Profile* profile, mojom::FreOverride fre_override);
   ~WaitForFreCompletionTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -218,6 +265,8 @@ class WaitForFreCompletionTask : public GlicInvokeTask {
 // Task that sends the invocation to the client.
 class SendToClientTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   SendToClientTask(
       GlicInstanceImpl* instance,
       mojom::InvokeOptionsPtr mojo_options,
@@ -238,6 +287,8 @@ class SendToClientTask : public GlicInvokeTask {
 // Task that waits for actuation (both start and complete).
 class WaitForActuationTask : public GlicInvokeTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   WaitForActuationTask(
       GlicInstanceImpl* instance,
       base::TimeDelta start_timeout,
@@ -294,6 +345,8 @@ class ClipboardPolicyTask : public GlicInvokeTask {
 
 class CopyPolicyTask : public ClipboardPolicyTask {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   CopyPolicyTask(GlicInstanceImpl* instance,
                  const GlicInvokeOptions& options,
                  base::OnceCallback<void(GlicInvokeError)> error_callback);
@@ -317,6 +370,8 @@ class CopyPolicyTask : public ClipboardPolicyTask {
 class PastePolicyCheckTask : public ClipboardPolicyTask,
                              public content::WebContentsObserver {
  public:
+  std::optional<GlicTaskType> GetType() const override;
+
   PastePolicyCheckTask(
       content::WebContents* contents,
       GlicInstanceImpl* instance,

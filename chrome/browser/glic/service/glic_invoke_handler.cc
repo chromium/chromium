@@ -495,4 +495,11 @@ mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
   return mojo_options;
 }
 
+std::optional<GlicTaskType> GlicInvokeHandler::GetLastActiveTaskType() const {
+  if (!main_task_) {
+    return std::nullopt;
+  }
+  return main_task_->GetLastActiveTaskType();
+}
+
 }  // namespace glic

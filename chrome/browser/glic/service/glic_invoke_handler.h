@@ -30,6 +30,7 @@ namespace glic {
 class GlicInstanceImpl;
 
 class SequentialTaskGroup;
+enum class GlicTaskType;
 
 // Handles an invocation of Glic, parsing options and communicating with the
 // instance's host.
@@ -77,6 +78,11 @@ class GlicInvokeHandler {
   void set_completion_callback(CompletionCallback completion_callback) {
     completion_callback_ = std::move(completion_callback);
   }
+
+  // Returns the task type of the last active task, if the invocation sequence
+  // is currently running or failed. Returns std::nullopt if no tasks have been
+  // started or if the `main_task_` is not present.
+  std::optional<GlicTaskType> GetLastActiveTaskType() const;
 
  private:
   bool IsFloatingTarget() const;
