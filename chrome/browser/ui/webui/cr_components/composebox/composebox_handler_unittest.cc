@@ -800,7 +800,10 @@ TEST_F(ComposeboxHandlerTest, ShouldOpenInLensSidePanel_MultipleTabsAttached) {
       SessionID::FromSerializedValue(tab_id.id() + 1));
   contextual_session_handle()->set_submitted_context_tokens({token1, token2});
 
-  EXPECT_TRUE(handler().ShouldOpenInLensSidePanelForTesting(
+  // When multiple tabs are attached, fulfillment goes through the navigation
+  // flow and is intercepted by ContextualTasksNavigationThrottle into the
+  // side panel with all tabs, so ShouldOpenInLensSidePanel returns false.
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
       web_contents(), contextual_session_handle()));
 }
 
