@@ -3032,12 +3032,19 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageBeforeInitialize) {
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kGuestError));
   ASSERT_TRUE(instance->IsShowing());
 
+  auto* old_frame = FindGlicGuestMainFrame();
+  ASSERT_TRUE(old_frame);
+  content::GlobalRenderFrameHostId old_frame_id = old_frame->GetGlobalId();
   // Simulate completing a captcha, navigating back.
   ASSERT_EQ(true,
-            content::EvalJs(FindGlicGuestMainFrame(),
+            content::EvalJs(old_frame,
                             std::string("(()=>{window.location = '") +
                                 GetGuestURL().spec() + "'; return true;})()"));
 
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* frame = FindGlicGuestMainFrame();
+    return frame && frame->GetGlobalId() != old_frame_id;
+  }));
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kFinishLoading));
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set("failWith", "none")),
@@ -3059,12 +3066,19 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageAfterInitialize) {
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kGuestError));
   ASSERT_TRUE(instance->IsShowing());
 
+  auto* old_frame = FindGlicGuestMainFrame();
+  ASSERT_TRUE(old_frame);
+  content::GlobalRenderFrameHostId old_frame_id = old_frame->GetGlobalId();
   // Simulate completing a captcha, navigating back.
   ASSERT_EQ(true,
-            content::EvalJs(FindGlicGuestMainFrame(),
+            content::EvalJs(old_frame,
                             std::string("(()=>{window.location = '") +
                                 GetGuestURL().spec() + "'; return true;})()"));
 
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* frame = FindGlicGuestMainFrame();
+    return frame && frame->GetGlobalId() != old_frame_id;
+  })) << "Glic guest frame never changed.";
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kFinishLoading));
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set("failWith", "none")),
