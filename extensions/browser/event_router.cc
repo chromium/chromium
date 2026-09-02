@@ -467,6 +467,38 @@ bool EventRouter::CanProcessAccessOrigin(RenderProcessHost& process,
                                url::Origin::Create(url));
 }
 
+void EventRouter::ReportUnauthorizedExtensionProcess(
+    const ExtensionId& extension_id,
+    RenderProcessHost& process) {
+  SCOPED_CRASH_KEY_STRING64("EventRouter", "extension_id", extension_id);
+
+  SCOPED_CRASH_KEY_BOOL(
+      "EventRouter", "cpsp_allows_origin",
+      CanProcessAccessOrigin(
+          process, Extension::GetBaseURLFromExtensionId(extension_id)));
+
+  // The extension that `ProcessMap` currently associates with `process`.
+  ProcessMap* process_map = ProcessMap::Get(browser_context_);
+  SCOPED_CRASH_KEY_STRING64(
+      "EventRouter", "process_map_entry",
+      process_map ? process_map->GetExtensionIdForProcess(process.GetID())
+                        .value_or("none")
+                  : "none");
+
+  // Whether ProcessManager tracks a worker for this extension in `process`.
+  ProcessManager* process_manager = ProcessManager::Get(browser_context_);
+  const bool worker_known =
+      process_manager &&
+      std::ranges::any_of(
+          process_manager->GetServiceWorkersForExtension(extension_id),
+          [&process](const WorkerId& worker_id) {
+            return worker_id.render_process_id == process.GetID();
+          });
+  SCOPED_CRASH_KEY_BOOL("EventRouter", "worker_known", worker_known);
+
+  receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
+}
+
 bool EventRouter::ValidateMainThreadListenerOwner(
     const mojom::EventListenerOwner& listener_owner,
     RenderProcessHost& process,
@@ -489,7 +521,7 @@ bool EventRouter::ValidateMainThreadListenerOwner(
             : IsProcessAuthorizedForMainThreadExtensionListener(extension_id,
                                                                 process);
     if (!is_authorized) {
-      receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
+      ReportUnauthorizedExtensionProcess(extension_id, process);
       return false;
     }
     return true;
@@ -532,7 +564,7 @@ bool EventRouter::ValidateServiceWorkerListenerForExtension(
   // state. A process that merely ran an extension content or user script is not
   // authorized to mutate that state.
   if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, process)) {
-    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
+    ReportUnauthorizedExtensionProcess(extension_id, process);
     return false;
   }
 
@@ -605,7 +637,7 @@ void EventRouter::AddLazyListenerForMainThread(const ExtensionId& extension_id,
   }
 
   if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, *process)) {
-    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
+    ReportUnauthorizedExtensionProcess(extension_id, *process);
     return;
   }
 
@@ -762,7 +794,7 @@ void EventRouter::RemoveLazyListenerForMainThread(
   }
 
   if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, *process)) {
-    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
+    ReportUnauthorizedExtensionProcess(extension_id, *process);
     return;
   }
 

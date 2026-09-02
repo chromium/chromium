@@ -484,6 +484,11 @@ class EventRouter : public KeyedService,
   bool CanProcessAccessOrigin(content::RenderProcessHost& process,
                               const GURL& url) const;
 
+  // Reports a bad message when `process` is not authorized for `extension_id`,
+  // recording crash keys to help diagnose unexpected renderer kills.
+  void ReportUnauthorizedExtensionProcess(const ExtensionId& extension_id,
+                                          content::RenderProcessHost& process);
+
   // Validates a main-thread listener owner from a renderer-originated message.
   // If `require_extension_process` is true, content and user script processes
   // are rejected. Returns true if the listener owner is valid and authorized.
