@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -355,8 +354,7 @@ bool FrameSensorProviderProxy::ShouldSuspendSensors() const {
   auto* web_contents_proxy =
       WebContentsSensorProviderProxy::FromWebContents(web_contents());
   bool is_virtual_sensor =
-      (web_contents_proxy && web_contents_proxy->HasVirtualSensors()) ||
-      DevToolsAgentHost::HasFor(web_contents());
+      web_contents_proxy && web_contents_proxy->HasVirtualSensors();
 
   if (is_virtual_sensor) {
     return false;

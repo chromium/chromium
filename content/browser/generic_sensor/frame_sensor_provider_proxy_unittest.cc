@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
@@ -67,9 +68,14 @@ class FrameSensorProviderProxyTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
+    auto permission_manager =
+        std::make_unique<testing::NiceMock<MockSensorPermissionManager>>();
+    ON_CALL(*permission_manager, GetPermissionResultForCurrentDocument(_, _, _))
+        .WillByDefault(
+            Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                    PermissionStatusSource::UNSPECIFIED)));
     static_cast<TestBrowserContext*>(browser_context())
-        ->SetPermissionControllerDelegate(
-            std::make_unique<testing::NiceMock<MockSensorPermissionManager>>());
+        ->SetPermissionControllerDelegate(std::move(permission_manager));
 
     fake_sensor_provider_ = std::make_unique<device::FakeSensorProvider>();
     WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
@@ -275,13 +281,6 @@ TEST_F(FrameSensorProviderProxyTest,
   rwh_visibility_test->SetPageFocus(true);
   FocusWebContentsOnFrame(main_test_rfh());
 
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .Times(2)
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
 
@@ -307,13 +306,6 @@ TEST_F(FrameSensorProviderProxyTest,
 
 TEST_F(FrameSensorProviderProxyTest,
        GetSensor_InitiallyHidden_StartsSuspended) {
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .Times(2)
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   web_contents()->WasHidden();
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -335,13 +327,6 @@ TEST_F(FrameSensorProviderProxyTest,
 
 TEST_F(FrameSensorProviderProxyTest,
        GetSensor_HiddenDuringPendingRequest_SensorSuspended) {
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .Times(2)
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
 
@@ -390,12 +375,6 @@ TEST_F(FrameSensorProviderProxyTest, GetSensor_Occluded_Suspends) {
   rwh->SetPageFocus(true);
   FocusWebContentsOnFrame(main_test_rfh());
 
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
 
@@ -423,12 +402,6 @@ TEST_F(FrameSensorProviderProxyTest, GetSensor_Occluded_Suspends) {
 
 TEST_F(FrameSensorProviderProxyTest,
        GetSensor_InitiallyOccluded_StartsSuspended) {
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   web_contents()->WasOccluded();
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -449,12 +422,6 @@ TEST_F(FrameSensorProviderProxyTest,
 }
 
 TEST_F(FrameSensorProviderProxyTest, GetSensor_LostFocus_Suspends) {
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   // Ensure initially focused.
   auto* rwh = static_cast<RenderWidgetHostImpl*>(
       main_test_rfh()->GetRenderWidgetHost());
@@ -493,12 +460,6 @@ TEST_F(FrameSensorProviderProxyTest, GetSensor_LostFocus_Suspends) {
 
 TEST_F(FrameSensorProviderProxyTest,
        GetSensor_InitiallyUnfocused_StartsSuspended) {
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   // Ensure initially unfocused.
   auto* rwh = static_cast<RenderWidgetHostImpl*>(
       main_test_rfh()->GetRenderWidgetHost());
@@ -526,12 +487,6 @@ TEST_F(FrameSensorProviderProxyTest,
 
 TEST_F(FrameSensorProviderProxyTest, GetSensor_CrossOriginFocus_Suspends) {
   NavigateAndCommit(GURL("https://google.com"));
-
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
 
   // Ensure main frame is focused initially.
   auto* main_rwh = static_cast<RenderWidgetHostImpl*>(
@@ -591,12 +546,6 @@ TEST_F(FrameSensorProviderProxyTest,
        GetSensor_SameOriginChildFocus_NotSuspended) {
   NavigateAndCommit(GURL("https://google.com"));
 
-  EXPECT_CALL(*permission_manager(),
-              GetPermissionResultForCurrentDocument(_, _, _))
-      .WillRepeatedly(
-          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                  PermissionStatusSource::UNSPECIFIED)));
-
   // Ensure main frame is focused initially.
   auto* main_rwh = static_cast<RenderWidgetHostImpl*>(
       main_test_rfh()->GetRenderWidgetHost());
@@ -644,6 +593,93 @@ TEST_F(FrameSensorProviderProxyTest,
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, flush_future.GetCallback());
   EXPECT_TRUE(flush_future.Wait());
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+}
+
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_DevToolsAgentHostWithoutVirtualSensors_SuspendedWhenHidden) {
+  NavigateAndCommit(GURL("https://google.com"));
+
+  // Ensure main frame is focused initially.
+  auto* main_rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  main_rwh->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+
+  // Create a DevToolsAgentHost for the WebContents (simulating chrome://inspect
+  // or extension target discovery).
+  scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+      DevToolsAgentHost::GetOrCreateFor(web_contents());
+  ASSERT_TRUE(devtools_agent_host);
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+
+  // Hiding the WebContents must suspend the hardware sensor, even though a
+  // DevToolsAgentHost exists for the WebContents.
+  web_contents()->WasHidden();
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(true));
+
+  web_contents()->WasShown();
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(false));
+}
+
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_VirtualSensor_BypassesSuspension) {
+  NavigateAndCommit(GURL("https://google.com"));
+
+  // Ensure main frame is focused initially.
+  auto* main_rwh = static_cast<RenderWidgetHostImpl*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  main_rwh->SetPageFocus(true);
+  FocusWebContentsOnFrame(main_test_rfh());
+
+  // Create a virtual sensor via WebContentsSensorProviderProxy (simulating
+  // DevTools / WPT test_driver sensor emulation).
+  auto* web_contents_proxy =
+      WebContentsSensorProviderProxy::GetOrCreate(web_contents());
+  auto virtual_sensor = web_contents_proxy->CreateVirtualSensorForDevTools(
+      device::mojom::SensorType::ACCELEROMETER,
+      device::mojom::VirtualSensorMetadata::New());
+  ASSERT_TRUE(virtual_sensor);
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+
+  // Hiding the WebContents does NOT suspend the virtual sensor.
+  web_contents()->WasHidden();
+  base::test::TestFuture<void> flush_future_virtual;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_future_virtual.GetCallback());
+  EXPECT_TRUE(flush_future_virtual.Wait());
   EXPECT_FALSE(fake_sensor->is_browser_suspended());
 }
 }  // namespace

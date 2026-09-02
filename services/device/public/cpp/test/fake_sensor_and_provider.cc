@@ -462,4 +462,30 @@ bool FakeSensorProvider::WaitForGyroscopeSuspend(bool suspend) {
   return gyroscope_->WaitForSuspend(suspend);
 }
 
+void FakeSensorProvider::CreateVirtualSensor(
+    mojom::SensorType type,
+    mojom::VirtualSensorMetadataPtr metadata,
+    mojom::SensorProvider::CreateVirtualSensorCallback callback) {
+  std::move(callback).Run(mojom::CreateVirtualSensorResult::kSuccess);
+}
+
+void FakeSensorProvider::UpdateVirtualSensor(
+    mojom::SensorType type,
+    const SensorReading& reading,
+    mojom::SensorProvider::UpdateVirtualSensorCallback callback) {
+  std::move(callback).Run(mojom::UpdateVirtualSensorResult::kSuccess);
+}
+
+void FakeSensorProvider::RemoveVirtualSensor(
+    mojom::SensorType type,
+    mojom::SensorProvider::RemoveVirtualSensorCallback callback) {
+  std::move(callback).Run();
+}
+
+void FakeSensorProvider::GetVirtualSensorInformation(
+    mojom::SensorType type,
+    mojom::SensorProvider::GetVirtualSensorInformationCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
 }  // namespace device
