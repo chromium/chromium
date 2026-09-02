@@ -1955,6 +1955,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     base::RunLoop expected_connections_run_loop;
     expected_connections_loop_ptr_.store(&expected_connections_run_loop);
 
+    std::vector<std::unique_ptr<content::SimpleURLLoaderTestHelper>> helpers;
     std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders;
     for (unsigned int i = 0; i < kTestMaxConnectionsPerProxy + 1; ++i) {
       std::unique_ptr<network::ResourceRequest> request =
@@ -1964,13 +1965,15 @@ class NetworkContextConfigurationProxySettingsBrowserTest
                                          base::StringPrintf("/hung_%u", i));
       request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-      content::SimpleURLLoaderTestHelper simple_loader_helper;
+      std::unique_ptr<content::SimpleURLLoaderTestHelper> simple_helper =
+          std::make_unique<content::SimpleURLLoaderTestHelper>();
       std::unique_ptr<network::SimpleURLLoader> simple_loader =
           network::SimpleURLLoader::Create(std::move(request),
                                            TRAFFIC_ANNOTATION_FOR_TESTS);
 
       simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-          loader_factory(), simple_loader_helper.GetCallback());
+          loader_factory(), simple_helper->GetCallback());
+      helpers.emplace_back(std::move(simple_helper));
       loaders.emplace_back(std::move(simple_loader));
     }
     expected_connections_run_loop.Run();
