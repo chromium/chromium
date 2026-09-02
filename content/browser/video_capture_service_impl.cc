@@ -82,6 +82,9 @@ void BindInProcessInstance(
       /*create_system_monitor=*/false);
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+  if (!gpu_channel_host) {
+    return;
+  }
   service->SetGpuChannelHost(
       std::move(gpu_channel_host),
       base::BindPostTask(
