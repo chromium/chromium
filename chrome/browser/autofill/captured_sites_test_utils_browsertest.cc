@@ -5,7 +5,6 @@
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 
 #include "chrome/browser/autofill/autofill_uitest.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"

@@ -46,6 +46,7 @@
 #include "extensions/browser/unpacked_installer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 

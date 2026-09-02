@@ -30,7 +30,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_(unittest|browsertest)\\.cc": [
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+components/policy/core/browser/browser_policy_connector.h",
     "+components/policy/policy_constants.h",
     "+components/sync_preferences/testing_pref_service_syncable.h",

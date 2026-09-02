@@ -77,6 +77,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"

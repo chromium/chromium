@@ -10,6 +10,7 @@
 #include "chrome/app_shim/app_shim_controller.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 #include "net/base/apple/url_conversions.h"
+#include "ui/base/window_open_disposition.h"
 
 @implementation AppShimDelegate {
   raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|

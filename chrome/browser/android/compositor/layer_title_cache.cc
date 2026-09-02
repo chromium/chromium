@@ -14,6 +14,7 @@
 #include "chrome/browser/android/compositor/decoration_icon_title.h"
 #include "chrome/browser/android/compositor/decoration_tab_title.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/gfx/android/java_bitmap.h"

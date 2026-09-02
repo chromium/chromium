@@ -40,6 +40,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"

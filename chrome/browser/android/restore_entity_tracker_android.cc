@@ -17,6 +17,7 @@
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 #include "chrome/browser/tab/tab_storage_util.h"
+#include "components/tab_groups/tab_group_id.h"
 
 namespace tabs {
 

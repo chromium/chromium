@@ -45,6 +45,7 @@
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/policy/core/common/features.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"

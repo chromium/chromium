@@ -8,6 +8,7 @@
 #include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/decoration_icon_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/base/l10n/l10n_util_android.h"
 

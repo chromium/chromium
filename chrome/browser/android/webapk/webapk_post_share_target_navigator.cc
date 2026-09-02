@@ -15,6 +15,7 @@
 #include "chrome/browser/web_share_target/target_util.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/android/compositor/layer/group_indicator_layer.h"
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/base/l10n/l10n_util_android.h"

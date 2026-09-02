@@ -10,6 +10,7 @@
 #include "chrome/browser/android/extensions/extensions_url_override_state_tracker.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 

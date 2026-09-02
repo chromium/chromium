@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"

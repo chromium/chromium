@@ -29,6 +29,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "net/base/filename_util.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 

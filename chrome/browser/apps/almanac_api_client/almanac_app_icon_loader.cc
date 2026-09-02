@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 

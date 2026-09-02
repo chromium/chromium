@@ -36,6 +36,7 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/window_open_disposition.h"
 
 using extensions::AppWindowRegistry;
 using extensions::Extension;

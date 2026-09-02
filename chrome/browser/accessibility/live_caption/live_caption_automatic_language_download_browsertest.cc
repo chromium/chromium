@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"

@@ -30,6 +30,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 

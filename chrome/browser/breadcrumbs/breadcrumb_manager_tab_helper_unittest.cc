@@ -22,6 +22,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 
 using infobars::InfoBarDelegate;
 

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"

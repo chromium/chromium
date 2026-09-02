@@ -26,6 +26,8 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/base/page_transition_types.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "chrome/browser/actor/android/actor_keyed_service_android.h"

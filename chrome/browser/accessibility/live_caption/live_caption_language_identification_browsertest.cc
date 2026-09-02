@@ -6,6 +6,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"

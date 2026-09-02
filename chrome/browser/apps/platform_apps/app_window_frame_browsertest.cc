@@ -11,6 +11,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace extensions {
 

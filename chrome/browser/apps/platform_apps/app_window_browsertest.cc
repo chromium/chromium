@@ -28,6 +28,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/display_switches.h"
 #include "url/gurl.h"
 

@@ -64,6 +64,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/actor_container_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"

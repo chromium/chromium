@@ -24,7 +24,6 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -72,6 +71,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 

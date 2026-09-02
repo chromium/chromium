@@ -56,7 +56,10 @@
 #include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/switches.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/display/types/display_constants.h"
 #include "url/url_constants.h"
 
 // TODO(crbug.com/40569217): life cycle events. Extensions can be installed and

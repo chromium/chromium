@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "extensions/browser/extension_util.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 // Max number of unscoped extension suggestions to send per extension.

@@ -20,6 +20,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace web_app {

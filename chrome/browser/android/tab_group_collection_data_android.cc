@@ -16,6 +16,7 @@
 #include "base/token.h"
 #include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

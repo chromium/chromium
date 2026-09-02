@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"

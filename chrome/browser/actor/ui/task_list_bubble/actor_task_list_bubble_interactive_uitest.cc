@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
+
 #include <memory>
 
 #include "base/test/metrics/user_action_tester.h"
@@ -11,7 +13,6 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/ui/actor_ui_interactive_browser_test.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -30,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/interaction/element_tracker_views.h"

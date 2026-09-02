@@ -13,7 +13,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"  // nogncheck
 #else
-#include "chrome/browser/ui/browser.h"  // nogncheck
+#include "chrome/test/base/in_process_browser_test.h"
 #endif
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"

@@ -31,6 +31,7 @@
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 

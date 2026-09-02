@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 

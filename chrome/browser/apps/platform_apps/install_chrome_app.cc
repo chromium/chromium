@@ -16,6 +16,8 @@
 #include "extensions/browser/webstore_install_result.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 using extensions::ExtensionRegistry;
 

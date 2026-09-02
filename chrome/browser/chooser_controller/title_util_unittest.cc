@@ -9,6 +9,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
