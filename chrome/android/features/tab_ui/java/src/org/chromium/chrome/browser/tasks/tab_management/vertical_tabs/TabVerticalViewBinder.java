@@ -313,7 +313,7 @@ class TabVerticalViewBinder {
         View actionButton = view.findViewById(R.id.action_button);
         View actuationSpark = view.findViewById(R.id.actuation_spark);
         ImageView actuationSpinner = view.findViewById(R.id.actuation_spinner);
-        ImageView mediaIndicator = view.findViewById(R.id.media_indicator_icon);
+        ImageView alertIndicator = view.findViewById(R.id.alert_indicator_icon);
         CircularProgressIndicator spinner = view.findViewById(R.id.tab_loading_spinner);
         ImageView faviconView = view.findViewById(R.id.tab_favicon);
 
@@ -337,7 +337,7 @@ class TabVerticalViewBinder {
                 model.containsKey(TabProperties.ALERT_STATE)
                         ? model.get(TabProperties.ALERT_STATE)
                         : TabAlert.NONE;
-        boolean alertWanted = mediaIndicator != null && alertState != TabAlert.NONE;
+        boolean alertWanted = alertIndicator != null && alertState != TabAlert.NONE;
         boolean loadingWanted = spinner != null && model.get(TabProperties.IS_LOADING);
         boolean faviconWanted =
                 faviconView != null
@@ -399,23 +399,23 @@ class TabVerticalViewBinder {
                     actuationSpark,
                     isIconCompact,
                     UNSET,
-                    R.id.media_indicator_icon,
+                    R.id.alert_indicator_icon,
                     UNSET,
                     /* marginStartDimenId= */ 0,
-                    /* marginEndDimenId= */ R.dimen.vertical_tab_item_media_indicator_margin_end);
+                    /* marginEndDimenId= */ R.dimen.vertical_tab_item_alert_indicator_margin_end);
         }
 
         // Tab Alert Indicator
-        if (mediaIndicator != null) {
+        if (alertIndicator != null) {
             updateViewConstraints(
-                    mediaIndicator,
+                    alertIndicator,
                     isIconCompact,
                     UNSET,
                     R.id.action_button,
                     UNSET,
                     /* marginStartDimenId= */ 0,
-                    /* marginEndDimenId= */ R.dimen.vertical_tab_item_media_indicator_margin_end);
-            mediaIndicator.setVisibility(alertWanted ? View.VISIBLE : View.GONE);
+                    /* marginEndDimenId= */ R.dimen.vertical_tab_item_alert_indicator_margin_end);
+            alertIndicator.setVisibility(alertWanted ? View.VISIBLE : View.GONE);
         }
 
         // Favicon container constraints (loading spinner or tab favicon)
@@ -516,15 +516,15 @@ class TabVerticalViewBinder {
      * @param view the root ViewGroup representing the tab row item.
      */
     private static void updateTabAlertIndicator(PropertyModel model, ViewGroup view) {
-        ImageView mediaIndicator = view.findViewById(R.id.media_indicator_icon);
-        if (mediaIndicator != null) {
+        ImageView alertIndicator = view.findViewById(R.id.alert_indicator_icon);
+        if (alertIndicator != null) {
             @TabAlert
             int alertState =
                     model.containsKey(TabProperties.ALERT_STATE)
                             ? model.get(TabProperties.ALERT_STATE)
                             : TabAlert.NONE;
             if (alertState != TabAlert.NONE) {
-                mediaIndicator.setImageResource(TabUtils.getTabAlertDrawable(alertState));
+                alertIndicator.setImageResource(TabUtils.getTabAlertDrawable(alertState));
             }
             boolean isIncognito = isIncognito(model);
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
@@ -535,7 +535,7 @@ class TabVerticalViewBinder {
                     getActionButtonTintList(context, isSelected, isIncognito).getDefaultColor();
 
             ImageViewCompat.setImageTintList(
-                    mediaIndicator,
+                    alertIndicator,
                     ColorStateList.valueOf(
                             TabUtils.getTabAlertTintColor(context, alertState, defaultIconColor)));
         }

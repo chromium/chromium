@@ -106,7 +106,7 @@ public class TabVerticalViewBinderUnitTest {
     private TextView mTitleView;
     private ImageView mFaviconView;
     private ImageView mCloseButton;
-    private ImageView mMediaIndicatorView;
+    private ImageView mAlertIndicatorView;
     private View mIndicatorView;
     private ImageView mActuationSparkView;
     private ImageView mActuationSpinnerView;
@@ -131,7 +131,7 @@ public class TabVerticalViewBinderUnitTest {
         mTitleView = mItemView.findViewById(R.id.tab_title);
         mFaviconView = mItemView.findViewById(R.id.tab_favicon);
         mCloseButton = mItemView.findViewById(R.id.action_button);
-        mMediaIndicatorView = mItemView.findViewById(R.id.media_indicator_icon);
+        mAlertIndicatorView = mItemView.findViewById(R.id.alert_indicator_icon);
         mIndicatorView = mItemView.findViewById(R.id.ai_indicator);
         mActuationSparkView = mItemView.findViewById(R.id.actuation_spark);
         mActuationSpinnerView = mItemView.findViewById(R.id.actuation_spinner);
@@ -474,10 +474,10 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ALERT_STATE);
 
-        assertEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
 
         // 1. Assert unselected baseline tint uses secondary icon color
-        ColorStateList tintList = mMediaIndicatorView.getImageTintList();
+        ColorStateList tintList = mAlertIndicatorView.getImageTintList();
         assertNotNull(tintList);
         assertEquals(
                 SemanticColorUtils.getDefaultIconColorSecondary(mActivity),
@@ -488,7 +488,7 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ALERT_STATE);
 
-        tintList = mMediaIndicatorView.getImageTintList();
+        tintList = mAlertIndicatorView.getImageTintList();
         assertNotNull(tintList);
         assertEquals(SemanticColorUtils.getDefaultIconColor(mActivity), tintList.getDefaultColor());
 
@@ -496,7 +496,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.ALERT_STATE, TabAlert.NONE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ALERT_STATE);
 
-        assertEquals(View.GONE, mMediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, mAlertIndicatorView.getVisibility());
     }
 
     @Test
@@ -1963,7 +1963,7 @@ public class TabVerticalViewBinderUnitTest {
         assertNotEquals(View.VISIBLE, mTitleView.getVisibility());
         assertEquals("Google", mItemView.getContentDescription());
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
-        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, mIndicatorView.getVisibility());
 
         // Verify padding is collapsed margin
@@ -2216,7 +2216,7 @@ public class TabVerticalViewBinderUnitTest {
         // --- Priority 1: Action Button ---
         assertEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
-        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
@@ -2229,7 +2229,7 @@ public class TabVerticalViewBinderUnitTest {
 
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
-        assertEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
@@ -2240,7 +2240,7 @@ public class TabVerticalViewBinderUnitTest {
 
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertEquals(View.VISIBLE, mActuationSparkView.getVisibility());
-        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
@@ -2253,7 +2253,7 @@ public class TabVerticalViewBinderUnitTest {
 
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
-        assertEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
@@ -2264,7 +2264,7 @@ public class TabVerticalViewBinderUnitTest {
 
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
-        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
@@ -2275,7 +2275,7 @@ public class TabVerticalViewBinderUnitTest {
 
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
-        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mAlertIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(View.VISIBLE, mFaviconView.getVisibility());
     }
@@ -2306,12 +2306,12 @@ public class TabVerticalViewBinderUnitTest {
 
         View spinner = pinnedView.findViewById(R.id.tab_loading_spinner);
         View faviconView = pinnedView.findViewById(R.id.tab_favicon);
-        View mediaIndicatorView = pinnedView.findViewById(R.id.media_indicator_icon);
+        View alertIndicatorView = pinnedView.findViewById(R.id.alert_indicator_icon);
         View actuationSparkView = pinnedView.findViewById(R.id.actuation_spark);
 
         // --- Priority 1: Recording/Sharing Alert Indicator ---
         assertEquals(View.GONE, actuationSparkView.getVisibility());
-        assertEquals(View.VISIBLE, mediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, alertIndicatorView.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.GONE, faviconView.getVisibility());
 
@@ -2321,7 +2321,7 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.ALERT_STATE);
 
         assertEquals(View.VISIBLE, actuationSparkView.getVisibility());
-        assertEquals(View.GONE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, alertIndicatorView.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.GONE, faviconView.getVisibility());
 
@@ -2333,7 +2333,7 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.ACTOR_UI_STATE);
 
         assertEquals(View.GONE, actuationSparkView.getVisibility());
-        assertEquals(View.VISIBLE, mediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, alertIndicatorView.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.GONE, faviconView.getVisibility());
 
@@ -2343,7 +2343,7 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.ALERT_STATE);
 
         assertEquals(View.GONE, actuationSparkView.getVisibility());
-        assertEquals(View.GONE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, alertIndicatorView.getVisibility());
         assertEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(View.GONE, faviconView.getVisibility());
 
@@ -2353,7 +2353,7 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_LOADING);
 
         assertEquals(View.GONE, actuationSparkView.getVisibility());
-        assertEquals(View.GONE, mediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, alertIndicatorView.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.VISIBLE, faviconView.getVisibility());
     }

@@ -242,7 +242,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
 
     void setAlertState(@TabAlert int alertState) {
         TextView tabTitle = fastFindViewById(R.id.tab_title);
-        ImageView tabAlertIndicator = fastFindViewById(R.id.media_indicator_icon);
+        ImageView tabAlertIndicator = fastFindViewById(R.id.alert_indicator_icon);
         @DrawableRes int iconRes = TabUtils.getTabAlertDrawable(alertState);
         tabAlertIndicator.setImageResource(iconRes);
         ConstraintLayout.LayoutParams titleParams =
@@ -253,7 +253,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         int marginResId = R.dimen.tab_grid_card_title_end_margin;
 
         if (iconRes != Resources.ID_NULL) {
-            marginResId = R.dimen.tab_grid_card_title_end_margin_media_indicator;
+            marginResId = R.dimen.tab_grid_card_title_end_margin_alert_indicator;
             alertIndicatorVisibility = View.VISIBLE;
         }
 

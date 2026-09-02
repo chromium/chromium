@@ -43,13 +43,13 @@ public class TabCardThemeUtil {
     }
 
     /**
-     * Returns the ColorStateList for media indicator based on the incognito mode or selected.
+     * Returns the ColorStateList for alert indicator based on the incognito mode or selected.
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param isSelected Whether the tab is currently selected.
      */
-    public static ColorStateList getMediaIndicatorColorStateList(
+    public static ColorStateList getAlertIndicatorColorStateList(
             Context context, boolean isIncognito, boolean isSelected) {
         return ColorStateList.valueOf(
                 getChromeOwnedFaviconTintColor(context, isIncognito, isSelected));

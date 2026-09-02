@@ -87,10 +87,10 @@ found in the LICENSE file.
         android:layout_height="@dimen/vertical_tab_item_actuation_icon_size"
         android:scaleType="fitCenter"
         android:padding="@dimen/vertical_tab_item_actuation_icon_padding"
-        app:layout_constraintEnd_toStartOf="@id/media_indicator_icon"
+        app:layout_constraintEnd_toStartOf="@id/alert_indicator_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="@dimen/vertical_tab_item_media_indicator_margin_end"
+        android:layout_marginEnd="@dimen/vertical_tab_item_alert_indicator_margin_end"
         android:src="@drawable/ic_arrow_selector_spark_24dp"
         app:tint="@macro/default_icon_color_accent1"
         android:visibility="gone"
@@ -110,15 +110,15 @@ found in the LICENSE file.
         android:visibility="gone"
         android:importantForAccessibility="no" />
 
-    <!-- Media Indicator (e.g., speaker icon when playing audio) -->
+    <!-- Alert Indicator (e.g., speaker icon when playing audio) -->
     <ImageView
-        android:id="@+id/media_indicator_icon"
+        android:id="@+id/alert_indicator_icon"
         android:layout_width="@dimen/vertical_tab_item_icon_size"
         android:layout_height="@dimen/vertical_tab_item_icon_size"
         app:layout_constraintEnd_toStartOf="@id/action_button"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="@dimen/vertical_tab_item_media_indicator_margin_end"
+        android:layout_marginEnd="@dimen/vertical_tab_item_alert_indicator_margin_end"
         android:visibility="gone"
         android:importantForAccessibility="no" />
 

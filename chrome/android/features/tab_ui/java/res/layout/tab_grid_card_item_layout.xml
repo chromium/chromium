@@ -90,10 +90,10 @@ found in the LICENSE file.
           android:singleLine="true"
           android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
         <ImageView
-            android:id="@+id/media_indicator_icon"
+            android:id="@+id/alert_indicator_icon"
             android:layout_height="@dimen/tab_grid_close_button_size"
             android:layout_width="@dimen/tab_grid_close_button_size"
-            android:layout_marginEnd="@dimen/tab_grid_card_media_indicator_margin_end"
+            android:layout_marginEnd="@dimen/tab_grid_card_alert_indicator_margin_end"
             android:importantForAccessibility="no"
             app:layout_constraintTop_toTopOf="@id/tab_title"
             app:layout_constraintBottom_toBottomOf="@id/tab_title"

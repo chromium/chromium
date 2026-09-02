@@ -73,9 +73,9 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         app:tint="@macro/default_icon_color_accent1" />
 
-    <!-- Media Indicator (e.g., speaker icon when playing audio). -->
+    <!-- Alert Indicator (e.g., speaker icon when playing audio). -->
     <ImageView
-        android:id="@+id/media_indicator_icon"
+        android:id="@+id/alert_indicator_icon"
         android:layout_width="@dimen/vertical_tab_item_icon_size"
         android:layout_height="@dimen/vertical_tab_item_icon_size"
         android:layout_gravity="center"

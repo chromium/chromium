@@ -58,13 +58,13 @@ found in the LICENSE file.
     <dimen name="tab_grid_focus_ring_inset">4dp</dimen>
     <dimen name="tab_grid_card_title_fading_length">20dp</dimen>
     <dimen name="tab_grid_card_title_end_margin">44dp</dimen>
-    <dimen name="tab_grid_card_media_indicator_margin_end">1dp</dimen>
+    <dimen name="tab_grid_card_alert_indicator_margin_end">1dp</dimen>
     <!--
       tab_grid_card_title_end_margin + tab_grid_close_button_size +
-      tab_grid_card_media_indicator_margin_end + GapBetweenTitleAndIndicator(8)
+      tab_grid_card_alert_indicator_margin_end + GapBetweenTitleAndIndicator(8)
       44 + 18 + 1 + 8 = 71.
     -->
-    <dimen name="tab_grid_card_title_end_margin_media_indicator">71dp</dimen>
+    <dimen name="tab_grid_card_title_end_margin_alert_indicator">71dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_top">12dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_bottom">20dp</dimen>
     <dimen name="tab_grid_card_thumbnail_margin">4dp</dimen>
@@ -210,7 +210,7 @@ found in the LICENSE file.
     <dimen name="vertical_tab_item_touch_target_inset">0dp</dimen>
     <dimen name="vertical_tab_item_title_margin_end">4dp</dimen>
     <dimen name="vertical_tab_item_favicon_margin_end">8dp</dimen>
-    <dimen name="vertical_tab_item_media_indicator_margin_end">12dp</dimen>
+    <dimen name="vertical_tab_item_alert_indicator_margin_end">12dp</dimen>
     <dimen name="vertical_tab_item_ai_indicator_width">2dp</dimen>
     <dimen name="vertical_tab_item_actuation_icon_size">20dp</dimen>
     <dimen name="vertical_tab_item_actuation_icon_padding">3dp</dimen>

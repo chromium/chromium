@@ -87,7 +87,7 @@ public final class TabGridViewBinderUnitTest {
     @Mock private TabThumbnailView mThumbnailView;
     @Mock private FrameLayout mTabGroupColorViewContainer;
     @Mock private ImageView mFaviconView;
-    @Mock private ImageView mMediaIndicatorView;
+    @Mock private ImageView mAlertIndicatorView;
     @Mock private ViewStub mTabCardLabelStub;
     @Mock private TabCardLabelView mTabCardLabelView;
     @Mock private ImageView mActionButton;
@@ -128,8 +128,8 @@ public final class TabGridViewBinderUnitTest {
         when(mViewGroup.fastFindViewById(R.id.tab_group_color_view_container))
                 .thenReturn(mTabGroupColorViewContainer);
         when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
-        when(mViewGroup.fastFindViewById(R.id.media_indicator_icon))
-                .thenReturn(mMediaIndicatorView);
+        when(mViewGroup.fastFindViewById(R.id.alert_indicator_icon))
+                .thenReturn(mAlertIndicatorView);
         when(mViewGroup.fastFindViewById(R.id.price_info_box_outer)).thenReturn(mPriceCardView);
         when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub)).thenReturn(mTabCardLabelStub);
         when(mViewGroup.fastFindViewById(R.id.action_button)).thenReturn(mActionButton);
@@ -145,7 +145,7 @@ public final class TabGridViewBinderUnitTest {
                 .when(mTabCardLabelStub)
                 .inflate();
         when(mFaviconView.getContext()).thenReturn(mContext);
-        when(mMediaIndicatorView.getContext()).thenReturn(mContext);
+        when(mAlertIndicatorView.getContext()).thenReturn(mContext);
         when(mViewGroup.getContext()).thenReturn(mContext);
         when(mViewGroup.getResources()).thenReturn(mContext.getResources());
 

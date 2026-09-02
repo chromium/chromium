@@ -449,7 +449,7 @@ public class TabGridViewBinder {
         TextView titleView = rootView.fastFindViewById(R.id.tab_title);
         TabThumbnailView thumbnail = rootView.fastFindViewById(R.id.tab_thumbnail);
         ImageView backgroundView = rootView.fastFindViewById(R.id.background_view);
-        ImageView mediaIndicator = rootView.fastFindViewById(R.id.media_indicator_icon);
+        ImageView alertIndicator = rootView.fastFindViewById(R.id.alert_indicator_icon);
 
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
@@ -471,9 +471,9 @@ public class TabGridViewBinder {
                 TabUiThemeProvider.getHoveredCardBackgroundTintList(
                         backgroundView.getContext(), isIncognito, isSelected));
 
-        mediaIndicator.setImageTintList(
-                TabCardThemeUtil.getMediaIndicatorColorStateList(
-                        mediaIndicator.getContext(), isIncognito, isSelected));
+        alertIndicator.setImageTintList(
+                TabCardThemeUtil.getAlertIndicatorColorStateList(
+                        alertIndicator.getContext(), isIncognito, isSelected));
 
         View contentView = rootView.fastFindViewById(R.id.content_view);
         if (contentView != null) {
