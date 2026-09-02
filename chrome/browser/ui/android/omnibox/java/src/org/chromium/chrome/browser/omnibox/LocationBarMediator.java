@@ -1352,7 +1352,8 @@ class LocationBarMediator
                 mCurrentInput
                         .setRequestType(AutocompleteRequestType.SEARCH)
                         .setUserText(mCurrentInput.getInitialUserText())
-                        .setAutocompleteState(AutocompleteState.STANDBY);
+                        .setAutocompleteState(AutocompleteState.STANDBY)
+                        .setDisplayState(DisplayState.DRAFTING);
                 pushUrlBarDataFromCurrentInput();
             }
         } else {
