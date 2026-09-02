@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/horizontal_tab_strip_metrics.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -270,29 +272,25 @@ void TabScrollButtonContainer::BeginScrollAnimation(bool scroll_to_start) {
     animation_.Stop();
   }
 
-  int full_scroll_amount =
+  const float page_scroll_amount =
       scroll_view_->GetScrollIncrement(scroll_bar, /*is_page=*/true,
                                        /*is_positive=*/true);
-  int current_offset = static_cast<int>(scroll_view_->CurrentOffset().x());
+  const float min_inactive_tab_width =
+      TabStyle::Get()->GetMinimumInactiveWidth();
 
-  // We may not scroll the entire `full_scroll_amount`, if the current offset
-  // is less than `full_scroll_amount` from the start and we are scrolling left,
-  // or the current offset is less than `full_scroll_amount` away from the
-  // end and we are scrolling right.
-  int actual_scroll_amount = full_scroll_amount;
+  // When pagination scrolling, decrease the scroll distance by the minimum
+  // tab width so that at least one of the tabs from before the scroll
+  // remains visible.
+  const float full_scroll_amount =
+      std::max(0.0f, page_scroll_amount - min_inactive_tab_width);
+  const float current_offset = scroll_view_->CurrentOffset().x();
+  float target_offset = current_offset + (base::i18n::IsRTL() ? -1 : 1) *
+                                             (scroll_to_start ? -1 : 1) *
+                                             full_scroll_amount;
+  target_offset = std::clamp<float>(target_offset, scroll_bar->GetMinPosition(),
+                                    scroll_bar->GetMaxPosition());
 
-  if (scroll_to_start) {
-    actual_scroll_amount = std::max(
-        0, base::i18n::IsRTL() ? scroll_bar->GetMaxPosition() - current_offset
-                               : current_offset - scroll_bar->GetMinPosition());
-  } else {
-    actual_scroll_amount = std::max(
-        0, base::i18n::IsRTL() ? current_offset - scroll_bar->GetMinPosition()
-                               : scroll_bar->GetMaxPosition() - current_offset);
-  }
-  actual_scroll_amount = std::min(full_scroll_amount, actual_scroll_amount);
-
-  if (actual_scroll_amount <= 0) {
+  if (current_offset == target_offset) {
     animation_params_ = std::nullopt;
     return;
   }
@@ -300,11 +298,8 @@ void TabScrollButtonContainer::BeginScrollAnimation(bool scroll_to_start) {
   tabs::RecordHorizontalTabStripScrollSource(
       tabs::HorizontalTabStripScrollSource::kButtons);
 
-  animation_params_ = AnimationParams{
-      .scroll_to_start = scroll_to_start,
-      .amount_to_scroll = actual_scroll_amount,
-      .last_progress = 0,
-  };
+  animation_params_ = AnimationParams{.start_offset = current_offset,
+                                      .target_offset = target_offset};
 
   animation_.Start();
 }
@@ -316,18 +311,17 @@ void TabScrollButtonContainer::AnimationProgressed(
 
   float progress = gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_OUT,
                                               animation_.GetCurrentValue());
-  float progress_since_last_scroll =
-      std::max(0.0f, progress - animation_params_->last_progress);
-  float need_to_scroll =
-      animation_params_->amount_to_scroll * progress_since_last_scroll;
-  int sign = animation_params_->scroll_to_start ? -1 : 1;
-  sign *= base::i18n::IsRTL() ? -1 : 1;
-
-  scroll_view_->ScrollByOffset({sign * need_to_scroll, 0});
-  animation_params_->last_progress = progress;
+  const float current_x =
+      gfx::Tween::FloatValueBetween(progress, animation_params_->start_offset,
+                                    animation_params_->target_offset);
+  scroll_view_->ScrollToOffset({current_x, 0.0f});
 }
 
 void TabScrollButtonContainer::AnimationEnded(const gfx::Animation* animation) {
+  if (scroll_view_) {
+    CHECK(animation_params_);
+    scroll_view_->ScrollToOffset({animation_params_->target_offset, 0.0f});
+  }
   animation_params_ = std::nullopt;
 }
 

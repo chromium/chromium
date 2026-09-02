@@ -336,8 +336,9 @@ class HorizontalTabStripRegionViewNewInteractiveUiTest
   }
 
   // Adds unpinned tabs until the unpinned tab container is scrollable. Will
-  // also add `extra_tabs` tabs after reaching this state.
-  void AddTabsUntilScrollable(int extra_tabs = 0) {
+  // also add `extra_tabs` tabs after reaching this state. Returns the number of
+  // tabs added to reach the scrollable state.
+  int AddTabsUntilScrollable(int extra_tabs = 0) {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     views::View* scroll_buttons = scroll_button_container();
 
@@ -354,6 +355,7 @@ class HorizontalTabStripRegionViewNewInteractiveUiTest
       chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
     }
     views::test::RunScheduledLayout(browser_view);
+    return tabs_added;
   }
 
   void AddPinnedTabsUntilScrollable() {
@@ -525,6 +527,73 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
             "TabStrip.Horizontal.ScrollSource",
             tabs::HorizontalTabStripScrollSource::kButtons, 2);
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       FullPageScrollMaintainsFrameOfReferenceTab) {
+  // Set the window size explicitly so we have a known viewport size.
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+      gfx::Rect(10, 10, 1000, 780));
+
+  // Add tabs until the container becomes scrollable, then add the same number
+  // of tabs again so that the content fills the viewport twice.
+  const int tabs_added = AddTabsUntilScrollable();
+  for (int i = 0; i < tabs_added; ++i) {
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+  }
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  const int total_tabs = browser()->GetTabStripModel()->count();
+
+  // Find the last tab index that is visible in the initial view before
+  // scrolling.
+  int last_visible_tab_before_scroll = -1;
+  for (int i = 0; i < total_tabs; ++i) {
+    if (IsTabVisible(i)) {
+      last_visible_tab_before_scroll = i;
+    } else {
+      break;
+    }
+  }
+
+  ASSERT_GT(last_visible_tab_before_scroll, 0);
+  ASSERT_LT(last_visible_tab_before_scroll, total_tabs - 1);
+
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kFirstTabVisibleObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kFrameOfReferenceTabVisibleObserver);
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      PollState(
+          kFirstTabVisibleObserver,
+          base::BindRepeating(
+              &HorizontalTabStripRegionViewNewInteractiveUiTest::IsTabVisible,
+              base::Unretained(this), 0)),
+      PollState(
+          kFrameOfReferenceTabVisibleObserver,
+          base::BindRepeating(
+              &HorizontalTabStripRegionViewNewInteractiveUiTest::IsTabVisible,
+              base::Unretained(this), last_visible_tab_before_scroll)),
+      // Initially, first tab and the frame-of-reference tab are visible.
+      WaitForState(kFirstTabVisibleObserver, true),
+      WaitForState(kFrameOfReferenceTabVisibleObserver, true),
+      // Scroll right by one full page increment.
+      PressButton(TabScrollButtonContainer::kEndScrollButton),
+      // The first tab should have scrolled out of view.
+      WaitForState(kFirstTabVisibleObserver, false),
+      // The last tab from the previous page should still be showing to provide
+      // a frame of reference.
+      WaitForState(kFrameOfReferenceTabVisibleObserver, true),
+      // Scroll back left by one full page increment.
+      PressButton(TabScrollButtonContainer::kStartScrollButton),
+      // First tab and frame of reference tab should be visible again.
+      WaitForState(kFirstTabVisibleObserver, true),
+      WaitForState(kFrameOfReferenceTabVisibleObserver, true));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
