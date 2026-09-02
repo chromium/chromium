@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -79,8 +80,8 @@ bool IsViewFocused(const BrowserWindowInterface* browser, ViewID vid) {
   DCHECK(widget);
   const views::FocusManager* focus_manager = widget->GetFocusManager();
   DCHECK(focus_manager);
-  DCHECK(focus_manager->GetFocusedView());
-  return focus_manager->GetFocusedView()->GetID() == vid;
+  return focus_manager->GetFocusedView() &&
+         focus_manager->GetFocusedView()->GetID() == vid;
 }
 
 void ClickOnView(views::View* view) {
@@ -147,11 +148,17 @@ gfx::Point GetCenterInScreenCoordinates(const views::View* view) {
 void WaitForViewFocus(BrowserWindowInterface* browser,
                       ViewID vid,
                       bool focused) {
-  views::View* view = views::Widget::GetWidgetForNativeWindow(
-                          browser->GetWindow()->GetNativeWindow())
-                          ->GetContentsView()
-                          ->GetViewByID(vid);
-  WaitForViewFocus(browser, view, focused);
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      browser->GetWindow()->GetNativeWindow());
+  views::View* view = widget && widget->GetContentsView()
+                          ? widget->GetContentsView()->GetViewByID(vid)
+                          : nullptr;
+  if (view) {
+    WaitForViewFocus(browser, view, focused);
+  } else {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return IsViewFocused(browser, vid) == focused; }));
+  }
 }
 
 void WaitForViewFocus(BrowserWindowInterface* browser,

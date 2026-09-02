@@ -109,6 +109,12 @@ void WebUIReadOnlyOmnibox::OnTabChanged(content::WebContents* web_contents) {
     }
   }
 
+  if (state && state->model_state.focus_state == OMNIBOX_FOCUS_VISIBLE) {
+    SetFocus(/*is_user_initiated=*/false);
+  } else if (has_focus_) {
+    OnBlur();
+  }
+
   RequestUpdateWebUI();
 }
 
