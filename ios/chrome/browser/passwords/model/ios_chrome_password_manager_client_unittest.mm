@@ -8,6 +8,7 @@
 
 #import <memory>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
@@ -28,6 +29,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
@@ -46,6 +48,8 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/metrics/public/cpp/metrics_utils.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -137,7 +141,8 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> web_state_;
@@ -379,4 +384,167 @@ TEST_F(IOSChromePasswordManagerClientTest,
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   EXPECT_EQ(infobar_manager->infobars().size(), 0u);
+}
+
+// Tests that `NotifyOnSuccessfulLogin` records Touch to Fill submission metrics
+// when submission is successful within the time threshold.
+TEST_F(IOSChromePasswordManagerClientTest,
+       TestTouchToFillSuccessfulSubmissionWasObserved) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  const std::u16string username = u"test_user";
+
+  client->StartSubmissionTrackingAfterTouchToFill(username);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  client->NotifyOnSuccessfulLogin(username);
+
+  histogram_tester.ExpectUniqueSample(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kTouchToFillTimeToSuccessfulLoginHistogram, base::Seconds(5), 1);
+
+  const auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::TouchToFill_TimeToSuccessfulLogin::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entries[0],
+      ukm::builders::TouchToFill_TimeToSuccessfulLogin::
+          kTimeToSuccessfulLoginName,
+      ukm::GetExponentialBucketMinForUserTiming(5000));
+
+  // Subsequent reset should not record duplicate metrics.
+  client->ResetSubmissionTrackingAfterTouchToFill();
+  histogram_tester.ExpectTotalCount(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, 1);
+}
+
+// Tests that `ResetSubmissionTrackingAfterTouchToFill` records false for
+// `SuccessfulSubmissionWasObserved` and resets tracking.
+TEST_F(IOSChromePasswordManagerClientTest,
+       TestTouchToFillResetSubmissionTracking) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  const std::u16string username = u"test_user";
+
+  client->StartSubmissionTrackingAfterTouchToFill(username);
+  client->ResetSubmissionTrackingAfterTouchToFill();
+
+  histogram_tester.ExpectUniqueSample(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kTouchToFillTimeToSuccessfulLoginHistogram,
+                                    0);
+  EXPECT_TRUE(
+      test_ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::TouchToFill_TimeToSuccessfulLogin::kEntryName)
+          .empty());
+
+  // Subsequent reset does not record again.
+  client->ResetSubmissionTrackingAfterTouchToFill();
+  histogram_tester.ExpectTotalCount(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, 1);
+}
+
+// Tests that `NotifyOnSuccessfulLogin` resets tracking when submitted username
+// does not match the filled username.
+TEST_F(IOSChromePasswordManagerClientTest, TestTouchToFillUsernameMismatch) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  client->StartSubmissionTrackingAfterTouchToFill(u"filled_user");
+  client->NotifyOnSuccessfulLogin(u"different_user");
+
+  histogram_tester.ExpectUniqueSample(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kTouchToFillTimeToSuccessfulLoginHistogram,
+                                    0);
+  EXPECT_TRUE(
+      test_ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::TouchToFill_TimeToSuccessfulLogin::kEntryName)
+          .empty());
+}
+
+// Tests that `NotifyOnSuccessfulLogin` treats login after more than 1 minute
+// as unrelated and records false for `SuccessfulSubmissionWasObserved`.
+TEST_F(IOSChromePasswordManagerClientTest, TestTouchToFillSubmissionTimeout) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  const std::u16string username = u"test_user";
+
+  client->StartSubmissionTrackingAfterTouchToFill(username);
+  task_environment_.FastForwardBy(base::Minutes(2));
+  client->NotifyOnSuccessfulLogin(username);
+
+  histogram_tester.ExpectUniqueSample(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kTouchToFillTimeToSuccessfulLoginHistogram,
+                                    0);
+  EXPECT_TRUE(
+      test_ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::TouchToFill_TimeToSuccessfulLogin::kEntryName)
+          .empty());
+}
+
+// Tests that `NotifyOnSuccessfulLogin` does nothing when Touch to Fill tracking
+// was never started.
+TEST_F(IOSChromePasswordManagerClientTest, TestTouchToFillNoTracking) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  client->NotifyOnSuccessfulLogin(u"some_user");
+
+  histogram_tester.ExpectTotalCount(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, 0);
+  histogram_tester.ExpectTotalCount(kTouchToFillTimeToSuccessfulLoginHistogram,
+                                    0);
+  EXPECT_TRUE(
+      test_ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::TouchToFill_TimeToSuccessfulLogin::kEntryName)
+          .empty());
+}
+
+// Tests that starting Touch to Fill tracking while a session is already pending
+// overwrites the previous session without logging, matching Android.
+TEST_F(IOSChromePasswordManagerClientTest, TestTouchToFillConsecutiveFills) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  client->StartSubmissionTrackingAfterTouchToFill(u"user_1");
+
+  // Second fill before submission of user_1 overwrites tracking.
+  client->StartSubmissionTrackingAfterTouchToFill(u"user_2");
+  histogram_tester.ExpectTotalCount(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, 0);
+  histogram_tester.ExpectTotalCount(kTouchToFillTimeToSuccessfulLoginHistogram,
+                                    0);
+
+  // Submitting user_2 should now succeed and record true.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  client->NotifyOnSuccessfulLogin(u"user_2");
+
+  histogram_tester.ExpectUniqueSample(
+      kTouchToFillSuccessfulSubmissionWasObservedHistogram, true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kTouchToFillTimeToSuccessfulLoginHistogram, base::Seconds(3), 1);
+
+  const auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::TouchToFill_TimeToSuccessfulLogin::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entries[0],
+      ukm::builders::TouchToFill_TimeToSuccessfulLogin::
+          kTimeToSuccessfulLoginName,
+      ukm::GetExponentialBucketMinForUserTiming(3000));
 }

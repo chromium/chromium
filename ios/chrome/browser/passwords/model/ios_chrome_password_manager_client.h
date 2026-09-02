@@ -11,6 +11,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/time/time.h"
 #import "base/types/optional_ref.h"
 #import "components/autofill/core/common/language_code.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -60,6 +61,12 @@ enum class WarningAction;
     (std::unique_ptr<password_manager::PasswordForm>)formSignedIn;
 
 @end
+
+// Histogram names for Touch to Fill submission metrics.
+inline constexpr char kTouchToFillTimeToSuccessfulLoginHistogram[] =
+    "PasswordManager.TouchToFill.TimeToSuccessfulLogin";
+inline constexpr char kTouchToFillSuccessfulSubmissionWasObservedHistogram[] =
+    "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved";
 
 // An iOS implementation of password_manager::PasswordManagerClient.
 // TODO(crbug.com/41456340): write unit tests for this class.
@@ -130,6 +137,11 @@ class IOSChromePasswordManagerClient
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
+  void NotifyOnSuccessfulLogin(
+      const std::u16string& submitted_username) override;
+  void StartSubmissionTrackingAfterTouchToFill(
+      const std::u16string& filled_username) override;
+  void ResetSubmissionTrackingAfterTouchToFill() override;
   bool IsPasswordChangeOngoing() override;
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
@@ -201,6 +213,14 @@ class IOSChromePasswordManagerClient
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.
   password_manager::PasswordManagerClientHelper helper_;
+
+  // State tracking credential data and timestamp when Touch to Fill was used.
+  struct TouchToFillState {
+    std::u16string username;
+    base::TimeTicks fill_time;
+  };
+
+  std::optional<TouchToFillState> touch_to_fill_state_;
 
   base::WeakPtrFactory<IOSChromePasswordManagerClient> weak_factory_{this};
 };
