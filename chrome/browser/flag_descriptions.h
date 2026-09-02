@@ -5693,6 +5693,13 @@ inline constexpr char kAndroidTipsNotificationsV2Name[] =
 inline constexpr char kAndroidTipsNotificationsV2Description[] =
     "Enable tips notifications V2 for supported features on Android.";
 
+inline constexpr char kAndroidUnknownGamepadExtraAxesName[] =
+    "Extra axes for unknown gamepads";
+inline constexpr char kAndroidUnknownGamepadExtraAxesDescription[] =
+    "Exposes axes without a standard mapping as extra axes for gamepads with "
+    "unknown mappings, instead of dropping them or mapping multiple input "
+    "axes to the same canonical axis.";
+
 inline constexpr char kAndroidUseCorrectDisplayWorkAreaName[] =
     "Enable accounting system UI for computing the display work area";
 inline constexpr char kAndroidUseCorrectDisplayWorkAreaDescription[] =

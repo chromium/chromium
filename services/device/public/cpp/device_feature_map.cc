@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "device/base/features.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 #include "services/device/public/cpp/device_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -22,8 +23,10 @@ namespace {
 // services/device/public/cpp/device_features.h or in other locations in the
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kGenericSensorExtraClasses, &kSensorsAllowAskBlockPermissionModel,
+    &kGenericSensorExtraClasses,
+    &kSensorsAllowAskBlockPermissionModel,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
+    &kAndroidUnknownGamepadExtraAxes,
     &device::features::kGmsCoreLocationRequestParamOverride,
     &device::features::kGmsCoreFailClosedOnPreciseLeak};
 

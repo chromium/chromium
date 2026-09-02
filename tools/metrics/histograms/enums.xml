@@ -18233,6 +18233,7 @@ from previous Chrome versions.
   <int value="1095061640" label="enable-prominent-url-app-flow"/>
   <int value="1095166532" label="PasspointARCSupport:disabled"/>
   <int value="1095706700" label="NavigationPredictor:enabled"/>
+  <int value="1096037167" label="AndroidUnknownGamepadExtraAxes:disabled"/>
   <int value="1096462052" label="TabGroupsSaveV2:enabled"/>
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
   <int value="1096958492" label="(Obsolete) LacrosColorManagement:disabled"/>
@@ -20418,6 +20419,7 @@ from previous Chrome versions.
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:enabled"/>
   <int value="1763256921" label="PerformanceNavigateSystemEntropy:disabled"/>
   <int value="1763791860" label="CastMessageLogging:enabled"/>
+  <int value="1764208497" label="AndroidUnknownGamepadExtraAxes:enabled"/>
   <int value="1764243510"
       label="EnableClientCertificateProvisioningOnAndroid:enabled"/>
   <int value="1764618580" label="MojoLinuxChannelSharedMem:disabled"/>

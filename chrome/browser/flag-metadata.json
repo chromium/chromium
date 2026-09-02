@@ -521,6 +521,15 @@
     "expiry_milestone": 158
   },
   {
+    "name": "android-unknown-gamepad-extra-axes",
+    "owners": [
+      "deviceapi-team@google.com",
+      "helmut@januschka.com",
+      "mattreynolds@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-use-correct-display-work-area",
     "owners": [
       "renkens@google.com",

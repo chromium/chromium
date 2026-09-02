@@ -26,6 +26,8 @@ public abstract class DeviceFeatureList {
             "SensorsAllowAskBlockPermissionModel";
     public static final String BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND =
             "BatteryStatusManagerBroadcastReceiverInBackground";
+    public static final String ANDROID_UNKNOWN_GAMEPAD_EXTRA_AXES =
+            "AndroidUnknownGamepadExtraAxes";
 
     public static final String GMS_CORE_FAIL_CLOSED_ON_PRECISE_LEAK =
             "GmsCoreFailClosedOnPreciseLeak";

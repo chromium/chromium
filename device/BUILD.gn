@@ -554,6 +554,7 @@ if (is_android) {
       "//device/gamepad:java",
       "//device/vr/public:java",
       "//mojo/public/java:bindings_java",
+      "//services/device/public/java:device_feature_list_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/hamcrest:hamcrest_java",
     ]

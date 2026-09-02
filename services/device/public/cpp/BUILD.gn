@@ -25,6 +25,7 @@ component("device_features") {
     deps += [
       "//device/base",
       "//device/fido",
+      "//device/gamepad/public/cpp:switches",
       "//services/device/public/java:device_feature_list_jni",
     ]
   }

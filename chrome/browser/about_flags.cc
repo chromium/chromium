@@ -14062,6 +14062,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDesktopQrCodeDetectionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnableDesktopQrCodeDetection)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-unknown-gamepad-extra-axes",
+     flag_descriptions::kAndroidUnknownGamepadExtraAxesName,
+     flag_descriptions::kAndroidUnknownGamepadExtraAxesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidUnknownGamepadExtraAxes)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

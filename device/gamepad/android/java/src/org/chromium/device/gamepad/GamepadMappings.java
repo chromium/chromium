@@ -15,8 +15,12 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 /** Class to manage mapping information related to each supported gamepad controller device. */
 @JNINamespace("content")
@@ -154,8 +158,16 @@ abstract class GamepadMappings {
     }
 
     /**
-     * Method implemented by subclasses to perform mapping from raw axes and buttons
-     * to canonical axes and buttons.
+     * Returns the number of mapped axes. Subclasses which expose axes beyond the canonical axes
+     * should override this.
+     */
+    public int getAxesLength() {
+        return CanonicalAxisIndex.COUNT;
+    }
+
+    /**
+     * Method implemented by subclasses to perform mapping from raw axes and buttons to canonical
+     * axes and buttons.
      */
     public abstract void mapToStandardGamepad(
             float[] mappedAxes, float[] mappedButtons, float[] rawAxes, float[] rawButtons);
@@ -626,47 +638,173 @@ abstract class GamepadMappings {
         private int mRightTriggerAxis = -1;
         private int mRightStickXAxis = -1;
         private int mRightStickYAxis = -1;
-        private boolean mUseHatAxes;
+        private final boolean mUseHatAxes;
         private final boolean mHasMetaButton;
+
+        // Input axes that could not be assigned a canonical axis or button, and the mapped axis
+        // index assigned to each of them.
+        private final int[] mExtraAxes;
+        private final int[] mExtraAxisIndices;
+        private final int mAxesLength;
 
         UnknownGamepadMappings(int[] axes, BitSet buttons) {
             mHasMetaButton = buttons.get(KeyEvent.KEYCODE_BUTTON_MODE);
 
-            int hatAxesFound = 0;
+            if (!DeviceFeatureMap.isEnabled(DeviceFeatureList.ANDROID_UNKNOWN_GAMEPAD_EXTRA_AXES)) {
+                // Legacy mapping logic: only the canonical axes are exposed, the last input
+                // axis matching a canonical axis wins, and unmatched input axes are dropped.
+                int hatAxesFound = 0;
+                for (int axis : axes) {
+                    switch (axis) {
+                        case MotionEvent.AXIS_LTRIGGER:
+                        case MotionEvent.AXIS_BRAKE:
+                            mLeftTriggerAxis = axis;
+                            break;
+                        case MotionEvent.AXIS_RTRIGGER:
+                        case MotionEvent.AXIS_GAS:
+                        case MotionEvent.AXIS_THROTTLE:
+                            mRightTriggerAxis = axis;
+                            break;
+                        case MotionEvent.AXIS_RX:
+                        case MotionEvent.AXIS_Z:
+                            mRightStickXAxis = axis;
+                            break;
+                        case MotionEvent.AXIS_RY:
+                        case MotionEvent.AXIS_RZ:
+                            mRightStickYAxis = axis;
+                            break;
+                        case MotionEvent.AXIS_HAT_X:
+                        case MotionEvent.AXIS_HAT_Y:
+                            hatAxesFound++;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                mUseHatAxes = hatAxesFound == 2;
+                mExtraAxes = new int[0];
+                mExtraAxisIndices = new int[0];
+                mAxesLength = CanonicalAxisIndex.COUNT;
+                return;
+            }
 
+            List<Integer> extraAxes = new ArrayList<>();
+
+            // First pass: assign input axes to the canonical stick axes. When more than one
+            // input axis maps to the same canonical axis, prefer the first candidate and treat
+            // the others as extra axes so they do not alias. The left stick axes (AXIS_X and
+            // AXIS_Y) have a single candidate each and are always mapped.
+            mRightStickXAxis =
+                    findPreferredAxis(axes, extraAxes, MotionEvent.AXIS_RX, MotionEvent.AXIS_Z);
+            mRightStickYAxis =
+                    findPreferredAxis(axes, extraAxes, MotionEvent.AXIS_RY, MotionEvent.AXIS_RZ);
+            if (mRightStickXAxis == -1 || mRightStickYAxis == -1) {
+                // The right stick is only mapped when both of its axes are present. Expose a
+                // lone axis as an extra axis instead of dropping it.
+                if (mRightStickXAxis != -1) {
+                    extraAxes.add(mRightStickXAxis);
+                    mRightStickXAxis = -1;
+                }
+                if (mRightStickYAxis != -1) {
+                    extraAxes.add(mRightStickYAxis);
+                    mRightStickYAxis = -1;
+                }
+            }
+
+            // Second pass: assign input axes to the canonical button axes with the same
+            // tie-breaking rule.
+            mLeftTriggerAxis =
+                    findPreferredAxis(
+                            axes, extraAxes, MotionEvent.AXIS_LTRIGGER, MotionEvent.AXIS_BRAKE);
+            mRightTriggerAxis =
+                    findPreferredAxis(
+                            axes,
+                            extraAxes,
+                            MotionEvent.AXIS_RTRIGGER,
+                            MotionEvent.AXIS_GAS,
+                            MotionEvent.AXIS_THROTTLE);
+            if (mLeftTriggerAxis == -1 || mRightTriggerAxis == -1) {
+                // The triggers are only mapped when both trigger axes are present. Expose a
+                // lone trigger axis as an extra axis instead of dropping it.
+                if (mLeftTriggerAxis != -1) {
+                    extraAxes.add(mLeftTriggerAxis);
+                    mLeftTriggerAxis = -1;
+                }
+                if (mRightTriggerAxis != -1) {
+                    extraAxes.add(mRightTriggerAxis);
+                    mRightTriggerAxis = -1;
+                }
+            }
+
+            // Hat axes are synthetic axes generated by the Linux input system and never appear
+            // alone. Ignore a lone hat axis.
+            boolean hasHatXAxis = hasAxis(axes, MotionEvent.AXIS_HAT_X);
+            boolean hasHatYAxis = hasAxis(axes, MotionEvent.AXIS_HAT_Y);
+            mUseHatAxes = hasHatXAxis && hasHatYAxis;
+
+            // Append input axes that have no standard mapping to the extra axes.
             for (int axis : axes) {
                 switch (axis) {
+                    case MotionEvent.AXIS_X:
+                    case MotionEvent.AXIS_Y:
+                    case MotionEvent.AXIS_RX:
+                    case MotionEvent.AXIS_Z:
+                    case MotionEvent.AXIS_RY:
+                    case MotionEvent.AXIS_RZ:
                     case MotionEvent.AXIS_LTRIGGER:
                     case MotionEvent.AXIS_BRAKE:
-                        mLeftTriggerAxis = axis;
-                        break;
                     case MotionEvent.AXIS_RTRIGGER:
                     case MotionEvent.AXIS_GAS:
                     case MotionEvent.AXIS_THROTTLE:
-                        mRightTriggerAxis = axis;
-                        break;
-                    case MotionEvent.AXIS_RX:
-                    case MotionEvent.AXIS_Z:
-                        mRightStickXAxis = axis;
-                        break;
-                    case MotionEvent.AXIS_RY:
-                    case MotionEvent.AXIS_RZ:
-                        mRightStickYAxis = axis;
-                        break;
                     case MotionEvent.AXIS_HAT_X:
-                        hatAxesFound++;
-                        break;
                     case MotionEvent.AXIS_HAT_Y:
-                        hatAxesFound++;
                         break;
                     default:
+                        extraAxes.add(axis);
                         break;
                 }
             }
 
-            if (hatAxesFound == 2) {
-                mUseHatAxes = true;
+            // Assign each extra axis the first unassigned axis index. The left stick axes are
+            // always mapped and the right stick axes are either both mapped or both unmapped,
+            // so the unassigned indices are contiguous.
+            int nextIndex =
+                    mRightStickXAxis == -1
+                            ? CanonicalAxisIndex.RIGHT_STICK_X
+                            : CanonicalAxisIndex.COUNT;
+            mExtraAxes = new int[extraAxes.size()];
+            mExtraAxisIndices = new int[extraAxes.size()];
+            for (int i = 0; i < mExtraAxes.length; i++) {
+                mExtraAxes[i] = extraAxes.get(i);
+                mExtraAxisIndices[i] = nextIndex++;
             }
+            mAxesLength = Math.max(CanonicalAxisIndex.COUNT, nextIndex);
+        }
+
+        /**
+         * Returns the first axis in {@code candidates} that is present in {@code axes}, or -1 if
+         * none are present. Any remaining candidates that are also present are appended to {@code
+         * extraAxes}.
+         */
+        private static int findPreferredAxis(
+                int[] axes, List<Integer> extraAxes, int... candidates) {
+            int preferred = -1;
+            for (int candidate : candidates) {
+                if (!hasAxis(axes, candidate)) continue;
+                if (preferred == -1) {
+                    preferred = candidate;
+                } else {
+                    extraAxes.add(candidate);
+                }
+            }
+            return preferred;
+        }
+
+        private static boolean hasAxis(int[] axes, int axis) {
+            for (int a : axes) {
+                if (a == axis) return true;
+            }
+            return false;
         }
 
         @Override
@@ -678,6 +816,11 @@ abstract class GamepadMappings {
         @Override
         public int getButtonsLength() {
             return mHasMetaButton ? CanonicalButtonIndex.COUNT : CanonicalButtonIndex.COUNT - 1;
+        }
+
+        @Override
+        public int getAxesLength() {
+            return mAxesLength;
         }
 
         @Override
@@ -712,6 +855,10 @@ abstract class GamepadMappings {
                 mapHatAxisToDpadButtons(mappedButtons, rawAxes);
             } else {
                 mapCommonDpadButtons(mappedButtons, rawButtons);
+            }
+
+            for (int i = 0; i < mExtraAxes.length; i++) {
+                mappedAxes[mExtraAxisIndices[i]] = rawAxes[mExtraAxes[i]];
             }
         }
     }

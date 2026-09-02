@@ -99,8 +99,9 @@ class GamepadDevice {
     // Array of values for all axes of the gamepad.
     // All axis values must be linearly normalized to the range [-1.0 .. 1.0].
     // As appropriate, -1.0 should correspond to "up" or "left", and 1.0
-    // should correspond to "down" or "right".
-    private final float[] mAxisValues = new float[CanonicalAxisIndex.COUNT];
+    // should correspond to "down" or "right". Sized to fit all mapped axes,
+    // including extra axes beyond the canonical axes.
+    private final float[] mAxisValues;
 
     // Array of values for all buttons of the gamepad. All button values must be
     // linearly normalized to the range [0.0 .. 1.0]. 0.0 should correspond to
@@ -159,6 +160,7 @@ class GamepadDevice {
         }
 
         mMappings = GamepadMappings.getMappings(inputDevice, mAxes, buttons);
+        mAxisValues = new float[mMappings.getAxesLength()];
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             VibratorManager vibratorManager = inputDevice.getVibratorManager();

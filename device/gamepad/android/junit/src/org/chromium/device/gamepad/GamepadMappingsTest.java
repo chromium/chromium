@@ -20,6 +20,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.device.DeviceFeatureList;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -27,6 +30,7 @@ import java.util.BitSet;
 /** Verify no regressions in gamepad mappings. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(DeviceFeatureList.ANDROID_UNKNOWN_GAMEPAD_EXTRA_AXES)
 public class GamepadMappingsTest {
     private static final float ERROR_TOLERANCE = 0.000001f;
 
@@ -685,6 +689,114 @@ public class GamepadMappingsTest {
                 ERROR_TOLERANCE);
 
         assertMapping(mappings);
+    }
+
+    @Test
+    @Feature({"Gamepad"})
+    public void testUnknownRcRadioGamepadMappings() {
+        // An EdgeTX radio (e.g. RadioMaster Pocket) in USB joystick mode reports the HID
+        // usages X, Y, Z, Rx, Ry, Rz, Slider and Dial for channels 1-8, which Android maps
+        // to these eight axes (crbug.com/535697682). AXIS_Z and AXIS_RZ collide with
+        // AXIS_RX and AXIS_RY on the right stick and must be exposed as extra axes instead
+        // of aliasing. The ExpressLRS BLE joystick exposes the same six colliding stick
+        // axes, so it is covered by this case as well.
+        int[] axes = {
+            MotionEvent.AXIS_X,
+            MotionEvent.AXIS_Y,
+            MotionEvent.AXIS_Z,
+            MotionEvent.AXIS_RX,
+            MotionEvent.AXIS_RY,
+            MotionEvent.AXIS_RZ,
+            MotionEvent.AXIS_THROTTLE,
+            MotionEvent.AXIS_RUDDER,
+        };
+        BitSet buttons = new BitSet();
+
+        GamepadMappings mappings = GamepadMappings.getUnknownGamepadMappings(axes, buttons);
+        Assert.assertEquals(8, mappings.getAxesLength());
+
+        float[] mappedAxes = new float[mappings.getAxesLength()];
+        Arrays.fill(mappedAxes, Float.NaN);
+        mappings.mapToStandardGamepad(mappedAxes, mMappedButtons, mRawAxes, mRawButtons);
+
+        Assert.assertFalse(mappings.isStandard());
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_X],
+                mappedAxes[CanonicalAxisIndex.LEFT_STICK_X],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_Y],
+                mappedAxes[CanonicalAxisIndex.LEFT_STICK_Y],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_RX],
+                mappedAxes[CanonicalAxisIndex.RIGHT_STICK_X],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_RY],
+                mappedAxes[CanonicalAxisIndex.RIGHT_STICK_Y],
+                ERROR_TOLERANCE);
+        // The colliding right stick axes come first, then the lone trigger axis, then axes
+        // with no standard mapping.
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_Z],
+                mappedAxes[CanonicalAxisIndex.COUNT],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_RZ],
+                mappedAxes[CanonicalAxisIndex.COUNT + 1],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_THROTTLE],
+                mappedAxes[CanonicalAxisIndex.COUNT + 2],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_RUDDER],
+                mappedAxes[CanonicalAxisIndex.COUNT + 3],
+                ERROR_TOLERANCE);
+    }
+
+    @Test
+    @Feature({"Gamepad"})
+    @DisableFeatures(DeviceFeatureList.ANDROID_UNKNOWN_GAMEPAD_EXTRA_AXES)
+    public void testUnknownRcRadioGamepadMappingsLegacy() {
+        // With AndroidUnknownGamepadExtraAxes disabled, only the canonical axes are
+        // exposed, the last input axis matching a canonical axis wins, and unmatched
+        // input axes are dropped.
+        int[] axes = {
+            MotionEvent.AXIS_X,
+            MotionEvent.AXIS_Y,
+            MotionEvent.AXIS_Z,
+            MotionEvent.AXIS_RX,
+            MotionEvent.AXIS_RY,
+            MotionEvent.AXIS_RZ,
+            MotionEvent.AXIS_THROTTLE,
+            MotionEvent.AXIS_RUDDER,
+        };
+        BitSet buttons = new BitSet();
+
+        GamepadMappings mappings = GamepadMappings.getUnknownGamepadMappings(axes, buttons);
+        Assert.assertEquals(CanonicalAxisIndex.COUNT, mappings.getAxesLength());
+
+        mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
+
+        Assert.assertFalse(mappings.isStandard());
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_X],
+                mMappedAxes[CanonicalAxisIndex.LEFT_STICK_X],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_Y],
+                mMappedAxes[CanonicalAxisIndex.LEFT_STICK_Y],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_RX],
+                mMappedAxes[CanonicalAxisIndex.RIGHT_STICK_X],
+                ERROR_TOLERANCE);
+        Assert.assertEquals(
+                mRawAxes[MotionEvent.AXIS_RZ],
+                mMappedAxes[CanonicalAxisIndex.RIGHT_STICK_Y],
+                ERROR_TOLERANCE);
     }
 
     @Test
