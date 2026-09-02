@@ -525,6 +525,14 @@ void OmniboxEverywhereUI::CreateHelpBubbleHandler(
           web_ui()->GetRenderFrameHost()));
 }
 
+ContextualSearchboxHandler*
+OmniboxEverywhereUI::GetContextualSearchboxHandler() {
+  if (composebox_handler_) {
+    return composebox_handler_.get();
+  }
+  return omnibox_handler_.get();
+}
+
 contextual_search::ContextualSearchSessionHandle*
 OmniboxEverywhereUI::GetOrCreateContextualSessionHandle() {
   if (!shared_session_handle_) {

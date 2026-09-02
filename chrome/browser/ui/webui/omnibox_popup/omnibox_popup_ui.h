@@ -109,6 +109,10 @@ class OmniboxPopupUI : public TopChromeWebUIController,
           pending_searchbox_handler) override;
   ComposeboxHandler* composebox_handler() { return composebox_handler_.get(); }
 
+  // Returns the active ContextualSearchboxHandler (either composebox_handler_
+  // or omnibox_handler_).
+  ContextualSearchboxHandler* GetContextualSearchboxHandler();
+
   // searchbox::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<searchbox::mojom::Page> page,

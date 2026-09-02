@@ -75,6 +75,8 @@ class OmniboxEverywhereService : public KeyedService {
   virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
                                        const RegionCaptureSource& source,
                                        RegionSelectedCallback callback);
+  virtual void OnFileChooserOpened();
+  virtual void OnFileChooserClosed();
   void OpenUrl(const GURL& url,
                WindowOpenDisposition disposition,
                ui::PageTransition transition);

@@ -305,6 +305,8 @@ class ContextualSearchboxHandler
                              base::UnguessableToken context_token,
                              AddTabContextCallback callback);
 
+  using SearchboxHandler::AddFileContextFromBrowser;
+
   // Called from browser code (e.g., Views-based file selector) to add file
   // context.
   void AddFileContextFromBrowser(

@@ -72,11 +72,11 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
   using OmniboxContextMenuController::OmniboxContextMenuController;
   using OmniboxContextMenuController::OnGetInputState;
 
-  ContextualSearchboxHandler* GetSearchboxHandler() const override {
+  ContextualSearchboxHandler* GetContextualSearchboxHandler() const override {
     return handler_;
   }
 
-  void SetSearchboxHandler(ContextualSearchboxHandler* handler) {
+  void SetContextualSearchboxHandler(ContextualSearchboxHandler* handler) {
     handler_ = handler;
   }
 
@@ -477,7 +477,7 @@ TEST_F(OmniboxContextMenuControllerTest, IsTabCommandId_HandlesInfinity) {
 TEST_F(OmniboxContextMenuControllerTest, SmartTabSharingTogglesState) {
   FakeContextualSearchboxHandler fake_handler(profile_.get(),
                                               web_contents_.get());
-  controller()->SetSearchboxHandler(&fake_handler);
+  controller()->SetContextualSearchboxHandler(&fake_handler);
 
   OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents_.get());
   fake_handler.active_ = false;
@@ -504,7 +504,7 @@ TEST_F(OmniboxContextMenuControllerTest,
 
   FakeContextualSearchboxHandler fake_handler(profile_.get(),
                                               web_contents_.get());
-  controller()->SetSearchboxHandler(&fake_handler);
+  controller()->SetContextualSearchboxHandler(&fake_handler);
 
   // 1. Smart Tab Sharing NOT active -> submenu is enabled
   fake_handler.active_ = false;
@@ -529,7 +529,7 @@ TEST_F(OmniboxContextMenuControllerTest,
 
   FakeContextualSearchboxHandler fake_handler(profile_.get(),
                                               web_contents_.get());
-  controller()->SetSearchboxHandler(&fake_handler);
+  controller()->SetContextualSearchboxHandler(&fake_handler);
 
   // Set up mock tabs so AddRecentTabItems compiles the tab sections
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
@@ -584,7 +584,7 @@ TEST_F(OmniboxContextMenuControllerTest,
 
   FakeContextualSearchboxHandler fake_handler(profile_.get(),
                                               web_contents_.get());
-  controller()->SetSearchboxHandler(&fake_handler);
+  controller()->SetContextualSearchboxHandler(&fake_handler);
 
   // Set up mock tabs
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
@@ -644,7 +644,7 @@ TEST_F(OmniboxContextMenuControllerTest,
 
   FakeContextualSearchboxHandler fake_handler(profile_.get(),
                                               web_contents_.get());
-  controller()->SetSearchboxHandler(&fake_handler);
+  controller()->SetContextualSearchboxHandler(&fake_handler);
 
   // Set up mock tabs
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
@@ -687,7 +687,7 @@ TEST_F(OmniboxContextMenuControllerTest,
 
   FakeContextualSearchboxHandler fake_handler(profile_.get(),
                                               web_contents_.get());
-  controller()->SetSearchboxHandler(&fake_handler);
+  controller()->SetContextualSearchboxHandler(&fake_handler);
 
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
   OmniboxContextMenuController::TabInfo tab1;

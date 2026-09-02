@@ -45,6 +45,9 @@ class OmniboxContextMenu : public views::MenuDelegate,
   void RunMenuAt(const gfx::Point& point,
                  ui::mojom::MenuSourceType source_type);
 
+  // Cancels the active menu runner.
+  void Cancel();
+
   // views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   const gfx::FontList* GetLabelFontList(int command_id) const override;
