@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -111,6 +112,7 @@
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -281,6 +283,32 @@ void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
 // confuse users expecting a new page to appear after navigation and the omnibar
 // has updated the url display.
 constexpr int kCommitDelayDefaultInMs = 500;  // 30 frames @ 60hz
+
+bool IsContentlessDocumentForPaintHolding(const Document& document) {
+  if (IsA<HTMLFrameSetElement>(document.documentElement()))
+    return true;
+
+  const Element* body = document.body();
+  if (!body)
+    return false;
+
+  for (const Node* child = body->firstChild(); child;
+       child = child->nextSibling()) {
+    if (const auto* text = DynamicTo<Text>(child)) {
+      if (text->data().StripWhiteSpace().empty())
+        continue;
+      return false;
+    }
+
+    const auto* element = DynamicTo<Element>(child);
+    if (!element || IsA<HTMLIFrameElement>(*element) ||
+        IsA<HTMLFrameElement>(*element)) {
+      continue;
+    }
+    return false;
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -5229,17 +5257,23 @@ void LocalFrameView::MaybeStopDeferringCommitsWithoutContentfulPaint() {
   if (!frame_->IsMainFrame()) {
     return;
   }
-  // If the document has finished parsing, first paint has been rendered and FCP
-  // hasn't fired, stop deferring commits. This handles pages that only have
-  // non-contentful paint (e.g., background-color only, no text or images).
+  // If parsing is complete and FCP hasn't fired, stop deferring commits once
+  // either first paint is rendered or the document has no top-level paintable
+  // content.
   Document* document = frame_->GetDocument();
   if (!document || !document->HasFinishedParsing()) {
     return;
   }
+  if (document->IsInitialEmptyDocument()) {
+    return;
+  }
 
   PaintTiming& paint_timing = PaintTiming::From(*document);
-  // Wait for the first paint to be rendered before stopping deferring commits.
-  if (paint_timing.FirstPaintRendered().is_null()) {
+  // Wait for the first paint to be rendered before stopping deferring commits,
+  // unless the document has no top-level paintable content. A blank page or a
+  // page containing only frame elements cannot produce the signal we wait for.
+  if (paint_timing.FirstPaintRendered().is_null() &&
+      !IsContentlessDocumentForPaintHolding(*document)) {
     return;
   }
   // Stop deferring commits was already called on FCP, so we don't need to do it

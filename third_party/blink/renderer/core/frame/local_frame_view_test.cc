@@ -830,6 +830,59 @@ TEST_F(PaintHoldingSimTest, ReleasedForBgColorOnlyPage) {
   EXPECT_FALSE(Compositor().LayerTreeHost()->IsDeferringCommits());
 }
 
+// Tests that an empty page releases paint holding once parsing is complete,
+// even when it has no first paint or first contentful paint.
+TEST_F(PaintHoldingSimTest, ReleasedForEmptyPageAfterParsing) {
+  SimRequest resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  resource.Complete(R"HTML(
+    <body></body>
+  )HTML");
+
+  PaintTiming& timing = PaintTiming::From(GetDocument());
+  ASSERT_TRUE(GetDocument().HasFinishedParsing());
+  ASSERT_TRUE(timing.FirstPaintRendered().is_null());
+  ASSERT_TRUE(
+      timing.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+          .is_null());
+  EXPECT_FALSE(Compositor().LayerTreeHost()->IsDeferringCommits());
+}
+
+TEST_F(PaintHoldingSimTest, ReleasedForEmptyFramesetAfterParsing) {
+  SimRequest resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  resource.Complete(R"HTML(
+    <frameset></frameset>
+  )HTML");
+
+  PaintTiming& timing = PaintTiming::From(GetDocument());
+  ASSERT_TRUE(GetDocument().HasFinishedParsing());
+  ASSERT_TRUE(timing.FirstPaintRendered().is_null());
+  ASSERT_TRUE(
+      timing.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+          .is_null());
+  EXPECT_FALSE(Compositor().LayerTreeHost()->IsDeferringCommits());
+}
+
+TEST_F(PaintHoldingSimTest, ReleasedForFrameOnlyPageAfterParsing) {
+  SimRequest resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  resource.Complete(R"HTML(
+    <iframe></iframe>
+  )HTML");
+
+  PaintTiming& timing = PaintTiming::From(GetDocument());
+  ASSERT_TRUE(GetDocument().HasFinishedParsing());
+  ASSERT_TRUE(timing.FirstPaintRendered().is_null());
+  ASSERT_TRUE(
+      timing.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+          .is_null());
+  EXPECT_FALSE(Compositor().LayerTreeHost()->IsDeferringCommits());
+}
+
 // Tests that a page not firing FCP (no text/images) doesn't release paint
 // holding after First Paint when parsing is still in progress. Verifies that
 // FinishedParsing is required.
