@@ -58,6 +58,11 @@ namespace {
 // resolved with Desktop Aura and WindowTreeHost.
 ScreenWin* g_instance = nullptr;
 
+HMONITOR GetPrimaryMonitor() {
+  constexpr POINT origin = {0, 0};
+  return ::MonitorFromPoint(origin, MONITOR_DEFAULTTOPRIMARY);
+}
+
 // Gets the DPI for a particular monitor.
 std::optional<int> GetPerMonitorDPI(HMONITOR monitor) {
   UINT dpi_x, dpi_y;
@@ -797,7 +802,7 @@ gfx::Vector2dF ScreenWin::GetPixelsPerInch(const gfx::PointF& point) const {
 int ScreenWin::GetSystemMetricsForMonitor(HMONITOR monitor, int metric) const {
   // Fall back to the primary display's HMONITOR.
   if (!monitor)
-    monitor = ::MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+    monitor = GetPrimaryMonitor();
 
   // We don't include fudge factors stemming from accessibility features when
   // dealing with system metrics associated with window elements drawn by the
@@ -1037,7 +1042,7 @@ void ScreenWin::UpdateFromDisplayInfosImpl(
   // Retrieve the primary monitor info here, instead of later below. This is a
   // speculative workaround for the issue observed on older version of Windows
   // 10.  See crbug.com/394622418 for more detail.
-  auto primary_monitor = ::MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+  auto primary_monitor = GetPrimaryMonitor();
 
   // Get a new list of displays. This will replace `screen_win_displays_` if any
   // displays are found.
@@ -1078,15 +1083,15 @@ void ScreenWin::UpdateFromDisplayInfosImpl(
 
   // This primary information is used only to detect if another monitor has
   // became the primary monitor.
-  primary_monitor_ = primary_monitor;
-
   const std::optional<MONITORINFOEX> primary_monitor_info =
-      MonitorInfoFromHMONITOR(primary_monitor_);
-  // Primary monitor, if it exists, has 0,0 origin. Guard the CHECK with kill
-  // switch in case this caused the problem in the field.
+      MonitorInfoFromHMONITOR(primary_monitor);
+  // Only trust the primary handle when the OS reports it at the (0,0) origin;
+  // otherwise reset so the next change-check forces a re-sync.
   if (primary_monitor_info &&
-      base::FeatureList::IsEnabled(features::kSkipEmptyDisplayHotplugEvent)) {
-    CHECK(gfx::Rect(primary_monitor_info->rcMonitor).origin().IsOrigin());
+      gfx::Rect(primary_monitor_info->rcMonitor).origin().IsOrigin()) {
+    primary_monitor_ = primary_monitor;
+  } else {
+    primary_monitor_ = nullptr;
   }
 
   screen_win_displays_ = std::move(new_screen_win_displays);
@@ -1211,7 +1216,7 @@ void ScreenWin::UpdateAllDisplaysAndNotify() {
 }
 
 void ScreenWin::UpdateAllDisplaysIfPrimaryMonitorChanged() {
-  HMONITOR monitor = ::MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
+  HMONITOR monitor = GetPrimaryMonitor();
   if (monitor != primary_monitor_) {
     UpdateAllDisplaysAndNotify();
   }
