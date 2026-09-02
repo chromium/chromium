@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @NullMarked
 public abstract class SelectionController {
     /**
-     * Operational modes of the SelectionController
+     * Operational modes of the SelectionController.
      *
      * <ul>
      *   <li>SATURATING:

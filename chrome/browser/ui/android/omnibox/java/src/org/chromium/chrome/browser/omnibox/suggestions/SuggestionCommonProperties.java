@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /** The set of common properties associated with any omnibox suggestion. */
 @NullMarked
 public @interface SuggestionCommonProperties {
-    /** Enum for identifying the device type */
+    /** Enum for identifying the device type. */
     @IntDef({FormFactor.UNKNOWN, FormFactor.PHONE, FormFactor.TABLET})
     @Retention(RetentionPolicy.SOURCE)
     @interface FormFactor {
@@ -61,7 +61,7 @@ public @interface SuggestionCommonProperties {
         int TOP_AND_BOTTOM = 2;
     }
 
-    /** The type of suggestion separator to draw between suggestions */
+    /** The type of suggestion separator to draw between suggestions. */
     @IntDef({GroupSeparatorType.NONE, GroupSeparatorType.GAP, GroupSeparatorType.LINE})
     @Retention(RetentionPolicy.SOURCE)
     @interface GroupSeparatorType {

@@ -8,7 +8,7 @@ import android.text.Html;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Shared logic for implementations of {@link AnswerText} */
+/** Shared logic for implementations of {@link AnswerText}. */
 @NullMarked
 class AnswerTextUtils {
     // Utils class, no member state.
