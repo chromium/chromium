@@ -2588,14 +2588,8 @@ static_library("ui") {
       "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h",
       "views/web_apps/frame_toolbar/web_app_menu_button.cc",
       "views/web_apps/frame_toolbar/web_app_menu_button.h",
-      "views/web_apps/frame_toolbar/web_app_navigation_button_container.cc",
-      "views/web_apps/frame_toolbar/web_app_navigation_button_container.h",
-      "views/web_apps/frame_toolbar/web_app_origin_text.cc",
-      "views/web_apps/frame_toolbar/web_app_origin_text.h",
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.cc",
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.h",
-      "views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.cc",
-      "views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.cc",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.cc",
@@ -2610,7 +2604,6 @@ static_library("ui") {
       "views/web_apps/web_app_install_flow_dialog_delegate.h",
       "views/web_apps/web_app_install_intro_view.cc",
       "views/web_apps/web_app_install_intro_view.h",
-      "views/web_apps/web_app_install_not_supported_dialog.cc",
       "views/web_apps/web_app_install_options_view.cc",
       "views/web_apps/web_app_install_options_view.h",
       "views/web_apps/web_app_launch_dialog.cc",
@@ -2898,6 +2891,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_apps:progress_delay",
       "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
       "//chrome/browser/ui/views/web_apps:web_app_blocked_migration_infobar_delegate",
+      "//chrome/browser/ui/views/web_apps:web_app_install_not_supported_dialog",
       "//chrome/browser/ui/views/web_apps:web_app_install_progress_view",
       "//chrome/browser/ui/views/web_apps:web_app_modal_dialog_delegate",
       "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
@@ -2907,6 +2901,12 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_apps/frame_toolbar:system_app_accessible_name",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_content_settings_container",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_utils",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
       "//chrome/browser/ui/views/webauthn",
@@ -3016,6 +3016,12 @@ static_library("ui") {
       # following header gets componentized:
       # c/b/ui/views/extensions/extensions_toolbar_desktop.h
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button_impl",
+
+      # TODO(crbug.com/353332589): These targets include headers from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:

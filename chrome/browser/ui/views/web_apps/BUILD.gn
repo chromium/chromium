@@ -390,3 +390,22 @@ source_set("web_app_uninstall_dialog_view_impl") {
     "//ui/views",
   ]
 }
+
+source_set("web_app_install_not_supported_dialog") {
+  sources = [ "web_app_install_not_supported_dialog.cc" ]
+  deps = [
+    ":web_app_modal_dialog_delegate",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
