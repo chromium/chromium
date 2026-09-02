@@ -209,7 +209,6 @@ public class NtpThemeCoordinatorUnitTest {
         verify(mNtpThemeCollectionsCoordinator)
                 .initializeBottomSheetContent(eq(BottomSheetType.THEME_COLLECTIONS));
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mBottomSheetDelegate).onNewThemeCollectionImageSelected(eq(bitmap));
         verify(mMediator)
                 .updateTrailingIconVisibilityForSectionType(NtpBackgroundType.THEME_COLLECTION);
 

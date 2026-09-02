@@ -458,8 +458,7 @@ public class NtpThemeSyncHistoryCoordinator {
 
         themeCollectionData.setBitmap(bitmap);
         if (themeCollectionData.getPrimaryColor() == null) {
-            // We calculate the primary color here as #onBackgroundDataChanged() skips primary color
-            // calculation for all theme collection image data.
+            // Calculates and sets the primary color if not already present before applying.
             @Nullable Bitmap smallBitmap = themeCollectionData.getPreviewBitmap();
             if (smallBitmap == null) {
                 smallBitmap = bitmap;

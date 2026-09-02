@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -177,6 +178,9 @@ public class NtpThemeCollectionManager {
                         return;
                     }
 
+                    @ColorInt
+                    Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
+
                     String fileId = null;
                     if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {
                         fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
@@ -187,7 +191,7 @@ public class NtpThemeCollectionManager {
                                     info,
                                     backgroundImageInfo,
                                     bitmap,
-                                    /* primaryColor= */ null,
+                                    primaryColor,
                                     fileId);
                     mNtpCustomizationConfigManager.onBackgroundDataChanged(
                             mContext, backgroundData);

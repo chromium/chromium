@@ -405,10 +405,7 @@ public class NtpCustomizationConfigManager {
         @ColorInt
         Integer primaryColor =
                 NtpCustomizationUtils.saveBackgroundInfo(
-                        uploadImageData,
-                        fromHistoryData ? null : bitmap,
-                        backgroundImageInfo,
-                        fromHistoryData);
+                        uploadImageData, fromHistoryData ? null : bitmap, backgroundImageInfo);
         if (!fromHistoryData) {
             uploadImageData.setPrimaryColor(primaryColor);
         }
@@ -442,16 +439,13 @@ public class NtpCustomizationConfigManager {
         NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
                 TimeUtils.currentTimeMillis(), mBackgroundType, mCustomBackgroundInfo);
 
-        // This method can be called from 1) the user chooses a theme collection image, or 2) the
-        // user chooses a previously selected theme collection image from history. For case 1), we
-        // defer the saving of the primary color until the bottom sheet is closed. It will be
-        // handled by NtpCustomizationMediator. For case 2), the primary color has been calculated
-        // before, save it to the Shared Preference now.
+        // Saves the background info, matrices, and primary color to SharedPreferences, and saves
+        // the bitmap to disk if not already saved on this device (e.g. when newly selected or from
+        // remote history).
         NtpCustomizationUtils.saveBackgroundInfo(
                 themeCollectionData,
                 themeCollectionData.isBitmapSaved() ? null : themeCollectionData.getBitmap(),
-                assumeNonNull(themeCollectionData.getBackgroundImageInfo()),
-                /* skipSavingPrimaryColor= */ true);
+                assumeNonNull(themeCollectionData.getBackgroundImageInfo()));
     }
 
     /**
@@ -486,8 +480,7 @@ public class NtpCustomizationConfigManager {
         NtpCustomizationUtils.saveBackgroundInfo(
                 themeCollectionData,
                 themeCollectionData.getBitmap(),
-                assumeNonNull(themeCollectionData.getBackgroundImageInfo()),
-                /* skipSavingPrimaryColor= */ false);
+                assumeNonNull(themeCollectionData.getBackgroundImageInfo()));
 
         // Cleans up any previously pending synced background image file
         // that is being replaced by the newly received synced theme.

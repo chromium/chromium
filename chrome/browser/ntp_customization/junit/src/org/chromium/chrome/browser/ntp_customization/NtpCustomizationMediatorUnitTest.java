@@ -36,12 +36,9 @@ import static org.chromium.components.browser_ui.bottomsheet.BottomSheetControll
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -70,9 +67,6 @@ import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPoli
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager.SnackBarState;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -609,75 +603,17 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    public void testOnNewThemeCollectionImageSelected_onSheetClosed() {
+    public void testOnSheetClosed() {
         BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
-        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        @ColorInt int themeCollectionDataPrimaryColor = Color.BLUE;
-        bitmap.eraseColor(themeCollectionDataPrimaryColor);
-        NtpBackgroundDataThemeCollection themeCollectionData =
-                mock(NtpBackgroundDataThemeCollection.class);
-        when(themeCollectionData.getPrimaryColor()).thenReturn(null);
-        mMediator.onNewThemeCollectionImageSelected(bitmap);
-        when(mConfigManager.getNtpBackgroundData()).thenReturn(themeCollectionData);
+        // Case 1: mShouldRecreate is false.
         observer.onSheetClosed(0);
-
-        // Verifies pickAndSavePrimaryColor() is called when a new theme collection image is
-        // selected and the background image type is THEME_COLLECTION.
-        assertEquals(
-                themeCollectionDataPrimaryColor,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         verify(mConfigManager, never())
                 .maybeSaveUserSelectedBackgroundTypeToSharedPreference(any());
 
-        // Sets the current theme type is NtpBackgroundType.IMAGE_FROM_DISK.
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        NtpBackgroundDataUploadImage uploadImageData = mock(NtpBackgroundDataUploadImage.class);
-        when(mConfigManager.getNtpBackgroundData()).thenReturn(uploadImageData);
-        mMediator.onNewThemeCollectionImageSelected(bitmap);
-        observer.onSheetClosed(0);
-        // Verifies pickAndSavePrimaryColor() is NOT called if background image type is not
-        // THEME_COLLECTION.
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-        verify(mConfigManager, never())
-                .maybeSaveUserSelectedBackgroundTypeToSharedPreference(any());
-
-        // Clean up shared preference for the test.
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        when(mConfigManager.getNtpBackgroundData()).thenReturn(themeCollectionData);
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-
-        mMediator.onNewThemeCollectionImageSelected(null);
-        observer.onSheetClosed(0);
-
-        // Verifies pickAndSavePrimaryColor() is not called when mNewThemeCollectionImage is null.
-        assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-        verify(mConfigManager, never())
-                .maybeSaveUserSelectedBackgroundTypeToSharedPreference(any());
-
-        // Case 4: Valid theme collection, recreating.
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        mMediator.onNewThemeCollectionImageSelected(bitmap);
+        // Case 2: mShouldRecreate is true.
         mMediator.onNewColorSelected(/* isDifferentColor= */ true);
         observer.onSheetClosed(0);
-
-        // Verifies pickAndSavePrimaryColor() is called.
-        assertEquals(
-                themeCollectionDataPrimaryColor,
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-
-        // Verifies maybeSaveUserSelectedBackgroundTypeToSharedPreference() is called because
-        // mShouldRecreate is true.
         verify(mConfigManager).maybeSaveUserSelectedBackgroundTypeToSharedPreference(eq(mContext));
     }
 

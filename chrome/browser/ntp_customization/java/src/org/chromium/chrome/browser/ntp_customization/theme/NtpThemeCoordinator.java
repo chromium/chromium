@@ -122,7 +122,6 @@ public class NtpThemeCoordinator {
                                             THEME_COLLECTION);
                                     mBottomSheetDelegate.onNewColorSelected(
                                             /* isDifferentColor= */ true);
-                                    mBottomSheetDelegate.onNewThemeCollectionImageSelected(bitmap);
                                     notifyBottomSheetBackgroundTypeChanged();
                                 }));
         mNtpThemeDelegate = createNtpThemeDelegate();

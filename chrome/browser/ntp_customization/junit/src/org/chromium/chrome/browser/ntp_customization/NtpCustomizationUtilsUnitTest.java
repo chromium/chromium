@@ -1332,19 +1332,19 @@ public class NtpCustomizationUtilsUnitTest {
         NtpBackgroundDataThemeCollection themeCollectionData =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID, customBackgroundInfo, /* previewBitmap= */ null);
-        testSaveBackgroundInfoImpl(/* skipSavingPrimaryColor= */ false, themeCollectionData);
+        testSaveBackgroundInfoImpl(themeCollectionData);
     }
 
     @Test
-    public void testSaveBackgroundInfo_postponedColorPicking() {
+    public void testSaveBackgroundInfo_withPrecalculatedPrimaryColor() {
         NtpBackgroundDataUploadImage uploadImageData =
                 new NtpBackgroundDataUploadImage(
                         PlatformType.ANDROID,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
-                        /* primaryColor= */ null,
+                        Color.RED,
                         /* fileIdHash= */ null);
-        testSaveBackgroundInfoImpl(/* skipSavingPrimaryColor= */ true, uploadImageData);
+        testSaveBackgroundInfoImpl(uploadImageData);
     }
 
     @Test
@@ -1357,7 +1357,7 @@ public class NtpCustomizationUtilsUnitTest {
                         bitmap,
                         /* primaryColor= */ null,
                         "uniqueHash");
-        testSaveBackgroundInfoImpl(/* skipSavingPrimaryColor= */ false, uploadImageData);
+        testSaveBackgroundInfoImpl(uploadImageData);
     }
 
     @Test
@@ -1371,11 +1371,10 @@ public class NtpCustomizationUtilsUnitTest {
                         bitmap,
                         /* primaryColor= */ null,
                         "themeHash");
-        testSaveBackgroundInfoImpl(/* skipSavingPrimaryColor= */ false, themeCollectionData);
+        testSaveBackgroundInfoImpl(themeCollectionData);
     }
 
-    private void testSaveBackgroundInfoImpl(
-            boolean skipSavingPrimaryColor, NtpBackgroundDataImageBase ntpBackgroundImageData) {
+    private void testSaveBackgroundInfoImpl(NtpBackgroundDataImageBase ntpBackgroundImageData) {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         Matrix portraitMatrix = new Matrix();
         Matrix landscapeMatrix = new Matrix();
@@ -1388,7 +1387,7 @@ public class NtpCustomizationUtilsUnitTest {
                         /* landscapeWindowSize= */ null);
 
         NtpCustomizationUtils.saveBackgroundInfo(
-                ntpBackgroundImageData, bitmap, backgroundImageInfo, skipSavingPrimaryColor);
+                ntpBackgroundImageData, bitmap, backgroundImageInfo);
         RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         File expectedSavedFile;
@@ -1416,9 +1415,9 @@ public class NtpCustomizationUtilsUnitTest {
             assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
         }
 
-        if (skipSavingPrimaryColor) {
+        if (ntpBackgroundImageData.getPrimaryColor() != null) {
             assertEquals(
-                    NtpThemeColorInfo.COLOR_NOT_SET,
+                    ntpBackgroundImageData.getPrimaryColor().intValue(),
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         } else {
             assertNotEquals(

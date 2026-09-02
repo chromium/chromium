@@ -1529,14 +1529,11 @@ public class NtpCustomizationUtils {
      * @param bitmap The bitmap of the theme collection or uploaded image.
      * @param backgroundImageInfo The {@link BackgroundImageInfo} containing the portrait and
      *     landscape transformation matrices of the image.
-     * @param skipSavingPrimaryColor True if color selection and saving are deferred until the
-     *     bottom sheet is dismissed.
      */
     public static @Nullable @ColorInt Integer saveBackgroundInfo(
             NtpBackgroundDataImageBase imageData,
             @Nullable Bitmap bitmap,
-            BackgroundImageInfo backgroundImageInfo,
-            boolean skipSavingPrimaryColor) {
+            BackgroundImageInfo backgroundImageInfo) {
         if (bitmap != null) {
             saveBackgroundImageFile(imageData, bitmap);
         }
@@ -1551,7 +1548,7 @@ public class NtpCustomizationUtils {
         @ColorInt Integer primaryColor = imageData.getPrimaryColor();
         @ColorInt Integer primaryColorPicked = null;
         if (primaryColor == null) {
-            if (!skipSavingPrimaryColor && bitmap != null) {
+            if (bitmap != null) {
                 primaryColorPicked = pickAndSavePrimaryColor(bitmap);
             }
         } else {

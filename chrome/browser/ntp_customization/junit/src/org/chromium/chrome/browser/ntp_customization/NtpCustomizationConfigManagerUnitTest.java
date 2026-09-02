@@ -776,6 +776,9 @@ public class NtpCustomizationConfigManagerUnitTest {
                                     FILE_ID_HASH)
                             .getAbsolutePath(),
                     NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+            assertNotEquals(
+                    NtpThemeColorInfo.COLOR_NOT_SET,
+                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
             assertTrue(backgroundData.isBitmapSaved());
         } else {
             assertEquals(
@@ -1000,8 +1003,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         mBitmap,
                         /* primaryColor= */ null,
                         isSyncEnabled ? FILE_ID_HASH : null);
-        NtpCustomizationUtils.saveBackgroundInfo(
-                imageData, mBitmap, mBackgroundImageInfo, /* skipSavingPrimaryColor= */ true);
+        NtpCustomizationUtils.saveBackgroundInfo(imageData, mBitmap, mBackgroundImageInfo);
         assertTrue(imageData.isBitmapSaved());
 
         NtpCustomizationConfigManager manager =

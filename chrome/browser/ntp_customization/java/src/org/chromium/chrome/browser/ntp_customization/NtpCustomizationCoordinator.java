@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.VIEW_FLIPPER_KEYS;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
@@ -381,11 +380,6 @@ public class NtpCustomizationCoordinator {
             @Override
             public void onNewColorSelected(boolean isDifferentColor) {
                 mMediator.onNewColorSelected(isDifferentColor);
-            }
-
-            @Override
-            public void onNewThemeCollectionImageSelected(@Nullable Bitmap bitmap) {
-                mMediator.onNewThemeCollectionImageSelected(bitmap);
             }
         };
     }

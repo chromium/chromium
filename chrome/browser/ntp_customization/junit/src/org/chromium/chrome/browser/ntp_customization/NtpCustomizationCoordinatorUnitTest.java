@@ -26,7 +26,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -316,15 +315,6 @@ public class NtpCustomizationCoordinatorUnitTest {
         delegate.showBottomSheet(SINGLE_THEME_COLLECTION);
         verify(mMediator).showBottomSheet(eq(SINGLE_THEME_COLLECTION));
         verify(mNtpThemeCoordinator).initializeBottomSheetContent(eq(SINGLE_THEME_COLLECTION));
-    }
-
-    @Test
-    public void testBottomSheetDelegateImplementation_onNewThemeCollectionImageSelected() {
-        BottomSheetDelegate delegate =
-                mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting();
-        Bitmap bitmap = mock(Bitmap.class);
-        delegate.onNewThemeCollectionImageSelected(bitmap);
-        verify(mMediator).onNewThemeCollectionImageSelected(eq(bitmap));
     }
 
     @Test
