@@ -2462,6 +2462,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mTabModelOrchestratorSupplier == null) {
             mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
         }
+        mTabModelOrchestrator = tabModelOrchestrator;
         mTabModelOrchestratorSupplier.set(tabModelOrchestrator);
     }
 

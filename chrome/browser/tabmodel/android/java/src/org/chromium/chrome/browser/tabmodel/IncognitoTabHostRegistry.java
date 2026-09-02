@@ -41,4 +41,9 @@ public class IncognitoTabHostRegistry {
     public List<IncognitoTabHost> getHosts() {
         return mHosts;
     }
+
+    /** Clears the hosts for testing. */
+    public void clearForTesting() {
+        mHosts.clear();
+    }
 }

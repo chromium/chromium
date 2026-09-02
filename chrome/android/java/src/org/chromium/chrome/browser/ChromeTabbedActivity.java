@@ -563,47 +563,59 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             new IncognitoTabHost() {
                 @Override
                 public boolean hasIncognitoTabs() {
-                    return getTabModelSelector().getModel(true).getCount() > 0;
+                    if (!areTabModelsInitialized() || mTabModelSelector == null) {
+                        return false;
+                    }
+                    // Do not check isActivityFinishingOrDestroyed() here: the host must continue
+                    // reporting tabs until destroyTabModels() destroys them, preventing premature
+                    // profile cleanup by IncognitoProfileDestroyer.
+                    return mTabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
                 }
 
                 @Override
                 public void closeAllIncognitoTabs() {
-                    if (isActivityFinishingOrDestroyed()) return;
-
-                    // If the tabbed activity has not yet initialized, then finish the activity to
-                    // avoid timing issues with clearing the incognito tab state in the
-                    // background.
-                    if (!areTabModelsInitialized() || !didFinishNativeInitialization()) {
-                        finish();
+                    if (!didFinishNativeInitialization()) {
+                        closeAllIncognitoTabsOnInit();
                         return;
                     }
 
-                    terminateIncognitoSession();
+                    if (areTabModelsInitialized() && mTabModelSelector != null) {
+                        terminateIncognitoSession();
+                        return;
+                    }
+
+                    if (isActivityFinishingOrDestroyed()) {
+                        return;
+                    }
+
+                    // If the tabbed activity has not yet initialized, then finish the activity to
+                    // avoid lingering in the background.
+                    finish();
                 }
 
                 @Override
                 public void closeAllIncognitoTabsOnInit() {
-                    // TODO(https://crbug.com/429478269): This approach creates a gap where
-                    // incognito tabs are loaded into the tab model, and some observers will be
-                    // notified through onTabStateInitialized with the incog tabs visible. This
-                    // should be fixed by adding support to the orchestrator to drop incog tabs
-                    // before finishing init.
                     if (isActivityFinishingOrDestroyed()) {
-                        // No action needed.
-                    } else if (!didFinishNativeInitialization() || mTabModelSelector == null) {
-                        // TODO(https://crbug.com/429478269): Native init is likely not needed.
+                        return;
+                    }
+                    if (!didFinishNativeInitialization() || mTabModelSelector == null) {
+                        // TODO(https://crbug.com/429478269): This approach creates a gap where
+                        // incognito tabs might briefly appear until native init is finished. A
+                        // better approach might be to not create the incognito tab model
+                        // orchestrator at all or drop it as soon as the signal to close all
+                        // incognito tabs is received.
                         ActivityLifecycleDispatcher dispatcher = getLifecycleDispatcher();
                         dispatcher.register(
                                 new NativeInitObserver() {
                                     @Override
                                     public void onFinishNativeInitialization() {
                                         dispatcher.unregister(this);
-                                        closeAllIncognitoTabs();
+                                        closeAllIncognitoTabsOnInit();
                                     }
                                 });
                     } else if (!mTabModelSelector.isTabStateInitialized()) {
                         TabModelUtils.runOnTabStateInitialized(
-                                mTabModelSelector, (ignored) -> closeAllIncognitoTabs());
+                                mTabModelSelector, _ -> closeAllIncognitoTabs());
                     } else {
                         terminateIncognitoSession();
                     }
@@ -611,7 +623,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
                 @Override
                 public boolean isActiveModel() {
-                    return getTabModelSelector().getModel(true).isActiveModel();
+                    if (!areTabModelsInitialized() || mTabModelSelector == null) {
+                        return false;
+                    }
+                    return mTabModelSelector.getModel(/* incognito= */ true).isActiveModel();
                 }
             };
 
@@ -5300,7 +5315,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mIncognitoCookiesFetcher.destroy();
             mIncognitoCookiesFetcher = null;
         }
-        IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
 
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();
         if (tabObscuringHandler != null) {
@@ -5372,10 +5386,19 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     protected @TabDestroyStatus int destroyTabModels() {
-        if (mTabModelOrchestrator != null) {
-            return mTabModelOrchestrator.destroy();
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
+        try {
+            TabModelOrchestrator orchestrator =
+                    mTabModelOrchestrator != null
+                            ? mTabModelOrchestrator
+                            : getTabModelOrchestratorSupplier().get();
+            if (orchestrator != null) {
+                status = orchestrator.destroy();
+            }
+        } finally {
+            IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
         }
-        return TabDestroyStatus.NO_SHUTDOWN;
+        return status;
     }
 
     @Override
@@ -5495,6 +5518,24 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     public OneshotSupplier<TabSwitcher> getTabSwitcherSupplierForTesting() {
         return mTabSwitcherSupplier;
+    }
+
+    public IncognitoTabHost getIncognitoTabHostForTesting() {
+        return mIncognitoTabHost;
+    }
+
+    public void setTabModelSelectorForTesting(TabModelSelectorBase tabModelSelector) {
+        mTabModelSelector = tabModelSelector;
+    }
+
+    @Override
+    public void setTabModelOrchestratorForTesting(TabModelOrchestrator tabModelOrchestrator) {
+        super.setTabModelOrchestratorForTesting(tabModelOrchestrator);
+        if (tabModelOrchestrator instanceof TabbedModeTabModelOrchestrator tabbedOrchestrator) {
+            mTabModelOrchestrator = tabbedOrchestrator;
+        } else {
+            mTabModelOrchestrator = null;
+        }
     }
 
     private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
