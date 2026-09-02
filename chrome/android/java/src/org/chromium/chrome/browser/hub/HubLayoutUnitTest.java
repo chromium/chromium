@@ -517,6 +517,18 @@ public class HubLayoutUnitTest {
     }
 
     @Test
+    public void testIsHidingSupplier() {
+        assertFalse(mHubLayout.getIsHidingSupplier().get());
+
+        setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.FADE_OUT);
+        startHiding(LayoutType.BROWSING, NEW_TAB_ID);
+        assertTrue(mHubLayout.getIsHidingSupplier().get());
+
+        mHubLayout.doneHiding();
+        assertFalse(mHubLayout.getIsHidingSupplier().get());
+    }
+
+    @Test
     public void testHideWithNoPane() {
         hide(
                 LayoutType.BROWSING,

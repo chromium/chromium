@@ -147,6 +147,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
             ObservableSuppliers.createNonNull(false);
 
+    private final SettableNonNullObservableSupplier<Boolean> mIsHidingSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private @Nullable SceneLayer mCurrentSceneLayer;
 
     private boolean mFullyShown;
@@ -258,6 +261,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
+    public NonNullObservableSupplier<Boolean> getIsHidingSupplier() {
+        return mIsHidingSupplier;
+    }
+
+    @Override
     public void onFinishNativeInitialization() {
         ensureSceneLayersExist();
     }
@@ -328,6 +336,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         try (TraceEvent _ = TraceEvent.scoped("HubLayout.show")) {
             super.show(time, animate);
 
+            mIsHidingSupplier.set(false);
             forceAnimationToFinish();
 
             Promise<@Nullable Bitmap> bitmapPromise = new Promise<>();
@@ -429,6 +438,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
             // Since we are hiding this is no-longer fully shown.
             mFullyShown = false;
+            mIsHidingSupplier.set(true);
             final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
             // Use the EXPAND_NEW_TAB animation if it is already prepared.
@@ -514,6 +524,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             // This is a legacy value from the stack tab switcher, we are using at a proxy for Hub
             // hidden.
             RecordUserAction.record("MobileExitStackView");
+
+            mIsHidingSupplier.set(false);
 
             // Do this last so the Hub is ready to show again.
             super.doneHiding();

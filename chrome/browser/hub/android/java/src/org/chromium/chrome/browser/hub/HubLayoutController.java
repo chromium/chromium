@@ -31,4 +31,7 @@ public interface HubLayoutController {
 
     /** Supplies whether an animation for the Hub Layout is running. */
     NonNullObservableSupplier<Boolean> getIsAnimatingSupplier();
+
+    /** Supplies whether the Hub Layout is currently hiding. */
+    NonNullObservableSupplier<Boolean> getIsHidingSupplier();
 }

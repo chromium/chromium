@@ -158,6 +158,8 @@ public class HubCoordinatorUnitTest {
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mHubLayoutController.getIsAnimatingSupplier())
                 .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mHubLayoutController.getIsHidingSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
