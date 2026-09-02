@@ -89,6 +89,9 @@ export function checkAutofillPoliciesAndModifyPrefIfNecessary(
     typesBlockedPref: chrome.settingsPrivate.PrefObject<TypesBlockedEntry[]>|
     undefined,
     category: AutofillPolicyDataCategory) {
+  // Due to the legacy AutofillAddressEnabled policy, if AutofillAddressEnabled
+  // is disabled by an enterprise admin, Forms AI types (such as travel and
+  // identity docs) are also disabled and enforced.
   if (addressPolicy?.enforcement ===
           chrome.settingsPrivate.Enforcement.ENFORCED &&
       !addressPolicy.value) {
