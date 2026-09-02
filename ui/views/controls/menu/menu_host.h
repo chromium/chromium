@@ -92,6 +92,8 @@ class MenuHost : public Widget, public WidgetObserver {
   // Releases a mouse grab installed by |ShowMenuHost|.
   void ReleaseMenuHostCapture();
 
+  bool destroying_for_testing() const { return destroying_; }
+
  private:
   friend class MenuControllerTest;
 

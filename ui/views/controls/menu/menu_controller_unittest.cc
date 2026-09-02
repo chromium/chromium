@@ -1063,13 +1063,8 @@ void MenuControllerTest::DestroyMenuController() {
     return;
   }
 
-  if (!owner_->IsClosed()) {
-    owner_->RemoveObserver(menu_controller_);
-  }
-
-  menu_controller_->showing_ = false;
-  menu_controller_->owner_ = nullptr;
-  delete menu_controller_.ExtractAsDangling();
+  menu_controller_->ClearOwner();
+  menu_controller_.ExtractAsDangling()->Destroy();
 }
 
 // static

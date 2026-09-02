@@ -673,7 +673,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   bool canceled_ = false;
 
   // Our parent.
-  const raw_ptr<MenuItemView> parent_menu_item_ = nullptr;
+  raw_ptr<MenuItemView> parent_menu_item_ = nullptr;
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.
