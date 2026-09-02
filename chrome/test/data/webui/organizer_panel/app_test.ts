@@ -54,4 +54,10 @@ suite('OrganizerPanelAppTest', () => {
   test('renders organizer list with expected sections', () => {
     assertEquals(1, app.$.list.sectionDelegates.length);
   });
+
+  test('updates list searchQuery when search field changes', async () => {
+    app.$.searchField.setValue('test search');
+    await microtasksFinished();
+    assertEquals('test search', app.$.list.searchQuery);
+  });
 });

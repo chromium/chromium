@@ -46,12 +46,14 @@ export class OrganizerListSectionElement extends CrLitElement implements
       delegate: {type: Object},
       items: {type: Array},
       expanded_: {type: Boolean},
+      searchQuery: {type: String},
     };
   }
 
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = false;
+  accessor searchQuery: string = '';
 
   // The panel WebUI will remain loaded but invisible when the panel is closed.
   // While invisible, the WebUI will not receive update events from the browser,
@@ -94,18 +96,18 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected getInitialItems_(): Array<OrganizerListSectionItem<unknown>> {
-    return this.items.slice(0, INITIAL_ITEM_COUNT);
+    return this.getFilteredItems_().slice(0, INITIAL_ITEM_COUNT);
   }
 
   protected getRemainingItems_(): Array<OrganizerListSectionItem<unknown>> {
     if (!this.expanded_) {
       return [];
     }
-    return this.items.slice(INITIAL_ITEM_COUNT);
+    return this.getFilteredItems_().slice(INITIAL_ITEM_COUNT);
   }
 
   protected hasMoreItems_(): boolean {
-    return this.items.length > INITIAL_ITEM_COUNT;
+    return this.getFilteredItems_().length > INITIAL_ITEM_COUNT;
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
@@ -116,6 +118,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
     const target = e.currentTarget as OrganizerListSectionItemElement;
     assert(target.item);
     this.delegate?.onItemClick(target.item);
+  }
+
+  protected getFilteredItems_(): Array<OrganizerListSectionItem<unknown>> {
+    return this.searchQuery ? [] : this.items;
   }
 }
 

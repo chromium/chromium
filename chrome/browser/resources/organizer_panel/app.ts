@@ -40,14 +40,21 @@ export class OrganizerPanelAppElement extends CrLitElement {
     return {
       shortcut_: {type: String},
       sectionDelegates_: {type: Array},
+      searchQuery_: {type: String},
     };
   }
 
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
+  protected accessor searchQuery_: string = '';
   protected accessor sectionDelegates_:
       Array<OrganizerListSectionDelegate<unknown>> = [
         new OpenTabsDelegate(),
       ];
+
+
+  protected onSearchChanged_(e: CustomEvent<string>) {
+    this.searchQuery_ = e.detail;
+  }
 }
 
 declare global {

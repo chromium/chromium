@@ -14,7 +14,9 @@ export function getHtml(this: OrganizerListElement) {
     ${index > 0 ? html`
       <div class="divider" role="separator" aria-orientation="horizontal"></div>
     ` : ''}
-    <organizer-list-section .delegate="${delegate}"></organizer-list-section>
+    <organizer-list-section .delegate="${delegate}"
+        .searchQuery="${this.searchQuery}">
+    </organizer-list-section>
   `)}
 </div>
 <!--_html_template_end_-->`;

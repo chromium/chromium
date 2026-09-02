@@ -167,4 +167,31 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(1, delegate.getClickCount());
     assertEquals(items[1], delegate.getLastClickedItem());
   });
+
+  test('filters items based on searchQuery', async () => {
+    const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
+      {title: 'Google', description: ['google.com']},
+      {title: 'YouTube', description: ['youtube.com']},
+    ];
+    listSection.delegate = new TestSectionDelegate('Open Tabs', delegateItems);
+    await microtasksFinished();
+
+    let listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(2, listItems.length);
+
+    listSection.searchQuery = 'You';
+    await microtasksFinished();
+
+    listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(0, listItems.length);
+
+    listSection.searchQuery = '';
+    await microtasksFinished();
+
+    listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(2, listItems.length);
+  });
 });

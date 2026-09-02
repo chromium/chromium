@@ -32,10 +32,12 @@ export class OrganizerListElement extends CrLitElement {
   static override get properties() {
     return {
       sectionDelegates: {type: Array},
+      searchQuery: {type: String},
     };
   }
 
   accessor sectionDelegates: Array<OrganizerListSectionDelegate<unknown>> = [];
+  accessor searchQuery: string = '';
 }
 
 declare global {
