@@ -375,7 +375,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 dataSharingTabManager,
                                                 tabModelSupplier,
                                                 tabContentManager,
-                                                resetHandler,
                                                 getTabListItemOnClickListenerProvider(),
                                                 TabSwitcherPaneCoordinator.this
                                                         ::getTabGridDialogAnimationSourceView,
@@ -583,7 +582,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     "Android.TabSwitcher.SetupRecyclerView.Time",
                     recyclerViewTimer.getElapsedMillis());
 
-            TabListEditorManager tabListEditorManager =
+            mTabListEditorManager =
                     new TabListEditorManager(
                             activity,
                             mModalDialogManager,
@@ -598,7 +597,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             onTabGroupCreation,
                             desktopWindowStateManager,
                             mEdgeToEdgeSupplier);
-            mTabListEditorManager = tabListEditorManager;
             mMediator.setTabListEditorControllerSupplier(
                     mTabListEditorManager.getControllerSupplier());
 

@@ -228,7 +228,6 @@ public class TabGridDialogMediator
     private final DialogController mDialogController;
     private final PropertyModel mModel;
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
-    private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final @Nullable AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
@@ -265,7 +264,6 @@ public class TabGridDialogMediator
             DialogController dialogController,
             PropertyModel model,
             NullableObservableSupplier<TabModel> currentTabModelSupplier,
-            @Nullable TabSwitcherResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
             @Nullable SnackbarManager snackbarManager,
@@ -282,7 +280,6 @@ public class TabGridDialogMediator
         mDialogController = dialogController;
         mModel = model;
         mCurrentTabModelSupplier = currentTabModelSupplier;
-        mTabSwitcherResetHandler = tabSwitcherResetHandler;
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
         mTabGridDialogHandler = new DialogHandler();
@@ -367,7 +364,6 @@ public class TabGridDialogMediator
                     public void tabClosureUndone(Tab tab) {
                         // Allow this to update when invisible so the undo bar is handled correctly.
                         updateDialog();
-                        updateGridTabSwitcher();
                         dismissSingleTabSnackbar(tab.getId());
                     }
 
@@ -375,9 +371,11 @@ public class TabGridDialogMediator
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         if (!isVisible()) return;
 
-                        // When this grid dialog is opened via the tab switcher there is a
-                        // `mTabSwitcherResetHandler`.
-                        boolean isTabSwitcherContext = mTabSwitcherResetHandler != null;
+                        // When opened from the tab switcher, the switcher handles the tab switch
+                        // transition. From the bottom tab strip context, dismiss the dialog
+                        // immediately upon selecting a tab.
+                        boolean isTabSwitcherContext =
+                                mComponentId == TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER;
                         if (type == TabSelectionType.FROM_USER && !isTabSwitcherContext) {
                             // Hide the dialog from the strip context only.
                             hideDialog(false);
@@ -400,12 +398,11 @@ public class TabGridDialogMediator
 
                         List<Tab> relatedTabs = getTabsInGroup(tabGroupId);
                         // If the group is empty, update the animation and hide the dialog.
-                        if (relatedTabs.size() == 0) {
+                        if (relatedTabs.isEmpty()) {
                             hideDialog(false);
                             return;
                         }
                         updateDialog();
-                        updateGridTabSwitcher();
                     }
 
                     @Override
@@ -790,13 +787,6 @@ public class TabGridDialogMediator
 
     void setGridContentSensitivity(boolean contentIsSensitive) {
         mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, contentIsSensitive);
-    }
-
-    private void updateGridTabSwitcher() {
-        if (!isVisible() || mTabSwitcherResetHandler == null) return;
-        TabModel tabModel = mCurrentTabModelSupplier.get();
-        assumeNonNull(tabModel);
-        mTabSwitcherResetHandler.resetWithListOfTabs(tabModel.getRepresentativeTabList());
     }
 
     private void updateDialog() {
@@ -1315,7 +1305,7 @@ public class TabGridDialogMediator
 
     @VisibleForTesting
     @Nullable
-    CancelLongPressTabItemEventListener onLongPressEvent(
+    static CancelLongPressTabItemEventListener onLongPressEvent(
             @TabId int tabId,
             @Nullable View cardView,
             @Nullable TabGridContextMenuCoordinator tabGridContextMenuCoordinator) {

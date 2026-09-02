@@ -178,7 +178,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mTabContentManager,
                         null,
                         null,
-                        null,
                         mScrimManager,
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null,
