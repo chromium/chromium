@@ -30,7 +30,10 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.os.SystemClock;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -601,6 +604,34 @@ public class FeedSurfaceCoordinatorTest {
         verify(swipeRefreshLayout).disableSwipe();
 
         mCoordinator = null;
+    }
+
+    @Test
+    public void testRootViewFocusabilityAndTapRequestsFocus() {
+        FrameLayout rootView = mCoordinator.getRootViewForTesting();
+        assertTrue(rootView.isFocusable());
+        assertTrue(rootView.isFocusableInTouchMode());
+
+        View otherView = new View(mActivity);
+        otherView.setFocusableInTouchMode(true);
+        rootView.addView(otherView);
+        otherView.requestFocus();
+        assertTrue(otherView.isFocused());
+        assertFalse(rootView.isFocused());
+
+        long downTime = SystemClock.uptimeMillis();
+        MotionEvent downEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ downTime,
+                        /* eventTime= */ downTime,
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 100f,
+                        /* y= */ 100f,
+                        /* metaState= */ 0);
+        rootView.dispatchTouchEvent(downEvent);
+        assertTrue(rootView.isFocused());
+        assertFalse(otherView.isFocused());
+        downEvent.recycle();
     }
 
     private boolean hasStreamBound() {

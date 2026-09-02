@@ -178,6 +178,8 @@ public class FeedSurfaceCoordinator
          */
         RootView(Context context) {
             super(context);
+            setFocusable(true);
+            setFocusableInTouchMode(true);
         }
 
         @Override
@@ -208,6 +210,11 @@ public class FeedSurfaceCoordinator
             // event. Placing this call later in the method would mean at least a subset of events
             // would be missed.
             mDelegate.sendMotionEventForInputTracking(ev);
+            // Defocus any other view (such as the Omnibox / UrlBar) when tapping on the empty
+            // background surface.
+            if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                requestFocus();
+            }
 
             if (super.onInterceptTouchEvent(ev)) return true;
             if (mMediator != null && !mMediator.getTouchEnabled()) return true;
