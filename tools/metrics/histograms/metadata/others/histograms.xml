@@ -3104,7 +3104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NQE.IsPrivateHost.CacheHit" enum="BooleanCacheHit"
     expires_after="2027-04-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Counts how many times the result of NetworkQualityEstimator::IsPrivateHost
@@ -3115,7 +3115,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NQE.IsPrivateHost.Duration" units="ms"
     expires_after="2027-04-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The duration of NetworkQualityEstimator::IsPrivateHost. Recorded every time
@@ -5284,7 +5284,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubresourceWebBundles.BundleFetchErrorCode"
     enum="NetErrorCodes" expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The net error code recorded when request for a subresource web bundle was
@@ -5294,7 +5294,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubresourceWebBundles.ContentLength" units="bytes"
     expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The value of content length header of a subresource web bundle, or zero if
@@ -5304,14 +5304,14 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubresourceWebBundles.LoadResult"
     enum="SubresourceWebBundleLoadResult" expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>The result of loading subresource web bundles.</summary>
 </histogram>
 
 <histogram name="SubresourceWebBundles.MaxMemoryUsagePerProcess" units="bytes"
     expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The max memory usage per renderer process for subresource web bundles which
@@ -5322,7 +5322,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubresourceWebBundles.OriginType"
     enum="SubresourceWebBundleOriginType" expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The counts of Web Bundles origin types requested by Subresource Loading with
@@ -5333,7 +5333,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubresourceWebBundles.ReceivedSize" units="bytes"
     expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The received data size of a subresource web bundle. Recorded when received
@@ -5343,7 +5343,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SubresourceWebBundles.ResourceCount" units="resources"
     expires_after="2027-09-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>horo@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The number of resources contained in a web bundle. Recorded when bundle

@@ -1885,7 +1885,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Navigation.OnBeforeUnloadOverheadTime.NoBeforeUnloadHandlerRegistered"
     units="ms" expires_after="2027-04-01">
-  <owner>hayato@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

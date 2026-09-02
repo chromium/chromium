@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Prefetch.PrefetchContainer.ConnectedCallbackDelay.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-11-12">
-  <owner>hayato@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Prefetch.PrefetchContainer.CreateStreamDelay.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-11-12">
-  <owner>hayato@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Prefetch.PrefetchContainer.InitializeStreamDelay.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-11-12">
-  <owner>hayato@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>

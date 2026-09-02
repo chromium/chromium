@@ -1637,7 +1637,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HttpCache.ResponseFreshnessIsZero" enum="Boolean"
     expires_after="2027-06-01">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Whether the freshness of a response is zero or not. Recorded for each http
@@ -4895,7 +4895,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.NetworkErrorLoggingService.TaskBacklogSize" units="count"
     expires_after="2027-01-03">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     Records the size of the Network Error Logging (NEL) Service's task backlog
@@ -4909,7 +4909,6 @@ chromium-metrics-reviews@google.com.
     name="Net.NetworkTransaction.AsyncRetryOnTooManyConnectionErrors.{Occurrence}{Protocol}"
     enum="Boolean" expires_after="2027-01-03">
   <owner>horo@chromium.org</owner>
-  <owner>hayato@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Recorded when the mitigation for priority starvation (switching to async
@@ -4927,7 +4926,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.NetworkTransaction.ConnectedCallbackDelay" units="ms"
     expires_after="2027-08-09">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Measures the time taken to call http network transaction connected callback.
@@ -5011,7 +5010,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.NetworkTransaction.InitialErrorOnAsyncRetry{Protocol}"
     enum="NetErrorCodes" expires_after="2027-06-19">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Recorded when the mitigation for priority starvation (switching to async
@@ -5085,7 +5084,6 @@ chromium-metrics-reviews@google.com.
     name="Net.NetworkTransaction.RetryAttemptsOnConnectionErrors{Protocol}"
     units="count" expires_after="2027-01-03">
   <owner>horo@chromium.org</owner>
-  <owner>hayato@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The number of retry attempts made for connection errors during the lifetime
@@ -5098,7 +5096,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.NetworkTransaction.RetryOnConnectionErrors{Protocol}"
     enum="NetErrorCodes" expires_after="2027-06-19">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Recorded when a retry attempt is made for a connection error during an HTTP
@@ -5195,7 +5193,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Net.NetworkTransaction.TooManyRetriesOnConnectionErrors{Protocol}"
     enum="Boolean" expires_after="2027-01-03">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Recorded when an HTTP network transaction has reached the maximum number of
@@ -9013,7 +9011,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.SpdySession.GetRemoteEndpointResult" enum="NetErrorCodes"
     expires_after="2027-06-20">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Records the net error code returned by GetPeerAddress inside
@@ -9861,7 +9859,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.TaskRunner.RequestPriority" enum="RequestPriority"
     expires_after="2027-01-03">
-  <owner>hayato@chromium.org</owner>
+  <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The request priority passed to net::GetTaskRunner. Recorded with 0.001
