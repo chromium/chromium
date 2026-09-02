@@ -620,7 +620,7 @@ BASE_FEATURE(kGlobalMediaControlsAutoDismiss, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the "Save Video Frame" button in Global Media Controls.
 BASE_FEATURE(kGlobalMediaControlsSaveVideoFrame,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable selection of audio output device in Global Media Controls.
 BASE_FEATURE(kGlobalMediaControlsSeamlessTransfer,
