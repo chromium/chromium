@@ -936,6 +936,7 @@ by a child template that "extends" this file.
                 <data android:scheme="package" />
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
             </intent-filter>
             {% if channel in ['default'] %}
             <intent-filter>

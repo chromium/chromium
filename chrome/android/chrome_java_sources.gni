@@ -268,6 +268,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClient.java",
   "java/src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientWrappers.java",
   "java/src/org/chromium/chrome/browser/browserservices/TrustedWebActivitySettingsNavigation.java",
+  "java/src/org/chromium/chrome/browser/browserservices/TwaUninstallNotificationHelper.java",
   "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/AcknowledgeConverter.java",
   "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/ConsumeConverter.java",
   "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsAdapter.java",

@@ -789,6 +789,7 @@
       <intent-filter>  # DIFF-ANCHOR: e5bb6a36
         <action android:name="android.intent.action.PACKAGE_DATA_CLEARED"/>
         <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
+        <action android:name="android.intent.action.PACKAGE_REMOVED"/>
         <data android:scheme="package"/>
       </intent-filter>  # DIFF-ANCHOR: e5bb6a36
     </receiver>  # DIFF-ANCHOR: bb762b77

@@ -14,6 +14,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappTabUtils;
 import org.chromium.components.embedder_support.util.Origin;
@@ -73,7 +74,8 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
             new HashSet<>(
                     Arrays.asList(
                             Intent.ACTION_PACKAGE_DATA_CLEARED,
-                            Intent.ACTION_PACKAGE_FULLY_REMOVED));
+                            Intent.ACTION_PACKAGE_FULLY_REMOVED,
+                            Intent.ACTION_PACKAGE_REMOVED));
 
     private final ClearDataStrategy mClearDataStrategy;
 
@@ -90,9 +92,9 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent == null) return;
-        // Since we only care about ACTION_PACKAGE_DATA_CLEARED and and ACTION_PACKAGE_FULLY_REMOVED
-        // which are protected Intents, we can assume that anything that gets past here will be a
-        // legitimate Intent sent by the system.
+        // Since we only care about ACTION_PACKAGE_DATA_CLEARED, ACTION_PACKAGE_FULLY_REMOVED,
+        // and ACTION_PACKAGE_REMOVED which are protected Intents, we can assume that anything that
+        // gets past here will be a legitimate Intent sent by the system.
         boolean debug = VersionInfo.isLocalBuild() && ACTION_DEBUG.equals(intent.getAction());
         if (!debug && !BROADCASTS.contains(intent.getAction())) return;
 
@@ -102,6 +104,8 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
         // https://developer.android.com/reference/android/content/Intent#ACTION_PACKAGE_DATA_CLEARED
         // - ACTION_PACKAGE_FULLY_REMOVED:
         // https://developer.android.com/reference/android/content/Intent#ACTION_PACKAGE_FULLY_REMOVED
+        // - ACTION_PACKAGE_REMOVED:
+        // https://developer.android.com/reference/android/content/Intent#ACTION_PACKAGE_REMOVED
         // The documentation cites that "The data contains the name of the package."
         // We don't need to execute any of the code below (including checking UID) if we don't have
         // a package name.
@@ -112,7 +116,14 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
         int uid = intent.getIntExtra(Intent.EXTRA_UID, -1);
         if (uid == -1) return;
 
-        boolean uninstalled = Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
+        boolean isPackageRemoved = Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction());
+        boolean isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
+        if (isPackageRemoved && isReplacing) {
+            return;
+        }
+
+        boolean uninstalled =
+                Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction()) || isPackageRemoved;
 
         if (uninstalled) {
             if (packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX)) {
@@ -183,6 +194,13 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
             String appName =
                     InstalledWebappDataRegister.getAppNameForRegisteredPackage(packageName);
+
+            if (ChromeFeatureList.sDesktopAndroidTWADeleteBrowserData.isEnabled() && uninstalled) {
+                TwaUninstallNotificationHelper.showNotification(
+                        context, packageName, appName, domains, origins);
+                return;
+            }
+
             Intent intent =
                     ClearDataDialogActivity.createIntent(
                             context, appName, domains, origins, uninstalled);

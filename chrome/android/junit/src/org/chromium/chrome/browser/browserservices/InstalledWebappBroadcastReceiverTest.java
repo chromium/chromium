@@ -35,9 +35,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -46,6 +48,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.webapps.AppBannerManager;
@@ -67,6 +72,7 @@ public class InstalledWebappBroadcastReceiverTest {
     @Mock public InstalledWebappBroadcastReceiver.ClearDataStrategy mMockStrategy;
     @Mock public InstalledWebappPermissionStore mStore;
     @Mock public SiteChannelsManager mSiteChannelsManager;
+    @Mock public NotificationManagerProxy mNotificationManager;
     @Mock private LibraryLoader mMockLibraryLoader;
     @Mock private AppBannerManager.Natives mMockAppBannerManagerJni;
     @Mock private TabWindowManager mTabWindowManager;
@@ -82,6 +88,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void setUp() {
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
         SiteChannelsManager.setInstanceForTesting(mSiteChannelsManager);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
 
         mReceiver = new InstalledWebappBroadcastReceiver(mMockStrategy);
         mContext = RuntimeEnvironment.application;
@@ -259,5 +266,79 @@ public class InstalledWebappBroadcastReceiverTest {
 
         // Verify AppBannerManager JNI recheck is called.
         verify(mAppBannerManager).recheckInstallability();
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void packageRemoved_TriggersExecute() {
+        int id = 23;
+        String appName = "App Name";
+        GURL url = new GURL("https://www.example.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url));
+
+        addToRegister(id, appName, urls);
+
+        mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_REMOVED));
+
+        verify(mMockStrategy).execute(any(), eq("com.package"), eq(true));
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void packageRemoved_Replacing_DoesNotTrigger() {
+        int id = 23;
+        String appName = "App Name";
+        GURL url = new GURL("https://www.example.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url));
+
+        addToRegister(id, appName, urls);
+
+        Intent intent = createMockIntent(id, Intent.ACTION_PACKAGE_REMOVED);
+        intent.putExtra(Intent.EXTRA_REPLACING, true);
+        mReceiver.onReceive(mContext, intent);
+
+        verify(mMockStrategy, never()).execute(any(), any(), anyBoolean());
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_TWA_DELETE_BROWSER_DATA)
+    public void execute_FlagEnabled_ShowsNotification() {
+        mReceiver =
+                new InstalledWebappBroadcastReceiver(
+                        new InstalledWebappBroadcastReceiver.ClearDataStrategy());
+
+        int id = 67;
+        String appName = "App Name 3";
+        GURL url = new GURL("https://www.example.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url));
+
+        addToRegister(id, appName, urls);
+
+        mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
+
+        verify(mNotificationManager).notify(any(NotificationWrapper.class));
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    @DisableFeatures(ChromeFeatureList.DESKTOP_ANDROID_TWA_DELETE_BROWSER_DATA)
+    public void execute_FlagDisabled_StartsActivity() {
+        mReceiver =
+                new InstalledWebappBroadcastReceiver(
+                        new InstalledWebappBroadcastReceiver.ClearDataStrategy());
+
+        int id = 67;
+        String appName = "App Name 3";
+        GURL url = new GURL("https://www.example.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url));
+
+        addToRegister(id, appName, urls);
+
+        Context context = mock(Context.class);
+        mReceiver.onReceive(context, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
+
+        verify(mNotificationManager, never()).notify(any(NotificationWrapper.class));
+        verify(context).startActivity(any());
     }
 }

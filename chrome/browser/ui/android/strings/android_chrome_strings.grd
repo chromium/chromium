@@ -5917,6 +5917,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TWA_CLEAR_DATA_SITE_SELECTION_TITLE" desc="Title of screen showing the sites linked to TWA, allowing the user to clean data in any of them.">
         Linked sites
       </message>
+      <message name="IDS_TWA_POST_UNINSTALL_NOTIFICATION_TITLE" desc="Title for the notification sent after a TWA app is uninstalled">
+        <ph name="APP_NAME">%1$s<ex>YouTube</ex></ph> was uninstalled
+      </message>
+      <message name="IDS_TWA_POST_UNINSTALL_NOTIFICATION_TITLE_GENERIC" desc="Title for the notification sent after a TWA app is uninstalled when the app name is unknown">
+        App was uninstalled
+      </message>
+      <message name="IDS_TWA_POST_UNINSTALL_NOTIFICATION_TEXT" desc="Text for the notification sent after a TWA app is uninstalled">
+        Tap to delete browsing data in Chrome
+      </message>
 
       <message name="IDS_WEBAPP_TAP_TO_COPY_URL" desc="Message on the notification that indicates that taping it will copy a Web App's URL into the clipboard.">
         Tap to copy the URL for this app

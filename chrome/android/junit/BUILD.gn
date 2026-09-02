@@ -605,6 +605,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/browserservices/PostMessageHandlerTest.java",
       "src/org/chromium/chrome/browser/browserservices/SessionDataHolderTest.java",
       "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientTest.java",
+      "src/org/chromium/chrome/browser/browserservices/TwaUninstallNotificationHelperTest.java",
       "src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsConverterTest.java",
       "src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsUnitTest.java",
       "src/org/chromium/chrome/browser/browserservices/digitalgoods/MockTrustedWebActivityClient.java",
