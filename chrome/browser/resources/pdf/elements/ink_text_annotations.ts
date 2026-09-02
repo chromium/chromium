@@ -7,6 +7,7 @@ import './ink_text_box.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TextAnnotation, TextBoxRect} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
@@ -28,7 +29,7 @@ export interface InkTextAnnotationsElement {
 }
 
 interface Placeholder {
-  screenRect: TextBoxRect;
+  screenRect: TextBoxRect|null;
   rotations: number;
   label: string;
 }
@@ -51,6 +52,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
       viewport: {type: Object},
       activeAnnotation_: {type: Object},
       activePageDimensions_: {type: Object},
+      focusedIndex_: {type: Number},
       isPaste_: {type: Boolean},
       placeholders_: {type: Array},
     };
@@ -59,6 +61,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
   accessor viewport: Viewport|null = null;
   protected accessor activeAnnotation_: TextAnnotation|null = null;
   protected accessor activePageDimensions_: ViewportRect|null = null;
+  protected accessor focusedIndex_: number = -1;
   protected accessor isPaste_: boolean = false;
   protected accessor placeholders_: Placeholder[] = [];
   private annotations_: TextAnnotation[] = [];
@@ -84,6 +87,16 @@ export class InkTextAnnotationsElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('focusedIndex_')) {
+      this.updatePlaceholders_();
+    }
   }
 
   private onKeyDown_(e: KeyboardEvent) {
@@ -139,13 +152,42 @@ export class InkTextAnnotationsElement extends CrLitElement {
     this.updatePlaceholders_();
   }
 
+  private getActiveWindowIndices_(): Set<number> {
+    const indices = new Set<number>();
+    const total = this.annotations_.length;
+    if (total === 0) {
+      return indices;
+    }
+
+    if (this.focusedIndex_ === -1) {
+      // When no placeholder is focused, pre-position the first and last
+      // items so tabbing from top or bottom immediately lands on a positioned
+      // element.
+      indices.add(0);
+      indices.add(total - 1);
+      return indices;
+    }
+
+    if (this.focusedIndex_ > 0) {
+      indices.add(this.focusedIndex_ - 1);
+    }
+    indices.add(this.focusedIndex_);
+    if (this.focusedIndex_ < total - 1) {
+      indices.add(this.focusedIndex_ + 1);
+    }
+    return indices;
+  }
+
   private updatePlaceholders_() {
-    assert(this.viewport);
     const viewport = this.viewport;
+    assert(viewport);
+    const activeIndices = this.getActiveWindowIndices_();
     const clockwiseRotations = viewport.getClockwiseRotations();
-    this.placeholders_ = this.annotations_.map(annotation => {
-      const screenRect = pageToScreenCoordinates(
-          annotation.pageIndex, annotation.textBoxRect, viewport);
+    this.placeholders_ = this.annotations_.map((annotation, index) => {
+      const screenRect = activeIndices.has(index) ?
+          pageToScreenCoordinates(
+              annotation.pageIndex, annotation.textBoxRect, viewport) :
+          null;
       return {
         screenRect,
         label: annotation.text,
@@ -155,6 +197,9 @@ export class InkTextAnnotationsElement extends CrLitElement {
   }
 
   protected getStyles_(placeholder: Placeholder) {
+    if (!placeholder.screenRect) {
+      return 'opacity: 0;';
+    }
     return `
       --left: ${placeholder.screenRect.locationX}px;
       --top: ${placeholder.screenRect.locationY}px;
@@ -166,10 +211,19 @@ export class InkTextAnnotationsElement extends CrLitElement {
   protected onPlaceholderFocus_(e: FocusEvent) {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
+    this.focusedIndex_ = index;
     const placeholder = this.placeholders_[index];
     assert(placeholder);
+    assert(placeholder.screenRect);
 
     this.scrollToShowTextBox_(placeholder.screenRect);
+  }
+
+  protected onContainerFocusout_(e: FocusEvent) {
+    const relatedTarget = e.relatedTarget as Node | null;
+    if (!this.$.container.contains(relatedTarget)) {
+      this.focusedIndex_ = -1;
+    }
   }
 
   protected async onPlaceholderKeydown_(e: KeyboardEvent) {
@@ -204,6 +258,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
       this.isPaste_ = false;
       this.activeAnnotation_ = null;
       this.activePageDimensions_ = null;
+      this.focusedIndex_ = -1;
     }
     this.fire('state-changed', e.detail);
   }
@@ -219,6 +274,17 @@ export class InkTextAnnotationsElement extends CrLitElement {
 
   protected onTextboxFocused_(e: CustomEvent<TextBoxRect>) {
     this.scrollToShowTextBox_(e.detail);
+  }
+
+  protected getPlaceholderTabIndex_(placeholder: Placeholder): number {
+    if (this.activeAnnotation_ || !placeholder.screenRect) {
+      return -1;
+    }
+    return 0;
+  }
+
+  protected isPlaceholderAriaHidden_(placeholder: Placeholder): string {
+    return this.activeAnnotation_ || !placeholder.screenRect ? 'true' : 'false';
   }
 
   // Child placeholder elements intercept all pointer-events. Manually forward

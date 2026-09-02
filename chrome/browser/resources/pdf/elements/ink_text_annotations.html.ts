@@ -9,12 +9,15 @@ import type {InkTextAnnotationsElement} from './ink_text_annotations.js';
 export function getHtml(this: InkTextAnnotationsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="container" role="list" aria-label="$i18n{ink2TextAnnotationsAxLabel}">
+<div id="container" role="list" aria-label="$i18n{ink2TextAnnotationsAxLabel}"
+    @focusout="${this.onContainerFocusout_}">
   ${this.placeholders_.map((placeholder, index) => html`
     <div class="placeholder" style="${this.getStyles_(placeholder)}"
         data-index="${index}" data-rotations="${placeholder.rotations}"
+        aria-hidden="${this.isPlaceholderAriaHidden_(placeholder)}"
+        aria-setsize="${this.placeholders_.length}" aria-posinset="${index + 1}"
         role="listitem" aria-label="${placeholder.label}"
-        tabindex="${this.activeAnnotation_ ? '-1' : '0'}"
+        tabindex="${this.getPlaceholderTabIndex_(placeholder)}"
         @focus="${this.onPlaceholderFocus_}"
         @keydown="${this.onPlaceholderKeydown_}">
     </div>

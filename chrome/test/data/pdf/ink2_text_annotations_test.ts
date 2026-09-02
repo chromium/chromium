@@ -64,6 +64,26 @@ function waitForTextboxFocused(annotationsElement: InkTextAnnotationsElement):
       'textbox-focused-for-test', annotationsElement.$.textBox);
 }
 
+function isPlaceholderPositioned(placeholder: HTMLElement): boolean {
+  return placeholder.style.getPropertyValue('--left') !== '';
+}
+
+function checkPositionedIndices(
+    placeholders: NodeListOf<HTMLElement>,
+    expectedPositionedIndices: number[]) {
+  const expectedSet = new Set(expectedPositionedIndices);
+  for (let i = 0; i < placeholders.length; i++) {
+    const isPositioned = expectedSet.has(i);
+    chrome.test.assertEq(
+        isPositioned, isPlaceholderPositioned(placeholders[i]!));
+    chrome.test.assertEq(
+        isPositioned ? '0' : '-1', placeholders[i]!.getAttribute('tabindex'));
+    chrome.test.assertEq(
+        isPositioned ? 'false' : 'true',
+        placeholders[i]!.getAttribute('aria-hidden'));
+  }
+}
+
 chrome.test.runTests([
   async function testPlaceholdersRenderedAndSorted() {
     const {manager, viewport} = setUpTest();
@@ -560,8 +580,9 @@ chrome.test.runTests([
     const placeholders = getPlaceholders(annotationsElement);
     chrome.test.assertEq(1, placeholders.length);
 
-    // Initially, tabindex should be 0.
+    // Initially, tabindex should be 0 and aria-hidden should be false.
     chrome.test.assertEq('0', placeholders[0]!.getAttribute('tabindex'));
+    chrome.test.assertEq('false', placeholders[0]!.getAttribute('aria-hidden'));
 
     // Activate the annotation manually.
     const activeAnnotation = getTestAnnotation(2);
@@ -574,8 +595,9 @@ chrome.test.runTests([
     }));
     await microtasksFinished();
 
-    // Now tabindex should be -1.
+    // Now tabindex should be -1 and aria-hidden should be true.
     chrome.test.assertEq('-1', placeholders[0]!.getAttribute('tabindex'));
+    chrome.test.assertEq('true', placeholders[0]!.getAttribute('aria-hidden'));
 
     // Deactivate the annotation (simulate via event).
     annotationsElement.$.textBox.dispatchEvent(
@@ -584,8 +606,9 @@ chrome.test.runTests([
         }));
     await microtasksFinished();
 
-    // Tabindex should be back to 0.
+    // Tabindex should be back to 0 and aria-hidden back to false.
     chrome.test.assertEq('0', placeholders[0]!.getAttribute('tabindex'));
+    chrome.test.assertEq('false', placeholders[0]!.getAttribute('aria-hidden'));
 
     chrome.test.succeed();
   },
@@ -1040,6 +1063,96 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function testSlidingFocusWindow() {
+    const {manager, viewport} = setUpTest();
+
+    // Create 6 annotations (0 to 5) spaced out vertically.
+    for (let i = 0; i < 6; i++) {
+      const annotation = {
+        ...getTestAnnotation(i + 1),
+        text: `Annotation ${i}`,
+        textBoxRect: {
+          height: 20,
+          locationX: 105,
+          locationY: 53 + i * 50,
+          width: 100,
+        },
+      };
+      manager.commitTextAnnotation(annotation, true, []);
+    }
+
+    const annotationsElement = createAnnotationsElement(viewport);
+    await microtasksFinished();
+
+    const placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(6, placeholders.length);
+
+    // Verify aria-setsize and aria-posinset on all placeholders.
+    for (let i = 0; i < placeholders.length; i++) {
+      chrome.test.assertEq('6', placeholders[i]!.getAttribute('aria-setsize'));
+      chrome.test.assertEq(
+          String(i + 1), placeholders[i]!.getAttribute('aria-posinset'));
+    }
+
+    // 1. Initial state (unfocused, radius = 1):
+    // Indices 0 (first item) and 5 (last item) are pre-positioned.
+    // Indices 1, 2, 3, 4 are unpositioned.
+    checkPositionedIndices(placeholders, [0, 5]);
+
+    // 2. Tab into first element (placeholder 0):
+    // Window slides to [0, 1].
+    // Indices 0, 1 are positioned; 2, 3, 4, 5 are unpositioned.
+    placeholders[0]!.focus();
+    placeholders[0]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [0, 1]);
+
+    // 3. Tab to placeholder 1:
+    // Window slides to [0, 1, 2] -> index 2 is now positioned.
+    placeholders[1]!.focus();
+    placeholders[1]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [0, 1, 2]);
+
+    // 4. Tab to placeholder 2:
+    // Window slides to [1, 2, 3] -> index 3 is now positioned.
+    placeholders[2]!.focus();
+    placeholders[2]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [1, 2, 3]);
+
+    // 5. Tab to placeholder 3:
+    // Window slides to [2, 3, 4] -> index 4 is now positioned.
+    placeholders[3]!.focus();
+    placeholders[3]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [2, 3, 4]);
+
+    // 6. Tab to placeholder 4:
+    // Window slides to [3, 4, 5] -> index 5 is now positioned.
+    placeholders[4]!.focus();
+    placeholders[4]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [3, 4, 5]);
+
+    // 7. Backward Shift-Tab to placeholder 3:
+    // Window slides back to [2, 3, 4].
+    placeholders[3]!.focus();
+    placeholders[3]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [2, 3, 4]);
+
+    // 8. Focus moves out of container:
+    // Resets to initial unfocused state -> [0] and [5] positioned.
+    const container = annotationsElement.shadowRoot.querySelector('#container');
+    assert(container);
+    container.dispatchEvent(new FocusEvent('focusout', {relatedTarget: null}));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [0, 5]);
+
+    chrome.test.succeed();
+  },
+
   // Verify copying and cutting empty annotations does not save
   // an annotation to the clipboard.
   async function testCopyAndCutEmptyAnnotation() {
@@ -1074,6 +1187,60 @@ chrome.test.runTests([
 
     // Verify nothing was saved to clipboard.
     chrome.test.assertFalse(manager.pasteAnnotation());
+
+    chrome.test.succeed();
+  },
+
+  async function testFocusWindowSmallAnnotationCount() {
+    const {manager, viewport} = setUpTest();
+
+    // Test with 2 annotations (total = 2).
+    const annotation1 = {
+      ...getTestAnnotation(1),
+      text: 'Annotation 0',
+      textBoxRect: {height: 20, locationX: 105, locationY: 53, width: 100},
+    };
+    const annotation2 = {
+      ...getTestAnnotation(2),
+      text: 'Annotation 1',
+      textBoxRect: {height: 20, locationX: 105, locationY: 103, width: 100},
+    };
+    manager.commitTextAnnotation(annotation1, true, []);
+    manager.commitTextAnnotation(annotation2, true, []);
+
+    const annotationsElement = createAnnotationsElement(viewport);
+    await microtasksFinished();
+
+    const placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(2, placeholders.length);
+
+    // Verify aria-setsize and aria-posinset for 2 items.
+    chrome.test.assertEq('2', placeholders[0]!.getAttribute('aria-setsize'));
+    chrome.test.assertEq('1', placeholders[0]!.getAttribute('aria-posinset'));
+    chrome.test.assertEq('2', placeholders[1]!.getAttribute('aria-setsize'));
+    chrome.test.assertEq('2', placeholders[1]!.getAttribute('aria-posinset'));
+
+    // Unfocused: both are positioned.
+    checkPositionedIndices(placeholders, [0, 1]);
+
+    // Focus placeholder 0: both remain positioned (clamped window [0, 1]).
+    placeholders[0]!.focus();
+    placeholders[0]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [0, 1]);
+
+    // Focus placeholder 1: both remain positioned (clamped window [0, 1]).
+    placeholders[1]!.focus();
+    placeholders[1]!.dispatchEvent(new FocusEvent('focus'));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [0, 1]);
+
+    // Focus moves out of container: both remain positioned.
+    const container = annotationsElement.shadowRoot.querySelector('#container');
+    assert(container);
+    container.dispatchEvent(new FocusEvent('focusout', {relatedTarget: null}));
+    await microtasksFinished();
+    checkPositionedIndices(placeholders, [0, 1]);
 
     chrome.test.succeed();
   },
