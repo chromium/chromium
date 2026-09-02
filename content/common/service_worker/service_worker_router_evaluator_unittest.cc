@@ -1961,6 +1961,307 @@ TEST(ServiceWorkerRouterEvaluator,
             SafeURLPatternToString(url_pattern));
 }
 
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringReconstructAsUrlString) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ("https://example.com/test/*", SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringReconstructAsUrlStringRootPathname) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ("https://example.com/", SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringReconstructAsUrlStringAllWildcardHostname) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ("https://*/test/*", SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringNonHttps) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("http", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"*",)"
+            R"("pathname":"/test/*","port":"","protocol":"http",)"
+            R"("search":"*","username":"*"})",
+            SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringWildcardProtocol) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"*",)"
+            R"("pathname":"/test/*","port":"","protocol":"*",)"
+            R"("search":"*","username":"*"})",
+            SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringWithNonDefaultPort) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("8080", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.port = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"*",)"
+            R"("pathname":"/test/*","port":"8080","protocol":"https",)"
+            R"("search":"*","username":"*"})",
+            SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringWithUsername) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("username", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.username = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"*",)"
+            R"("pathname":"/test/*","port":"","protocol":"https",)"
+            R"("search":"*","username":"username"})",
+            SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringWithPassword) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("password", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.password = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"password",)"
+            R"("pathname":"/test/*","port":"","protocol":"https",)"
+            R"("search":"*","username":"*"})",
+            SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringEmptyPath) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  url_pattern.pathname.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"*",)"
+            R"("pathname":"","port":"","protocol":"https",)"
+            R"("search":"*","username":"*"})",
+            SafeURLPatternToString(url_pattern));
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     SafeURLPatternToStringCannotReconstructAsUrlStringRelativePath) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerStaticRouterTypedRulesForDevTools);
+
+  blink::SafeUrlPattern url_pattern = DefaultURLPattern();
+  url_pattern.port.clear();
+  {
+    auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.protocol = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("example.com", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.hostname = parse_result.value().PartList();
+  }
+  {
+    auto parse_result =
+        liburlpattern::Parse("test/page.html", ParseEncodeCallback);
+    ASSERT_TRUE(parse_result.has_value());
+    url_pattern.pathname = parse_result.value().PartList();
+  }
+
+  EXPECT_EQ(R"({"hash":"*","hostname":"example.com","password":"*",)"
+            R"("pathname":"test/page.html","port":"","protocol":"https",)"
+            R"("search":"*","username":"*"})",
+            SafeURLPatternToString(url_pattern));
+}
+
 }  // namespace
 
 }  // namespace content

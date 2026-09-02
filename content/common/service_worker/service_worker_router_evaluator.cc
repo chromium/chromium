@@ -6,6 +6,8 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
+#include <string>
 #include <tuple>
 #include <variant>
 
@@ -14,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -195,6 +198,34 @@ bool CanReconstructAsStruct(const blink::SafeUrlPattern& pattern) {
          !IsSimpleFullWildcardField(pattern.pathname) ||
          !IsSimpleFullWildcardField(pattern.search) ||
          !IsSimpleFullWildcardField(pattern.hash);
+}
+
+std::optional<std::string> MaybeReconstructAsURLString(
+    const blink::SafeUrlPattern& pattern) {
+  if (!IsSimpleFullWildcardField(pattern.username) ||
+      !IsSimpleFullWildcardField(pattern.password) ||
+      !IsSimpleFullWildcardField(pattern.search) ||
+      !IsSimpleFullWildcardField(pattern.hash)) {
+    return std::nullopt;
+  }
+  if (ConvertToPatternString(pattern, URLPatternFieldType::kProtocol) !=
+      "https") {
+    return std::nullopt;
+  }
+  const std::string pathname =
+      ConvertToPatternString(pattern, URLPatternFieldType::kPathname);
+  if (pathname.empty() || pathname[0] != '/') {
+    return std::nullopt;
+  }
+  // In a URLPattern string, `port` is parsed as an empty string unless
+  // explicitly specified, while other omitted fields are set to "*".
+  if (!pattern.port.empty()) {
+    return std::nullopt;
+  }
+  return base::StrCat(
+      {"https://",
+       ConvertToPatternString(pattern, URLPatternFieldType::kHostname),
+       pathname});
 }
 
 base::Value OrConditionToValue(
@@ -714,6 +745,12 @@ namespace content {
 std::string SafeURLPatternToString(const blink::SafeUrlPattern& pattern) {
   if (base::FeatureList::IsEnabled(
           features::kServiceWorkerStaticRouterTypedRulesForDevTools)) {
+    // Prefer a simple URL string representation when possible, as it is more
+    // readable and concise for DevTools.
+    if (std::optional<std::string> url_string =
+            MaybeReconstructAsURLString(pattern)) {
+      return *url_string;
+    }
     if (CanReconstructAsStruct(pattern)) {
       return base::WriteJson(SafeURLPatternToURLPatternInitDict(pattern))
           .value_or("");
