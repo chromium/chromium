@@ -8,6 +8,22 @@
 
 namespace actor {
 
+bool IsTerminalState(ActorTaskState state) {
+  switch (state) {
+    case ActorTaskState::kCancelled:
+    case ActorTaskState::kFinished:
+    case ActorTaskState::kFailed:
+      return true;
+    case ActorTaskState::kInit:
+    case ActorTaskState::kActing:
+    case ActorTaskState::kReflecting:
+    case ActorTaskState::kPausedByActor:
+    case ActorTaskState::kPausedByUser:
+    case ActorTaskState::kWaitingOnUser:
+      return false;
+  }
+}
+
 ActionResult::ActionResult(ToolExecutionResult result)
     : tool_result(std::move(result)) {}
 ActionResult::~ActionResult() = default;

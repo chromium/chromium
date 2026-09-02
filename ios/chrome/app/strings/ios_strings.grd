@@ -317,6 +317,21 @@
       <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS_AI_TIER" desc="The accessibility label for the cell containing user’s name, email, managed status and AI tier. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$3<ex>Your account is managed</ex></ph>. <ph name="AI_TIER">$4<ex>Google AI Foo membership</ex></ph>.
       </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_CLICKING" desc="Worklog chip label indicating the actor is clicking an element on the page. [iOS only]">
+        Clicking
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_FILLING_PASSWORD" desc="Worklog chip label indicating the actor is filling a password on the page. [iOS only]">
+        Filling password
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_SCROLLING" desc="Worklog chip label indicating the actor is scrolling the page. [iOS only]">
+        Scrolling
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_TYPING" desc="Worklog chip label indicating the actor is typing text on the page. [iOS only]">
+        Typing
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_WAITING" desc="Worklog chip label indicating the actor is waiting. [iOS only]">
+        Waiting
+      </message>
       <message name="IDS_IOS_ADDRESSES_NOT_ENCRYPTED_DIALOG_TEXT" desc="Text of a dialog shown to users when they turn on the ability to use and save addresses in their Google Account. This is shown to users who encrypt their data with their own passphrase in order to explain that addresses they will save in the future will not be encrypted. [iOS only]">
         Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.
       </message>
@@ -3506,6 +3521,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       </message>
       <message name="IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_TITLE" desc="Title text for the strict data governance row.">
         Your data improves Google AI
+      </message>
+      <message name="IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_SUBTITLE" desc="Subtitle disclaimer shown in the initial step of the actuation worklog explaining Gemini usage responsibility. [iOS only]">
+        Use Gemini carefully and take control if needed. You are responsible for Gemini's actions during tasks.
+      </message>
+      <message name="IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_TITLE" desc="Title of the initial step shown in the actuation worklog when an actor task starts. [iOS only]">
+        Task started
       </message>
       <message name="IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT" desc="The entry point for Gemini when the user long-presses an image. Invites the user to create an image using Gemini in Chrome.">
         Edit Image with Gemini

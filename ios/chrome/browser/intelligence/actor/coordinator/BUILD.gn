@@ -6,31 +6,43 @@ source_set("coordinator") {
   sources = [
     "actor_overlay_coordinator.h",
     "actor_overlay_coordinator.mm",
+    "actuation_worklog_mediator.h",
+    "actuation_worklog_mediator.mm",
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "actor_overlay_coordinator_unittest.mm" ]
+  sources = [
+    "actor_overlay_coordinator_unittest.mm",
+    "actuation_worklog_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

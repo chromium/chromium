@@ -42,6 +42,9 @@ enum class ActorTaskState {
   kFailed = 8
 };
 
+// Returns whether `state` corresponds to a terminal actor task state.
+bool IsTerminalState(ActorTaskState state);
+
 // Reasons why an ActorTask was stopped.
 enum class ActorTaskStoppedReason {
   // Task was explicitly stopped by the user.
