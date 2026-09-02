@@ -60,3 +60,10 @@ feature kWebNNCompilerProcess {
   const string name = "WebNNCompilerProcess";
   const bool default_state = false;
 };
+
+// Enables LiteRT WebGPU execution in the renderer.
+feature kWebNNLiteRTGpuInRenderer {
+  const string name = "WebNNLiteRTGpuInRenderer";
+  const bool default_state = false;
+};
+

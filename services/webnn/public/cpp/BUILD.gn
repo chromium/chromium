@@ -48,6 +48,7 @@ component("cpp") {
   public_deps = [
     ":buildflags",
     "//base",
+    "//services/webnn/public/mojom:features",
   ]
 
   deps = [
