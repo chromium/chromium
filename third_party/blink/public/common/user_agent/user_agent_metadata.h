@@ -44,19 +44,12 @@ struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
 using UserAgentBrandList = std::vector<UserAgentBrandVersion>;
 
 struct BLINK_COMMON_EXPORT UserAgentMetadata {
- private:
-  // Common private function turning the brand list into a structured header
-  // comes up often enough and is just non-trivial enough that it's better to be
-  // in one place.
-  const std::string SerializeBrandVersionList(
-      const blink::UserAgentBrandList& ua_brand_version_list);
-
  public:
   // Turning the brand list into a structured header with full version and major
   // version.
-  const std::string SerializeBrandFullVersionList();
-  const std::string SerializeBrandMajorVersionList();
-  const std::string SerializeFormFactors();
+  std::string SerializeBrandFullVersionList() const;
+  std::string SerializeBrandMajorVersionList() const;
+  std::string SerializeFormFactors() const;
 
   static std::optional<UserAgentMetadata> Demarshal(
       const std::optional<std::string>& encoded);

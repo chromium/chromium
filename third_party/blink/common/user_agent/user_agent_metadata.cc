@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/pickle.h"
 #include "net/http/structured_headers.h"
 #include "third_party/blink/public/common/features.h"
@@ -32,42 +33,43 @@ UserAgentBrandVersion::UserAgentBrandVersion(const std::string& ua_brand,
   version = ua_version;
 }
 
-const std::string UserAgentMetadata::SerializeBrandVersionList(
+namespace {
+
+std::string SerializeBrandVersionList(
     const blink::UserAgentBrandList& ua_brand_version_list) {
-  net::structured_headers::List brand_version_header =
-      net::structured_headers::List();
-  for (const UserAgentBrandVersion& brand_version : ua_brand_version_list) {
-    if (brand_version.version.empty()) {
-      brand_version_header.push_back(
-          net::structured_headers::ParameterizedMember(
-              net::structured_headers::Item(brand_version.brand), {}));
-    } else {
-      brand_version_header.push_back(
-          net::structured_headers::ParameterizedMember(
-              net::structured_headers::Item(brand_version.brand),
-              {std::make_pair(
-                  "v", net::structured_headers::Item(brand_version.version))}));
-    }
-  }
+  const net::structured_headers::List brand_version_header = base::ToVector(
+      ua_brand_version_list, [](const UserAgentBrandVersion& brand_version) {
+        net::structured_headers::Parameters params;
+        if (!brand_version.version.empty()) {
+          params.emplace_back(
+              "v", net::structured_headers::Item(brand_version.version));
+        }
+        return net::structured_headers::ParameterizedMember(
+            net::structured_headers::Item(brand_version.brand),
+            std::move(params));
+      });
 
   return net::structured_headers::SerializeList(brand_version_header)
       .value_or("");
 }
 
-const std::string UserAgentMetadata::SerializeBrandFullVersionList() {
+}  // namespace
+
+std::string UserAgentMetadata::SerializeBrandFullVersionList() const {
   return SerializeBrandVersionList(brand_full_version_list);
 }
 
-const std::string UserAgentMetadata::SerializeBrandMajorVersionList() {
+std::string UserAgentMetadata::SerializeBrandMajorVersionList() const {
   return SerializeBrandVersionList(brand_version_list);
 }
 
-const std::string UserAgentMetadata::SerializeFormFactors() {
-  net::structured_headers::List structured;
-  for (auto& ff : form_factors) {
-    structured.push_back(net::structured_headers::ParameterizedMember(
-        net::structured_headers::Item(ff), {}));
-  }
+std::string UserAgentMetadata::SerializeFormFactors() const {
+  const net::structured_headers::List structured =
+      base::ToVector(form_factors, [](const auto& ff) {
+        return net::structured_headers::ParameterizedMember(
+            net::structured_headers::Item(ff));
+      });
+
   return SerializeList(structured).value_or("");
 }
 
