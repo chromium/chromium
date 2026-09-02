@@ -2765,12 +2765,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_testSetMinimumWidgetSize DISABLED_testSetMinimumWidgetSize
-#else
-#define MAYBE_testSetMinimumWidgetSize testSetMinimumWidgetSize
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSetMinimumWidgetSize) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetMinimumWidgetSize) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ExecuteJsTest();
   ASSERT_TRUE(step_data().has_value() && step_data()->is_dict());
@@ -2782,7 +2777,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSetMinimumWidgetSize) {
   expected_size.SetToMax(gfx::Size(width, height));
   GlicWidget* glic_widget = GetGlicWidget();
   ASSERT_TRUE(glic_widget);
-  EXPECT_EQ(glic_widget->GetMinimumSize(), expected_size);
+  ASSERT_OK(RunUntilEqual([&]() { return glic_widget->GetMinimumSize(); },
+                          expected_size));
 
   ContinueJsTest();
 }
