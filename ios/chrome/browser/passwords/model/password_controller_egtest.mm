@@ -666,6 +666,11 @@ void LoginOnUff() {
                                  kFormPassword];
   [ChromeEarlGrey waitForJavaScriptCondition:emptyFieldCondition];
 
+  // TODO(crbug.com/508127830): Find a better solution to fix the flakiness of
+  // this test.
+  // Wait for the page and WebKit layout to settle before tapping the field.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormPassword)];
