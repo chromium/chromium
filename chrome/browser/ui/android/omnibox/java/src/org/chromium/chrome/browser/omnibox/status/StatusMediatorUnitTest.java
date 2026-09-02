@@ -417,7 +417,10 @@ public final class StatusMediatorUnitTest {
     @Test
     public void testStatusText() {
         mMediator.setUnfocusedLocationBarWidth(10);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, true);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ true,
+                /* pageIsPaintPreview= */ true);
         // When both states, offline, and preview are enabled, paint preview has
         // the highest priority.
         assertEquals(
@@ -440,7 +443,10 @@ public final class StatusMediatorUnitTest {
         assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
 
         // When only offline is enabled, it should be shown.
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ true,
+                /* pageIsPaintPreview= */ false);
         mResourceProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         mMediator.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
@@ -646,7 +652,10 @@ public final class StatusMediatorUnitTest {
         doReturn(PageClassification.NTP)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.WARNING, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.WARNING,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
 
         mMediator.setBackground();
         assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
@@ -736,35 +745,44 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void showStatusView_toggleVisibility() {
-        mMediator.setShowStatusView(false);
+        mMediator.setShowStatusView(/* show= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
-        mMediator.setShowStatusView(true);
+        mMediator.setShowStatusView(/* show= */ true);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
     public void hideViewForSecureOrigins() {
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
-        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
         mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.WARNING, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.WARNING,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
 
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
-        mMediator.setShowStatusIconForSecureOrigins(true);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ true);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
@@ -776,7 +794,10 @@ public final class StatusMediatorUnitTest {
     @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
     public void testShowStatusIconForSecureOrigins_restoresIconResourceAfterNavigation() {
         mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
@@ -784,7 +805,7 @@ public final class StatusMediatorUnitTest {
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
 
         // Simulate Mini Origin Bar hiding status icon for secure origins.
-        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
@@ -794,7 +815,7 @@ public final class StatusMediatorUnitTest {
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
         // Simulate Mini Origin Bar closing and restoring status icon for secure origins.
-        mMediator.setShowStatusIconForSecureOrigins(true);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ true);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
@@ -814,19 +835,28 @@ public final class StatusMediatorUnitTest {
 
         // Non-secure pages should show the status view.
         mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.DANGEROUS, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.DANGEROUS,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Secure pages should not show the status view if the flag is off.
-        mMediator.setShowStatusIconForSecureOrigins(false);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
     @Test
     public void testUpdateStatusViewVisibility_withPermissionIcon() {
-        mMediator.setShowStatusIconForSecureOrigins(false);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         StatusProperties.PermissionIconResource icon =
@@ -838,23 +868,35 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void testUpdateStatusViewVisibility_withVerboseStatusText() {
-        mMediator.setShowStatusIconForSecureOrigins(false);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ true,
+                /* pageIsPaintPreview= */ false);
 
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
     @Test
     public void testUpdateStatusViewVisibility_withPaintPreview() {
-        mMediator.setShowStatusIconForSecureOrigins(false);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Simulate Paint Preview active (third argument is true)
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, true);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ true);
 
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
@@ -863,12 +905,15 @@ public final class StatusMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
     public void setShowStatusIconForSecureOrigins_pageInfoMoved_phone() {
         // Set security level to SECURE, the status view should be hidden.
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Try to show the status icon, it should not work because the page info is moved to app
         // menu.
-        mMediator.setShowStatusIconForSecureOrigins(true);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ true);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
@@ -879,11 +924,14 @@ public final class StatusMediatorUnitTest {
         // Tablet should not move page info to app menu, even if feature is enabled.
 
         // Set security level to SECURE, the status view should be shown initially.
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Try to hide the status icon, it should work because page info is not moved to app menu.
-        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
@@ -935,7 +983,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_plusButton_allConditionsMet() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         doReturn(AutocompleteRequestType.SEARCH).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -956,7 +1004,10 @@ public final class StatusMediatorUnitTest {
         mMediator.setOnStatusViewHiddenForPageInfoRemoval(mOnStatusViewHiddenForPageInfoRemoval);
 
         mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateVerboseStatus(
+                ConnectionSecurityLevel.SECURE,
+                /* pageIsOffline= */ false,
+                /* pageIsPaintPreview= */ false);
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
         verify(mOnStatusViewHiddenForPageInfoRemoval, times(3)).run();
@@ -966,7 +1017,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_fallbackToSpark_notDesktop() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         doReturn(AutocompleteRequestType.SEARCH).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -981,7 +1032,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_fallbackToSpark_notConventional() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         doReturn(AutocompleteRequestType.AI_MODE).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -997,7 +1048,7 @@ public final class StatusMediatorUnitTest {
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         doReturn(AutocompleteRequestType.SEARCH).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
