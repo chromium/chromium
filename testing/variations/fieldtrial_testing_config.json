@@ -991,21 +991,6 @@
             ]
         }
     ],
-    "AndroidSystemTracing": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnablePerfettoSystemTracing",
-                    "enable_features": [
-                        "EnablePerfettoSystemTracing"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidThreadPriority": [
         {
             "platforms": [
@@ -4958,6 +4943,24 @@
                     "name": "Enabled_20260320",
                     "enable_features": [
                         "ClankDefaultSearchApi"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ClankDesktopFieldSystemTracing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260901",
+                    "enable_features": [
+                        "EnablePerfettoSystemTracing"
                     ]
                 }
             ]
