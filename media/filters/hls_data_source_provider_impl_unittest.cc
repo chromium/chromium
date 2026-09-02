@@ -169,7 +169,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
       .WillOnce([&read_cb, &write_out](auto* data_source, const auto&, ...) {
         EXPECT_CALL(*data_source, Initialize)
             .WillOnce(RunOnceCallback<0>(true));
-        EXPECT_CALL(*data_source, GetUrlAfterRedirects())
+        EXPECT_CALL(*data_source, GetUrlDataOrigin())
             .WillOnce(testing::Return(GURL("https://example.com")));
         EXPECT_CALL(*data_source, Stop()).Times(0);
         EXPECT_CALL(*data_source, Abort()).Times(0);
@@ -313,5 +313,37 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestCrossOriginRangeRequest) {
   ASSERT_TRUE(has_error);
 }
 
+TEST_F(HlsDataSourceProviderImplUnittest, ReadSegmentWithDifferentDataOrigin) {
+  HlsDataSourceProvider::UrlDataSegment segment(GURL("http://evil.com"),
+                                                std::nullopt);
+
+  const GURL url("http://evil.com");
+  EXPECT_CALL(*factory_, Setup(_, url, _, _))
+      .WillOnce([](MockDataSource* mock, const GURL& uri, ...) {
+        MockDataSourceFactory::ConfigureAsSuccess(mock, uri);
+        ON_CALL(*mock, GetUrlAfterRedirects())
+            .WillByDefault(testing::Return(GURL("http://evil.com")));
+        ON_CALL(*mock, GetUrlDataOrigin())
+            .WillByDefault(testing::Return(GURL("http://innocent.com")));
+        EXPECT_CALL(*mock, Read(0, SpanSizeEq(16384), _))
+            .WillOnce(base::test::RunOnceCallback<2>(4096));
+      });
+
+  std::unique_ptr<HlsDataSourceStream> first_read;
+  impl_->ReadFromUrl(std::move(segment),
+                     base::BindOnce(
+                         [](std::unique_ptr<HlsDataSourceStream>* extract,
+                            HlsDataSourceProvider::ReadResult result) {
+                           *extract = std::move(result).value();
+                         },
+                         &first_read));
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(first_read, nullptr);
+  ASSERT_TRUE(first_read->CanReadMore());
+  ASSERT_FALSE(first_read->RequiresInit());
+  ASSERT_EQ(first_read->SecurityInfo().response_origins.size(), 1u);
+  ASSERT_EQ(*first_read->SecurityInfo().response_origins.begin(),
+            url::Origin::Create(GURL("http://innocent.com")));
+}
 
 }  // namespace media

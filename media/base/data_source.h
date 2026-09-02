@@ -124,6 +124,10 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
   // an empty GURL.
   virtual GURL GetUrlAfterRedirects() const;
 
+  // The final URL from which data was loaded. If the request was intercepted
+  // by a service worker, this may differ from GetUrlAfterRedirects.
+  virtual GURL GetUrlDataOrigin() const;
+
   // Stops any outstanding speculative loading. Active and future Read() calls
   // will not be stopped. OnMediaIsPlaying() or OnMediaPlaybackRateChanged()
   // with a rate > 0 will reset this flag.

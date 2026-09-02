@@ -28,6 +28,10 @@ GURL DataSource::GetUrlAfterRedirects() const {
   return GURL();
 }
 
+GURL DataSource::GetUrlDataOrigin() const {
+  return GetUrlAfterRedirects();
+}
+
 bool DataSource::DidRedirect() const {
   return false;
 }

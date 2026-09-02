@@ -93,6 +93,8 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Accessors
   const KURL& url() const { return url_; }
 
+  const std::optional<KURL>& data_origin() const { return data_origin_; }
+
   // Cross-origin access mode
   CorsMode cors_mode() const { return cors_mode_; }
 

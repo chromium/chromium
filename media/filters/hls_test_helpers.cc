@@ -145,6 +145,7 @@ void MockDataSourceFactory::ConfigureAsSuccess(MockDataSource* mock,
       .WillByDefault(base::test::RunOnceCallback<0>(true));
   ON_CALL(*mock, Stop()).WillByDefault(testing::Return());
   ON_CALL(*mock, GetUrlAfterRedirects()).WillByDefault(testing::Return(uri));
+  ON_CALL(*mock, GetUrlDataOrigin()).WillByDefault(testing::Return(uri));
   ON_CALL(*mock, DidRedirect()).WillByDefault(testing::Return(false));
   ON_CALL(*mock, WouldTaintOrigin()).WillByDefault(testing::Return(false));
 }
@@ -155,6 +156,7 @@ void MockDataSourceFactory::ConfigureAsFailure(MockDataSource* mock) {
       .WillByDefault(base::test::RunOnceCallback<0>(false));
   EXPECT_CALL(*mock, Stop()).Times(0);
   EXPECT_CALL(*mock, GetUrlAfterRedirects()).Times(0);
+  EXPECT_CALL(*mock, GetUrlDataOrigin()).Times(0);
   EXPECT_CALL(*mock, DidRedirect()).Times(0);
   ON_CALL(*mock, WouldTaintOrigin()).WillByDefault(testing::Return(false));
 }
@@ -167,6 +169,7 @@ void MockDataSourceFactory::ConfigureAsRedirect(MockDataSource* mock,
   ON_CALL(*mock, Stop()).WillByDefault(testing::Return());
   ON_CALL(*mock, GetUrlAfterRedirects())
       .WillByDefault(testing::Return(target_uri));
+  ON_CALL(*mock, GetUrlDataOrigin()).WillByDefault(testing::Return(target_uri));
   ON_CALL(*mock, DidRedirect()).WillByDefault(testing::Return(true));
   ON_CALL(*mock, WouldTaintOrigin()).WillByDefault(testing::Return(false));
 }

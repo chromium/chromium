@@ -195,7 +195,7 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
     if (it->second->DidRedirect()) {
       stream->set_did_redirect();
     }
-    const auto& response_uri = it->second->GetUrlAfterRedirects();
+    const auto& response_uri = it->second->GetUrlDataOrigin();
     if (!response_uri.is_empty()) {
       if (!response_uri.SchemeIs("data")) {
         stream->TrackOrigin(url::Origin::Create(response_uri));

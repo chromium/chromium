@@ -145,6 +145,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   bool DidRedirect() const override { return did_redirect_; }
 
   GURL GetUrlAfterRedirects() const override;
+  GURL GetUrlDataOrigin() const override;
 
   // media::DataSource implementation.
   // Called from demuxer thread.

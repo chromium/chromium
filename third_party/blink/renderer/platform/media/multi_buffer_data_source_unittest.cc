@@ -649,6 +649,29 @@ TEST_F(MultiBufferDataSourceTest, Range_ServerLied) {
   Stop();
 }
 
+TEST_F(MultiBufferDataSourceTest, GetUrlDataOrigin_NoDataOrigin) {
+  InitializeWith200Response();
+  // Without a data origin, it should fallback to url() via
+  // GetUrlAfterRedirects().
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpUrl));
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest, GetUrlDataOrigin_WithDataOrigin) {
+  Initialize(kHttpUrl, true);
+
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  WebURLResponse response = response_generator_->Generate200();
+  response.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
+  Respond(response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+
+  EXPECT_EQ(data_source_->GetUrlDataOrigin(), GURL(kHttpDifferentOriginUrl));
+  Stop();
+}
+
 TEST_F(MultiBufferDataSourceTest, Http_AbortWhileReading) {
   InitializeWith206Response();
 

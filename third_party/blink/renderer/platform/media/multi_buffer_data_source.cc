@@ -395,6 +395,13 @@ GURL MultiBufferDataSource::GetUrlAfterRedirects() const {
   return GURL(url_data_->url());
 }
 
+GURL MultiBufferDataSource::GetUrlDataOrigin() const {
+  if (url_data_->data_origin().has_value()) {
+    return GURL(*url_data_->data_origin());
+  }
+  return GetUrlAfterRedirects();
+}
+
 void MultiBufferDataSource::Read(int64_t position,
                                  base::span<uint8_t> data,
                                  media::DataSource::ReadCB read_cb) {
