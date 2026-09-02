@@ -410,9 +410,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
               // `text_`. If the `original_string` starts with a zero width
               // space, it should be collapsed. See
               // https://issues.chromium.org/issues/389738294 for more details.
-              if (RuntimeEnabledFeatures::
-                      CollapseZeroWidthSpaceWhenReuseItemEnabled() &&
-                  old_item0.TextType() == TextItemType::kFlowControl) {
+              if (old_item0.TextType() == TextItemType::kFlowControl) {
                 return false;
               }
               break;

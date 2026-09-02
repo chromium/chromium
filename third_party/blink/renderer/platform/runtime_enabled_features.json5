@@ -1212,10 +1212,6 @@
       status: "test",
     },
     {
-      name: "CollapseZeroWidthSpaceWhenReuseItem",
-      status: "stable",
-    },
-    {
       // Allows <input type=color> to accept any valid CSS color value
       // (named colors, rgb(), hsl(), system colors, etc.) in addition to
       // the legacy 7-character hex format (#rrggbb).
