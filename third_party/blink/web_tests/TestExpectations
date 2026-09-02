@@ -4266,6 +4266,11 @@ crbug.com/535451658 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
 crbug.com/407750721 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
 crbug.com/407750721 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 
+## Disable layout tests to land crrev.com/c/8331533
+crbug.com/555591236 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/555591236 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/555591236 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+
 
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
