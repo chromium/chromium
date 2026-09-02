@@ -11,8 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -43,6 +46,9 @@ public class HubBottomToolbarCoordinator {
      * @param paneManager Interact with the current and all {@link Pane}s.
      * @param hubColorMixer Mixes the Hub Overview Color.
      * @param delegate The delegate that provides bottom toolbar functionality.
+     * @param edgeToEdgeSupplier The supplier of {@link EdgeToEdgeController}.
+     * @param currentTabSupplier The supplier of the current tab.
+     * @param isHidingSupplier Supplies whether the Hub is currently hiding / exiting.
      */
     public HubBottomToolbarCoordinator(
             Context context,
@@ -50,7 +56,9 @@ public class HubBottomToolbarCoordinator {
             PaneManager paneManager,
             HubColorMixer hubColorMixer,
             HubBottomToolbarDelegate delegate,
-            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
+            NonNullObservableSupplier<Boolean> isHidingSupplier) {
         mDelegate = delegate;
 
         mModel =
@@ -68,7 +76,9 @@ public class HubBottomToolbarCoordinator {
                     mModel, hubBottomToolbarView, HubBottomToolbarViewBinder::bind);
         }
 
-        mMediator = new HubBottomToolbarMediator(mModel, mDelegate);
+        mMediator =
+                new HubBottomToolbarMediator(
+                        mModel, mDelegate, currentTabSupplier, isHidingSupplier);
 
         if (hubBottomToolbarView != null) {
             mEdgeToEdgePadAdjuster =

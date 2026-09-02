@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 
 /** Responsible for holding properties of the bottom toolbar in the hub. */
 @NullMarked
@@ -17,8 +18,12 @@ class HubBottomToolbarProperties {
     public static final WritableBooleanPropertyKey BOTTOM_TOOLBAR_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The color scheme of the bottom toolbar. */
+    public static final WritableIntDefPropertyKey<HubColorScheme> COLOR_SCHEME =
+            new WritableIntDefPropertyKey<>(HubColorScheme.DEFAULT);
+
     // All property keys for the bottom toolbar.
     static final PropertyKey[] ALL_BOTTOM_KEYS = {
-        COLOR_MIXER, BOTTOM_TOOLBAR_VISIBLE,
+        COLOR_MIXER, BOTTOM_TOOLBAR_VISIBLE, COLOR_SCHEME,
     };
 }

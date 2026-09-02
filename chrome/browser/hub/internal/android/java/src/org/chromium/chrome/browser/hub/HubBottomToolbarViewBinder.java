@@ -8,6 +8,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import static org.chromium.chrome.browser.hub.HubBottomToolbarProperties.BOTTOM_TOOLBAR_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubBottomToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
 import org.chromium.build.annotations.NullMarked;
@@ -23,6 +24,9 @@ public class HubBottomToolbarViewBinder {
         } else if (key == BOTTOM_TOOLBAR_VISIBLE) {
             boolean isVisible = model.get(BOTTOM_TOOLBAR_VISIBLE);
             view.setVisibility(isVisible ? VISIBLE : GONE);
+        } else if (key == COLOR_SCHEME) {
+            @HubColorScheme int colorScheme = model.get(COLOR_SCHEME);
+            view.setColorScheme(colorScheme);
         }
     }
 }
