@@ -229,8 +229,12 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // same tab as before entering the switcher), which is not tracked at this level.
     }
 
+    // TabObserver implementation.
+
     @Override
-    void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
+    public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
+        assert mMediator.isShowingTabs();
+
         if (mMediator.isTabInTabGroup(updatedTab)) {
             @Nullable Pair<Integer, Tab> indexAndTab =
                     getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
@@ -247,7 +251,9 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    void onUrlUpdated(Tab updatedTab) {
+    public void onUrlUpdated(Tab updatedTab) {
+        assert mMediator.isShowingTabs();
+
         if (mMediator.isTabInTabGroup(updatedTab)) {
             @Nullable Pair<Integer, Tab> indexAndTab =
                     getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
@@ -267,7 +273,9 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
+    public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
+        assert mMediator.isShowingTabs();
+
         if (mMediator.isTabInTabGroup(updatedTab)) {
             Token tabGroupId = updatedTab.getTabGroupId();
             assumeNonNull(tabGroupId);

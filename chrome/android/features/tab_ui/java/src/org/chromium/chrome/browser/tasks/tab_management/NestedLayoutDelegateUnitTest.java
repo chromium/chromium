@@ -83,6 +83,8 @@ public class NestedLayoutDelegateUnitTest {
         mModelList = new TabListModel();
         mDelegate = new NestedLayoutDelegate(mMediator, mModelList);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
+        when(mMediator.isShowingTabs()).thenReturn(true);
+        when(mMediator.supportsTabLoadingState()).thenReturn(true);
         when(mTabModel.getTabGroupColorWithFallback(any(Token.class)))
                 .thenReturn(TabGroupColorId.BLUE);
         when(mTab1.getId()).thenReturn(TAB1_ID);

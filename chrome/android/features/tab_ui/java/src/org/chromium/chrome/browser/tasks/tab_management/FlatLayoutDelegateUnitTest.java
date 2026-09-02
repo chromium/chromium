@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
@@ -45,8 +46,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridD
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tabs.TabAlert;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 
@@ -66,6 +70,8 @@ public class FlatLayoutDelegateUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private NavigationHandle mNavigationHandle;
+    @Mock private TabFaviconFetcher mFaviconFetcher;
 
     private TabListModel mModelList;
     private FlatLayoutDelegate mDelegate;
@@ -76,6 +82,8 @@ public class FlatLayoutDelegateUnitTest {
         mDelegate = new FlatLayoutDelegate(mMediator, mModelList, mTabGridDialogHandler);
 
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
+        when(mMediator.isShowingTabs()).thenReturn(true);
+        when(mMediator.supportsTabLoadingState()).thenReturn(true);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab1.isInitialized()).thenReturn(true);
         when(mTab2.getId()).thenReturn(TAB2_ID);
@@ -243,6 +251,127 @@ public class FlatLayoutDelegateUnitTest {
     public void testOnAlertStateChanged_NotFound() {
         // Verify no exception is thrown when the tab ID is not found in the model list.
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
+    }
+
+    @Test
+    public void testOnDidStartNavigationInPrimaryMainFrame() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        GURL tabUrl = JUnitTestGURLs.URL_1;
+        GURL navUrl = JUnitTestGURLs.URL_2;
+        when(mTab1.getUrl()).thenReturn(tabUrl);
+        when(mTab1.isIncognito()).thenReturn(false);
+        when(mNavigationHandle.isSameDocument()).thenReturn(false);
+        when(mNavigationHandle.getUrl()).thenReturn(navUrl);
+        when(mMediator.getDefaultFaviconFetcher(/* isIncognito= */ false))
+                .thenReturn(mFaviconFetcher);
+
+        mDelegate.onDidStartNavigationInPrimaryMainFrame(mTab1, mNavigationHandle);
+
+        assertEquals(mFaviconFetcher, model.get(TabProperties.FAVICON_FETCHER));
+    }
+
+    @Test
+    public void testOnDidStartNavigationInPrimaryMainFrame_SameDocument() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mNavigationHandle.isSameDocument()).thenReturn(true);
+
+        mDelegate.onDidStartNavigationInPrimaryMainFrame(mTab1, mNavigationHandle);
+
+        assertNull(model.get(TabProperties.FAVICON_FETCHER));
+    }
+
+    @Test
+    public void testOnTitleUpdated() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mMediator.getLatestTitleForTabOrGroup(mTab1, model, /* useDefault= */ true))
+                .thenReturn("New Title");
+
+        mDelegate.onTitleUpdated(mTab1);
+
+        assertEquals("New Title", model.get(TabProperties.TITLE));
+    }
+
+    @Test
+    public void testOnTitleUpdated_TabNotFoundInTabModel() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(null);
+
+        mDelegate.onTitleUpdated(mTab1);
+
+        assertNull(model.get(TabProperties.TITLE));
+    }
+
+    @Test
+    public void testOnLoadStarted() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        mDelegate.onLoadStarted(mTab1, /* toDifferentDocument= */ true);
+
+        assertTrue(model.get(TabProperties.IS_LOADING));
+    }
+
+    @Test
+    public void testOnLoadStarted_SameDocument_NoOp() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        mDelegate.onLoadStarted(mTab1, /* toDifferentDocument= */ false);
+
+        assertFalse(model.get(TabProperties.IS_LOADING));
+    }
+
+    @Test
+    public void testOnLoadStopped() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        model.set(TabProperties.IS_LOADING, true);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        mDelegate.onLoadStopped(mTab1, /* toDifferentDocument= */ true);
+
+        assertFalse(model.get(TabProperties.IS_LOADING));
+    }
+
+    @Test
+    public void testOnLoadStopped_SameDocument_NoOp() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        model.set(TabProperties.IS_LOADING, true);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        mDelegate.onLoadStopped(mTab1, /* toDifferentDocument= */ false);
+
+        assertTrue(model.get(TabProperties.IS_LOADING));
+    }
+
+    @Test
+    public void testOnCrash() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        model.set(TabProperties.IS_LOADING, true);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        mDelegate.onCrash(mTab1);
+
+        assertFalse(model.get(TabProperties.IS_LOADING));
+    }
+
+    @Test
+    public void testOnTabPinnedStateChanged() {
+        addTabsToModelList(TAB1_ID);
+
+        mDelegate.onTabPinnedStateChanged(mTab1, /* isPinned= */ true);
+
+        verify(mMediator).updateTab(0, mTab1, /* isUpdatingId= */ false, /* quickMode= */ false);
     }
 
     @Test

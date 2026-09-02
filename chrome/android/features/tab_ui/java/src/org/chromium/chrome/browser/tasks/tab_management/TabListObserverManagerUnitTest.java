@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,6 +16,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /** Unit tests for {@link TabListObserverManager}. */
@@ -24,6 +26,7 @@ public class TabListObserverManagerUnitTest {
 
     @Mock private TabListLayoutDelegate mLayoutDelegate;
     @Mock private TabModel mTabModel;
+    @Mock private Tab mTab;
 
     private TabListObserverManager mObserverManager;
 
@@ -38,6 +41,38 @@ public class TabListObserverManagerUnitTest {
         verify(mTabModel).addTabGroupObserver(mLayoutDelegate);
 
         mObserverManager.removeTabGroupObserver(mTabModel);
+        verify(mTabModel).removeTabGroupObserver(mLayoutDelegate);
+    }
+
+    @Test
+    public void testRemoveTabGroupObserver_NullTabModel() {
+        mObserverManager.removeTabGroupObserver(null);
+        verifyNoInteractions(mLayoutDelegate);
+    }
+
+    @Test
+    public void testAddAndRemoveTabObserver() {
+        mObserverManager.addTabObserver(mTab);
+        verify(mTab).addObserver(mLayoutDelegate);
+
+        mObserverManager.removeTabObserver(mTab);
+        verify(mTab).removeObserver(mLayoutDelegate);
+    }
+
+    @Test
+    public void testRemoveTabObserver_NullTab() {
+        mObserverManager.removeTabObserver(null);
+        verifyNoInteractions(mLayoutDelegate);
+    }
+
+    @Test
+    public void testDestroy() {
+        mObserverManager.addTabObserver(mTab);
+        mObserverManager.addTabGroupObserver(mTabModel);
+
+        mObserverManager.destroy();
+
+        verify(mTab).removeObserver(mLayoutDelegate);
         verify(mTabModel).removeTabGroupObserver(mLayoutDelegate);
     }
 }
