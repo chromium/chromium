@@ -74,8 +74,6 @@ source_set("ui_bundled") {
     "settings_navigation_controller.mm",
     "settings_table_view_controller.h",
     "settings_table_view_controller.mm",
-    "translate_table_view_controller.h",
-    "translate_table_view_controller.mm",
     "voice_search_table_view_controller.h",
     "voice_search_table_view_controller.mm",
   ]
@@ -315,7 +313,6 @@ source_set("unit_tests") {
     "settings_navigation_controller_unittest.mm",
     "settings_root_table_view_controller_unittest.mm",
     "settings_table_view_controller_unittest.mm",
-    "translate_table_view_controller_unittest.mm",
     "voice_search_table_view_controller_unittest.mm",
   ]
   deps = [
