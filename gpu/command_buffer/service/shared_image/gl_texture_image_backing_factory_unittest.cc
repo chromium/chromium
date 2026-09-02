@@ -167,6 +167,33 @@ class GLTextureImageBackingFactoryWithUploadTest
 using GLTextureImageBackingFactoryWithReadbackTest =
     GLTextureImageBackingFactoryWithUploadTest;
 
+TEST_F(GLTextureImageBackingFactoryTest, CompressedFormatRequiresInitialData) {
+  if (!supports_etc1_) {
+    GTEST_SKIP();
+  }
+
+  auto format = viz::SinglePlaneFormat::kETC1;
+  gfx::Size size(64, 64);
+  // Note: The specific usage doesn't matter here as long as it's supported by
+  // GLTextureImageBacking.
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+
+  // Compressed textures cannot be cleared so they must be created with initial
+  // pixel data.
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
+  EXPECT_FALSE(supported);
+
+  // With correctly sized initial data the format is supported.
+  size_t required_size = format.MaybeEstimatedSizeInBytes(size).value();
+  std::vector<uint8_t> initial_data(required_size);
+  supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, initial_data);
+  EXPECT_TRUE(supported);
+}
+
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
   auto format = viz::SinglePlaneFormat::kBGR_565;
   gfx::Size size(256, 256);
