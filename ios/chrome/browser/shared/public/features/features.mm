@@ -1243,3 +1243,9 @@ BASE_FEATURE(kDomainLevelSitePermissions, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsDomainLevelSitePermissionsEnabled() {
   return base::FeatureList::IsEnabled(kDomainLevelSitePermissions);
 }
+
+BASE_FEATURE(kAimHistoryThreadsManagement, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAimHistoryThreadsManagementEnabled() {
+  return base::FeatureList::IsEnabled(kAimHistoryThreadsManagement);
+}

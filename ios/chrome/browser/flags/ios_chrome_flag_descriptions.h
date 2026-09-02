@@ -61,6 +61,11 @@ inline constexpr char kAimCobrowseName[] = "AimCobrowse";
 inline constexpr char kAimCobrowseDescription[] =
     "Enables the AimCobrowse feature.";
 
+inline constexpr char kAimHistoryThreadsManagementName[] =
+    "AimHistoryThreadsManagement";
+inline constexpr char kAimHistoryThreadsManagementDescription[] =
+    "Enables the AimHistoryThreadsManagement feature.";
+
 inline constexpr char kAimUrlNavigationFetchEnabledName[] =
     "AimUrlNavigationFetchEnabled";
 inline constexpr char kAimUrlNavigationFetchEnabledDescription[] =

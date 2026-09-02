@@ -1010,4 +1010,10 @@ BASE_DECLARE_FEATURE(kDomainLevelSitePermissions);
 // Returns true if DomainLevelSitePermissions is enabled.
 bool IsDomainLevelSitePermissionsEnabled();
 
+// Enables the AimHistoryThreadsManagement feature.
+BASE_DECLARE_FEATURE(kAimHistoryThreadsManagement);
+
+// Returns true if the AimHistoryThreadsManagement feature is enabled.
+bool IsAimHistoryThreadsManagementEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

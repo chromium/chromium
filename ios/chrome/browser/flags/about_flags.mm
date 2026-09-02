@@ -2818,6 +2818,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableAccountPreviewPreferredAccountDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewPreferredAccount)},
+    {"aim-history-threads-management",
+     flag_descriptions::kAimHistoryThreadsManagementName,
+     flag_descriptions::kAimHistoryThreadsManagementDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAimHistoryThreadsManagement)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
