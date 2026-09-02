@@ -184,6 +184,11 @@ void DrivePickerHostController::ResetControllerState() {
   browser_widget_observation_.Reset();
   anchor_widget_ = nullptr;
   browser_window_interface_ = nullptr;
+  Observe(nullptr);
+  if (picker_view_) {
+    picker_view_->RemoveAllChildViews();
+    picker_view_ = nullptr;
+  }
   if (picker_widget_) {
     picker_widget_->Close();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -197,10 +202,8 @@ void DrivePickerHostController::ResetControllerState() {
   } else {
     picker_delegate_.reset();
   }
-  picker_view_ = nullptr;
   is_picker_document_loaded_ = false;
   pending_request_.reset();
-  Observe(nullptr);
   if (on_close_callback_) {
     std::move(on_close_callback_).Run();
   }

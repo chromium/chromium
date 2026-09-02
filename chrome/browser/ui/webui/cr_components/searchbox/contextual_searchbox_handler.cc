@@ -1291,23 +1291,23 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
       base::BindOnce(&ContextualSearchboxHandler::OnCancel,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  drive_picker_result_handler_receiver_.reset();
+  if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+    ShowDrivePicker(
+        drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted);
+    return;
+  }
 
-  bool accepted =
-      profile_->GetPrefs()->GetInteger(contextual_search::kDriveConsentState) ==
-      static_cast<int>(contextual_search::DriveConsentState::kConsent);
+  auto* disclaimer_controller = GetDriveDisclaimerController();
+  if (!disclaimer_controller) {
+    if (!drive_upload_click_callback_.is_null()) {
+      std::move(drive_upload_click_callback_)
+          .Run(searchbox::mojom::DriveUploadResponse::New());
+    }
+    return;
+  }
 
-  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
-      accepted
-          ? drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi
-          : drive_picker_host::DrivePickerHostRequest::RequestType::
-                kConsentDialog,
-      drive_picker_result_handler_receiver_.BindNewPipeAndPassRemote());
-
-  drive_picker_controller_->ShowDrivePickerHost(std::move(request));
-
-  drive_picker_result_handler_receiver_.set_disconnect_handler(
-      base::BindOnce(&ContextualSearchboxHandler::OnDrivePickerDisconnected,
+  disclaimer_controller->CheckDisclaimerStatusAsync(
+      base::BindOnce(&ContextualSearchboxHandler::ShowDrivePicker,
                      weak_ptr_factory_.GetWeakPtr()));
 #endif
 }
@@ -1442,23 +1442,6 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
       base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   input_state_model_->Initialize();
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOption)) {
-    if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
-      OnDriveDisclaimerChecked(
-          drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted);
-    } else if (auto* controller = GetDriveDisclaimerController()) {
-      controller->CheckDisclaimerStatusAsync(
-          base::BindOnce(&ContextualSearchboxHandler::OnDriveDisclaimerChecked,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      OnDriveDisclaimerChecked(drive_picker::DriveDisclaimerController::
-                                   DisclaimerStatus::kRestricted);
-    }
-  }
-#endif
 }
 
 bool ContextualSearchboxHandler::IsContextualSearchTabSharingEligible() const {
@@ -1803,8 +1786,12 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
     return;
   }
   controller->CheckDisclaimerStatusAsync(base::BindOnce(
-      [](GetDriveDisclaimerStatusCallback callback,
+      [](base::WeakPtr<ContextualSearchboxHandler> handler,
+         GetDriveDisclaimerStatusCallback callback,
          drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+        if (handler) {
+          handler->UpdateDriveConsentPref(status);
+        }
         DVLOG(1) << "ContextualSearchboxHandler::GetDriveDisclaimerStatus "
                     "callback: disclaimer status is "
                  << drive_picker::DriveDisclaimerController::
@@ -1827,7 +1814,7 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
             break;
         }
       },
-      std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #endif
 }
 
@@ -2309,9 +2296,33 @@ ContextualSearchboxHandler::GetActiveTaskContextProvider() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void ContextualSearchboxHandler::OnDriveDisclaimerChecked(
+void ContextualSearchboxHandler::ShowDrivePicker(
     drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
-  DVLOG(1) << "ContextualSearchboxHandler::OnDriveDisclaimerChecked: status is "
+  // Sync the authoritative backend Consent state into the profile's
+  // `kDriveConsentState` Preference Cache.
+  UpdateDriveConsentPref(status);
+
+  bool accepted =
+      status ==
+      drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted;
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      accepted
+          ? drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi
+          : drive_picker_host::DrivePickerHostRequest::RequestType::
+                kConsentDialog,
+      drive_picker_result_handler_receiver_.BindNewPipeAndPassRemote());
+
+  drive_picker_controller_->ShowDrivePickerHost(std::move(request));
+
+  drive_picker_result_handler_receiver_.set_disconnect_handler(
+      base::BindOnce(&ContextualSearchboxHandler::OnDrivePickerDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContextualSearchboxHandler::UpdateDriveConsentPref(
+    drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+  DVLOG(1) << "ContextualSearchboxHandler::UpdateDriveConsentPref: status is "
            << drive_picker::DriveDisclaimerController::DisclaimerStatusToString(
                   status);
 

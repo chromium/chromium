@@ -33,6 +33,15 @@ class DriveDisclaimerController {
     kRestricted,
   };
 
+  // Represents the raw eligibility status returned by the FPOP API.
+  // These values mirror the internal `ConsentEligibilityStatus` proto enum.
+  enum class ConsentEligibilityStatus {
+    kUnknown = 0,
+    kCanConsent = 1,
+    kCannotConsent = 2,
+    kAlreadyConsented = 3,
+  };
+
   // Converts a DisclaimerStatus to its string representation.
   static std::string DisclaimerStatusToString(DisclaimerStatus status);
 

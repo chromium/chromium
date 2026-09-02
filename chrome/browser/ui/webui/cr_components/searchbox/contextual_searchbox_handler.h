@@ -494,7 +494,9 @@ class ContextualSearchboxHandler
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnDrivePickerDisconnected();
-  void OnDriveDisclaimerChecked(
+  void UpdateDriveConsentPref(
+      drive_picker::DriveDisclaimerController::DisclaimerStatus status);
+  void ShowDrivePicker(
       drive_picker::DriveDisclaimerController::DisclaimerStatus status);
   drive_picker::DriveDisclaimerController* GetDriveDisclaimerController();
 

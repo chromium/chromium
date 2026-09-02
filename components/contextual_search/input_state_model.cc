@@ -564,18 +564,9 @@ bool InputStateModel::IsDriveSupported() const {
   bool feature_enabled =
       base::FeatureList::IsEnabled(omnibox::kComposeboxDriveContextMenuOption);
 
-  // If the disclaimer flag is enabled, then the user can see Drive in the menu
-  // even if they have not consented, since selecting it will trigger the
-  // disclaimer flow. Otherwise, the user must have consented to see Drive in
-  // the menu. In either case, we do not show Drive if the user is restricted.
-  bool consented =
-      drive_consent_state_ == DriveConsentState::kConsent ||
-      base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted) ||
-      (base::FeatureList::IsEnabled(
-           omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
-       drive_consent_state_ != DriveConsentState::kRestricted);
+  bool is_restricted = drive_consent_state_ == DriveConsentState::kRestricted;
 
-  return identity_matches && !incognito && feature_enabled && consented;
+  return identity_matches && !incognito && feature_enabled && !is_restricted;
 }
 
 // Helper to check if search content sharing is enabled based on the

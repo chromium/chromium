@@ -169,6 +169,8 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
         ->NotifySessionStateChanged(session_state);
   }
 
+  using ContextualSearchboxHandler::InitializeInputStateModel;
+
   contextual_search::InputStateModel* input_state_model() {
     return input_state_model_.get();
   }
@@ -337,7 +339,8 @@ class ContextualSearchboxHandlerTest
     // TODO(crbug.com/503732217): Fix tests to support lazy fetching of cluster
     // info and enable this feature by default in tests.
     scoped_feature_list_.InitWithFeatures(
-        {omnibox::kComposeboxDriveContextMenuOption},
+        {omnibox::kComposeboxDriveContextMenuOption,
+         omnibox::kForceDriveDisclaimerAccepted},
         {contextual_tasks::kContextualTasksLazyFetchClusterInfo});
 
     auto query_controller_config_params = std::make_unique<
@@ -435,20 +438,24 @@ class ContextualSearchboxHandlerTest
   MockQueryController& query_controller() { return *query_controller_; }
 
   void SetUpMockFpopService(bool accepted) {
+    SetUpMockFpopServiceWithStatus(
+        accepted ? drive_picker::DriveDisclaimerController::
+                       ConsentEligibilityStatus::kAlreadyConsented
+                 : drive_picker::DriveDisclaimerController::
+                       ConsentEligibilityStatus::kCanConsent);
+  }
+
+  void SetUpMockFpopServiceWithStatus(
+      drive_picker::DriveDisclaimerController::ConsentEligibilityStatus
+          status) {
     auto mock_fpop_service = std::make_unique<MockFpopService>();
     EXPECT_CALL(*mock_fpop_service,
                 ShouldShowMobileConsentFlow(testing::_, testing::_))
-        .WillOnce([accepted](const auto& request, auto callback) {
+        .WillOnce([status](const auto& request, auto callback) {
           footprints::oneplatform::ShouldShowMobileConsentFlowResponse response;
-          if (accepted) {
-            response.mutable_should_show_flow_result()
-                ->mutable_eligibility()
-                ->set_status(3);  // ALREADY_CONSENTED
-          } else {
-            response.mutable_should_show_flow_result()
-                ->mutable_eligibility()
-                ->set_status(1);  // ELIGIBLE / CAN_CONSENT
-          }
+          response.mutable_should_show_flow_result()
+              ->mutable_eligibility()
+              ->set_status(static_cast<int32_t>(status));
           std::move(callback).Run(true, response);
         });
     handler().SetDriveDisclaimerController(
@@ -1825,7 +1832,8 @@ TEST_F(ContextualSearchboxHandlerTest, OnDrivePickerResult_OnError) {
 
 TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_NotAccepted) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+  feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                {omnibox::kForceDriveDisclaimerAccepted});
 
   SetUpMockFpopService(/*accepted=*/false);
 
@@ -1833,17 +1841,57 @@ TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_NotAccepted) {
   handler().GetDriveDisclaimerStatus(future.GetCallback());
   EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kNotAccepted,
             future.Get());
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
 }
 
 TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_Accepted) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+  feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                {omnibox::kForceDriveDisclaimerAccepted});
 
   SetUpMockFpopService(/*accepted=*/true);
 
   base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
   handler().GetDriveDisclaimerStatus(future.GetCallback());
   EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kAccepted, future.Get());
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_Restricted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                {omnibox::kForceDriveDisclaimerAccepted});
+
+  SetUpMockFpopServiceWithStatus(drive_picker::DriveDisclaimerController::
+                                     ConsentEligibilityStatus::kCannotConsent);
+
+  base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
+  handler().GetDriveDisclaimerStatus(future.GetCallback());
+  EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kRestricted, future.Get());
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kRestricted));
+}
+
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_NoEagerRpcOnInitialize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  auto mock_fpop_service = std::make_unique<MockFpopService>();
+  EXPECT_CALL(*mock_fpop_service,
+              ShouldShowMobileConsentFlow(testing::_, testing::_))
+      .Times(0);
+  handler().SetDriveDisclaimerController(
+      std::make_unique<drive_picker::DriveDisclaimerController>(
+          std::move(mock_fpop_service)));
+
+  // Initializing the input state model (as done on page load) should NOT
+  // trigger the RPC.
+  handler().InitializeInputStateModel();
 }
 
 TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_FlagDisabled) {
