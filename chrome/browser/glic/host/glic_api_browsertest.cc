@@ -955,6 +955,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testGetPinCandidatesWithPanelClosed) {
       GetTabListInterface()->GetActiveTab()->GetContents(),
       embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
   ASSERT_OK(OpenGlicForActiveTab());
+  PreventDeletionOnClose();
 
   // Save first tab.
   tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
@@ -1018,6 +1019,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testShowProfilePicker) {
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testPanelActive) {
   ASSERT_OK(OpenGlicForActiveTab());
+  PreventDeletionOnClose();
   ExecuteJsTest();
 
   // Opening a new browser window will deactivate the previous one, and make
