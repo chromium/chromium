@@ -317,6 +317,8 @@ public class ToolbarProgressBarTest {
     }
 
     @Test
+    // TODO(https://crbug.com/556322774): when cleaning up APB, keep the bug fix to pass this test.
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER)
     @Feature({"Android-Progress-Bar"})
     @SmallTest
     public void testProgressBarHideWithBrowserControls() {

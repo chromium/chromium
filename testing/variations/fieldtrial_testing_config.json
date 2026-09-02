@@ -601,27 +601,6 @@
             ]
         }
     ],
-    "AndroidAnimatedProgressBarInBrowser": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_JumpToCompletionWithFade_20260504",
-                    "params": {
-                        "jump_to_completion_with_fade": "true"
-                    },
-                    "enable_features": [
-                        "AndroidAnimatedProgressBarInBrowser"
-                    ],
-                    "disable_features": [
-                        "AndroidProgressBarVisualUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAppRatingPrompt": [
         {
             "platforms": [

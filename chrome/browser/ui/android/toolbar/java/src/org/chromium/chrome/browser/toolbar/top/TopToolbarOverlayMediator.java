@@ -352,16 +352,12 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
                 new ProgressBarObserver() {
                     @Override
                     public void onVisibleProgressUpdated() {
-                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
-                            updateProgress();
-                        }
+                        updateProgress();
                     }
 
                     @Override
                     public void onCompositedLayersVisibilityChanged() {
-                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
-                            updateProgress();
-                        }
+                        updateProgress();
                     }
                 };
         if (progressBar != null) {

@@ -228,6 +228,8 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    // TODO(https://crbug.com/556322774): when cleaning up APB, keep the bug fix to pass this test.
+    @EnableFeatures(ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER)
     public void testProgressUpdate_phone_fromTabObserver() {
         // TODO(crbug.com/525121986): Failing on Desktop Android.
         assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
@@ -272,6 +274,8 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    // TODO(https://crbug.com/556322774): when cleaning up APB, keep the bug fix to pass this test.
+    @EnableFeatures(ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER)
     public void testProgressUpdate_tablet_fromProgressBar() {
         // TODO(crbug.com/525121986): Failing on Desktop Android.
         assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
