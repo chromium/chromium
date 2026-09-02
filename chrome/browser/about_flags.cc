@@ -1068,21 +1068,6 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxSimplificationVariations[] = {
     {"- Chip with plus button and background",
      kChipWithPlusButtonWithBackground, nullptr}};
 
-const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
-    {"SxS", "true"}};
-const FeatureEntry::FeatureVariation kWebUIOmniboxPopupDebugVariations[] = {
-    {"Side by Side", kWebUIOmniboxPopupDebugSxS, nullptr}};
-
-const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupUseBrowserView[] = {
-    {"Omnibox_UseBrowserView", "true"}};
-const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupMultiline[] = {
-    {"Omnibox_Multiline", "true"}};
-
-const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
-    {"- Use BrowserView", kWebUIOmniboxFullPopupUseBrowserView, nullptr},
-    {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
-};
-
 const FeatureEntry::FeatureParam kOmniboxEverywhereProfilePicker[] = {
     {"ProfilePicker", "true"}};
 
@@ -1190,6 +1175,21 @@ const FeatureEntry::FeatureVariation
          kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint,
          nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
+    {"SxS", "true"}};
+const FeatureEntry::FeatureVariation kWebUIOmniboxPopupDebugVariations[] = {
+    {"Side by Side", kWebUIOmniboxPopupDebugSxS, nullptr}};
+
+const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupUseBrowserView[] = {
+    {"Omnibox_UseBrowserView", "true"}};
+const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupMultiline[] = {
+    {"Omnibox_Multiline", "true"}};
+
+const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
+    {"- Use BrowserView", kWebUIOmniboxFullPopupUseBrowserView, nullptr},
+    {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
+};
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -9700,7 +9700,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
 
-#if !BUILDFLAG(IS_ANDROID)
     {"omnibox-dynamic-ai-mode-button",
      flag_descriptions::kDynamicAiModeButtonName,
      flag_descriptions::kDynamicAiModeButtonDescription, kOsDesktop,
@@ -9712,7 +9711,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxDynamicAiModeButtonName,
      flag_descriptions::kNtpRealboxDynamicAiModeButtonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxDynamicAiModeButton)},
-#endif
 
     {"omnibox-ai-mode-space-does-not-activate",
      flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateName,
@@ -9731,10 +9729,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxEverywhereVariations,
                                     "OmniboxEverywhere")},
 
-    {"webui-omnibox-aim-popup", flag_descriptions::kWebUIOmniboxAimPopupName,
-     flag_descriptions::kWebUIOmniboxAimPopupDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::internal::kWebUIOmniboxAimPopup)},
-
     {"webui-omnibox-aim-popup-disable-animation",
      flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationName,
      flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationDescription,
@@ -9745,23 +9739,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUIOmniboxHideAimUrlName,
      flag_descriptions::kWebUIOmniboxHideAimUrlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kHideAimEntrypointForUrlSuggestions)},
-
-    {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
-     flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup,
-                                    kWebUIOmniboxFullPopupVariations,
-                                    "WebUIOmniboxFullPopup")},
-
-    {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
-     flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::internal::kWebUIOmniboxPopup)},
-
-    {"webui-omnibox-popup-debug",
-     flag_descriptions::kWebUIOmniboxPopupDebugName,
-     flag_descriptions::kWebUIOmniboxPopupDebugDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxPopupDebug,
-                                    kWebUIOmniboxPopupDebugVariations,
-                                    "WebUIOmniboxPopupDebugVariations")},
 
     {"webui-omnibox-popup-selection-control",
      flag_descriptions::kWebUIOmniboxPopupSelectionControlName,
@@ -9784,6 +9761,27 @@ const FeatureEntry kFeatureEntries[] = {
                                     kWebUiOmniboxAskGAboutThisPageVariations,
                                     "WebUiOmniboxAskGAboutThisPage")},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"webui-omnibox-aim-popup", flag_descriptions::kWebUIOmniboxAimPopupName,
+     flag_descriptions::kWebUIOmniboxAimPopupDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::internal::kWebUIOmniboxAimPopup)},
+
+    {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
+     flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup,
+                                    kWebUIOmniboxFullPopupVariations,
+                                    "WebUIOmniboxFullPopup")},
+
+    {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
+     flag_descriptions::kWebUIOmniboxPopupDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::internal::kWebUIOmniboxPopup)},
+
+    {"webui-omnibox-popup-debug",
+     flag_descriptions::kWebUIOmniboxPopupDebugName,
+     flag_descriptions::kWebUIOmniboxPopupDebugDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxPopupDebug,
+                                    kWebUIOmniboxPopupDebugVariations,
+                                    "WebUIOmniboxPopupDebugVariations")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"use-webui-ntp-android", flag_descriptions::kUseWebUiNtpAndroidName,
