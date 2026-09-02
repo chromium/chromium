@@ -304,6 +304,13 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
       session_options.get(), kOrtSessionOptionsConfigLoadModelFormat, "ONNX"));
 
+  // Disable ahead-of-time function inlining. WebNN-built models never contain
+  // ONNX functions, so inlining is unnecessary for both the Compiler and GPU
+  // processes, and disabling it reduces the attack surface in the GPU process.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(),
+      kOrtSessionOptionsDisableAheadOfTimeFunctionInlining, "1"));
+
   // Block external initializer file reads. The all-zero volume GUID is never
   // assigned by Windows, so ORT cannot resolve any external data path to a real
   // file.
