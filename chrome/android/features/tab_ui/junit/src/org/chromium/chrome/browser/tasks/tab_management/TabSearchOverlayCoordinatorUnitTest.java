@@ -954,27 +954,28 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     @Test
-    public void testPanelTopMargin_FullscreenVsDesktopWindowing() {
-        // In fullscreen / split screen (not in desktop windowing), top margin is offset by
-        // (tabStripHeight - reservedTopPadding - hairlineGap).
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
+    public void testPanelTopMargin_AlignsWithControlContainer() {
+        int[] containerLocation = new int[] {0, 48};
+        View controlContainer =
+                new View(mActivity) {
+                    @Override
+                    public void getLocationInWindow(int[] outLocation) {
+                        outLocation[0] = containerLocation[0];
+                        outLocation[1] = containerLocation[1];
+                    }
+                };
+        controlContainer.setId(R.id.control_container);
+        mActivity.setContentView(controlContainer);
+
         showOverlay();
 
         View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
         var params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
-        int expectedMargin =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height)
-                        - mActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding)
-                        - mActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.tab_search_overlay_hairline_gap);
-        assertEquals(expectedMargin, params.topMargin);
+        assertEquals(48, params.topMargin);
 
-        // In desktop windowing mode, top margin is 0.
+        // In desktop windowing mode, control container sits at y = 0.
         mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        containerLocation[1] = 0;
         showOverlay();
 
         params = (LinearLayout.LayoutParams) panelView.getLayoutParams();

@@ -753,37 +753,33 @@ public class TabSearchOverlayCoordinator
     }
 
     /**
-     * Updates the top margin of the panel view based on desktop windowing state.
+     * Updates the top margin of the panel view to align with the top of the tab strip.
      *
-     * <p>In desktop windowing mode (freeform window), the panel starts at the top of the window
-     * (topMargin = 0) to align with the caption bar / tab strip. When not in desktop windowing
-     * (e.g. fullscreen or split screen mode), the panel is offset below the OS application window
-     * toolbar / status bar trigger zone so that the close button remains accessible and clickable.
+     * <p>The top of the tab strip is defined by the location of the control container. In desktop
+     * windowing mode, this sits at the top of the window (topMargin = 0). When not in desktop
+     * windowing (e.g. fullscreen), the control container starts below the system status bar, so the
+     * panel is offset to align with the tab strip and remain accessible.
      */
     private void updatePanelTopMargin() {
-        boolean isInDesktopWindow =
-                mDesktopWindowStateManager != null
-                        && mDesktopWindowStateManager.getAppHeaderState() != null
-                        && mDesktopWindowStateManager.getAppHeaderState().isInDesktopWindow();
-        if (mPanelContainer != null) {
-            View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
-            if (panelView != null
-                    && panelView.getLayoutParams() instanceof LinearLayout.LayoutParams params) {
-                var res = mPanelContainer.getContext().getResources();
-                int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
-                int reservedTopPadding =
-                        res.getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding);
-                int hairlineGap =
-                        res.getDimensionPixelSize(R.dimen.tab_search_overlay_hairline_gap);
-                int topMargin =
-                        !isInDesktopWindow
-                                ? (tabStripHeight - reservedTopPadding - hairlineGap)
-                                : 0;
-                if (params.topMargin != topMargin) {
-                    params.topMargin = topMargin;
-                    panelView.setLayoutParams(params);
-                }
-            }
+        if (mPanelContainer == null) {
+            return;
+        }
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        if (panelView == null
+                || !(panelView.getLayoutParams() instanceof LinearLayout.LayoutParams params)) {
+            return;
+        }
+
+        View controlContainer = mActivity.findViewById(R.id.control_container);
+        int topMargin = 0;
+        if (controlContainer != null) {
+            int[] location = new int[2];
+            controlContainer.getLocationInWindow(location);
+            topMargin = Math.max(0, location[1]);
+        }
+        if (params.topMargin != topMargin) {
+            params.topMargin = topMargin;
+            panelView.setLayoutParams(params);
         }
     }
 
