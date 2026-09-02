@@ -2673,7 +2673,6 @@ crbug.com/550470670 external/wpt/custom-elements/parser/xml-parser-custom-elemen
 crbug.com/550481743 external/wpt/svg/styling/text-overflow-presentation-attribute-foreignobject.html [ Failure ]
 crbug.com/550484948 virtual/webcrypto-pqc/external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.html [ Timeout ]
 crbug.com/550484948 virtual/webcrypto-pqc/external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.worker.html [ Timeout ]
-crbug.com/548482066 external/wpt/css/css-inline/text-box-trim/text-box-trim-first-line-pseudo-002.html [ Failure ]
 crbug.com/546159614 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/545676304 [ Win ] external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.html [ Pass Timeout ]
 crbug.com/545718484 external/wpt/mathml/relations/html5-tree/href-target-base.html [ Failure Pass Timeout ]

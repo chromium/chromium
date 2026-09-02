@@ -3026,8 +3026,9 @@
       status: "stable",
     },
     {
+      // It turned out that this fix was wrong. The plan is to turn it off, and
+      // remove if that goes well. crbug.com/41362700
       name: "FirstLineTextMetrics",
-      status: "stable",
     },
     {
       name: "FirstLineTextTransform",
