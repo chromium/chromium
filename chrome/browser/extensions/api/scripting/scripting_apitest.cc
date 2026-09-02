@@ -25,12 +25,17 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_content_script_load_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -690,6 +695,38 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
   ScopedAllowHttpForHostnamesForTesting allow_http({"example.com"},
                                                    profile()->GetPrefs());
+
+  // Wait for the extensions loaded in the PRE_ test to be restored and their
+  // dynamic content scripts to finish loading before navigating.
+  auto wait_for_extension_and_scripts = [this](const base::FilePath& path) {
+    const Extension* extension =
+        GetExtensionByPath(extension_registry()->enabled_extensions(), path);
+    while (!extension) {
+      SCOPED_TRACE(base::StringPrintf("Waiting for extension to load: %s",
+                                      path.AsUTF8Unsafe().c_str()));
+      TestExtensionRegistryObserver observer(extension_registry());
+      observer.WaitForExtensionLoaded();
+      extension =
+          GetExtensionByPath(extension_registry()->enabled_extensions(), path);
+    }
+
+    ExtensionUserScriptLoader* user_script_loader =
+        ExtensionSystem::Get(profile())
+            ->user_script_manager()
+            ->GetUserScriptLoaderForExtension(extension->id());
+    if (!user_script_loader->HasLoadedScripts()) {
+      SCOPED_TRACE(
+          base::StringPrintf("Waiting for dynamic content scripts to load: %s",
+                             path.AsUTF8Unsafe().c_str()));
+      ContentScriptLoadWaiter waiter(user_script_loader);
+      waiter.Wait();
+    }
+  };
+
+  wait_for_extension_and_scripts(
+      test_data_dir_.AppendASCII("scripting/incognito_allowed"));
+  wait_for_extension_and_scripts(
+      test_data_dir_.AppendASCII("scripting/incognito_disallowed"));
 
   // Repeat the steps of navigating to an on-the-record and off-the-record page
   // to validate injection after a restart. This verifies the incognito bit
