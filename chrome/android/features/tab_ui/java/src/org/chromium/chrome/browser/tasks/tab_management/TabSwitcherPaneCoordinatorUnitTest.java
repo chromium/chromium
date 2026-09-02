@@ -224,6 +224,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mTabModelSupplier.set(mTabModel);
 
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        mHubSearchBoxVisibilitySupplier.set(false);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
@@ -596,6 +597,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         MockTab tab = new MockTab(1, mProfile);
 
         doReturn(1).when(mTabModel).getPinnedTabsCount();
+        mHubSearchBoxVisibilitySupplier.set(false);
 
         mTabModelObserver.didChangePinState(tab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();

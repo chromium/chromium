@@ -507,7 +507,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      */
     public void setOnLongPressTabItemEventListener(
             @Nullable OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
-        assert mMediator != null;
         mMediator.setOnLongPressTabItemEventListener(onLongPressTabItemEventListener);
     }
 
@@ -516,7 +515,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      */
     public void setOnDropOnArchivalMessageCardEventListener(
             @Nullable OnDropOnArchivalMessageCardEventListener listener) {
-        assert mMediator != null;
         mMediator.setOnDropOnArchivalMessageCardEventListener(listener);
     }
 
@@ -530,7 +528,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
     /** Sets the current {@link TabActionState} for the TabList. */
     public void setTabActionState(@TabActionState int tabActionState) {
-        assert mMediator != null;
         mTabActionState = tabActionState;
         configureRecyclerViewTouchHelpers();
         mMediator.setTabActionState(tabActionState);
@@ -586,12 +583,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mAwaitingLayoutRunnable = r;
         mAwaitingTabId = mModelList.get(index).model.get(TabProperties.TAB_ID);
         mRecyclerView.runOnNextLayout(this::checkAwaitingLayout);
-    }
-
-    Rect getRecyclerViewLocation() {
-        Rect recyclerViewRect = new Rect();
-        mRecyclerView.getGlobalVisibleRect(recyclerViewRect);
-        return recyclerViewRect;
     }
 
     /** Returns the position and offset of the first visible element in the list. */
@@ -1145,7 +1136,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param isVisible Whether the spinner should be visible.
      */
     void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
-        assert mMediator != null;
         mMediator.setThumbnailSpinnerVisibility(tab, isVisible);
     }
 }
