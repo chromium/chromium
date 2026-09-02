@@ -26,7 +26,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 /** Unit tests for the URL bar UI component. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OverrideUrlLoadingDelegateImplUnitTest {
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mOpenGridTabSwitcher;
     private OverrideUrlLoadingDelegateImpl mDelegate;
 
