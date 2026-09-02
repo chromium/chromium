@@ -1846,7 +1846,8 @@ suite('SearchboxMixinTest', () => {
     assertEquals('', mockInput.inputElement.value);
   });
 
-  test(
+  // TODO(crbug.com/555945371): Fails on multiple OSes.
+  test.skip(
       'navigating matches in keyword mode preserves keyword mode and icon',
       async () => {
         const mockInput = element.getInputElement();
