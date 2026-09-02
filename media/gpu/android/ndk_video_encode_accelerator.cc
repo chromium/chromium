@@ -5,10 +5,15 @@
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include <android/hardware_buffer.h>
+#include <media/NdkMediaCodec.h>
+#include <media/NdkMediaCodecInfo.h>
+#include <media/NdkMediaCodecStore.h>
+#include <media/NdkMediaFormat.h>
 
 #include <optional>
 
 #include "base/android/android_info.h"
+#include "base/android/jni_android.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -29,12 +34,12 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/base/android/media_codec_util.h"
+#include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_serializers_base.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "media/gpu/android/ndk_video_encode_accelerator_svc_api.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -73,54 +78,106 @@ struct AMediaFormatDeleter {
   }
 };
 
+// TODO(crbug.com/469819307): AMEDIAFORMAT_KEY_VIDEO_BITRATE_LAYERING is
+// declared in <media/NdkMediaFormat.h> for API 37, but is not yet exported in
+// libmediandk.so. Once the NDK stub is updated to export this symbol, this
+// constant can be removed in favor of using the NDK constant directly.
+constexpr const char* kMediaFormatKeyVideoBitrateLayering =
+    "video-bitrate-layering";
+
+bool IsTemporalLayerEncodingEnabled() {
+  static bool enabled = []() {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    return Java_VideoAcceleratorUtil_isTemporalLayerEncodingEnabled(env);
+  }();
+  return enabled;
+}
+
+bool IsNdkSvcApiSupported() {
+  if (__builtin_available(android 37, *)) {
+    // On preview/canary OS builds, __builtin_available() evaluates to true
+    // because Bionic returns API 10000. Check sdk_int() to ensure we are
+    // running on actual Android 17+ (Cinnamon Bun, API 37) and not an
+    // Android 16 Canary.
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_CINNAMON_BUN) {
+      return false;
+    }
+
+    // Guard against early preview images or incomplete platform stubs that may
+    // not export all required symbols in libmediandk.so.
+    return &AMediaCodecStore_getCodecInfo != nullptr &&
+           &AMediaCodecInfo_getEncoderCapabilities != nullptr &&
+           &ACodecEncoderCapabilities_getSupportedLayeringSchemas != nullptr;
+  }
+  return false;
+}
+
+bool IsTemporalLayerIdSupported() {
+  return IsNdkSvcApiSupported() &&
+         base::FeatureList::IsEnabled(
+             media::kNdkVideoEncodeAcceleratorNativeSvc) &&
+         IsTemporalLayerEncodingEnabled();
+}
+
+bool IsBitrateLayeringSupported() {
+  return IsNdkSvcApiSupported() &&
+         base::FeatureList::IsEnabled(
+             media::kNdkVideoEncodeAcceleratorBitrateLayering) &&
+         IsTemporalLayerEncodingEnabled();
+}
+
 std::vector<std::string> GetSupportedLayeringSchemas(
     const std::string& codec_name) {
-  const auto* api = NdkVideoEncodeAcceleratorSvcApi::Get();
-  if (!api->AMediaCodecStore_getCodecInfo) {
-    return {};
-  }
+  if (__builtin_available(android 37, *)) {
+    if (!IsNdkSvcApiSupported()) {
+      return {};
+    }
 
-  const AMediaCodecInfo* info = nullptr;
-  media_status_t status =
-      api->AMediaCodecStore_getCodecInfo(codec_name.c_str(), &info);
-  if (status != AMEDIA_OK || !info) {
-    LOG(ERROR) << "AMediaCodecStore_getCodecInfo failed for " << codec_name
-               << " status: " << status;
-    return {};
-  }
+    const AMediaCodecInfo* info = nullptr;
+    media_status_t status =
+        AMediaCodecStore_getCodecInfo(codec_name.c_str(), &info);
+    if (status != AMEDIA_OK || !info) {
+      LOG(ERROR) << "AMediaCodecStore_getCodecInfo failed for " << codec_name
+                 << " status: " << status;
+      return {};
+    }
 
-  const ACodecEncoderCapabilities* encoder_caps = nullptr;
-  status = api->AMediaCodecInfo_getEncoderCapabilities(info, &encoder_caps);
-  if (status != AMEDIA_OK || !encoder_caps) {
-    LOG(ERROR) << "AMediaCodecInfo_getEncoderCapabilities failed status: "
-               << status;
-    return {};
-  }
+    const ACodecEncoderCapabilities* encoder_caps = nullptr;
+    status = AMediaCodecInfo_getEncoderCapabilities(info, &encoder_caps);
+    if (status != AMEDIA_OK || !encoder_caps) {
+      LOG(ERROR) << "AMediaCodecInfo_getEncoderCapabilities failed status: "
+                 << status;
+      return {};
+    }
 
-  const char* const* schemas = nullptr;
-  size_t count = 0;
-  status = api->ACodecEncoderCapabilities_getSupportedLayeringSchemas(
-      encoder_caps, &schemas, &count);
-  if (status != AMEDIA_OK) {
-    LOG(ERROR) << "ACodecEncoderCapabilities_getSupportedLayeringSchemas "
-                  "failed status: "
-               << status;
-    return {};
-  }
+    const char* const* schemas = nullptr;
+    size_t count = 0;
+    status = ACodecEncoderCapabilities_getSupportedLayeringSchemas(
+        encoder_caps, &schemas, &count);
+    if (status != AMEDIA_OK) {
+      LOG(ERROR) << "ACodecEncoderCapabilities_getSupportedLayeringSchemas "
+                    "failed status: "
+                 << status;
+      return {};
+    }
 
-  std::vector<std::string> supported_schemas;
-  if (count > 0 && schemas) {
-    // SAFETY: The NDK API guarantees that `schemas` points to an array of
-    // `count` elements.
-    auto schemas_span = UNSAFE_BUFFERS(base::span(schemas, count));
-    for (const char* schema : schemas_span) {
-      if (schema) {
-        supported_schemas.emplace_back(schema);
+    std::vector<std::string> supported_schemas;
+    if (count > 0 && schemas) {
+      // SAFETY: The NDK API guarantees that `schemas` points to an array of
+      // `count` elements.
+      auto schemas_span = UNSAFE_BUFFERS(base::span(schemas, count));
+      for (const char* schema : schemas_span) {
+        if (schema) {
+          supported_schemas.emplace_back(schema);
+        }
       }
     }
+
+    return supported_schemas;
   }
 
-  return supported_schemas;
+  return {};
 }
 
 std::string GetOptimalLayeringSchema(MediaLog* log,
@@ -480,24 +537,21 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
 
     // Signal that we want to receive the temporal layer ID in the output
     // format.
-    if (NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
-      AMediaFormat_setInt32(
-          result.get(),
-          NdkVideoEncodeAcceleratorSvcApi::AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID,
-          0);
+    if (IsTemporalLayerIdSupported()) {
+      AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID,
+                            0);
     }
 
-    if (NdkVideoEncodeAcceleratorSvcApi::IsBitrateLayeringSupported()) {
+    if (IsBitrateLayeringSupported()) {
       std::vector<double> ratios =
           NdkVideoEncodeAccelerator::GetDefaultSvcBitrateRatios(
               num_temporal_layers);
       if (!ratios.empty()) {
-        AMediaFormat_setString(
-            result.get(),
-            NdkVideoEncodeAcceleratorSvcApi::
-                AMEDIAFORMAT_KEY_VIDEO_BITRATE_LAYERING,
-            NdkVideoEncodeAccelerator::GetSvcBitrateRatiosString(ratios)
-                .c_str());
+        std::string bitrate_ratios_str =
+            NdkVideoEncodeAccelerator::GetSvcBitrateRatiosString(ratios);
+        AMediaFormat_setString(result.get(),
+                               kMediaFormatKeyVideoBitrateLayering,
+                               bitrate_ratios_str.c_str());
       }
     }
   }
@@ -762,7 +816,7 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
     // Log platform capabilities for SVC once per initialization.
     base::UmaHistogramBoolean(
         "Media.VideoEncoder.NDKVEA.TemporalLayerEncodingEnabled",
-        NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerEncodingEnabled());
+        IsTemporalLayerEncodingEnabled());
   }
 
   const EncoderStatus status = ResetMediaCodec();
@@ -1607,16 +1661,14 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     }
 
     int32_t temporal_id = -1;
-    if (NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+    if (IsTemporalLayerIdSupported()) {
       // For supported Android versions, retrieve the temporal layer ID
       // natively from the output buffer format.
       MediaFormatPtr buffer_format(AMediaCodec_getBufferFormat(
           media_codec_->codec(), output_buffer.buffer_index));
       if (buffer_format) {
-        AMediaFormat_getInt32(
-            buffer_format.get(),
-            NdkVideoEncodeAcceleratorSvcApi::AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID,
-            &temporal_id);
+        AMediaFormat_getInt32(buffer_format.get(),
+                              AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID, &temporal_id);
       }
     }
 
@@ -1634,8 +1686,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       temporal_id = bits_md.temporal_id;
     }
 
-    if (temporal_id < 0 &&
-        NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+    if (temporal_id < 0 && IsTemporalLayerIdSupported()) {
       // If native retrieval was expected but failed, treat it as a hardware
       // error. For AV1/VP9 on older Android versions, we don't error out
       // because these codecs follow standard scalability modes
@@ -1654,7 +1705,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       case VideoCodec::kAV1:
       case VideoCodec::kVP9:
         metadata.svc_generic.emplace().follow_svc_spec = true;
-        if (NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+        if (IsTemporalLayerIdSupported()) {
           // Native temporal ID is only expected for AV1/VP9 when supported
           // by the platform.
           metadata.svc_generic->temporal_idx = temporal_id;
