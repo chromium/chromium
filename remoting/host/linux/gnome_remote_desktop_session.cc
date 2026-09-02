@@ -29,6 +29,7 @@
 #include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
 #include "remoting/host/linux/screen_saver_inhibitor.h"
+#include "remoting/host/linux/systemd_utils.h"
 #include "remoting/proto/control.pb.h"
 
 namespace remoting {
@@ -158,12 +159,7 @@ void GnomeRemoteDesktopSession::OnConnectionCreated(
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->GetSwitchValueASCII(kProcessTypeSwitchName) ==
       kProcessTypeDesktop) {
-    // For the multi-process Linux host, the desktop process is always run under
-    // a GDM remote display, so it is guaranteed to be headless.
-    // TODO: yuweih - This needs to be changed if we want to support custom
-    // sessions, or remoting the local session (if it becomes possible) in
-    // multi-process mode.
-    OnHeadlessDetection(/*is_headless=*/true);
+    OnHeadlessDetection(IsRunningInHeadlessSystemdSession());
     return;
   }
 

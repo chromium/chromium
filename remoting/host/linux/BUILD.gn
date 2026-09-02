@@ -322,6 +322,8 @@ source_set("platform_impls") {
     "screen_saver_inhibitor.h",
     "systemd_user_env_setter.cc",
     "systemd_user_env_setter.h",
+    "systemd_utils.cc",
+    "systemd_utils.h",
   ]
   deps = [
     ":gvariant",
@@ -446,6 +448,7 @@ source_set("unit_tests") {
     "peer_connection_bpf_policy_linux_unittest.cc",
     "pipewire_audio_capturer_unittest.cc",
     "pipewire_mouse_cursor_capturer_unittest.cc",
+    "systemd_utils_unittest.cc",
     "test_util.cc",
     "test_util.h",
     "unicode_to_keysym_unittest.cc",
