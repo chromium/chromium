@@ -319,7 +319,8 @@ public class UrlBarUnitTest {
 
     @Test
     public void onCreateInputConnection_ensureNoAutocorrect() {
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
         assertEquals(
@@ -332,7 +333,8 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_disallowKeyboardLearningPassedToIme() {
         doReturn(true).when(mUrlBarDelegate).allowKeyboardLearning();
 
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
         assertEquals(0, info.imeOptions & EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -342,7 +344,8 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_allowKeyboardLearningPassedToIme() {
         doReturn(false).when(mUrlBarDelegate).allowKeyboardLearning();
 
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
         assertEquals(
@@ -354,7 +357,8 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_setDefaultsWhenDelegateNotPresent() {
         mUrlBar.setDelegate(null);
 
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
 
@@ -459,8 +463,10 @@ public class UrlBarUnitTest {
 
         // Simulate focus lost, then applied programmatically.
         // This will reset the internal state, and then enable alternative event.
-        mUrlBar.onFocusChanged(false, 0, null);
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
 
         mUrlBar.performClick();
         verify(mUrlBarDelegate).onTouchAfterFocus();
@@ -471,7 +477,10 @@ public class UrlBarUnitTest {
 
     @Test
     public void onTouchEvent_touchDownIsIgnored() {
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         mUrlBar.onTouchEvent(
                 MotionEvent.obtain(
                         /* downTime= */ 0,
@@ -507,8 +516,10 @@ public class UrlBarUnitTest {
 
         // Simulate focus lost, then applied programmatically.
         // This will reset the internal state, and then enable alternative event.
-        mUrlBar.onFocusChanged(false, 0, null);
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
 
         mUrlBar.onTouchEvent(
                 MotionEvent.obtain(
@@ -640,13 +651,15 @@ public class UrlBarUnitTest {
             // Focus is requested so that _we_ can specify the selection and cursor placement.
             verify(mUrlBar).requestFocus();
             clearInvocations(mUrlBar);
-            mUrlBar.onFocusChanged(false, 0, null);
+            mUrlBar.onFocusChanged(
+                    /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
 
             // 3. Verify requestFocus is re-emitted after focus was lost.
             mUrlBar.onTouchEvent(evt);
             verify(mUrlBar).requestFocus();
             clearInvocations(mUrlBar);
-            mUrlBar.onFocusChanged(false, 0, null);
+            mUrlBar.onFocusChanged(
+                    /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         }
     }
 
@@ -708,7 +721,8 @@ public class UrlBarUnitTest {
 
         // Simulate focus lost. This should re-set recorded state and permit the UrlBar to emit
         // focus events once more.
-        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
 
         mUrlBar.performClick();
         verify(mUrlBarDelegate).onFocusByTouch();
@@ -722,13 +736,15 @@ public class UrlBarUnitTest {
 
     @Test
     public void testTruncation_NoTruncationWhileFocused() {
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
 
         mUrlBar.setTextWithTruncation(LONG_DOMAIN, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
         String text = mUrlBar.getText().toString();
         assertEquals(LONG_DOMAIN, text);
 
-        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
     }
 
     @Test
@@ -743,7 +759,8 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -756,7 +773,8 @@ public class UrlBarUnitTest {
 
         // Simulate request to update scroll type with no changes of scroll type, text, or view
         // size. This should avoid recalculations and simply re-set the scroll position.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollToTLD();
         verify(mUrlBar, never()).scrollToBeginning();
         verify(mUrlBar).scrollTo(0, 0);
@@ -774,7 +792,8 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -787,7 +806,8 @@ public class UrlBarUnitTest {
 
         // Simulate request to update scroll type with no changes of scroll type, text, or view
         // size. This should avoid recalculations and simply re-set the scroll position.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollToTLD();
         verify(mUrlBar, never()).scrollToBeginning();
         verify(mUrlBar).scrollTo(0, 0);
@@ -805,7 +825,8 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -819,7 +840,8 @@ public class UrlBarUnitTest {
 
         // Simulate request to update scroll type with no changes of scroll type, text, or view
         // size. This should avoid recalculations and simply re-set the scroll position.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollToTLD();
         verify(mUrlBar, never()).scrollToBeginning();
         verify(mUrlBar).scrollTo(0, 0);
@@ -837,7 +859,8 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollTo(anyInt(), anyInt());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -850,7 +873,8 @@ public class UrlBarUnitTest {
 
         // Simulate request to update scroll type with no changes of scroll type, text, or view
         // size. This should avoid recalculations and simply re-set the scroll position.
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).scrollToTLD();
         verify(mUrlBar, never()).scrollToBeginning();
         verify(mUrlBar).scrollTo(not(eq(0)), eq(0));
@@ -860,7 +884,8 @@ public class UrlBarUnitTest {
     public void layout_noScrollWithNoSizeChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -875,7 +900,8 @@ public class UrlBarUnitTest {
     public void layout_noScrollWhenHeightChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -890,7 +916,8 @@ public class UrlBarUnitTest {
     public void layout_updateScrollWhenWidthChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         clearInvocations(mUrlBar);
@@ -909,20 +936,23 @@ public class UrlBarUnitTest {
         // Case 1: Cursor at 0, no selection.
         mUrlBar.setSelection(0);
         clearInvocations(mUrlBar);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar, never()).setSelection(anyInt());
 
         // Case 2: Cursor at non-zero, no selection.
         mUrlBar.setSelection(5);
         clearInvocations(mUrlBar);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar).setSelection(0);
         assertEquals(0, mUrlBar.getSelectionStart());
 
         // Case 3: Selection exists.
         mUrlBar.setSelection(1, 3);
         clearInvocations(mUrlBar);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         verify(mUrlBar).setSelection(0);
         assertEquals(0, mUrlBar.getSelectionStart());
         assertEquals(0, mUrlBar.getSelectionEnd());
@@ -1205,11 +1235,17 @@ public class UrlBarUnitTest {
     public void horizontalFadingEdge_noFadeInWhenFocused() {
         measureAndLayoutUrlBar();
         mUrlBar.setScrollX(100);
-        mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.LAYOUT_DIRECTION_LTR,
+                /* previouslyFocusedRect= */ null);
         assertFalse(mUrlBar.isHorizontalFadingEdgeEnabled());
 
         // NOTE: defocusing should restore fading edge.
-        mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.LAYOUT_DIRECTION_LTR,
+                /* previouslyFocusedRect= */ null);
         assertTrue(mUrlBar.isHorizontalFadingEdgeEnabled());
     }
 
@@ -1303,7 +1339,8 @@ public class UrlBarUnitTest {
 
     @Test
     public void fixupTextDirection_unfocusedWithText() {
-        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         mUrlBar.setText("test");
         assertEquals(View.TEXT_DIRECTION_LTR, mLastTextDirection);
         assertEquals(View.TEXT_ALIGNMENT_TEXT_START, mLastTextAlignment);
@@ -1311,7 +1348,8 @@ public class UrlBarUnitTest {
 
     @Test
     public void fixupTextDirection_focusedWithText() {
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         mUrlBar.setText("test");
         assertEquals(View.TEXT_DIRECTION_INHERIT, mLastTextDirection);
         assertEquals(View.TEXT_ALIGNMENT_TEXT_START, mLastTextAlignment);
@@ -1319,7 +1357,8 @@ public class UrlBarUnitTest {
 
     @Test
     public void fixupTextDirection_unfocusedWithoutText() {
-        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         mUrlBar.setText("");
         assertEquals(View.TEXT_DIRECTION_INHERIT, mLastTextDirection);
         assertEquals(View.TEXT_ALIGNMENT_VIEW_START, mLastTextAlignment);
@@ -1327,7 +1366,8 @@ public class UrlBarUnitTest {
 
     @Test
     public void fixupTextDirection_focusedWithoutText() {
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         mUrlBar.setText("");
         assertEquals(View.TEXT_DIRECTION_INHERIT, mLastTextDirection);
         assertEquals(View.TEXT_ALIGNMENT_VIEW_START, mLastTextAlignment);
@@ -1490,10 +1530,16 @@ public class UrlBarUnitTest {
     @Test
     public void onFocusChanged_MultilineEligibility() {
         mUrlBar.setAllowMultilineInput(true);
-        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         mUrlBar.setInputIsMultilineEligible(true);
@@ -1504,7 +1550,10 @@ public class UrlBarUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_Enabled() {
         mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
         measureAndLayoutUrlBar();
 
@@ -1519,7 +1568,10 @@ public class UrlBarUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_Disabled() {
         mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
         measureAndLayoutUrlBar();
 
@@ -1533,7 +1585,10 @@ public class UrlBarUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_NotEnabledByContext() {
         mUrlBar.setBoundsEllipsisEnabled(false);
-        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
         measureAndLayoutUrlBar();
 
@@ -1547,7 +1602,10 @@ public class UrlBarUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testApplyBoundsEllipsis_ClearOnFocus() {
         mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
         measureAndLayoutUrlBar();
 
@@ -1557,7 +1615,10 @@ public class UrlBarUnitTest {
         assertNotNull(spans);
         assertTrue(spans.length > 0);
 
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         spans = text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
         assertTrue(spans == null || spans.length == 0);
     }
@@ -1566,7 +1627,10 @@ public class UrlBarUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testLimitDisplayableLength_BoundsEllipsisAtEnd() {
         mUrlBar.setBoundsEllipsisEnabled(true);
-        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
         mUrlBar.setText(SUPER_LONG_URL);
 
         Editable text = mUrlBar.getText();
@@ -1746,7 +1810,8 @@ public class UrlBarUnitTest {
     @Test
     public void testClearTextSelection() {
         mUrlBar.setText("test selection");
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         doReturn(true).when(mUrlBar).isFocused();
         mUrlBar.setSelection(0, 4);
         assertEquals(0, mUrlBar.getSelectionStart());
@@ -1766,7 +1831,7 @@ public class UrlBarUnitTest {
         doReturn(true).when(mUrlBar).isFocused();
         doReturn(true).when(mUrlBarDelegate).isKeyboardSuppressed();
 
-        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
     }
@@ -1778,7 +1843,7 @@ public class UrlBarUnitTest {
         doReturn(true).when(mUrlBar).isFocused();
         doReturn(false).when(mUrlBarDelegate).isKeyboardSuppressed();
 
-        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
     }
@@ -1789,18 +1854,18 @@ public class UrlBarUnitTest {
 
         // Window gains focus
         doReturn(true).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
         mUrlBar.setCursorVisible(true);
         assertTrue(mUrlBar.isCursorVisible());
 
         // Window loses focus
         doReturn(false).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(false);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ false);
         assertFalse(mUrlBar.isCursorVisible());
 
         // Window gains focus again
         doReturn(true).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
         assertTrue(mUrlBar.isCursorVisible());
     }
 
@@ -1808,12 +1873,12 @@ public class UrlBarUnitTest {
     public void testCursorVisibility_WindowFocusGained_NotFocused() {
         doReturn(false).when(mUrlBar).isFocused();
         doReturn(false).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(false);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ false);
         mUrlBar.setCursorVisible(true);
         assertFalse(mUrlBar.isCursorVisible());
 
         doReturn(true).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
         assertFalse(mUrlBar.isCursorVisible());
     }
 
@@ -1821,13 +1886,13 @@ public class UrlBarUnitTest {
     public void testCursorVisibility_SetVisible_NoWindowFocus() {
         doReturn(true).when(mUrlBar).isFocused();
         doReturn(false).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(false);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ false);
 
         mUrlBar.setCursorVisible(true);
         assertFalse(mUrlBar.isCursorVisible());
 
         doReturn(true).when(mUrlBar).hasWindowFocus();
-        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.onWindowFocusChanged(/* hasWindowFocus= */ true);
         assertTrue(mUrlBar.isCursorVisible());
     }
 
@@ -1908,7 +1973,8 @@ public class UrlBarUnitTest {
     public void testOnTouchEvent_UnfocusedSpanRemovedOnTouchDown() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
 
-        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         assertFalse(mUrlBar.isFocused());
 
         String url = SHORT_DOMAIN + LONG_PATH;
@@ -1938,7 +2004,8 @@ public class UrlBarUnitTest {
     public void testOnTouchEvent_VeryLongUrlReTruncatedOnTouchDown() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
 
-        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         assertFalse(mUrlBar.isFocused());
 
         mUrlBar.setTextWithTruncation(SUPER_LONG_URL, UrlBar.ScrollType.SCROLL_TO_TLD, 10);
@@ -1998,7 +2065,8 @@ public class UrlBarUnitTest {
 
     @Test
     public void testSetTextWithTruncation_identicalLongFocusedText_noReset() {
-        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         mUrlBar.setText(SUPER_LONG_URL);
         Editable textBefore = mUrlBar.getText();
         assertEquals(
