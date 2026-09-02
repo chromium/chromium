@@ -82,7 +82,7 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION =
             "Android.Omnibox.SearchPrefetch.NumPrefetchesStartedInOmniboxSession.NavigationPrefetch";
 
-    /** The result of prefetches started by touch down events within an omnibox session */
+    /** The result of prefetches started by touch down events within an omnibox session. */
     public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT =
             "Android.Omnibox.SearchPrefetch.TouchDownPrefetchResult.NavigationPrefetch";
 

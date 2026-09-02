@@ -622,7 +622,7 @@ import java.util.function.Supplier;
         mBackPressStateSupplier.set(true);
     }
 
-    /** Hides the popup if currently shown */
+    /** Hides the popup if currently shown. */
     /* package */ boolean handleHidePopup() {
         if (mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
             return false;

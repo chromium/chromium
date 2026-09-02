@@ -321,7 +321,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mScrimManager.destroy();
     }
 
-    /** Apply a variant of the branded color scheme to Fusebox UI elements */
+    /** Apply a variant of the branded color scheme to Fusebox UI elements. */
     public void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         mLastBrandedColorScheme = brandedColorScheme;
         if (mMediator != null) {

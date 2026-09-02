@@ -3242,7 +3242,7 @@ class LocationBarMediator
         }
     }
 
-    /** Enter the DRAFTING_NO_FOCUS state, executing all necessary and convenient pre-processing */
+    /** Enter the DRAFTING_NO_FOCUS state, executing all necessary and convenient pre-processing. */
     @VisibleForTesting
     /* package */ void enterDraftingNoFocus() {
         assert mCurrentInput != null;

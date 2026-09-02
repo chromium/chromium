@@ -148,7 +148,7 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_CAMERA_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Action to perform when the user clicks the "add current tab" button */
+    /** Action to perform when the user clicks the "add current tab" button. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CURRENT_TAB_CLICKED =
             new WritableObjectPropertyKey<>();
 
