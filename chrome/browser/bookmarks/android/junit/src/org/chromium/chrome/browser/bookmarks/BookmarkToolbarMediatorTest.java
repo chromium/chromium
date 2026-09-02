@@ -75,7 +75,10 @@ import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link BookmarkToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+})
 public class BookmarkToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -244,7 +247,10 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+        ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+    })
     public void testNavigationButton_topLevelFolder_mobile() {
         DeviceInfo.setIsDesktopForTesting(false);
         mMediator.onFolderStateSet(mBookmarkModel.getMobileFolderId());
@@ -433,7 +439,10 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+        ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+    })
     public void testNonDesktop_doesNotShowChromeIcon() {
         DeviceInfo.setIsDesktopForTesting(false);
         mMediator.setSmallScreen(true);

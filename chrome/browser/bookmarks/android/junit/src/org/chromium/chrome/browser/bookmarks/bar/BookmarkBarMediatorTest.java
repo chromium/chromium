@@ -91,7 +91,8 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.BOOKMARKS_BAR_NTP,
-    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
 public class BookmarkBarMediatorTest {
     @Rule

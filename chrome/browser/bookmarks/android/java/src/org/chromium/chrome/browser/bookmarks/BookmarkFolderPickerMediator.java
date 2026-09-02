@@ -272,7 +272,7 @@ class BookmarkFolderPickerMediator {
     }
 
     void updateNavigationIconForCurrentParent() {
-        if (mCurrentParentItem == null || !BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (mCurrentParentItem == null || !BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return;
         }
 

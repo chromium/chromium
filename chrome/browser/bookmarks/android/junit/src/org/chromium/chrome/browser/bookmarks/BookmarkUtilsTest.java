@@ -79,7 +79,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
-    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
 public class BookmarkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -710,6 +711,18 @@ public class BookmarkUtilsTest {
 
         // invalid url
         assertFalse(BookmarkUtils.isReadingListSupported(JUnitTestGURLs.INVALID_URL));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testIsDesktopBookmarksDialogEnabled_featureEnabled() {
+        assertTrue(BookmarkUtils.isDesktopBookmarksDialogEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testIsDesktopBookmarksDialogEnabled_featureDisabled() {
+        assertFalse(BookmarkUtils.isDesktopBookmarksDialogEnabled());
     }
 
     @Test

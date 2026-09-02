@@ -21,7 +21,7 @@ public class BookmarkFolderPickerViewBinder {
             Toolbar toolbar = view.findViewById(R.id.toolbar);
             toolbar.setTitle(model.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         } else if (key == BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE) {
-            if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
                 Toolbar toolbar = view.findViewById(R.id.toolbar);
                 boolean visible = model.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE);
                 if (visible) {
@@ -58,7 +58,7 @@ public class BookmarkFolderPickerViewBinder {
         } else if (key == BookmarkFolderPickerProperties.ADD_NEW_FOLDER_BUTTON_ENABLED) {
             boolean enabled =
                     model.get(BookmarkFolderPickerProperties.ADD_NEW_FOLDER_BUTTON_ENABLED);
-            if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
                 View newFolderButton = view.findViewById(R.id.new_folder_button);
                 if (newFolderButton != null) {
                     newFolderButton.setEnabled(enabled);

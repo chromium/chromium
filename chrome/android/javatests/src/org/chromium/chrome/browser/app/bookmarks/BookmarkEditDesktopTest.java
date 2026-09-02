@@ -45,10 +45,10 @@ import org.chromium.url.GURL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/** Tests functionality in BookmarkEditActivity for Desktop layout. */
+/** Tests functionality in BookmarkEditActivity for Desktop dialog. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+@EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG})
 public class BookmarkEditDesktopTest {
 
     @Rule
@@ -158,7 +158,7 @@ public class BookmarkEditDesktopTest {
 
     @Test
     @MediumTest
-    public void testDesktopLayoutInflated() {
+    public void testDesktopDialogInflated() {
         Assert.assertNotNull("Activity should not be null", mActivity);
         Assert.assertNotNull("Save button should exist", mActivity.getSaveButton());
         Assert.assertNotNull("Remove button should exist", mActivity.getRemoveButton());

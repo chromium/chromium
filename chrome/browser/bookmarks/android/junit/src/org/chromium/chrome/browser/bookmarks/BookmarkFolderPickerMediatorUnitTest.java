@@ -23,6 +23,7 @@ import android.view.MenuItem;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +65,10 @@ import java.util.Arrays;
 
 /** Unit tests for {@link BookmarkFolderPickerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
+})
 public class BookmarkFolderPickerMediatorUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -323,6 +327,11 @@ public class BookmarkFolderPickerMediatorUnitTest {
         mFinishModelLoadCallback.run();
     }
 
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
+    }
+
     private void remakeMediator(BookmarkModel bookmarkModel, BookmarkId... bookmarkIds) {
         if (mMediator != null) {
             mMediator.destroy();
@@ -479,8 +488,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
-    public void testDesktopBookmarksLayout_NavigationIconVisibility_NotFromBookmarkDialog() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testDesktopBookmarksDialog_NavigationIconVisibility_NotFromBookmarkDialog() {
         DeviceInfo.setIsDesktopForTesting(true);
         remakeMediator(mBookmarkModel, mUserBookmarkId);
 
@@ -502,8 +511,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
-    public void testDesktopBookmarksLayout_NavigationIconVisibility_FromBookmarkDialog() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testDesktopBookmarksDialog_NavigationIconVisibility_FromBookmarkDialog() {
         DeviceInfo.setIsDesktopForTesting(true);
         if (mMediator != null) {
             mMediator.destroy();
