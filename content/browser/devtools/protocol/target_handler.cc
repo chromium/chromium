@@ -972,18 +972,30 @@ void TargetHandler::SetAttachedTargetsOfType(
     const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
     const std::string& type) {
   DCHECK(!type.empty());
-  auto old_sessions = auto_attached_sessions_;
-  for (auto& entry : old_sessions) {
+  // Detaching a target (e.g. a subframe) can synchronously dispose child
+  // sessions and tear down owned resources (e.g. hidden targets), which may
+  // destroy sibling DevToolsAgentHost instances and mutate
+  // `auto_attached_sessions_`.
+  // To avoid use-after-free on bare pointer keys or session objects, first
+  // collect strong references to the hosts that need to be detached while all
+  // entries are still alive and valid.
+  std::vector<scoped_refptr<DevToolsAgentHost>> hosts_to_detach;
+  for (const auto& entry : auto_attached_sessions_) {
     scoped_refptr<DevToolsAgentHost> host(entry.first);
     if (host->GetType() == type &&
         entry.second->auto_attacher_id_ ==
             reinterpret_cast<uintptr_t>(source) &&
         !new_hosts.contains(host)) {
-      AutoDetach(source, host.get());
+      hosts_to_detach.push_back(std::move(host));
     }
   }
-  for (auto& host : new_hosts) {
-    if (!old_sessions.contains(host.get())) {
+  // AutoDetach re-validates each host against the live `auto_attached_sessions_`
+  // map, safely skipping any targets already detached by earlier cascades.
+  for (const auto& host : hosts_to_detach) {
+    AutoDetach(source, host.get());
+  }
+  for (const auto& host : new_hosts) {
+    if (!auto_attached_sessions_.contains(host.get())) {
       AutoAttach(source, host.get(), false);
     }
   }
