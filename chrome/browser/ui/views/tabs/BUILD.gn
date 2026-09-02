@@ -159,11 +159,7 @@ source_set("tab_group_impl") {
 }
 
 source_set("tab_style_views") {
-  sources = [
-    "horizontal_tab_style_views.h",
-    "tab_style_views.h",
-    "vertical_tab_style_views.h",
-  ]
+  sources = [ "tab_style_views.h" ]
 
   deps = [
     "//base",
@@ -178,11 +174,7 @@ source_set("tab_style_views") {
 }
 
 source_set("tab_style_views_impl") {
-  sources = [
-    "horizontal_tab_style_views.cc",
-    "tab_style_views.cc",
-    "vertical_tab_style_views.cc",
-  ]
+  sources = [ "tab_style_views.cc" ]
 
   deps = [
     ":base",

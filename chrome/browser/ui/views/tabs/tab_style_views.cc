@@ -13,8 +13,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
-#include "chrome/browser/ui/views/tabs/horizontal_tab_style_views.h"
-#include "chrome/browser/ui/views/tabs/vertical_tab_style_views.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
+#include "chrome/browser/ui/views/tabs/common/vertical_tab_style_views.h"
 #include "ui/gfx/color_utils.h"
 
 // static

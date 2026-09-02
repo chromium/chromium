@@ -45,6 +45,8 @@ source_set("common") {
 source_set("impl") {
   sources = [
     "dragged_tabs_container.cc",
+    "horizontal_tab_style_views.cc",
+    "horizontal_tab_style_views.h",
     "pinned_tab_container_view.cc",
     "root_tab_collection_node.cc",
     "split_tab_view.cc",
@@ -76,9 +78,14 @@ source_set("impl") {
     "tab_view_vertical_layout.h",
     "unpinned_tab_container_view.cc",
     "unpinned_tab_container_view_layout.cc",
+    "vertical_tab_style_views.cc",
+    "vertical_tab_style_views.h",
   ]
 
   deps = [
+    "//base:i18n",
+    "//cc/paint",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser:primitives",
     "//chrome/browser/dictation",
     "//chrome/browser/glic",
@@ -105,6 +112,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:glass_frame_service",
     "//chrome/browser/ui/views/tabs:base",
+    "//chrome/browser/ui/views/tabs:tab",
     "//chrome/browser/ui/views/tabs:tab_group",
     "//chrome/browser/ui/views/tabs:tab_style_views",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
@@ -135,6 +143,7 @@ source_set("impl") {
     "//ui/display",
     "//ui/events",
     "//ui/gfx",
+    "//ui/gfx/animation",
     "//ui/gfx/geometry",
     "//ui/views",
   ]
