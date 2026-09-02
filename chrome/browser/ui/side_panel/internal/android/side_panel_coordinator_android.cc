@@ -513,8 +513,6 @@ void SidePanelCoordinatorAndroid::Show(
   if (!entry) {
     return;
   }
-  CHECK(entry->type() == SidePanelType::kToolbar)
-      << "Android Side Panel only supports kToolbar entries.";
 
   // Defer the show request if there is insufficient space to show the side
   // panel.
