@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -32,6 +33,12 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+
+NSString* const kTestUrl = @"https://www.example.com";
+
+}  // namespace
 
 // Test fixture for SendTabPushNotificationClient.
 class SendTabPushNotificationClientTest : public PlatformTest {
@@ -81,28 +88,34 @@ class SendTabPushNotificationClientTest : public PlatformTest {
 
   // Returns a mock UNNotificationResponse.
   id MockRequestResponse(bool is_send_tab_notification,
-                         const std::string& guid = "") {
+                         const std::string& guid = "",
+                         NSString* url_string = kTestUrl) {
     mock_response_ = OCMClassMock([UNNotificationResponse class]);
     OCMStub([mock_response_ notification])
-        .andReturn(MockNotification(is_send_tab_notification, guid));
+        .andReturn(
+            MockNotification(is_send_tab_notification, guid, url_string));
     return mock_response_;
   }
 
   // Returns a mock UNNotification.
   id MockNotification(bool is_send_tab_notification,
-                      const std::string& guid = "") {
+                      const std::string& guid = "",
+                      NSString* url_string = kTestUrl) {
     UNNotificationRequest* request =
-        CreateRequest(is_send_tab_notification, guid);
+        CreateRequest(is_send_tab_notification, guid, url_string);
     mock_notification_ = OCMClassMock([UNNotification class]);
     OCMStub([mock_notification_ request]).andReturn(request);
     return mock_notification_;
   }
 
   id CreateRequest(bool is_send_tab_notification,
-                   const std::string& guid = "") {
+                   const std::string& guid = "",
+                   NSString* url_string = kTestUrl) {
     NSMutableDictionary<NSString*, id>* payload =
         [[NSMutableDictionary alloc] init];
-    [payload setObject:@"https://www.example.com" forKey:@"url"];
+    if (url_string) {
+      [payload setObject:url_string forKey:@"url"];
+    }
     if (is_send_tab_notification) {
       [payload setObject:@"6" forKey:@"push_notification_client_id"];
       if (!guid.empty()) {
@@ -125,29 +138,31 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   web::WebTaskEnvironment web_task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  SceneState* scene_state_;
+  SceneState* scene_state_ = nil;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<SendTabPushNotificationClient> client_;
-  raw_ptr<send_tab_to_self::FakeSendTabToSelfModel> model_;
-  id<SceneCommands> application_handler_;
-  id mock_notification_center_;
-  id mock_application_handler_;
-  id mock_response_;
-  id mock_notification_;
+  raw_ptr<send_tab_to_self::FakeSendTabToSelfModel> model_ = nullptr;
+  id<SceneCommands> application_handler_ = nil;
+  id mock_response_ = nil;
+  id mock_notification_ = nil;
 };
 
+// Tests that interacting with a valid send tab notification loads the URL in a
+// new tab and marks the entry opened and activated in the model.
 TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   // Add an entry to the fake model.
   const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
-      GURL("https://www.example.com"), "title", "device",
+      GURL(base::SysNSStringToUTF8(kTestUrl)), "title", "device",
       send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+  ASSERT_NE(nullptr, entry);
   std::string guid = entry->GetGUID();
 
   // Set up expectation BEFORE the action.
   OCMExpect([application_handler_
       openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
-        EXPECT_EQ(GURL("https://www.example.com/"), command.URL);
+        EXPECT_EQ(GURL(base::SysNSStringToUTF8(kTestUrl)), command.URL);
         EXPECT_NSEQ(base::SysUTF8ToNSString(guid),
                     command.sendTabToSelfEntryGUID);
         return YES;
@@ -167,11 +182,17 @@ TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.Notifications.SendTab.Interaction"),
+            1);
 }
 
+// Tests that interacting with a send tab notification when the entry has not
+// arrived in the model yet buffers the GUID on the model and loads the URL.
 TEST_F(SendTabPushNotificationClientTest,
        TestNotificationInteraction_EntryNotInModelYet) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   std::string guid = "guid_not_in_model_yet";
 
   // Do NOT add the entry to `model_` prior to interaction to simulate the race
@@ -180,7 +201,7 @@ TEST_F(SendTabPushNotificationClientTest,
   // Set up expectation BEFORE the action.
   OCMExpect([application_handler_
       openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
-        EXPECT_EQ(GURL("https://www.example.com/"), command.URL);
+        EXPECT_EQ(GURL(base::SysNSStringToUTF8(kTestUrl)), command.URL);
         EXPECT_NSEQ(base::SysUTF8ToNSString(guid),
                     command.sendTabToSelfEntryGUID);
         return YES;
@@ -201,11 +222,16 @@ TEST_F(SendTabPushNotificationClientTest,
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.Notifications.SendTab.Interaction"),
+            1);
 }
 
+// Tests that non-send-tab notifications are rejected by the client.
 TEST_F(SendTabPushNotificationClientTest,
        TestNotificationInteraction_NotSendTabNotification) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   bool handle_interaction = client_->HandleNotificationInteraction(
       MockRequestResponse(/*is_send_tab_notification=*/false));
 
@@ -215,4 +241,43 @@ TEST_F(SendTabPushNotificationClientTest,
 
   histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
                                     0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.Notifications.SendTab.Interaction"),
+            0);
+}
+
+// Tests that notification interactions with invalid URLs are rejected.
+TEST_F(SendTabPushNotificationClientTest,
+       TestNotificationInteraction_InvalidUrl) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  OCMReject([application_handler_ openURLInNewTab:[OCMArg any]]);
+  bool handle_interaction =
+      client_->HandleNotificationInteraction(MockRequestResponse(
+          /*is_send_tab_notification=*/true, "guid123", @"not-a-valid-url"));
+  EXPECT_FALSE(handle_interaction);
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.Notifications.SendTab.Interaction"),
+            0);
+}
+
+// Tests that notification interactions with empty URLs are rejected.
+TEST_F(SendTabPushNotificationClientTest,
+       TestNotificationInteraction_EmptyUrl) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  OCMReject([application_handler_ openURLInNewTab:[OCMArg any]]);
+  bool handle_interaction =
+      client_->HandleNotificationInteraction(MockRequestResponse(
+          /*is_send_tab_notification=*/true, "guid123", @""));
+  EXPECT_FALSE(handle_interaction);
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.Notifications.SendTab.Interaction"),
+            0);
 }
