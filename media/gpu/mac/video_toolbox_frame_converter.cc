@@ -209,7 +209,6 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  frame->set_color_space(shared_image->color_space());
   frame->set_hdr_metadata(metadata->hdr_metadata);
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;

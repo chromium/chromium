@@ -455,7 +455,6 @@ scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
           base::NullCallback(), frame->visible_rect(), frame->natural_size(),
           frame->timestamp());
 
-  video_frame->set_color_space(color_space);
   video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
   return video_frame;

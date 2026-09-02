@@ -152,7 +152,6 @@ class MockVideoDecoder : public VideoDecoder {
             PIXEL_FORMAT_ABGR, shared_image, gpu::SyncToken(),
             GetReleaseMailboxCB(), config_.visible_rect(),
             config_.natural_size(), buffer->timestamp());
-        frame->set_color_space(shared_image->color_space());
         frame->metadata().power_efficient = true;
         output_cb_.Run(frame);
       }

@@ -192,7 +192,6 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     CHECK(video_frame);
 
     video_frame->set_metadata(frame.frame_info->metadata);
-    video_frame->set_color_space(frame.frame_info->color_space);
 
     auto mapped_frame = media::ConvertToMemoryMappedFrame(video_frame);
     CHECK(mapped_frame);

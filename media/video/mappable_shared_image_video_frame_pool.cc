@@ -1155,8 +1155,6 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   frame->SetReleaseMailboxCB(
       base::BindOnce(&PoolImpl::SharedImageReleased, this, frame_resource));
 
-  frame->set_color_space(frame_resource->shared_image->color_space());
-
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
   return frame;

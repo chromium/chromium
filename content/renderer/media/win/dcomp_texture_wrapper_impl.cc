@@ -208,7 +208,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
           base::BindOnce(&OnReleaseVideoFrame, dcomp_texture_resources_)),
       gfx::Rect(shared_image->size()), natural_size_, base::TimeDelta());
 
-  frame->set_color_space(shared_image->color_space());
   frame->metadata().dcomp_surface = true;
 
   std::move(create_video_frame_cb).Run(frame);

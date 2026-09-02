@@ -279,6 +279,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
           info->pixel_format, info->coded_size, info->visible_rect,
           info->visible_rect.size(), mapping, info->timestamp);
       ASSERT_TRUE(frame);
+      frame->set_color_space(info->color_space);
       frame->AddDestructionObserver(
           base::BindOnce([](base::ReadOnlySharedMemoryMapping mapping) {},
                          std::move(mapping)));
@@ -309,7 +310,6 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
     }
 
     frame->set_metadata(info->metadata);
-    frame->set_color_space(info->color_space);
     OnFrameCapturedMock();
     frames_.push_back(std::move(frame));
     done_callbacks_.push_back(

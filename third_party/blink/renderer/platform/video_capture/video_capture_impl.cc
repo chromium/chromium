@@ -636,7 +636,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     return false;
   }
 
-  frame->set_color_space(shared_image->color_space());
   frame->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible =

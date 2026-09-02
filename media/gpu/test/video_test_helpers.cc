@@ -727,13 +727,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       LOG(ERROR) << "Failed to create a mappable shared image.";
       return nullptr;
     }
-    auto video_frame = media::VideoFrame::WrapMappableSharedImage(
+    return media::VideoFrame::WrapMappableSharedImage(
         std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
         base::NullCallback(), visible_rect_, natural_size_, frame_timestamp);
-    if (video_frame) {
-      video_frame->set_color_space(color_space);
-    }
-    return video_frame;
   } else {
     const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();

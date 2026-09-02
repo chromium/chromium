@@ -2228,8 +2228,6 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
     return nullptr;
   }
 
-  frame->set_color_space(nv12_shared_image->color_space());
-
   input_buffers_free_.pop_back();
   frame->AddDestructionObserver(
       base::BindPostTaskToCurrentDefault(blink::BindOnce(
@@ -2449,10 +2447,6 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
   black_frame_ = media::VideoFrame::WrapMappableSharedImage(
       std::move(shared_image), sync_token, base::NullCallback(),
       gfx::Rect(mapping->Size()), natural_size, base::TimeDelta());
-
-  if (black_frame_) {
-    black_frame_->set_color_space(black_frame_->shared_image()->color_space());
-  }
 
   return true;
 }

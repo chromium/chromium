@@ -423,7 +423,6 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     return nullptr;
   }
 
-  video_frame->set_color_space(color_space);
   video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
   return video_frame;

@@ -263,7 +263,6 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   auto codec_image_holder = std::move(record.codec_image_holder);
 
   CHECK(record.shared_image);
-  gfx::ColorSpace color_space = record.shared_image->color_space();
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       pixel_format, std::move(record.shared_image), gpu::SyncToken(),
       VideoFrame::ReleaseMailboxCB(), frame_info.visible_rect, natural_size,
@@ -280,7 +279,6 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   // For Vulkan.
   frame->metadata().ycbcr_info = frame_info.ycbcr_info;
 
-  frame->set_color_space(color_space);
   frame->set_hdr_metadata(hdr_metadata);
 
   frame->metadata().copy_required = video_frame_copy_required;

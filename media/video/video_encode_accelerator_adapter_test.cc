@@ -147,11 +147,9 @@ class VideoEncodeAcceleratorAdapterTest
     std::ranges::fill(scoped_mapping->GetMemoryForPlane(0), 0x96);
     std::ranges::fill(scoped_mapping->GetMemoryForPlane(1), 0x28);
 
-    auto frame = VideoFrame::WrapMappableSharedImage(
+    return VideoFrame::WrapMappableSharedImage(
         std::move(shared_image), sii_->GenVerifiedSyncToken(),
         base::NullCallback(), gfx::Rect(size), size, timestamp);
-    frame->set_color_space(kYUVColorSpace);
-    return frame;
   }
 
   scoped_refptr<VideoFrame> CreateGreenCpuFrame(gfx::Size size,

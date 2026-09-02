@@ -959,9 +959,6 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
       base::BindOnce(release_mailbox_cb_, std::move(wait_complete_cb)));
   frame->metadata().power_efficient = true;
 
-  // If the output texture is in RGB pixel format, then the color space needs to
-  // be updated using the color space of the output texture.
-  frame->set_color_space(shared_image->color_space());
   if (shared_image->color_space().IsHDR()) {
     // Some streams may have varying metadata, so bitstream metadata should be
     // preferred over metadata provide by the configuration.

@@ -282,8 +282,6 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  frame->set_color_space(color_space);
-
   // Make sure the Mojo callback is called on the same thread as where the Mojo
   // call is received (here).
   frame->AddDestructionObserver(

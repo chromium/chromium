@@ -75,7 +75,6 @@ class FakeGpuVideoDecoder : public media::FakeVideoDecoder {
         media::VideoFrame::ReleaseMailboxCB(), current_config_.visible_rect(),
         current_config_.natural_size(), buffer.timestamp());
     frame->metadata().power_efficient = true;
-    frame->set_color_space(shared_image->color_space());
     return frame;
   }
 
