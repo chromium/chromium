@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -98,6 +99,17 @@ void IDBValue::SetData(mojo_base::BigBuffer new_data) {
   }
 
   data_from_mojo_ = std::move(new_data);
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  // Remove the bytes from shared memory to free up the FD and avoid FD
+  // exhaustion. See crbug.com/342779913. Apple uses Mach send rights for shared
+  // memory handles rather than FDs; see `PlatformSharedMemoryHandle`.
+  //
+  // This extra copy is inefficient and unnecessary in the case where FD
+  // pressure is not a concern. We might consider doing this more heuristically
+  // (e.g. only after N BigBuffers are in use concurrently).
+  data_from_mojo_.MakePrivateBytes();
+#endif
 }
 
 scoped_refptr<BlobDataHandle> IDBValue::TakeLastBlob() {
