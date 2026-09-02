@@ -233,6 +233,10 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     return;
   }
   for (const url::Origin& origin : iframe_origins) {
+    // Skip if the iframe origin matches the main frame origin.
+    if (origin == manager.client().GetLastCommittedPrimaryMainFrameOrigin()) {
+      continue;
+    }
     if (!manager.client()
              .GetAutofillOptimizationGuideDecider()
              ->IsUrlEligibleForOmniboxAutofill(origin.GetURL())) {

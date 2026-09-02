@@ -155,6 +155,53 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillDelegateBrowserTest,
 }
 
 // Checks that Omnibox Autofill is allowed when form fields are contained within
+// an iframe with the same origin as the main frame, even though that frame is
+// not in the allowlist.
+IN_PROC_BROWSER_TEST_F(OmniboxAutofillDelegateBrowserTest,
+                       FieldsInSameOriginIframe_Succeeds) {
+  base::HistogramTester histogram_tester;
+
+  SetUrlContent("/iframe.html", R"(<input autocomplete="cc-exp">)");
+
+  std::string main_content = base::StringPrintf(
+      R"(<form>
+           <input autocomplete="cc-name">
+           <input autocomplete="cc-number">
+           <iframe src="%s"></iframe>
+         </form>)",
+      embedded_https_test_server()
+          .GetURL("a.com", "/iframe.html")
+          .spec()
+          .c_str());
+
+  SetUrlContent("/form.html", main_content);
+
+  // Decider should not be queried for same origin iframes.
+  EXPECT_CALL(optimization_guide_decider(), IsUrlEligibleForOmniboxAutofill)
+      .Times(0);
+
+  GURL url = embedded_https_test_server().GetURL("a.com", "/form.html");
+  autofill_client().set_last_committed_primary_main_frame_url(url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  AutofillManager& manager = driver->GetAutofillManager();
+
+  const FormStructure* form = WaitForMatchingForm(
+      &manager, base::BindRepeating([](const FormStructure& form) {
+        return form.field_count() == 3;
+      }));
+  ASSERT_TRUE(form);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+               OmniboxAutofillShowChipDecisionPart1::kSuccess) == 1;
+  }));
+}
+
+// Checks that Omnibox Autofill is allowed when form fields are contained within
 // an iframe, as long as that iframe is allowlisted.
 IN_PROC_BROWSER_TEST_F(OmniboxAutofillDelegateBrowserTest,
                        FieldsInAllowlistedIframe_Succeeds) {
