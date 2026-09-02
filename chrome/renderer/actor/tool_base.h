@@ -91,12 +91,6 @@ class ToolBase {
   // Used primarily for logging and debugging.
   virtual std::string DebugString() const = 0;
 
-  // The amount of time to wait when observing tool execution before starting to
-  // wait for page stability. 0 by default, meaning no delay, but tools can
-  // override this on a case-by-case basis when the expected effects of tool use
-  // may happen asynchronously outside of the injected events.
-  virtual base::TimeDelta ExecutionObservationDelay() const;
-
   // Scrolls the target element into view if it's not already. If the target is
   // a coordinate, the coordinate is updated to reflect the new location after
   // scrolling. Returns true if a scroll into view was requested.

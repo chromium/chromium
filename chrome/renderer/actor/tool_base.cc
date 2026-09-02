@@ -314,10 +314,6 @@ WebWidget* ResolvedTarget::GetWidget(const ToolBase& tool) const {
   return nullptr;
 }
 
-base::TimeDelta ToolBase::ExecutionObservationDelay() const {
-  return base::TimeDelta();
-}
-
 bool ToolBase::SupportsPaintStability() const {
   return false;
 }

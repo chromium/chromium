@@ -50,7 +50,6 @@ class TypeTool : public ToolBase {
   void Execute(ToolFinishedCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;
-  base::TimeDelta ExecutionObservationDelay() const override;
   bool SupportsPaintStability() const override;
 
  private:
