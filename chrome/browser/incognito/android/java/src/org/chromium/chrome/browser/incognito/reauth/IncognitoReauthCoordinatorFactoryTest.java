@@ -31,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
@@ -60,7 +59,6 @@ import java.util.Collection;
  * <p>TODO(crbug.com/40056462): Remove parameterization to improve readability of the tests.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class IncognitoReauthCoordinatorFactoryTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
