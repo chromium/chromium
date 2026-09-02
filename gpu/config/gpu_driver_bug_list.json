@@ -3889,6 +3889,15 @@
       "features": [
         "finish_before_blit_framebuffer_multi_attachment"
       ]
+    },
+    {
+      "id": 494,
+      "cr_bugs": [553172761],
+      "description": "For texture formats which would be twiddled on the host CPU, upload via TexSubImage2D instead of TexImage2D.",
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "use_tex_sub_image_for_host_twiddled_npot_uploads"
+      ]
     }
   ]
 }
