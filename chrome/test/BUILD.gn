@@ -44,7 +44,6 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
-import("//third_party/protobuf/proto_library.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/gl/features.gni")
@@ -144,31 +143,8 @@ static_library("test_support") {
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:global_features",
-    "//chrome/browser/background",
-    "//chrome/browser/bookmarks",
-    "//chrome/browser/bookmarks:test_support",
-    "//chrome/browser/component_updater",
-    "//chrome/browser/lifetime",
-    "//chrome/browser/omnibox",
-    "//chrome/browser/password_manager",
-    "//chrome/browser/password_manager:test_support",
-    "//chrome/browser/password_manager/factories",
-    "//chrome/browser/performance_manager:test_support",
-    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/browser/profiles/keep_alive",
-    "//chrome/browser/regional_capabilities",
-    "//chrome/browser/ssl",
-    "//chrome/browser/status_icons",
-    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/update_client",
-    "//components/activity_reporter",
-    "//components/affiliations/core/browser:test_support",
-    "//components/record_replay/core/common",
-    "//components/supervised_user/core/browser:device_parental_controls",
-    "//components/supervised_user/core/browser:test_support",
-    "//ui/base/unowned_user_data",
   ]
 
   if (is_android || is_mac || is_win || is_chromeos) {
@@ -223,13 +199,6 @@ static_library("test_support") {
   }
   if (!is_android) {
     public_deps += [ "//chrome/renderer:process_state" ]
-    deps += [
-      "//chrome/browser/apps/app_service/publishers",
-      "//chrome/browser/hid",
-      "//chrome/browser/signin:signin_browser_test_base",
-      "//components/record_replay/content/renderer",
-      "//components/storage_monitor:test_support",
-    ]
   }
 
   if (enable_dice_support || is_chromeos) {
@@ -248,8 +217,6 @@ static_library("test_support") {
       "//extensions:test_support",
     ]
 
-    deps += [ "//chrome/renderer/extensions" ]
-
     # TODO(crbug.com/521960574): Fix extension_browsertest.cc and eliminate this
     # circular dependency.
     allow_circular_includes_from +=
@@ -259,25 +226,15 @@ static_library("test_support") {
   if (enable_extensions) {
     deps += [
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/sync_file_system",
-      "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:test_support",
       "//chrome/browser/ui/web_applications/test:test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/renderer/extensions",
-      "//components/media_router/browser:test_support",
-      "//components/media_router/common:test_support",
-      "//components/no_state_prefetch/browser",
+      "//components/security_interstitials/content:security_interstitial_page",
       "//components/web_package",
-      "//components/web_package/test_support",
-      "//components/webapps/browser",
       "//components/webapps/browser:test_support",
+      "//components/webapps/common",
       "//components/webapps/isolated_web_apps",
-      "//extensions/renderer",
-      "//extensions/strings",
-      "//third_party/zlib/google:zip",
     ]
 
     public_deps += [
@@ -302,74 +259,6 @@ static_library("test_support") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  deps += [
-    "//chrome/app:command_ids",
-    "//chrome/browser/autofill",
-    "//chrome/browser/background_fetch",
-    "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/custom_handlers",
-    "//chrome/browser/history",
-    "//chrome/browser/notifications",
-    "//chrome/browser/notifications:impl",
-    "//chrome/browser/notifications:system_notification_helper",
-    "//chrome/browser/performance_manager",
-    "//chrome/browser/permissions",
-    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
-    "//chrome/browser/policy/messaging_layer/storage_selector",
-    "//chrome/browser/prefs",
-    "//chrome/browser/prefs:util",
-    "//chrome/browser/profiles:profiles_extra_parts",
-    "//chrome/browser/reading_list",
-    "//chrome/browser/search_engines",
-    "//chrome/browser/serial",
-    "//chrome/browser/subresource_filter",
-    "//chrome/browser/sync",
-    "//chrome/browser/transition_manager",
-    "//chrome/browser/ui:browser_element_identifiers",
-    "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
-    "//chrome/browser/ui/webui:configs",
-    "//chrome/browser/ui/zoom",
-    "//chrome/browser/usb",
-    "//chrome/browser/webdata_services",
-    "//chrome/common/search:mojo_bindings",
-    "//components/application_locale_storage",
-    "//components/autofill/content/renderer:test_support",
-    "//components/blocked_content",
-    "//components/content_settings/browser",
-    "//components/enterprise",
-    "//components/infobars/content",
-    "//components/input",
-    "//components/network_session_configurator/common",
-    "//components/os_crypt/common:switches",
-    "//components/performance_manager",
-    "//components/performance_manager/test_support:test_support_common",
-    "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
-    "//components/reporting/storage:test_support",
-    "//components/reporting/util:status_macros",
-    "//components/reporting/util:test_callbacks_support",
-    "//components/safe_browsing/core/browser/db:sb_database",
-    "//components/safe_browsing/core/common",
-    "//components/security_interstitials/content:security_interstitial_page",
-    "//components/security_interstitials/core:unsafe_resource",
-    "//components/segmentation_platform/public",
-    "//components/segmentation_platform/public:test_support",
-    "//components/signin/core/browser",
-    "//components/spellcheck/renderer",
-    "//components/subresource_filter/core/browser:test_support",
-    "//components/subresource_filter/core/common:test_support",
-    "//components/ukm:test_support",
-    "//components/user_education/common",
-    "//components/user_manager",
-    "//components/web_package",
-    "//components/webapps/browser",
-    "//components/webapps/common",
-    "//ui/menus",
-    "//ui/webui",
-  ]
-
-  # New deps should go in the non-iOS section below.
   public_deps += [
     "//base/i18n:test_support",
     "//base/test:test_support",
