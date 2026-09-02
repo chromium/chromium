@@ -16,6 +16,7 @@ static_library("test_support") {
 
   deps = [
     "//ash",
+    "//ash:test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
@@ -26,16 +27,16 @@ static_library("test_support") {
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/exclusive_access:test_support",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
+    "//chrome/browser/ui/views/frame:immersive_mode_tester",
+    "//chrome/test/base:in_process_browser_test",
+    "//chrome/test/base:mixin_based_in_process_browser_test",
+    "//chrome/test/base:ui_test_utils",
     "//chromeos/ui/base",
     "//content/public/browser",
     "//ui/aura",
     "//ui/display",
     "//ui/views:test_support",
   ]
-
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
 }
 
 # Gather unit tests from subdirectories.

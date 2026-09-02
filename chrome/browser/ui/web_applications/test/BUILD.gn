@@ -26,3 +26,86 @@ source_set("test_support") {
     "//url",
   ]
 }
+
+source_set("test_support_ui") {
+  testonly = true
+
+  sources = [
+    "isolated_web_app_test_utils.cc",
+    "isolated_web_app_test_utils.h",
+    "web_app_browsertest_util.cc",
+    "web_app_browsertest_util.h",
+    "web_app_navigation_browsertest.cc",
+    "web_app_navigation_browsertest.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/profiles:profile_io_data",
+    "//chrome/browser/ui:browser_init_state",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/web_applications:test_support",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/isolated_web_apps",
+    "//chrome/test/base:in_process_browser_test",
+    "//components/webapps/browser:test_support",
+    "//net",
+  ]
+
+  # web_app_browsertest_util.cc includes
+  # web_applications/web_app_browsertest_base.h, while that target depends
+  # back on this one (via web_applications:test_support) for
+  # web_app_browsertest_util.h -- a genuine bidirectional pair.
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/web_applications:test_support" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:chrome_browser_main",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/security_state/core",
+    "//components/user_education/views",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
+
+if (is_chromeos) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    sources = [ "system_web_app_interactive_uitest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":test_support_ui",
+      "//ash",
+      "//base",
+      "//chrome/browser/ash/app_list/app_service",
+      "//chrome/browser/ash/login:test_support",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+      "//chrome/browser/renderer_context_menu:test_support",
+      "//chrome/browser/ui/ash/multi_user",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/web_applications:test_support",
+      "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
+      "//chrome/test/base:interactive_test_utils",
+      "//chrome/test/base:ui_test_utils",
+      "//testing/gtest",
+    ]
+  }
+}

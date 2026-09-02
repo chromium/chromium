@@ -263,23 +263,14 @@ static_library("test_support") {
   }
 
   if (enable_extensions) {
-    # TODO(crbug.com/521960574): Move these into build files closer to the
-    # sources.
-    sources += [
-      "../browser/ui/web_applications/test/isolated_web_app_test_utils.cc",
-      "../browser/ui/web_applications/test/isolated_web_app_test_utils.h",
-      "../browser/ui/web_applications/test/web_app_browsertest_util.cc",
-      "../browser/ui/web_applications/test/web_app_browsertest_util.h",
-      "../browser/ui/web_applications/web_app_browsertest_base.cc",
-      "../browser/ui/web_applications/web_app_browsertest_base.h",
-    ]
-
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/sync_file_system",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:test_support",
+      "//chrome/browser/ui/web_applications/test:test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/renderer/extensions",
       "//components/media_router/browser:test_support",
@@ -2391,6 +2382,7 @@ if (!is_android) {
       "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:browser_tests",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/ui/webauthn:browser_tests",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:browser_tests",
@@ -3813,7 +3805,6 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
         "../browser/ui/wallet/walletable_pass_bubble_controller_browsertest.cc",
         "../browser/ui/wallet/walletable_pass_save_bubble_view_browsertest.cc",
-        "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
 
       deps += [
@@ -8145,8 +8136,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_integration_test_driver.h",
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.cc",
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
-      "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
-      "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -8177,6 +8166,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/browser/ui/views/web_apps/sub_apps",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test/base:browser_feature_test_waiters",
       "//chrome/test/base:chrome_test_utils",
@@ -8559,7 +8549,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_interactive_uitest.cc",
       "../browser/ui/views/webview_interactive_uitest.cc",
-      "../browser/ui/web_applications/web_app_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
     ]
@@ -8802,6 +8791,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/user_education:interactive_ui_tests",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:interactive_ui_tests",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/ui/webui:chrome_web_contents_handler",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
       "//chrome/browser/ui/webui/cr_components/history_embeddings:interactive_ui_tests",
@@ -9258,10 +9249,7 @@ if (!is_android && !is_chromeos_device) {
       }
 
       if (is_chromeos) {
-        sources += [
-          "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
-          "//ash/drag_drop/drag_drop_interactive_uitest.cc",
-        ]
+        sources += [ "//ash/drag_drop/drag_drop_interactive_uitest.cc" ]
 
         deps += [
           "//ash",
@@ -9284,6 +9272,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ui/ash/cast_config",
           "//chrome/browser/ui/ash/login",
           "//chrome/browser/ui/ash/multi_user",
+          "//chrome/browser/ui/web_applications/test:interactive_ui_tests",
           "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",
