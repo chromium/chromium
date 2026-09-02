@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 

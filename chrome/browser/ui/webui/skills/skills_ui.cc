@@ -39,6 +39,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 

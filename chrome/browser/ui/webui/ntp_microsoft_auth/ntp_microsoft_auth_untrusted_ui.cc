@@ -13,6 +13,7 @@
 #include "chrome/grit/new_tab_page_untrusted_resources.h"
 #include "chrome/grit/new_tab_page_untrusted_resources_map.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

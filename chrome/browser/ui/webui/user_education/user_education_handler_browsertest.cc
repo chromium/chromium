@@ -16,6 +16,7 @@
 #include "components/user_education/webui/user_education.mojom-shared.h"
 #include "components/user_education/webui/user_education.mojom.h"
 #include "components/webui/chrome_urls/pref_names.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"

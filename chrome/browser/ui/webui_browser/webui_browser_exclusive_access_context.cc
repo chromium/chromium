@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/views/widget/widget.h"
 
 // TODO(webium): We support both browser and tab fullscreen by passing an enum

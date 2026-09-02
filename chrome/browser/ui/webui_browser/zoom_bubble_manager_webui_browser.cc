@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui_browser/zoom_bubble_manager_webui_browser.h"
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"

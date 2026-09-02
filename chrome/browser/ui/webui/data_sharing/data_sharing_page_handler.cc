@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 

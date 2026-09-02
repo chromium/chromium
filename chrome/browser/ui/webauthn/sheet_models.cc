@@ -38,6 +38,7 @@
 #include "device/fido/public/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 

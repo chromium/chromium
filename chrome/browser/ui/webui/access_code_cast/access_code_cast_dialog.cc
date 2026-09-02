@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

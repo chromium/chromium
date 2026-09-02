@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/sync/base/features.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"

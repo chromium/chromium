@@ -35,8 +35,10 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "extensions/common/constants.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

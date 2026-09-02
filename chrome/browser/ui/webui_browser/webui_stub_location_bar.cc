@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui_browser/webui_stub_location_bar.h"
 
 #include "base/notimplemented.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

@@ -17,6 +17,7 @@
 #include "chrome/grit/signin_signout_confirmation_resources.h"
 #include "chrome/grit/signin_signout_confirmation_resources_map.h"
 #include "components/sync/base/features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
