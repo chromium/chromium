@@ -61,6 +61,7 @@ bool IsToolbarGlowUpBackForwardEnabled();
 bool IsMenuSimplificationEnabled();
 bool IsTabGroupColorRefreshEnabled();
 bool IsWebuiRefresh2026Enabled();
+bool IsSettingsRefresh2026Enabled();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

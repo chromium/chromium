@@ -104,6 +104,12 @@ bool IsWebuiRefresh2026Enabled() {
          base::FeatureList::IsEnabled(kWebuiRefresh2026);
 }
 
+bool IsSettingsRefresh2026Enabled() {
+  return (base::FeatureList::IsEnabled(kDesktopGlowUp) ||
+          base::FeatureList::IsEnabled(kWebuiRefresh2026)) &&
+         base::FeatureList::IsEnabled(kSettingsRefresh2026);
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kDseIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the feature to remove the last confirmation dialog when relaunching
