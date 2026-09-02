@@ -287,7 +287,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
     if (tab && tab->IsActivated()) {
       CHECK(tab->GetBrowserWindowInterface());
       ToastController* const toast_controller =
-          tab->GetBrowserWindowInterface()->GetFeatures().toast_controller();
+          ToastController::From(tab->GetBrowserWindowInterface());
       if (toast_controller) {
         toast_controller->MaybeShowToast(
             ToastParams(ToastId::kClearBrowsingData));

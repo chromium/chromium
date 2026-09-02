@@ -106,7 +106,7 @@ ToastController* ToastController::MaybeGetForTabInterface(
     return nullptr;
   }
 
-  return bwi->GetFeatures().toast_controller();
+  return ToastController::From(bwi);
 }
 
 void ToastController::Init() {

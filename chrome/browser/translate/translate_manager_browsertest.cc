@@ -286,7 +286,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
   }
 
   ToastController* GetToastController() {
-    return browser()->GetFeatures().toast_controller();
+    return ToastController::From(browser());
   }
 
   bool IsToastShown(ToastId id) {

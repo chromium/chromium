@@ -88,7 +88,7 @@ void ShowSharedTabGroupVersionUpToDateToast(
     return;
   }
 
-  ToastController* toast_controller = browser->GetFeatures().toast_controller();
+  ToastController* toast_controller = ToastController::From(browser.get());
   if (!toast_controller) {
     return;
   }

@@ -1670,8 +1670,7 @@ ToastController* ChromeAutofillClient::GetToastController() {
   }
   BrowserWindowInterface* window_interface =
       tab_interface->GetBrowserWindowInterface();
-  return window_interface ? window_interface->GetFeatures().toast_controller()
-                          : nullptr;
+  return window_interface ? ToastController::From(window_interface) : nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

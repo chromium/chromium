@@ -132,8 +132,7 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
                         int message_id,
                         const std::u16string& replacement = u"",
                         const gfx::VectorIcon* expected_icon = nullptr) {
-    ToastController* toast_controller =
-        browser()->GetFeatures().toast_controller();
+    ToastController* toast_controller = ToastController::From(browser());
 
     EXPECT_EQ(toast_controller->GetCurrentToastId(), expected_id);
     toasts::ToastView* toast_view = toast_controller->GetToastViewForTesting();

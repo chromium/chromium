@@ -253,7 +253,7 @@ class PasswordAutoSignInToastTest : public base::test::WithFeatureOverride,
             password_manager::features::kCredentialManagementUnifiedUi) {}
 
   ToastController* GetToastController() {
-    return browser()->GetFeatures().toast_controller();
+    return ToastController::From(browser());
   }
 
   page_actions::PageActionTestAccessor GetIconAccessor() {

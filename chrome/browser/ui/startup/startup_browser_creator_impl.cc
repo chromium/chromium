@@ -859,7 +859,7 @@ void StartupBrowserCreatorImpl::MaybeShowNonMilestoneUpdateToast(
       local_state->GetString(prefs::kNonMilestoneUpdateToastVersion);
 
   if (IsNonMilestoneUpdate(last_version_string, current_version_string)) {
-    browser->GetFeatures().toast_controller()->MaybeShowToast(
+    ToastController::From(browser)->MaybeShowToast(
         ToastParams(ToastId::kNonMilestoneUpdate));
   }
   local_state->SetString(prefs::kNonMilestoneUpdateToastVersion,

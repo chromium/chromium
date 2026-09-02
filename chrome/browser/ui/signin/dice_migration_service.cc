@@ -65,8 +65,7 @@ bool MaybeMigrateUser(Profile* profile) {
 }
 
 bool MaybeShowToast(BrowserWindowInterface* browser) {
-  ToastController* const toast_controller =
-      browser->GetFeatures().toast_controller();
+  ToastController* const toast_controller = ToastController::From(browser);
   if (!toast_controller) {
     return false;
   }

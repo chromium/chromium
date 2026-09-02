@@ -385,11 +385,7 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
 
   auto StopToastTimer() {
     return Do([this]() {
-      browser()
-          ->GetFeatures()
-          .toast_controller()
-          ->GetToastCloseTimerForTesting()
-          ->Stop();
+      ToastController::From(browser())->GetToastCloseTimerForTesting()->Stop();
     });
   }
 

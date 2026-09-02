@@ -150,7 +150,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
   InteractiveTestApi::MultiStep CheckToastIsShowing(ToastId toast_id) {
     return PollUntil(
         [this, toast_id]() {
-          auto* controller = browser()->GetFeatures().toast_controller();
+          auto* controller = ToastController::From(browser());
           return controller && controller->IsShowingToast() &&
                  controller->GetCurrentToastId() == toast_id;
         },
