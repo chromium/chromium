@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -143,6 +144,7 @@ class PageActionUiTestBase {
         /*disabled_features=*/{
             lens::features::kLensOverlay,
             features::kPageActionsPrioritySelector,
+            features::kWebUILocationBar,
         });
   }
 
