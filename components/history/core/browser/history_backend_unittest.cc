@@ -6632,4 +6632,79 @@ TEST_F(HistoryBackendTest, ProcessDBTaskWithMultipleIterations) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HistoryBackendTest, GetRedirectChain_CappedAtMaxLength) {
+  const int kChainLength = 50;
+  base::Time now = base::Time::Now();
+
+  auto [url_id, prev_visit_id] = backend_->AddPageVisit(
+      GURL("https://example.com/start"), now, /*referring_visit=*/0,
+      /*external_referrer_url=*/GURL(),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_CHAIN_START |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      /*hidden=*/false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+      /*should_increment_typed_count=*/false, /*opener_visit=*/0,
+      /*consider_for_ntp_most_visited=*/true);
+
+  VisitRow last_visit;
+  for (int i = 1; i < kChainLength; ++i) {
+    auto [refresh_url_id, next_visit_id] = backend_->AddPageVisit(
+        GURL("https://example.com/refresh"), now + base::Seconds(i),
+        /*referring_visit=*/prev_visit_id,
+        /*external_referrer_url=*/GURL(),
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                  ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+                                  ui::PAGE_TRANSITION_CHAIN_END),
+        /*hidden=*/false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+        /*should_increment_typed_count=*/false, /*opener_visit=*/0,
+        /*consider_for_ntp_most_visited=*/true);
+    prev_visit_id = next_visit_id;
+    if (i == kChainLength - 1) {
+      backend_->db()->GetRowForVisit(next_visit_id, &last_visit);
+    }
+  }
+
+  VisitVector chain = backend_->GetRedirectChain(last_visit);
+  EXPECT_EQ(chain.size(), HistoryBackend::kMaxRedirectChainLength);
+  EXPECT_EQ(chain.back().visit_id, last_visit.visit_id);
+}
+
+TEST_F(HistoryBackendTest, GetAnnotatedVisits_LongRedirectChain) {
+  const int kChainLength = 50;
+  base::Time now = base::Time::Now();
+
+  auto [url_id, prev_visit_id] = backend_->AddPageVisit(
+      GURL("https://example.com/start"), now, /*referring_visit=*/0,
+      /*external_referrer_url=*/GURL(),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_CHAIN_START |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      /*hidden=*/false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+      /*should_increment_typed_count=*/false, /*opener_visit=*/0,
+      /*consider_for_ntp_most_visited=*/true);
+
+  for (int i = 1; i < kChainLength; ++i) {
+    auto [refresh_url_id, next_visit_id] = backend_->AddPageVisit(
+        GURL("https://example.com/refresh"), now + base::Seconds(i),
+        /*referring_visit=*/prev_visit_id,
+        /*external_referrer_url=*/GURL(),
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                  ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+                                  ui::PAGE_TRANSITION_CHAIN_END),
+        /*hidden=*/false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+        /*should_increment_typed_count=*/false, /*opener_visit=*/0,
+        /*consider_for_ntp_most_visited=*/true);
+    prev_visit_id = next_visit_id;
+  }
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  options.max_count = kChainLength;
+
+  auto annotated_visits = backend_->GetAnnotatedVisits(
+      options, /*compute_redirect_chain_start_properties=*/true,
+      /*get_unclustered_visits_only=*/false);
+  EXPECT_EQ(annotated_visits.size(), static_cast<size_t>(kChainLength));
+}
+
 }  // namespace history

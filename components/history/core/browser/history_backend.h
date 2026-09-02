@@ -207,6 +207,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // and is deleted.
   static constexpr int kExpireDaysThreshold = 90;
 
+  // The maximum redirect chain depth to traverse before stopping. Prevents
+  // quadratic sql query floods on unbounded client-redirect chains.
+  static constexpr size_t kMaxRedirectChainLength = 30;
+
   // Init must be called to complete object creation. This object can be
   // constructed on any thread, but all other functions including Init() must
   // be called on the history thread.

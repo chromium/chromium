@@ -2357,6 +2357,7 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisitsFromRows(
   VisitSourceMap sources;
   GetVisitsSource(visit_rows, &sources);
 
+  base::flat_map<VisitID, VisitRow> redirect_start_cache;
   std::vector<AnnotatedVisit> annotated_visits;
   for (const auto& visit_row : visit_rows) {
     // Add a result row for this visit, get the URL info from the DB.
@@ -2382,7 +2383,19 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisitsFromRows(
     VisitID referring_visit_of_redirect_chain_start = 0;
     VisitID opener_visit_of_redirect_chain_start = 0;
     if (compute_redirect_chain_start_properties) {
-      VisitRow redirect_start = GetRedirectChainStart(visit_row);
+      VisitRow redirect_start;
+      auto it = redirect_start_cache.find(visit_row.visit_id);
+      if (it != redirect_start_cache.end()) {
+        redirect_start = it->second;
+      } else {
+        VisitVector redirect_chain = GetRedirectChain(visit_row);
+        if (!redirect_chain.empty()) {
+          redirect_start = redirect_chain.front();
+          for (const auto& chain_visit : redirect_chain) {
+            redirect_start_cache[chain_visit.visit_id] = redirect_start;
+          }
+        }
+      }
       referring_visit_of_redirect_chain_start = redirect_start.referring_visit;
       opener_visit_of_redirect_chain_start = redirect_start.opener_visit;
     }
@@ -2660,7 +2673,8 @@ VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
   result.push_back(visit);
   if (db_) {
     base::flat_set<VisitID> visit_set;
-    while (!(visit.transition & ui::PAGE_TRANSITION_CHAIN_START)) {
+    while (!(visit.transition & ui::PAGE_TRANSITION_CHAIN_START) &&
+           result.size() < kMaxRedirectChainLength) {
       visit_set.insert(visit.visit_id);
       // `GetRowForVisit()` should not return false if the DB is correct.
       VisitRow referring_visit;
