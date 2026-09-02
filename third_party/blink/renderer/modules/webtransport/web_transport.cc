@@ -1310,6 +1310,10 @@ void WebTransport::OnConnectionEstablished(
   received_streams_underlying_source_->NotifyOpened();
   received_bidirectional_streams_underlying_source_->NotifyOpened();
 
+  // Chromium only establishes WebTransport sessions over HTTP/3 connections
+  // that negotiated H3 Datagram support.
+  reliability_ = V8WebTransportReliabilityMode(
+      V8WebTransportReliabilityMode::Enum::kSupportsUnreliable);
   connection_pending_ = false;
   ready_->ResolveWithUndefined();
 
@@ -2151,6 +2155,10 @@ const String& WebTransport::protocol() {
   return selected_application_protocol_;
 }
 
+V8WebTransportReliabilityMode WebTransport::reliability() const {
+  return reliability_;
+}
+
 V8WebTransportCongestionControl WebTransport::congestionControl() const {
   // TODO(crbug.com/501268547): Per the W3C spec, this attribute should reflect
   // whether the UA *satisfied* the application's congestion control preference.
@@ -2236,6 +2244,13 @@ WebTransport::ExtractSendStreamOptions(
 
 Headers* WebTransport::responseHeaders() const {
   return response_headers_.Get();
+}
+
+// static
+bool WebTransport::supportsReliableOnly() {
+  // Chromium only supports WebTransport over HTTP/3 connections that
+  // negotiated H3 Datagram support.
+  return false;
 }
 
 }  // namespace blink

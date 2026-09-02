@@ -597,6 +597,8 @@ TEST_F(WebTransportTest, FailedConnect) {
   EXPECT_FALSE(web_transport->HasPendingActivity());
   EXPECT_TRUE(ready_tester.IsRejected());
   EXPECT_TRUE(closed_tester.IsRejected());
+  EXPECT_EQ(web_transport->reliability().AsEnum(),
+            V8WebTransportReliabilityMode::Enum::kPending);
 }
 
 TEST_F(WebTransportTest, SendConnectWithFingerprint) {
@@ -2806,6 +2808,9 @@ TEST_F(WebTransportTest, OnClosed) {
   tester.WaitUntilSettled();
 
   EXPECT_TRUE(tester.IsFulfilled());
+  // Closing a session does not change its negotiated reliability mode.
+  EXPECT_EQ(web_transport->reliability().AsEnum(),
+            V8WebTransportReliabilityMode::Enum::kSupportsUnreliable);
   ScriptValue value = tester.Value();
   ASSERT_FALSE(value.IsEmpty());
   ASSERT_TRUE(value.IsObject());
@@ -3746,6 +3751,31 @@ TEST_F(WebTransportTest,
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
             exception_state.Code());
+}
+
+TEST_F(WebTransportTest, ReliabilityPendingBeforeConnection) {
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  auto* web_transport = WebTransport::Create(
+      scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
+      ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(web_transport->reliability().AsEnum(),
+            V8WebTransportReliabilityMode::Enum::kPending);
+}
+
+TEST_F(WebTransportTest, ReliabilitySupportsUnreliableAfterConnection) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, String("https://example.com/"));
+
+  EXPECT_EQ(web_transport->reliability().AsEnum(),
+            V8WebTransportReliabilityMode::Enum::kSupportsUnreliable);
+}
+
+TEST_F(WebTransportTest, SupportsReliableOnlyIsFalse) {
+  EXPECT_FALSE(WebTransport::supportsReliableOnly());
 }
 
 TEST_F(WebTransportTest, CongestionControlThroughput) {

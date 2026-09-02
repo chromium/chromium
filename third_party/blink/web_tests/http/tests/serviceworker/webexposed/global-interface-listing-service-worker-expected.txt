@@ -3639,6 +3639,7 @@ interface WebSocketStream
     method close
     method constructor
 interface WebTransport
+    static getter supportsReliableOnly
     attribute @@toStringTag
     getter anticipatedConcurrentIncomingBidirectionalStreams
     getter anticipatedConcurrentIncomingUnidirectionalStreams
@@ -3650,6 +3651,7 @@ interface WebTransport
     getter incomingUnidirectionalStreams
     getter protocol
     getter ready
+    getter reliability
     getter responseHeaders
     method close
     method constructor

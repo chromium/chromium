@@ -7187,6 +7187,11 @@
       base_feature: "none",
     },
     {
+      name: "WebTransportReliability",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebTransportSendGroup",
       status: "experimental",
       base_feature: "none",
