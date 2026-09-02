@@ -17,6 +17,7 @@ source_set("app_menu") {
     "block_menu_entry_button.h",
     "bookmarks_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
+    "tab_group_dynamic_menu.h",
   ]
 
   public_deps = [
@@ -26,6 +27,7 @@ source_set("app_menu") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views",
     "//components/favicon_base",
     "//components/user_education/common",
@@ -49,6 +51,7 @@ source_set("impl") {
     "block_menu_entry_button.cc",
     "bookmarks_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
+    "tab_group_dynamic_menu.cc",
   ]
 
   deps = [

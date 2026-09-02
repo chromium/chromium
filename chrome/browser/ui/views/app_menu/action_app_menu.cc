@@ -195,7 +195,10 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
   actions::ActionItem* action_item = base_action_item->GetActionItem();
   CHECK(action_item);
   std::optional<actions::ActionId> action_id = action_item->GetActionId();
-  const int command_id = action_id.value_or(next_id_++);
+  int command_id = action_id.value_or(next_id_++);
+  if (command_to_action_map_.contains(command_id)) {
+    command_id = next_id_++;
+  }
 
   // Even though the zoom menu item has children, it should not be treated
   // as a submenu because its children are laid out within the same top

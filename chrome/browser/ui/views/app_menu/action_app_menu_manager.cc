@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/tab_group_dynamic_menu.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/grit/branded_strings.h"
@@ -241,8 +242,7 @@ ActionAppMenuManager::CreateIndirectActionItem(
     DisplayType display_type,
     std::optional<ui::ColorId> container_color,
     std::optional<std::u16string> text_override,
-    std::optional<ui::ImageModel> icon_override,
-    std::optional<base::Uuid> saved_tab_group_guid) {
+    std::optional<ui::ImageModel> icon_override) {
   actions::ActionItem* action =
       actions::ActionManager::Get().FindAction(action_id);
   if (!action) {
@@ -265,11 +265,6 @@ ActionAppMenuManager::CreateIndirectActionItem(
   if (icon_override.has_value()) {
     item->SetProperty(kIconOverrideKey,
                       std::make_unique<ui::ImageModel>(icon_override.value()));
-  }
-
-  if (saved_tab_group_guid.has_value()) {
-    item->SetProperty(kSavedTabGroupGuidKey, std::make_unique<base::Uuid>(
-                                                 saved_tab_group_guid.value()));
   }
 
   return item;
@@ -328,7 +323,9 @@ ActionAppMenuManager::ActionAppMenuManager(
       recent_tabs_menu_(
           std::make_unique<RecentTabsDynamicMenu>(browser_window_interface)),
       bookmarks_menu_(
-          std::make_unique<BookmarksDynamicMenu>(browser_window_interface)) {}
+          std::make_unique<BookmarksDynamicMenu>(browser_window_interface)),
+      tab_groups_menu_(
+          std::make_unique<TabGroupDynamicMenu>(browser_window_interface)) {}
 
 ActionAppMenuManager::~ActionAppMenuManager() = default;
 
@@ -458,6 +455,14 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
 
           sub_builder.AddDivider();
         });
+  }
+
+  if (profile->IsRegularProfile()) {
+    builder.AddDynamicSubmenu(
+        kActionSavedTabGroupsSubmenu,
+        base::BindRepeating(&TabGroupDynamicMenu::BuildTabGroupsAction,
+                            tab_groups_menu_->GetWeakPtr()),
+        [](AppMenuBuilder& sub) { sub.AddAction(kActionCreateNewTabGroup); });
   }
 
   builder.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {

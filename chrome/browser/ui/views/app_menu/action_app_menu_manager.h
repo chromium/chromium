@@ -20,6 +20,7 @@
 
 class RecentTabsDynamicMenu;
 class BookmarksDynamicMenu;
+class TabGroupDynamicMenu;
 
 // Manages the ActionItem hierarchy for the Action App Menu, including
 // constructing the menu tree and managing dynamic submenus.
@@ -45,8 +46,7 @@ class ActionAppMenuManager {
       DisplayType display_type,
       std::optional<ui::ColorId> container_color = std::nullopt,
       std::optional<std::u16string> text_override = std::nullopt,
-      std::optional<ui::ImageModel> icon_override = std::nullopt,
-      std::optional<base::Uuid> saved_tab_group_guid = std::nullopt);
+      std::optional<ui::ImageModel> icon_override = std::nullopt);
 
   static std::unique_ptr<actions::ActionItem> CreateSectionActionItem(
       DisplayType display_type,
@@ -81,6 +81,7 @@ class ActionAppMenuManager {
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;
   std::unique_ptr<BookmarksDynamicMenu> bookmarks_menu_;
+  std::unique_ptr<TabGroupDynamicMenu> tab_groups_menu_;
 };
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
