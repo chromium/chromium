@@ -866,11 +866,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     VLOG(1) << "Distillation terminated because update processing is paused";
     return;
   }
-  // Reset state, including the current side panel selection so we can update
-  // it based on the new main panel selection in PostProcessSelection below.
-  model_.Reset(content_node_ids);
-  read_aloud_model_.ResetReadAloudState();
-
   // Return early if any of the following scenarios occurred while waiting for
   // distillation to complete:
   // 1. tree_id != model_.active_tree_id(): The active tree was changed.
@@ -899,6 +894,11 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     }
     return;
   }
+
+  // Reset state, including the current side panel selection so we can update
+  // it based on the new main panel selection in PostProcessSelection below.
+  model_.Reset(content_node_ids);
+  read_aloud_model_.ResetReadAloudState();
 
   if (!model_.content_node_ids().empty()) {
     // If there are content_node_ids, this means the AXTree was successfully

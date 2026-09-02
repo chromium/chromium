@@ -3193,6 +3193,29 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
 }
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,
+       OnAXTreeDistilled_InactiveTree_DoesNotMutateActiveTreeState) {
+  // Distill active tree with leaf node 2. Display nodes will include ancestor 1
+  // and node 2, but not sibling nodes 3 and 4.
+  OnAXTreeDistilled(tree_id_, {2});
+  EXPECT_THAT(model().content_node_ids(), ElementsAre(2));
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_TRUE(model().display_node_ids().contains(2));
+  EXPECT_FALSE(model().display_node_ids().contains(3));
+  EXPECT_FALSE(model().display_node_ids().contains(4));
+
+  // A delayed distillation callback arrives for a different (inactive) tree ID.
+  ui::AXTreeID inactive_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  OnAXTreeDistilled(inactive_tree_id, {3, 4});
+
+  // Active tree state should not be mutated, cleared, or overwritten.
+  EXPECT_THAT(model().content_node_ids(), ElementsAre(2));
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_TRUE(model().display_node_ids().contains(2));
+  EXPECT_FALSE(model().display_node_ids().contains(3));
+  EXPECT_FALSE(model().display_node_ids().contains(4));
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        OnActiveAXTreeIDChanged_SetsDistillationInProgress) {
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
