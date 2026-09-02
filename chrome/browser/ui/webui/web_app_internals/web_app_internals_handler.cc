@@ -38,7 +38,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/navigation_capturing_log.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
-#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
@@ -324,14 +323,9 @@ void WebAppInternalsHandler::BuildDebugInfo(
 WebAppInternalsHandler::WebAppInternalsHandler(
     content::WebUI* web_ui,
     mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver)
-    : web_ui_(raw_ref<content::WebUI>::from_ptr(web_ui)),
-      profile_(raw_ref<Profile>::from_ptr(Profile::FromBrowserContext(
-          web_ui_->GetWebContents()->GetBrowserContext()))),
-      receiver_(this, std::move(receiver)) {
-  if (content::AreIsolatedWebAppsEnabled(&*profile_)) {
-    iwa_handler_.emplace(*web_ui_, *profile_);
-  }
-}
+    : profile_(raw_ref<Profile>::from_ptr(Profile::FromBrowserContext(
+          web_ui->GetWebContents()->GetBrowserContext()))),
+      receiver_(this, std::move(receiver)) {}
 
 WebAppInternalsHandler::~WebAppInternalsHandler() = default;
 
@@ -350,121 +344,4 @@ void WebAppInternalsHandler::GetDebugInfoAsJsonString(
       FROM_HERE,
       base::BindOnce(&WebAppInternalsHandler::BuildDebugInfo, &profile_.get(),
                      std::move(value_to_string).Then(std::move(callback))));
-}
-
-void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
-    const GURL& url,
-    InstallIsolatedWebAppFromDevProxyCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->InstallIsolatedWebAppFromDevProxy(url, std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::ParseUpdateManifestFromUrl(
-    const GURL& update_manifest_url,
-    ParseUpdateManifestFromUrlCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->ParseUpdateManifestFromUrl(update_manifest_url,
-                                             std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
-    mojom::InstallFromBundleUrlParamsPtr params,
-    InstallIsolatedWebAppFromBundleUrlCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->InstallIsolatedWebAppFromBundleUrl(std::move(params),
-                                                     std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
-    SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->SelectFileAndInstallIsolatedWebAppFromDevBundle(
-        std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::SelectFileAndUpdateIsolatedWebAppFromDevBundle(
-    const webapps::AppId& app_id,
-    SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->SelectFileAndUpdateIsolatedWebAppFromDevBundle(
-        app_id, std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
-    SearchForIsolatedWebAppUpdatesCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->SearchForIsolatedWebAppUpdates(std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
-    GetIsolatedWebAppDevModeAppInfoCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->GetIsolatedWebAppDevModeAppInfo(std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
-    const webapps::AppId& app_id,
-    UpdateDevProxyIsolatedWebAppCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->UpdateDevProxyIsolatedWebApp(app_id, std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
-    const webapps::AppId& app_id,
-    UpdateManifestInstalledIsolatedWebAppCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->UpdateManifestInstalledIsolatedWebApp(app_id,
-                                                        std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::SetUpdateChannelForIsolatedWebApp(
-    const webapps::AppId& app_id,
-    const std::string& update_channel,
-    SetUpdateChannelForIsolatedWebAppCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->SetUpdateChannelForIsolatedWebApp(app_id, update_channel,
-                                                    std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::SetPinnedVersionForIsolatedWebApp(
-    const webapps::AppId& app_id,
-    const std::string& pinned_version,
-    SetPinnedVersionForIsolatedWebAppCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->SetPinnedVersionForIsolatedWebApp(app_id, pinned_version,
-                                                    std::move(callback));
-  }
-}
-
-void WebAppInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
-    const webapps::AppId& app_id) {
-  if (iwa_handler_) {
-    iwa_handler_->ResetPinnedVersionForIsolatedWebApp(app_id);
-  }
-}
-
-void WebAppInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
-    bool allow_downgrades,
-    const webapps::AppId& app_id) {
-  if (iwa_handler_) {
-    iwa_handler_->SetAllowDowngradesForIsolatedWebApp(allow_downgrades, app_id);
-  }
-}
-
-void WebAppInternalsHandler::DeleteIsolatedWebApp(
-    const webapps::AppId& app_id,
-    DeleteIsolatedWebAppCallback callback) {
-  if (iwa_handler_) {
-    iwa_handler_->DeleteIsolatedWebApp(app_id, std::move(callback));
-  }
 }

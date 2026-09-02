@@ -4,7 +4,6 @@
 
 import 'chrome://web-app-internals/app.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {WebAppInternalsAppElement} from 'chrome://web-app-internals/app.js';
 import {browserProxyFactory} from 'chrome://web-app-internals/web_app_internals.mojom-webui.js';
@@ -28,62 +27,6 @@ class TestWebAppInternalsHandler extends TestBrowserProxy implements
   getDebugInfoAsJsonString(): Promise<{result: string}> {
     this.methodCalled('getDebugInfoAsJsonString');
     return Promise.resolve({result: this.debugInfoJson_});
-  }
-
-  installIsolatedWebAppFromDevProxy() {
-    return assertNotReached();
-  }
-
-  selectFileAndInstallIsolatedWebAppFromDevBundle() {
-    return assertNotReached();
-  }
-
-  parseUpdateManifestFromUrl() {
-    return assertNotReached();
-  }
-
-  installIsolatedWebAppFromBundleUrl() {
-    return assertNotReached();
-  }
-
-  updateDevProxyIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  selectFileAndUpdateIsolatedWebAppFromDevBundle() {
-    return assertNotReached();
-  }
-
-  updateManifestInstalledIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  deleteIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  setUpdateChannelForIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  setPinnedVersionForIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  resetPinnedVersionForIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  setAllowDowngradesForIsolatedWebApp() {
-    return assertNotReached();
-  }
-
-  searchForIsolatedWebAppUpdates() {
-    return assertNotReached();
-  }
-
-  getIsolatedWebAppDevModeAppInfo() {
-    return assertNotReached();
   }
 }
 

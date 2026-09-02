@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/web_app_internals/iwa_internals_handler.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,52 +38,10 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   // mojom::WebAppInternalsHandler:
   void GetDebugInfoAsJsonString(
       GetDebugInfoAsJsonStringCallback callback) override;
-  void InstallIsolatedWebAppFromDevProxy(
-      const GURL& url,
-      InstallIsolatedWebAppFromDevProxyCallback callback) override;
-  void ParseUpdateManifestFromUrl(
-      const GURL& update_manifest_url,
-      ParseUpdateManifestFromUrlCallback callback) override;
-  void InstallIsolatedWebAppFromBundleUrl(
-      mojom::InstallFromBundleUrlParamsPtr params,
-      InstallIsolatedWebAppFromBundleUrlCallback callback) override;
-  void SelectFileAndInstallIsolatedWebAppFromDevBundle(
-      SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback)
-      override;
-  void SelectFileAndUpdateIsolatedWebAppFromDevBundle(
-      const webapps::AppId& app_id,
-      SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback) override;
-  void SearchForIsolatedWebAppUpdates(
-      SearchForIsolatedWebAppUpdatesCallback callback) override;
-  void GetIsolatedWebAppDevModeAppInfo(
-      GetIsolatedWebAppDevModeAppInfoCallback callback) override;
-  void UpdateDevProxyIsolatedWebApp(
-      const webapps::AppId& app_id,
-      UpdateDevProxyIsolatedWebAppCallback callback) override;
-  void UpdateManifestInstalledIsolatedWebApp(
-      const webapps::AppId& app_id,
-      UpdateManifestInstalledIsolatedWebAppCallback callback) override;
-  void SetUpdateChannelForIsolatedWebApp(
-      const webapps::AppId& app_id,
-      const std::string& update_channel,
-      SetUpdateChannelForIsolatedWebAppCallback callback) override;
-  void SetPinnedVersionForIsolatedWebApp(
-      const webapps::AppId& app_id,
-      const std::string& pinned_version,
-      SetPinnedVersionForIsolatedWebAppCallback callback) override;
-  void ResetPinnedVersionForIsolatedWebApp(
-      const webapps::AppId& app_id) override;
-  void SetAllowDowngradesForIsolatedWebApp(
-      bool allow_downgrades,
-      const webapps::AppId& app_id) override;
-  void DeleteIsolatedWebApp(const webapps::AppId& app_id,
-                            DeleteIsolatedWebAppCallback callback) override;
 
  private:
-  const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
   mojo::Receiver<mojom::WebAppInternalsHandler> receiver_;
-  std::optional<web_app::IwaInternalsHandler> iwa_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_

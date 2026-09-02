@@ -311,8 +311,6 @@ after discussions on the right group.
       <annotation id="help_me_read_request"/>
       <annotation id="chrome_data_sharing_preview"/>
       <annotation id="lens_overlay_save"/>
-      <annotation id="iwa_web_app_internals_update_manifest"/>
-      <annotation id="iwa_web_app_internals_web_bundle"/>
       <annotation id="iwa_dev_tools_installation_web_bundle"/>
       <annotation id="remoting_cloud_send_heartbeat"/>
       <annotation id="remoting_cloud_update_remote_access_host"/>
@@ -420,6 +418,7 @@ after discussions on the right group.
       <annotation id="device_authorization_key_fetch"/>
       <annotation id="site_token_fetcher"/>
       <annotation id="browser_actuator_transport"/>
+      <annotation id="iwa_dev_ui_web_bundle"/>
     </sender>
   </group>
   <group name="Admin Features">

@@ -169,17 +169,16 @@ constexpr auto kDownloadAnnotationDevToolsProtocol =
     })");
 
 constexpr auto kDownloadAnnotationDevUi =
-    net::DefinePartialNetworkTrafficAnnotation(
-        "iwa_web_app_internals_web_bundle",
-        "iwa_bundle_downloader",
-        R"(
+    net::DefinePartialNetworkTrafficAnnotation("iwa_dev_ui_web_bundle",
+                                               "iwa_bundle_downloader",
+                                               R"(
     semantics {
-      sender: "Web App Internals page"
+      sender: "IWA Dev UI Page"
       description:
         "Downloads a Signed Web Bundle of an Isolated Web App which contains "
         "code and other resources of this app."
       trigger:
-        "User accepts the installation dialog in chrome://web-app-internals."
+        "User accepts the installation dialog in chrome://iwa-dev."
     }
     policy {
       setting: "This feature cannot be disabled in settings."
