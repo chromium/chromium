@@ -4,6 +4,24 @@ pub(crate) fn third<A, B, C>(t: (A, B, C)) -> C {
     t.2
 }
 
+#[inline]
+#[track_caller]
+pub(crate) fn assert_index_lt(index: usize, len: usize) {
+    assert!(
+        index < len,
+        "index out of bounds: the len is {len} but the index is {index}",
+    );
+}
+
+#[inline]
+#[track_caller]
+pub(crate) fn assert_index_le(index: usize, len: usize) {
+    assert!(
+        index <= len,
+        "index out of bounds: the len is {len} but the index is {index}. Expected index <= len"
+    );
+}
+
 #[track_caller]
 pub(crate) fn simplify_range<R>(range: R, len: usize) -> Range<usize>
 where

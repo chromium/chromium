@@ -20,7 +20,7 @@ pub use crate::rayon::set as rayon;
 #[cfg(feature = "std")]
 use std::hash::RandomState;
 
-use crate::util::try_simplify_range;
+use crate::util::{assert_index_lt, try_simplify_range};
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use core::cmp::Ordering;
@@ -1281,14 +1281,8 @@ impl<T, S> Index<usize> for IndexSet<T, S> {
     ///
     /// ***Panics*** if `index` is out of bounds.
     fn index(&self, index: usize) -> &T {
-        if let Some(value) = self.get_index(index) {
-            value
-        } else {
-            panic!(
-                "index out of bounds: the len is {len} but the index is {index}",
-                len = self.len()
-            );
-        }
+        assert_index_lt(index, self.len());
+        &self.map.as_entries()[index].key
     }
 }
 

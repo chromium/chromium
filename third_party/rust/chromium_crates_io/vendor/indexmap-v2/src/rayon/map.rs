@@ -394,7 +394,7 @@ where
     K: Send,
     V: Send,
 {
-    /// Return a parallel iterator over mutable references to the the values of the map slice.
+    /// Return a parallel iterator over mutable references to the values of the map slice.
     ///
     /// While parallel iterators can process items in any order, their relative order
     /// in the slice is still preserved for operations like `reduce` and `collect`.

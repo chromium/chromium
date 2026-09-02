@@ -796,9 +796,7 @@ quickcheck_limit! {
             // value seen for that key!
             let mut last_val_per_key = HashMap::new();
             for &(k, v) in input.iter().rev() {
-                if !last_val_per_key.contains_key(&k) {
-                    last_val_per_key.insert(k, v);
-                }
+                last_val_per_key.entry(k).or_insert(v);
             }
 
             // iterate over the keys in (A) in order, and match each one with

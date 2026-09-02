@@ -1,5 +1,11 @@
 # Releases
 
+## 2.14.1 (2026-08-28)
+
+- Simplify comparisons where `Equivalent` isn't needed (`Q = K`).
+- Unify index assertions for bounds checks.
+- Fix (or `expect`) clippy lints.
+
 ## 2.14.0 (2026-04-09)
 
 - **MSRV**: Rust 1.85.0 or later is now required.

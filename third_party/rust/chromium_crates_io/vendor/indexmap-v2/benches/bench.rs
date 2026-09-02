@@ -289,6 +289,7 @@ fn lookup_hashmap_10_000_exist(b: &mut Bencher) {
     }
     b.iter(|| {
         let mut found = 0;
+        #[expect(clippy::unnecessary_get_then_check)]
         for key in 5000..c {
             found += map.get(&key).is_some() as i32;
         }
@@ -306,6 +307,7 @@ fn lookup_hashmap_10_000_noexist(b: &mut Bencher) {
     }
     b.iter(|| {
         let mut found = 0;
+        #[expect(clippy::unnecessary_get_then_check)]
         for key in c..15000 {
             found += map.get(&key).is_some() as i32;
         }
