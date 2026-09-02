@@ -1210,6 +1210,55 @@ public class BottomSheetUnitTest {
     }
 
     @Test
+    public void testLargeFormFactorUi_CloseButtonVisibility_TransitionsFromNonModalToModal() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        BottomSheetContent nonModalContent = mock(BottomSheetContent.class);
+        doReturn(true).when(nonModalContent).hasCustomScrimLifecycle();
+        doReturn(true).when(nonModalContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(nonModalContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        sheet.showContent(nonModalContent);
+        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        assertEquals(
+                "Close button should be visible for non-modal sheets on large form factors.",
+                View.VISIBLE,
+                closeButton.getVisibility());
+
+        BottomSheetContent modalContent = mock(BottomSheetContent.class);
+        doReturn(false).when(modalContent).hasCustomScrimLifecycle();
+        doReturn(true).when(modalContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(modalContent).getContentView();
+
+        sheet.showContent(modalContent);
+        assertEquals(
+                "Close button should be hidden when transitioning to modal content on desktop.",
+                View.GONE,
+                closeButton.getVisibility());
+    }
+
+    @Test
     public void testSmallFormFactorUi_CloseButtonAlwaysHidden() {
         BottomSheet sheet =
                 (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
