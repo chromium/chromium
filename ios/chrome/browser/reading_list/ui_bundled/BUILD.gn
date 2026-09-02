@@ -119,8 +119,6 @@ source_set("reading_list_constants") {
 
 source_set("ui") {
   sources = [
-    "number_badge_view.h",
-    "number_badge_view.mm",
     "reading_list_data_sink.h",
     "reading_list_data_source.h",
     "reading_list_list_item.h",
