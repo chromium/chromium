@@ -1983,6 +1983,13 @@ source_set("core") {
   if (safe_browsing_mode == 1) {
     deps += [ "//chrome/browser/ui/webui/reset_password" ]
   }
+
+  if (enable_request_header_integrity) {
+    deps += [
+      "//chrome/browser/request_header_integrity",
+      "//chrome/common/request_header_integrity",
+    ]
+  }
 }
 
 # This target no longer has any sources of its own; it only aggregates
@@ -4232,6 +4239,7 @@ if (is_android) {
   java_cpp_enum("tos_dialog_behavior_generated_enum") {
     sources = [ "first_run/android/first_run_prefs.h" ]
   }
+
   java_cpp_enum("screenshot_mode_enum") {
     sources = [ "android/feedback/screenshot_mode.h" ]
   }
