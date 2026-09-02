@@ -75,6 +75,10 @@ class ScheduledRestartManager : public UpgradeObserver,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return mode_ != ScheduledRestartMode::kNone;
   }
+  UpgradeDetector* upgrade_detector() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return &upgrade_detector_.get();
+  }
 
   // Schedules a restart when the browser/system next becomes idle.
   void ScheduleRestartOnIdle();

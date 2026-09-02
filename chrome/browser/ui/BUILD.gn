@@ -986,6 +986,10 @@ static_library("ui") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    public_deps += [ "//chrome/browser/ui/views/scheduled_restart" ]
+  }
+
   # //chrome/browser/ui/views/relaunch_notification:impl sources include
   # :ui headers (browser.h, views/frame/browser_view.h).
   if (!is_android && !is_chromeos) {

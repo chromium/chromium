@@ -197,6 +197,9 @@ source_set("impl") {
       "//components/user_education/webui",
       "//ui/webui/tracked_element",
     ]
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/views/scheduled_restart" ]
+    }
   }
 
   if (!is_official_build) {
