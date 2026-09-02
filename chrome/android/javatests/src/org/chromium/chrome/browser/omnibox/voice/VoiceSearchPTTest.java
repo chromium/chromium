@@ -36,6 +36,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.omnibox.OmniboxEnteredTextFacility;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
@@ -110,9 +111,38 @@ public final class VoiceSearchPTTest {
         OmniboxFacility omnibox = ntp.openOmnibox();
 
         stubSpeechRecognitionResult(VOICE_QUERY, /* isHighConfidence= */ true);
-        WebPageStation searchResultsPage = omnibox.clickOmniboxMicToSearchPage(VOICE_QUERY);
+        WebPageStation searchResultsPage = clickOmniboxMicToSearchPage(omnibox, ntp, VOICE_QUERY);
 
         assertFinalDestination(searchResultsPage);
+    }
+
+    @LargeTest
+    @Test
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    public void testOmniboxVoiceSearch_lowConfidence_entersText() {
+        RegularNewTabPageStation ntp = mCtaTestRule.startOnNtp();
+        OmniboxFacility omnibox = ntp.openOmnibox();
+        stubSpeechRecognitionResult(VOICE_QUERY, /* isHighConfidence= */ false);
+
+        OmniboxEnteredTextFacility enteredText = clickOmniboxMicToEnteredText(omnibox, VOICE_QUERY);
+
+        // Exiting the facility is necessary for batching tests together, as leaving the omnibox
+        // focused causes subsequent tests in the batch to fail.
+        enteredText.pressBackToExit();
+
+        assertFinalDestination(ntp);
+    }
+
+    private static WebPageStation clickOmniboxMicToSearchPage(
+            OmniboxFacility omnibox, RegularNewTabPageStation ntp, String query) {
+        return omnibox.micButtonElement.clickTo().arriveAt(ntp.createSearchPageStation(query));
+    }
+
+    private static OmniboxEnteredTextFacility clickOmniboxMicToEnteredText(
+            OmniboxFacility omnibox, String text) {
+        return omnibox.micButtonElement
+                .clickTo()
+                .enterFacility(new OmniboxEnteredTextFacility(omnibox, text));
     }
 
     private static void stubSpeechRecognitionResult(String query, boolean isHighConfidence) {

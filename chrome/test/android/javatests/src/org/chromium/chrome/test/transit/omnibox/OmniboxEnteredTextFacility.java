@@ -15,6 +15,8 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
+import androidx.test.espresso.Espresso;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
@@ -112,8 +114,10 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
                 .enterFacility(new OmniboxEnteredTextFacility(mOmniboxFacility, ""));
     }
 
-    /** Presses Back to exit Omnibox completely, returning to host CtaPageStation (WEBSITE). */
+    /** Closes the keyboard and presses Back to exit the Omnibox facility. */
     public void pressBackToExit() {
+        // The soft keyboard swallows the first back press if open.
+        Espresso.closeSoftKeyboard();
         pressBackTo().exitFacilityAnd().exitFacility(mOmniboxFacility);
     }
 }

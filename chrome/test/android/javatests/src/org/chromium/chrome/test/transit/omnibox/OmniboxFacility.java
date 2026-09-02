@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.scrim.ScrimView;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 
@@ -75,15 +74,5 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
     public OmniboxEnteredTextFacility setText(String textToSetAndExpect) {
         return runOnUiThreadTo(() -> urlBarElement.value().setText(textToSetAndExpect))
                 .enterFacility(new OmniboxEnteredTextFacility(this, textToSetAndExpect));
-    }
-
-    /**
-     * Clicks the omnibox mic button, expecting to navigate to a search results page.
-     *
-     * @param query the query to expect in the search URL
-     * @return the {@link WebPageStation} representing the search results page
-     */
-    public WebPageStation clickOmniboxMicToSearchPage(String query) {
-        return micButtonElement.clickTo().arriveAt(mHostStation.createSearchPageStation(query));
     }
 }
