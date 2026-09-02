@@ -102,8 +102,6 @@ void GlicWebClientManager::AttachGuestContents(
   DVLOG(1) << "Glic [WebClientManager] AttachGuestContents " << guest_contents;
   has_navigation_committed_ = false;
   Observe(guest_contents);
-  guest_main_frame_ =
-      guest_contents ? guest_contents->GetPrimaryMainFrame() : nullptr;
 }
 
 void GlicWebClientManager::OnGuestNavigationBlocked(
@@ -112,7 +110,7 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
 }
 
 content::RenderFrameHost* GlicWebClientManager::GetGuestMainFrame() const {
-  return guest_main_frame_;
+  return web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
 }
 
 content::WebContents* GlicWebClientManager::web_client_contents() const {
@@ -206,20 +204,21 @@ void GlicWebClientManager::DidFinishNavigation(
       navigation_handle->IsSameDocument()) {
     return;
   }
-  guest_main_frame_ = navigation_handle->GetRenderFrameHost();
+  content::RenderFrameHost* guest_main_frame =
+      navigation_handle->GetRenderFrameHost();
   DVLOG(1) << "Glic [WebClientManager] DidFinishNavigation, url="
-           << guest_main_frame_->GetLastCommittedURL();
+           << guest_main_frame->GetLastCommittedURL();
   bool is_api_allowed =
-      IsOriginAllowedGlicApi(guest_main_frame_->GetLastCommittedOrigin());
+      IsOriginAllowedGlicApi(guest_main_frame->GetLastCommittedOrigin());
   mojom::GuestPageType page_type =
-      GetGuestPageType(guest_main_frame_->GetLastCommittedURL());
+      GetGuestPageType(guest_main_frame->GetLastCommittedURL());
   bool is_initial_commit = !has_navigation_committed_;
   has_navigation_committed_ = true;
 
   // Note, this notifies the WebUI page about the navigation, which may hide or
   // show the guest contents.
   if (delegate_) {
-    delegate_->OnGuestNavigated(guest_main_frame_->GetLastCommittedURL(),
+    delegate_->OnGuestNavigated(guest_main_frame->GetLastCommittedURL(),
                                 is_api_allowed, page_type, is_initial_commit);
   }
   if (web_client_owned_) {
@@ -232,7 +231,6 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
   DVLOG(1)
       << "Glic [WebClientManager] PrimaryMainFrameRenderProcessGone, status="
       << std::to_underlying(status);
-  guest_main_frame_ = nullptr;
   base::UmaHistogramEnumeration("Glic.Session.WebClientCrash.ExitReason",
                                 TerminationStatusToExitReason(status));
   if (web_client_owned_) {
@@ -243,21 +241,6 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
     if (delegate_) {
       delegate_->OnGuestProcessGone(status);
     }
-  }
-}
-
-void GlicWebClientManager::RenderFrameHostChanged(
-    content::RenderFrameHost* old_host,
-    content::RenderFrameHost* new_host) {
-  if (guest_main_frame_ == old_host) {
-    guest_main_frame_ = new_host;
-  }
-}
-
-void GlicWebClientManager::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (guest_main_frame_ == render_frame_host) {
-    guest_main_frame_ = nullptr;
   }
 }
 

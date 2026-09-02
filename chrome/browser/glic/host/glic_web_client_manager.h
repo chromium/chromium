@@ -96,16 +96,12 @@ class GlicWebClientManager : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
  private:
   void OnWebClientStateChanged(mojom::WebClientState state);
 
   raw_ptr<Host> host_ = nullptr;
   raw_ptr<Delegate> delegate_ = nullptr;
-  raw_ptr<content::RenderFrameHost> guest_main_frame_ = nullptr;
 
   // Host owns at most one web client access. If a new access is created,
   // the old one is destroyed synchronously. This should usually not be used
