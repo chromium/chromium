@@ -336,11 +336,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                                     "ConnectivityDetector.DefaultHttpProbeResult." + mClientName,
                                     result,
                                     ProbeResult.RESULT_COUNT);
-                        } else {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    "ConnectivityDetector.FallbackHttpProbeResult." + mClientName,
-                                    result,
-                                    ProbeResult.RESULT_COUNT);
                         }
 
                         // If we just lose the connection, bail out.
