@@ -2560,6 +2560,7 @@ static_library("ui") {
       "views/frame/multi_contents_view_mini_toolbar.h",
       "views/frame/picture_in_picture_browser_frame_view.cc",
       "views/frame/picture_in_picture_browser_frame_view.h",
+      "views/frame/safe_invoke/safe_invoke.h",
       "views/frame/scrim_view_controller.cc",
       "views/frame/scrim_view_controller.h",
       "views/frame/shadow_overlay_view.cc",
