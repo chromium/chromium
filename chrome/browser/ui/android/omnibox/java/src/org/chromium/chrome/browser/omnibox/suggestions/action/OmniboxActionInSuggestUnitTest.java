@@ -51,7 +51,7 @@ public class OmniboxActionInSuggestUnitTest {
                     ActionType.CHROME_AIM_VALUE,
                     ActionType.CHROME_TAB_SWITCH_VALUE);
 
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private OmniboxActionDelegate mDelegate;
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<String> mUrlCaptor;

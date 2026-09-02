@@ -63,7 +63,7 @@ import java.util.List;
 public class DropdownItemViewInfoListBuilderUnitTest {
     private final Context mContext = ContextUtils.getApplicationContext();
 
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SuggestionProcessor mMockSuggestionProcessor;
     @Mock private AutocompleteInput mInput;

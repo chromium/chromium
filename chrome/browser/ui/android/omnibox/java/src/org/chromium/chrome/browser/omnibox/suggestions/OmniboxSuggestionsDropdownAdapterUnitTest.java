@@ -42,7 +42,7 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
                     OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES,
                     OmniboxSuggestionUiType.OBSOLETE_HEADER,
                     OmniboxSuggestionUiType.OBSOLETE_GROUP_SEPARATOR);
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private DropdownItemProcessor mProcessor;
     private Context mContext;
     private FrameLayout mContainer;

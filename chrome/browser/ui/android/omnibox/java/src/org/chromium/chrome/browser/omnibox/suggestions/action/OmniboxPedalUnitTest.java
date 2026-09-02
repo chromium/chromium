@@ -33,7 +33,7 @@ import java.util.List;
 /** Tests for {@link OmniboxPedal}s. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxPedalUnitTest {
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private OmniboxActionDelegate mDelegate;
     private static final List<Integer> sPedalsWithCustomIcons =
             List.of(OmniboxPedalId.PLAY_CHROME_DINO_GAME);

@@ -42,7 +42,7 @@ import java.util.List;
 /** Tests for {@link DropdownItemViewInfoListManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropdownItemViewInfoListManagerUnitTest {
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Spy private SuggestionProcessor mBasicSuggestionProcessor;
     @Spy private SuggestionProcessor mEditUrlSuggestionProcessor;
