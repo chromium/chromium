@@ -66,28 +66,24 @@
 
 namespace blink {
 
-#if BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
-inline constexpr bool kEnableHeapVectorActiveIteratorChecks = true;
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS)
+inline constexpr bool kEnableHeapVectorModificationChecks = true;
 #else
-inline constexpr bool kEnableHeapVectorActiveIteratorChecks = false;
+inline constexpr bool kEnableHeapVectorModificationChecks = false;
 #endif
 
-#if BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
-inline constexpr bool kEnableVectorActiveIteratorChecks = true;
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
+inline constexpr bool kEnableVectorModificationChecks = true;
 #else
-inline constexpr bool kEnableVectorActiveIteratorChecks = false;
+inline constexpr bool kEnableVectorModificationChecks = false;
 #endif
 
-// Whether active-iterator checks are enabled for the Allocator.
+// Whether modification checks are enabled for the Allocator.
 // Allows HeapVector and Vector checks to be toggled independently.
 template <typename Allocator>
-inline constexpr bool kEnableActiveIteratorChecks =
-    (Allocator::kIsGarbageCollected && kEnableHeapVectorActiveIteratorChecks) ||
-    (!Allocator::kIsGarbageCollected && kEnableVectorActiveIteratorChecks);
-
-// Out-of-line helper to report freeing a Vector backing while iterators are
-// alive. Defined in vector.cc to avoid header bloat and LTO inlining.
-NOINLINE WTF_EXPORT void ReportVectorBackingFreedWhileIteratorsAlive();
+inline constexpr bool kEnableModificationChecks =
+    (Allocator::kIsGarbageCollected && kEnableHeapVectorModificationChecks) ||
+    (!Allocator::kIsGarbageCollected && kEnableVectorModificationChecks);
 
 #if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // The allocation pool for nodes is one big chunk that ASAN has no insight
@@ -509,12 +505,18 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
   const T* Buffer() const { return buffer_; }
   wtf_size_t capacity() const { return capacity_; }
 
-#if DCHECK_IS_ON()
-  uint32_t Modifications() const { return modifications_; }
-  void RegisterModification() { modifications_++; }
-#else
-  ALWAYS_INLINE void RegisterModification() {}
-#endif
+  uint32_t Modifications() const {
+    if constexpr (kEnableModificationChecks<Allocator>) {
+      return modification_state_.count;
+    } else {
+      return 0;
+    }
+  }
+  ALWAYS_INLINE void RegisterModification() {
+    if constexpr (kEnableModificationChecks<Allocator>) {
+      modification_state_.count++;
+    }
+  }
 
   base::span<T> BufferSpan() {
     return UNSAFE_TODO(base::span<T>(base::unchecked, buffer_, capacity_));
@@ -593,9 +595,9 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
     AtomicWriteSwap(buffer_, other.buffer_);
     std::swap(capacity_, other.capacity_);
     std::swap(size_, other.size_);
-#if DCHECK_IS_ON()
-    std::swap(modifications_, other.modifications_);
-#endif
+    if constexpr (kEnableModificationChecks<Allocator>) {
+      std::swap(modification_state_.count, other.modification_state_.count);
+    }
     if (this_origin != VectorOperationOrigin::kConstruction) {
       Allocator::BackingWriteBarrier(&buffer_);
     }
@@ -605,19 +607,16 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
   T* buffer_;
   wtf_size_t capacity_;
   wtf_size_t size_;
-#if DCHECK_IS_ON()
-  uint32_t modifications_ = 0;
-#endif
 
-  struct ActiveIteratorCounter {
-    wtf_size_t count = 0;
+  struct ModificationCounter {
+    uint32_t count = 0;
   };
-  struct NoActiveIteratorCounter {};
+  struct NoModificationCounter {};
   NO_UNIQUE_ADDRESS
-  std::conditional_t<kEnableActiveIteratorChecks<Allocator>,
-                     ActiveIteratorCounter,
-                     NoActiveIteratorCounter>
-      active_iterator_state_;
+  std::conditional_t<kEnableModificationChecks<Allocator>,
+                     ModificationCounter,
+                     NoModificationCounter>
+      modification_state_;
 
  private:
   static constexpr bool NeedsToClearUnusedSlots() {
@@ -670,11 +669,6 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   }
 
   void DeallocateBuffer(T* buffer_to_deallocate) {
-    if constexpr (kEnableActiveIteratorChecks<Allocator>) {
-      if (this->active_iterator_state_.count != 0u) [[unlikely]] {
-        ReportVectorBackingFreedWhileIteratorsAlive();
-      }
-    }
     Allocator::FreeVectorBacking(buffer_to_deallocate);
   }
 
@@ -791,18 +785,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     buffer_ = nullptr;
   }
 
-  NOINLINE void ReallyDeallocateBuffer(T* buffer_to_deallocate) {
-    if constexpr (kEnableActiveIteratorChecks<Allocator>) {
-      if (this->active_iterator_state_.count != 0u) [[unlikely]] {
-        ReportVectorBackingFreedWhileIteratorsAlive();
-      }
-    }
-    Allocator::FreeVectorBacking(buffer_to_deallocate);
-  }
-
   void DeallocateBuffer(T* buffer_to_deallocate) {
     if (buffer_to_deallocate != InlineBuffer()) [[unlikely]] {
-      ReallyDeallocateBuffer(buffer_to_deallocate);
+      Allocator::FreeVectorBacking(buffer_to_deallocate);
     }
   }
 
@@ -890,9 +875,10 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       return;
     }
 
-#if DCHECK_IS_ON()
-    std::swap(this->modifications_, other.modifications_);
-#endif
+    if constexpr (kEnableModificationChecks<Allocator>) {
+      std::swap(this->modification_state_.count,
+                other.modification_state_.count);
+    }
 
     Allocator::EnterGCForbiddenScope();
 
@@ -1114,101 +1100,24 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
 
   constexpr UncheckedIterator() = default;
   explicit UncheckedIterator(T* cur) : current_(cur) {}
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() ||                                   \
+    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) || \
+    BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
   UncheckedIterator(T* cur, const uint32_t* modifications_ptr)
       : current_(cur),
         modifications_ptr_(modifications_ptr),
         captured_modifications_(modifications_ptr ? *modifications_ptr : 0) {}
-  UncheckedIterator(const UncheckedIterator& other) = default;
-#elif BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS) || \
-    BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
-  // Constructor that registers this iterator with the owning Vector's
-  // active_iterators_ count. Used to detect freeing a backing while
-  // iterators are alive.
-  UncheckedIterator(T* cur, wtf_size_t* active_iterator_count)
-      : current_(cur), active_iterator_count_(active_iterator_count) {
-    if (active_iterator_count_) {
-      ++(*active_iterator_count_);
-    }
-  }
-  UncheckedIterator(const UncheckedIterator& other)
-      : current_(other.current_),
-        active_iterator_count_(other.active_iterator_count_) {
-    if (active_iterator_count_) {
-      ++(*active_iterator_count_);
-    }
-  }
-  UncheckedIterator(UncheckedIterator&& other)
-      : current_(other.current_),
-        active_iterator_count_(other.active_iterator_count_) {
-    other.active_iterator_count_ = nullptr;
-  }
-#else
-  UncheckedIterator(const UncheckedIterator& other) = default;
 #endif
+  UncheckedIterator(const UncheckedIterator& other) = default;
+  UncheckedIterator(UncheckedIterator&& other) = default;
   // Allow implicit conversion from a base::CheckedContiguousIterator<T>.
   // NOLINTNEXTLINE(google-explicit-constructor)
   UncheckedIterator(const base::CheckedContiguousIterator<T>& other)
       : current_(base::to_address(other)) {}
-  ~UncheckedIterator() {
-#if !DCHECK_IS_ON() &&                                       \
-    (BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS) || \
-     BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS))
-    if (active_iterator_count_) {
-      --(*active_iterator_count_);
-    }
-#endif
-  }
+  ~UncheckedIterator() = default;
 
-#if DCHECK_IS_ON()
-  UncheckedIterator& operator=(const UncheckedIterator& other) {
-    if (this != &other) {
-      current_ = other.current_;
-      modifications_ptr_ = other.modifications_ptr_;
-      captured_modifications_ = other.captured_modifications_;
-    }
-    return *this;
-  }
-  UncheckedIterator& operator=(UncheckedIterator&& other) {
-    if (this != &other) {
-      current_ = other.current_;
-      modifications_ptr_ = other.modifications_ptr_;
-      captured_modifications_ = other.captured_modifications_;
-      other.modifications_ptr_ = nullptr;
-      other.captured_modifications_ = 0;
-    }
-    return *this;
-  }
-#elif BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS) || \
-    BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
-  UncheckedIterator& operator=(const UncheckedIterator& other) {
-    if (this != &other) {
-      if (active_iterator_count_) {
-        --(*active_iterator_count_);
-      }
-      current_ = other.current_;
-      active_iterator_count_ = other.active_iterator_count_;
-      if (active_iterator_count_) {
-        ++(*active_iterator_count_);
-      }
-    }
-    return *this;
-  }
-  UncheckedIterator& operator=(UncheckedIterator&& other) {
-    if (this != &other) {
-      if (active_iterator_count_) {
-        --(*active_iterator_count_);
-      }
-      current_ = other.current_;
-      active_iterator_count_ = other.active_iterator_count_;
-      other.active_iterator_count_ = nullptr;
-    }
-    return *this;
-  }
-#else
   UncheckedIterator& operator=(const UncheckedIterator& other) = default;
   UncheckedIterator& operator=(UncheckedIterator&& other) = default;
-#endif
 
   friend constexpr bool operator==(const UncheckedIterator& lhs,
                                    const UncheckedIterator& rhs) {
@@ -1290,11 +1199,18 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
   }
 
  private:
-  void CheckModifications() const {
-#if DCHECK_IS_ON()
+  ALWAYS_INLINE void CheckModifications() const {
+#if DCHECK_IS_ON() ||                                   \
+    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) || \
+    BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
     if (modifications_ptr_) {
+#if DCHECK_IS_ON()
       DCHECK_EQ(captured_modifications_, *modifications_ptr_)
           << "Vector modified while being iterated.";
+#else
+      CHECK_EQ(captured_modifications_, *modifications_ptr_)
+          << "Vector modified while being iterated.";
+#endif
     }
 #endif
   }
@@ -1304,12 +1220,11 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
   friend class UncheckedIterator;
 
   T* current_ = nullptr;
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() ||                                   \
+    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) || \
+    BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
   const uint32_t* modifications_ptr_ = nullptr;
   uint32_t captured_modifications_ = 0;
-#elif BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS) || \
-    BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
-  wtf_size_t* active_iterator_count_ = nullptr;
 #endif
 };
 
@@ -1878,27 +1793,18 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
  private:
   iterator MakeIterator(T* ptr) {
-#if DCHECK_IS_ON()
-    return iterator(ptr, &this->modifications_);
-#else
-    if constexpr (kEnableActiveIteratorChecks<Allocator>) {
-      return iterator(ptr, &this->active_iterator_state_.count);
+    if constexpr (kEnableModificationChecks<Allocator>) {
+      return iterator(ptr, &this->modification_state_.count);
     } else {
       return iterator(ptr);
     }
-#endif
   }
   const_iterator MakeConstIterator(const T* ptr) const {
-#if DCHECK_IS_ON()
-    return const_iterator(ptr, &this->modifications_);
-#else
-    if constexpr (kEnableActiveIteratorChecks<Allocator>) {
-      return const_iterator(
-          ptr, const_cast<wtf_size_t*>(&this->active_iterator_state_.count));
+    if constexpr (kEnableModificationChecks<Allocator>) {
+      return const_iterator(ptr, &this->modification_state_.count);
     } else {
       return const_iterator(ptr);
     }
-#endif
   }
 
   template <typename, wtf_size_t, typename>
@@ -1998,9 +1904,9 @@ inline Vector<T, InlineCapacity, Allocator>::Vector(wtf_size_t size,
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other)
     : Base(other.capacity()) {
-#if DCHECK_IS_ON()
-  this->modifications_ = other.modifications_;
-#endif
+  if constexpr (kEnableModificationChecks<Allocator>) {
+    this->modification_state_.count = other.modification_state_.count;
+  }
   UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), other.size()));
   size_ = other.size();
   TypeOperations::UninitializedCopy(base::span(other), base::span(*this),
@@ -2012,9 +1918,9 @@ template <wtf_size_t otherCapacity>
 Vector<T, InlineCapacity, Allocator>::Vector(
     const Vector<T, otherCapacity, Allocator>& other)
     : Base(other.capacity()) {
-#if DCHECK_IS_ON()
-  this->modifications_ = other.modifications_;
-#endif
+  if constexpr (kEnableModificationChecks<Allocator>) {
+    this->modification_state_.count = other.modification_state_.count;
+  }
   UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), other.size()));
   size_ = other.size();
   TypeOperations::UninitializedCopy(base::span(other), base::span(*this),

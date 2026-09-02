@@ -59,8 +59,9 @@ using HeapLinkedHashSet =
                            Traits>;
 
 static_assert(IsDisallowNew<HeapLinkedHashSet<int>>);
-#if !BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS) && \
-    !BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
+#if DCHECK_IS_ON() ||                                     \
+    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) == \
+        BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
 ASSERT_SIZE(LinkedHashSet<int>, HeapLinkedHashSet<int>);
 #endif
 
@@ -70,8 +71,9 @@ using GCedHeapLinkedHashSet =
     BasicHeapLinkedHashSet<internal::HeapCollectionType::kGCed, T, Traits>;
 
 static_assert(!IsDisallowNew<GCedHeapLinkedHashSet<int>>);
-#if !BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS) && \
-    !BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
+#if DCHECK_IS_ON() ||                                     \
+    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) == \
+        BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
 ASSERT_SIZE(LinkedHashSet<int>, GCedHeapLinkedHashSet<int>);
 #endif
 

@@ -67,14 +67,11 @@ struct SameSizeAsVectorWithInlineCapacity<T, 0> {
   void* buffer_pointer;
   wtf_size_t capacity;
   wtf_size_t size;
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
   // Using a 32-bit integer prevents Vector alignof() from becoming 8-bytes on
   // 32-bit systems, avoiding memory alignment violations in HeapVector
   // backing stores.
   uint32_t modifications;
-#endif
-#if BUILDFLAG(ENABLE_VECTOR_ACTIVE_ITERATOR_CHECKS)
-  wtf_size_t active_iterator_count;
 #endif
 };
 

@@ -853,7 +853,7 @@ static_assert(VectorTraits<UnknownType*>::kCanCopyWithMemcpy,
 static_assert(!IsTraceable<Vector<int>>::value,
               "Vector<int> must not be traceable.");
 
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
 TEST(VectorTest, MutationDuringIteration) {
   Vector<int> vector = {1, 2, 3};
   auto it = vector.begin();
