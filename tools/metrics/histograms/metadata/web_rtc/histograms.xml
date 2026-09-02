@@ -1638,8 +1638,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpMunging.Outcome"
-    enum="SdpMungingOutcome" expires_after="2026-09-06">
+    enum="SdpMungingOutcome" expires_after="2027-09-06">
   <owner>danilchap@chromium.org</owner>
+  <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Classifies the outcome when a local description is set; either no SDP
