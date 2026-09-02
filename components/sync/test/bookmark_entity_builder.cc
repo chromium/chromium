@@ -55,8 +55,7 @@ BookmarkEntityBuilder::BookmarkEntityBuilder(
     const string& originator_cache_guid)
     : title_(title),
       uuid_(uuid),
-      originator_cache_guid_(originator_cache_guid),
-      originator_client_item_id_(uuid.AsLowercaseString()) {}
+      originator_cache_guid_(originator_cache_guid) {}
 
 BookmarkEntityBuilder::BookmarkEntityBuilder(
     const std::u16string& title,
@@ -94,7 +93,7 @@ BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentId(
 
 BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentGuid(
     const base::Uuid& parent_guid) {
-  DCHECK(parent_guid.is_valid()) << parent_guid.AsLowercaseString();
+  CHECK(parent_guid.is_valid()) << parent_guid.AsLowercaseString();
   parent_guid_ = parent_guid;
   return *this;
 }
@@ -119,7 +118,7 @@ BookmarkEntityBuilder& BookmarkEntityBuilder::SetFavicon(
 }
 
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildBookmark(
-    const GURL& url) {
+    const GURL& url) const {
   if (!url.is_valid()) {
     return base::WrapUnique<LoopbackServerEntity>(nullptr);
   }
@@ -131,7 +130,8 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildBookmark(
   return Build(entity_specifics, /*is_folder=*/false);
 }
 
-std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder() {
+std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder()
+    const {
   return Build(CreateBaseEntitySpecifics(/*is_folder=*/true),
                /*is_folder=*/true);
 }
@@ -143,17 +143,10 @@ sync_pb::UniquePosition BookmarkEntityBuilder::GetUniquePosition() const {
 }
 
 sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
-    bool is_folder) {
+    bool is_folder) const {
   sync_pb::EntitySpecifics entity_specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       entity_specifics.mutable_bookmark();
-
-  if (parent_id_.empty() && !parent_guid_.is_valid()) {
-    parent_id_ =
-        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar",
-                                       /*migration_version=*/0);
-    parent_guid_ = base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
-  }
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndLegacyTitle) {
     bookmark_specifics->set_legacy_canonicalized_title(title_);
@@ -168,8 +161,10 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
   }
 
   if (bookmark_generation_ >= BookmarkGeneration::kHierarchyFieldsInSpecifics) {
-    DCHECK(parent_guid_.is_valid());
-    bookmark_specifics->set_parent_guid(parent_guid_.AsLowercaseString());
+    const base::Uuid parent_guid = parent_guid_.value_or(
+        base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid));
+    CHECK(parent_guid.is_valid());
+    bookmark_specifics->set_parent_guid(parent_guid.AsLowercaseString());
     bookmark_specifics->set_type(is_folder ? sync_pb::BookmarkSpecifics::FOLDER
                                            : sync_pb::BookmarkSpecifics::URL);
     *bookmark_specifics->mutable_unique_position() = GetUniquePosition();
@@ -180,33 +175,41 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
 
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
     const sync_pb::EntitySpecifics& entity_specifics,
-    bool is_folder) {
-  if (id_.empty()) {
-    id_ = LoopbackServerEntity::CreateId(
-        syncer::BOOKMARKS, base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        /*migration_version=*/0);
-  }
+    bool is_folder) const {
+  const std::string parent_id =
+      parent_id_.value_or(LoopbackServerEntity::CreateId(
+          syncer::BOOKMARKS, "bookmark_bar", /*migration_version=*/0));
 
   if (use_client_tag_hash_) {
-    return std::make_unique<syncer::PersistentBookmarkEntity>(
-        id_, kUnusedVersion, title_, /*originator_cache_guid=*/"",
-        /*originator_client_item_id=*/"",
+    const std::string client_tag_hash =
         syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
                                             uuid_.AsLowercaseString())
-            .value(),
-        GetUniquePosition(), entity_specifics, is_folder, parent_id_,
-        kDefaultTime, kDefaultTime);
-  } else {
+            .value();
+    const std::string id = id_.value_or(LoopbackServerEntity::CreateId(
+        syncer::BOOKMARKS, client_tag_hash, /*migration_version=*/0));
     return std::make_unique<syncer::PersistentBookmarkEntity>(
-        id_, kUnusedVersion, title_, originator_cache_guid_,
-        /*originator_client_item_id=*/originator_client_item_id_,
-        /*client_tag_hash=*/"", GetUniquePosition(), entity_specifics,
-        is_folder, parent_id_, kDefaultTime, kDefaultTime);
+        id, kUnusedVersion, title_, /*originator_cache_guid=*/"",
+        /*originator_client_item_id=*/"", client_tag_hash, GetUniquePosition(),
+        entity_specifics, is_folder, parent_id, kDefaultTime, kDefaultTime);
   }
+
+  const std::string originator_client_item_id =
+      originator_client_item_id_.value_or(uuid_.AsLowercaseString());
+  const std::string id = id_.value_or(LoopbackServerEntity::CreateId(
+      syncer::BOOKMARKS,
+      base::Uuid::ParseLowercase(originator_client_item_id).is_valid()
+          ? originator_client_item_id
+          : base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      /*migration_version=*/0));
+
+  return std::make_unique<syncer::PersistentBookmarkEntity>(
+      id, kUnusedVersion, title_, originator_cache_guid_,
+      originator_client_item_id, /*client_tag_hash=*/"", GetUniquePosition(),
+      entity_specifics, is_folder, parent_id, kDefaultTime, kDefaultTime);
 }
 
 void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
-    sync_pb::BookmarkSpecifics* bookmark_specifics) {
+    sync_pb::BookmarkSpecifics* bookmark_specifics) const {
   DCHECK(bookmark_specifics);
   // Both `favicon_` and `icon_url_` must be provided or empty simultaneously.
   DCHECK(favicon_.IsEmpty() == icon_url_.is_empty());

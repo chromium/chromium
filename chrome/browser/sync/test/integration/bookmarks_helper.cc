@@ -877,9 +877,6 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(title, uuid);
-  bookmark_builder.SetId(syncer::LoopbackServerEntity::CreateId(
-      syncer::BOOKMARKS, uuid.AsLowercaseString(),
-      /*migration_version=*/0));
   return bookmark_builder.BuildBookmark(url);
 }
 

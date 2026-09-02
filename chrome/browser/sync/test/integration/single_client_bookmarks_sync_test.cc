@@ -1335,13 +1335,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   const std::u16string title = u"Title1";
   fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(
-          title, base::Uuid::ParseLowercase(kBookmarkGuid));
-  bookmark_builder.SetId(
-      syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid,
-                                             /*migration_version=*/0));
-  fake_server_->InjectEntity(bookmark_builder.BuildFolder());
+  fake_server_->InjectEntity(
+      entity_builder_factory
+          .NewBookmarkEntityBuilder(title,
+                                    base::Uuid::ParseLowercase(kBookmarkGuid))
+          .BuildFolder());
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
@@ -1358,13 +1356,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
                        PersistProgressMarkerOnRestart) {
   const std::u16string title = u"Title1";
   fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(
-          title, base::Uuid::ParseLowercase(kBookmarkGuid));
-  bookmark_builder.SetId(
-      syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid,
-                                             /*migration_version=*/0));
-  fake_server_->InjectEntity(bookmark_builder.BuildFolder());
+  fake_server_->InjectEntity(
+      entity_builder_factory
+          .NewBookmarkEntityBuilder(title,
+                                    base::Uuid::ParseLowercase(kBookmarkGuid))
+          .BuildFolder());
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients());
