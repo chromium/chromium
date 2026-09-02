@@ -598,11 +598,10 @@ static_library("test_support") {
       deps += [ "//chrome/browser/compose" ]
     }
 
-    sources += [
-      "../test/base/browser_with_test_window_test.cc",
-      "../test/base/browser_with_test_window_test.h",
+    public_deps += [
+      "//chrome/test/base:browser_with_test_window_test",
+      "//chrome/test/base:test_browser_window",
     ]
-    public_deps += [ "//chrome/test/base:test_browser_window" ]
     allow_circular_includes_from += [
       ":test_support_ui",
       "//chrome/browser/ui/views/tabs/common:impl",

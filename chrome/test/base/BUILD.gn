@@ -1022,6 +1022,74 @@ if (!is_android) {
     ]
   }
 
+  source_set("browser_with_test_window_test") {
+    testonly = true
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    sources = [
+      "browser_with_test_window_test.cc",
+      "browser_with_test_window_test.h",
+    ]
+    public_deps = [
+      ":test_browser_window",
+      ":testing_profile",
+      "//base",
+      "//chrome/browser/performance_manager:test_support",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/views:chrome_constrained_window_views_client",
+      "//components/variations:test_support",
+      "//content/test:test_support",
+      "//services/network:test_support",
+      "//testing/gtest",
+    ]
+    deps = [
+      ":testing_browser_process",
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/net",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//components/sync_preferences",
+      "//content/public/browser",
+    ]
+    if (toolkit_views) {
+      public_deps += [ "//chrome/test/views" ]
+      deps += [
+        "//components/constrained_window",
+        "//ui/views:test_support",
+      ]
+      if (is_chromeos) {
+        public_deps += [ "//ash:test_support" ]
+      }
+    }
+    if (is_chromeos) {
+      public_deps += [
+        "//chrome/browser/ash/app_mode",
+        "//chrome/browser/ash/settings:test_support",
+        "//chromeos/ash/components/install_attributes:test_support",
+        "//components/session_manager/core",
+        "//components/session_manager/core:test_support",
+        "//components/user_manager",
+        "//services/network/public/cpp",
+      ]
+      deps += [
+        "//chrome/browser/ash/profiles",
+        "//chromeos/ash/components/browser_context_helper",
+        "//chromeos/ash/components/dbus/cros_disks",
+        "//chromeos/ash/components/disks:test_support",
+        "//components/user_manager:test_support",
+        "//google_apis",
+      ]
+    }
+    if (is_win) {
+      deps += [ "//ui/base" ]
+    }
+  }
+
   source_set("save_desktop_snapshot") {
     testonly = true
     sources = [
