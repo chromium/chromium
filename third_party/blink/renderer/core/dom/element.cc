@@ -134,7 +134,6 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/focusgroup_dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
@@ -1790,15 +1789,10 @@ void Element::setAriaOwnsElements(
 }
 
 NamedNodeMap* Element::attributesForBindings() const {
-  NodeRareData* rare_data = &const_cast<Element*>(this)->EnsureRareData();
-  if (NamedNodeMap* attribute_map = rare_data->AttributeMap()) {
-    return attribute_map;
-  }
-
-  rare_data = rare_data->SetAttributeMap(
-      MakeGarbageCollected<NamedNodeMap>(const_cast<Element*>(this)));
-  const_cast<Element*>(this)->data_ = rare_data;
-  return rare_data->AttributeMap();
+  auto* mutable_this = const_cast<Element*>(this);
+  return &mutable_this->EnsureRareData()
+              .EnsureAttributeMap(*mutable_this)
+              .RefreshNodeAndUnwrap(*mutable_this);
 }
 
 AttributeNamesView Element::getAttributeNamesForBindings() const {
@@ -2187,13 +2181,7 @@ ElementAnimations* Element::GetElementAnimations() const {
 }
 
 ElementAnimations& Element::EnsureElementAnimations() {
-  NodeRareData* rare_data = &EnsureRareData();
-  if (!rare_data->GetElementAnimations()) {
-    rare_data = rare_data->SetElementAnimations(
-        MakeGarbageCollected<ElementAnimations>());
-    data_ = rare_data;
-  }
-  return *rare_data->GetElementAnimations();
+  return EnsureRareData().EnsureElementAnimations().RefreshNodeAndUnwrap(*this);
 }
 
 bool Element::HasAnimations() const {
@@ -11606,38 +11594,16 @@ Element* Element::closest(const AtomicString& selectors) {
 }
 
 DOMTokenList& Element::classList() {
-  NodeRareData* rare_data = &EnsureRareData();
-  if (!rare_data->GetClassList()) {
-    auto* class_list =
-        MakeGarbageCollected<DOMTokenList>(*this, html_names::kClassAttr);
-    class_list->DidUpdateAttributeValue(g_null_atom,
-                                        getAttribute(html_names::kClassAttr));
-    rare_data = rare_data->SetClassList(class_list);
-    data_ = rare_data;
-  }
-  return *rare_data->GetClassList();
+  return EnsureRareData().EnsureClassList(*this).RefreshNodeAndUnwrap(*this);
 }
 
 DOMTokenList& Element::focusGroup() {
-  NodeRareData* rare_data = &EnsureRareData();
-  if (!rare_data->GetFocusgroupTokenList()) {
-    auto* token_list = MakeGarbageCollected<FocusgroupDOMTokenList>(*this);
-    token_list->DidUpdateAttributeValue(
-        g_null_atom, getAttribute(html_names::kFocusgroupAttr));
-    rare_data = rare_data->SetFocusgroupTokenList(token_list);
-    data_ = rare_data;
-  }
-  return *rare_data->GetFocusgroupTokenList();
+  return EnsureRareData().EnsureFocusgroupTokenList(*this).RefreshNodeAndUnwrap(
+      *this);
 }
 
 DOMStringMap& Element::dataset() {
-  NodeRareData* rare_data = &EnsureRareData();
-  if (!rare_data->Dataset()) {
-    rare_data =
-        rare_data->SetDataset(MakeGarbageCollected<DatasetDOMStringMap>(this));
-    data_ = rare_data;
-  }
-  return *rare_data->Dataset();
+  return EnsureRareData().EnsureDataset(*this).RefreshNodeAndUnwrap(*this);
 }
 
 KURL Element::HrefURL() const {
@@ -11950,7 +11916,7 @@ bool Element::FastAttributeLookupAllowed(const QualifiedName& name) const {
 #if DUMP_NODE_STATISTICS
 bool Element::HasNamedNodeMap() const {
   if (const NodeRareData* data = RareData()) {
-    return data->AttributeMap();
+    return data->HasAttributeMap();
   }
   return false;
 }
@@ -12877,13 +12843,7 @@ DOMTokenList* Element::GetPart() const {
 }
 
 DOMTokenList& Element::part() {
-  NodeRareData& rare_data = EnsureRareData();
-  DOMTokenList* part = rare_data.GetPart();
-  if (!part) {
-    part = MakeGarbageCollected<DOMTokenList>(*this, html_names::kPartAttr);
-    data_ = rare_data.SetPart(part);
-  }
-  return *part;
+  return EnsureRareData().EnsurePart(*this).RefreshNodeAndUnwrap(*this);
 }
 
 bool Element::HasPartNamesMap() const {

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/element_animation_trigger_data.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/invoker_data.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/unbounded_event_data.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
@@ -241,32 +243,54 @@ NodeRareData* NodeRareData::SetShadowRoot(ShadowRoot& shadow_root) {
   return SetField(FieldId::kShadowRoot, &shadow_root);
 }
 
-NamedNodeMap* NodeRareData::AttributeMap() const {
-  return static_cast<NamedNodeMap*>(GetField(FieldId::kAttributeMap));
+bool NodeRareData::HasAttributeMap() const {
+  return HasField(FieldId::kAttributeMap);
 }
-NodeRareData* NodeRareData::SetAttributeMap(NamedNodeMap* attribute_map) {
-  return SetField(FieldId::kAttributeMap, attribute_map);
+RareDataUpdate<NamedNodeMap> NodeRareData::EnsureAttributeMap(
+    Element& owner_element) {
+  return EnsureField<NamedNodeMap>(FieldId::kAttributeMap, &owner_element);
 }
 
 DOMTokenList* NodeRareData::GetClassList() const {
   return static_cast<DOMTokenList*>(GetField(FieldId::kClassList));
 }
-NodeRareData* NodeRareData::SetClassList(DOMTokenList* class_list) {
-  return SetField(FieldId::kClassList, class_list);
+RareDataUpdate<DOMTokenList> NodeRareData::EnsureClassList(Element& element) {
+  auto* class_list = static_cast<DOMTokenList*>(GetField(FieldId::kClassList));
+  NodeRareData* vec = this;
+  if (!class_list) {
+    class_list =
+        MakeGarbageCollected<DOMTokenList>(element, html_names::kClassAttr);
+    class_list->DidUpdateAttributeValue(
+        g_null_atom, element.getAttribute(html_names::kClassAttr));
+    vec = SetField(FieldId::kClassList, class_list);
+  }
+  return RareDataUpdate<DOMTokenList>(base::PassKey<NodeRareData>(),
+                                      *class_list, vec);
 }
 
 DOMTokenList* NodeRareData::GetFocusgroupTokenList() const {
   return static_cast<DOMTokenList*>(GetField(FieldId::kFocusgroupTokenList));
 }
-NodeRareData* NodeRareData::SetFocusgroupTokenList(DOMTokenList* token_list) {
-  return SetField(FieldId::kFocusgroupTokenList, token_list);
+RareDataUpdate<DOMTokenList> NodeRareData::EnsureFocusgroupTokenList(
+    Element& element) {
+  auto* token_list =
+      static_cast<DOMTokenList*>(GetField(FieldId::kFocusgroupTokenList));
+  NodeRareData* vec = this;
+  if (!token_list) {
+    auto* focusgroup_token_list =
+        MakeGarbageCollected<FocusgroupDOMTokenList>(element);
+    focusgroup_token_list->DidUpdateAttributeValue(
+        g_null_atom, element.getAttribute(html_names::kFocusgroupAttr));
+    token_list = focusgroup_token_list;
+    vec = SetField(FieldId::kFocusgroupTokenList, token_list);
+  }
+  return RareDataUpdate<DOMTokenList>(base::PassKey<NodeRareData>(),
+                                      *token_list, vec);
 }
 
-DatasetDOMStringMap* NodeRareData::Dataset() const {
-  return static_cast<DatasetDOMStringMap*>(GetField(FieldId::kDataset));
-}
-NodeRareData* NodeRareData::SetDataset(DatasetDOMStringMap* dataset) {
-  return SetField(FieldId::kDataset, dataset);
+RareDataUpdate<DatasetDOMStringMap> NodeRareData::EnsureDataset(
+    Element& element) {
+  return EnsureField<DatasetDOMStringMap>(FieldId::kDataset, &element);
 }
 
 ScrollOffset NodeRareData::SavedLayerScrollOffset() const {
@@ -285,9 +309,8 @@ NodeRareData* NodeRareData::SetSavedLayerScrollOffset(ScrollOffset offset) {
 ElementAnimations* NodeRareData::GetElementAnimations() {
   return static_cast<ElementAnimations*>(GetField(FieldId::kElementAnimations));
 }
-NodeRareData* NodeRareData::SetElementAnimations(
-    ElementAnimations* element_animations) {
-  return SetField(FieldId::kElementAnimations, element_animations);
+RareDataUpdate<ElementAnimations> NodeRareData::EnsureElementAnimations() {
+  return EnsureField<ElementAnimations>(FieldId::kElementAnimations);
 }
 
 RareDataUpdate<AttrNodeList> NodeRareData::EnsureAttrNodeList() {
@@ -361,8 +384,9 @@ NodeRareData* NodeRareData::SetEditContext(EditContext* edit_context) {
   return SetField(FieldId::kEditContext, edit_context);
 }
 
-NodeRareData* NodeRareData::SetPart(DOMTokenList* part) {
-  return SetField(FieldId::kPart, part);
+RareDataUpdate<DOMTokenList> NodeRareData::EnsurePart(Element& element) {
+  return EnsureField<DOMTokenList>(FieldId::kPart, element,
+                                   html_names::kPartAttr);
 }
 
 DOMTokenList* NodeRareData::GetPart() const {

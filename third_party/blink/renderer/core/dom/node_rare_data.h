@@ -212,24 +212,22 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   ShadowRoot* GetShadowRoot() const;
   [[nodiscard]] NodeRareData* SetShadowRoot(ShadowRoot& shadow_root);
 
-  NamedNodeMap* AttributeMap() const;
-  [[nodiscard]] NodeRareData* SetAttributeMap(NamedNodeMap* attribute_map);
+  bool HasAttributeMap() const;
+  RareDataUpdate<NamedNodeMap> EnsureAttributeMap(Element& owner_element);
 
   DOMTokenList* GetClassList() const;
-  [[nodiscard]] NodeRareData* SetClassList(DOMTokenList* class_list);
+  RareDataUpdate<DOMTokenList> EnsureClassList(Element& element);
 
   DOMTokenList* GetFocusgroupTokenList() const;
-  [[nodiscard]] NodeRareData* SetFocusgroupTokenList(DOMTokenList* token_list);
+  RareDataUpdate<DOMTokenList> EnsureFocusgroupTokenList(Element& element);
 
-  DatasetDOMStringMap* Dataset() const;
-  [[nodiscard]] NodeRareData* SetDataset(DatasetDOMStringMap* dataset);
+  RareDataUpdate<DatasetDOMStringMap> EnsureDataset(Element& element);
 
   ScrollOffset SavedLayerScrollOffset() const;
   [[nodiscard]] NodeRareData* SetSavedLayerScrollOffset(ScrollOffset offset);
 
   ElementAnimations* GetElementAnimations();
-  [[nodiscard]] NodeRareData* SetElementAnimations(
-      ElementAnimations* element_animations);
+  RareDataUpdate<ElementAnimations> EnsureElementAnimations();
 
   bool HasPseudoElements() const;
   void ClearPseudoElements();
@@ -256,7 +254,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   EditContext* GetEditContext() const;
   [[nodiscard]] NodeRareData* SetEditContext(EditContext* edit_context);
 
-  [[nodiscard]] NodeRareData* SetPart(DOMTokenList* part);
+  RareDataUpdate<DOMTokenList> EnsurePart(Element& element);
   DOMTokenList* GetPart() const;
 
   [[nodiscard]] NodeRareData* SetPartNamesMap(const AtomicString part_names);
