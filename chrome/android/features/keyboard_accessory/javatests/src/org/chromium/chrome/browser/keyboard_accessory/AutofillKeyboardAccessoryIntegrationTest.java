@@ -241,6 +241,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY})
     public void testMouseClicksConsumedByAccessoryBar() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
         mHelper.registerSheetDataProvider(AccessoryTabType.CREDIT_CARDS);

@@ -45,7 +45,10 @@ import java.util.concurrent.TimeoutException;
 // TODO(crbug.com/447076444): Enable Keyboard Accessory revamp flag
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP})
+@Features.DisableFeatures({
+    ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,
+    ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY
+})
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511286364
 public class ManualFillingUiCaptureTest {
     @Rule
