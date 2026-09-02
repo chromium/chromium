@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "components/country_codes/country_codes.h"
@@ -42,6 +41,10 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
+#endif
 
 namespace {
 using ::regional_capabilities::SearchEngineChoiceScreenConditions;

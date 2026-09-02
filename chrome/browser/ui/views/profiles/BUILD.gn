@@ -42,6 +42,66 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//ui/gfx/geometry",
     ]
   }
+
+  source_set("signin_view_controller_delegate_views") {
+    public = [ "signin_view_controller_delegate_views.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//components/signin/public/base:signin_buildflags",
+      "//content/public/browser",
+      "//ui/base/metadata",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+  }
+
+  source_set("signin_view_controller_delegate_views_impl") {
+    sources = [ "signin_view_controller_delegate_views.cc" ]
+    public_deps = [
+      ":signin_view_controller_delegate_views",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views:color_provider_browser_helper",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//chrome/common:constants",
+      "//components/constrained_window",
+      "//components/input",
+      "//components/web_modal",
+      "//content/public/browser",
+      "//ui/base/metadata",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/views",
+      "//ui/views/controls/webview",
+      "//url",
+    ]
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/signin:profile" ]
+    }
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
+    }
+  }
 }
 
 if (toolkit_views) {
@@ -275,6 +335,40 @@ if (is_win || is_mac || is_linux) {
       "//url",
     ]
   }
+
+  source_set("profile_customization_bubble_sync_controller") {
+    public = [ "profile_customization_bubble_sync_controller.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/search/background",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
+      "//components/sync/service",
+      "//skia",
+      "//ui/base/unowned_user_data",
+    ]
+  }
+
+  source_set("profile_customization_bubble_sync_controller_impl") {
+    sources = [ "profile_customization_bubble_sync_controller.cc" ]
+    public_deps = [
+      ":profile_customization_bubble_sync_controller",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":avatar_toolbar_button",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search/background",
+      "//chrome/browser/sync",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//components/sync/service",
+    ]
+  }
 }
 
 if (toolkit_views) {
@@ -428,6 +522,81 @@ if (enable_dice_support) {
       "//chrome/browser/ui/profiles",
       "//components/web_modal",
       "//content/public/browser",
+    ]
+  }
+
+  source_set("dice_web_signin_interception_bubble_view") {
+    public = [ "dice_web_signin_interception_bubble_view.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/signin",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+  }
+
+  source_set("dice_web_signin_interception_bubble_view_impl") {
+    sources = [ "dice_web_signin_interception_bubble_view.cc" ]
+    public_deps = [
+      ":dice_web_signin_interception_bubble_view",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/common:constants",
+      "//components/input",
+      "//components/signin/public/base",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/events",
+      "//ui/views",
+    ]
+  }
+
+  source_set("profile_picker_glic_flow_controller") {
+    public = [ "profile_picker_glic_flow_controller.h" ]
+    sources = [ "profile_picker_glic_flow_controller.cc" ]
+    public_deps = [
+      ":profile_management_flow_controller",
+      "//base",
+      "//components/signin/public/identity_manager",
+    ]
+    deps = [
+      ":profile_management_step_controller",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/signin",
+      "//chrome/common",
+    ]
+  }
+
+  source_set("profile_picker_omnibox_everywhere_flow_controller") {
+    public = [ "profile_picker_omnibox_everywhere_flow_controller.h" ]
+    sources = [ "profile_picker_omnibox_everywhere_flow_controller.cc" ]
+    public_deps = [
+      ":profile_management_flow_controller",
+      "//base",
+    ]
+    deps = [
+      ":profile_management_step_controller",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/common",
     ]
   }
 }

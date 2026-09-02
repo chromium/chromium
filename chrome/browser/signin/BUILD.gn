@@ -807,6 +807,7 @@ if (!is_android) {
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/signin",
+        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
         "//chrome/browser/ui/webui/settings",
         "//chrome/browser/ui/webui/signin",
         "//chrome/browser/ui/webui/signin:login_ui_service",

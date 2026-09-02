@@ -172,6 +172,7 @@ source_set("internal") {
     if (is_win || is_mac || is_linux) {
       deps += [
         "//chrome/browser/download/bubble",
+        "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller",
         "//chrome/browser/ui/views/session_restore_infobar",
       ]
     }

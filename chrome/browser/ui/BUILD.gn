@@ -2177,8 +2177,6 @@ static_library("ui") {
       "views/profiles/profile_menu_coordinator.h",
       "views/profiles/profile_menu_view_base.cc",
       "views/profiles/profile_menu_view_base.h",
-      "views/profiles/signin_view_controller_delegate_views.cc",
-      "views/profiles/signin_view_controller_delegate_views.h",
     ]
     deps += [
       "//chrome/browser/lifetime:termination_notification",
@@ -2190,12 +2188,18 @@ static_library("ui") {
       "//chrome/browser/ui/views/hats",
       "//chrome/browser/ui/views/hats:impl",
       "//chrome/browser/ui/views/profiles:avatar_badge_view",
+      "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views",
+      "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views_impl",
       "//chrome/browser/ui/wallet",
     ]
 
     allow_circular_includes_from += [
       "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/views/hats:impl",
+
+      # TODO(crbug.com/353332589): signin_view_controller_delegate_views.cc
+      # includes browser_view.h.
+      "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views_impl",
     ]
   }
 
@@ -2209,8 +2213,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "views/profiles/profile_customization_bubble_sync_controller.cc",
-      "views/profiles/profile_customization_bubble_sync_controller.h",
       "views/profiles/profile_management_flow_controller.cc",
       "views/profiles/profile_management_flow_controller_impl.cc",
       "views/profiles/profile_management_flow_controller_impl.h",
@@ -2238,6 +2240,8 @@ static_library("ui") {
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/views/profiles:badged_profile_photo",
+      "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller",
+      "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller_impl",
       "//chrome/browser/ui/views/profiles:profile_management_types",
       "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller",
       "//chrome/browser/ui/views/profiles:profile_picker_web_contents_host",
@@ -2259,6 +2263,10 @@ static_library("ui") {
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/webui/signin:profile_impl",
 
+      # TODO(crbug.com/353332589):
+      # profile_customization_bubble_sync_controller.cc includes browser_view.h.
+      "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller_impl",
+
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
       # subdirectories such as views and webui which are not modularized yet.
       "//chrome/browser/ui/webui/app_home:impl",
@@ -2275,21 +2283,19 @@ static_library("ui") {
     if (enable_dice_support) {
       sources += [
         "views/profiles/cross_device_signin_qr_bubble_views.cc",
-        "views/profiles/dice_web_signin_interception_bubble_view.cc",
-        "views/profiles/dice_web_signin_interception_bubble_view.h",
         "views/profiles/first_run_flow_controller.cc",
         "views/profiles/first_run_flow_controller.h",
-        "views/profiles/profile_picker_glic_flow_controller.cc",
-        "views/profiles/profile_picker_glic_flow_controller.h",
-        "views/profiles/profile_picker_omnibox_everywhere_flow_controller.cc",
-        "views/profiles/profile_picker_omnibox_everywhere_flow_controller.h",
         "views/profiles/profile_picker_reauth_provider.cc",
         "views/profiles/profile_picker_sign_in_provider.cc",
       ]
       deps += [
         "webui/signin/batch_upload:mojo_bindings",
+        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
+        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
         "//chrome/browser/ui/views/profiles:profile_management_flow_controller",
         "//chrome/browser/ui/views/profiles:profile_management_step_controller",
+        "//chrome/browser/ui/views/profiles:profile_picker_glic_flow_controller",
+        "//chrome/browser/ui/views/profiles:profile_picker_omnibox_everywhere_flow_controller",
         "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider",
         "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
         "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
@@ -2301,8 +2307,12 @@ static_library("ui") {
 
       # batch_upload includes headers from //chrome/browser/ui (e.g. browser.h)
       # that can't be split out yet.
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/webui/signin:batch_upload" ]
+      allow_circular_includes_from += [
+        # TODO(crbug.com/353332589): dice_web_signin_interception_bubble_view.cc
+        # includes browser_view.h.
+        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
+        "//chrome/browser/ui/webui/signin:batch_upload",
+      ]
     }
   }
 

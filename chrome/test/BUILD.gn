@@ -3562,6 +3562,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/frame:multi_contents_resize_area",
         "//chrome/browser/ui/views/profiles:batch_upload_dialog_view",
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
+        "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views",
         "//chrome/browser/ui/views/search_engines",
         "//chrome/browser/ui/views/web_apps",
         "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
@@ -3652,6 +3653,8 @@ if (!is_android) {
       }
       if (enable_dice_support) {
         deps += [
+          "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
+          "//chrome/browser/ui/views/profiles:profile_picker_glic_flow_controller",
           "//chrome/browser/ui/webui/signin/signout_confirmation",
           "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
           "//components/sync_bookmarks",
@@ -5994,6 +5997,7 @@ test("unit_tests") {
     sources += [ "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc" ]
     deps += [
       "//chrome/browser/ui/signin:unit_tests",
+      "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
       "//chrome/browser/ui/views/profiles/feature_showcase:unit_tests",
       "//chrome/browser/ui/webui/cr_components/signin:unit_tests",
       "//chrome/browser/ui/webui/feature_showcase",
@@ -7784,6 +7788,7 @@ test("unit_tests") {
         "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc",
         "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
       ]
+      deps += [ "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller" ]
     }
     if (use_aura) {
       sources += [
@@ -9298,6 +9303,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/enterprise/idle:interactive_ui_tests",
         "//chrome/browser/ui/startup:test_support_ui",
+        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
         "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
         "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
         "//chrome/browser/ui/webui/feature_showcase",

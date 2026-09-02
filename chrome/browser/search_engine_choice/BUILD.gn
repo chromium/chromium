@@ -79,6 +79,8 @@ source_set("impl") {
         "//chromeos/components/kiosk",
         "//chromeos/components/mgs",
       ]
+    } else {
+      deps += [ "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller" ]
     }
 
     if (is_chrome_for_testing) {
