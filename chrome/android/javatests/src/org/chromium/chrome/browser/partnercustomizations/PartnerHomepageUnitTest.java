@@ -48,8 +48,6 @@ public class PartnerHomepageUnitTest {
 
     @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
-    public static final String TAG = "PartnerHomepageUnitTest";
-
     private static final GURL TEST_CUSTOM_HOMEPAGE_GURL = new GURL("http://chrome.com");
 
     private HomepageManager mHomepageManager;

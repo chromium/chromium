@@ -41,7 +41,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -76,7 +75,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
     @Mock private Runnable mOnChromeColorSelectedCallback;
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private TextWatcher mTextWatcher;
-    @Captor private ArgumentCaptor<TextWatcher> mTextWatcherCaptor;
 
     private static final String FILE_ID_HASH = "fileIdHash";
 

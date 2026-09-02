@@ -362,7 +362,7 @@ public class CustomTabActivityTabControllerUnitTest {
     // be restored using a different mechanism. See crbug.com/448865648.
     @Test
     public void doesNotUseTabFromIntent_IfActivityRecreated() {
-        Tab popupTab = env.prepareTransferredTab();
+        env.prepareTransferredTab();
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);
         mTabController.setUpInitialTab(null);

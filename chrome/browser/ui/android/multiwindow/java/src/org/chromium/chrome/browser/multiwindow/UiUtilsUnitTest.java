@@ -40,7 +40,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests for {@link UiUtils}. */
@@ -62,7 +61,6 @@ public class UiUtilsUnitTest {
     @Mock Context mContext;
     @Mock Resources mResources;
     @Mock Drawable mDrawable;
-    @Mock LargeIconBridge mIconBridge;
 
     private final @NameWindowDialogSource int mNameWindowDialogSource =
             NameWindowDialogSource.WINDOW_MANAGER;

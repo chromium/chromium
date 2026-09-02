@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -65,7 +64,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Mock private SetupListManager mSetupListManager;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
-    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private Context mContext;
     private NonNullObservableSupplier<Profile> mProfileSupplier;

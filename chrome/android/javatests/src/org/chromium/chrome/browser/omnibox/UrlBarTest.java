@@ -64,7 +64,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class UrlBarTest {
-    public static final String EXAMPLE_STRING = "example string";
     private UrlBar mUrlBar;
 
     @Rule

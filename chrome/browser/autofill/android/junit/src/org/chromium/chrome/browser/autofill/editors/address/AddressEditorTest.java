@@ -69,7 +69,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -217,8 +216,6 @@ public class AddressEditorTest {
                     new DropdownKeyValue("US", "United States"),
                     new DropdownKeyValue("DE", "Germany"),
                     new DropdownKeyValue("CU", "Cuba"));
-
-    @Nullable private AutofillAddress mEditedAutofillAddress;
 
     private Activity mActivity;
     private AddressEditorCoordinator mAddressEditor;

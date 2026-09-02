@@ -32,7 +32,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -134,7 +133,7 @@ public class IncognitoTabLauncherTest {
         // To emulate first party we create a CustomTabIntent with an associated
         // session token. Then, we create a normal intent and copy the session token
         // from CustomTabIntent to the normal intent.
-        CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
+        CustomTabsTestUtils.setUpConnection();
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(null).session;
 
         CustomTabsIntent customTabIntent = new CustomTabsIntent.Builder(session).build();

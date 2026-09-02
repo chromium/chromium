@@ -11,10 +11,8 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -25,11 +23,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -45,11 +40,6 @@ public class BookmarkManagerViewBinderTest {
 
     @Mock View mView;
     @Mock TextView mTextView;
-    @Mock LinearLayout mLinearLayout;
-    @Mock PersonalizedSigninPromoView mPromoView;
-    @Mock Callback<BookmarkId> mOpenFolderCallback;
-    @Mock ItemTouchHelper mItemTouchHelper;
-    @Mock Runnable mClearHighlightCallback;
 
     private Activity mActivity;
     private PropertyModel mModel;

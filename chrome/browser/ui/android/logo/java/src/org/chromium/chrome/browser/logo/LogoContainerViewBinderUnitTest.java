@@ -67,8 +67,6 @@ public class LogoContainerViewBinderUnitTest {
 
     @Mock private LogoContainerView mMockLogoView;
 
-    @Mock LogoBridge.Natives mLogoBridgeJniMock;
-
     @Mock LogoBridge mLogoBridge;
 
     @Mock ImageFetcher mImageFetcher;

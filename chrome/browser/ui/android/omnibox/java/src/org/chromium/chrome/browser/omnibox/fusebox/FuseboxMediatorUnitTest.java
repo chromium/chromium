@@ -2651,9 +2651,9 @@ public class FuseboxMediatorUnitTest {
         when(mTabModelSelector.getCurrentTab()).thenReturn(tab1);
 
         // Recent tabs.
-        Tab tab2 = mockTab(2, JUnitTestGURLs.NTP_URL);
-        Tab tab3 = mockTab(3, JUnitTestGURLs.URL_1);
-        Tab tab4 = mockTab(4, JUnitTestGURLs.URL_2);
+        mockTab(2, JUnitTestGURLs.NTP_URL);
+        mockTab(3, JUnitTestGURLs.URL_1);
+        mockTab(4, JUnitTestGURLs.URL_2);
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 
@@ -3229,7 +3229,7 @@ public class FuseboxMediatorUnitTest {
 
         Tab tab1 = mockTab(1, JUnitTestGURLs.GOOGLE_URL);
         when(mTabModelSelector.getCurrentTab()).thenReturn(tab1);
-        Tab tab2 = mockTab(2, JUnitTestGURLs.URL_1);
+        mockTab(2, JUnitTestGURLs.URL_1);
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 

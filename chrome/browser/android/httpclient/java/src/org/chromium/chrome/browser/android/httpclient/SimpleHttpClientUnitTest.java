@@ -11,8 +11,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -35,9 +33,6 @@ public class SimpleHttpClientUnitTest {
 
     @Mock public SimpleHttpClient.Natives mNativeMock;
     @Mock public Profile mMockProfile;
-
-    @Captor public ArgumentCaptor<String[]> mHeaderKeysCaptor;
-    @Captor public ArgumentCaptor<String[]> mHeaderValuesCaptor;
 
     private SimpleHttpClient mHttpClient;
 

@@ -49,7 +49,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344669865): Failing when batched, batch this again.
 public class CookieControlsBridgeTest {
-    public static final String COOKIE_CONTROLS_BATCH_NAME = "cookie_controls";
     private WebPageStation mInitialPage;
 
     private class TestCallbackHandler implements CookieControlsObserver {

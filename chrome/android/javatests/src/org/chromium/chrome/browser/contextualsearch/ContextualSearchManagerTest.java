@@ -26,8 +26,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -120,10 +118,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     private static final String SIMPLE_SEARCH_NODE_ID = "search";
 
     /** Feature maps that we use for parameterized tests. */
-
-    /** This represents the current fully-launched configuration. */
-    private static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
-
     private UserActionTester mActionTester;
 
     @Override

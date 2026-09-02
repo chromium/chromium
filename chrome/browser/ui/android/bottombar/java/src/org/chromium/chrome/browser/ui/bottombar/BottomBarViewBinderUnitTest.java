@@ -136,10 +136,7 @@ public class BottomBarViewBinderUnitTest {
         assertEquals(R.id.extra_button_container, mBottomBarView.getChildAt(1).getId());
 
         // 2: new tab container
-        View centerContainer = mBottomBarView.getChildAt(2);
-
         // 3: tab switcher container
-        View tabSwitcherContainer = mBottomBarView.getChildAt(3);
 
         // 4: app_menu_button_container
         assertEquals(R.id.app_menu_button_container, mBottomBarView.getChildAt(4).getId());

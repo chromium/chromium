@@ -42,7 +42,6 @@ import java.util.concurrent.CountDownLatch;
 /** Robolectric tests for ChromeOriginVerifier. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeOriginVerifierJunitTest {
-    public static final String TEST_BATCH_NAME = "chrome_origin_verifier";
 
     private static final String PACKAGE_NAME = "org.chromium.com";
     private final int mUid = Process.myUid();
