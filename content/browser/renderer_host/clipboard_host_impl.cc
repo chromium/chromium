@@ -322,6 +322,12 @@ void ClipboardHostImpl::OnReadHtml(ui::ClipboardBuffer clipboard_buffer,
             std::u16string markup;
             if (clipboard_paste_data) {
               markup = std::move(clipboard_paste_data->html);
+            } else {
+              // Clear other data when pasting is blocked to not needlessly leak
+              // information to the renderer.
+              src_url = GURL();
+              fragment_start = 0;
+              fragment_end = 0;
             }
             std::move(callback).Run(std::move(markup), src_url, fragment_start,
                                     fragment_end);
