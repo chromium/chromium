@@ -235,6 +235,86 @@ TEST_F(TracingSampleProfilerTest, CustomSamplingInterval) {
   ValidateReceivedEvents();
 }
 
+TEST_F(TracingSampleProfilerTest, MultipleInstances) {
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return MakeMockUnwinderFactoryWithExpectations(); }));
+
+  perfetto::TraceConfig trace_config;
+  trace_config.add_buffers()->set_size_kb(1024);
+  auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
+  ds_cfg->set_name(kSamplerProfilerSourceName);
+
+  perfetto::protos::gen::ChromiumStackSamplingProfilerConfig profiler_config;
+  profiler_config.set_sampling_interval_ms(10);
+  ds_cfg->set_chromium_stack_sampling_profiler_raw(
+      profiler_config.SerializeAsString());
+
+  // 1. Start tracing session 1.
+  auto tracing_session1 =
+      perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  tracing_session1->Setup(trace_config);
+  tracing_session1->StartBlocking();
+
+  WaitForEvents();
+
+  // 2. Start tracing session 2.
+  auto tracing_session2 =
+      perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  tracing_session2->Setup(trace_config);
+  tracing_session2->StartBlocking();
+
+  WaitForEvents();
+
+  // 3. Stop both sessions.
+  base::TrackEvent::Flush();
+  base::RunLoop wait_for_stop1;
+  tracing_session1->SetOnStopCallback(
+      [&wait_for_stop1] { wait_for_stop1.Quit(); });
+  tracing_session1->Stop();
+  wait_for_stop1.Run();
+
+  base::RunLoop wait_for_stop2;
+  tracing_session2->SetOnStopCallback(
+      [&wait_for_stop2] { wait_for_stop2.Quit(); });
+  tracing_session2->Stop();
+  wait_for_stop2.Run();
+
+  // 4. Verify trace 1 contains samples.
+  std::vector<char> serialized_data1 = tracing_session1->ReadTraceBlocking();
+  perfetto::protos::Trace trace1;
+  EXPECT_TRUE(
+      trace1.ParseFromArray(serialized_data1.data(), serialized_data1.size()));
+
+  size_t samples_count1 = 0;
+  for (const auto& packet : trace1.packet()) {
+    if (packet.has_streaming_profile_packet()) {
+      samples_count1++;
+    }
+  }
+
+  // 5. Verify trace 2 contains samples.
+  std::vector<char> serialized_data2 = tracing_session2->ReadTraceBlocking();
+  perfetto::protos::Trace trace2;
+  EXPECT_TRUE(
+      trace2.ParseFromArray(serialized_data2.data(), serialized_data2.size()));
+
+  size_t samples_count2 = 0;
+  for (const auto& packet : trace2.packet()) {
+    if (packet.has_streaming_profile_packet()) {
+      samples_count2++;
+    }
+  }
+
+  if (TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
+    EXPECT_GT(samples_count1, 0U);
+    EXPECT_GT(samples_count2, 0U);
+  } else {
+    EXPECT_EQ(samples_count1, 0U);
+    EXPECT_EQ(samples_count2, 0U);
+  }
+}
+
 // This is needed because this code is racy (example:
 // http://b/41494892#comment1) by design: tracing needs to have minimal runtime
 // overhead, so tracing code assumes certain things are already initialized, and

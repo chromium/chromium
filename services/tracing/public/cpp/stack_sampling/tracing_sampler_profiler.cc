@@ -104,41 +104,29 @@ class TracingSamplerProfilerManager {
 
   void OnDataSourceStart(TracingSamplerProfiler::DataSource* data_source) {
     base::AutoLock lock(lock_);
-    DCHECK_EQ(data_source_, nullptr);
-    data_source_ = data_source;
-    for (TracingSamplerProfiler* profiler : profilers_) {
-      profiler->StartTracing(data_source_->CreateTraceWriter(),
-                             data_source_->privacy_filtering_enabled(),
-                             data_source_->sampling_interval());
+    bool inserted =
+        data_sources_.emplace(data_source->instance_index(), data_source)
+            .second;
+    DCHECK(inserted);
+    for (auto& [profiler, aux_factory] : profilers_) {
+      data_source->StartTracing(profiler, aux_factory);
     }
   }
+
   void OnDataSourceStop(TracingSamplerProfiler::DataSource* data_source) {
     base::AutoLock lock(lock_);
-    DCHECK_EQ(data_source_, data_source);
-    data_source_ = nullptr;
-    for (TracingSamplerProfiler* profiler : profilers_) {
-      profiler->StopTracing();
-    }
-  }
-
-  void WillClearIncrementalState() {
-    incremental_state_reset_id_.fetch_add(1u, std::memory_order_relaxed);
-  }
-
-  uint32_t GetIncrementalStateResetID() {
-    return incremental_state_reset_id_.load(std::memory_order_relaxed);
+    size_t erased = data_sources_.erase(data_source->instance_index());
+    DCHECK_EQ(erased, 1u);
   }
 
   void RegisterProfiler(TracingSamplerProfiler* profiler) {
     base::AutoLock lock(lock_);
-    if (!profilers_.insert(profiler).second) {
+    auto [it, inserted] = profilers_.try_emplace(profiler);
+    if (!inserted) {
       return;
     }
-
-    if (data_source_) {
-      profiler->StartTracing(data_source_->CreateTraceWriter(),
-                             data_source_->privacy_filtering_enabled(),
-                             data_source_->sampling_interval());
+    for (auto& [instance_index, data_source] : data_sources_) {
+      data_source->StartTracing(profiler, it->second);
     }
   }
 
@@ -147,9 +135,22 @@ class TracingSamplerProfilerManager {
     if (!profilers_.erase(profiler)) {
       return;
     }
+    for (auto& [instance_index, data_source] : data_sources_) {
+      data_source->StopTracing(profiler);
+    }
+  }
 
-    if (data_source_) {
-      profiler->StopTracing();
+  void SetAuxUnwinderFactory(
+      TracingSamplerProfiler* profiler,
+      const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>&
+          factory) {
+    base::AutoLock lock(lock_);
+    auto it = profilers_.find(profiler);
+    if (it != profilers_.end()) {
+      it->second = factory;
+    }
+    for (auto& [instance_index, data_source] : data_sources_) {
+      data_source->SetAuxUnwinderFactory(profiler, factory);
     }
   }
 
@@ -160,10 +161,11 @@ class TracingSamplerProfilerManager {
   ~TracingSamplerProfilerManager() = default;
 
   base::Lock lock_;  // Protects subsequent members.
-  std::set<raw_ptr<TracingSamplerProfiler, SetExperimental>> profilers_
-      GUARDED_BY(lock_);
-  raw_ptr<TracingSamplerProfiler::DataSource> data_source_ GUARDED_BY(lock_);
-  std::atomic<uint32_t> incremental_state_reset_id_{1};
+  base::flat_map<raw_ptr<TracingSamplerProfiler>,
+                 base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>>
+      profilers_ GUARDED_BY(lock_);
+  base::flat_map<uint32_t, raw_ptr<TracingSamplerProfiler::DataSource>>
+      data_sources_ GUARDED_BY(lock_);
 };
 
 base::SequenceLocalStorageSlot<TracingSamplerProfiler>&
@@ -289,7 +291,6 @@ perfetto::StaticString UnwinderTypeToString(
 }  // namespace
 
 TracingSamplerProfiler::DataSource::DataSource() = default;
-
 TracingSamplerProfiler::DataSource::~DataSource() = default;
 
 void TracingSamplerProfiler::DataSource::OnSetup(const SetupArgs& args) {
@@ -307,17 +308,120 @@ void TracingSamplerProfiler::DataSource::OnSetup(const SetupArgs& args) {
   }
 }
 
-void TracingSamplerProfiler::DataSource::OnStart(const StartArgs&) {
+void TracingSamplerProfiler::DataSource::OnStart(const StartArgs& args) {
+  instance_index_ = args.internal_instance_index;
   TracingSamplerProfilerManager::Get()->OnDataSourceStart(this);
 }
 
 void TracingSamplerProfiler::DataSource::OnStop(const StopArgs&) {
   TracingSamplerProfilerManager::Get()->OnDataSourceStop(this);
+  base::AutoLock lock(lock_);
+  for (auto& [thread_id, session] : sessions_) {
+    session.profile_builder = nullptr;
+    if (session.profiler) {
+      session.profiler->Stop();
+    }
+  }
+  sessions_.clear();
 }
 
 void TracingSamplerProfiler::DataSource::WillClearIncrementalState(
     const ClearIncrementalStateArgs& args) {
-  TracingSamplerProfilerManager::Get()->WillClearIncrementalState();
+  base::AutoLock lock(lock_);
+  for (auto& [thread_id, session] : sessions_) {
+    if (session.profile_builder) {
+      session.profile_builder->ResetIncrementalState();
+    }
+  }
+}
+
+void TracingSamplerProfiler::DataSource::StartTracing(
+    TracingSamplerProfiler* profiler,
+    const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>&
+        aux_unwinder_factory) {
+  base::AutoLock lock(lock_);
+  DCHECK(profiler);
+  base::PlatformThreadId thread_id = profiler->sampled_thread_token_.id;
+  if (sessions_.contains(thread_id)) {
+    return;
+  }
+
+  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform()) {
+    return;
+  }
+
+  base::StackSamplingProfiler::SamplingParams params;
+  params.samples_per_profile = std::numeric_limits<int>::max();
+  params.sampling_interval = sampling_interval_.is_zero()
+                                 ? kDefaultSamplingInterval
+                                 : sampling_interval_;
+
+  auto profile_builder = std::make_unique<TracingProfileBuilder>(
+      thread_id, CreateTraceWriter(), privacy_filtering_enabled_,
+      profiler->sample_callback_for_testing_);
+
+  TracingProfileBuilder* profile_builder_ptr = profile_builder.get();
+  auto unwinder_type = profiler->unwinder_type_;
+  std::unique_ptr<base::StackSamplingProfiler> sampling_profiler;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::StackSamplingProfiler::UnwindersFactory core_unwinders_factory;
+  if (profiler->core_unwinders_factory_function_) {
+    core_unwinders_factory = profiler->core_unwinders_factory_function_.Run();
+  }
+  if (core_unwinders_factory) {
+    if (unwinder_type == UnwinderType::kUnknown) {
+      unwinder_type = UnwinderType::kCustomAndroid;
+    }
+    profile_builder_ptr->SetUnwinderType(unwinder_type);
+    sampling_profiler = std::make_unique<base::StackSamplingProfiler>(
+        profiler->sampled_thread_token_, params, std::move(profile_builder),
+        std::move(core_unwinders_factory));
+  }
+#else   // BUILDFLAG(IS_ANDROID)
+  if (unwinder_type == UnwinderType::kUnknown) {
+    unwinder_type = UnwinderType::kDefault;
+  }
+  profile_builder_ptr->SetUnwinderType(unwinder_type);
+  sampling_profiler = std::make_unique<base::StackSamplingProfiler>(
+      profiler->sampled_thread_token_, params, std::move(profile_builder),
+      base::CreateCoreUnwindersFactory());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (sampling_profiler != nullptr) {
+    if (aux_unwinder_factory) {
+      sampling_profiler->AddAuxUnwinder(aux_unwinder_factory.Run());
+    }
+    sampling_profiler->Start();
+    sessions_.emplace(
+        thread_id, Session{std::move(sampling_profiler), profile_builder_ptr});
+  }
+}
+
+void TracingSamplerProfiler::DataSource::StopTracing(
+    TracingSamplerProfiler* profiler) {
+  base::AutoLock lock(lock_);
+  DCHECK(profiler);
+  auto it = sessions_.find(profiler->sampled_thread_token_.id);
+  if (it == sessions_.end()) {
+    return;
+  }
+  it->second.profile_builder = nullptr;
+  if (it->second.profiler) {
+    it->second.profiler->Stop();
+  }
+  sessions_.erase(it);
+}
+
+void TracingSamplerProfiler::DataSource::SetAuxUnwinderFactory(
+    TracingSamplerProfiler* profiler,
+    const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
+  base::AutoLock lock(lock_);
+  DCHECK(profiler);
+  auto it = sessions_.find(profiler->sampled_thread_token_.id);
+  if (it != sessions_.end() && it->second.profiler) {
+    it->second.profiler->AddAuxUnwinder(factory.Run());
+  }
 }
 
 TracingSamplerProfiler::TracingProfileBuilder::TracingProfileBuilder(
@@ -363,14 +467,15 @@ void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
   }
 }
 
+void TracingSamplerProfiler::TracingProfileBuilder::ResetIncrementalState() {
+  reset_incremental_state_.store(true, std::memory_order_relaxed);
+}
+
 void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp) {
-  uint32_t previous_incremental_state_reset_id = std::exchange(
-      last_incremental_state_reset_id_,
-      TracingSamplerProfilerManager::Get()->GetIncrementalStateResetID());
   bool reset_incremental_state =
-      (previous_incremental_state_reset_id != last_incremental_state_reset_id_);
+      reset_incremental_state_.exchange(false, std::memory_order_relaxed);
 
   if (reset_incremental_state) {
     stack_profile_writer_.ResetEmittedState();
@@ -671,9 +776,13 @@ void TracingSamplerProfiler::SetAuxUnwinderFactoryOnMainThread(
   g_main_thread_instance->SetAuxUnwinderFactory(factory);
 }
 
+void TracingSamplerProfiler::SetAuxUnwinderFactory(
+    const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
+  TracingSamplerProfilerManager::Get()->SetAuxUnwinderFactory(this, factory);
+}
+
 void TracingSamplerProfiler::SetSampleCallbackForTesting(
     const base::RepeatingClosure& sample_callback_for_testing) {
-  base::AutoLock lock(lock_);
   sample_callback_for_testing_ = sample_callback_for_testing;
 }
 
@@ -703,84 +812,6 @@ TracingSamplerProfiler::~TracingSamplerProfiler() {
   }
 }
 
-void TracingSamplerProfiler::SetAuxUnwinderFactory(
-    const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
-  base::AutoLock lock(lock_);
-  aux_unwinder_factory_ = factory;
-  if (profiler_) {
-    profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
-  }
-}
-
-void TracingSamplerProfiler::StartTracing(
-    std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
-    bool should_enable_filtering,
-    base::TimeDelta sampling_interval) {
-  base::AutoLock lock(lock_);
-  DCHECK_EQ(profiler_, nullptr);
-
-  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform()) {
-    return;
-  }
-
-  base::StackSamplingProfiler::SamplingParams params;
-  params.samples_per_profile = std::numeric_limits<int>::max();
-  params.sampling_interval = sampling_interval.is_zero()
-                                 ? kDefaultSamplingInterval
-                                 : sampling_interval;
-
-  auto profile_builder = std::make_unique<TracingProfileBuilder>(
-      sampled_thread_token_.id, std::move(trace_writer),
-      should_enable_filtering, sample_callback_for_testing_);
-
-  profile_builder_ = profile_builder.get();
-  // There is a dichotomy between stack samplers for Android and other
-  // platforms. While Android explicitly needs a factory to provide "core"
-  // unwinders, other platforms explicitly check that no such factory is
-  // provided.
-#if BUILDFLAG(IS_ANDROID)
-  base::StackSamplingProfiler::UnwindersFactory core_unwinders_factory;
-  if (core_unwinders_factory_function_) {
-    core_unwinders_factory = core_unwinders_factory_function_.Run();
-  }
-  if (core_unwinders_factory) {
-    if (unwinder_type_ == UnwinderType::kUnknown) {
-      unwinder_type_ = UnwinderType::kCustomAndroid;
-    }
-    profile_builder->SetUnwinderType(unwinder_type_);
-    profiler_ = std::make_unique<base::StackSamplingProfiler>(
-        sampled_thread_token_, params, std::move(profile_builder),
-        std::move(core_unwinders_factory));
-  }
-#else   // BUILDFLAG(IS_ANDROID)
-  if (unwinder_type_ == UnwinderType::kUnknown) {
-    unwinder_type_ = UnwinderType::kDefault;
-  }
-  profile_builder->SetUnwinderType(unwinder_type_);
-  profiler_ = std::make_unique<base::StackSamplingProfiler>(
-      sampled_thread_token_, params, std::move(profile_builder),
-      base::CreateCoreUnwindersFactory());
-#endif  // BUILDFLAG(IS_ANDROID)
-  if (profiler_ != nullptr) {
-    if (aux_unwinder_factory_) {
-      profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
-    }
-    profiler_->Start();
-  }
-}
-
-void TracingSamplerProfiler::StopTracing() {
-  base::AutoLock lock(lock_);
-  if (!profiler_) {
-    return;
-  }
-
-  // Stop and release the stack sampling profiler.
-  profiler_->Stop();
-  profile_builder_ = nullptr;
-  profiler_.reset();
-}
-
 }  // namespace tracing
 
 PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(
@@ -789,15 +820,22 @@ PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(
 
 // This should go after PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS
 // to avoid instantiation of type() template method before specialization.
+// static
 std::unique_ptr<perfetto::TraceWriterBase>
-tracing::TracingSamplerProfiler::DataSource::CreateTraceWriter() {
+tracing::TracingSamplerProfiler::DataSource::CreateTraceWriter(
+    uint32_t instance_index) {
   perfetto::internal::DataSourceStaticState* static_state =
       perfetto::DataSourceHelper<TracingSamplerProfiler::DataSource>::type()
           .static_state();
-  // DataSourceProxy disallows multiple instances, so our instance will always
-  // have index 0.
-  perfetto::internal::DataSourceState* instance_state = static_state->TryGet(0);
+  perfetto::internal::DataSourceState* instance_state =
+      static_state->TryGet(instance_index);
   CHECK(instance_state);
   return perfetto::internal::TracingMuxer::Get()->CreateTraceWriter(
-      static_state, 0, instance_state, perfetto::BufferExhaustedPolicy::kDrop);
+      static_state, instance_index, instance_state,
+      perfetto::BufferExhaustedPolicy::kDrop);
+}
+
+std::unique_ptr<perfetto::TraceWriterBase>
+tracing::TracingSamplerProfiler::DataSource::CreateTraceWriter() {
+  return CreateTraceWriter(instance_index_);
 }
