@@ -4,7 +4,7 @@
 
 // This file contains unit tests for Windows internationalization funcs.
 
-#include "base/win/i18n.h"
+#include "base/i18n/win/preferred_languages.h"
 
 #include <stddef.h>
 #include <string.h>

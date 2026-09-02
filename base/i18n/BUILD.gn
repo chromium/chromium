@@ -111,3 +111,24 @@ source_set("unittests") {
     "//testing/gtest",
   ]
 }
+
+if (is_win) {
+  component("win_i18n") {
+    output_name = "win_i18n"
+    sources = [
+      "win/embedded_i18n/language_selector.cc",
+      "win/embedded_i18n/language_selector.h",
+      "win/preferred_languages.cc",
+      "win/preferred_languages.h",
+    ]
+
+    defines = [ "BASE_I18N_IMPLEMENTATION" ]
+
+    public_deps = [
+      ":base_i18n_export",
+      "//base/i18n:language_tag",
+    ]
+
+    deps = [ "//base" ]
+  }
+}

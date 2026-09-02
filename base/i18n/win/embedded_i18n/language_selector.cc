@@ -7,17 +7,17 @@
 // embedded into the executable / library instead of stored in external
 // .pak files.
 
-#include "base/win/embedded_i18n/language_selector.h"
+#include "base/i18n/win/embedded_i18n/language_selector.h"
 
 #include <algorithm>
 #include <functional>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/i18n/win/preferred_languages.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/i18n.h"
 
 namespace base {
 namespace win {

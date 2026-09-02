@@ -8,11 +8,11 @@
 #include <iterator>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/win/preferred_languages.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/i18n.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/win/dpi.h"

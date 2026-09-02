@@ -1948,8 +1948,6 @@ component("base") {
       "win/delayload_helpers.h",
       "win/elevation_util.cc",
       "win/elevation_util.h",
-      "win/embedded_i18n/language_selector.cc",
-      "win/embedded_i18n/language_selector.h",
       "win/enum_variant.cc",
       "win/enum_variant.h",
       "win/event_trace_consumer.h",
@@ -1961,8 +1959,6 @@ component("base") {
       "win/hardware_check.h",
       "win/hstring_reference.cc",
       "win/hstring_reference.h",
-      "win/i18n.cc",
-      "win/i18n.h",
       "win/iat_patch_function.cc",
       "win/iat_patch_function.h",
       "win/limited_access_features.cc",
@@ -3236,6 +3232,10 @@ component("i18n") {
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]
   }
+
+  if (is_win) {
+    public_deps += [ "//base/i18n:win_i18n" ]
+  }
 }
 
 executable("containers_memory_benchmark") {
@@ -4249,6 +4249,8 @@ test("base_unittests") {
     sources += [
       "debug/gdi_debug_util_win_unittest.cc",
       "file_version_info_win_unittest.cc",
+      "i18n/win/embedded_i18n/language_selector_unittest.cc",
+      "i18n/win/preferred_languages_unittest.cc",
       "process/launch_unittest_win.cc",
       "test/fake_iasync_operation_win_unittest.cc",
       "test/test_file_util_win_unittest.cc",
@@ -4267,14 +4269,12 @@ test("base_unittests") {
       "win/dispatch_stub.h",
       "win/dllmain.cc",
       "win/elevation_util_unittest.cc",
-      "win/embedded_i18n/language_selector_unittest.cc",
       "win/enum_variant_unittest.cc",
       "win/event_trace_consumer_unittest.cc",
       "win/event_trace_controller_unittest.cc",
       "win/event_trace_provider_unittest.cc",
       "win/hardware_check_unittest.cc",
       "win/hstring_reference_unittest.cc",
-      "win/i18n_unittest.cc",
       "win/limited_access_features_unittest.cc",
       "win/map_unittest.cc",
       "win/message_window_unittest.cc",

@@ -5,17 +5,17 @@
 // This file declares a helper class for selecting a supported language from a
 // set of candidates.
 
-#ifndef BASE_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_
-#define BASE_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_
+#ifndef BASE_I18N_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_
+#define BASE_I18N_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_
 
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/i18n/base_i18n_export.h"
 
 namespace base {
 namespace win {
@@ -24,7 +24,7 @@ namespace i18n {
 // Selects a language from a set of available translations based on the user's
 // preferred language list. An optional preferred language may be provided to
 // override selection should a corresponding translation be available.
-class BASE_EXPORT LanguageSelector {
+class BASE_I18N_EXPORT LanguageSelector {
  public:
   using LangToOffset = std::pair<std::wstring_view, size_t>;
 
@@ -76,4 +76,4 @@ class BASE_EXPORT LanguageSelector {
 }  // namespace win
 }  // namespace base
 
-#endif  // BASE_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_
+#endif  // BASE_I18N_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_

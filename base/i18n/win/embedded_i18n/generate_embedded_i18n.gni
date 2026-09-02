@@ -85,7 +85,7 @@ template("generate_embedded_i18n") {
   }
 
   action_with_pydeps(target_name) {
-    script = "//base/win/embedded_i18n/create_string_rc.py"
+    script = "//base/i18n/win/embedded_i18n/create_string_rc.py"
     inputs = []
 
     output_dir = rebase_path(target_gen_dir, root_build_dir)

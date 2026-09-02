@@ -26,4 +26,7 @@ include_rules = [
 
   # The metainstaller should not depend on ICU, to minimize binary size.
   "-base/i18n",
+  # These do not add ICU4C to the binary, only the ICU4X canonicalizer.
+  "+base/i18n/win/embedded_i18n/language_selector.h",
+  "+base/i18n/win/preferred_languages.h",
 ]

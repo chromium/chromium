@@ -16,9 +16,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <vector>
 
+#include "base/i18n/win/preferred_languages.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/i18n.h"
 #include "chrome/browser/browser_process.h"
 #endif
 

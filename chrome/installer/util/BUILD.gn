@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//base/win/embedded_i18n/generate_embedded_i18n.gni")
+import("//base/i18n/win/embedded_i18n/generate_embedded_i18n.gni")
 import("//build/config/chrome_build.gni")
 
 import("//testing/test.gni")
