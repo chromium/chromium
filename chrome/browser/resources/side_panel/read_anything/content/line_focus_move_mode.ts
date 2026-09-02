@@ -112,8 +112,9 @@ export abstract class LineFocusMoveMode {
       return;
     }
     const rect = rects[0]!;
-    if (Math.abs(this.model_.getFocalPoint() -
-                 this.styleMode_.getFocalPointForRect(rect)) > 0.1) {
+    if (Math.abs(
+            this.model_.getFocalPoint() -
+            this.styleMode_.getFocalPointForRect(rect)) > 2) {
       this.metricsBrowserProxy_.incrementLineFocusSpeechLines();
     }
     this.moveToRect(rect);

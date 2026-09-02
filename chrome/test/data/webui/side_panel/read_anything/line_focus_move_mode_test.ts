@@ -38,12 +38,81 @@ suite('LineFocusMoveMode', () => {
   function createShortContainer(): HTMLElement {
     const container = document.createElement('p');
     container.innerText =
-        'I\'ve heard it said\nThat people come into our lives\nfor a reason.';
-    container.style.whiteSpace = 'pre-line';
+        'I\'ve heard it said\nThat people come into our lives\nfor a reason.\n';
+    container.style.whiteSpace = 'pre';
+    container.style.width = 'max-content';
+    container.style.margin = '0';
     container.style.fontSize = '20px';
     container.style.lineHeight = '2';
     document.body.appendChild(container);
     return container;
+  }
+
+  // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to be
+  // gone.
+  function getVisualLines(container: HTMLElement): string[] {
+    const walker = document.createTreeWalker(
+        container,
+        NodeFilter.SHOW_TEXT,
+        null,
+    );
+    const range = document.createRange();
+    const lines: string[] = [];
+    let currentLine = '';
+    let lastTop: number|null = null;
+
+    let node = walker.nextNode();
+    while (node) {
+      const text = node.textContent || '';
+      for (let i = 0; i < text.length; i++) {
+        range.setStart(node, i);
+        range.setEnd(node, i + 1);
+        const rect = range.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) {
+          continue;
+        }
+        if (lastTop === null) {
+          lastTop = rect.top;
+        } else if (Math.abs(rect.top - lastTop) > 2) {
+          lines.push(currentLine);
+          currentLine = '';
+          lastTop = rect.top;
+        }
+        currentLine += text[i];
+      }
+      node = walker.nextNode();
+    }
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+    return lines;
+  }
+
+  // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to be
+  // gone.
+  function logBoundsFailure(testName: string, container: HTMLElement) {
+    const rect = container.getBoundingClientRect();
+    const bounds = model.getTextBounds();
+    const visualLines = getVisualLines(container);
+    console.error(
+        `[${testName}] text bounds length is ${bounds.length}, expected 3.\n` +
+        `Container: width=${container.offsetWidth}px, height=${
+            container.offsetHeight}px, ` +
+        `rect=[left:${rect.left}, top:${rect.top}, width:${
+            rect.width}, height:${rect.height}], ` +
+        `computedStyle.whiteSpace="${
+            window.getComputedStyle(container).whiteSpace}"\n` +
+        `Window: innerWidth=${window.innerWidth}px, body.clientWidth=${
+            document.body.clientWidth}px\n` +
+        `Visual lines (${visualLines.length}):\n` +
+        visualLines.map((line, i) => `  [${i}]: "${line}"`).join('\n') + '\n' +
+        `HTML: ${container.outerHTML}\n` +
+        `Bounds: ${JSON.stringify(bounds.map(b => ({
+                                               top: b.top,
+                                               bottom: b.bottom,
+                                               left: b.left,
+                                               right: b.right,
+                                             })))}`);
   }
 
   function mockLinesCounters() {
@@ -134,6 +203,11 @@ suite('LineFocusMoveMode', () => {
 
       mode.onActivated(container, defaultHeight);
 
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      if (model.getTextBounds().length !== 3) {
+        logBoundsFailure('static onActivated', container);
+      }
       assertEquals(defaultHeight, model.getMaxY());
       assertLT(model.getMinY(), defaultHeight);
       assertEquals(3, model.getTextBounds().length);
@@ -223,6 +297,15 @@ suite('LineFocusMoveMode', () => {
 
       mode.onWordBoundary(segments1);
       assertLT(0, scrollDiffReceived);
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      const callCount1 =
+          metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
+      if (callCount1 !== 1) {
+        console.error(`static onWordBoundary segment1 speech lines is ${
+            callCount1}, expected 1. Focal point: ${
+            model.getFocalPoint()}, scrollDiff: ${scrollDiffReceived}`);
+      }
       assertEquals(
           1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
 
@@ -230,6 +313,15 @@ suite('LineFocusMoveMode', () => {
       model.setFocalPoint(model.getFocalPoint() + scrollDiffReceived);
       mode.onWordBoundary(segments2);
       assertLT(0, scrollDiffReceived);
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      const callCount2 =
+          metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
+      if (callCount2 !== 1) {
+        console.error(`static onWordBoundary segment2 speech lines is ${
+            callCount2}, expected 1. Focal point: ${
+            model.getFocalPoint()}, scrollDiff: ${scrollDiffReceived}`);
+      }
       assertEquals(
           1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
     });
@@ -328,6 +420,11 @@ suite('LineFocusMoveMode', () => {
 
       mode.onTextLocationsChange(container, defaultHeight);
 
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      if (model.getTextBounds().length !== 3) {
+        logBoundsFailure('static onTextLocationsChange', container);
+      }
       assertEquals(defaultHeight, model.getMaxY());
       assertLT(model.getMinY(), defaultHeight);
       assertEquals(3, model.getTextBounds().length);
@@ -458,6 +555,11 @@ suite('LineFocusMoveMode', () => {
 
       mode.onActivated(container, defaultHeight);
 
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      if (model.getTextBounds().length !== 3) {
+        logBoundsFailure('cursor onActivated', container);
+      }
       assertEquals(defaultHeight, model.getMaxY());
       assertLT(model.getMinY(), defaultHeight);
       assertEquals(3, model.getTextBounds().length);
@@ -554,10 +656,26 @@ suite('LineFocusMoveMode', () => {
       }];
 
       mode.onWordBoundary(segments1);
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      const callCount1 =
+          metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
+      if (callCount1 !== 1) {
+        console.error(`cursor onWordBoundary segment1 speech lines is ${
+            callCount1}, expected 1. Focal point: ${model.getFocalPoint()}`);
+      }
       assertEquals(
           1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
 
       mode.onWordBoundary(segments2);
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      const callCount2 =
+          metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
+      if (callCount2 !== 1) {
+        console.error(`cursor onWordBoundary segment2 speech lines is ${
+            callCount2}, expected 1. Focal point: ${model.getFocalPoint()}`);
+      }
       assertEquals(
           1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
     });
@@ -842,6 +960,11 @@ suite('LineFocusMoveMode', () => {
 
       mode.onTextLocationsChange(container, defaultHeight);
 
+      // TODO(crbug.com/502069860): Remove this once flakiness is confirmed to
+      // be gone.
+      if (model.getTextBounds().length !== 3) {
+        logBoundsFailure('cursor onTextLocationsChange', container);
+      }
       assertEquals(defaultHeight, model.getMaxY());
       assertLT(model.getMinY(), defaultHeight);
       assertEquals(3, model.getTextBounds().length);

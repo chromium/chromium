@@ -32,7 +32,11 @@ suite('LineFocusController', () => {
     const container = document.createElement('p');
     container.innerText =
         'I\'ve heard it said\nThat people come into our lives\nfor a reason.';
-    container.style.whiteSpace = 'pre-line';
+    container.style.whiteSpace = 'pre';
+    container.style.width = 'max-content';
+    container.style.margin = '0';
+    container.style.fontSize = '20px';
+    container.style.lineHeight = '40px';
     document.body.appendChild(container);
     return container;
   }
@@ -44,7 +48,11 @@ suite('LineFocusController', () => {
         'who help us most to grow\nif we let them and we help them in return\n' +
         'Now I don\'t know if I believe that\'s true\n' +
         'But I know I\'m who I am today because I met you';
-    container.style.whiteSpace = 'pre-line';
+    container.style.whiteSpace = 'pre';
+    container.style.width = 'max-content';
+    container.style.margin = '0';
+    container.style.fontSize = '20px';
+    container.style.lineHeight = '40px';
     document.body.appendChild(container);
     return container;
   }
