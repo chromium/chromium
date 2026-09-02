@@ -6,8 +6,6 @@ source_set("cells") {
   sources = [
     "whats_new_table_view_item.h",
     "whats_new_table_view_item.mm",
-    "whats_new_table_view_subtitle_item.h",
-    "whats_new_table_view_subtitle_item.mm",
   ]
 
   deps = [
