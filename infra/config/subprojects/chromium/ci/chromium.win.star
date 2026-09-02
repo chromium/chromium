@@ -447,6 +447,7 @@ ci.builder(
                 isolate_profile_data = False,
             ),
             "interactive_ui_tests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 9,
                 ),
@@ -457,6 +458,7 @@ ci.builder(
                 ),
             ),
             "sync_integration_tests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 3,
                 ),
