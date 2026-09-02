@@ -682,6 +682,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         mActivity,
                         activityLifecycleDispatcher,
                         mvTilesContainerLayout,
+                        assertNonNull(mUiConfig),
                         () -> mSnapshotTileGridChanged = true,
                         () -> {
                             if (mUrlFocusChangePercent == 1f) mTileCountChanged = true;

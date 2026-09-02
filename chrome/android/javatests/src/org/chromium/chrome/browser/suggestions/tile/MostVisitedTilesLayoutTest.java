@@ -67,6 +67,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -372,7 +373,12 @@ public class MostVisitedTilesLayoutTest {
 
         mCoordinator =
                 new MostVisitedTilesCoordinator(
-                        activity, mActivityLifecycleDispatcher, containerLayout, null, null);
+                        activity,
+                        mActivityLifecycleDispatcher,
+                        containerLayout,
+                        new UiConfig(containerLayout),
+                        null,
+                        null);
         mCoordinator.initWithNative(profile, uiDelegate, delegate, mTouchEnabledDelegate);
     }
 }

@@ -98,6 +98,13 @@ public class UiConfig {
         updateDisplayStyle();
     }
 
+    /**
+     * @return The horizontal inset, in DP.
+     */
+    public int getHorizontalInset() {
+        return mHorizontalInsetDp;
+    }
+
     /** Refresh the display style, notify observers of changes. */
     public void updateDisplayStyle() {
         updateDisplayStyle(computeDisplayStyleForCurrentConfig());

@@ -87,23 +87,23 @@ public class FeedStreamViewResizerUtils {
             return padding;
         }
         float dpToPx = resources.getDisplayMetrics().density;
-        float screenWidth = getScreenWidth(uiConfig, view);
+        float availableWidth = getAvailableWidth(uiConfig, view);
         float screenHeight = resources.getConfiguration().screenHeightDp * dpToPx;
         float useableHeight = screenHeight - getStatusBarHeight(activity) - toolBarHeight;
         int customPadding =
-                (int) ((screenWidth - useableHeight * FEED_IMAGE_OR_VIDEO_ASPECT_RATIO) / 2);
+                (int) ((availableWidth - useableHeight * FEED_IMAGE_OR_VIDEO_ASPECT_RATIO) / 2);
         return Math.max(customPadding, padding);
     }
 
     private static int computePaddingWide(
             Activity activity, UiConfig uiConfig, View view, int minWidePaddingPixels) {
-        float screenWidth = getScreenWidth(uiConfig, view);
+        float availableWidth = getAvailableWidth(uiConfig, view);
         // (a) Once the width of the body reaches breakpoint,
         // adjust margin sizes while keeping the body width constant.
         Resources resources = activity.getResources();
         int breakpointWidth =
                 resources.getDimensionPixelSize(R.dimen.ntp_wide_card_width_breakpoint);
-        int customPadding = (int) ((screenWidth - breakpointWidth) / 2);
+        int customPadding = (int) ((availableWidth - breakpointWidth) / 2);
         // (b) Once the margins reach max, adjust the body size while keeping margins constant.
         customPadding =
                 Math.min(
@@ -112,21 +112,23 @@ public class FeedStreamViewResizerUtils {
         // (c) Once the body reaches max width, adjust the margin widths while keeping the body
         // constant.
         int maxWidth = resources.getDimensionPixelSize(R.dimen.ntp_wide_card_width_max);
-        customPadding = Math.max(customPadding, (int) (screenWidth - maxWidth) / 2);
+        customPadding = Math.max(customPadding, (int) (availableWidth - maxWidth) / 2);
         // (d) Return max of computed padding and min allowed margin.
         return Math.max(customPadding, minWidePaddingPixels);
     }
 
-    private static float getScreenWidth(UiConfig uiConfig, View view) {
+    private static float getAvailableWidth(UiConfig uiConfig, View view) {
         Resources resources = uiConfig.getContext().getResources();
-        float screenWidth;
+        float availableWidth;
         if (DisplayUtil.isUiScaled() && view != null) {
-            screenWidth = view.getMeasuredWidth();
+            availableWidth = view.getMeasuredWidth();
         } else {
             float dpToPx = resources.getDisplayMetrics().density;
-            screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
+            int availableWidthDp =
+                    resources.getConfiguration().screenWidthDp - uiConfig.getHorizontalInset();
+            availableWidth = availableWidthDp * dpToPx;
         }
-        return screenWidth;
+        return availableWidth;
     }
 
     private static int getStatusBarHeight(Activity activity) {

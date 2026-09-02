@@ -110,6 +110,17 @@ public final class FeedStreamViewResizerTest {
         assertPaddingEquals(expectedPadding);
     }
 
+    @Config(qualifiers = "sw1820dp-w1820dp")
+    @Test
+    public void computePaddingWidthWithHorizontalInset() {
+        // screenWidthDp = 1820, horizontalInset = 600 -> availableWidth = 1220dp
+        // expectedPadding = max((1220-ntp_wide_card_width_breakpoint)/2, mMinWidePaddingPixels) =
+        // 190
+        mUiConfig.setHorizontalInset(600);
+        int expectedPadding = 190;
+        assertPaddingEquals(expectedPadding);
+    }
+
     private void assertPaddingEquals(int expectedPadding) {
         int padding = mResizer.computePadding();
         assertEquals(expectedPadding, padding);
