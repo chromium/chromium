@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.task.TaskTraits;
@@ -32,7 +31,6 @@ import java.util.HashSet;
 
 /** Unit tests for {@link org.chromium.webapk.lib.client.WebApkServiceConnectionManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkServiceConnectionManagerTest {
     private static final String WEBAPK_PACKAGE = "com.webapk.package";
 

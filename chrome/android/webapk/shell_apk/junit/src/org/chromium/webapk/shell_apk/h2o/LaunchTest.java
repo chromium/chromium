@@ -35,7 +35,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -56,7 +55,6 @@ import java.util.stream.Collectors;
 
 /** Tests launching WebAPK. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class LaunchTest {
     /** Values based on manifest specified in GN file. */
     private static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";

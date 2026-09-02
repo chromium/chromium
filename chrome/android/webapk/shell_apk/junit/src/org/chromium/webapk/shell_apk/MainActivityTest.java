@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
@@ -37,7 +36,6 @@ import org.chromium.webapk.test.WebApkTestHelper;
  * together.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class MainActivityTest {
     private static final String BROWSER_PACKAGE_NAME = "com.android.chrome";
 

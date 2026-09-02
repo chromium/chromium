@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 
 /** Tests for HostBrowserLauncherParams's WebShareTarget parsing. */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HostBrowserLauncherParamsTest {
     /**
      * Test that {@link HostBrowserLauncherParams#createGETWebShareTargetUriString()} handles adding

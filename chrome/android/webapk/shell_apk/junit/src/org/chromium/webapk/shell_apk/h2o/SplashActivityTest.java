@@ -48,7 +48,6 @@ import java.util.Arrays;
 
 /** Tests for {@link SplashActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class SplashActivityTest {
     public static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
 

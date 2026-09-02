@@ -31,14 +31,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 /** Tests for WebApkUtils. */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mMockApplicationContext;

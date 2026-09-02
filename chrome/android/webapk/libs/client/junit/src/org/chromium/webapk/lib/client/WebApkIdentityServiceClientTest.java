@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.task.TaskTraits;
@@ -26,7 +25,6 @@ import org.chromium.webapk.test.WebApkTestHelper;
 
 /** Unit tests for {@link org.chromium.webapk.lib.client.WebApkIdentityServiceClient}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkIdentityServiceClientTest {
     static final String BROWSER_PACKAGE_NAME = "org.chromium.test";
 

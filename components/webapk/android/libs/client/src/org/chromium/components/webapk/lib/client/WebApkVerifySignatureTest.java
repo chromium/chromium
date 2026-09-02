@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.webapk.lib.client.WebApkVerifySignature.Error;
@@ -29,7 +28,6 @@ import java.security.spec.X509EncodedKeySpec;
 
 /** Unit tests for WebApkVerifySignature for Android. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkVerifySignatureTest {
     /** Elliptical Curves, Digital Signature Algorithm */
     private static final String KEY_FACTORY = "EC";

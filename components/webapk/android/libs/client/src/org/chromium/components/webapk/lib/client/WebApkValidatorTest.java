@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowToast;
 
@@ -43,7 +42,6 @@ import java.net.URISyntaxException;
 
 /** Unit tests for {@link org.chromium.webapk.lib.client.WebApkValidator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkValidatorTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.foo";
     private static final String INVALID_WEBAPK_PACKAGE_NAME = "invalid.org.chromium.webapk.foo";
