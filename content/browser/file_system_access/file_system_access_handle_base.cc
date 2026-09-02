@@ -55,7 +55,7 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
       context_(context),
       url_(url),
       handle_state_(handle_state) {
-  DCHECK(manager_);
+  CHECK(manager_, base::NotFatalUntil::M159);
 
   // We support sandboxed file system and local file systems on all platforms.
   DCHECK(url_.type() == storage::kFileSystemTypeLocal ||
@@ -289,8 +289,8 @@ void FileSystemAccessHandleBase::DoMove(
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetEffectiveWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   manager()->ResolveTransferToken(
       std::move(destination_directory),
@@ -393,8 +393,8 @@ void FileSystemAccessHandleBase::DoRename(
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // To get this far, we must have write access to the entry being moved.
-  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetEffectiveWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   if (!manager()->IsSafePathComponent(url().type(), new_entry_name)) {
     std::move(callback).Run(file_system_access_error::FromStatus(
@@ -722,8 +722,8 @@ void FileSystemAccessHandleBase::DoRemove(
     bool recurse,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetEffectiveWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   // A locked file cannot be removed. Acquire a lock and release it after the
   // remove operation completes.

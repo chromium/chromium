@@ -22,7 +22,7 @@ FileSystemAccessDataTransferTokenImpl::FileSystemAccessDataTransferTokenImpl(
       file_path_info_(file_path_info),
       renderer_process_id_(renderer_process_id),
       token_(base::UnguessableToken::Create()) {
-  DCHECK(manager_);
+  CHECK(manager_, base::NotFatalUntil::M159);
 
   receivers_.set_disconnect_handler(base::BindRepeating(
       &FileSystemAccessDataTransferTokenImpl::OnMojoDisconnect,

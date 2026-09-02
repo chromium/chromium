@@ -70,7 +70,7 @@ bool FilePathWatcher::RecursiveWatchAvailable() {
 FilePathWatcher::PlatformDelegate::PlatformDelegate() = default;
 
 FilePathWatcher::PlatformDelegate::~PlatformDelegate() {
-  DCHECK(is_cancelled());
+  CHECK(is_cancelled(), base::NotFatalUntil::M159);
 }
 
 size_t FilePathWatcher::PlatformDelegate::current_usage() const {
@@ -81,7 +81,7 @@ bool FilePathWatcher::Watch(const base::FilePath& path,
                             Type type,
                             const Callback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(path.IsAbsolute());
+  CHECK(path.IsAbsolute(), base::NotFatalUntil::M159);
   return impl_->Watch(path, type, callback);
 }
 
@@ -89,7 +89,7 @@ bool FilePathWatcher::WatchWithOptions(const base::FilePath& path,
                                        const WatchOptions& options,
                                        const Callback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(path.IsAbsolute());
+  CHECK(path.IsAbsolute(), base::NotFatalUntil::M159);
   return impl_->WatchWithOptions(path, options, callback);
 }
 
@@ -99,7 +99,7 @@ std::optional<size_t> FilePathWatcher::WatchWithChangeInfo(
     const CallbackWithChangeInfo& callback,
     const UsageChangeCallback& usage_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(path.IsAbsolute());
+  CHECK(path.IsAbsolute(), base::NotFatalUntil::M159);
   if (impl_->WatchWithChangeInfo(path, options, callback, usage_callback)) {
     return impl_->current_usage();
   }

@@ -31,10 +31,11 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
       url_(url),
       on_close_callback_(std::move(on_close_callback)),
       lock_(std::move(lock)) {
-  DCHECK(manager_);
+  CHECK(manager_, base::NotFatalUntil::M159);
 
-  DCHECK(manager_->context()->is_incognito() ==
-         file_delegate_receiver.is_valid());
+  CHECK(
+      manager_->context()->is_incognito() == file_delegate_receiver.is_valid(),
+      base::NotFatalUntil::M159);
 
   // Only create a file delegate host in incognito mode.
   incognito_host_ =

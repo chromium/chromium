@@ -350,8 +350,8 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetReadWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
       file_delegate_host_remote;
@@ -373,8 +373,8 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetReadWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::OpenFile,
@@ -439,7 +439,7 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
         mojo::NullRemote());
     return;
   }
-  DCHECK_GE(length_or_error.value(), 0);
+  CHECK_GE(length_or_error.value(), 0, base::NotFatalUntil::M159);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileModificationHost>
       file_modification_host_remote;
@@ -549,9 +549,9 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
     blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(keep_existing_data ? GetReadWritePermissionStatus()
-                               : GetEffectiveWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(keep_existing_data ? GetReadWritePermissionStatus()
+                              : GetEffectiveWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   // TODO(crbug.com/40194651): Expand this check to all backends.
   if (url().type() == storage::kFileSystemTypeLocal) {
@@ -613,7 +613,7 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     scoped_refptr<FileSystemAccessLockManager::LockHandle> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(start_count >= 0);
-  DCHECK(max_swap_files_ >= 0);
+  CHECK(max_swap_files_ >= 0, base::NotFatalUntil::M159);
 
   // We should not have gotten any farther than zero without a lock on the file.
   CHECK(start_count == 0 || lock);
@@ -749,8 +749,8 @@ void FileSystemAccessFileHandleImpl::DidCheckSwapFileExists(
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(count >= 0);
-  DCHECK(max_swap_files_ >= 0);
+  CHECK(count >= 0, base::NotFatalUntil::M159);
+  CHECK(max_swap_files_ >= 0, base::NotFatalUntil::M159);
 
   if (result != base::File::FILE_ERROR_NOT_FOUND) {
     // File already exists. We need to find an unused filename.
@@ -781,8 +781,8 @@ void FileSystemAccessFileHandleImpl::CreateSwapFileFromCopy(
     scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(count >= 0);
-  DCHECK(max_swap_files_ >= 0);
+  CHECK(count >= 0, base::NotFatalUntil::M159);
+  CHECK(max_swap_files_ >= 0, base::NotFatalUntil::M159);
 
   manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::Copy,
@@ -807,9 +807,9 @@ void FileSystemAccessFileHandleImpl::CreateClonedSwapFile(
     scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(count >= 0);
-  DCHECK(max_swap_files_ >= 0);
-  DCHECK(CanUseCowSwapFile());
+  CHECK(count >= 0, base::NotFatalUntil::M159);
+  CHECK(max_swap_files_ >= 0, base::NotFatalUntil::M159);
+  CHECK(CanUseCowSwapFile(), base::NotFatalUntil::M159);
 
   auto after_clone_callback = base::BindOnce(
       &FileSystemAccessFileHandleImpl::DidCloneSwapFile,
@@ -836,7 +836,7 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CanUseCowSwapFile());
+  CHECK(CanUseCowSwapFile(), base::NotFatalUntil::M159);
 
   swap_file_clone_result_for_testing_ = result;
 
@@ -909,7 +909,7 @@ void FileSystemAccessFileHandleImpl::GetUniqueId(GetUniqueIdCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto id = manager()->GetUniqueId(*this);
-  DCHECK(id.is_valid());
+  CHECK(id.is_valid(), base::NotFatalUntil::M159);
   std::move(callback).Run(file_system_access_error::Ok(),
                           id.AsLowercaseString());
 }

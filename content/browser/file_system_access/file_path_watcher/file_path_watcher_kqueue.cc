@@ -33,7 +33,8 @@ namespace content {
 FilePathWatcherKQueue::FilePathWatcherKQueue() : kqueue_(-1) {}
 
 FilePathWatcherKQueue::~FilePathWatcherKQueue() {
-  DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 }
 
 void FilePathWatcherKQueue::ReleaseEvent(struct kevent& event) {
@@ -46,7 +47,7 @@ void FilePathWatcherKQueue::ReleaseEvent(struct kevent& event) {
 size_t FilePathWatcherKQueue::EventsForPath(base::FilePath path,
                                             EventVector* events) {
   // Make sure that we are working with a clean slate.
-  DCHECK(events->empty());
+  CHECK(events->empty(), base::NotFatalUntil::M159);
 
   std::vector<base::FilePath::StringType> components = path.GetComponents();
 
@@ -90,7 +91,7 @@ size_t FilePathWatcherKQueue::EventsForPath(base::FilePath path,
 size_t FilePathWatcherKQueue::EventForItem(const base::FilePath& path,
                                            EventVector* events) {
   // Make sure that we are working with a clean slate.
-  DCHECK(events->empty());
+  CHECK(events->empty(), base::NotFatalUntil::M159);
 
   events->resize(1);
   auto& event = events->front();
@@ -270,11 +271,12 @@ bool FilePathWatcherKQueue::UpdateWatches(bool* target_file_affected) {
 bool FilePathWatcherKQueue::Watch(const base::FilePath& path,
                                   Type type,
                                   const FilePathWatcher::Callback& callback) {
-  DCHECK(target_.value().empty());  // Can only watch one path.
-  DCHECK(!callback.is_null());
-  DCHECK_EQ(kqueue_, -1);
+  CHECK(target_.value().empty(),
+        base::NotFatalUntil::M159);  // Can only watch one path.
+  CHECK(!callback.is_null(), base::NotFatalUntil::M159);
+  CHECK_EQ(kqueue_, -1, base::NotFatalUntil::M159);
   // Recursive watch is not supported using kqueue.
-  DCHECK_NE(type, Type::kRecursive);
+  CHECK_NE(type, Type::kRecursive, base::NotFatalUntil::M159);
 
   callback_ = callback;
   target_ = path;
@@ -328,7 +330,7 @@ void FilePathWatcherKQueue::Cancel() {
     return;
   }
 
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
   if (!is_cancelled()) {
     set_cancelled();
     kqueue_watch_controller_.reset();
@@ -343,8 +345,8 @@ void FilePathWatcherKQueue::Cancel() {
 }
 
 void FilePathWatcherKQueue::OnKQueueReadable() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(events_.size());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
+  CHECK(events_.size(), base::NotFatalUntil::M159);
 
   // Request the file system update notifications that have occurred and return
   // them in |updates|. |count| will contain the number of updates that have

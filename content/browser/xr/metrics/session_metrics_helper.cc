@@ -52,7 +52,7 @@ void ReportInitialSessionData(
     const device::mojom::XRSessionOptions& session_options,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         enabled_features) {
-  DCHECK(webxr_session_tracker);
+  CHECK(webxr_session_tracker, base::NotFatalUntil::M159);
 
   webxr_session_tracker->ukm_entry()->SetMode(
       static_cast<int64_t>(session_options.mode));

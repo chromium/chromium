@@ -134,7 +134,8 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
             if (!base::NormalizeFilePath(path, &check_path)) {
               check_path = path;
             }
-            DCHECK(path.empty() == check_path.empty());
+            CHECK(path.empty() == check_path.empty(),
+                  base::NotFatalUntil::M159);
             return check_path != path;
           },
           std::move(path)),

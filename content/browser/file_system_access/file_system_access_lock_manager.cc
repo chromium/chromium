@@ -476,19 +476,20 @@ FileSystemAccessLockManager::RootLocator::FromFileSystemURL(
   switch (url.type()) {
     case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeTest:
-      DCHECK(!url.bucket());
+      CHECK(!url.bucket(), base::NotFatalUntil::M159);
       path_type = EntryPathType::kLocal;
       break;
     case storage::kFileSystemTypeTemporary:
       // URLs from the sandboxed file system must include bucket information.
-      DCHECK(url.bucket());
+      CHECK(url.bucket(), base::NotFatalUntil::M159);
       maybe_bucket_locator = url.bucket().value();
       path_type = EntryPathType::kSandboxed;
       break;
     default:
-      DCHECK(!url.bucket());
-      DCHECK_EQ(url.mount_type(),
-                storage::FileSystemType::kFileSystemTypeExternal);
+      CHECK(!url.bucket(), base::NotFatalUntil::M159);
+      CHECK_EQ(url.mount_type(),
+               storage::FileSystemType::kFileSystemTypeExternal,
+               base::NotFatalUntil::M159);
       path_type = EntryPathType::kExternal;
   }
   return RootLocator(path_type, maybe_bucket_locator);
@@ -503,7 +504,8 @@ FileSystemAccessLockManager::RootLocator::RootLocator(
   // sandboxed file system should not be keyed by StorageKey to ensure that
   // locks apply across sites. i.e. separate sites cannot hold their own
   // exclusive locks to the same file.
-  DCHECK_EQ(type == EntryPathType::kSandboxed, bucket_locator.has_value());
+  CHECK_EQ(type == EntryPathType::kSandboxed, bucket_locator.has_value(),
+           base::NotFatalUntil::M159);
 }
 FileSystemAccessLockManager::RootLocator::RootLocator(const RootLocator&) =
     default;
@@ -619,7 +621,7 @@ void FileSystemAccessLockManager::ReleaseRoot(const RootLocator& root_locator) {
   // `scoped_refptr` to `this`, and this is the last root lock.
   size_t count_removed = root_locks_.erase(root_locator);
 
-  DCHECK_EQ(1u, count_removed);
+  CHECK_EQ(1u, count_removed, base::NotFatalUntil::M159);
 }
 
 RootLock* FileSystemAccessLockManager::GetRootLock(

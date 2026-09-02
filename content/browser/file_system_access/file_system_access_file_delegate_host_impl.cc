@@ -37,7 +37,7 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> context,
                     scoped_refptr<storage::BigIOBuffer> buffer,
                     scoped_refptr<base::SequencedTaskRunner> reply_runner,
                     base::OnceCallback<void(int)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M159);
 
   auto wrapped_callback =
       base::BindPostTask(std::move(reply_runner), std::move(callback));
@@ -73,8 +73,8 @@ FileSystemAccessFileDelegateHostImpl::FileSystemAccessFileDelegateHostImpl(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
         receiver)
     : manager_(manager), url_(url), receiver_(this, std::move(receiver)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(manager_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(manager_, base::NotFatalUntil::M159);
   receiver_.set_disconnect_handler(
       base::BindOnce(&FileSystemAccessFileDelegateHostImpl::OnDisconnect,
                      base::Unretained(this)));
@@ -172,7 +172,7 @@ void FileSystemAccessFileDelegateHostImpl::DidWrite(WriteState* state,
                                                     bool complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(state);
+  CHECK(state, base::NotFatalUntil::M159);
   state->bytes_written += bytes;
   if (complete) {
     // This cast is guaranteed to be safe because the data buffer we're writing

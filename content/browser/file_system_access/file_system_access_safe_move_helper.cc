@@ -51,7 +51,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
       FileSystemAccessSafeMoveHelper::HashCallback callback,
       const storage::FileSystemURL& source_url,
       storage::FileSystemOperationRunner*) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
     auto calculator = base::MakeRefCounted<HashCalculator>(std::move(context),
                                                            std::move(callback));
     calculator->Start(source_url);
@@ -60,7 +60,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   HashCalculator(scoped_refptr<storage::FileSystemContext> context,
                  FileSystemAccessSafeMoveHelper::HashCallback callback)
       : context_(std::move(context)), callback_(std::move(callback)) {
-    DCHECK(context_);
+    CHECK(context_, base::NotFatalUntil::M159);
   }
 
  private:
@@ -97,7 +97,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
 
   void ReadMore() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_GE(file_size_, 0);
+    CHECK_GE(file_size_, 0, base::NotFatalUntil::M159);
     int read_result =
         reader_->Read(buffer_.get(), buffer_->size(),
                       base::BindOnce(&HashCalculator::DidRead, this));
@@ -108,7 +108,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
 
   void DidRead(int bytes_read) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_GE(file_size_, 0);
+    CHECK_GE(file_size_, 0, base::NotFatalUntil::M159);
     if (bytes_read < 0) {
       std::move(callback_).Run(storage::NetErrorToFileError(bytes_read),
                                std::string(), -1);

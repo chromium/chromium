@@ -125,7 +125,8 @@ FilePathWatcherFSEvents::FilePathWatcherFSEvents()
           DISPATCH_QUEUE_SERIAL)) {}
 
 FilePathWatcherFSEvents::~FilePathWatcherFSEvents() {
-  DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   DCHECK(callback_.is_null())
       << "Cancel() must be called before FilePathWatcher is destroyed.";
 }
@@ -137,8 +138,8 @@ size_t FilePathWatcherFSEvents::current_usage() const {
 bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
                                     Type type,
                                     const FilePathWatcher::Callback& callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(callback_.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M159);
+  CHECK(callback_.is_null(), base::NotFatalUntil::M159);
 
   // This class could support non-recursive watches, but that is currently
   // left to FilePathWatcherKQueue.
@@ -365,7 +366,7 @@ bool FilePathWatcherFSEvents::ResolveTargetPath() {
 }
 
 void FilePathWatcherFSEvents::ReportError(const base::FilePath& target) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
   if (!callback_.is_null()) {
     callback_.Run(FilePathWatcher::ChangeInfo(), target, true);
   }
@@ -390,7 +391,7 @@ void FilePathWatcherFSEvents::DestroyEventStream() {
 
 bool FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
                                                const base::FilePath& path) {
-  DCHECK(resolved_target_.empty());
+  CHECK(resolved_target_.empty(), base::NotFatalUntil::M159);
 
   target_ = path;
   ResolveTargetPath();

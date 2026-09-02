@@ -496,7 +496,8 @@ void CompletionIOPortThread::ThreadMain() {
 }
 
 FilePathWatcherImpl::~FilePathWatcherImpl() {
-  DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 }
 
 bool FilePathWatcherImpl::Watch(const base::FilePath& path,
@@ -525,7 +526,8 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
     const WatchOptions& options,
     const FilePathWatcher::CallbackWithChangeInfo& callback,
     const FilePathWatcher::UsageChangeCallback& usage_callback) {
-  DCHECK(target_.empty());  // Can only watch one path.
+  CHECK(target_.empty(),
+        base::NotFatalUntil::M159);  // Can only watch one path.
 
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
@@ -549,7 +551,7 @@ void FilePathWatcherImpl::Cancel() {
     return;
   }
 
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 
   CloseWatchHandle();
 
@@ -561,7 +563,7 @@ base::Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
 }
 
 void FilePathWatcherImpl::BufferOverflowed() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 
   DecrementAndGetUpcomingBatchCount();
 
@@ -578,7 +580,7 @@ void FilePathWatcherImpl::BufferOverflowed() {
 void FilePathWatcherImpl::WatchedDirectoryDeleted(
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 
   WatchWithChangeInfoResult result = SetupWatchHandleForTarget();
 
@@ -631,7 +633,7 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
 void FilePathWatcherImpl::ProcessNotificationBatch(
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
   CHECK(!notification_batch.empty());
 
   // When a new batch arrives, cancel the timer to send a pending delete since
@@ -774,7 +776,7 @@ int FilePathWatcherImpl::DecrementAndGetUpcomingBatchCount() {
 }
 
 void FilePathWatcherImpl::RunCallbackOnPendingDelete() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 
   if (callback_.is_null()) {
     return;

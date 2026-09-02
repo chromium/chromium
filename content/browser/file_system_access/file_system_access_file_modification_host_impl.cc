@@ -30,8 +30,8 @@ FileSystemAccessFileModificationHostImpl::
       url_(url),
       receiver_(this, std::move(receiver)),
       granted_capacity_(file_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(manager_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(manager_, base::NotFatalUntil::M159);
   // base::Unretained is safe here because this
   // FileSystemAccessFileModificationHostImpl owns `receiver_`. So, the
   // unretained FileSystemAccessFileModificationHostImpl is guaranteed to
@@ -54,8 +54,8 @@ FileSystemAccessFileModificationHostImpl::
       url_(url),
       receiver_(this, std::move(receiver)),
       granted_capacity_(file_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(manager_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(manager_, base::NotFatalUntil::M159);
   // base::Unretained is safe here because this
   // FileSystemAccessFileModificationHostImpl owns `receiver_`. So, the
   // unretained FileSystemAccessFileModificationHostImpl is guaranteed to

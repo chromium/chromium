@@ -11,7 +11,7 @@
 namespace content {
 
 media_session::MediaSessionService& GetMediaSessionService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   static base::NoDestructor<media_session::MediaSessionServiceImpl> service;
   return *service;
 }

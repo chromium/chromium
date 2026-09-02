@@ -324,7 +324,7 @@ void FileSystemChooser::CreateAndShow(
     const Options& options,
     ResultCallback callback,
     FileSystemChooser::ScopedObjects scoped_objects) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   TRACE_EVENT0("FileSystem", "FileSystemChooser::CreateAndShow");
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);

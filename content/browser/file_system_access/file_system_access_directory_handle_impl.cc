@@ -577,10 +577,10 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // URLs from the sandboxed file system must include bucket info, while URLs
   // from non-sandboxed file systems should not.
-  DCHECK_EQ(parent_url.type() == storage::kFileSystemTypeTemporary,
-            parent_url.bucket().has_value());
-  DCHECK_EQ(child_url.type() == storage::kFileSystemTypeTemporary,
-            child_url.bucket().has_value());
+  CHECK_EQ(parent_url.type() == storage::kFileSystemTypeTemporary,
+           parent_url.bucket().has_value(), base::NotFatalUntil::M159);
+  CHECK_EQ(child_url.type() == storage::kFileSystemTypeTemporary,
+           child_url.bucket().has_value(), base::NotFatalUntil::M159);
 
   // Since the types match, either both or neither URL will have bucket info.
   if (parent_url.bucket() != child_url.bucket()) {
@@ -639,8 +639,8 @@ void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
     const storage::FileSystemURL& child_url,
     GetFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetEffectiveWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
@@ -707,8 +707,8 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
     const storage::FileSystemURL& child_url,
     GetDirectoryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
+  CHECK_EQ(GetEffectiveWritePermissionStatus(),
+           blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
   manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateDirectory,
@@ -782,7 +782,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
   }
 
   if (result != base::File::FILE_OK) {
-    DCHECK(!has_more_entries);
+    CHECK(!has_more_entries, base::NotFatalUntil::M159);
     listener_holder->listener->DidReadDirectory(
         file_system_access_error::FromFileError(result), {}, false);
     return;
@@ -1020,7 +1020,7 @@ void FileSystemAccessDirectoryHandleImpl::GetUniqueId(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::Uuid id = manager()->GetUniqueId(*this);
-  DCHECK(id.is_valid());
+  CHECK(id.is_valid(), base::NotFatalUntil::M159);
   std::move(callback).Run(file_system_access_error::Ok(),
                           id.AsLowercaseString());
 }

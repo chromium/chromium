@@ -104,8 +104,8 @@ void FilePathWatcherFSEventsChangeTracker::ReportChangeEvent(
 
 void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     std::map<FSEventStreamEventId, ChangeEvent> events) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!target_.empty());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
+  CHECK(!target_.empty(), base::NotFatalUntil::M159);
 
   // Don't issue callbacks after Cancel() has been called.
   if (callback_.is_null()) {

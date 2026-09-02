@@ -29,7 +29,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool Watch(const base::FilePath& path,
              Type type,
              const FilePathWatcher::Callback& callback) override {
-    DCHECK(!callback.is_null());
+    CHECK(!callback.is_null(), base::NotFatalUntil::M159);
 
     NOTIMPLEMENTED_LOG_ONCE();
     return false;
