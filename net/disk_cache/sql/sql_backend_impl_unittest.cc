@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_file_util.h"
@@ -3899,6 +3900,26 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheHandleNotFound) {
   backend->RunUntilAllTasksCompleteForTest();
 }
 
+TEST_F(SqlBackendImplTest, BackendInterfaceSupportsSharedCacheDisabled) {
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::OK);
+
+  disk_cache::Backend* base_backend = backend.get();
+  EXPECT_FALSE(base_backend->SupportsSharedCache());
+
+  EXPECT_CHECK_DEATH(base_backend->RegisterSharedCacheClientRemote(
+      net::NetworkIsolationKey(), nullptr));
+
+  EXPECT_CHECK_DEATH(base_backend->OnEntryEligibleForSharedCache(
+      "key", GURL("https://example.com"),
+      std::make_unique<net::HttpResponseInfo>(), net::NetworkIsolationKey()));
+
+  EXPECT_CHECK_DEATH(base_backend->ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner()));
+}
+
 class SqlBackendImplSharedCacheTest : public SqlBackendImplTest {
  public:
   SqlBackendImplSharedCacheTest() {
@@ -4588,8 +4609,7 @@ TEST_F(SqlBackendImplSharedCacheTest,
 
   base::RunLoop process_run_loop2;
   backend->ProcessAllSharedCacheEligibleEntriesForTest(
-      base::ScopedClosureRunner(process_run_loop2.QuitClosure()),
-      /*on_entry_copied_callback=*/base::NullCallback());
+      base::ScopedClosureRunner(process_run_loop2.QuitClosure()));
   process_run_loop2.Run();
   backend->RunUntilAllTasksCompleteForTest();
 
@@ -4762,7 +4782,7 @@ TEST_F(SqlBackendImplSharedCacheTest,
       backend.get(), base::Owned(on_normal_op_holder.release()));
 
   base::RunLoop process_run_loop;
-  backend->ProcessAllSharedCacheEligibleEntriesForTest(
+  backend->ProcessAllSharedCacheEligibleEntriesWithCallbackForTest(
       base::ScopedClosureRunner(process_run_loop.QuitClosure()),
       std::move(on_entry_copied));
 
@@ -4771,6 +4791,63 @@ TEST_F(SqlBackendImplSharedCacheTest,
   EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
   VerifySharedCacheResourceIdExists(backend.get(), kKey1);
   VerifySharedCacheResourceIdExists(backend.get(), kKey2);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest, BackendInterfaceSupportsSharedCache) {
+  auto backend = CreateBackendAndInit();
+  disk_cache::Backend* base_backend = backend.get();
+  EXPECT_TRUE(base_backend->SupportsSharedCache());
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       BackendInterfaceProcessAllSharedCacheEligibleEntries) {
+  auto backend = CreateBackendAndInit();
+  disk_cache::Backend* base_backend = backend.get();
+
+  const std::string kKey = "0/0/https://example.com/test";
+  const net::SchemefulSite kSite(GURL("https://example.com"));
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey, "test data", kNik);
+
+  base::RunLoop run_loop;
+  base_backend->ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       ProcessAllSharedCacheEligibleEntriesWithActiveEntry) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "0/0/https://example.com/active";
+  const net::SchemefulSite kSite(GURL("https://example.com"));
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+
+  // 1. Create and populate an entry, but do not close it so it remains active.
+  disk_cache::Entry* entry = CreateAndRegisterSharedCacheEntry(
+      backend.get(), kKey, "test data", kNik, base::Time::Now(),
+      /*close_entry=*/false);
+
+  // 2. Post a task to close the entry shortly after.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&disk_cache::Entry::Close, base::Unretained(entry)));
+
+  // 3. Trigger ProcessAllSharedCacheEligibleEntriesForTest. Since the entry is
+  // active initially, it is skipped. The posted asynchronous retry allows the
+  // pending Close task to execute first, so the entry is processed on the next
+  // attempt.
+  base::RunLoop process_run_loop;
+  backend->ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()));
+  process_run_loop.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey);
 }
 
 class SqlBackendImplSharedCacheWriteTest
@@ -4866,8 +4943,7 @@ class SqlBackendImplSharedCacheWriteTest
 
     base::RunLoop process_run_loop;
     backend->ProcessAllSharedCacheEligibleEntriesForTest(
-        base::ScopedClosureRunner(process_run_loop.QuitClosure()),
-        /*on_entry_copied_callback=*/base::NullCallback());
+        base::ScopedClosureRunner(process_run_loop.QuitClosure()));
     process_run_loop.Run();
     backend->RunUntilAllTasksCompleteForTest();
 

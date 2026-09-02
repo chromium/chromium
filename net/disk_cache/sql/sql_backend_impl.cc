@@ -1023,6 +1023,7 @@ bool SqlBackendImpl::SupportsSharedCache() const {
 void SqlBackendImpl::RegisterSharedCacheClientRemote(
     const net::NetworkIsolationKey& network_isolation_key,
     std::unique_ptr<SharedCacheClientRemote> client) {
+  CHECK(SupportsSharedCache());
   if (network_isolation_key.IsTransient()) {
     return;
   }
@@ -1051,6 +1052,14 @@ void SqlBackendImpl::OnEntryEligibleForSharedCache(
   }
 }
 
+void SqlBackendImpl::ProcessAllSharedCacheEligibleEntriesForTest(
+    base::ScopedClosureRunner scoped_closure_runner) {
+  CHECK(SupportsSharedCache());
+  ProcessAllSharedCacheEligibleEntriesWithCallbackForTest(  // IN-TEST
+      std::move(scoped_closure_runner),
+      /*on_entry_copied_callback=*/base::NullCallback());
+}
+
 void SqlBackendImpl::ProcessSharedCacheEligibleEntriesForTest(  // IN-TEST
     base::ScopedClosureRunner scoped_closure_runner,
     base::RepeatingCallback<void(const CacheEntryKey&)>
@@ -1059,18 +1068,23 @@ void SqlBackendImpl::ProcessSharedCacheEligibleEntriesForTest(  // IN-TEST
                                     std::move(on_entry_copied_callback));
 }
 
-void SqlBackendImpl::ProcessAllSharedCacheEligibleEntriesForTest(  // IN-TEST
-    base::ScopedClosureRunner scoped_closure_runner,
-    base::RepeatingCallback<void(const CacheEntryKey&)>
-        on_entry_copied_callback) {
+void SqlBackendImpl::
+    ProcessAllSharedCacheEligibleEntriesWithCallbackForTest(  // IN-TEST
+        base::ScopedClosureRunner scoped_closure_runner,
+        base::RepeatingCallback<void(const CacheEntryKey&)>
+            on_entry_copied_callback) {
   if (!SupportsSharedCache() || shared_cache_eligible_entries_.empty()) {
     return;
   }
   ProcessSharedCacheEligibleEntries(
-      base::ScopedClosureRunner(base::BindOnce(
-          &SqlBackendImpl::ProcessAllSharedCacheEligibleEntriesForTest,
-          weak_factory_.GetWeakPtr(), std::move(scoped_closure_runner),
-          on_entry_copied_callback)),
+      base::ScopedClosureRunner(
+          // Post the next iteration asynchronously to avoid a synchronous
+          // infinite loop when eligible entries are temporarily active.
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &SqlBackendImpl::
+                  ProcessAllSharedCacheEligibleEntriesWithCallbackForTest,
+              weak_factory_.GetWeakPtr(), std::move(scoped_closure_runner),
+              on_entry_copied_callback))),
       on_entry_copied_callback);
 }
 

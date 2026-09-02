@@ -17,6 +17,7 @@
 
 #include "base/byte_size.h"
 #include "base/files/file.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -28,6 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/cache_file.h"
 
 namespace base {
@@ -39,6 +41,19 @@ class ApplicationStatusListener;
 }  // namespace android
 
 }  // namespace base
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+class GURL;
+
+namespace net {
+class HttpResponseInfo;
+class NetworkIsolationKey;
+}  // namespace net
+
+namespace disk_cache {
+class SharedCacheClientRemote;
+}  // namespace disk_cache
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 namespace net {
 class CacheEncryptionDelegate;
@@ -349,6 +364,30 @@ class NET_EXPORT Backend {
   // If an automatic size was chosen due to being set to 0, this returns
   // the calculated non-zero value.
   virtual base::ByteSize GetMaxBytesForTesting() const = 0;
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  // Returns true if the backend supports shared cache clients.
+  virtual bool SupportsSharedCache() const;
+
+  // Registers a client that can access the cache directly (e.g. from a renderer
+  // process). The backend will provide the necessary file handles to the
+  // client.
+  virtual void RegisterSharedCacheClientRemote(
+      const net::NetworkIsolationKey& network_isolation_key,
+      std::unique_ptr<SharedCacheClientRemote> client);
+
+  // Called when an entry is identified as eligible for the shared cache.
+  virtual void OnEntryEligibleForSharedCache(
+      const std::string& key,
+      const GURL& url,
+      std::unique_ptr<net::HttpResponseInfo> response_info,
+      const net::NetworkIsolationKey& network_isolation_key);
+
+  // For testing only: forces processing of shared cache eligible entries until
+  // empty and calls the callback when done.
+  virtual void ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner scoped_closure_runner);
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
  private:
   const net::CacheType cache_type_;

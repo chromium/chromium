@@ -128,15 +128,17 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   uint8_t GetEntryInMemoryData(const std::string& key) override;
   void OnBrowserIdle() override;
 
-  bool SupportsSharedCache() const;
+  bool SupportsSharedCache() const override;
   void RegisterSharedCacheClientRemote(
       const net::NetworkIsolationKey& network_isolation_key,
-      std::unique_ptr<SharedCacheClientRemote> client);
+      std::unique_ptr<SharedCacheClientRemote> client) override;
   void OnEntryEligibleForSharedCache(
       const std::string& key,
       const GURL& url,
       std::unique_ptr<net::HttpResponseInfo> response_info,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkIsolationKey& network_isolation_key) override;
+  void ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner scoped_closure_runner) override;
 
   // Called by SqlEntryImpl when it's being closed and is not doomed.
   // Removes the entry from `active_entries_`.
@@ -289,7 +291,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // aborted, remaining entries are automatically re-triggered for processing
   // until no eligible entries remain. `scoped_closure_runner` runs only after
   // all eligible entries have been processed.
-  void ProcessAllSharedCacheEligibleEntriesForTest(
+  void ProcessAllSharedCacheEligibleEntriesWithCallbackForTest(
       base::ScopedClosureRunner scoped_closure_runner,
       base::RepeatingCallback<void(const CacheEntryKey&)>
           on_entry_copied_callback);

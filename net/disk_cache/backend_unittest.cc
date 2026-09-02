@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -45,6 +46,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
@@ -64,11 +66,14 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_test_util.h"
 #include "net/disk_cache/simple/simple_util.h"
+#include "net/disk_cache/sql/shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/http/http_response_info.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
+#include "url/gurl.h"
 
 using disk_cache::EntryResult;
 using net::test::IsError;
@@ -6194,6 +6199,27 @@ TEST_P(DiskCacheGenericBackendTest, DeleteBackendWithMassDoom) {
   EXPECT_EQ(net::OK, cb.GetResult(rv));
   run_loop.Run();
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+TEST_P(DiskCacheGenericBackendTest, SharedCacheNotSupported) {
+  InitCache();
+  // SqlBackendImpl is tested in sql_backend_impl_unittest.cc.
+  if (backend_to_test_ == BackendToTest::kSql) {
+    return;
+  }
+  EXPECT_FALSE(cache_->SupportsSharedCache());
+
+  EXPECT_NOTREACHED_DEATH(cache_->RegisterSharedCacheClientRemote(
+      net::NetworkIsolationKey(), nullptr));
+
+  EXPECT_NOTREACHED_DEATH(cache_->OnEntryEligibleForSharedCache(
+      "key", GURL("https://example.com"),
+      std::make_unique<net::HttpResponseInfo>(), net::NetworkIsolationKey()));
+
+  EXPECT_NOTREACHED_DEATH(cache_->ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner()));
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 INSTANTIATE_TEST_SUITE_P(
     /* no name */,

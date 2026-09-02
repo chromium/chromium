@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -39,7 +40,9 @@
 #include "net/disk_cache/trivial_cache_entry_hasher.h"
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+#include "net/disk_cache/sql/shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_backend_impl.h"
+#include "net/http/http_response_info.h"
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 namespace {
@@ -571,6 +574,31 @@ uint8_t Backend::GetEntryInMemoryData(const std::string& key) {
 }
 
 void Backend::OnBrowserIdle() {}
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+bool Backend::SupportsSharedCache() const {
+  return false;
+}
+
+void Backend::RegisterSharedCacheClientRemote(
+    const net::NetworkIsolationKey& network_isolation_key,
+    std::unique_ptr<SharedCacheClientRemote> client) {
+  NOTREACHED();
+}
+
+void Backend::OnEntryEligibleForSharedCache(
+    const std::string& key,
+    const GURL& url,
+    std::unique_ptr<net::HttpResponseInfo> response_info,
+    const net::NetworkIsolationKey& network_isolation_key) {
+  NOTREACHED();
+}
+
+void Backend::ProcessAllSharedCacheEligibleEntriesForTest(  // IN-TEST
+    base::ScopedClosureRunner scoped_closure_runner) {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 void Entry::SetEntryInMemoryData(uint8_t data) {}
 
