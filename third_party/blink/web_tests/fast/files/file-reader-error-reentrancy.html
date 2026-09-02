@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>FileReader loadend suppression after an error handler starts a read</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<input id="file" type="file">
+<script>
+promise_test(async t => {
+  assert_true(!!window.eventSender, 'This test requires eventSender');
+
+  const input = document.querySelector('#file');
+  const fileSelected = new Promise(resolve => {
+    input.addEventListener('change', resolve, {once: true});
+  });
+
+  eventSender.beginDragWithFiles(['resources/non-existent']);
+  const rect = input.getBoundingClientRect();
+  eventSender.mouseMoveTo(rect.left + rect.width / 2,
+                          rect.top + rect.height / 2);
+  eventSender.mouseUp();
+  await fileSelected;
+
+  assert_equals(input.files.length, 1);
+
+  const reader = new FileReader();
+  const events = [];
+
+  for (const type of ['error', 'load', 'loadend']) {
+    reader.addEventListener(type, () => events.push(type));
+  }
+
+  reader.addEventListener('abort', t.unreached_func('Unexpected abort event'));
+  reader.addEventListener('error', t.step_func(() => {
+    assert_equals(reader.readyState, FileReader.DONE);
+    assert_equals(reader.error.name, 'NotFoundError');
+    reader.readAsText(new Blob(['second']));
+    assert_equals(reader.readyState, FileReader.LOADING);
+  }), {once: true});
+
+  const secondLoadend = new Promise(resolve => {
+    reader.addEventListener('loadend', t.step_func(() => {
+      if (reader.result === 'second') {
+        resolve();
+      }
+    }));
+  });
+
+  reader.readAsText(input.files[0]);
+  await secondLoadend;
+
+  assert_equals(reader.result, 'second');
+  assert_array_equals(events, ['error', 'load', 'loadend']);
+}, 'A new read in an error handler suppresses the old read loadend');
+</script>

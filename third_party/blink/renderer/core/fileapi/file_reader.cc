@@ -355,9 +355,9 @@ void FileReader::abort() {
   scheduler::TaskAttributionInfo* task_state =
       std::exchange(task_state_, nullptr);
   FireEvent(event_type_names::kAbort, task_state);
-  // TODO(https://crbug.com/1204139): Only fire loadend event if no new load was
-  // started from the abort event handler.
-  FireEvent(event_type_names::kLoadend, task_state);
+  if (state_ != kLoading) {
+    FireEvent(event_type_names::kLoadend, task_state);
+  }
 
   // All possible events have fired and we're done, no more pending activity.
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
@@ -444,9 +444,9 @@ void FileReader::DidFinishLoading(FileReaderData contents) {
   scheduler::TaskAttributionInfo* task_state =
       std::exchange(task_state_, nullptr);
   FireEvent(event_type_names::kLoad, task_state);
-  // TODO(https://crbug.com/1204139): Only fire loadend event if no new load was
-  // started from the abort event handler.
-  FireEvent(event_type_names::kLoadend, task_state);
+  if (state_ != kLoading) {
+    FireEvent(event_type_names::kLoadend, task_state);
+  }
 
   // All possible events have fired and we're done, no more pending activity.
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
@@ -474,7 +474,9 @@ void FileReader::DidFail(FileErrorCode error_code) {
   scheduler::TaskAttributionInfo* task_state =
       std::exchange(task_state_, nullptr);
   FireEvent(event_type_names::kError, task_state);
-  FireEvent(event_type_names::kLoadend, task_state);
+  if (state_ != kLoading) {
+    FireEvent(event_type_names::kLoadend, task_state);
+  }
 
   // All possible events have fired and we're done, no more pending activity.
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
