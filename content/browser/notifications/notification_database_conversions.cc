@@ -45,7 +45,7 @@ std::vector<unsigned char> SerializeImage(const SkBitmap& image) {
 
 bool DeserializeNotificationDatabaseData(const std::string& input,
                                          NotificationDatabaseData* output) {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M159);
 
   NotificationDatabaseDataProto message;
   if (!message.ParseFromString(input))
@@ -190,7 +190,7 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
 
 bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
                                        std::string* output) {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M159);
 
   auto payload =
       std::make_unique<NotificationDatabaseDataProto::NotificationData>();
@@ -319,7 +319,7 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
 bool DeserializeNotificationDatabaseResources(
     const std::string& serialized_resources,
     blink::NotificationResources* output) {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M159);
 
   NotificationDatabaseResourcesProto message;
   if (!message.ParseFromString(serialized_resources))
@@ -350,7 +350,7 @@ bool DeserializeNotificationDatabaseResources(
 bool SerializeNotificationDatabaseResources(
     const blink::NotificationResources& input,
     std::string* serialized_resources) {
-  DCHECK(serialized_resources);
+  CHECK(serialized_resources, base::NotFatalUntil::M159);
 
   NotificationDatabaseResourcesProto message;
 

@@ -60,7 +60,7 @@ void ContinueRegisterBlob(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
     blink::mojom::FileBackedBlobFactory::RegisterBlobSyncCallback
         finish_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   base::ScopedClosureRunner scoped_finish_callback(std::move(finish_callback));
 
   if (blob_storage_context->context()->registry().HasEntry(uuid) ||
@@ -123,7 +123,7 @@ void FileBackedBlobFactoryBase::RegisterBlobSync(
     const std::string& content_type,
     blink::mojom::DataElementFilePtr file,
     RegisterBlobSyncCallback finish_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   const bool security_check_success =
       ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(process_id_,

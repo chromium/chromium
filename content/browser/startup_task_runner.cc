@@ -25,7 +25,7 @@ void StartupTaskRunner::AddTask(StartupTask callback) {
 }
 
 void StartupTaskRunner::StartRunningTasksAsync() {
-  DCHECK(proxy_.get());
+  CHECK(proxy_.get(), base::NotFatalUntil::M159);
   int result = 0;
   if (task_list_.empty()) {
     if (!startup_complete_callback_.is_null()) {

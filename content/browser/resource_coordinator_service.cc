@@ -11,9 +11,10 @@
 namespace content {
 
 memory_instrumentation::Registry* GetMemoryInstrumentationRegistry() {
-  DCHECK(base::trace_event::MemoryDumpManager::GetInstance()
-             ->GetDumpThreadTaskRunner()
-             ->RunsTasksInCurrentSequence());
+  CHECK(base::trace_event::MemoryDumpManager::GetInstance()
+            ->GetDumpThreadTaskRunner()
+            ->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   static memory_instrumentation::Registry* registry =
       new memory_instrumentation::CoordinatorImpl();
   return registry;

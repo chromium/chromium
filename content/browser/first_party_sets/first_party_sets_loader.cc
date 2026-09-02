@@ -89,7 +89,8 @@ void FirstPartySetsLoader::DisposeFile(base::File file) {
 void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
                                           const std::string& raw_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
+  CHECK_EQ(component_sets_parse_progress_, Progress::kStarted,
+           base::NotFatalUntil::M159);
 
   std::istringstream stream(raw_sets);
   sets_ = FirstPartySetParser::ParseSetsFromStream(stream, std::move(version),

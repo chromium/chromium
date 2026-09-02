@@ -26,14 +26,14 @@ PlatformNotificationServiceProxy::PlatformNotificationServiceProxy(
     : service_worker_context_(service_worker_context),
       browser_context_(browser_context),
       notification_service_(browser_context->GetPlatformNotificationService()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 PlatformNotificationServiceProxy::~PlatformNotificationServiceProxy() = default;
 
 base::WeakPtr<PlatformNotificationServiceProxy>
 PlatformNotificationServiceProxy::AsWeakPtr() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -41,7 +41,7 @@ void PlatformNotificationServiceProxy::DoDisplayNotification(
     const NotificationDatabaseData& data,
     const GURL& service_worker_scope,
     DisplayResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (notification_service_) {
     notification_service_->DisplayPersistentNotification(
         data.notification_id, service_worker_scope, data.origin,
@@ -58,7 +58,7 @@ void PlatformNotificationServiceProxy::VerifyServiceWorkerScope(
     DisplayResultCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   base::OnceClosure task;
 
   if (status == blink::ServiceWorkerStatusCode::kOk &&
@@ -72,7 +72,7 @@ void PlatformNotificationServiceProxy::VerifyServiceWorkerScope(
 void PlatformNotificationServiceProxy::DisplayNotification(
     const NotificationDatabaseData& data,
     DisplayResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!service_worker_context_) {
     DoDisplayNotification(data, GURL(), std::move(callback));
     return;
@@ -88,7 +88,7 @@ void PlatformNotificationServiceProxy::DisplayNotification(
 
 void PlatformNotificationServiceProxy::CloseNotifications(
     const std::set<std::string>& notification_ids) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!notification_service_)
     return;
   for (const std::string& notification_id : notification_ids)
@@ -96,7 +96,7 @@ void PlatformNotificationServiceProxy::CloseNotifications(
 }
 
 void PlatformNotificationServiceProxy::ScheduleTrigger(base::Time timestamp) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!notification_service_)
     return;
   notification_service_->ScheduleTrigger(timestamp);
@@ -104,8 +104,9 @@ void PlatformNotificationServiceProxy::ScheduleTrigger(base::Time timestamp) {
 
 void PlatformNotificationServiceProxy::ScheduleNotification(
     const NotificationDatabaseData& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(data.notification_data.show_trigger_timestamp.has_value());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(data.notification_data.show_trigger_timestamp.has_value(),
+        base::NotFatalUntil::M159);
   if (!notification_service_) {
     return;
   }
@@ -117,7 +118,7 @@ void PlatformNotificationServiceProxy::ScheduleNotification(
 }
 
 base::Time PlatformNotificationServiceProxy::GetNextTrigger() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!notification_service_)
     return base::Time::Max();
   return notification_service_->ReadNextTriggerTimestamp();
@@ -125,21 +126,21 @@ base::Time PlatformNotificationServiceProxy::GetNextTrigger() {
 
 void PlatformNotificationServiceProxy::RecordNotificationUkmEvent(
     const NotificationDatabaseData& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!notification_service_)
     return;
   notification_service_->RecordNotificationUkmEvent(data);
 }
 
 bool PlatformNotificationServiceProxy::ShouldLogClose(const GURL& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return notifications::ShouldLogNotificationEventToDevTools(browser_context_,
                                                              origin);
 }
 
 void PlatformNotificationServiceProxy::LogClose(
     const NotificationDatabaseData& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   notifications::LogNotificationClosedEventToDevTools(browser_context_, data);
 }
 

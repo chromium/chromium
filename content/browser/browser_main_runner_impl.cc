@@ -143,15 +143,15 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
 }
 
 int BrowserMainRunnerImpl::Run() {
-  DCHECK(initialization_started_);
-  DCHECK(!is_shutdown_);
+  CHECK(initialization_started_, base::NotFatalUntil::M159);
+  CHECK(!is_shutdown_, base::NotFatalUntil::M159);
   main_loop_->RunMainMessageLoop();
   return main_loop_->GetResultCode();
 }
 
 void BrowserMainRunnerImpl::Shutdown() {
-  DCHECK(initialization_started_);
-  DCHECK(!is_shutdown_);
+  CHECK(initialization_started_, base::NotFatalUntil::M159);
+  CHECK(!is_shutdown_, base::NotFatalUntil::M159);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Reduces shutdown hangs on CrOS.

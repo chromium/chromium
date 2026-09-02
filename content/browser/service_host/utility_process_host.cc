@@ -178,13 +178,13 @@ UtilityProcessHost::UtilityProcessHost(Options options,
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
       client_(std::move(client)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   process_ =
       std::make_unique<BrowserChildProcessHostImpl>(PROCESS_TYPE_UTILITY, this);
 }
 
 UtilityProcessHost::~UtilityProcessHost() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (client_ && launch_state_ == LaunchState::kLaunchComplete) {
     client_->OnProcessTerminatedNormally();
   }
@@ -250,7 +250,7 @@ UtilityProcessHost::Options& UtilityProcessHost::Options::WithFileToPreload(
     std::variant<base::FilePath, base::ScopedFD> file) {
   auto [it, inserted] =
       file_data_->files_to_preload.try_emplace(std::move(key), std::move(file));
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M159);
   return *this;
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)

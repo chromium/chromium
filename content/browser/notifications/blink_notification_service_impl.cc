@@ -103,9 +103,9 @@ BlinkNotificationServiceImpl::BlinkNotificationServiceImpl(
       weak_document_ptr_(weak_document_ptr),
       creator_type_(creator_type),
       receiver_(this, std::move(receiver)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(notification_context_);
-  DCHECK(browser_context_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(notification_context_, base::NotFatalUntil::M159);
+  CHECK(browser_context_, base::NotFatalUntil::M159);
 
   receiver_.set_disconnect_handler(base::BindOnce(
       &BlinkNotificationServiceImpl::OnConnectionError,
@@ -113,17 +113,17 @@ BlinkNotificationServiceImpl::BlinkNotificationServiceImpl(
 }
 
 BlinkNotificationServiceImpl::~BlinkNotificationServiceImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void BlinkNotificationServiceImpl::OnContextShutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   browser_context_ = nullptr;
 }
 
 void BlinkNotificationServiceImpl::GetPermissionStatus(
     GetPermissionStatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!browser_context_ ||
       !browser_context_->GetPlatformNotificationService()) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
@@ -134,7 +134,7 @@ void BlinkNotificationServiceImpl::GetPermissionStatus(
 }
 
 void BlinkNotificationServiceImpl::OnConnectionError() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   notification_context_->RemoveService(this);
   // |this| has now been deleted.
 }
@@ -161,7 +161,7 @@ void BlinkNotificationServiceImpl::DisplayNonPersistentNotification(
     const blink::NotificationResources& notification_resources,
     mojo::PendingRemote<blink::mojom::NonPersistentNotificationListener>
         event_listener_remote) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!ValidateNotificationDataAndResources(platform_notification_data,
                                             notification_resources))
     return;
@@ -204,7 +204,7 @@ void BlinkNotificationServiceImpl::DisplayNonPersistentNotification(
 
 void BlinkNotificationServiceImpl::CloseNonPersistentNotification(
     const std::string& token) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!browser_context_ ||
       !browser_context_->GetPlatformNotificationService()) {
     return;
@@ -237,7 +237,7 @@ void BlinkNotificationServiceImpl::CloseNonPersistentNotification(
 
 blink::mojom::PermissionStatus
 BlinkNotificationServiceImpl::CheckPermissionStatus() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!browser_context_) {
     return blink::mojom::PermissionStatus::DENIED;
@@ -296,7 +296,7 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
     const blink::PlatformNotificationData& platform_notification_data,
     const blink::NotificationResources& notification_resources,
     DisplayPersistentNotificationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // The renderer should have checked and disallowed the request for fenced
   // frames and thrown an error in
@@ -355,7 +355,7 @@ void BlinkNotificationServiceImpl::DidWriteNotificationData(
     DisplayPersistentNotificationCallback callback,
     bool success,
     const std::string& notification_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::move(callback).Run(success
                               ? PersistentNotificationError::NONE
                               : PersistentNotificationError::DATABASE_ERROR);
@@ -363,7 +363,7 @@ void BlinkNotificationServiceImpl::DidWriteNotificationData(
 
 void BlinkNotificationServiceImpl::ClosePersistentNotification(
     const std::string& notification_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!browser_context_ ||
       !browser_context_->GetPlatformNotificationService()) {
     return;
@@ -382,7 +382,7 @@ void BlinkNotificationServiceImpl::GetNotifications(
     const std::string& filter_tag,
     bool include_triggered,
     GetNotificationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!browser_context_ ||
       !browser_context_->GetPlatformNotificationService() ||
       CheckPermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
@@ -410,7 +410,7 @@ void BlinkNotificationServiceImpl::DidGetNotifications(
     GetNotificationsCallback callback,
     bool success,
     const std::vector<NotificationDatabaseData>& notifications) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::vector<std::string> ids;
   std::vector<blink::PlatformNotificationData> datas;

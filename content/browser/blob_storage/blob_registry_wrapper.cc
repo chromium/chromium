@@ -50,7 +50,7 @@ BlobRegistryWrapper::BlobRegistryWrapper() = default;
 void BlobRegistryWrapper::Bind(
     ChildProcessId process_id,
     mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   blob_registry_->Bind(
       std::move(receiver),
       std::make_unique<BindingDelegate>(
@@ -62,7 +62,7 @@ BlobRegistryWrapper::~BlobRegistryWrapper() = default;
 
 void BlobRegistryWrapper::InitializeOnIOThread(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   blob_registry_ = std::make_unique<storage::BlobRegistryImpl>(
       blob_storage_context->context()->AsWeakPtr());
 }
