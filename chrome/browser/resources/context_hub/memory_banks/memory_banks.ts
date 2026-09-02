@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/icons.html.js';
+import './memory_banks_edit_dialog.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -19,6 +20,7 @@ import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './memory_banks.css.js';
 import {getHtml} from './memory_banks.html.js';
+import type {EntryAnnotationsUpdatedDetail} from './memory_banks_edit_dialog.js';
 
 function downloadFile(filename: string, content: string) {
   if (!content) {
@@ -66,6 +68,7 @@ export class MemoryBanksElement extends CrLitElement {
       geminiResponse_: {type: String, state: true},
       isAskingGemini_: {type: Boolean, state: true},
       showGeminiPanel_: {type: Boolean, state: true},
+      editingEntry_: {type: Object, state: true},
     };
   }
 
@@ -76,6 +79,7 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
+  protected accessor editingEntry_: MemoryBankEntry|null = null;
   private activeMenuEntry_: MemoryBankEntry|null = null;
 
   override connectedCallback() {
@@ -97,6 +101,20 @@ export class MemoryBanksElement extends CrLitElement {
       }
     }
     return Array.from(set).sort();
+  }
+
+  protected getAvailableTags_(): string[] {
+    const set = new Set<string>();
+    for (const entry of this.entries) {
+      if (entry.tags) {
+        for (const tag of entry.tags) {
+          if (tag) {
+            set.add(tag);
+          }
+        }
+      }
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
   }
 
   protected getRecentlySaved_(): MemoryBankEntry[] {
@@ -162,6 +180,12 @@ export class MemoryBanksElement extends CrLitElement {
     this.$.actionMenu.showAt(target);
   }
 
+  protected onMenuEditClick_() {
+    this.$.actionMenu.close();
+    this.editingEntry_ = this.activeMenuEntry_;
+    this.activeMenuEntry_ = null;
+  }
+
   protected async onMenuDeleteClick_() {
     this.$.actionMenu.close();
     if (this.activeMenuEntry_) {
@@ -169,6 +193,19 @@ export class MemoryBanksElement extends CrLitElement {
       this.activeMenuEntry_ = null;
       await this.deleteEntries_([id]);
     }
+  }
+
+  protected onEditDialogClose_() {
+    this.editingEntry_ = null;
+  }
+
+  protected onEntryAnnotationsUpdated_(
+      e: CustomEvent<EntryAnnotationsUpdatedDetail>) {
+    const {id, collection, note, tags} = e.detail;
+    this.entries = this.entries.map(
+        entry => entry.id === id ? {...entry, collection, note, tags} : entry);
+    this.selectedCollection = collection || '';
+    this.editingEntry_ = null;
   }
 
   convertMojoTimeToDate(mojoTime: {internalValue: bigint}): Date {

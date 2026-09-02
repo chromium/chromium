@@ -254,6 +254,11 @@ interface PageHandler {
   // Returns all unique collections stored in the memory bank.
   GetAllMemoryBankCollections() => (array<string> collections);
 
+  // Updates an existing memory bank entry with new user annotations.
+  UpdateMemoryBankEntryAnnotations(int64 id,
+                                   MemoryBankEntryAnnotations annotations)
+      => (bool success);
+
   // Returns the list of open ungrouped tabs in the current window.
   [RuntimeFeature=kAutoTabGroups]
   GetTabs() => (array<TabInfo> tabs);

@@ -93,6 +93,10 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void GetAllMemoryBankTags(GetAllMemoryBankTagsCallback callback) override;
   void GetAllMemoryBankCollections(
       GetAllMemoryBankCollectionsCallback callback) override;
+  void UpdateMemoryBankEntryAnnotations(
+      int64_t id,
+      browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr annotations,
+      UpdateMemoryBankEntryAnnotationsCallback callback) override;
   void GetTabs(GetTabsCallback callback) override;
   void RetrieveAndGroupTabs(const std::string& user_command,
                             RetrieveAndGroupTabsCallback callback) override;

@@ -1937,5 +1937,58 @@ TEST_F(ContextHubPageHandlerTest, SaveMemoryBankEntry_WithContext) {
   EXPECT_THAT(entries[0].tags, testing::ElementsAre("tag1"));
 }
 
+TEST_F(ContextHubPageHandlerTest, UpdateMemoryBankEntryAnnotations_Success) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  MemoryBankEntry entry(MemoryBankType::kTextSelection,
+                        GURL("https://example.com/test"), "Test Title",
+                        "Test Snippet");
+  entry.tags = {"old_tag"};
+  entry.note = "Old Note";
+  entry.collection = "Old Collection";
+
+  base::test::TestFuture<bool> save_future;
+  service->SaveMemoryBankEntry(std::move(entry), save_future.GetCallback());
+  EXPECT_TRUE(save_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service->GetAllEntries(entries_future.GetCallback());
+  auto entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 1u);
+  int64_t id = entries[0].id;
+
+  auto new_annotations =
+      browser::context_hub::mojom::MemoryBankEntryAnnotations::New();
+  new_annotations->note = "New Note";
+  new_annotations->collection = "New Collection";
+  new_annotations->tags = std::vector<std::string>{"new_tag1", "new_tag2"};
+
+  base::test::TestFuture<bool> update_future;
+  handler_->UpdateMemoryBankEntryAnnotations(id, std::move(new_annotations),
+                                             update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> updated_entries_future;
+  service->GetAllEntries(updated_entries_future.GetCallback());
+  auto updated_entries = updated_entries_future.Take();
+  ASSERT_EQ(updated_entries.size(), 1u);
+  EXPECT_EQ(updated_entries[0].id, id);
+  EXPECT_EQ(updated_entries[0].note, "New Note");
+  EXPECT_EQ(updated_entries[0].collection, "New Collection");
+  EXPECT_THAT(updated_entries[0].tags,
+              testing::ElementsAre("new_tag1", "new_tag2"));
+}
+
+TEST_F(ContextHubPageHandlerTest, UpdateMemoryBankEntryAnnotations_NotFound) {
+  auto new_annotations =
+      browser::context_hub::mojom::MemoryBankEntryAnnotations::New();
+  new_annotations->note = "Note";
+
+  base::test::TestFuture<bool> update_future;
+  handler_->UpdateMemoryBankEntryAnnotations(999999, std::move(new_annotations),
+                                             update_future.GetCallback());
+  EXPECT_FALSE(update_future.Get());
+}
+
 }  // namespace
 }  // namespace context_hub

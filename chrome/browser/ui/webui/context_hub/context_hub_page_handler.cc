@@ -327,6 +327,23 @@ void ContextHubPageHandler::GetAllMemoryBankCollections(
   service->GetAllMemoryBankCollections(std::move(callback));
 }
 
+void ContextHubPageHandler::UpdateMemoryBankEntryAnnotations(
+    int64_t id,
+    browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr annotations,
+    UpdateMemoryBankEntryAnnotationsCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !annotations) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  std::vector<std::string> tags =
+      std::move(annotations->tags).value_or(std::vector<std::string>{});
+  service->UpdateMemoryBankEntryAnnotations(
+      id, std::move(tags), std::move(annotations->note),
+      std::move(annotations->collection), std::move(callback));
+}
+
 namespace {
 
 std::vector<context_hub::TabData> GetOpenUngroupedTabs(

@@ -170,7 +170,23 @@ export function getHtml(this: MemoryBanksElement) {
         </section>
     </main>
 
+    ${
+      this.editingEntry_ ?
+      html`
+      <memory-banks-edit-dialog
+          .entry="${this.editingEntry_}"
+          .availableCollections="${this.getAvailableCollections_()}"
+          .availableTags="${this.getAvailableTags_()}"
+          @close="${this.onEditDialogClose_}"
+          @entry-annotations-updated="${this.onEntryAnnotationsUpdated_}">
+      </memory-banks-edit-dialog>
+    ` :
+      ''}
+
     <cr-action-menu id="actionMenu">
+      <button class="dropdown-item" @click="${this.onMenuEditClick_}">
+        Edit
+      </button>
       <button class="dropdown-item" @click="${this.onMenuDeleteClick_}">
         Delete
       </button>
