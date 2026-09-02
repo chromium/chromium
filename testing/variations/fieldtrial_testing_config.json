@@ -18164,6 +18164,21 @@
             ]
         }
     ],
+    "SkiaGraphiteDrawListLayer": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkiaGraphiteDrawListLayer"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkiaGraphiteSmallPathAtlas": [
         {
             "platforms": [
