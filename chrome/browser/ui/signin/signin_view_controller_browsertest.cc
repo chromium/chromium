@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -84,6 +85,9 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
+
+using ::testing::IsEmpty;
+using ::testing::Not;
 
 constexpr char kTestEmail[] = "email@gmail.com";
 constexpr signin_metrics::AccessPoint kTestAccessPoint =
@@ -770,6 +774,25 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    ShowChromeSigninDialogForExtensionsPromptKeyjackingProtection) {
+  // Make sure a user is signed in to web (otherwise the dialog doesn't
+  // trigger).
+  identity_test_env()->MakeAccountAvailable(kTestEmail, {.set_cookie = true});
+  ASSERT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
+              Not(IsEmpty()));
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  views::DialogDelegate* dialog_delegate =
+      TriggerChromeSigninDialogForExtensionsPrompt(
+          /*on_complete=*/base::DoNothing());
+
+  ASSERT_NE(dialog_delegate, nullptr);
+  EXPECT_FALSE(dialog_delegate->ShouldAllowKeyEventsDuringInputProtection());
 }
 
 IN_PROC_BROWSER_TEST_F(

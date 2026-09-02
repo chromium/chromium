@@ -977,6 +977,7 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
       .AddCancelButton(base::DoNothing(),
                        ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_CANCEL)))
+      .SetEnableInputProtection(true)
       .SetDialogDestroyingCallback(std::move(on_complete));
 
   chrome::ShowTabModal(dialog_builder.Build(), contents);
