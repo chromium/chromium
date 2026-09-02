@@ -151,7 +151,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void selectModel(boolean incognito) {
-        if (mTabModelInternals.size() == 0) {
+        if (mTabModelInternals.isEmpty()) {
             mStartIncognito = incognito;
             return;
         }
@@ -199,7 +199,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public TabModel getCurrentModel() {
-        if (mTabModelInternals.size() == 0) return EmptyTabModel.getInstance(false);
+        if (mTabModelInternals.isEmpty()) return EmptyTabModel.getInstance(false);
         return assumeNonNull(mTabModelSupplier.get());
     }
 
@@ -234,19 +234,19 @@ public abstract class TabModelSelectorBase
 
     @Override
     public boolean isIncognitoSelected() {
-        if (mTabModelInternals.size() == 0) return mStartIncognito;
+        if (mTabModelInternals.isEmpty()) return mStartIncognito;
         return getCurrentModel().isIncognito();
     }
 
     @Override
     public boolean isIncognitoBrandedModelSelected() {
-        if (mTabModelInternals.size() == 0) return mStartIncognito;
+        if (mTabModelInternals.isEmpty()) return mStartIncognito;
         return getCurrentModel().isIncognitoBranded();
     }
 
     @Override
     public boolean isOffTheRecordModelSelected() {
-        if (mTabModelInternals.size() == 0) return mStartIncognito;
+        if (mTabModelInternals.isEmpty()) return mStartIncognito;
         return getCurrentModel().isOffTheRecord();
     }
 

@@ -267,7 +267,7 @@ public class HomepageManager
                 ChromeSharedPreferences.getInstance()
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
-        if (!homepagePartnerDefaultGurlSerialized.equals("")) {
+        if (!homepagePartnerDefaultGurlSerialized.isEmpty()) {
             GURL homepagePartnerDefaultGurl =
                     GURL.deserialize(homepagePartnerDefaultGurlSerialized);
             if (!homepagePartnerDefaultGurl.isEmpty()) {
@@ -281,7 +281,7 @@ public class HomepageManager
                                 ChromePreferenceKeys
                                         .DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                                 "");
-        if (!homepagePartnerDefaultUri.equals("")) {
+        if (!homepagePartnerDefaultUri.isEmpty()) {
             GURL homepagePartnerDefaultGurl = new GURL(homepagePartnerDefaultUri);
             if (homepagePartnerDefaultGurl.isValid()) {
                 ChromeSharedPreferences.getInstance()
@@ -374,14 +374,14 @@ public class HomepageManager
     public GURL getPrefHomepageCustomGurl() {
         String homepageCustomGurlSerialized =
                 mSharedPreferencesManager.readString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, "");
-        if (!homepageCustomGurlSerialized.equals("")) {
+        if (!homepageCustomGurlSerialized.isEmpty()) {
             return GURL.deserialize(homepageCustomGurlSerialized);
         }
 
         String homepageCustomUri =
                 mSharedPreferencesManager.readString(
                         ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, "");
-        if (!homepageCustomUri.equals("")) {
+        if (!homepageCustomUri.isEmpty()) {
             GURL homepageCustomGurl = new GURL(homepageCustomUri);
             if (homepageCustomGurl.isValid()) {
                 mSharedPreferencesManager.writeString(

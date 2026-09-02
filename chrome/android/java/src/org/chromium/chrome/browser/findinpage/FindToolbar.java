@@ -436,7 +436,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         if (mFindInPageBridge == null) return;
 
         final String findQuery = assumeNonNull(mFindQuery.getText()).toString();
-        if (findQuery.length() == 0) return;
+        if (findQuery.isEmpty()) return;
 
         mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
         mFindInPageBridge.startFinding(findQuery, forward, false);
