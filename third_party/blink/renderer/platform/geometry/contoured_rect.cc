@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "ui/gfx/geometry/line_f.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -160,43 +161,116 @@ gfx::PointF ContouredRect::Corner::QuadraticControlPoint() const {
 // The resulting "aligned" corner has its coordinates and curvature adjusted
 // in such a way that it would have consistent thickness along its entire path.
 Corner ContouredRect::Corner::AlignedToOrigin(const Corner& origin,
-                                              float thickness_start,
-                                              float thickness_end) const {
+                                              float edge_inset_start,
+                                              float edge_inset_end) const {
   if (origin.IsEmpty() || *this == origin) {
     return *this;
   }
 
-  const float curvature = origin.Curvature();
-  // The curve should start at a position perpendicular to the curve, with the
-  // thickness as the distance. We use the hull of the superellipse (x*2 - 1/2,
-  // y*2 - 1/2), normalize a vector in that direction, and find its
-  // perpendicular.
-  const float clamped_half_corner =
-      Corner::HalfCornerForCurvature(ClampTo<float>(curvature, 0.5, 2));
-  const gfx::Vector2dF normalized_hull_vector = gfx::NormalizeVector2d(
-      gfx::ScaleVector2d(
-          gfx::Vector2dF(clamped_half_corner, 1 - clamped_half_corner), 2) -
-      gfx::Vector2dF(.5, .5));
-  const gfx::Vector2dF adjusted_offset{normalized_hull_vector.x(),
-                                       -normalized_hull_vector.y()};
+  const float start_radius = origin.v2().Length();
+  const float end_radius = origin.v3().Length();
+  // Preserve insets beyond the radius because FloatRoundedRect clamps their
+  // target radii to zero.
+  const float start_inset = edge_inset_start >= 0 && !v2().Length()
+                                ? edge_inset_start
+                                : start_radius - v2().Length();
+  const float end_inset = edge_inset_end >= 0 && !v3().Length()
+                              ? edge_inset_end
+                              : end_radius - v3().Length();
+  const float superellipse_parameter = std::log2(origin.Curvature());
+  const float exponent = std::exp2(std::abs(superellipse_parameter));
+  const float convex_half_corner = std::pow(0.5f, 1.0f / exponent);
+  const float half_corner = superellipse_parameter < 0
+                                ? 1.0f - convex_half_corner
+                                : convex_half_corner;
+  const float control_point_x =
+      std::clamp(half_corner / (std::numbers::sqrt2_v<float> - 1.0f) -
+                     1.0f / std::numbers::sqrt2_v<float>,
+                 0.0f, 1.0f);
+  const float inset_difference =
+      std::clamp(end_inset - start_inset, -start_radius, end_radius);
 
-  // Adjust the corner based on the offset & the thickness.
-  const gfx::Vector2dF v1_offset =
-      gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v1()),
-                         thickness_start * adjusted_offset.y());
-  const gfx::Vector2dF v2_offset =
-      gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v2()),
-                         thickness_start * adjusted_offset.x());
-  const gfx::Vector2dF v3_offset = gfx::ScaleVector2d(
-      gfx::NormalizeVector2d(origin.v3()), thickness_end * adjusted_offset.x());
-  const gfx::Vector2dF v4_offset = gfx::ScaleVector2d(
-      gfx::NormalizeVector2d(origin.v4()), thickness_end * adjusted_offset.y());
+  float start_control_point_x = control_point_x;
+  float end_control_point_x = control_point_x;
+  if (inset_difference != 0) {
+    const float bevel_normal_delta =
+        std::sqrt(start_radius * start_radius + end_radius * end_radius -
+                  inset_difference * inset_difference);
+    const float bevel_normal_x =
+        end_radius * inset_difference + start_radius * bevel_normal_delta;
+    const float bevel_normal_y =
+        -start_radius * inset_difference + end_radius * bevel_normal_delta;
+    const float bevel_control_point_x =
+        start_radius * bevel_normal_y /
+        (start_radius * bevel_normal_y + end_radius * bevel_normal_x);
+    start_control_point_x =
+        superellipse_parameter < 0
+            ? bevel_control_point_x * (2.0f * control_point_x)
+            : 1.0f - (1.0f - bevel_control_point_x) *
+                         (2.0f * (1.0f - control_point_x));
+    end_control_point_x = 2.0f * control_point_x - start_control_point_x;
+  }
 
-  return Corner{{origin.Start() + v1_offset + v2_offset,
-                 origin.Outer() + v2_offset + v3_offset,
-                 origin.End() + v3_offset + v4_offset,
-                 origin.Center() + v4_offset + v1_offset},
-                curvature};
+  const gfx::Vector2dF unmapped_start_normal = gfx::NormalizeVector2d(
+      gfx::Vector2dF((1.0f - start_control_point_x) * start_radius,
+                     start_control_point_x * end_radius));
+  const gfx::Vector2dF unmapped_end_normal = gfx::NormalizeVector2d(
+      gfx::Vector2dF(end_control_point_x * start_radius,
+                     (1.0f - end_control_point_x) * end_radius));
+  const gfx::Vector2dF normalized_v3 = gfx::NormalizeVector2d(origin.v3());
+  const gfx::Vector2dF normalized_v2 = gfx::NormalizeVector2d(origin.v2());
+  const gfx::Vector2dF start_normal =
+      gfx::ScaleVector2d(normalized_v3, unmapped_start_normal.x()) +
+      gfx::ScaleVector2d(normalized_v2, unmapped_start_normal.y());
+  const gfx::Vector2dF end_normal =
+      gfx::ScaleVector2d(normalized_v3, unmapped_end_normal.x()) +
+      gfx::ScaleVector2d(normalized_v2, unmapped_end_normal.y());
+
+  const gfx::PointF original_outer =
+      Outer() - gfx::ScaleVector2d(normalized_v3, end_inset) -
+      gfx::ScaleVector2d(normalized_v2, start_inset);
+  gfx::PointF adjusted_start = original_outer +
+                               gfx::ScaleVector2d(normalized_v3, end_radius) +
+                               gfx::ScaleVector2d(start_normal, start_inset);
+  gfx::PointF adjusted_end = original_outer +
+                             gfx::ScaleVector2d(normalized_v2, start_radius) +
+                             gfx::ScaleVector2d(end_normal, end_inset);
+
+  const gfx::Vector2dF start_tangent(-start_normal.y(), start_normal.x());
+  const gfx::Vector2dF end_tangent(-end_normal.y(), end_normal.x());
+  if (superellipse_parameter >= 0 && start_inset < 0) {
+    adjusted_start =
+        gfx::LineF(adjusted_start, adjusted_start - start_tangent)
+            .IntersectionWith(gfx::LineF(Outer() + normalized_v3, Outer()))
+            .value_or(adjusted_start);
+  }
+  if (superellipse_parameter >= 0 && end_inset < 0) {
+    adjusted_end =
+        gfx::LineF(adjusted_end, adjusted_end + end_tangent)
+            .IntersectionWith(gfx::LineF(Outer() + normalized_v2, Outer()))
+            .value_or(adjusted_end);
+  }
+
+  const float adjusted_height =
+      gfx::DotProduct(adjusted_end - adjusted_start, normalized_v2);
+  const gfx::PointF adjusted_outer =
+      adjusted_end - gfx::ScaleVector2d(normalized_v2, adjusted_height);
+  const gfx::PointF adjusted_center =
+      adjusted_start + gfx::ScaleVector2d(normalized_v2, adjusted_height);
+  if (superellipse_parameter <= -1 || superellipse_parameter >= 0) {
+    return Corner(
+        {adjusted_start, adjusted_outer, adjusted_end, adjusted_center},
+        origin.Curvature());
+  }
+
+  const gfx::PointF tangent_intersection =
+      gfx::LineF(adjusted_start, adjusted_start - start_tangent)
+          .IntersectionWith(
+              gfx::LineF(adjusted_end, adjusted_end + end_tangent))
+          .value_or(adjusted_start);
+  return Corner({adjusted_start, tangent_intersection, adjusted_end,
+                 adjusted_start + (adjusted_end - tangent_intersection)},
+                CornerCurvature::kRound);
 }
 
 // static

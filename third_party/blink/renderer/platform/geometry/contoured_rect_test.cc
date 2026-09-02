@@ -142,6 +142,37 @@ TEST(ContouredRectTest, ellipticalCorners) {
       ContouredRect(r).XInterceptsAtY(101, min_x_intercept, max_x_intercept));
 }
 
+TEST(ContouredRectTest, AlignAsymmetricConcaveOutset) {
+  constexpr float kCurvature = 0.70710677f;
+  const ContouredRect::Corner origin(gfx::RectF(0, 0, 10, 50), 3, kCurvature);
+  const ContouredRect::Corner target(gfx::RectF(-15, -15, 25, 65), 3,
+                                     kCurvature);
+
+  const ContouredRect::Corner aligned =
+      target.AlignedToOrigin(origin, -15, -15);
+
+  EXPECT_NEAR(aligned.Start().x(), -12.426438f, 0.0001f);
+  EXPECT_NEAR(aligned.Start().y(), 41.598593f, 0.0001f);
+  EXPECT_NEAR(aligned.Outer().x(), -7.013692f, 0.0001f);
+  EXPECT_NEAR(aligned.Outer().y(), 33.592654f, 0.0001f);
+  EXPECT_NEAR(aligned.End().x(), -4.973816f, 0.0001f);
+  EXPECT_NEAR(aligned.End().y(), -0.885905f, 0.0001f);
+  EXPECT_EQ(aligned.Curvature(), ContouredRect::CornerCurvature::kRound);
+}
+
+TEST(ContouredRectTest, AlignInsetPastRadius) {
+  constexpr float kCurvature = 0.03125f;
+  const ContouredRect::Corner origin(gfx::RectF(0, 0, 50, 50), 3, kCurvature);
+  const ContouredRect::Corner target(gfx::RectF(55, 20, 0, 30), 3, kCurvature);
+
+  const ContouredRect::Corner aligned = target.AlignedToOrigin(origin, 55, 20);
+
+  EXPECT_EQ(aligned.Start(), gfx::PointF(0, 105));
+  EXPECT_EQ(aligned.Outer(), gfx::PointF(0, 0));
+  EXPECT_EQ(aligned.End(), gfx::PointF(70, 0));
+  EXPECT_EQ(aligned.Center(), gfx::PointF(70, 105));
+}
+
 TEST(ContouredRectTest, ToString) {
   gfx::SizeF corner_rect(1, 2);
   ContouredRect rect_with_curvature(

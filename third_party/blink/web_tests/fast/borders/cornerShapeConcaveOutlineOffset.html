@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<style>
+  body {
+    display: grid;
+    grid-template-columns: repeat(2, 80px);
+    gap: 60px;
+    margin: 40px;
+  }
+  .test {
+    width: 80px;
+    height: 80px;
+    background: red;
+    outline: 10px solid blue;
+    outline-offset: 5px;
+  }
+  .top-left {
+    border-top-left-radius: 10px 50px;
+    corner-top-left-shape: superellipse(-0.5);
+  }
+  .top-right {
+    border-top-right-radius: 50px 10px;
+    corner-top-right-shape: superellipse(-0.5);
+  }
+  .bottom-right {
+    border-bottom-right-radius: 10px 50px;
+    corner-bottom-right-shape: superellipse(-0.5);
+  }
+  .bottom-left {
+    border-bottom-left-radius: 50px 10px;
+    corner-bottom-left-shape: superellipse(-0.5);
+  }
+</style>
+<div class="test top-left"></div>
+<div class="test top-right"></div>
+<div class="test bottom-left"></div>
+<div class="test bottom-right"></div>

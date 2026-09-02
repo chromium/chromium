@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
+#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 
 namespace blink {
@@ -60,6 +62,35 @@ TEST(PathBuilderTest, CurrentPath) {
   const Path p5 = builder.CurrentPath();
   EXPECT_TRUE(p5.IsEmpty());
   EXPECT_NE(p4, p5);
+}
+
+TEST(PathBuilderTest, AsymmetricConcaveOutsetIsSingleContour) {
+  FloatRoundedRect::Radii origin_radii;
+  origin_radii.SetTopLeft(gfx::SizeF(10, 50));
+  const FloatRoundedRect origin(gfx::RectF(0, 0, 80, 80), origin_radii);
+
+  FloatRoundedRect::Radii target_radii;
+  target_radii.SetTopLeft(gfx::SizeF(25, 65));
+  ContouredRect target(
+      FloatRoundedRect(gfx::RectF(-15, -15, 110, 110), target_radii),
+      ContouredRect::CornerCurvature(0.70710677f, 2, 2, 2));
+  target.SetOriginRect(origin);
+
+  PathBuilder builder;
+  builder.AddContouredRect(target);
+  const SkPath path = builder.Finalize().GetSkPath();
+
+  int contour_count = 0;
+  SkPath::Iter iterator(path, false);
+  SkPoint points[4];
+  for (SkPath::Verb verb;
+       (verb = iterator.next(points)) != SkPath::kDone_Verb;) {
+    if (verb == SkPath::kMove_Verb) {
+      ++contour_count;
+    }
+  }
+  EXPECT_EQ(contour_count, 1);
+  EXPECT_EQ(path.getBounds(), SkRect::MakeLTRB(-15, -15, 95, 95));
 }
 
 TEST(PathBuilderTest, WindRule) {

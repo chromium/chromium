@@ -4,14 +4,17 @@
 
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
+#include <array>
+#include <numbers>
+#include <optional>
+#include <utility>
+
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
-#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
-#include "ui/gfx/geometry/line_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -97,6 +100,127 @@ void AddCurvedCorner(SkPathBuilder& path, const Corner& corner) {
                      corner.MapPoint(TransposeVector2d(control_points.at(0)))),
                  gfx::PointFToSkPoint(corner.End()));
   }
+}
+
+std::optional<gfx::PointF> LineIntersection(const gfx::PointF& a0,
+                                            const gfx::PointF& a1,
+                                            const gfx::PointF& b0,
+                                            const gfx::PointF& b1) {
+  const gfx::Vector2dF a_length = a1 - a0;
+  const gfx::Vector2dF b_length = b1 - b0;
+  const double denominator = gfx::CrossProduct(a_length, b_length);
+  if (std::abs(denominator) < 1e-6) {
+    return std::nullopt;
+  }
+  const double scale = gfx::CrossProduct(b0 - a0, b_length) / denominator;
+  return a0 + gfx::ScaleVector2d(a_length, scale);
+}
+
+std::optional<gfx::PointF> SegmentLineIntersection(const gfx::PointF& a0,
+                                                   const gfx::PointF& a1,
+                                                   const gfx::PointF& b0,
+                                                   const gfx::PointF& b1) {
+  const gfx::Vector2dF a_length = a1 - a0;
+  const gfx::Vector2dF b_length = b1 - b0;
+  const double denominator = gfx::CrossProduct(a_length, b_length);
+  if (std::abs(denominator) < 1e-6) {
+    return std::nullopt;
+  }
+
+  const gfx::Vector2dF offset = b0 - a0;
+  const double a_scale = gfx::CrossProduct(offset, b_length) / denominator;
+  if (a_scale >= 0 && a_scale <= 1) {
+    return a0 + gfx::ScaleVector2d(a_length, a_scale);
+  }
+
+  const double b_scale = gfx::CrossProduct(offset, a_length) / denominator;
+  if (b_scale >= 0 && b_scale <= 1) {
+    return b0 + gfx::ScaleVector2d(b_length, b_scale);
+  }
+  return std::nullopt;
+}
+
+// Builds the border-aligned corner clip-out path from CSS Borders 4:
+// https://drafts.csswg.org/css-borders-4/#border-aligned-corner-clip-out-path
+std::optional<SkPath> CornerClipOutPath(const Corner& origin,
+                                        const Corner& target,
+                                        float edge_inset_start,
+                                        float edge_inset_end) {
+  const float start_radius = origin.v2().Length();
+  const float end_radius = origin.v3().Length();
+  if (!start_radius || !end_radius || origin.IsStraight()) {
+    return std::nullopt;
+  }
+
+  // Preserve insets beyond the radius because FloatRoundedRect clamps their
+  // target radii to zero.
+  const float start_inset = edge_inset_start >= 0 && !target.v2().Length()
+                                ? edge_inset_start
+                                : start_radius - target.v2().Length();
+  const float end_inset = edge_inset_end >= 0 && !target.v3().Length()
+                              ? edge_inset_end
+                              : end_radius - target.v3().Length();
+  const float superellipse_parameter = std::log2(origin.Curvature());
+  const float inset_difference =
+      std::clamp(end_inset - start_inset, -start_radius, end_radius);
+  if (superellipse_parameter <= 0 &&
+      (inset_difference == -start_radius || inset_difference == end_radius)) {
+    return std::nullopt;
+  }
+
+  const Corner aligned =
+      target.AlignedToOrigin(origin, edge_inset_start, edge_inset_end);
+  const gfx::Vector2dF normalized_v3 = gfx::NormalizeVector2d(origin.v3());
+  const gfx::Vector2dF normalized_v2 = gfx::NormalizeVector2d(origin.v2());
+  const gfx::PointF original_outer =
+      target.Outer() - gfx::ScaleVector2d(normalized_v3, end_inset) -
+      gfx::ScaleVector2d(normalized_v2, start_inset);
+  const gfx::PointF original_start =
+      original_outer + gfx::ScaleVector2d(normalized_v3, end_radius);
+  const gfx::PointF original_end =
+      original_outer + gfx::ScaleVector2d(normalized_v2, start_radius);
+
+  gfx::PointF miter_start = aligned.Start();
+  gfx::PointF miter_end = aligned.End();
+  if (superellipse_parameter < 0 && start_inset < 0) {
+    const gfx::Vector2dF start_normal =
+        gfx::NormalizeVector2d(gfx::ScaleVector2d(
+            aligned.Start() - original_start, 1.0f / start_inset));
+    const gfx::Vector2dF start_tangent(-start_normal.y(), start_normal.x());
+    miter_start =
+        LineIntersection(aligned.Start(), aligned.Start() - start_tangent,
+                         target.Outer() + normalized_v3, target.Outer())
+            .value_or(aligned.Start());
+  }
+  if (superellipse_parameter < 0 && end_inset < 0) {
+    const gfx::Vector2dF end_normal = gfx::NormalizeVector2d(
+        gfx::ScaleVector2d(aligned.End() - original_end, 1.0f / end_inset));
+    const gfx::Vector2dF end_tangent(-end_normal.y(), end_normal.x());
+    miter_end = LineIntersection(aligned.End(), aligned.End() + end_tangent,
+                                 target.Outer() + normalized_v2, target.Outer())
+                    .value_or(aligned.End());
+  }
+
+  std::optional<gfx::PointF> self_intersection;
+  if (superellipse_parameter < 0 && start_inset < 0 && end_inset < 0 &&
+      (-end_inset >= start_radius || -start_inset >= end_radius)) {
+    self_intersection = SegmentLineIntersection(miter_start, aligned.Start(),
+                                                miter_end, aligned.End());
+  }
+
+  SkPathBuilder path;
+  path.moveTo(gfx::PointFToSkPoint(miter_start));
+  if (self_intersection) {
+    path.lineTo(gfx::PointFToSkPoint(*self_intersection));
+  } else if (origin.IsNotch()) {
+    path.lineTo(gfx::PointFToSkPoint(aligned.Center()));
+  } else {
+    AddCurvedCorner(path, aligned);
+  }
+  path.lineTo(gfx::PointFToSkPoint(miter_end));
+  path.lineTo(gfx::PointFToSkPoint(target.Outer()));
+  path.close();
+  return path.detach();
 }
 
 }  // anonymous namespace
@@ -252,9 +376,7 @@ PathBuilder& PathBuilder::AddContouredRect(
   }
   const FloatRoundedRect& origin_rect = contoured_rect.GetOriginRect();
 
-  auto DrawAsSinglePath = [&]() {
-    // A rect with no insets/outsets, we can draw all the corners and not worry
-    // about intersections.
+  auto draw_as_single_path = [&]() {
     const Corner top_right_corner = contoured_rect.TopRightCorner();
     MoveTo(top_right_corner.Start());
     AddCurvedCorner(builder_, top_right_corner);
@@ -265,133 +387,55 @@ PathBuilder& PathBuilder::AddContouredRect(
     ClearCachedData();
   };
 
+  // The identity case needs no corner clipping; draw the contour directly to
+  // keep exact vertices and avoid path-op antialiasing artifacts.
   if (origin_rect == target_rect) {
-    DrawAsSinglePath();
+    draw_as_single_path();
     return *this;
   }
 
-  // This would include the outer border of the rect, as well as shadow and
-  // margin.
-  if (target_rect.Rect().Contains(origin_rect.Rect())) {
-    auto miter = [&](const Corner& corner, const gfx::LineF& edge,
-                     const gfx::PointF& ref_point) {
-      return edge
-          .IntersectionWith(gfx::LineF(corner.IsEmpty()
-                                           ? (ref_point + edge.Normal())
-                                           : corner.QuadraticControlPoint(),
-                                       ref_point))
-          .value_or(ref_point);
-    };
+  const ContouredRect::CornerCurvature& curvature =
+      contoured_rect.GetCornerCurvature();
+  const std::array<Corner, 4> origin_corners = {
+      Corner(origin_rect.TopRightCorner(), 0, curvature.TopRight()),
+      Corner(origin_rect.BottomRightCorner(), 1, curvature.BottomRight()),
+      Corner(origin_rect.BottomLeftCorner(), 2, curvature.BottomLeft()),
+      Corner(origin_rect.TopLeftCorner(), 3, curvature.TopLeft())};
+  const std::array<Corner, 4> target_corners = {
+      Corner(target_rect.TopRightCorner(), 0, curvature.TopRight()),
+      Corner(target_rect.BottomRightCorner(), 1, curvature.BottomRight()),
+      Corner(target_rect.BottomLeftCorner(), 2, curvature.BottomLeft()),
+      Corner(target_rect.TopLeftCorner(), 3, curvature.TopLeft())};
+  const std::array<std::pair<float, float>, 4> edge_insets = {{
+      {target_rect.Rect().y() - origin_rect.Rect().y(),
+       origin_rect.Rect().right() - target_rect.Rect().right()},
+      {origin_rect.Rect().right() - target_rect.Rect().right(),
+       origin_rect.Rect().bottom() - target_rect.Rect().bottom()},
+      {origin_rect.Rect().bottom() - target_rect.Rect().bottom(),
+       target_rect.Rect().x() - origin_rect.Rect().x()},
+      {target_rect.Rect().x() - origin_rect.Rect().x(),
+       target_rect.Rect().y() - origin_rect.Rect().y()},
+  }};
 
-    auto miter_start = [&](const Corner& corner, const gfx::LineF& edge) {
-      return miter(corner, edge, corner.Start());
-    };
-    auto miter_end = [&](const Corner& corner, const gfx::LineF& edge) {
-      return miter(corner, edge, corner.End());
-    };
-
-    const Corner top_right_corner = contoured_rect.TopRightCorner();
-    const Corner bottom_right_corner = contoured_rect.BottomRightCorner();
-    const Corner bottom_left_corner = contoured_rect.BottomLeftCorner();
-    const Corner top_left_corner = contoured_rect.TopLeftCorner();
-
-    const gfx::LineF top_line(target_rect.Rect().origin(),
-                              target_rect.Rect().top_right());
-    const gfx::LineF bottom_line(target_rect.Rect().bottom_left(),
-                                 target_rect.Rect().bottom_right());
-    const gfx::LineF left_line(target_rect.Rect().origin(),
-                               target_rect.Rect().bottom_left());
-    const gfx::LineF right_line(target_rect.Rect().top_right(),
-                                target_rect.Rect().bottom_right());
-
-    MoveTo(miter_start(top_right_corner, top_line));
-    AddCorner(top_right_corner);
-    LineTo(miter_end(top_right_corner, right_line));
-
-    LineTo(miter_start(bottom_right_corner, right_line));
-    AddCorner(bottom_right_corner);
-    LineTo(miter_end(bottom_right_corner, bottom_line));
-
-    LineTo(miter_start(bottom_left_corner, bottom_line));
-    AddCorner(bottom_left_corner);
-    LineTo(miter_end(bottom_left_corner, left_line));
-
-    LineTo(miter_start(top_left_corner, left_line));
-    AddCorner(top_left_corner);
-    LineTo(miter_end(top_left_corner, top_line));
-
-    Close();
-    ClearCachedData();
-
-    return *this;
+  SkPath result = SkPath::Rect(gfx::RectFToSkRect(target_rect.Rect()));
+  bool success = true;
+  for (size_t i = 0; i < origin_corners.size(); ++i) {
+    if (std::optional<SkPath> clip_out =
+            CornerClipOutPath(origin_corners[i], target_corners[i],
+                              edge_insets[i].first, edge_insets[i].second)) {
+      SkPath clipped;
+      if (!Op(result, *clip_out, kDifference_SkPathOp, &clipped)) {
+        success = false;
+        break;
+      }
+      result = std::move(clipped);
+    }
   }
 
-  // To generate curves that have constant thickness, we compute the
-  // superellipse based on the same center and an increased radius. Since the
-  // resulting path segments don't start/end at the target rect, we use
-  // path-intersection logic, and intersect 3 paths: (1) the target rect (2) the
-  // top-left & bottom-right corners together with the bottom-left and top-right
-  // of the infinite rect (3) the top-right & bottom-left corners together with
-  // the top-left and bottom-right corners of the infinite rect.
-  // This generates a path that corresponds to the inset/outset rect but has the
-  // corners carved out.
-  SkOpBuilder op_builder;
-
-  const SkRect infinite_rect =
-      gfx::RectFToSkRect(gfx::RectF(InfiniteIntRect()));
-
-  // Start with the target rect
-  op_builder.add(SkPath::Rect(gfx::RectFToSkRect(target_rect.Rect())),
-                 kUnion_SkPathOp);
-
-  ContouredRect origin_contoured_rect(origin_rect,
-                                      contoured_rect.GetCornerCurvature());
-
-  if (!origin_rect.GetRadii().TopRight().IsEmpty()) {
-    SkPathBuilder path;
-    path.moveTo(infinite_rect.left(), infinite_rect.top());
-    AddCurvedCorner(path, contoured_rect.TopRightCorner());
-    path.lineTo(infinite_rect.right(), infinite_rect.bottom());
-    path.lineTo(infinite_rect.left(), infinite_rect.bottom());
-    path.close();
-    op_builder.add(path.detach(), kIntersect_SkPathOp);
-  }
-
-  if (!origin_rect.GetRadii().BottomRight().IsEmpty()) {
-    SkPathBuilder path;
-    path.moveTo(infinite_rect.right(), infinite_rect.top());
-    AddCurvedCorner(path, contoured_rect.BottomRightCorner());
-    path.lineTo(infinite_rect.left(), infinite_rect.bottom());
-    path.lineTo(infinite_rect.left(), infinite_rect.top());
-    path.close();
-    op_builder.add(path.detach(), kIntersect_SkPathOp);
-  }
-
-  if (!origin_rect.GetRadii().BottomLeft().IsEmpty()) {
-    SkPathBuilder path;
-    path.moveTo(infinite_rect.right(), infinite_rect.bottom());
-    AddCurvedCorner(path, contoured_rect.BottomLeftCorner());
-    path.lineTo(infinite_rect.left(), infinite_rect.top());
-    path.lineTo(infinite_rect.right(), infinite_rect.top());
-    path.close();
-    op_builder.add(path.detach(), kIntersect_SkPathOp);
-  }
-
-  if (!origin_rect.GetRadii().TopLeft().IsEmpty()) {
-    SkPathBuilder path;
-    path.moveTo(infinite_rect.left(), infinite_rect.bottom());
-    AddCurvedCorner(path, contoured_rect.TopLeftCorner());
-    path.lineTo(infinite_rect.right(), infinite_rect.top());
-    path.lineTo(infinite_rect.right(), infinite_rect.bottom());
-    path.close();
-    op_builder.add(path.detach(), kIntersect_SkPathOp);
-  }
-
-  SkPath result;
-  if (op_builder.resolve(&result)) {
+  if (success) {
     builder_.addPath(result);
   } else {
-    DrawAsSinglePath();
+    draw_as_single_path();
   }
   ClearCachedData();
   return *this;
