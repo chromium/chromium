@@ -274,11 +274,14 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_THAT(boca_app_browser, NotNull());
   EXPECT_EQ(boca_app_browser->GetTabStripModel()->count(), 1);
 
-  // Create tab so we can verify we are on boca homepage when paused.
+  // Create tab and activate it so we can verify pause switches back to the Boca
+  // homepage.
   system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->GetSessionID(), GURL(kTestUrl),
       LockedNavigationOptions::BLOCK_NAVIGATION);
   ASSERT_EQ(boca_app_browser->GetTabStripModel()->count(), 2);
+  boca_app_browser->GetTabStripModel()->ActivateTabAt(1);
+  ASSERT_EQ(boca_app_browser->GetTabStripModel()->active_index(), 1);
 
   // Pin and pause the Boca app and verify result.
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
@@ -613,6 +616,98 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       /*pinned=*/true, boca_app_browser->GetSessionID());
   EXPECT_TRUE(
       system_web_app_manager.IsWindowPinned(boca_app_browser->GetSessionID()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OnTaskSystemWebAppManagerImplBrowserTest,
+    PinAndPauseSystemWebAppWindowWhenHomepageNotAtIndexZero) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  TabStripModel* const tab_strip_model = boca_app_browser->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  content::WebContents* const homepage_tab =
+      tab_strip_model->GetWebContentsAt(0);
+
+  // Create background tab.
+  system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
+      LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  content::WebContents* const non_homepage_tab =
+      tab_strip_model->GetWebContentsAt(1);
+  ASSERT_NE(homepage_tab, non_homepage_tab);
+
+  // Move the non-homepage tab to index 0 by detaching and inserting it as
+  // pinned at index 0, shifting the Boca homepage tab to index 1.
+  std::unique_ptr<content::WebContents> non_homepage_contents =
+      tab_strip_model->DetachWebContentsAtForInsertion(1);
+  tab_strip_model->InsertWebContentsAt(0, std::move(non_homepage_contents),
+                                       AddTabTypes::ADD_PINNED);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), non_homepage_tab);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), homepage_tab);
+
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_EQ(tab_strip_model->active_index(), 0);
+
+  // Pin and pause the Boca app and verify that the homepage at index 1 is
+  // activated.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/true, boca_app_browser->GetSessionID());
+  system_web_app_manager.SetPauseStateForSystemWebAppWindow(
+      /*paused=*/true, boca_app_browser->GetSessionID());
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_TRUE(boca_app_browser->GetWindow()->IsVisible());
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents(), homepage_tab);
+  EXPECT_EQ(tab_strip_model->active_index(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       PreparingSystemWebAppWindowWhenHomepageNotAtIndexZero) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  TabStripModel* const tab_strip_model = boca_app_browser->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  content::WebContents* const homepage_tab =
+      tab_strip_model->GetWebContentsAt(0);
+
+  // Create background tab.
+  system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->GetSessionID(), GURL(kTestUrl),
+      LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  content::WebContents* const non_homepage_tab =
+      tab_strip_model->GetWebContentsAt(1);
+  ASSERT_NE(homepage_tab, non_homepage_tab);
+
+  // Move the non-homepage tab to index 0 by detaching and inserting it as
+  // pinned at index 0, shifting the Boca homepage tab to index 1.
+  std::unique_ptr<content::WebContents> non_homepage_contents =
+      tab_strip_model->DetachWebContentsAtForInsertion(1);
+  tab_strip_model->InsertWebContentsAt(0, std::move(non_homepage_contents),
+                                       AddTabTypes::ADD_PINNED);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), non_homepage_tab);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), homepage_tab);
+
+  // Verify that the non-homepage tab is cleaned up after window prep,
+  // preserving the homepage.
+  system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
+      boca_app_browser->GetSessionID(), /*close_bundle_content=*/true);
+  EXPECT_TRUE(
+      OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
+  EXPECT_EQ(tab_strip_model->count(), 1);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), homepage_tab);
 }
 
 }  // namespace

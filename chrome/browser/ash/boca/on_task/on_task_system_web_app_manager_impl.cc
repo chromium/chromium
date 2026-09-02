@@ -6,6 +6,7 @@
 
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/wm/window_pin_util.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -29,6 +30,7 @@
 #include "components/services/app_service/public/cpp/launch_result.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -36,6 +38,17 @@
 
 namespace ash::boca {
 namespace {
+
+bool IsBocaHomePageTab(content::WebContents* tab) {
+  if (!tab) {
+    return false;
+  }
+  const GURL tab_url = tab->GetLastCommittedURL().is_empty()
+                           ? tab->GetVisibleURL()
+                           : tab->GetLastCommittedURL();
+  return tab_url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+         tab_url.host() == ash::boca::kChromeBocaAppHost;
+}
 
 // Returns a pointer to the browser window with the specified id. Returns
 // nullptr if there is no match.
@@ -175,7 +188,15 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
 
   if (paused) {
     // Focus on the boca homepage in pause mode.
-    browser->ActivateWebContentsAt(0);
+    DCHECK_GT(browser->GetWebContentsCount(), 0u);
+    size_t activation_index = 0;
+    for (size_t idx = 0; idx < browser->GetWebContentsCount(); ++idx) {
+      if (IsBocaHomePageTab(browser->GetWebContentsAt(idx))) {
+        activation_index = idx;
+        break;
+      }
+    }
+    browser->ActivateWebContentsAt(activation_index);
 
     // Cache current camera and microphone states before pausing, only if not
     // already cached.
@@ -359,11 +380,14 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   // de-dupe content and ensure that the tabs are set up for locked mode.
   if (close_bundle_content) {
     std::set<SessionID> tab_ids_to_remove;
-    for (size_t idx = browser->GetWebContentsCount(); idx-- > 1;) {
+    for (size_t idx = 0; idx < browser->GetWebContentsCount(); ++idx) {
       content::WebContents* const tab = browser->GetWebContentsAt(idx);
-      const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
-      tab_ids_to_remove.insert(tab_id);
+      if (!IsBocaHomePageTab(tab)) {
+        const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+        tab_ids_to_remove.insert(tab_id);
+      }
     }
+    DCHECK_NE(tab_ids_to_remove.size(), browser->GetWebContentsCount());
     RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
   }
 }
