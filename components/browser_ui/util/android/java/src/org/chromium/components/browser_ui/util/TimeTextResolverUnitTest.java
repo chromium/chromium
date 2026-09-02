@@ -25,8 +25,6 @@ public class TimeTextResolverUnitTest {
     private Activity mActivity;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    TimeTextResolver mResolver;
-
     @Before
     public void setup() {
         mActivity = Robolectric.setupActivity(Activity.class);
