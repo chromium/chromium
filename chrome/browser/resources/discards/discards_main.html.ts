@@ -17,6 +17,7 @@ export function getHtml(this: DiscardsMainElement) {
   <discards-tab></discards-tab>
   <database-tab></database-tab>
   <graph-tab></graph-tab>
+  <memory-tab></memory-tab>
 </cr-page-selector>
 <!--_html_template_end_-->`;
   //clang-format on

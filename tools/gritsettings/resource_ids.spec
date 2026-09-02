@@ -469,7 +469,7 @@
     "includes": [3820],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/discards/resources.grd": {
-    "META": {"sizes": {"includes": [20],}},
+    "META": {"sizes": {"includes": [30],}},
     "includes": [3840],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/dlp_internals/resources.grd": {

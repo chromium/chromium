@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import './database_tab.js';
 import './discards_tab.js';
 import './graph_tab.js';
+import './memory_tab.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -35,7 +36,8 @@ export class DiscardsMainElement extends CrLitElement {
   }
 
   protected accessor selected: number = 0;
-  protected accessor tabs: string[] = ['discards', 'database', 'graph'];
+  protected accessor tabs: string[] =
+      ['discards', 'database', 'graph', 'memory'];
 
   override firstUpdated() {
     const router = CrRouter.getInstance();

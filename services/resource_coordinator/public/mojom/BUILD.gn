@@ -18,6 +18,9 @@ mojom_component("mojom") {
     "//services/metrics/public/mojom",
   ]
 
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+
   cpp_typemaps = [
     {
       types = [

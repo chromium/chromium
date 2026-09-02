@@ -23,6 +23,9 @@ build_webui("build") {
     "graph.ts",
     "graph_tab.html.ts",
     "graph_tab.ts",
+    "memory_section_defs.ts",
+    "memory_tab.html.ts",
+    "memory_tab.ts",
     "sorted_table_mixin_lit.ts",
   ]
 
@@ -31,16 +34,20 @@ build_webui("build") {
     "discards_main.css",
     "discards_tab.css",
     "graph_tab.css",
+    "memory_tab.css",
   ]
 
   mojo_files_deps = [
     "//chrome/browser/resource_coordinator:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/discards:mojo_bindings_ts__generator",
+    "//services/resource_coordinator/public/mojom:mojom_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/discards/discards.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/discards/site_data.mojom-webui.ts",
+    "$root_gen_dir/services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom-webui.ts",
+    "$root_gen_dir/services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-webui.ts",
   ]
 
   ts_tsconfig_base = "tsconfig_base.json"

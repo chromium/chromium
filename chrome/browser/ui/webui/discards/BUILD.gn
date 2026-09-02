@@ -13,6 +13,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//mojo/public/mojom/base",
+    "//services/resource_coordinator/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
@@ -52,6 +53,7 @@ if (!is_android || is_desktop_android) {
       "//content/public/browser",
       "//mojo/public/cpp/bindings",
       "//services/network/public/mojom",
+      "//services/resource_coordinator/public/cpp/memory_instrumentation",
       "//ui/resources:ui_resources_grd",
       "//ui/resources:ui_resources_grd_grit",
       "//ui/webui",

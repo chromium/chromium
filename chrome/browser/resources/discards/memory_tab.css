@@ -1,0 +1,426 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=action-link-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
+  padding: 16px 16px 64px 16px;
+}
+
+.table-container {
+  margin-bottom: 48px;
+  max-width: 100%;
+  width: fit-content;
+}
+
+.toolbar {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.status-text {
+  color: var(--cr-secondary-text-color, #5f6368);
+  font-size: 13px;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+}
+
+table td,
+table th {
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 12px;
+  vertical-align: middle;
+}
+
+@media (prefers-color-scheme: dark) {
+  table td,
+  table th {
+    border-bottom-color: var(--cr-separator-color, #3c4043);
+  }
+}
+
+table thead th {
+  background: rgb(224, 236, 255);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  position: sticky;
+  text-align: left;
+  top: 0;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+@media (prefers-color-scheme: dark) {
+  table thead th {
+    background: var(--google-grey-800, #3c4043);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: var(--cr-primary-text-color, #e8eaed);
+  }
+}
+
+table th[data-sort-key] {
+  cursor: pointer;
+}
+
+table th.sort-column::after {
+  content: ' ▲';
+  font-size: 10px;
+}
+
+table th.sort-column-reverse::after {
+  content: ' ▼';
+  font-size: 10px;
+}
+
+.pid-col {
+  box-sizing: border-box;
+  min-width: 65px;
+  text-align: right !important;
+  width: 65px;
+}
+
+.process-desc-col {
+  box-sizing: border-box;
+  max-width: 460px;
+  min-width: 260px;
+  text-align: left;
+}
+
+.process-desc-container {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+}
+
+.process-desc-text {
+  flex: 1;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.num-col {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.footprint-col {
+  box-sizing: border-box;
+  font-family: 'Roboto Mono', monospace, sans-serif;
+  min-width: 170px;
+  text-align: right !important;
+  width: 170px;
+}
+
+.magnitude-col {
+  box-sizing: border-box;
+  min-width: 110px;
+  text-align: left;
+  width: 110px;
+}
+
+.trend-col {
+  box-sizing: border-box;
+  min-width: 115px;
+  text-align: left;
+  width: 115px;
+}
+
+.process-row {
+  cursor: pointer;
+}
+
+.process-row td {
+  background-color: var(--google-grey-50, #fff);
+}
+
+@media (prefers-color-scheme: dark) {
+  .process-row td {
+    background-color: var(--google-grey-900, #202124);
+    color: var(--cr-primary-text-color, #e8eaed);
+  }
+}
+
+.process-row:hover td {
+  background-color: rgba(26, 115, 232, 0.12) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .process-row:hover td {
+    background-color: rgba(138, 180, 248, 0.16) !important;
+  }
+}
+
+.process-row.dead td {
+  opacity: 0.65;
+}
+
+.dead-badge {
+  background-color: var(--google-red-50, #fce8e6);
+  border: 1px solid var(--google-red-200, #fad2cf);
+  border-radius: 4px;
+  color: var(--google-red-700, #c5221f);
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 8px;
+  padding: 1px 5px;
+  text-transform: uppercase;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dead-badge {
+    background-color: rgba(242, 139, 130, 0.15);
+    border-color: rgba(242, 139, 130, 0.3);
+    color: var(--google-red-300, #f28b82);
+  }
+}
+
+.toggle-arrow {
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 6px;
+  transition: transform 0.15s ease;
+  user-select: none;
+}
+
+.toggle-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+/* Magnitude Bar */
+.magnitude-bar-track {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 3px;
+  height: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .magnitude-bar-track {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.magnitude-bar-fill {
+  background-color: #1a73e8;
+  border-radius: 3px;
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .magnitude-bar-fill {
+    background-color: #8ab4f8;
+  }
+}
+
+/* Breakdown container styling */
+.breakdown-wrapper-cell {
+  background-color: #f7f9fc !important;
+  padding: 12px 16px !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .breakdown-wrapper-cell {
+    background-color: #1a1c1e !important;
+  }
+}
+
+.breakdown-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-card {
+  background: var(--google-grey-50, #fff);
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .section-card {
+    background: #24272b;
+    border-color: #3e444c;
+  }
+}
+
+.section-header {
+  align-items: center;
+  background-color: #edf2fa;
+  cursor: pointer;
+  display: flex;
+  font-weight: 500;
+  justify-content: space-between;
+  padding: 8px 12px;
+  user-select: none;
+}
+
+.section-header:hover {
+  background-color: #e2ebf7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .section-header {
+    background-color: #2c333e;
+    color: var(--cr-primary-text-color, #e8eaed);
+  }
+
+  .section-header:hover {
+    background-color: #373f4d;
+  }
+}
+
+.section-header-title {
+  align-items: center;
+  display: flex;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.section-pill {
+  background-color: var(--google-blue-50, #e8f0fe);
+  border: 1px solid var(--google-blue-200, #aecbfa);
+  border-radius: 12px;
+  color: var(--google-blue-700, #1967d2);
+  font-family: 'Roboto Mono', monospace, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .section-pill {
+    background-color: rgba(138, 180, 248, 0.15);
+    border-color: rgba(138, 180, 248, 0.3);
+    color: var(--google-blue-300, #8ab4f8);
+  }
+}
+
+.sub-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  width: 100%;
+}
+
+.sub-table td,
+.sub-table th {
+  border: none;
+  border-bottom: 1px solid #eee;
+  padding: 6px 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sub-table td,
+  .sub-table th {
+    border-bottom: 1px solid #333;
+  }
+}
+
+.sub-table thead th {
+  background-color: #fafafa;
+  box-shadow: none;
+  color: var(--cr-secondary-text-color, #5f6368);
+  font-size: 11px;
+  font-weight: 600;
+  position: static;
+  text-transform: uppercase;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sub-table thead th {
+    background-color: #1f2226;
+    color: var(--cr-secondary-text-color, #9aa0a6);
+  }
+}
+
+.sub-table-row:hover td {
+  background-color: rgba(26, 115, 232, 0.1) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sub-table-row:hover td {
+    background-color: rgba(138, 180, 248, 0.14) !important;
+  }
+}
+
+.sub-td-label {
+  color: var(--cr-primary-text-color, #202124);
+  padding-left: 28px !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sub-td-label {
+    color: var(--cr-primary-text-color, #e8eaed);
+  }
+}
+
+.sub-td-val {
+  font-family: 'Roboto Mono', monospace, sans-serif;
+  font-size: 12px;
+  min-width: 130px;
+  width: 130px;
+}
+
+/* HTML Flexbox Trend Sparkline */
+.trend-sparkline {
+  align-items: flex-end;
+  display: flex;
+  gap: 3px;
+  height: 18px;
+  width: 105px;
+}
+
+.sparkline-bar {
+  background-color: #1a73e8;
+  border-radius: 1px 1px 0 0;
+  flex: 1;
+  min-height: 2px;
+  transition: height 0.15s ease;
+}
+
+.sparkline-bar.empty {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.sparkline-bar.error {
+  background-color: var(--google-red-600, #d93025);
+}
+
+@media (prefers-color-scheme: dark) {
+  .sparkline-bar {
+    background-color: #8ab4f8;
+  }
+
+  .sparkline-bar.empty {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .sparkline-bar.error {
+    background-color: var(--google-red-300, #f28b82);
+  }
+}
