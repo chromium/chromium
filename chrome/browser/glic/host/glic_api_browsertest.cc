@@ -941,7 +941,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPinCandidatesSingleTab) {
 }
 
 // Flaky on Android and MSan.
-#if BUILDFLAG(IS_ANDROID) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/554636751): Flaky on Linux.
+#if BUILDFLAG(IS_ANDROID) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_testGetPinCandidatesWithPanelClosed \
   DISABLED_testGetPinCandidatesWithPanelClosed
 #else
