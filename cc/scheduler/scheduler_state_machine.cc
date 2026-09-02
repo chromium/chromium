@@ -1630,7 +1630,7 @@ void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now, bool unthrottled) {
   needs_begin_main_frame_ = true;
 
   if (unthrottled) {
-    // Reset the throttling interval for the next frame only.
+    consecutive_no_damage_main_frames_ = 0;
     main_frame_consecutive_no_damage_throttled_interval_ = base::TimeDelta();
   }
 
