@@ -53,6 +53,7 @@
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_process_host.h"
@@ -1846,6 +1847,83 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Because of navigation queueing, the first reload's speculative RFH will be
   // kept.
   EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+}
+
+// Records the NavigationDiscardReason of the last navigation that finished
+// without committing.
+class NavigationDiscardReasonObserver : public WebContentsObserver {
+ public:
+  explicit NavigationDiscardReasonObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  // WebContentsObserver:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->HasCommitted()) {
+      discard_reason_ = navigation_handle->GetNavigationDiscardReason();
+    }
+  }
+
+  const std::optional<NavigationDiscardReason>& discard_reason() const {
+    return discard_reason_;
+  }
+
+ private:
+  std::optional<NavigationDiscardReason> discard_reason_;
+};
+
+// Ensures that a browser-initiated page close is not lost when it races a
+// navigation that is pending commit. With RenderDocument, even a same-site
+// reload commits into a new RenderFrameHost, so the RenderFrameHost that is
+// running the unload handlers gets replaced and destroyed - taking the pending
+// ClosePage() reply callback and its timeout monitor with it. The page would
+// then stay open forever, even though the close was requested.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       ClosePageWithNavigationPendingCommit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+
+  const GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Start a reload and let it run until the RenderFrameHost that will commit it
+  // has been picked.
+  TestNavigationManager reload(web_contents, url);
+  EXPECT_TRUE(ExecJs(web_contents, "location.reload();"));
+  EXPECT_TRUE(reload.WaitForResponse());
+
+  // With RenderDocument the reload commits in a new RenderFrameHost; otherwise
+  // the current one is reused.
+  RenderFrameHostImplWrapper commit_rfh(
+      root->render_manager()->speculative_frame_host()
+          ? root->render_manager()->speculative_frame_host()
+          : root->current_frame_host());
+
+  // When speculative RenderFrameHost owns the pending commit navigation,
+  // it is only discarded once that RenderFrameHost is destroyed,
+  // and ends up labeled with the destruction reason, unfortunately.
+  auto discard_reason =
+      commit_rfh.get() == root->current_frame_host()
+          ? NavigationDiscardReason::kWillRemoveFrame
+          : NavigationDiscardReason::kRenderFrameHostDestruction;
+
+  // Let the renderer commit the reload, but pause before the browser processes
+  // the commit, so that the navigation is pending commit.
+  CommitNavigationPauser commit_pauser(commit_rfh.get());
+  reload.ResumeNavigation();
+  commit_pauser.WaitForCommitAndPause();
+  EXPECT_TRUE(commit_rfh->HasPendingCommitNavigation());
+
+  // Closing the page has to win over the pending commit.
+  NavigationDiscardReasonObserver discard_reason_observer(web_contents);
+  WebContentsDestroyedWatcher destroyed_watcher(web_contents);
+  web_contents->ClosePage();
+
+  EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+  EXPECT_FALSE(root->current_frame_host()->HasPendingCommitNavigation());
+  EXPECT_EQ(discard_reason_observer.discard_reason(), discard_reason);
+  destroyed_watcher.Wait();
 }
 
 // Test for crbug.com/9682.  We should not show the URL for a pending renderer-
