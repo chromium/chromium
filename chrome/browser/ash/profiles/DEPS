@@ -22,5 +22,4 @@ include_rules = [
   "+chrome/browser/lifetime/application_lifetime_desktop.h",
   "+chrome/browser/profiles",
   "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_switches.h",
 ]

@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -103,8 +103,8 @@ class KioskAppUpdateServiceTest
 
     // Fake app mode command line.
     base::CommandLine* command = base::CommandLine::ForCurrentProcess();
-    command->AppendSwitch(switches::kForceAppMode);
-    command->AppendSwitchASCII(switches::kAppId, app_->id());
+    command->AppendSwitch(ash::chrome_switches::kForceAppMode);
+    command->AppendSwitchASCII(ash::chrome_switches::kAppId, app_->id());
 
     automatic_reboot_manager_ =
         g_browser_process->platform_part()->automatic_reboot_manager();

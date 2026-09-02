@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -288,7 +289,7 @@ class VideoConferenceIntegrationTest
                                       user_manager::kGuestUserName);
       command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                       TestingProfile::kTestUserProfileDir);
-      command_line->AppendSwitch(::switches::kIncognito);
+      command_line->AppendSwitch(ash::chrome_switches::kIncognito);
     }
   }
 

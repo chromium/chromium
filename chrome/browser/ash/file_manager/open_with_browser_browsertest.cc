@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -107,7 +108,7 @@ class OpenWithBrowserBrowserTest
     if (profile_type() == TestProfileType::kGuest) {
       ConfigureCommandLineForGuestMode(command_line);
     } else if (profile_type() == TestProfileType::kIncognito) {
-      command_line->AppendSwitch(::switches::kIncognito);
+      command_line->AppendSwitch(ash::chrome_switches::kIncognito);
     }
     if (!startup_browser()) {
       command_line->AppendSwitch(::switches::kNoStartupWindow);

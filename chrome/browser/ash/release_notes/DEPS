@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/chrome_pages.h",
-  "+chrome/common/chrome_switches.h",
   "+chrome/grit",
   "+chrome/test/base",
 

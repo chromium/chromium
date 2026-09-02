@@ -20,6 +20,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -2345,12 +2346,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     command_line->AppendSwitch(ash::switches::kGuestSession);
     command_line->AppendSwitchNative(ash::switches::kLoginUser, "$guest");
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
-    command_line->AppendSwitch(switches::kIncognito);
+    command_line->AppendSwitch(ash::chrome_switches::kIncognito);
     set_chromeos_user_ = false;
   }
 
   if (options.guest_mode == IN_INCOGNITO) {
-    command_line->AppendSwitch(switches::kIncognito);
+    command_line->AppendSwitch(ash::chrome_switches::kIncognito);
   }
 
   if (options.offline) {

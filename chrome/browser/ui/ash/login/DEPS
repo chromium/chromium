@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/ui/webui/feedback",
   "+chrome/common",
   "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_switches.h",
   "+chrome/grit",
 ]
 

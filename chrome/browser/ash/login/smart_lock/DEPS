@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
-  "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/grit",
   "+chrome/test/base",

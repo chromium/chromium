@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/re2/src/re2/re2.h"

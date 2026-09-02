@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/notifications/idle_app_name_notification_view.h"
 
+#include "ash/constants/chrome_switches.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "extensions/common/manifest_constants.h"
@@ -37,7 +37,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     // Add the application switch.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        ::switches::kAppId, kTestAppName);
+        ash::chrome_switches::kAppId, kTestAppName);
 
     BrowserWithTestWindowTest::SetUp();
 

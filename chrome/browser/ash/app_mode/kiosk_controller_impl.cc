@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -46,7 +47,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager_wrapper.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -356,17 +356,17 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(::switches::kForceAppMode);
+  command_line->AppendSwitch(ash::chrome_switches::kForceAppMode);
 
   // Disables installation of preinstalled apps in kiosk sessions as
   // `UserManager::Observer::OnUserLoggedIn` is called before `Profile` creation
   // and `WebAppProvider::Start`.
   // TODO(crbug.com/385072112): Replace cmd line switch with proper filtering.
-  command_line->AppendSwitch(::switches::kDisableDefaultApps);
+  command_line->AppendSwitch(ash::chrome_switches::kDisableDefaultApps);
 
   // This happens in Web kiosks.
   if (!kiosk_app_id.empty()) {
-    command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);
+    command_line->AppendSwitchASCII(ash::chrome_switches::kAppId, kiosk_app_id);
   }
 
   // Disable window animation since kiosk app runs in a single full screen

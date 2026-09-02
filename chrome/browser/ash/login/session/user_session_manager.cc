@@ -19,6 +19,7 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/token_handle_store.h"
 #include "ash/shell.h"
@@ -129,7 +130,6 @@
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
@@ -1989,7 +1989,7 @@ void UserSessionManager::MaybeLaunchHelpAppForFirstRun(Profile* profile) const {
     // app. Because we don't want the first-run app to be hidden in the
     // background.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kSilentLaunch);
+        ash::chrome_switches::kSilentLaunch);
     first_run::LaunchHelpApp(profile);
   }
 }

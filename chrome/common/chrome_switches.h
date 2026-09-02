@@ -8,12 +8,18 @@
 #ifndef CHROME_COMMON_CHROME_SWITCHES_H_
 #define CHROME_COMMON_CHROME_SWITCHES_H_
 
+#include <string_view>
+
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/chrome_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Don't add more switch files here. This is linked into some places like the
 // installer where dependencies should be limited. Instead, have files
@@ -85,6 +91,10 @@ inline constexpr char kApp[] = "app";
 // Specifies that the extension-app with the specified id should be launched
 // according to its configuration.
 inline constexpr char kAppId[] = "app-id";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kAppId) ==
+              std::string_view(ash::chrome_switches::kAppId));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Overrides the launch url of an app with the specified url. This is used
 // along with kAppId to launch a given app with the url corresponding to an item
@@ -242,6 +252,10 @@ inline constexpr char kDisableCrashpadForTesting[] =
 // Disables installation of default apps on first run. This is used during
 // automated testing.
 inline constexpr char kDisableDefaultApps[] = "disable-default-apps";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kDisableDefaultApps) ==
+              std::string_view(ash::chrome_switches::kDisableDefaultApps));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Disables Domain Reliability Monitoring.
 inline constexpr char kDisableDomainReliability[] =
@@ -370,6 +384,10 @@ inline constexpr char kExtensionExperimentalActor[] =
 // Forces application mode. This hides certain system UI elements and forces
 // the app to be installed if it hasn't been already.
 inline constexpr char kForceAppMode[] = "force-app-mode";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kForceAppMode) ==
+              std::string_view(ash::chrome_switches::kForceAppMode));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Displays the First Run experience when the browser is started, regardless of
 // whether or not it's actually the First Run (this overrides kNoFirstRun).
@@ -392,11 +410,19 @@ inline constexpr char kForceWhatsNew[] = "force-whats-new";
 // enabled, because the ChromeOS full restore notification is shown for the user
 // to select restore or not.
 inline constexpr char kHideCrashRestoreBubble[] = "hide-crash-restore-bubble";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kHideCrashRestoreBubble) ==
+              std::string_view(ash::chrome_switches::kHideCrashRestoreBubble));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Specifies which page will be displayed in newly-opened tabs. We need this
 // for testing purposes so that the UI tests don't depend on what comes up for
 // http://google.com.
 inline constexpr char kHomePage[] = "homepage";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kHomePage) ==
+              std::string_view(ash::chrome_switches::kHomePage));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Causes the browser to simulate a screen lock event shortly after startup.
@@ -413,6 +439,10 @@ inline constexpr char kImportPasswords[] = "import-passwords";
 // Causes the initial browser opened to be in incognito mode. Further browsers
 // may or may not be in incognito mode; see `IncognitoModePrefs`.
 inline constexpr char kIncognito[] = "incognito";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kIncognito) ==
+              std::string_view(ash::chrome_switches::kIncognito));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Specifies that the main-thread Isolate should initialize in foreground mode.
 // If not specified, the the Isolate will start in background mode for extension
@@ -494,6 +524,10 @@ inline constexpr char kNoExperiments[] = "no-experiments";
 // prevent What's New from occurring the next time chrome is launched without
 // this flag.
 inline constexpr char kNoFirstRun[] = "no-first-run";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kNoFirstRun) ==
+              std::string_view(ash::chrome_switches::kNoFirstRun));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Don't send hyperlink auditing pings
 inline constexpr char kNoPings[] = "no-pings";
@@ -613,6 +647,10 @@ inline constexpr char kRestart[] = "restart";
 // implement support for OS-specific "continue where you left off" functionality
 // on OS X and Windows.
 inline constexpr char kRestoreLastSession[] = "restore-last-session";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kRestoreLastSession) ==
+              std::string_view(ash::chrome_switches::kRestoreLastSession));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Indicates that the URL in the command line should open in the active tab
 // instead of a new tab. In case of multiple URLS given as arguments, the
@@ -627,6 +665,10 @@ inline constexpr char kSilentDebuggerExtensionAPI[] =
 // Causes Chrome to launch without opening any windows by default. Useful if
 // one wishes to use Chrome as an ash server.
 inline constexpr char kSilentLaunch[] = "silent-launch";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kSilentLaunch) ==
+              std::string_view(ash::chrome_switches::kSilentLaunch));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Sets the BrowsingDataLifetime policy to a very short value (shorter than
 // normally possible) for testing purposes.
@@ -720,6 +762,10 @@ inline constexpr char kUnsafelyDisableDevToolsSelfXssWarnings[] =
 // Specifies the user data directory, which is where the browser will look for
 // all of its state.
 inline constexpr char kUserDataDir[] = "user-data-dir";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kUserDataDir) ==
+              std::string_view(ash::chrome_switches::kUserDataDir));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Uses WinHttp to resolve proxies instead of using Chromium's normal proxy
 // resolution logic. This is only supported in Windows.
@@ -1066,6 +1112,10 @@ inline constexpr char kProfileManagementAttributes[] =
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Custom WebAPK server URL for the sake of testing.
 inline constexpr char kWebApkServerUrl[] = "webapk-server-url";
+#if BUILDFLAG(IS_CHROMEOS)
+static_assert(std::string_view(kWebApkServerUrl) ==
+              std::string_view(ash::chrome_switches::kWebApkServerUrl));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif
 

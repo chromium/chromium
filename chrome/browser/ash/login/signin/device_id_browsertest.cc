@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
@@ -186,7 +186,7 @@ class DeviceIDTest : public OobeBaseTest,
 
   base::FilePath GetRefreshTokenToDeviceIdMapFilePath() const {
     return base::CommandLine::ForCurrentProcess()
-        ->GetSwitchValuePath(::switches::kUserDataDir)
+        ->GetSwitchValuePath(ash::chrome_switches::kUserDataDir)
         .Append(kRefreshTokenToDeviceIdMapFile);
   }
 

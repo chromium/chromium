@@ -142,6 +142,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/common:non_code_constants",
     "//components/webapk:proto",

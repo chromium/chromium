@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
@@ -73,7 +74,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -753,7 +753,7 @@ class SpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
 
     if (GetParam().variant() == kTestAsGuestUser) {
       command_line->AppendSwitch(switches::kGuestSession);
-      command_line->AppendSwitch(::switches::kIncognito);
+      command_line->AppendSwitch(ash::chrome_switches::kIncognito);
       command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
       command_line->AppendSwitchASCII(
           switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());

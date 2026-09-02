@@ -5,6 +5,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/test/ash_test_util.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -679,7 +679,7 @@ class InformedRestoreOnboardingTest : public InformedRestoreTest {
 
     // Onboarding dialog is gated by this switch so it doesn't affect other
     // browser tests.
-    command_line->RemoveSwitch(::switches::kNoFirstRun);
+    command_line->RemoveSwitch(ash::chrome_switches::kNoFirstRun);
   }
 };
 

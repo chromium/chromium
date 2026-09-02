@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/chrome_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/notifications/idle_app_name_notification_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -86,7 +86,7 @@ void KioskModeIdleAppNameNotification::OnUserActivity(const ui::Event* event) {
     if (display.IsInternal()) {
       base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
       const std::string app_id =
-          command_line->GetSwitchValueASCII(::switches::kAppId);
+          command_line->GetSwitchValueASCII(ash::chrome_switches::kAppId);
       Profile* profile = ProfileManager::GetActiveUserProfile();
       notification_ = std::make_unique<IdleAppNameNotificationView>(
           kMessageVisibilityTimeMs, kMessageAnimationTimeMs,

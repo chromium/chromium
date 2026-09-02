@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/test/base",
   "+chrome/test/views",
-  "+chrome/common/chrome_switches.h",
 ]
 
 specific_include_rules = {

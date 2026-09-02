@@ -21,6 +21,5 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
 ]

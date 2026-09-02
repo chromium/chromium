@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/apps/webapk/webapk_test_server.h"
 
+#include "ash/constants/chrome_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "chrome/common/chrome_switches.h"
 
 namespace {
 constexpr char kServerPath[] = "/webapk";
@@ -50,7 +50,7 @@ bool WebApkTestServer::SetUpAndStartServer(
   if (result) {
     GURL server_url = server->GetURL(kServerPath);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kWebApkServerUrl, server_url.spec());
+        ash::chrome_switches::kWebApkServerUrl, server_url.spec());
   }
 
   return result;

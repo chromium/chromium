@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/chrome_pref_names.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -194,7 +195,7 @@ class FullRestoreServiceTest : public testing::Test {
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kNoFirstRun);
+        ash::chrome_switches::kNoFirstRun);
 
     test_user_session_manager_ =
         std::make_unique<ash::test::TestUserSessionManager>(
@@ -694,7 +695,7 @@ class ForestFullRestoreServiceMultipleUsersTest
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kNoFirstRun);
+        ash::chrome_switches::kNoFirstRun);
     FullRestoreServiceMultipleUsersTest::SetUp();
   }
 };

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/chrome_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -16,7 +17,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 
@@ -67,7 +67,7 @@ class SecurityFilesIntegrationTest : public AshIntegrationTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AshIntegrationTest::SetUpCommandLine(command_line);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kUserDataDir, "/home/chronos");
+        ash::chrome_switches::kUserDataDir, "/home/chronos");
   }
 };
 

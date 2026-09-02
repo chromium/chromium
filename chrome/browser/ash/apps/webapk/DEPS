@@ -15,6 +15,5 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/common/chrome_switches.h",
   "+components/webapk",
 ]

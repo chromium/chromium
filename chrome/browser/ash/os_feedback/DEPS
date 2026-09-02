@@ -26,6 +26,5 @@ specific_include_rules = {
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
-    "+chrome/common/chrome_switches.h",
   ],
 }

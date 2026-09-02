@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -143,7 +143,7 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kHardwareVideoDevicePath,
 #endif
       ::switches::kUseGL,
-      ::switches::kUserDataDir,
+      ash::chrome_switches::kUserDataDir,
       ::switches::kV,
       ::switches::kVModule,
       ::switches::kVideoCaptureUseGpuMemoryBuffer,
@@ -383,7 +383,7 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
                                 base::CommandLine* command_line) {
   base::DictValue otr_switches;
   otr_switches.Set(switches::kGuestSession, std::string());
-  otr_switches.Set(::switches::kIncognito, std::string());
+  otr_switches.Set(ash::chrome_switches::kIncognito, std::string());
   otr_switches.Set(::switches::kLoggingLevel, kGuestModeLoggingLevel);
   otr_switches.Set(
       switches::kLoginUser,
@@ -394,7 +394,7 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
   }
 
   // Override the home page.
-  otr_switches.Set(::switches::kHomePage,
+  otr_switches.Set(ash::chrome_switches::kHomePage,
                    GURL(ash::chrome_urls::kChromeUINewTabURL).spec());
 
   DeriveCommandLine(start_url, base_command_line, otr_switches, command_line);

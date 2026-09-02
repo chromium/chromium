@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_prefs_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -70,7 +71,6 @@
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/channel/channel_info.h"
@@ -619,5 +619,5 @@ void ChromeShellDelegate::OpenMultitaskingSettings() {
 
 bool ChromeShellDelegate::IsNoFirstRunSwitchOn() const {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kNoFirstRun);
+      ash::chrome_switches::kNoFirstRun);
 }

@@ -12,6 +12,7 @@
 
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -85,7 +86,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1103,7 +1103,7 @@ void AppListClientGuestModeBrowserTest::SetUpCommandLine(
                                   user_manager::kGuestUserName);
   command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                   TestingProfile::kTestUserProfileDir);
-  command_line->AppendSwitch(switches::kIncognito);
+  command_line->AppendSwitch(ash::chrome_switches::kIncognito);
 }
 
 // Test creating the initial app list in guest mode.

@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -382,7 +382,7 @@ class ChromeOsFeedbackDelegateGuestModeBrowserTest
                                     user_manager::kGuestUserName);
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     TestingProfile::kTestUserProfileDir);
-    command_line->AppendSwitch(::switches::kIncognito);
+    command_line->AppendSwitch(ash::chrome_switches::kIncognito);
   }
 };
 

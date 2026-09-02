@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -50,7 +51,6 @@
 #if BUILDFLAG(ENABLE_RLZ)
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/google/google_brand_chromeos.h"  // nogncheck
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"  // nogncheck
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(ENABLE_RLZ)
@@ -467,7 +467,7 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kGuestSession);
-    command_line->AppendSwitch(::switches::kIncognito);
+    command_line->AppendSwitch(ash::chrome_switches::kIncognito);
     command_line->AppendSwitchASCII(switches::kLoginProfile, "hash");
     command_line->AppendSwitchASCII(
         switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());

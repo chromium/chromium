@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/chrome_switches.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -46,7 +47,6 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -540,8 +540,9 @@ class StartupAppLauncherNoCreateTest
 
     UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     command_line_.GetProcessCommandLine()->AppendSwitch(
-        ::switches::kForceAppMode);
-    command_line_.GetProcessCommandLine()->AppendSwitch(::switches::kAppId);
+        ash::chrome_switches::kForceAppMode);
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::chrome_switches::kAppId);
 
     extensions::ExtensionServiceTestBase::SetUp();
 
