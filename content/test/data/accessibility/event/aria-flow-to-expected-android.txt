@@ -1,16 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [a1] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [b1] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [b2] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [c2] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [b3] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [c3] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [a4] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [c4] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [a5] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [b5] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [c5] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [a6] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [c6] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [d6] class_name=android.widget.TextView

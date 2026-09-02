@@ -1,10 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=] on [checkbox3] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=] on [checkbox4] class_name=android.widget.CheckBox

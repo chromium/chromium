@@ -1,11 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Toggle] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [list item 1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Toggle] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=] on [Toggle] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Toggle] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [Toggle] class_name=android.view.View

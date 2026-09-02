@@ -1,18 +1,5 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox1] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [checkbox1] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox1] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on [checkbox2] class_name=android.widget.CheckBox
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [radio1] class_name=android.widget.RadioButton
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on [radio1] class_name=android.widget.RadioButton
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [radio2] class_name=android.widget.RadioButton
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on [radio2] class_name=android.widget.RadioButton
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [switch1] class_name=android.widget.Switch
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on [switch1] class_name=android.widget.Switch
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [switch2] class_name=android.widget.Switch
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on [switch2] class_name=android.widget.Switch

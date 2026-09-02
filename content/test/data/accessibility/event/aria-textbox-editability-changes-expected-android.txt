@@ -1,17 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [foo ok] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [foo ok] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [foo ok] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [foo ok] class_name=android.widget.EditText
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [ok] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [ok] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [foo ] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on [foo ] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [foo ] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [ok] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.Button [contentTypes=UNDEFINED] on [ok] class_name=android.widget.Button
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [foo ] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on [foo ] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=UNDEFINED] on [foo ] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
