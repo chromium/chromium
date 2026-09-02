@@ -583,7 +583,7 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 }
 
 - (void)suppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
-  // TODO(crbug.com/551864564): Implement suppression/removal of the entity.
+  [self showConfirmationDialogToSuppressPersonalContextSuggestion];
 }
 
 - (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
@@ -888,6 +888,7 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 
 - (void)dismissAlertCoordinator {
   [_alertCoordinator stop];
+  [self.childCoordinators removeObject:_alertCoordinator];
   _alertCoordinator = nil;
 }
 
@@ -899,6 +900,46 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   CHECK(tracker);
   return tracker;
+}
+
+// Shows confirmation dialog before removing/suppressing a personal context
+// suggestion.
+- (void)showConfirmationDialogToSuppressPersonalContextSuggestion {
+  [self dismissAlertCoordinator];
+
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_CONFIRMATION_TITLE);
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_CONFIRMATION_MESSAGE);
+
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message];
+  [self.childCoordinators addObject:_alertCoordinator];
+
+  __weak __typeof__(self) weakSelf = self;
+
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^{
+                                 [weakSelf dismissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleCancel];
+
+  NSString* removeActionTitle =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_ACTION);
+  [_alertCoordinator addItemWithTitle:removeActionTitle
+                               action:^{
+                                 // TODO(crbug.com/551864564): Implement entity
+                                 // suppression and undo snackbar.
+                                 [weakSelf dismissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleDestructive
+                            preferred:NO
+                              enabled:YES];
+
+  [_alertCoordinator start];
 }
 
 // Shows confirmation dialog before opening Other passwords.
