@@ -87,7 +87,8 @@ public class TabSwitcherDragHandlerUnitTest {
                         () -> mActivity,
                         mMultiInstanceManager,
                         mDragAndDropDelegate,
-                        mDragHandlerManager);
+                        mDragHandlerManager,
+                        /* fadeDragShadow= */ true);
         mDragHandler.setDragHandlerDelegate(mDragHandlerDelegate);
     }
 
@@ -147,7 +148,12 @@ public class TabSwitcherDragHandlerUnitTest {
         shadowView.layout(0, 0, 100, 200);
 
         AnimatedDragShadowBuilder builder =
-                new AnimatedDragShadowBuilder(originalView, shadowView, new PointF(10f, 20f), 0L);
+                new AnimatedDragShadowBuilder(
+                        originalView,
+                        shadowView,
+                        new PointF(10f, 20f),
+                        0L,
+                        /* fadeDragShadow= */ true);
 
         // Visible by default
         Point shadowSize = new Point();
@@ -179,6 +185,26 @@ public class TabSwitcherDragHandlerUnitTest {
     }
 
     @Test
+    public void testAnimatedDragShadowBuilder_FadeDragShadowDisabled() {
+        View originalView = spy(new View(ContextUtils.getApplicationContext()));
+        View shadowView = spy(new View(ContextUtils.getApplicationContext()));
+        shadowView.layout(0, 0, 100, 200);
+
+        AnimatedDragShadowBuilder builder =
+                new AnimatedDragShadowBuilder(
+                        originalView,
+                        shadowView,
+                        new PointF(10f, 20f),
+                        0L,
+                        /* fadeDragShadow= */ false);
+
+        // When fading is disabled, animate() is not posted and the view is drawn directly.
+        verify(shadowView, never()).post(any());
+        builder.onDrawShadow(mCanvas);
+        verify(shadowView).draw(mCanvas);
+    }
+
+    @Test
     public void testAnimatedDragShadowBuilder_ViewResolutionChain() {
         View attachedView = spy(new View(ContextUtils.getApplicationContext()));
         doReturn(true).when(attachedView).isAttachedToWindow();
@@ -190,7 +216,12 @@ public class TabSwitcherDragHandlerUnitTest {
         doReturn(false).when(shadowView).isAttachedToWindow();
 
         AnimatedDragShadowBuilder builder =
-                new AnimatedDragShadowBuilder(originalView, shadowView, new PointF(0f, 0f), 0L);
+                new AnimatedDragShadowBuilder(
+                        originalView,
+                        shadowView,
+                        new PointF(0f, 0f),
+                        0L,
+                        /* fadeDragShadow= */ true);
 
         // 1. Attached view provided explicitly
         builder.update(attachedView, /* show= */ false);
@@ -232,7 +263,12 @@ public class TabSwitcherDragHandlerUnitTest {
         View shadowView = spy(new View(ContextUtils.getApplicationContext()));
 
         AnimatedDragShadowBuilder builder =
-                new AnimatedDragShadowBuilder(originalView, shadowView, new PointF(0f, 0f), 0L);
+                new AnimatedDragShadowBuilder(
+                        originalView,
+                        shadowView,
+                        new PointF(0f, 0f),
+                        0L,
+                        /* fadeDragShadow= */ true);
         DropDataAndroid dropData = mock(DropDataAndroid.class);
         Token token = DragDropGlobalState.store(1, dropData, builder);
 

@@ -1465,7 +1465,8 @@ public class VerticalTabListCoordinator {
                         mMultiInstanceManager,
                         dragDropDelegate,
                         // TODO(crbug.com/518307037): Provide back press handler manager?
-                        new TabSwitcherBackPressHandlerManager());
+                        new TabSwitcherBackPressHandlerManager(),
+                        /* fadeDragShadow= */ false);
         dragHandler.setTabModelSelector(tabModelSelector);
         mTabSwitcherDragHandlers.add(dragHandler);
         return dragHandler;

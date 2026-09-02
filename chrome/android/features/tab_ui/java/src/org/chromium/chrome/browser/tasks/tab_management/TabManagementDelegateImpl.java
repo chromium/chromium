@@ -148,7 +148,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             () -> activity,
                             multiInstanceManager,
                             dragDropDelegate,
-                            dragHandlerManager);
+                            dragHandlerManager,
+                            /* fadeDragShadow= */ true);
             tabSwitcherDragHandler.setTabModelSelector(tabModelSelector);
             if (!backPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
                 backPressManager.addHandler(
