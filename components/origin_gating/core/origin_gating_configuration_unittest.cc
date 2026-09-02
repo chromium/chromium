@@ -25,11 +25,19 @@ enum class TestCustomPredicate {
   kCustom2,
 };
 
+enum class AnotherCustomPredicate {
+  kCustom1,
+};
+
 }  // namespace
 
 template <>
 const CustomPredicateDomain
     CustomPredicateDomain::kInstance<TestCustomPredicate>{};
+
+template <>
+const CustomPredicateDomain
+    CustomPredicateDomain::kInstance<AnotherCustomPredicate>{};
 
 namespace {
 
@@ -77,6 +85,31 @@ TEST(OriginGatingConfigurationTest, CheckFails_NoVerdict) {
       {
         OriginGatingConfiguration config(
             {{DecisionSource::kNoVerdict, GateableEventSet::All()}},
+            /*use_site_keyed_cache=*/false);
+      },
+      "");
+}
+
+TEST(OriginGatingConfigurationTest, CheckFails_MultipleCustomPredicateDomains) {
+  CustomPredicate custom1(
+      base::BindRepeating([](GatingDecisionContext*, const GURL&, const GURL&) {
+        return Decision::kNoDecision;
+      }),
+      TestCustomPredicate::kCustom1);
+
+  CustomPredicate custom2(
+      base::BindRepeating([](GatingDecisionContext*, const GURL&, const GURL&) {
+        return Decision::kNoDecision;
+      }),
+      AnotherCustomPredicate::kCustom1);
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        OriginGatingConfiguration config(
+            {
+                {custom1, GateableEventSet::All()},
+                {custom2, GateableEventSet::All()},
+            },
             /*use_site_keyed_cache=*/false);
       },
       "");

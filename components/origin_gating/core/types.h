@@ -119,6 +119,10 @@ class DecisionAttribution {
       return static_cast<E>(id_);
     }
 
+    bool IsSameDomain(const CustomPredicateAttribution& other) const {
+      return &domain_.get() == &other.domain_.get();
+    }
+
    private:
     int id_ = 0;
     raw_ref<const CustomPredicateDomain> domain_;

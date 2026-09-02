@@ -97,7 +97,8 @@ class OriginGatingConfiguration {
  public:
   // `predicates` specifies the ordered sequence of decision predicates to
   // execute. Each entry is a PredicateConfiguration that restricts the
-  // predicate to specific events.
+  // predicate to specific events. All CustomPredicate entries must have been
+  // created using the same enum domain.
   //
   // The following internal/fallback states are strictly forbidden:
   // - `DecisionSource::kNoVerdict`
