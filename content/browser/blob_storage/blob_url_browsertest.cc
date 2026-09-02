@@ -331,7 +331,9 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
       ->GetBlobUrlRegistry()
       ->AddUrlMapping(blob_url, blob.BindNewPipeAndPassRemote(),
                       blink::StorageKey::CreateFirstParty(origin), origin,
-                      rfh->GetProcess()->GetDeprecatedID());
+                      // BlobUrlRegistry lives in //storage and uses a numeric
+                      // process ID at the //content boundary.
+                      rfh->GetProcess()->GetID().GetUnsafeValue());
 
   NavigationHandleObserver observer(shell()->web_contents(), blob_url);
   EXPECT_FALSE(NavigateToURL(shell(), blob_url));

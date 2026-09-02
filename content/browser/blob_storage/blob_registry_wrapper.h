@@ -5,13 +5,16 @@
 #ifndef CONTENT_BROWSER_BLOB_STORAGE_BLOB_REGISTRY_WRAPPER_H_
 #define CONTENT_BROWSER_BLOB_STORAGE_BLOB_REGISTRY_WRAPPER_H_
 
+#include <memory>
+
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/child_process_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 
 namespace storage {
 class BlobRegistryImpl;
-class BlobUrlRegistry;
 }  // namespace storage
 
 namespace content {
@@ -28,13 +31,9 @@ class BlobRegistryWrapper
                                         BrowserThread::DeleteOnIOThread> {
  public:
   static scoped_refptr<BlobRegistryWrapper> Create(
-      scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-      base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
-
-  static scoped_refptr<BlobRegistryWrapper> Create(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
 
-  void Bind(int process_id,
+  void Bind(ChildProcessId process_id,
             mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver);
 
  private:
@@ -42,10 +41,6 @@ class BlobRegistryWrapper
   friend struct BrowserThread::DeleteOnThread<BrowserThread::IO>;
   friend class base::DeleteHelper<BlobRegistryWrapper>;
   ~BlobRegistryWrapper();
-
-  void InitializeOnIOThreadDeprecated(
-      scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-      base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
 
   void InitializeOnIOThread(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);

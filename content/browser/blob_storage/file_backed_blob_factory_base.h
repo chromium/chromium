@@ -5,15 +5,19 @@
 #ifndef CONTENT_BROWSER_BLOB_STORAGE_FILE_BACKED_BLOB_FACTORY_BASE_H_
 #define CONTENT_BROWSER_BLOB_STORAGE_FILE_BACKED_BLOB_FACTORY_BASE_H_
 
-#include "content/browser/blob_storage/chrome_blob_storage_context.h"
-#include "content/public/browser/render_frame_host.h"
+#include <string>
+
+#include "base/memory/scoped_refptr.h"
+#include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+class ChromeBlobStorageContext;
 
 // `FileBackedBlobFactoryBase` is an abstract class to allow the registration of
 // file backed blobs. The URL used for the registration should be the URL of the
@@ -41,7 +45,7 @@ namespace content {
 class CONTENT_EXPORT FileBackedBlobFactoryBase
     : public blink::mojom::FileBackedBlobFactory {
  public:
-  explicit FileBackedBlobFactoryBase(int process_id);
+  explicit FileBackedBlobFactoryBase(ChildProcessId process_id);
   ~FileBackedBlobFactoryBase() override;
   FileBackedBlobFactoryBase(const FileBackedBlobFactoryBase&) = delete;
   FileBackedBlobFactoryBase& operator=(const FileBackedBlobFactoryBase&) =
@@ -65,7 +69,7 @@ class CONTENT_EXPORT FileBackedBlobFactoryBase
   virtual GURL GetCurrentUrl() = 0;
   virtual mojo::ReportBadMessageCallback GetBadMessageCallback() = 0;
 
-  const int process_id_;
+  const ChildProcessId process_id_;
 };
 
 }  // namespace content

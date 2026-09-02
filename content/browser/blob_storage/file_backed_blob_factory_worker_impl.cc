@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
+
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/render_process_host.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -14,8 +13,8 @@ FileBackedBlobFactoryWorkerImpl::~FileBackedBlobFactoryWorkerImpl() = default;
 
 FileBackedBlobFactoryWorkerImpl::FileBackedBlobFactoryWorkerImpl(
     BrowserContext* browser_context,
-    int process_id)
-    : content::FileBackedBlobFactoryBase(process_id) {
+    ChildProcessId process_id)
+    : FileBackedBlobFactoryBase(process_id) {
   blob_storage_context_ =
       base::WrapRefCounted(ChromeBlobStorageContext::GetFor(browser_context));
 }

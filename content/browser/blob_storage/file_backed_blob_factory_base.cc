@@ -6,19 +6,16 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/file_access/scoped_file_access.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_id.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_registry_impl.h"
+#include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 #include "url/gurl.h"
 
@@ -100,7 +97,7 @@ void ContinueRegisterBlob(
 
 }  // namespace
 
-FileBackedBlobFactoryBase::FileBackedBlobFactoryBase(int process_id)
+FileBackedBlobFactoryBase::FileBackedBlobFactoryBase(ChildProcessId process_id)
     : process_id_(process_id) {}
 
 FileBackedBlobFactoryBase::~FileBackedBlobFactoryBase() = default;
@@ -128,12 +125,11 @@ void FileBackedBlobFactoryBase::RegisterBlobSync(
     RegisterBlobSyncCallback finish_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  bool security_check_success =
-      ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-          ChildProcessId::FromUnsafeValue(process_id_), file->path);
+  const bool security_check_success =
+      ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(process_id_,
+                                                                 file->path);
 
-  GURL url_for_file_access_checks = GetCurrentUrl();
+  const GURL url_for_file_access_checks = GetCurrentUrl();
 
   if (finish_callback) {
     finish_callback =

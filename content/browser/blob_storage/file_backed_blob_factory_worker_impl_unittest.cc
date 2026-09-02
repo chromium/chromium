@@ -23,7 +23,9 @@
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_storage_constants.h"
+#include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "url/gurl.h"
@@ -48,9 +50,8 @@ constexpr char kUrl2[] = "https://2.example.com";
 class FileBackedBlobFactoryWorkerImplTest : public testing::Test {
  public:
   void SetUp() override {
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     factory_impl_ = std::make_unique<FileBackedBlobFactoryWorkerImpl>(
-        &context_, process_id_.GetUnsafeValue());
+        &context_, process_id_);
     factory_impl_->BindReceiver(factory_.BindNewPipeAndPassReceiver(),
                                 GURL(kUrl));
 
@@ -80,7 +81,7 @@ class FileBackedBlobFactoryWorkerImplTest : public testing::Test {
 
  protected:
   BrowserTaskEnvironment browser_task_environment_{};
-  ChildProcessId process_id_ = ChildProcessId(3);
+  const ChildProcessId process_id_{3};
   TestBrowserContext context_;
   std::unique_ptr<FileBackedBlobFactoryWorkerImpl> factory_impl_;
   mojo::Remote<blink::mojom::FileBackedBlobFactory> factory_;

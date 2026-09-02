@@ -6,8 +6,7 @@
 #define CONTENT_BROWSER_BLOB_STORAGE_FILE_BACKED_BLOB_FACTORY_WORKER_IMPL_H_
 
 #include "content/browser/blob_storage/file_backed_blob_factory_base.h"
-
-#include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -16,11 +15,13 @@
 
 namespace content {
 
+class BrowserContext;
+
 class CONTENT_EXPORT FileBackedBlobFactoryWorkerImpl
     : public FileBackedBlobFactoryBase {
  public:
   explicit FileBackedBlobFactoryWorkerImpl(BrowserContext* browser_context,
-                                           int process_id);
+                                           ChildProcessId process_id);
   ~FileBackedBlobFactoryWorkerImpl() override;
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::FileBackedBlobFactory> receiver,

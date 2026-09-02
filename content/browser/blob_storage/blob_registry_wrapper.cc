@@ -4,14 +4,10 @@
 
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
-#include "net/base/features.h"
 #include "storage/browser/blob/blob_registry_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 
@@ -24,7 +20,7 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   explicit BindingDelegate(
       ChildProcessSecurityPolicyImpl::Handle security_policy_handle)
       : security_policy_handle_(std::move(security_policy_handle)) {}
-  ~BindingDelegate() override {}
+  ~BindingDelegate() override = default;
 
   bool CanReadFile(const base::FilePath& file) override {
     return security_policy_handle_.CanReadFile(file);
@@ -52,7 +48,7 @@ scoped_refptr<BlobRegistryWrapper> BlobRegistryWrapper::Create(
 BlobRegistryWrapper::BlobRegistryWrapper() = default;
 
 void BlobRegistryWrapper::Bind(
-    int process_id,
+    ChildProcessId process_id,
     mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   blob_registry_->Bind(

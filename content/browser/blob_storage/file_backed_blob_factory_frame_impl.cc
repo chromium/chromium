@@ -5,7 +5,6 @@
 #include "content/browser/blob_storage/file_backed_blob_factory_frame_impl.h"
 
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "url/gurl.h"
 
@@ -18,8 +17,7 @@ FileBackedBlobFactoryFrameImpl::FileBackedBlobFactoryFrameImpl(
     mojo::PendingAssociatedReceiver<blink::mojom::FileBackedBlobFactory>
         receiver)
     : DocumentUserData<FileBackedBlobFactoryFrameImpl>(rfh),
-      content::FileBackedBlobFactoryBase(
-          render_frame_host().GetProcess()->GetDeprecatedID()),
+      FileBackedBlobFactoryBase(render_frame_host().GetProcess()->GetID()),
       receiver_(this, std::move(receiver)) {
   blob_storage_context_ = base::WrapRefCounted(ChromeBlobStorageContext::GetFor(
       render_frame_host().GetBrowserContext()));
