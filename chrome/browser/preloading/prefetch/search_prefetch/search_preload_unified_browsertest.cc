@@ -2766,6 +2766,97 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       1);
 }
 
+class SearchPreloadUnifiedMetricsDisabledBrowserTest
+    : public SearchPreloadUnifiedBrowserTest {
+ public:
+  SearchPreloadUnifiedMetricsDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(kSearchPrefetchPreloadServingMetrics);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/517725655): Flaky on Android due to the wait mechanism,
+// investigate and re-enable this test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SearchPrefetchServedNavigationHandleUserDataFeatureDisabled \
+  DISABLED_SearchPrefetchServedNavigationHandleUserDataFeatureDisabled
+#else
+#define MAYBE_SearchPrefetchServedNavigationHandleUserDataFeatureDisabled \
+  SearchPrefetchServedNavigationHandleUserDataFeatureDisabled
+#endif
+// Tests that a navigation served by search prefetch does not mark
+// NavigationHandleUserData or record PreloadServingMetrics as kPrefetch
+// when kSearchPrefetchPreloadServingMetrics is disabled.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadUnifiedMetricsDisabledBrowserTest,
+    MAYBE_SearchPrefetchServedNavigationHandleUserDataFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  std::string search_query = "pre";
+  std::string prefetch_query = "prefetch";
+  GURL expected_prefetch_url = GetSearchUrl(prefetch_query, UrlType::kPrefetch);
+  GURL expected_real_url = GetSearchUrl(prefetch_query, UrlType::kReal);
+
+  ChangeAutocompleteResult(search_query, prefetch_query,
+                           PrerenderHint::kDisabled, PrefetchHint::kEnabled);
+
+  // Wait until prefetch request succeeds.
+  std::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prefetch_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(expected_prefetch_url),
+      {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
+
+  page_load_metrics::TestNavigationObserver omnibox_observer(
+      GetActiveWebContents());
+
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(GetActiveWebContents());
+  waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                TimingField::kFirstContentfulPaint);
+
+  base::RepeatingCallback<void(content::NavigationHandle&)>
+      navigation_handle_callback = base::BindRepeating(
+          &AttachOmniboxDefaultSearchEngineNavigationHandleUserData);
+
+  GetActiveWebContents()->OpenURL(
+      content::OpenURLParams(
+          expected_real_url, content::Referrer(),
+          WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      std::move(navigation_handle_callback));
+  waiter.Wait();
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
+      SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
+
+  EXPECT_TRUE(omnibox_observer.navigation_type().has_value());
+  EXPECT_EQ(omnibox_observer.navigation_type().value(),
+            GetInitiatorLocation(
+                ChromeInitiatorLocation::kOmniboxDefaultSearchEngine));
+  EXPECT_TRUE(
+      omnibox_observer.is_served_by_legacy_search_prefetch().has_value());
+  EXPECT_FALSE(omnibox_observer.is_served_by_legacy_search_prefetch().value());
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.OmniboxDefaultSearchEngine.All",
+      0 /* kNoInstantLoad */, 1);
+}
+
 // TODO(crbug.com/393195683): User-agent override mismatch causes this test to
 // fail on Android desktop.
 // TODO(crbug.com/517725655): Flaky on Android due to the wait mechanism.

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,9 @@
 // static
 void SearchPrefetchNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
+  if (!IsSearchPrefetchPreloadServingMetricsEnabled()) {
+    return;
+  }
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (!handle.IsInMainFrame()) {
     return;

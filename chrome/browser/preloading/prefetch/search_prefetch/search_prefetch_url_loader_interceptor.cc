@@ -118,10 +118,12 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     auto handler =
         service->MaybeCreateResponseReader(tentative_resource_request);
     if (handler) {
-      // This navigation id is used for recording navigation served by
-      // search prefetch in UMA. It is added here to avoid recording
-      // navigation served from the disk cache handler below.
-      service->AddServingNavigationId(navigation_id);
+      if (IsSearchPrefetchPreloadServingMetricsEnabled()) {
+        // This navigation id is used for recording navigation served by search
+        // prefetch in UMA. It is added here to avoid recording navigation
+        // served from the disk cache handler below.
+        service->AddServingNavigationId(navigation_id);
+      }
     }
     return handler;
   }
@@ -130,10 +132,12 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   auto handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (handler) {
-    // This navigation id is used for recording navigation served by search
-    // prefetch in UMA. It is added here to avoid recording navigation served
-    // from the disk cache handler below.
-    service->AddServingNavigationId(navigation_id);
+    if (IsSearchPrefetchPreloadServingMetricsEnabled()) {
+      // This navigation id is used for recording navigation served by search
+      // prefetch in UMA. It is added here to avoid recording navigation served
+      // from the disk cache handler below.
+      service->AddServingNavigationId(navigation_id);
+    }
     return handler;
   }
   if (IsNoVarySearchDiskCacheEnabled() &&
