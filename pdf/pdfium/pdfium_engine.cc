@@ -205,6 +205,8 @@ void AddMetadataToTextObject(FPDF_DOCUMENT doc,
                                     attributes.is_bold));
   CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsItalic",
                                     attributes.is_italic));
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsStrikethrough",
+                                    attributes.is_strikethrough));
 
   CHECK(FPDFPageObjMark_SetStringParam(doc, text_object, mark, "Text",
                                        attributes.text.c_str()));
@@ -272,6 +274,57 @@ FS_MATRIX CalculateTextObjectOriginTransform(
   baseline_origin.Scale(printing::kUnitConversionFactorPixelsToPoints);
   return FS_MATRIX{
       1.0f, 0.0f, 0.0f, 1.0f, baseline_origin.x(), -baseline_origin.y()};
+}
+
+// Creates a strikethrough path page object for a single text line at
+// `text_line_rect` in local coordinates (relative to the baseline origin) in
+// PDF points.
+ScopedFPDFPageObject CreateStrikethroughPath(
+    const gfx::RectF& text_line_rect,
+    double pdf_zoom,
+    const InkTextBoxAttributes& attributes,
+    float ascent) {
+  const int total_rotations =
+      GetClockwiseRotationSteps(attributes.viewport_orientation) +
+      attributes.orientation;
+  const float run_length = (total_rotations % 2 == 0) ? text_line_rect.width()
+                                                      : text_line_rect.height();
+  const float run_width_pt = CSSFontSizeToPdfFontSize(run_length / pdf_zoom);
+  const float pdf_font_size =
+      CSSFontSizeToPdfFontSize(attributes.css_font_size);
+
+  // Matches Blink's text-decoration auto thickness.
+  const float auto_thickness = pdf_font_size / 10.0f;
+
+  // Unlike Blink which enforces a 1.0f CSS pixel floor on screen rasterization,
+  // use a smaller safety floor in PDF points so that the stroke scales down
+  // proportionally with small glyphs and does not become thick when zoomed in
+  // or on high DPI.
+  const float stroke_width = std::max(0.25f, auto_thickness);
+
+  // Use the ascent calculated at the textbox level so the line remains
+  // continuous across multiple different fonts on the same baseline.
+  // Position is centered at 1/3 ascent above the baseline. This matches Blink's
+  // text-decoration line-through calculation.
+  // Note that on very small font sizes (e.g. 6-8px), Blink's screen rendering
+  // snaps the line to the nearest integer pixel boundary, whereas the PDF
+  // stores exact float vector coordinates.
+  const float line_y = CSSFontSizeToPdfFontSize(ascent) / 3.0f;
+
+  ScopedFPDFPageObject strikethrough_path(FPDFPageObj_CreateNewPath(0, line_y));
+  CHECK(strikethrough_path);
+  CHECK(FPDFPath_LineTo(strikethrough_path.get(), run_width_pt, line_y));
+  CHECK(FPDFPath_SetDrawMode(strikethrough_path.get(), FPDF_FILLMODE_NONE,
+                             /*stroke=*/1));
+  CHECK(FPDFPageObj_SetLineCap(strikethrough_path.get(), FPDF_LINECAP_BUTT));
+  const SkColor color = attributes.color;
+  CHECK(FPDFPageObj_SetStrokeColor(strikethrough_path.get(),
+                                   /*R=*/SkColorGetR(color),
+                                   /*G=*/SkColorGetG(color),
+                                   /*B=*/SkColorGetB(color),
+                                   /*A=*/255));
+  CHECK(FPDFPageObj_SetStrokeWidth(strikethrough_path.get(), stroke_width));
+  return strikethrough_path;
 }
 
 // Creates a text object for a single typeface run at `item` in PDF points.
@@ -5567,13 +5620,21 @@ void PDFiumEngine::DrawText(int page_index,
 
   ascent /= pdf_zoom;
 
-  size_t total_text_objects = 0;
+  size_t num_page_objects = 0;
   for (const InkTextLine& line : text_lines) {
-    total_text_objects += line.text_info.size();
+    num_page_objects += line.text_info.size();
   }
+  // Strikethrough generates one path page object per line in addition to the
+  // text objects.
+  if (attributes.is_strikethrough) {
+    num_page_objects += text_lines.size();
+  }
+
   PageObjectVector page_objects;
-  page_objects.reserve(total_text_objects);
+  page_objects.reserve(num_page_objects);
   FPDF_PAGEOBJECTMARK mark = nullptr;
+
+  // 1. Create text objects for all lines.
   for (const InkTextLine& line : text_lines) {
     for (const InkTextInfo& item : line.text_info) {
       FPDF_FONT font = GetAddedFont(item.font_id);
@@ -5612,6 +5673,28 @@ void PDFiumEngine::DrawText(int page_index,
 
       page_objects.push_back(text_object.get());
       CHECK(FPDFPage_InsertObject(page, text_object.release()));
+    }
+  }
+
+  // 2. Create line decorations (strikethrough).
+  if (attributes.is_strikethrough && !page_objects.empty()) {
+    for (const InkTextLine& line : text_lines) {
+      if (line.text_info.empty()) {
+        continue;
+      }
+
+      ScopedFPDFPageObject strikethrough_path =
+          CreateStrikethroughPath(line.location, pdf_zoom, attributes, ascent);
+      FS_MATRIX line_origin_matrix = CalculateTextObjectOriginTransform(
+          line.location, pdf_zoom, attributes, ascent);
+      CHECK(FPDFPageObj_TransformF(strikethrough_path.get(),
+                                   &line_origin_matrix));
+      CHECK(FPDFPageObj_TransformF(strikethrough_path.get(), &textbox_matrix));
+      // Mark should have already been created after text object creation.
+      CHECK(mark);
+      CHECK(FPDFPageObj_AddExistingMark(strikethrough_path.get(), mark));
+      page_objects.push_back(strikethrough_path.get());
+      CHECK(FPDFPage_InsertObject(page, strikethrough_path.release()));
     }
   }
 
