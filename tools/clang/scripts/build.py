@@ -1726,7 +1726,7 @@ def main():
         target_triple = 'armv7'
       api_level = '21'
       if target_arch == 'riscv64':
-        api_level = '36'
+        api_level = '37'
       target_triple += '-linux-android' + api_level
       android_cflags = [
         '--sysroot=%s/sysroot' % toolchain_dir,
