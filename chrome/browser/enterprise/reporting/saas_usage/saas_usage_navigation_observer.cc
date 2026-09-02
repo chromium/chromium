@@ -25,7 +25,7 @@ bool ShouldRecordNavigation(content::NavigationHandle* navigation_handle) {
   return navigation_handle->HasCommitted() &&
          !navigation_handle->IsErrorPage() &&
          !navigation_handle->IsSameDocument() &&
-         navigation_handle->IsInMainFrame();
+         navigation_handle->IsInPrimaryMainFrame();
 }
 
 }  // namespace
