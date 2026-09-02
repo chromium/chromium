@@ -33,6 +33,7 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -40,7 +41,9 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_delegate.h"
 
 using ::tabs::MockTabInterface;
 class ActorTaskListBubbleTest : public ChromeViewsTestBase {
@@ -337,4 +340,87 @@ TEST_F(ActorTaskListBubbleTest,
       l10n_util::GetStringUTF16(
           IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE),
       button->GetSubtitleText());
+}
+
+// The bubble is shown activated in response to a task update. It has no dialog
+// buttons, so unless it explicitly focuses one of its rows the widget is
+// activated with nothing focused inside it, and screen readers are left with no
+// way into the bubble.
+TEST_F(ActorTaskListBubbleTest, ShowBubbleFocusesFirstRow) {
+  absl::flat_hash_map<actor::TaskId, bool> task_list;
+  task_list[CreatePausedTask()] = true;
+  task_list[CreatePausedTask()] = false;
+
+  views::Widget* actor_task_list_bubble =
+      CreateBubbleView(std::move(task_list));
+  ASSERT_TRUE(actor_task_list_bubble);
+
+  views::View* content_view =
+      GetContentViewInActorTaskListBubble(actor_task_list_bubble);
+  ASSERT_EQ(2u, content_view->children().size());
+
+  views::WidgetDelegate* delegate = actor_task_list_bubble->widget_delegate();
+  EXPECT_EQ(content_view->children().front(),
+            delegate->GetInitiallyFocusedView());
+  // Having a focused view makes the bubble expose the dialog role instead of
+  // the alert dialog role, which is what makes screen readers announce it as a
+  // dialog when focus moves into it.
+  EXPECT_EQ(ax::mojom::Role::kDialog, delegate->GetAccessibleWindowRole());
+}
+
+// Rows for tasks whose tab was closed are disabled and cannot take focus, so
+// initial focus must skip past them.
+TEST_F(ActorTaskListBubbleTest, ShowBubbleSkipsDisabledRowsForInitialFocus) {
+  // Paused task with no tab. Sorts first because it requires attention, but is
+  // rendered as a disabled "Tab closed" row.
+  actor::TaskId closed_tab_task = actor_service_->CreateTaskForTesting();
+  actor_service_->GetTask(closed_tab_task)->Pause(/*from_actor=*/true);
+
+  // Acting task with a tab. Sorts last but is the first enabled row.
+  actor::TaskId acting_task = actor_service_->CreateTaskForTesting();
+  base::RunLoop loop;
+  actor_service_->GetTask(acting_task)
+      ->AddTab(
+          mock_tab().GetHandle(),
+          /*stop_task_on_detach=*/true,
+          base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
+            EXPECT_TRUE(actor::IsOk(*result));
+            loop.Quit();
+          }));
+  loop.Run();
+
+  absl::flat_hash_map<actor::TaskId, bool> task_list;
+  task_list[closed_tab_task] = false;
+  task_list[acting_task] = false;
+
+  views::Widget* actor_task_list_bubble =
+      CreateBubbleView(std::move(task_list));
+  ASSERT_TRUE(actor_task_list_bubble);
+
+  views::View* content_view =
+      GetContentViewInActorTaskListBubble(actor_task_list_bubble);
+  ASSERT_EQ(2u, content_view->children().size());
+  ASSERT_FALSE(content_view->children().front()->GetEnabled());
+  ASSERT_TRUE(content_view->children().back()->GetEnabled());
+
+  EXPECT_EQ(
+      content_view->children().back(),
+      actor_task_list_bubble->widget_delegate()->GetInitiallyFocusedView());
+}
+
+// When nothing in the bubble can take focus, it must keep the alert dialog role
+// so that its contents are still announced when it appears.
+TEST_F(ActorTaskListBubbleTest, BubbleWithOnlyDisabledRowsKeepsAlertRole) {
+  actor::TaskId id = actor_service_->CreateTaskForTesting();
+  actor_service_->GetTask(id)->Pause(/*from_actor=*/true);
+  absl::flat_hash_map<actor::TaskId, bool> task_list;
+  task_list[id] = false;
+
+  views::Widget* actor_task_list_bubble =
+      CreateBubbleView(std::move(task_list));
+  ASSERT_TRUE(actor_task_list_bubble);
+
+  views::WidgetDelegate* delegate = actor_task_list_bubble->widget_delegate();
+  EXPECT_EQ(nullptr, delegate->GetInitiallyFocusedView());
+  EXPECT_EQ(ax::mojom::Role::kAlertDialog, delegate->GetAccessibleWindowRole());
 }

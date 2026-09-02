@@ -20,6 +20,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
@@ -52,14 +53,14 @@ void ActorTaskListBubble::Show(views::View* anchor_view) {
   auto contents_view = CreateContentsView();
 
   // If there are no rows, don't show the bubble.
-  if (contents_view->children().empty()) {
+  if (!contents_view || contents_view->children().empty()) {
     return;
   }
 
   std::unique_ptr<views::ScrollView> scroll_view =
       std::make_unique<views::ScrollView>(
           views::ScrollView::ScrollWithLayers::kEnabled);
-  scroll_view->SetContents(std::move(contents_view));
+  views::View* contents = scroll_view->SetContents(std::move(contents_view));
   scroll_view->ClipHeightTo(0, kMaxBubbleHeight);
   scroll_view->SetDrawOverflowIndicator(false);
 
@@ -80,9 +81,28 @@ void ActorTaskListBubble::Show(views::View* anchor_view) {
   bubble->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble->set_margins(gfx::Insets::VH(kVerticalMargin, 0));
+  // This bubble has no dialog buttons, so without an explicit initially focused
+  // view the widget is activated with nothing focused inside it. In that state
+  // BubbleDialogDelegate exposes the bubble as an alert dialog with no focused
+  // descendant, which leaves screen readers unable to move into the bubble.
+  // Focus the first actionable row instead so the bubble is exposed as a dialog
+  // and keyboard focus lands on a control the user can activate.
+  // Rows for tasks whose tab was closed are disabled and cannot take focus.
+  // If every row is disabled there is nothing to focus, and the bubble keeps
+  // its alert dialog role so its contents are still announced on show.
+  for (views::View* row : contents->children()) {
+    if (row->GetEnabled()) {
+      bubble->SetInitiallyFocusedView(row);
+      break;
+    }
+  }
 
   widget_ = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  if (!widget_) {
+    return;
+  }
+
   // Bubble can always show activated as it will only show in the active window.
   widget_->Show();
   widget_observation_.Reset();
