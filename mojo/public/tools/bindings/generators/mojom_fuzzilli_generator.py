@@ -45,13 +45,13 @@ PRIMITIVES_MAPPING = {
 # TODO(crbug.com/553473421): Add support for MSGPIPE and PLATFORMHANDLE
 HANDLES_MAPPING = {
   mojom.HANDLE: "MojoHandle",
-  mojom.DPPIPE: "MojoDataPipeProducer",
-  mojom.DCPIPE: "MojoDataPipeConsumer",
-  mojom.SHAREDBUFFER: "MojoHandle",
+  mojom.DPPIPE: "MojoDataPipeProducerHandle",
+  mojom.DCPIPE: "MojoDataPipeConsumerHandle",
+  mojom.SHAREDBUFFER: "MojoSharedBufferHandle",
   mojom.NULLABLE_HANDLE: "MojoHandle",
-  mojom.NULLABLE_DPPIPE: "MojoDataPipeProducer",
-  mojom.NULLABLE_DCPIPE: "MojoDataPipeConsumer",
-  mojom.NULLABLE_SHAREDBUFFER: "MojoHandle",
+  mojom.NULLABLE_DPPIPE: "MojoDataPipeProducerHandle",
+  mojom.NULLABLE_DCPIPE: "MojoDataPipeConsumerHandle",
+  mojom.NULLABLE_SHAREDBUFFER: "MojoSharedBufferHandle",
 }
 # List of types skipped during profile generation.
 # These types should be hand-defined in MojoCommonProfile.swift; its definitions

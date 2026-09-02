@@ -1,0 +1,78 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  MethodWithPrimitives(
+      bool bool_param,
+      int8 int8_param,
+      int16 int16_param,
+      int32 int32_param,
+      int64 int64_param,
+      uint8 uint8_param,
+      uint16 uint16_param,
+      uint32 uint32_param,
+      uint64 uint64_param,
+      float float_param,
+      double double_param,
+      string string_param) => (
+      bool bool_res,
+      int8 int8_res,
+      int16 int16_res,
+      int32 int32_res,
+      int64 int64_res,
+      uint8 uint8_res,
+      uint16 uint16_res,
+      uint32 uint32_res,
+      uint64 uint64_res,
+      float float_res,
+      double double_res,
+      string string_res);
+
+  MethodWithNullablePrimitives(
+      bool? bool_param,
+      int8? int8_param,
+      int16? int16_param,
+      int32? int32_param,
+      int64? int64_param,
+      uint8? uint8_param,
+      uint16? uint16_param,
+      uint32? uint32_param,
+      uint64? uint64_param,
+      float? float_param,
+      double? double_param,
+      string? string_param) => (
+      bool? bool_res,
+      int8? int8_res,
+      int16? int16_res,
+      int32? int32_res,
+      int64? int64_res,
+      uint8? uint8_res,
+      uint16? uint16_res,
+      uint32? uint32_res,
+      uint64? uint64_res,
+      float? float_res,
+      double? double_res,
+      string? string_res);
+
+  MethodWithHandles(
+      handle handle_param,
+      handle<data_pipe_producer> data_pipe_producer_param,
+      handle<data_pipe_consumer> data_pipe_consumer_param,
+      handle<shared_buffer> shared_buffer_param) => (
+      handle handle_res,
+      handle<data_pipe_producer> data_pipe_producer_res,
+      handle<data_pipe_consumer> data_pipe_consumer_res,
+      handle<shared_buffer> shared_buffer_res);
+
+  MethodWithNullableHandles(
+      handle? handle_param,
+      handle<data_pipe_producer>? data_pipe_producer_param,
+      handle<data_pipe_consumer>? data_pipe_consumer_param,
+      handle<shared_buffer>? shared_buffer_param) => (
+      handle? handle_res,
+      handle<data_pipe_producer>? data_pipe_producer_res,
+      handle<data_pipe_consumer>? data_pipe_consumer_res,
+      handle<shared_buffer>? shared_buffer_res);
+};
