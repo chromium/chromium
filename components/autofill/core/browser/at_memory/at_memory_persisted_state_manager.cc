@@ -64,7 +64,7 @@ AtMemoryPersistedStateManager::GetStateForField(
     const FieldGlobalId& field_id,
     const url::Origin& field_origin) {
   if (field_id_ != field_id) {
-    cleanup_timer_.Stop();
+    search_state_timer_.Stop();
     field_id_ = field_id;
     field_origin_ = field_origin;
     search_state_.reset();
@@ -77,7 +77,7 @@ void AtMemoryPersistedStateManager::OnFilterChanged(
   CHECK(field_id_);
   if (filter.empty()) {
     search_state_.reset();
-    cleanup_timer_.Stop();
+    search_state_timer_.Stop();
     return;
   }
   if (!search_state_) {
@@ -86,7 +86,7 @@ void AtMemoryPersistedStateManager::OnFilterChanged(
   search_state_->filter = filter;
   search_state_->suggestions.clear();
   search_state_->is_searching = false;
-  RestartCleanupTimer();
+  RestartSearchStateTimer();
 }
 
 void AtMemoryPersistedStateManager::OnFilterSubmitted(
@@ -97,7 +97,7 @@ void AtMemoryPersistedStateManager::OnFilterSubmitted(
   }
   search_state_->filter = filter;
   search_state_->is_searching = true;
-  RestartCleanupTimer();
+  RestartSearchStateTimer();
 }
 
 void AtMemoryPersistedStateManager::OnSuggestionsChanged(
@@ -106,7 +106,7 @@ void AtMemoryPersistedStateManager::OnSuggestionsChanged(
     return;
   }
   search_state_->suggestions = std::move(suggestions);
-  RestartCleanupTimer();
+  RestartSearchStateTimer();
 }
 
 void AtMemoryPersistedStateManager::OnSuggestionAccepted(
@@ -160,15 +160,15 @@ void AtMemoryPersistedStateManager::Reset() {
 }
 
 void AtMemoryPersistedStateManager::ResetSearchState() {
-  cleanup_timer_.Stop();
+  search_state_timer_.Stop();
   field_id_ = FieldGlobalId();
   field_origin_ = url::Origin();
   search_state_.reset();
 }
 
-void AtMemoryPersistedStateManager::RestartCleanupTimer() {
-  cleanup_timer_.Start(FROM_HERE, kTimeToLive, this,
-                       &AtMemoryPersistedStateManager::Reset);
+void AtMemoryPersistedStateManager::RestartSearchStateTimer() {
+  search_state_timer_.Start(FROM_HERE, kTimeToLive, this,
+                            &AtMemoryPersistedStateManager::ResetSearchState);
 }
 
 }  // namespace autofill

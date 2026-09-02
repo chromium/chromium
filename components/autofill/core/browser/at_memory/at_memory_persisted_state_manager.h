@@ -88,7 +88,7 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
  private:
   void Reset();
   void ResetSearchState();
-  void RestartCleanupTimer();
+  void RestartSearchStateTimer();
 
   // Field id for which the `search_state_` is kept.
   FieldGlobalId field_id_;
@@ -99,7 +99,7 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   std::optional<AtMemorySearchState> search_state_;
   // Stores previously filled suggestions.
   std::vector<Suggestion> previously_filled_suggestions_;
-  base::OneShotTimer cleanup_timer_;
+  base::OneShotTimer search_state_timer_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
