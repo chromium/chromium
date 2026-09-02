@@ -63,6 +63,8 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 
  private:
   void OnTabSearchPinnedStateChanged();
+  bool IsInVerticalTabsMode() const;
+  bool ContentFullscreenOverridesShowTabstrip() const;
 
   const raw_ref<BrowserView> browser_view_;
   PrefChangeRegistrar pref_registrar_;

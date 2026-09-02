@@ -50,20 +50,19 @@ BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
 BrowserViewLayoutDelegateImpl::~BrowserViewLayoutDelegateImpl() = default;
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawTabStrip() const {
+  if (IsInVerticalTabsMode() && ContentFullscreenOverridesShowTabstrip()) {
+    return false;
+  }
   return browser_view_->ShouldDrawTabStrip();
 }
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawVerticalTabStrip() const {
-#if BUILDFLAG(IS_MAC)
-  // Do not lay out the vertical tabstrip in content-fullscreen on Mac. This
-  // check cannot be done in BrowserView because the immersive mode controller
-  // itself relies on BrowserView reporting which tab strip it *would* draw,
-  // creating a circular dependency/race condition.
-  if (fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
-    return false;
-  }
-#endif
-  return browser_view_->ShouldDrawVerticalTabStrip();
+  // Because we don't want to duplicate effort and because content fullscreen
+  // needs to be factored in (see https://crbug.com/554652531), do a slightly
+  // different calculation here than in
+  // BrowserView::ShouldDrawVerticalTabStrip().
+  return browser_view_->ShouldDrawTabStrip() && IsInVerticalTabsMode() &&
+         !ContentFullscreenOverridesShowTabstrip();
 }
 
 bool BrowserViewLayoutDelegateImpl::IsVerticalTabStripCollapsed() const {
@@ -298,4 +297,26 @@ BrowserViewLayoutDelegateImpl::AddOnGlassModeChangedCallback(
     *current_state_out = false;
   }
   return base::CallbackListSubscription();
+}
+
+bool BrowserViewLayoutDelegateImpl::IsInVerticalTabsMode() const {
+  auto* const controller =
+      tabs::VerticalTabStripStateController::From(browser_view_->browser());
+  return controller && controller->ShouldDisplayVerticalTabs() &&
+         browser_view_->browser()->GetType() ==
+             BrowserWindowInterface::Type::TYPE_NORMAL;
+}
+
+bool BrowserViewLayoutDelegateImpl::ContentFullscreenOverridesShowTabstrip()
+    const {
+#if BUILDFLAG(IS_MAC)
+  // Do not lay out the vertical tabstrip in content-fullscreen on Mac. This
+  // check cannot be done in BrowserView because the immersive mode controller
+  // itself relies on BrowserView reporting which tab strip it *would* draw,
+  // creating a circular dependency/race condition.
+  if (fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
+    return true;
+  }
+#endif
+  return false;
 }
