@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/command_line.h"
 #import "base/files/file_path.h"
 #import "base/functional/callback_helpers.h"
 #import "base/logging.h"
@@ -50,6 +51,8 @@ bool IOSTracingController::HasInstance() {
 
 // static
 void IOSTracingController::CreateInstance() {
+  tracing::TraceStartupConfig::InitializeFromCommandLine(
+      *base::CommandLine::ForCurrentProcess());
   static base::NoDestructor<IOSTracingController> instance;
   instance->Initialize();
 }
@@ -131,7 +134,6 @@ void IOSTracingController::ResetForTesting() {
   trace_database_.reset();
   trace_report_to_upload_.reset();
   tracing::TrackNameRecorder::GetInstance()->StopRecording();
-  tracing::TraceStartupConfig::ResetForTesting();        // IN-TEST
   platform_->ResetTaskRunner(base::SingleThreadTaskRunner::GetCurrentDefault());
   if (base::ThreadPoolInstance::Get()) {
     base::ThreadPoolInstance::Get()->FlushForTesting();  // IN-TEST

@@ -21,6 +21,7 @@
 #include "build/chromecast_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
@@ -255,9 +256,8 @@ void AdaptDataSourceConfig(
 }  // namespace
 
 base::ByteSize GetDefaultTraceBufferSize() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string switch_value = command_line->GetSwitchValueASCII(
-      switches::kDefaultTraceBufferSizeLimitInKb);
+  std::string_view switch_value =
+      TraceStartupConfig::GetInstance().GetDefaultTraceBufferSizeLimitInKb();
   size_t switch_kilobytes;
   if (!switch_value.empty() &&
       base::StringToSizeT(switch_value, &switch_kilobytes)) {

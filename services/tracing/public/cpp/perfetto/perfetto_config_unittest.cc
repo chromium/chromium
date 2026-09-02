@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/common/builtin_clock.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
@@ -79,6 +80,7 @@ class AdaptPerfettoConfigForChromeTest : public ::testing::Test {
   }
 
  protected:
+  TraceStartupConfig startup_config_;
   base::TestProtoSetLoader config_loader_{GetTestDataRoot().Append(
       FILE_PATH_LITERAL("third_party/perfetto/protos/perfetto/"
                         "config/config.descriptor"))};

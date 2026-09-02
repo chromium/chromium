@@ -204,10 +204,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Called on the process's main thread once the thread pool is ready.
   // |enable_system_backend| indicates if the system backend should be enabled
   // on Posix platforms. It is ignored on other platforms.
-  void SetupClientLibrary(
-      bool enable_consumer,
-      bool enable_system_backend,
-      std::optional<uint64_t> process_track_uuid = std::nullopt);
+  void SetupClientLibrary(bool enable_consumer, bool enable_system_backend);
 
   // Set a callback that returns whether a system tracing session is allowed.
   // The callback will be executed on the sequence that set it. Only a single

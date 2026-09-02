@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
@@ -751,11 +752,12 @@ PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
     shmem_page_size_hint = features::kPerfettoSMBPageSizeBytes.Get();
 
   if (args.use_producer_provided_smb) {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
     base::UnsafeSharedMemoryRegion unsafe_shm;
-    if (command_line->HasSwitch(switches::kTraceBufferHandle)) {
+    const auto& trace_buffer_handle =
+        TraceStartupConfig::GetInstance().GetTraceBufferHandle();
+    if (trace_buffer_handle) {
       auto shmem_region = base::shared_memory::UnsafeSharedMemoryRegionFrom(
-          command_line->GetSwitchValueASCII(switches::kTraceBufferHandle));
+          *trace_buffer_handle);
       if (shmem_region->IsValid()) {
         DCHECK_EQ(shmem_size_hint, shmem_region->GetSize());
         unsafe_shm = std::move(shmem_region.value());

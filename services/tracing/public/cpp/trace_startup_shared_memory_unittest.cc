@@ -92,7 +92,8 @@ MULTIPROCESS_TEST_MAIN(InitFromLaunchParameters) {
 class TraceStartupSharedMemoryTest : public ::testing::TestWithParam<bool> {
  protected:
   void Initialize() {
-    startup_config_ = base::WrapUnique(new TraceStartupConfig());
+    startup_config_ = base::WrapUnique(
+        new TraceStartupConfig(*base::CommandLine::ForCurrentProcess()));
   }
 
   std::unique_ptr<TraceStartupConfig> startup_config_;

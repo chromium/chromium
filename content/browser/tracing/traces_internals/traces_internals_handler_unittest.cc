@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/background_tracing/trace_upload_list.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -147,6 +148,7 @@ class TracesInternalsHandlerTest : public testing::Test {
   }
 
  protected:
+  tracing::TraceStartupConfig startup_config_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BackgroundTracingManagerImpl> background_tracing_manager_;
   testing::StrictMock<FakeTraceUploadList> fake_trace_upload_list_;

@@ -98,8 +98,8 @@ class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
 #endif
 IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest,
                        MAYBE_TestFilledStartupBuffer) {
-  auto config = tracing::TraceStartupConfig::GetInstance()
-                    .GetDefaultBackgroundStartupConfig();
+  auto config =
+      tracing::TraceStartupConfig::GetDefaultBackgroundStartupConfig();
 
   perfetto::Tracing::SetupStartupTracingOpts opts;
   opts.timeout_ms = tracing::kStartupTracingTimeoutMs;
@@ -229,9 +229,6 @@ class StartupTracingTest
       tracing::StartupTracingController::OverrideDefaultBasenameForTest(
           "trace1",
           tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
-    } else {
-      // Fallback to explicitly initializing it if we don't set a basename
-      tracing::TraceStartupConfig::GetInstance();
     }
   }
 

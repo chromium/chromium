@@ -53,12 +53,14 @@ class IOSTracingControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    startup_config_.emplace();
     IOSTracingController::MaybeCreateInstanceForTesting();
     IOSTracingController::GetInstance().InitializeForTesting();
   }
 
   void TearDown() override {
     IOSTracingController::GetInstance().ResetForTesting();
+    startup_config_.reset();
     PlatformTest::TearDown();
   }
 
@@ -69,6 +71,7 @@ class IOSTracingControllerTest : public PlatformTest {
                                        scenario_start_time);
   }
 
+  std::optional<tracing::TraceStartupConfig> startup_config_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -133,8 +136,8 @@ TEST_F(IOSTracingControllerTest, StartupTraceRecording) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kTraceStartupFormat, "proto");
 
-  // Reset the config to pick up the new command line switches.
-  tracing::TraceStartupConfig::ResetForTesting();
+  // Reset and create the config to pick up the new command line switches.
+  startup_config_.emplace(*scoped_command_line.GetProcessCommandLine());
 
   // Reset and re-initialize to restart startup tracing.
   IOSTracingController::GetInstance().ResetForTesting();

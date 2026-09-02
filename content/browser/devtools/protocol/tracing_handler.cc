@@ -72,6 +72,8 @@ namespace content::protocol {
 
 namespace {
 
+bool g_did_adopt_startup_session = false;
+
 const double kMinimumReportingInterval = 250.0;
 
 const char kRecordModeParam[] = "record_mode";
@@ -909,11 +911,15 @@ void TracingHandler::AttemptAdoptStartupSession(
   if (session_for_process_filter_) {
     return;
   }
-  auto& startup_config = tracing::TraceStartupConfig::GetInstance();
-  if (!startup_config.AttemptAdoptBySessionOwner(
+  if (g_did_adopt_startup_session) {
+    return;
+  }
+  const auto& startup_config = tracing::TraceStartupConfig::GetInstance();
+  if (!startup_config.ShouldAdoptBySessionOwner(
           tracing::TraceStartupConfig::SessionOwner::kDevToolsTracingHandler)) {
     return;
   }
+  g_did_adopt_startup_session = true;
 
   return_as_stream_ = return_as_stream;
   gzip_compression_ = gzip_compression;

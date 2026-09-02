@@ -24,12 +24,14 @@
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/snappy/src/snappy.h"
 
 namespace {
 
 class BackgroundTracingUtilsTest : public testing::Test {
+  tracing::TraceStartupConfig startup_config_;
   content::BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::TracingDelegate tracing_delegate_;

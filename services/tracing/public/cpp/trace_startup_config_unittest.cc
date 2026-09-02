@@ -96,8 +96,16 @@ std::string GetTraceConfigFileContent(std::string trace_config,
 
 class TraceStartupConfigTest : public ::testing::Test {
  protected:
+  void TearDown() override { startup_config_.reset(); }
+
   void Initialize() {
-    startup_config_ = base::WrapUnique(new TraceStartupConfig());
+    startup_config_ = CreateConfig(*base::CommandLine::ForCurrentProcess());
+  }
+
+  std::unique_ptr<TraceStartupConfig> CreateConfig(
+      const base::CommandLine& command_line) {
+    startup_config_.reset();
+    return std::make_unique<TraceStartupConfig>(command_line);
   }
 
   std::unique_ptr<TraceStartupConfig> startup_config_;
@@ -416,6 +424,25 @@ TEST_F(TraceStartupConfigTest, TraceStartupEnabledSystemOwner) {
   EXPECT_TRUE(startup_config_->IsEnabled());
   EXPECT_EQ(TraceStartupConfig::SessionOwner::kSystemTracing,
             startup_config_->GetSessionOwner());
+  EXPECT_TRUE(startup_config_->ShouldAdoptBySessionOwner(
+      TraceStartupConfig::SessionOwner::kSystemTracing));
+  EXPECT_FALSE(startup_config_->ShouldAdoptBySessionOwner(
+      TraceStartupConfig::SessionOwner::kTracingController));
+}
+
+TEST_F(TraceStartupConfigTest, CommandLineAccessors) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII("type", "renderer");
+  command_line.AppendSwitchASCII(switches::kTraceProcessTrackUuid, "12345");
+  command_line.AppendSwitchASCII(switches::kTraceBufferHandle, "handle_test");
+  command_line.AppendSwitchASCII(switches::kDefaultTraceBufferSizeLimitInKb,
+                                 "1024");
+
+  auto config = CreateConfig(command_line);
+  EXPECT_EQ("renderer", config->GetProcessType());
+  EXPECT_EQ(12345u, config->GetProcessTrackUuid());
+  EXPECT_EQ("handle_test", config->GetTraceBufferHandle());
+  EXPECT_EQ("1024", config->GetDefaultTraceBufferSizeLimitInKb());
 }
 
 }  // namespace tracing

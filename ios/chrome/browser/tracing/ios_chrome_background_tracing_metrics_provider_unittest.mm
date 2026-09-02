@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tracing/ios_chrome_background_tracing_metrics_provider.h"
 
+#import <optional>
+
 #import "base/functional/callback_helpers.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
@@ -28,6 +30,7 @@ class IOSChromeBackgroundTracingMetricsProviderTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    startup_config_.emplace();
     IOSTracingController::MaybeCreateInstanceForTesting();
     IOSTracingController::GetInstance().InitializeForTesting();
 
@@ -41,6 +44,7 @@ class IOSChromeBackgroundTracingMetricsProviderTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::optional<tracing::TraceStartupConfig> startup_config_;
 };
 
 TEST_F(IOSChromeBackgroundTracingMetricsProviderTest, HasIndependentMetrics) {

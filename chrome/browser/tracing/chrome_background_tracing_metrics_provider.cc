@@ -75,7 +75,7 @@ ChromeBackgroundTracingMetricsProvider::
     ~ChromeBackgroundTracingMetricsProvider() = default;
 
 void ChromeBackgroundTracingMetricsProvider::Init() {
-  tracing::TraceStartupConfig::GetInstance().SetBackgroundStartupTracingEnabled(
+  tracing::TraceStartupConfig::SetBackgroundStartupTracingEnabled(
       tracing::kStartupFieldTracing.Get());
   SetupFieldTracingFromFieldTrial();
 

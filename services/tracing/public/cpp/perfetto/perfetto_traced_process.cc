@@ -25,6 +25,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
@@ -340,10 +341,8 @@ void PerfettoTracedProcess::DeferOrConnectProducerSocket(
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-void PerfettoTracedProcess::SetupClientLibrary(
-    bool enable_consumer,
-    bool enable_system_backend,
-    std::optional<uint64_t> process_track_uuid) {
+void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer,
+                                               bool enable_system_backend) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
@@ -354,16 +353,15 @@ void PerfettoTracedProcess::SetupClientLibrary(
   init_args.shmem_direct_patching_enabled = true;
   init_args.use_monotonic_clock = true;
   init_args.disallow_merging_with_system_tracks = true;
-  init_args.process_uuid = process_track_uuid;
+  init_args.process_uuid =
+      TraceStartupConfig::GetInstance().GetProcessTrackUuid();
 #if BUILDFLAG(IS_POSIX)
   if (enable_system_backend) {
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-    auto type =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
-    if (!type.empty()) {  // Sandboxed. Need to delegate to the browser process
-                          // using Mojo.
+    if (!TraceStartupConfig::GetInstance().GetProcessType().empty()) {
+      // Sandboxed. Need to delegate to the browser process using Mojo.
       init_args.create_socket_async = ConnectProducerSocketAsync;
     }
 #endif
@@ -399,9 +397,7 @@ void PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
 void PerfettoTracedProcess::ShouldAllowConsumerSession(
     const perfetto::TracingPolicy::ShouldAllowConsumerSessionArgs& args) {
   // Consumer connections should only be attempted in the browser process.
-  CHECK(base::CommandLine::ForCurrentProcess()
-            ->GetSwitchValueASCII("type")
-            .empty());
+  CHECK(TraceStartupConfig::GetInstance().GetProcessType().empty());
 
   // Integrated tracing backends are always allowed.
   if (args.backend_type != perfetto::BackendType::kSystemBackend) {

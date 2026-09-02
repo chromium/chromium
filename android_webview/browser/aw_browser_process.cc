@@ -6,7 +6,6 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
-#include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
@@ -14,6 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
+#include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/base_paths_posix.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
@@ -36,6 +36,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -409,6 +410,8 @@ static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
 static void JNI_AwBrowserProcess_InitTracing(JNIEnv* env,
                                              bool enable_system_backend,
                                              bool called_on_background_thread) {
+  tracing::TraceStartupConfig::InitializeFromCommandLine(
+      *base::CommandLine::ForCurrentProcess());
   tracing::InitTracing(/*enable_consumer=*/true,
                        /*will_trace_thread_restart=*/false,
                        /*enable_system_backend=*/enable_system_backend ||

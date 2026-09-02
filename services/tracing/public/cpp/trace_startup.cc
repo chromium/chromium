@@ -35,20 +35,6 @@ namespace {
 
 using base::trace_event::TraceConfig;
 
-std::optional<uint64_t> GetStartupTraceProcessTrackUuid() {
-  std::optional<uint64_t> process_track_uuid;
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kTraceProcessTrackUuid)) {
-    uint64_t parsed_uuid;
-    if (base::StringToUint64(
-            command_line->GetSwitchValueASCII(switches::kTraceProcessTrackUuid),
-            &parsed_uuid)) {
-      process_track_uuid = parsed_uuid;
-    }
-  }
-  return process_track_uuid;
-}
-
 class StartupTrackEventConfigObserver
     : public perfetto::TrackEventSessionObserver {
  public:
@@ -126,9 +112,6 @@ void InitTracing(
   g_tracing_initialized = true;
   base::TimeTicks init_start = base::TimeTicks::Now();
 
-  std::optional<uint64_t> maybe_process_track_uuid =
-      GetStartupTraceProcessTrackUuid();
-
   // Create the PerfettoTracedProcess.
   auto& traced_process =
       PerfettoTracedProcess::MaybeCreateInstance(will_trace_thread_restart);
@@ -136,8 +119,7 @@ void InitTracing(
     traced_process.SetAllowSystemTracingConsumerCallback(
         std::move(allow_system_tracing_consumer));
   }
-  traced_process.SetupClientLibrary(enable_consumer, enable_system_backend,
-                                    maybe_process_track_uuid);
+  traced_process.SetupClientLibrary(enable_consumer, enable_system_backend);
 
   RegisterTracedValueProtoWriter();
 
@@ -170,6 +152,8 @@ void InitTracingPostFeatureList(
     bool will_trace_thread_restart,
     base::RepeatingCallback<bool()> allow_system_tracing_consumer) {
   DCHECK(base::FeatureList::GetInstance());
+  TraceStartupConfig::InitializeFromCommandLine(
+      *base::CommandLine::ForCurrentProcess());
   InitTracing(enable_consumer, will_trace_thread_restart,
               ShouldSetupSystemTracing(),
               std::move(allow_system_tracing_consumer));
@@ -210,7 +194,8 @@ base::UnsafeSharedMemoryRegion CreateTracingOutputSharedMemory() {
 
 void EnableEarlyTrackRegistration() {
   perfetto::internal::TrackRegistry::InitializeInstance(
-      GetStartupTraceProcessTrackUuid());
+      TraceStartupConfig::GetProcessTrackUuid(
+          *base::CommandLine::ForCurrentProcess()));
 }
 
 }  // namespace tracing

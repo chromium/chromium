@@ -35,7 +35,7 @@ AwBackgroundTracingMetricsProvider::~AwBackgroundTracingMetricsProvider() =
     default;
 
 void AwBackgroundTracingMetricsProvider::Init() {
-  tracing::TraceStartupConfig::GetInstance().SetBackgroundStartupTracingEnabled(
+  tracing::TraceStartupConfig::SetBackgroundStartupTracingEnabled(
       tracing::kStartupFieldTracing.Get());
   SetupFieldTracingFromFieldTrial();
 

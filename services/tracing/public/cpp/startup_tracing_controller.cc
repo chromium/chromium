@@ -57,6 +57,13 @@ std::string& GetGlobalDefaultBasename() {
   return *basename;
 }
 
+StartupTracingController::ExtensionType&
+GetGlobalDefaultBasenameExtensionType() {
+  static StartupTracingController::ExtensionType extension_type =
+      StartupTracingController::ExtensionType::kNone;
+  return extension_type;
+}
+
 bool& GetGlobalBasenameForTestSet() {
   static bool basename_for_test_set = false;
   return basename_for_test_set;
@@ -455,9 +462,19 @@ base::FilePath StartupTracingController::GetOutputPath() {
     return RebasePathIfNeeded(result);
   }
 
-  std::string_view basename = GetGlobalDefaultBasename();
+  std::string basename = GetGlobalDefaultBasename();
   if (basename.empty()) {
     basename = "chrome.pftrace";
+  } else if (GetGlobalDefaultBasenameExtensionType() ==
+             ExtensionType::kAppendAppropriate) {
+    switch (tracing::TraceStartupConfig::GetInstance().GetOutputFormat()) {
+      case tracing::TraceStartupConfig::OutputFormat::kLegacyJSON:
+        basename += ".json";
+        break;
+      case tracing::TraceStartupConfig::OutputFormat::kProto:
+        basename += ".pftrace";
+        break;
+    }
   }
 
   // If a non-empty directory is specified, use it.
@@ -474,8 +491,8 @@ void StartupTracingController::StartIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kRunning);
 
-  auto& trace_startup_config = tracing::TraceStartupConfig::GetInstance();
-  if (!trace_startup_config.AttemptAdoptBySessionOwner(
+  const auto& trace_startup_config = tracing::TraceStartupConfig::GetInstance();
+  if (!trace_startup_config.ShouldAdoptBySessionOwner(
           tracing::TraceStartupConfig::SessionOwner::kTracingController)) {
     return;
   }
@@ -527,7 +544,6 @@ void StartupTracingController::OnAutoStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TracingSessionCoordinator::GetInstance().OnAutoStopped();
   state_ = State::kStopped;
-  tracing::TraceStartupConfig::GetInstance().SetDisabled();
 }
 
 // static
@@ -559,21 +575,8 @@ void StartupTracingController::OverrideDefaultBasenameForTest(
 void StartupTracingController::SetDefaultBasenameInternal(
     std::string basename,
     ExtensionType extension_type) {
-  if (!tracing::TraceStartupConfig::GetInstance().IsEnabled()) {
-    return;
-  }
-
-  if (extension_type == ExtensionType::kAppendAppropriate) {
-    switch (tracing::TraceStartupConfig::GetInstance().GetOutputFormat()) {
-      case tracing::TraceStartupConfig::OutputFormat::kLegacyJSON:
-        basename += ".json";
-        break;
-      case tracing::TraceStartupConfig::OutputFormat::kProto:
-        basename += ".pftrace";
-        break;
-    }
-  }
   GetGlobalDefaultBasename() = std::move(basename);
+  GetGlobalDefaultBasenameExtensionType() = extension_type;
 }
 
 void StartupTracingController::ShutdownAndWaitForStopIfNeeded() {
@@ -581,7 +584,6 @@ void StartupTracingController::ShutdownAndWaitForStopIfNeeded() {
   TracingSessionCoordinator::GetInstance().ShutdownAndWait();
 
   state_ = State::kStopped;
-  tracing::TraceStartupConfig::GetInstance().SetDisabled();
 }
 
 // static

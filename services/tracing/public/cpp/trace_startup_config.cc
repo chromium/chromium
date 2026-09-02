@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,6 +41,8 @@
 namespace tracing {
 
 namespace {
+
+const TraceStartupConfig* g_instance = nullptr;
 
 // Maximum trace config file size that will be loaded, in bytes.
 const size_t kTraceConfigFileSizeLimit = 64 * 1024;
@@ -89,15 +92,36 @@ constexpr std::string_view kDefaultStartupCategories[] = {
 }  // namespace
 
 // static
-TraceStartupConfig& TraceStartupConfig::GetInstance() {
-  static base::NoDestructor<TraceStartupConfig> instance;
-  return *instance;
+void TraceStartupConfig::InitializeFromCommandLine(
+    const base::CommandLine& command_line) {
+  CHECK(!g_instance) << "TraceStartupConfig already initialized";
+  // In production, `instance` holds the process-lifetime singleton. The
+  // constructor sets `g_instance = this`.
+  //
+  // In unit tests, tests can directly construct a scoped `TraceStartupConfig`
+  // without calling `InitializeFromCommandLine()`. The constructor sets
+  // `g_instance = this` for that scoped instance, and the destructor resets
+  // `g_instance = nullptr`, allowing tests to safely set up and tear down
+  // custom configurations per test case.
+  //
+  // `GetInstance()` returns `*g_instance`, providing uniform access to either
+  // the production singleton or the currently active test instance.
+  static const base::NoDestructor<TraceStartupConfig> instance(command_line);
 }
 
 // static
-void TraceStartupConfig::ResetForTesting() {
-  GetInstance().Clear();
-  GetInstance().Initialize();
+const TraceStartupConfig& TraceStartupConfig::GetInstance() {
+  CHECK(g_instance)
+      << "TraceStartupConfig has not been initialized. "
+         "Call TraceStartupConfig::InitializeFromCommandLine first.";
+  return *g_instance;
+}
+
+// static
+void TraceStartupConfig::SetBackgroundStartupTracingEnabled(bool enabled) {
+#if BUILDFLAG(IS_ANDROID)
+  base::android::SetBackgroundStartupTracingFlag(enabled);
+#endif
 }
 
 // static
@@ -139,38 +163,65 @@ perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
   return config;
 }
 
-TraceStartupConfig::TraceStartupConfig() {
-  Initialize();
+// static
+std::optional<uint64_t> TraceStartupConfig::GetProcessTrackUuid(
+    const base::CommandLine& command_line) {
+  if (command_line.HasSwitch(switches::kTraceProcessTrackUuid)) {
+    uint64_t parsed_uuid;
+    if (base::StringToUint64(
+            command_line.GetSwitchValueASCII(switches::kTraceProcessTrackUuid),
+            &parsed_uuid)) {
+      return parsed_uuid;
+    }
+  }
+  return std::nullopt;
 }
 
-void TraceStartupConfig::Initialize() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+TraceStartupConfig::TraceStartupConfig()
+    : TraceStartupConfig(base::CommandLine(base::CommandLine::NO_PROGRAM)) {}
+
+TraceStartupConfig::TraceStartupConfig(const base::CommandLine& command_line) {
+  CHECK(!g_instance) << "TraceStartupConfig already initialized";
+  g_instance = this;
+
+  process_track_uuid_ = GetProcessTrackUuid(command_line);
+
+  process_type_ = command_line.GetSwitchValueASCII("type");
+
+  if (command_line.HasSwitch(switches::kTraceBufferHandle)) {
+    trace_buffer_handle_ =
+        command_line.GetSwitchValueASCII(switches::kTraceBufferHandle);
+  }
+
+  default_trace_buffer_size_limit_in_kb_ = command_line.GetSwitchValueASCII(
+      switches::kDefaultTraceBufferSizeLimitInKb);
+
   const std::string value =
-      command_line->GetSwitchValueASCII(switches::kTraceStartupOwner);
+      command_line.GetSwitchValueASCII(switches::kTraceStartupOwner);
   if (value == "devtools") {
     session_owner_ = SessionOwner::kDevToolsTracingHandler;
   } else if (value == "system") {
     session_owner_ = SessionOwner::kSystemTracing;
   }
 
-  if (EnableFromCommandLine()) {
+  if (EnableFromCommandLine(command_line)) {
     DCHECK(IsEnabled());
-  } else if (EnableFromConfigHandle()) {
+  } else if (EnableFromConfigHandle(command_line)) {
     DCHECK(IsEnabled());
-  } else if (EnableFromJsonConfigFile()) {
+  } else if (EnableFromJsonConfigFile(command_line)) {
     DCHECK(IsEnabled());
-  } else if (EnableFromPerfettoConfig()) {
+  } else if (EnableFromPerfettoConfig(command_line)) {
     DCHECK(IsEnabled());
-  } else if (EnableFromBackgroundTracing()) {
+  } else if (EnableFromBackgroundTracing(command_line)) {
     DCHECK(IsEnabled());
     DCHECK_EQ(SessionOwner::kBackgroundTracing, session_owner_);
     CHECK(GetResultFile().empty());
   }
 
   if (IsEnabled() && session_owner_ != SessionOwner::kBackgroundTracing &&
-      command_line->HasSwitch(switches::kTraceStartupDuration)) {
+      command_line.HasSwitch(switches::kTraceStartupDuration)) {
     std::string startup_duration_str =
-        command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
+        command_line.GetSwitchValueASCII(switches::kTraceStartupDuration);
     int startup_duration_in_seconds = 0;
     if (!startup_duration_str.empty() &&
         !base::StringToInt(startup_duration_str,
@@ -186,23 +237,17 @@ void TraceStartupConfig::Initialize() {
   }
 }
 
-void TraceStartupConfig::Clear() {
-  is_enabled_ = false;
-  perfetto_config_ = perfetto::TraceConfig();
-  result_file_ = base::FilePath();
-  session_owner_ = SessionOwner::kTracingController;
-  session_adopted_ = false;
-  output_format_ = OutputFormat::kProto;
+TraceStartupConfig::~TraceStartupConfig() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
-
-TraceStartupConfig::~TraceStartupConfig() = default;
 
 bool TraceStartupConfig::IsEnabled() const {
   return is_enabled_;
 }
 
-void TraceStartupConfig::SetDisabled() {
-  is_enabled_ = false;
+bool TraceStartupConfig::ShouldAdoptBySessionOwner(SessionOwner owner) const {
+  return is_enabled_ && session_owner_ == owner;
 }
 
 perfetto::TraceConfig TraceStartupConfig::GetPerfettoConfig() const {
@@ -220,42 +265,44 @@ base::FilePath TraceStartupConfig::GetResultFile() const {
   return result_file_;
 }
 
-void TraceStartupConfig::SetBackgroundStartupTracingEnabled(bool enabled) {
-#if BUILDFLAG(IS_ANDROID)
-  base::android::SetBackgroundStartupTracingFlag(enabled);
-#endif
-}
-
 TraceStartupConfig::SessionOwner TraceStartupConfig::GetSessionOwner() const {
   DCHECK(IsEnabled());
   return session_owner_;
 }
 
-bool TraceStartupConfig::AttemptAdoptBySessionOwner(SessionOwner owner) {
-  if (IsEnabled() && GetSessionOwner() == owner && !session_adopted_) {
-    // The session can only be adopted once.
-    session_adopted_ = true;
-    return true;
-  }
-  return false;
+std::optional<uint64_t> TraceStartupConfig::GetProcessTrackUuid() const {
+  return process_track_uuid_;
 }
 
-bool TraceStartupConfig::EnableFromCommandLine() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+std::string_view TraceStartupConfig::GetProcessType() const {
+  return process_type_;
+}
 
+const std::optional<std::string>& TraceStartupConfig::GetTraceBufferHandle()
+    const {
+  return trace_buffer_handle_;
+}
+
+std::string_view TraceStartupConfig::GetDefaultTraceBufferSizeLimitInKb()
+    const {
+  return default_trace_buffer_size_limit_in_kb_;
+}
+
+bool TraceStartupConfig::EnableFromCommandLine(
+    const base::CommandLine& command_line) {
   bool tracing_enabled_from_command_line =
-      command_line->HasSwitch(switches::kTraceStartup) ||
-      command_line->HasSwitch(switches::kEnableTracing);
+      command_line.HasSwitch(switches::kTraceStartup) ||
+      command_line.HasSwitch(switches::kEnableTracing);
 
-  if (command_line->HasSwitch(switches::kTraceStartupFormat)) {
-    if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
+  if (command_line.HasSwitch(switches::kTraceStartupFormat)) {
+    if (command_line.GetSwitchValueASCII(switches::kTraceStartupFormat) ==
         "json") {
       // Default is "proto", so switch to json only if the "json" string is
       // provided.
       output_format_ = OutputFormat::kLegacyJSON;
     }
-  } else if (command_line->HasSwitch(switches::kEnableTracingFormat)) {
-    if (command_line->GetSwitchValueASCII(switches::kEnableTracingFormat) ==
+  } else if (command_line.HasSwitch(switches::kEnableTracingFormat)) {
+    if (command_line.GetSwitchValueASCII(switches::kEnableTracingFormat) ==
         "json") {
       output_format_ = OutputFormat::kLegacyJSON;
     }
@@ -269,15 +316,15 @@ bool TraceStartupConfig::EnableFromCommandLine() {
   }
 
   std::string categories;
-  if (command_line->HasSwitch(switches::kTraceStartup)) {
-    categories = command_line->GetSwitchValueASCII(switches::kTraceStartup);
+  if (command_line.HasSwitch(switches::kTraceStartup)) {
+    categories = command_line.GetSwitchValueASCII(switches::kTraceStartup);
   } else {
-    categories = command_line->GetSwitchValueASCII(switches::kEnableTracing);
+    categories = command_line.GetSwitchValueASCII(switches::kEnableTracing);
   }
 
   auto chrome_config = base::trace_event::TraceConfig(
       categories,
-      command_line->GetSwitchValueASCII(switches::kTraceStartupRecordMode));
+      command_line.GetSwitchValueASCII(switches::kTraceStartupRecordMode));
 
   if (chrome_config.IsCategoryGroupEnabled(
           base::trace_event::MemoryDumpManager::kTraceCategory)) {
@@ -293,20 +340,20 @@ bool TraceStartupConfig::EnableFromCommandLine() {
   perfetto_config_ = tracing::GetDefaultPerfettoConfig(
       chrome_config, false, output_format_ != OutputFormat::kProto, "");
 
-  result_file_ = command_line->GetSwitchValuePath(switches::kTraceStartupFile);
+  result_file_ = command_line.GetSwitchValuePath(switches::kTraceStartupFile);
 
   is_enabled_ = true;
   return true;
 }
 
-bool TraceStartupConfig::EnableFromConfigHandle() {
+bool TraceStartupConfig::EnableFromConfigHandle(
+    const base::CommandLine& command_line) {
 #if BUILDFLAG(USE_BLINK)
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kTraceConfigHandle)) {
+  if (!command_line.HasSwitch(switches::kTraceConfigHandle)) {
     return false;
   }
   auto shmem_region = base::shared_memory::ReadOnlySharedMemoryRegionFrom(
-      command_line->GetSwitchValueASCII(switches::kTraceConfigHandle));
+      command_line.GetSwitchValueASCII(switches::kTraceConfigHandle));
   CHECK(shmem_region.has_value() && shmem_region.value().IsValid())
       << "Invald memory region passed on command line.";
 
@@ -333,16 +380,16 @@ bool TraceStartupConfig::EnableFromConfigHandle() {
 #endif
 }
 
-bool TraceStartupConfig::EnableFromJsonConfigFile() {
+bool TraceStartupConfig::EnableFromJsonConfigFile(
+    const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_ANDROID)
   base::FilePath trace_config_file(kAndroidTraceConfigFile);
 #else
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kTraceConfigFile)) {
+  if (!command_line.HasSwitch(switches::kTraceConfigFile)) {
     return false;
   }
   base::FilePath trace_config_file =
-      command_line->GetSwitchValuePath(switches::kTraceConfigFile);
+      command_line.GetSwitchValuePath(switches::kTraceConfigFile);
 #endif
 
   if (trace_config_file.empty()) {
@@ -377,13 +424,13 @@ bool TraceStartupConfig::EnableFromJsonConfigFile() {
   return true;
 }
 
-bool TraceStartupConfig::EnableFromPerfettoConfig() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+bool TraceStartupConfig::EnableFromPerfettoConfig(
+    const base::CommandLine& command_line) {
   std::optional<perfetto::TraceConfig> config;
 
-  if (command_line->HasSwitch(switches::kTracePerfettoConfig)) {
+  if (command_line.HasSwitch(switches::kTracePerfettoConfig)) {
     std::string config_text =
-        command_line->GetSwitchValueASCII(switches::kTracePerfettoConfig);
+        command_line.GetSwitchValueASCII(switches::kTracePerfettoConfig);
     if (config_text.empty()) {
       DLOG(WARNING) << "--" << switches::kTracePerfettoConfig
                     << " needs a config string.";
@@ -394,9 +441,9 @@ bool TraceStartupConfig::EnableFromPerfettoConfig() {
       DLOG(WARNING) << "Failed to parse perfetto config.";
       return false;
     }
-  } else if (command_line->HasSwitch(switches::kTracePerfettoConfigFile)) {
+  } else if (command_line.HasSwitch(switches::kTracePerfettoConfigFile)) {
     base::FilePath config_file =
-        command_line->GetSwitchValuePath(switches::kTracePerfettoConfigFile);
+        command_line.GetSwitchValuePath(switches::kTracePerfettoConfigFile);
     if (config_file.empty()) {
       DLOG(WARNING) << "--" << switches::kTracePerfettoConfigFile
                     << " needs a config file path.";
@@ -434,15 +481,14 @@ bool TraceStartupConfig::EnableFromPerfettoConfig() {
   return true;
 }
 
-bool TraceStartupConfig::EnableFromBackgroundTracing() {
+bool TraceStartupConfig::EnableFromBackgroundTracing(
+    const base::CommandLine& command_line) {
   bool enabled = false;
 #if BUILDFLAG(IS_ANDROID)
   // We only enable background startup tracing in the browser process. We must
   // avoid calling JNI in the renderer process - see crbug.com/391360180.
   // kProcessType is hardcoded ("type") as we cannot depend on content/.
-  if (base::CommandLine::ForCurrentProcess()
-          ->GetSwitchValueASCII("type")
-          .empty()) {
+  if (process_type_.empty()) {
     // Tests can enable this value.
     enabled |= base::android::GetBackgroundStartupTracingFlagFromJava();
   }

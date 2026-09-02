@@ -5,6 +5,10 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_CONFIG_H_
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_CONFIG_H_
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -13,25 +17,16 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace base {
-template <typename Type>
-class NoDestructor;
+class CommandLine;
 }  // namespace base
 
-namespace content {
-class CommandlineStartupTracingTest;
-class BackgroundStartupTracingTest;
-}
-
 namespace tracing {
-class TraceStartupConfigTest;
-class TraceStartupSharedMemoryTest;
 
-// TraceStartupConfig is a singleton that contains the configurations of startup
-// tracing. One can use --trace-startup flag or, for more complicated
-// configurations, create a trace config file and use it to configure startup
-// tracing.
+// TraceStartupConfig is an immutable configuration object holding startup
+// tracing settings. It is initialized explicitly on the main thread via
+// TraceStartupConfig::InitializeFromCommandLine.
 //
-// The trace config file should be JSON formated. One example is:
+// The trace config file should be JSON formatted. One example is:
 //   {
 //     "trace_config": {
 //        "record_mode": "record-until-full",
@@ -102,9 +97,22 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
     kProto,
   };
 
-  static TraceStartupConfig& GetInstance();
+  // Explicitly initializes the global TraceStartupConfig instance from the
+  // provided CommandLine. Must be called on the main/UI thread before tracing
+  // starts.
+  static void InitializeFromCommandLine(const base::CommandLine& command_line);
 
-  static void ResetForTesting();
+  // Returns the global immutable TraceStartupConfig instance.
+  // CHECKs that an instance is active.
+  static const TraceStartupConfig& GetInstance();
+
+  // Constructs an empty TraceStartupConfig (tracing disabled) and registers it
+  // as the active instance during its lifetime.
+  TraceStartupConfig();
+
+  // Constructs a TraceStartupConfig from |command_line| and registers it as the
+  // active instance during its lifetime.
+  explicit TraceStartupConfig(const base::CommandLine& command_line);
 
   ~TraceStartupConfig();
 
@@ -114,56 +122,48 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   // Default minimum startup trace config with enough events to debug issues.
   static perfetto::TraceConfig GetDefaultBackgroundStartupConfig();
 
+  // Set the background tracing config in preferences for the next session.
+  static void SetBackgroundStartupTracingEnabled(bool enabled);
+
+  // Extracts the process track UUID from |command_line|, if present.
+  static std::optional<uint64_t> GetProcessTrackUuid(
+      const base::CommandLine& command_line);
+
   // IsEnabled() returns true if
   // - valid trace config file or trace startup flags are specified,
   // - the specified startup duration is zero or we are not passed the positive
-  //   startup duration, and
-  // - startup tracing is not stopped by other means, e.g. via DevTools
-  //   protocol.
+  //   startup duration.
   bool IsEnabled() const;
 
-  // SetDisabled() is used by the tracing controller to indicate that startup
-  // tracing is finished.
-  void SetDisabled();
+  // Returns true if startup tracing is enabled and |owner| is the configured
+  // session owner.
+  bool ShouldAdoptBySessionOwner(SessionOwner owner) const;
 
   perfetto::TraceConfig GetPerfettoConfig() const;
 
   // Returns the name of the file to write the trace result into.
   base::FilePath GetResultFile() const;
 
-  // Set the background tracing config in preferences for the next session.
-  void SetBackgroundStartupTracingEnabled(bool enabled);
-
   SessionOwner GetSessionOwner() const;
 
   OutputFormat GetOutputFormat() const;
 
-  // Called by a potential session owner to determine if it should take
-  // ownership of the startup tracing session and begin tracing. Returns |true|
-  // if the passed |owner| should adopt the session.
-  bool AttemptAdoptBySessionOwner(SessionOwner owner);
+  std::optional<uint64_t> GetProcessTrackUuid() const;
+
+  std::string_view GetProcessType() const;
+
+  const std::optional<std::string>& GetTraceBufferHandle() const;
+
+  std::string_view GetDefaultTraceBufferSizeLimitInKb() const;
 
  private:
-  // This allows constructor and destructor to be private and usable only
-  // by the NoDestructor class.
-  friend class base::NoDestructor<TraceStartupConfig>;
-  friend class content::CommandlineStartupTracingTest;
-  friend class content::BackgroundStartupTracingTest;
-  friend class ::tracing::TraceStartupConfigTest;
-  friend class ::tracing::TraceStartupSharedMemoryTest;
-
   constexpr static int kDefaultStartupDurationInSeconds = 5;
 
-  TraceStartupConfig();
-
-  void Initialize();
-  void Clear();
-
-  bool EnableFromCommandLine();
-  bool EnableFromJsonConfigFile();
-  bool EnableFromPerfettoConfig();
-  bool EnableFromConfigHandle();
-  bool EnableFromBackgroundTracing();
+  bool EnableFromCommandLine(const base::CommandLine& command_line);
+  bool EnableFromJsonConfigFile(const base::CommandLine& command_line);
+  bool EnableFromPerfettoConfig(const base::CommandLine& command_line);
+  bool EnableFromConfigHandle(const base::CommandLine& command_line);
+  bool EnableFromBackgroundTracing(const base::CommandLine& command_line);
 
   std::optional<perfetto::TraceConfig> ParseTraceJsonConfigFileContent(
       const std::string& content);
@@ -176,8 +176,12 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   perfetto::TraceConfig perfetto_config_;
   base::FilePath result_file_;
   SessionOwner session_owner_ = SessionOwner::kTracingController;
-  bool session_adopted_ = false;
   OutputFormat output_format_ = OutputFormat::kProto;
+
+  std::optional<uint64_t> process_track_uuid_;
+  std::string process_type_;
+  std::optional<std::string> trace_buffer_handle_;
+  std::string default_trace_buffer_size_limit_in_kb_;
 };
 
 }  // namespace tracing
