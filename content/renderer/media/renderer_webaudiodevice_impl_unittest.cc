@@ -5,6 +5,9 @@
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -12,17 +15,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
-#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/limits.h"
-#include "media/base/mock_audio_renderer_sink.h"
 #include "media/base/output_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
@@ -38,7 +37,7 @@ using ::testing::InSequence;
 
 class MockAudioRendererSink : public media::AudioRendererSink {
  public:
-  explicit MockAudioRendererSink() = default;
+  MockAudioRendererSink() = default;
   void Initialize(const media::AudioParameters& params,
                   media::AudioRendererSink::RenderCallback* callback) override {
     callback_ = callback;
@@ -67,17 +66,18 @@ class MockAudioRendererSink : public media::AudioRendererSink {
 constexpr int kHardwareSampleRate = 44100;
 constexpr int kHardwareBufferSize = 128;
 const blink::LocalFrameToken kFrameToken;
-const media::OutputDeviceInfo kHealthyDevice(
-    media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
-const media::OutputDeviceInfo kErrorDevice(
-    media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 
-media::AudioParameters MockGetOutputDeviceParameters(
-    const blink::LocalFrameToken& frame_token,
-    const std::string& device_id) {
-  return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::ChannelLayoutConfig::Stereo(),
-                                kHardwareSampleRate, kHardwareBufferSize);
+media::OutputDeviceInfo GetHealthyDevice() {
+  return media::OutputDeviceInfo(
+      std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::ChannelLayoutConfig::Stereo(),
+                             kHardwareSampleRate, kHardwareBufferSize));
+}
+
+media::OutputDeviceInfo GetErrorDevice() {
+  return media::OutputDeviceInfo(
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 }
 
 class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
@@ -95,42 +95,10 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
             latency_hint,
             context_sample_rate,
             callback,
-            base::BindOnce(&MockGetOutputDeviceParameters),
-            std::move(silent_sink_callback)) {}
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            std::move(silent_sink_callback),
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting()) {}
 };
-class RendererWebAudioDeviceImplConstructorParamTest
-    : public RendererWebAudioDeviceImpl {
- public:
-  RendererWebAudioDeviceImplConstructorParamTest(
-      const blink::WebAudioSinkDescriptor& sink_descriptor,
-      media::ChannelLayoutConfig layout_config,
-      const blink::WebAudioLatencyHint& latency_hint,
-      std::optional<float> context_sample_rate,
-      media::AudioRendererSink::RenderCallback* callback,
-      CreateSilentSinkCallback silent_sink_callback,
-      base::RepeatingCallback<
-          media::AudioParameters(const blink::LocalFrameToken&,
-                                 const std::string&)> device_params_cb);
-};
-
-RendererWebAudioDeviceImplConstructorParamTest::
-    RendererWebAudioDeviceImplConstructorParamTest(
-        const blink::WebAudioSinkDescriptor& sink_descriptor,
-        media::ChannelLayoutConfig layout_config,
-        const blink::WebAudioLatencyHint& latency_hint,
-        std::optional<float> context_sample_rate,
-        media::AudioRendererSink::RenderCallback* callback,
-        CreateSilentSinkCallback silent_sink_callback,
-        base::RepeatingCallback<
-            media::AudioParameters(const blink::LocalFrameToken&,
-                                   const std::string&)> device_params_cb)
-    : RendererWebAudioDeviceImpl(sink_descriptor,
-                                 layout_config,
-                                 latency_hint,
-                                 context_sample_rate,
-                                 callback,
-                                 std::move(device_params_cb),
-                                 std::move(silent_sink_callback)) {}
 
 }  // namespace
 
@@ -157,22 +125,21 @@ class RendererWebAudioDeviceImplTest
  protected:
   RendererWebAudioDeviceImplTest() {
     mock_audio_renderer_sink_ = base::MakeRefCounted<MockAudioRendererSink>();
+    ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+        .WillByDefault(testing::Return(GetHealthyDevice()));
   }
 
-
-  void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
+  void SetupDevice(blink::WebAudioLatencyHint latency_hint) {
     blink::WebAudioSinkDescriptor sink_descriptor(
         blink::WebString::FromUtf8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, media::ChannelLayoutConfig::Mono(), latencyHint,
+        sink_descriptor, media::ChannelLayoutConfig::Mono(), latency_hint,
         context_sample_rate_, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
-            // Guaranteed to be valid because |this| owns |webaudio_device_| and
+            // Guaranteed to be valid because `this` owns `webaudio_device_` and
             // so will outlive it.
             base::Unretained(this)));
-    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   void SetupDevice(media::ChannelLayoutConfig layout_config) {
@@ -185,11 +152,9 @@ class RendererWebAudioDeviceImplTest
         context_sample_rate_, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
-            // Guaranteed to be valid because |this| owns |webaudio_device_| and
+            // Guaranteed to be valid because `this` owns `webaudio_device_` and
             // so will outlive it.
             base::Unretained(this)));
-    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   void SetupDevice(blink::WebAudioSinkDescriptor sink_descriptor) {
@@ -200,11 +165,9 @@ class RendererWebAudioDeviceImplTest
         context_sample_rate_, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
-            // Guaranteed to be valid because |this| owns |webaudio_device_| and
+            // Guaranteed to be valid because `this` owns `webaudio_device_` and
             // so will outlive it.
             base::Unretained(this)));
-    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(
@@ -380,10 +343,13 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
       latency_hint, context_sample_rate, hardware_params);
   EXPECT_EQ(output_buffer_size, kMaxWebAudioBufferSize);
 }
-// When the kWebAudioRemoveAudioDestinationResampler feature is enabled and the
-// hardware reports a native minimum buffer size that exceeds Web Audio's
-// maximum limit (kMaxWebAudioBufferSize), the GetOutputBufferSize method
-// safely caps the computed buffer size at kMaxWebAudioBufferSize.
+// TODO(crbug.com/40248990): Re-enable once
+// media::AudioLatency::GetExactBufferSize removes the internal
+// DCHECK_LE(hardware_buffer_size, max_allowed_buffer_size). When the
+// kWebAudioRemoveAudioDestinationResampler feature is enabled and the hardware
+// reports a native minimum buffer size that exceeds Web Audio's maximum limit
+// (kMaxWebAudioBufferSize), the GetOutputBufferSize method safely caps the
+// computed buffer size at kMaxWebAudioBufferSize.
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        DISABLED_ExactLatency_HighHardwareBufferSize_CapsAtMaxBufferSize) {
   feature_list_.InitAndEnableFeature(
@@ -422,7 +388,7 @@ TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
 
     SetupDevice({layout, ch});
     media::AudioParameters sink_params =
-        webaudio_device_->get_sink_params_for_testing();
+        webaudio_device_->GetSinkParamsForTesting();
     EXPECT_TRUE(sink_params.IsValid());
     EXPECT_EQ(layout, sink_params.channel_layout());
     EXPECT_EQ(ch, sink_params.channels());
@@ -578,9 +544,6 @@ TEST_F(RendererWebAudioDeviceImplTest,
   {
     InSequence s;
 
-    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
-        .Times(1)
-        .WillOnce(testing::Return(kHealthyDevice));
     EXPECT_CALL(*mock_audio_renderer_sink_, Start).Times(1);
     EXPECT_CALL(*mock_audio_renderer_sink_, Play).Times(1);
     EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
@@ -590,44 +553,51 @@ TEST_F(RendererWebAudioDeviceImplTest,
 
   // `sink_` should be created after OUTPUT_DEVICE_STATUS_OK status return from
   // `CreateAndGetSinkStatus` call.
-  EXPECT_EQ(webaudio_device_->sink_, nullptr);
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
   media::OutputDeviceStatus status =
       webaudio_device_->MaybeCreateSinkAndGetStatus();
-  EXPECT_NE(webaudio_device_->sink_, nullptr);
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
 
   // Healthy device should return OUTPUT_DEVICE_STATUS_OK.
-  EXPECT_EQ(status, media ::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
+  EXPECT_EQ(status, media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
   webaudio_device_->Start();
   webaudio_device_->Stop();
 }
 
 TEST_F(RendererWebAudioDeviceImplTest,
        CreateSinkAndGetDeviceStatus_ErrorDevice) {
-  {
-    InSequence s;
-
-    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
-        .Times(1)
-        .WillOnce(testing::Return(kErrorDevice));
-    EXPECT_CALL(*mock_audio_renderer_sink_, Start).Times(0);
-    EXPECT_CALL(*mock_audio_renderer_sink_, Play).Times(0);
-    // Stop() is necessary before destruction per AudioRendererSink contract.
-    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
-  }
+  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+      .WillRepeatedly(testing::Return(GetErrorDevice()));
+  EXPECT_CALL(*mock_audio_renderer_sink_, Start).Times(0);
+  EXPECT_CALL(*mock_audio_renderer_sink_, Play).Times(0);
+  // Stop() is necessary before destruction per AudioRendererSink contract.
+  EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(testing::AtLeast(1));
 
   SetupDevice(media::ChannelLayoutConfig::Stereo());
 
-  // `sink_` should be remain as nullptr after
-  // OUTPUT_DEVICE_STATUS_ERROR_INTERNAL status return from
-  // `CreateAndGetSinkStatus` call.
-  EXPECT_EQ(webaudio_device_->sink_, nullptr);
+  // `sink_` should remain as nullptr after
+  // OUTPUT_DEVICE_STATUS_ERROR_INTERNAL status return from constructor /
+  // `MaybeCreateSinkAndGetStatus` call.
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
   media::OutputDeviceStatus status =
       webaudio_device_->MaybeCreateSinkAndGetStatus();
-  EXPECT_EQ(webaudio_device_->sink_, nullptr);
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
 
   // Error device should return OUTPUT_DEVICE_STATUS_ERROR_INTERNAL.
   EXPECT_EQ(status,
-            media ::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       MaybeCreateSinkAndGetStatus_ErrorDevice) {
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillOnce(testing::Return(GetErrorDevice()));
+  media::OutputDeviceStatus status =
+      webaudio_device_->MaybeCreateSinkAndGetStatus();
+  EXPECT_EQ(status,
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
 }
 
 TEST_F(RendererWebAudioDeviceImplTest,
@@ -648,13 +618,13 @@ TEST_F(RendererWebAudioDeviceImplTest,
 
   // `sink_` should be created after OUTPUT_DEVICE_STATUS_OK status return from
   // `CreateAndGetSinkStatus` call.
-  EXPECT_EQ(webaudio_device_->sink_, nullptr);
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
   media::OutputDeviceStatus status =
       webaudio_device_->MaybeCreateSinkAndGetStatus();
-  EXPECT_NE(webaudio_device_->sink_, nullptr);
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
 
   // Silent sink should return OUTPUT_DEVICE_STATUS_OK.
-  EXPECT_EQ(status, media ::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
+  EXPECT_EQ(status, media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
   webaudio_device_->Start();
   webaudio_device_->Stop();
 }
@@ -674,28 +644,18 @@ TEST_F(RendererWebAudioDeviceImplTest, ValidDeviceParameters) {
 
 TEST_F(RendererWebAudioDeviceImplTest,
        HandleInvalidOriginalSinkParamsInConstructor) {
-  media::AudioParameters default_params;
-  EXPECT_FALSE(default_params.IsValid());
-  // Test for handling invalid original sink parameters in constructor.
-  auto mock_device_params_cb =
-      base::BindRepeating([](const blink::LocalFrameToken&,
-                             const std::string&) -> media::AudioParameters {
-        return media::AudioParameters();
-      });
-  blink::WebAudioSinkDescriptor sink_descriptor(
-      blink::WebString::FromUtf8(std::string()), kFrameToken);
+  media::AudioParameters invalid_params;
+  EXPECT_FALSE(invalid_params.IsValid());
 
-  RendererWebAudioDeviceImplConstructorParamTest device_under_test(
-      sink_descriptor, media::ChannelLayoutConfig::Stereo(),
-      blink::WebAudioLatencyHint(
-          blink::WebAudioLatencyHint::kCategoryInteractive),
-      std::nullopt, this,
-      base::BindRepeating(&RendererWebAudioDeviceImplTest::CreateMockSilentSink,
-                          base::Unretained(this)),
-      mock_device_params_cb);
+  // Test for handling invalid original sink parameters in constructor.
+  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillOnce(testing::Return(media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_OK, invalid_params)));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
 
   const media::AudioParameters& params =
-      device_under_test.GetOriginalSinkParamsForTesting();
+      webaudio_device_->GetOriginalSinkParamsForTesting();
   EXPECT_EQ(params.format(), media::AudioParameters::AUDIO_FAKE);
   EXPECT_EQ(params.sample_rate(), 48000);
   EXPECT_EQ(params.frames_per_buffer(), 480);
