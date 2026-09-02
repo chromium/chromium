@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -54,6 +55,9 @@ void OmniboxPopupHandler::ShowContextMenu(const gfx::Point& point) {
   }
 }
 
+// TODO(crbug.com/553005514): Add traces for popup dismissal (CloseUI/Hide) and
+// in-flight query cancellation when the Omnibox is closed rapidly or queries
+// arrive from inactive tabs.
 void OmniboxPopupHandler::CloseUI() {
   if (embedder_) {
     // NOTE: `embedder_->CloseUI()` transitions the popup state to `kNone`,
@@ -197,6 +201,10 @@ void OmniboxPopupHandler::SetInputState(
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
   current_sequence_number_++;
+
+  TRACE_EVENT2("omnibox", "OmniboxPopupHandler::SetInputState",
+               "sequence_number", current_sequence_number_, "is_focused",
+               is_focused);
 
   auto state = omnibox_popup::mojom::OmniboxInputState::New();
   state->sequence_number = current_sequence_number_;

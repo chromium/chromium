@@ -7,6 +7,7 @@ import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './full_app.html.js';
@@ -37,6 +38,11 @@ export class OmniboxFullAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    performance.mark('OmniboxFullAppElement::firstUpdated');
   }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
+import {markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SearchboxUtilsTest', () => {
@@ -73,6 +73,17 @@ suite('SearchboxUtilsTest', () => {
       assertEquals(
           'alert(1)',
           sanitizeTextForPaste('  javascript:javascript:alert(1)\n'));
+    });
+  });
+
+  suite('markOnce', () => {
+    test('only logs mark once', () => {
+      const markName = 'test-mark';
+
+      markOnce(markName);
+      markOnce(markName);
+
+      assertEquals(1, performance.getEntriesByName(markName).length);
     });
   });
 });

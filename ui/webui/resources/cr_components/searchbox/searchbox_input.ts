@@ -17,6 +17,7 @@ import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_input.css.js';
 import {getHtml} from './searchbox_input.html.js';
+import {markOnce} from './utils.js';
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -153,7 +154,11 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   setInputText(text: string) {
+    // TODO(crbug.com/553005514): Investigate a way to track the rendering time
+    // and modify these markings accordingly.
+    markOnce('SearchboxInputElement::setInputText:Start');
     this.onSetInputText_(text);
+    markOnce('SearchboxInputElement::setInputText:End');
   }
 
   setInput(update: InputUpdate) {
