@@ -10,9 +10,7 @@ import '../../services/tenji/sandboxed_tenji_wrapper.js';
 import {ArrayBufferUtil} from '/common/array_buffer_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Msgs} from '../../common/msgs.js';
 import {OffscreenBridge} from '../../common/offscreen_bridge.js';
-import {Output} from '../output/output.js';
 
 import {BackTranslateCallback, BrailleTranslator, TranslateCallback} from './braille_translator.js';
 import {CompositionCandidateProvider} from './composition_candidate_provider.js';
@@ -22,7 +20,7 @@ type QueuedRequest = {
   type: 'translate',
   text: string,
   callback: TranslateCallback
-};
+}|{type: 'backTranslate', cells: ArrayBuffer, callback: BackTranslateCallback};
 
 export class TenjiTranslator implements BrailleTranslator {
   /**
@@ -34,7 +32,6 @@ export class TenjiTranslator implements BrailleTranslator {
   private static initPromise_: Promise<boolean>|null = null;
   private static pendingRequest_ = false;
   private static requestQueue_: QueuedRequest[] = [];
-  private static hasAnnouncedBackTranslateUnavailable_ = false;
   private static compositionCandidateProvider_: CompositionCandidateProvider|
       null = null;
 
@@ -129,22 +126,17 @@ export class TenjiTranslator implements BrailleTranslator {
     }
   }
 
-  backTranslate(_cells: ArrayBuffer, callback: BackTranslateCallback): void {
-    // TODO(crbug.com/510816368): Back translation is not useful without full
-    // IME support. Disable until that is available.
-    TenjiTranslator.notifyBackTranslateUnavailable_();
-    callback(null);
-  }
-
-  private static notifyBackTranslateUnavailable_(): void {
-    if (TenjiTranslator.hasAnnouncedBackTranslateUnavailable_) {
+  backTranslate(cells: ArrayBuffer, callback: BackTranslateCallback): void {
+    if (!TenjiTranslator.initPromise_) {
+      callback(null);
       return;
     }
 
-    TenjiTranslator.hasAnnouncedBackTranslateUnavailable_ = true;
-    new Output()
-        .withString(Msgs.getMsg('tenji_back_translate_unavailable'))
-        .go();
+    TenjiTranslator.requestQueue_.push(
+        {type: 'backTranslate', cells, callback});
+    if (!TenjiTranslator.pendingRequest_) {
+      void TenjiTranslator.processNextRequest_();
+    }
   }
 
   private static async processNextRequest_(): Promise<void> {
@@ -164,31 +156,49 @@ export class TenjiTranslator implements BrailleTranslator {
     TenjiTranslator.pendingRequest_ = true;
 
     try {
-      const result = await OffscreenBridge.tenjiTranslate(req.text);
-      if (!result || !result.value) {
-        req.callback(new ArrayBuffer(0), [], []);
-      } else {
-        const tenjiString = result.value;
-        const bytes = new Uint8Array(tenjiString.length);
-        for (let i = 0; i < tenjiString.length; i++) {
-          // Get the character code and subtract the Braille base to get
-          // the cell value, which is expected to be just the bitmask.
-          // See `BrailleCaptionsBackground.setContent()` and [1] for
-          // more details.
-          // The Tenji library passes newlines through unmodified which
-          // could result in characters outside the Braille Unicode block.
-          // Map any character outside the Braille Unicode block
-          // (U+2800–U+28FF) to 0 (empty cell).
-          // [1] https://www.unicode.org/charts/PDF/U2800.pdf
-          const offset =
-              tenjiString.charCodeAt(i) - BRAILLE_UNICODE_BLOCK_START;
-          bytes[i] = (offset >= 0 && offset <= 0xFF) ? offset : 0;
+      if (req.type === 'translate') {
+        const result = await OffscreenBridge.tenjiTranslate(req.text);
+        if (!result || !result.value) {
+          req.callback(new ArrayBuffer(0), [], []);
+        } else {
+          const tenjiString = result.value;
+          const bytes = new Uint8Array(tenjiString.length);
+          for (let i = 0; i < tenjiString.length; i++) {
+            // Get the character code and subtract the Braille base to get
+            // the cell value, which is expected to be just the bitmask.
+            // See `BrailleCaptionsBackground.setContent()` and [1] for
+            // more details.
+            // The Tenji library passes newlines through unmodified which
+            // could result in characters outside the Braille Unicode block.
+            // Map any character outside the Braille Unicode block
+            // (U+2800–U+28FF) to 0 (empty cell).
+            // [1] https://www.unicode.org/charts/PDF/U2800.pdf
+            const offset =
+                tenjiString.charCodeAt(i) - BRAILLE_UNICODE_BLOCK_START;
+            bytes[i] = (offset >= 0 && offset <= 0xFF) ? offset : 0;
+          }
+          req.callback(
+              bytes.buffer, result.textToBraille, result.brailleToText);
         }
-        req.callback(bytes.buffer, result.textToBraille, result.brailleToText);
+      } else {
+        const cellBytes = new Uint8Array(req.cells);
+        const tenjiChars: string[] = [];
+        for (let i = 0; i < cellBytes.length; i++) {
+          tenjiChars.push(
+              String.fromCharCode(cellBytes[i] + BRAILLE_UNICODE_BLOCK_START));
+        }
+        const tenjiString = tenjiChars.join('');
+        const result = await OffscreenBridge.tenjiBackTranslate(tenjiString);
+        req.callback(result);
       }
     } catch (error) {
-      console.error('Error during tenji translation: ' + error);
-      req.callback(new ArrayBuffer(0), [], []);
+      if (req.type === 'translate') {
+        console.error('Error during tenji translation: ' + error);
+        req.callback(new ArrayBuffer(0), [], []);
+      } else {
+        console.error('Error during tenji back translation: ' + error);
+        req.callback(null);
+      }
     }
 
     TenjiTranslator.pendingRequest_ = false;
@@ -202,7 +212,11 @@ export class TenjiTranslator implements BrailleTranslator {
         return;
       }
 
-      req.callback(new ArrayBuffer(0), [], []);
+      if (req.type === 'translate') {
+        req.callback(new ArrayBuffer(0), [], []);
+      } else {
+        req.callback(null);
+      }
     }
   }
 }

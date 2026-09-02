@@ -18,12 +18,14 @@ ChromeVoxTenjiTranslatorTest = class extends ChromeVoxE2ETest {
     this.savedInstallTenji_ = chrome.accessibilityPrivate.installTenji;
     this.savedTenjiStartWorker_ = OffscreenBridge.tenjiStartWorker;
     this.savedTenjiTranslate_ = OffscreenBridge.tenjiTranslate;
+    this.savedTenjiBackTranslate_ = OffscreenBridge.tenjiBackTranslate;
   }
 
   tearDown() {
     chrome.accessibilityPrivate.installTenji = this.savedInstallTenji_;
     OffscreenBridge.tenjiStartWorker = this.savedTenjiStartWorker_;
     OffscreenBridge.tenjiTranslate = this.savedTenjiTranslate_;
+    OffscreenBridge.tenjiBackTranslate = this.savedTenjiBackTranslate_;
     this.resetState_();
     super.tearDown();
   }
@@ -32,7 +34,6 @@ ChromeVoxTenjiTranslatorTest = class extends ChromeVoxE2ETest {
     TenjiTranslator['pendingRequest_'] = false;
     TenjiTranslator['requestQueue_'] = [];
     TenjiTranslator['initPromise_'] = null;
-    TenjiTranslator['hasAnnouncedBackTranslateUnavailable_'] = false;
   }
 
   /** Bypasses initialization and marks the translator as ready. */
@@ -172,21 +173,55 @@ AX_TEST_F(
       });
     });
 
-// TODO(crbug.com/510816368): Back translation is disabled until full IME
-// support is available. Verify the stub immediately returns null.
 AX_TEST_F(
-    'ChromeVoxTenjiTranslatorTest', 'BackTranslateReturnsNull',
+    'ChromeVoxTenjiTranslatorTest', 'BackTranslateBasic', async function() {
+      this.setInitialized_();
+      OffscreenBridge.tenjiBackTranslate = (_tenjiString) =>
+          Promise.resolve('あいう');
+
+      await new Promise((resolve) => {
+        this.translator_.backTranslate(
+            new Uint8Array([1, 3, 7]).buffer, (text) => {
+              assertEquals('あいう', text);
+              resolve();
+            });
+      });
+    });
+
+AX_TEST_F(
+    'ChromeVoxTenjiTranslatorTest', 'BackTranslateNullResultReturnsNull',
     async function() {
       this.setInitialized_();
-      const messages = [];
-      const savedWithString = Output.prototype.withString;
-      const savedGo = Output.prototype.go;
-      Output.prototype.withString = function(text) {
-        messages.push(text);
-        return this;
-      };
-      Output.prototype.go = function() {};
+      OffscreenBridge.tenjiBackTranslate = (_tenjiString) =>
+          Promise.resolve(null);
 
+      await new Promise((resolve) => {
+        this.translator_.backTranslate(new Uint8Array([1]).buffer, (text) => {
+          assertEquals(null, text);
+          resolve();
+        });
+      });
+    });
+
+AX_TEST_F(
+    'ChromeVoxTenjiTranslatorTest', 'BackTranslateRejectionReturnsNull',
+    async function() {
+      this.setInitialized_();
+      OffscreenBridge.tenjiBackTranslate = (_tenjiString) =>
+          Promise.reject(new Error('back translation failed'));
+
+      await new Promise((resolve) => {
+        this.translator_.backTranslate(new Uint8Array([1]).buffer, (text) => {
+          assertEquals(null, text);
+          resolve();
+        });
+      });
+    });
+
+AX_TEST_F(
+    'ChromeVoxTenjiTranslatorTest', 'BackTranslatePreInitReturnsNull',
+    async function() {
+      // initPromise_ is null (not initialized)
       await new Promise((resolve) => {
         this.translator_.backTranslate(
             new Uint8Array([1, 3]).buffer, (text) => {
@@ -195,40 +230,31 @@ AX_TEST_F(
             });
       });
 
-      Output.prototype.withString = savedWithString;
-      Output.prototype.go = savedGo;
-      assertEquals(1, messages.length);
-      assertEquals(
-          Msgs.getMsg('tenji_back_translate_unavailable'), messages[0]);
+      assertEquals(0, TenjiTranslator['requestQueue_'].length);
     });
 
 AX_TEST_F(
-    'ChromeVoxTenjiTranslatorTest', 'BackTranslateAnnouncesOnlyOnce',
+    'ChromeVoxTenjiTranslatorTest', 'BackTranslateCellsConvertedToTenjiChars',
     async function() {
       this.setInitialized_();
-      const messages = [];
-      const savedWithString = Output.prototype.withString;
-      const savedGo = Output.prototype.go;
-      Output.prototype.withString = function(text) {
-        messages.push(text);
-        return this;
+      let capturedInput = null;
+      OffscreenBridge.tenjiBackTranslate = (tenjiString) => {
+        capturedInput = tenjiString;
+        return Promise.resolve('か');
       };
-      Output.prototype.go = function() {};
 
       await new Promise((resolve) => {
-        this.translator_.backTranslate(new ArrayBuffer(1), (_text) => {
-          resolve();
-        });
-      });
-      await new Promise((resolve) => {
-        this.translator_.backTranslate(new ArrayBuffer(1), (_text) => {
-          resolve();
-        });
+        this.translator_.backTranslate(
+            new Uint8Array([1, 0xFF]).buffer, (_text) => {
+              resolve();
+            });
       });
 
-      Output.prototype.withString = savedWithString;
-      Output.prototype.go = savedGo;
-      assertEquals(1, messages.length);
+      // Each byte should be offset by BRAILLE_UNICODE_BLOCK_START.
+      assertEquals(
+          String.fromCharCode(BRAILLE_UNICODE_BLOCK_START + 1) +
+              String.fromCharCode(BRAILLE_UNICODE_BLOCK_START + 0xFF),
+          capturedInput);
     });
 
 AX_TEST_F(
