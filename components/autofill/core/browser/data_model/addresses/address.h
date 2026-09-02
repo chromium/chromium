@@ -57,7 +57,9 @@ class Address : public FormGroup {
   ~Address() override;
 
   Address(const Address& address);
+  Address(Address&& address) noexcept;
   Address& operator=(const Address& address);
+  Address& operator=(Address&& address) noexcept;
   bool operator==(const Address& other) const;
 
   // FormGroup:

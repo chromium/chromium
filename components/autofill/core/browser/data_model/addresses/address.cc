@@ -47,6 +47,8 @@ Address::Address(const Address& address) {
   *this = address;
 }
 
+Address::Address(Address&& other) noexcept = default;
+
 Address& Address::operator=(const Address& address) {
   if (this == &address) {
     return *this;
@@ -59,6 +61,8 @@ Address& Address::operator=(const Address& address) {
   is_legacy_address_ = address.IsLegacyAddress();
   return *this;
 }
+
+Address& Address::operator=(Address&& other) noexcept = default;
 
 bool Address::operator==(const Address& other) const {
   if (this == &other)

@@ -721,72 +721,70 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
 AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     const AutofillProfile& profile,
     std::string_view app_locale) {
+  using enum ProfileMergeResult;
   // TODO(crbug.com/453945181) Move this CHECK to a more suitable place.
   CHECK(record_type() != RecordType::kAccountNameEmail ||
         profile.record_type() != RecordType::kAccountNameEmail);
 
   if (!data_util::HaveNonConflictingCountryCodes(
           GetAddressCountryCode(), profile.GetAddressCountryCode())) {
-    return ProfileMergeResult::kMergeFailed;
+    return kMergeFailed;
   }
 
   // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
   // it conforms to the other infos. The check logic should be embedded inside
-  // the merge method.
+  // the merge method and the method should be returning
+  // `std::optional<NameInfo>` instead of taking a reference to a `NameInfo`
+  // object as a parameter.
   if (!NameInfo::AreNamesMergeable(profile.GetNameInfo(),
                                    profile.GetAddressCountryCode(),
                                    GetNameInfo(), GetAddressCountryCode()) ||
       !NameInfo::AreAlternativeNamesMergeable(
           profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
           GetAddressCountryCode())) {
-    return ProfileMergeResult::kMergeFailed;
+    return kMergeFailed;
   }
-
-  AutofillProfileComparator comparator(app_locale);
-
-  NameInfo name(
-      /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
-      AddressCountryCode("JP"));
-  Address address(profile.GetAddressCountryCode());
-
-  DVLOG(1) << "Merging profiles:\nSource = " << profile << "\nDest = " << *this;
-
   // The comparator's merge operations are biased to prefer the data in the
   // first profile parameter when the data is the same modulo case. We expect
   // the caller to pass the incoming profile in this position to prefer
   // accepting updates instead of preserving the original data. I.e., passing
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
+  AutofillProfileComparator comparator(app_locale);
+
   std::optional<EmailInfo> merged_email =
       comparator.MergeEmailAddresses(profile, *this);
   if (!merged_email.has_value()) {
-    return ProfileMergeResult::kMergeFailed;
+    return kMergeFailed;
   }
 
   std::optional<CompanyInfo> merged_company =
       comparator.MergeCompanyNames(profile, *this);
   if (!merged_company.has_value()) {
-    return ProfileMergeResult::kMergeFailed;
+    return kMergeFailed;
   }
 
   std::optional<PhoneNumber> merged_phone =
       comparator.MergePhoneNumbers(profile, *this);
   if (!merged_phone.has_value()) {
-    return ProfileMergeResult::kMergeFailed;
+    return kMergeFailed;
   }
-  // TODO(crbug.com/453945181): Simplify this logic by returning merged
-  // objects instead of passing them by reference.
-  // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
-  // it conforms to the other infos. The check logic should be embedded inside
-  // the merge method.
+
+  std::optional<Address> merged_address =
+      comparator.MergeAddresses(profile, *this);
+  if (!merged_address.has_value()) {
+    return kMergeFailed;
+  }
+
+  NameInfo merged_name(
+      /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
+      AddressCountryCode("JP"));
   if (!NameInfo::MergeNames(
           profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
           GetAddressCountryCode(),
           usage_history().use_date() < profile.usage_history().use_date(),
-          name) ||
-      comparator.MergeAddresses(profile, *this, address) ==
-          ProfileMergeResult::kMergeFailed) {
-    return ProfileMergeResult::kMergeFailed;
+          merged_name)) {
+    return kMergeFailed;
   }
 
   set_language_code(profile.language_code());
@@ -799,9 +797,9 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
 
   bool modified = false;
 
-  if (name_ != name) {
-    MergeFormGroupTokenQuality(name, profile);
-    name_ = name;
+  if (name_ != merged_name) {
+    MergeFormGroupTokenQuality(merged_name, profile);
+    name_ = merged_name;
     modified = true;
   }
 
@@ -823,14 +821,14 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     modified = true;
   }
 
-  if (address_ != address) {
-    MergeFormGroupTokenQuality(address, profile);
-    address_ = address;
+  if (address_ != merged_address) {
+    MergeFormGroupTokenQuality(*merged_address, profile);
+    address_ = *std::move(merged_address);
     modified = true;
   }
 
-  return modified ? ProfileMergeResult::kMergeSucceededWithModification
-                  : ProfileMergeResult::kMergeSucceededWithoutModification;
+  return modified ? kMergeSucceededWithModification
+                  : kMergeSucceededWithoutModification;
 }
 
 void AutofillProfile::MergeFormGroupTokenQuality(

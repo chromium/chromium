@@ -13,6 +13,7 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/company_info.h"
@@ -21,8 +22,6 @@
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
-
-class Address;
 
 struct ProfileValueDifference {
   // The type of the field that is different.
@@ -119,22 +118,19 @@ class AutofillProfileComparator {
       const AutofillProfile& new_profile,
       const AutofillProfile& old_profile) const;
 
-  // Populates `address` with the result of merging the addresses in
-  // `new_profile` and `old_profile`. Returns the merge result.
+  // Merges the addresses in `new_profile` and `old_profile` if the merge
+  // succeeds. Returns an `Address` on success or `std::nullopt` if the merge
+  // fails.
   //
   // Heuristic: Populate the missing parts of each address from the other.
   // Prefer the abbreviated state, the shorter zip code and routing code, the
   // more verbose city, dependent locality, and address.
   //
-  // If one of the profiles is `kAccountNameEmail`, sets `address` to the
-  // address tree of the other profile.
-  //
-  // TODO(crbug.com/453945181): Return a newly created `Address` instead of
-  // modifying `address`.
-  AutofillProfile::ProfileMergeResult MergeAddresses(
+  // If one of the profiles is `kAccountNameEmail`, uses the address tree of the
+  // other profile.
+  std::optional<Address> MergeAddresses(
       const AutofillProfile& new_profile,
-      const AutofillProfile& old_profile,
-      Address& address) const;
+      const AutofillProfile& old_profile) const;
 
   // Returns the subset of setting-visible types whose values in `a` and `b` are
   // non-mergeable. This means that `a` and `b` become mergeable, if the values

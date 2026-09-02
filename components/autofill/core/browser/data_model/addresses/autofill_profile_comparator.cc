@@ -340,43 +340,35 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   return create_phone_number(base::UTF8ToUTF16(new_number));
 }
 
-AutofillProfile::ProfileMergeResult AutofillProfileComparator::MergeAddresses(
+std::optional<Address> AutofillProfileComparator::MergeAddresses(
     const AutofillProfile& new_profile,
-    const AutofillProfile& old_profile,
-    Address& address) const {
-  using enum AutofillProfile::ProfileMergeResult;
-  // If one of the profiles is `kAccountNameEmail` profile, sets `address` to
-  // address tree of the other profile.
+    const AutofillProfile& old_profile) const {
+  // If one of the profiles is `kAccountNameEmail` profile, uses the address
+  // tree of the other profile.
   if (new_profile.record_type() ==
       AutofillProfile::RecordType::kAccountNameEmail) {
-    address = old_profile.GetAddress();
-    return kMergeSucceededWithoutModification;
+    return old_profile.GetAddress();
   }
   if (old_profile.record_type() ==
       AutofillProfile::RecordType::kAccountNameEmail) {
-    address = new_profile.GetAddress();
-    return address == old_profile.GetAddress()
-               ? kMergeSucceededWithoutModification
-               : kMergeSucceededWithModification;
+    return new_profile.GetAddress();
   }
 
   // TODO(crbug.com/552327712): Explore if the check logic can be embedded into
   // the merge method.
   if (!old_profile.GetAddress().IsStructuredAddressMergeable(
           new_profile.GetAddress())) {
-    return kMergeFailed;
+    return std::nullopt;
   }
 
-  address = old_profile.GetAddress();
+  Address address = old_profile.GetAddress();
   if (!address.MergeStructuredAddress(
           new_profile.GetAddress(),
           old_profile.usage_history().use_date() <
               new_profile.usage_history().use_date())) {
-    return kMergeFailed;
+    return std::nullopt;
   }
-  return address == old_profile.GetAddress()
-             ? kMergeSucceededWithoutModification
-             : kMergeSucceededWithModification;
+  return address;
 }
 
 std::optional<FieldTypeSet>

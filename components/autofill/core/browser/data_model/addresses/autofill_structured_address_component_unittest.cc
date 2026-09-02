@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_hierarchies.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component_store.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_test_util.h"
@@ -2010,6 +2011,43 @@ INSTANTIATE_TEST_SUITE_P(
     PerCountryAutofillStructuredAddressAddressComponentTest,
     testing::Combine(testing::ValuesIn(GetAllAutofillCountriesWithHierarchy()),
                      testing::Bool()));
+
+// Tests that move-assigning an `AddressComponentsStore` to itself does not wipe
+// its component tree.
+TEST(AddressComponentsStoreTest, SelfMoveAssignment) {
+  AddressComponentsStore store =
+      i18n_model_definition::CreateAddressComponentModel(
+          AddressCountryCode("US"));
+  ASSERT_NE(store.Root(), nullptr);
+  ASSERT_FALSE(store.Root()->Subcomponents().empty());
+  AddressComponent* child = store.Root()->Subcomponents().front();
+  ASSERT_NE(child, nullptr);
+  EXPECT_EQ(child->Parent(), store.Root());
+
+  // Alias prevents -Wself-move while still exercising self move-assignment.
+  AddressComponentsStore& store_ref = store;
+  store = std::move(store_ref);
+
+  EXPECT_NE(store.Root(), nullptr);
+  EXPECT_FALSE(store.Root()->Subcomponents().empty());
+  EXPECT_EQ(child->Parent(), store.Root());
+}
+
+// Tests that move-assigning an `AddressComponentsStore` transfers the
+// components properly.
+TEST(AddressComponentsStoreTest, MoveAssignment) {
+  AddressComponentsStore store1 =
+      i18n_model_definition::CreateAddressComponentModel(
+          AddressCountryCode("US"));
+  AddressComponentsStore store2 =
+      i18n_model_definition::CreateAddressComponentModel(
+          AddressCountryCode("US"));
+
+  store1 = std::move(store2);
+
+  EXPECT_NE(store1.Root(), nullptr);
+  EXPECT_FALSE(store1.Root()->Subcomponents().empty());
+}
 
 }  // namespace
 }  // namespace autofill

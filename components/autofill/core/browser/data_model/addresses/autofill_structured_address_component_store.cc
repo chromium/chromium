@@ -38,6 +38,9 @@ AddressComponent* AddressComponentsStore::GetNodeForType(
 
 AddressComponentsStore& AddressComponentsStore::operator=(
     AddressComponentsStore&& other) {
+  if (this == &other) {
+    return *this;
+  }
   WipeRawPtrsForDestruction();
   components_ = std::move(other.components_);
   return *this;
