@@ -46,6 +46,7 @@ class MockRenderWidgetHostDelegate
   }
 
   void CreateInputEventRouter();
+  void ResetInputEventRouter() { rwh_input_event_router_.reset(); }
 
   void FlushInkRenderer() { delegated_ink_point_renderer_.FlushForTesting(); }
 

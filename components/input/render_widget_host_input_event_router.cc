@@ -10,9 +10,11 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -94,9 +96,7 @@ class TouchEventAckQueue {
   };
 
   explicit TouchEventAckQueue(RenderWidgetHostInputEventRouter* client)
-      : client_(client) {
-    DCHECK(client_);
-  }
+      : client_(CHECK_DEREF(client)) {}
 
   void Add(const TouchEventWithLatencyInfo& touch_event,
            RenderWidgetHostViewInput* target_view,
@@ -122,7 +122,7 @@ class TouchEventAckQueue {
   void ProcessAckedTouchEvents();
 
   std::deque<AckData> ack_queue_;
-  raw_ptr<RenderWidgetHostInputEventRouter> client_;
+  const raw_ref<RenderWidgetHostInputEventRouter> client_;
 };
 
 void TouchEventAckQueue::Add(
@@ -194,9 +194,6 @@ void TouchEventAckQueue::ProcessAckedTouchEvents() {
 
   while (!ack_queue_.empty() && ack_queue_.front().touch_event_ack_status ==
                                     TouchEventAckStatus::TouchEventAcked) {
-    if (!weak_client) {
-      return;
-    }
     // Extract values and bare pointers to avoid holding raw_ptrs on the stack
     // across synchronous view destruction boundaries.
     TouchEventWithLatencyInfo touch_event = ack_queue_.front().touch_event;
@@ -210,12 +207,18 @@ void TouchEventAckQueue::ProcessAckedTouchEvents() {
       handled_by_emulator = weak_touch_emulator->HandleTouchEventAck(
           touch_event.event, ack_result);
     }
+    if (!weak_client) {
+      return;
+    }
 
-    if (!handled_by_emulator && weak_client) {
+    if (!handled_by_emulator) {
       if (client_->IsViewInMap(root_view) || client_->ViewMapIsEmpty()) {
         // Forward acked event and result to the root view associated with the
         // event. The view map is only empty for AndroidWebView.
         root_view->ProcessAckedTouchEvent(touch_event, ack_result);
+        if (!weak_client) {
+          return;
+        }
       }
     }
   }
