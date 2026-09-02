@@ -676,8 +676,8 @@ CustomDlgColors::~CustomDlgColors() = default;
 
 void CustomDlgColors::UpdateThemeState() {
   is_high_contrast_ = IsHighContrastOn();
-  is_dark_mode_ = !is_high_contrast_ && IsDarkModeOn();
-  if (is_dark_mode_) {
+  is_dark_mode_ = IsDarkModeOn();
+  if (is_dark_mode_ && !is_high_contrast_) {
     if (!dark_bk_brush_.is_valid()) {
       dark_bk_brush_.reset(::CreateSolidBrush(kBgColorDark));
     }
@@ -750,7 +750,7 @@ CustomProgressBarCtrl::~CustomProgressBarCtrl() = default;
 
 void CustomProgressBarCtrl::UpdateThemeState() {
   is_high_contrast_ = IsHighContrastOn();
-  is_dark_mode_ = !is_high_contrast_ && IsDarkModeOn();
+  is_dark_mode_ = IsDarkModeOn();
 }
 
 LRESULT CustomProgressBarCtrl::OnEraseBkgnd(UINT, WPARAM, LPARAM) {
@@ -1038,7 +1038,7 @@ FlatButton::~FlatButton() = default;
 
 void FlatButton::UpdateThemeState() {
   is_high_contrast_ = IsHighContrastOn();
-  is_dark_mode_ = !is_high_contrast_ && IsDarkModeOn();
+  is_dark_mode_ = IsDarkModeOn();
 }
 
 void FlatButton::SetIsPrimary(bool is_primary) {

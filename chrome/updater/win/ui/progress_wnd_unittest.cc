@@ -635,4 +635,129 @@ TEST_F(ProgressWndTest, SetCursorArrow) {
   progress_wnd.DestroyWindow();
 }
 
+// Verifies that the error illustration is not loaded while the control is
+// hidden, and switches between light and dark bitmap resources based on
+// is_dark_mode() when visible.
+TEST_F(ProgressWndTest, ErrorIllustrationThemeSwitching) {
+  registry_util::RegistryOverrideManager registry_override;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override.OverrideRegistry(HKEY_CURRENT_USER));
+
+  auto set_dark_mode = [](bool dark) {
+    base::win::RegKey key;
+    EXPECT_EQ(key.Create(HKEY_CURRENT_USER,
+                         L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes"
+                         L"\\Personalize",
+                         KEY_SET_VALUE),
+              ERROR_SUCCESS);
+    EXPECT_EQ(
+        key.WriteValue(L"AppsUseLightTheme", static_cast<DWORD>(dark ? 0 : 1)),
+        ERROR_SUCCESS);
+  };
+
+  EXPECT_CALL(*mock_progress_wnd_events_, DoExit())
+      .Times(::testing::AnyNumber());
+
+  MessageLoop ui_message_loop;
+
+  // 1. In light mode, verify the error illustration is not loaded while hidden.
+  set_dark_mode(false);
+  {
+    std::unique_ptr<ProgressWnd> progress_wnd =
+        MakeProgressWindow(&ui_message_loop);
+    const HWND error_ctl =
+        ::GetDlgItem(progress_wnd->hwnd(), IDC_ERROR_ILLUSTRATION);
+    ASSERT_NE(error_ctl, nullptr);
+    EXPECT_FALSE(::IsWindowVisible(error_ctl));
+    EXPECT_EQ(reinterpret_cast<HBITMAP>(
+                  ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0)),
+              nullptr);
+
+    // Transition to error state: calling DisplayCompletionDialog(false, ...)
+    // shows IDC_ERROR_ILLUSTRATION and triggers UpdateErrorIllustration().
+    progress_wnd->DisplayCompletionDialog(false, L"Error message", "");
+    EXPECT_TRUE(::IsWindowVisible(error_ctl));
+
+    HBITMAP current_bmp = reinterpret_cast<HBITMAP>(
+        ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    EXPECT_EQ(current_bmp, progress_wnd->GetErrorIllustrationBitmap(false));
+    EXPECT_NE(current_bmp, nullptr);
+
+    // 2. Switch to dark mode via WM_SETTINGCHANGE and verify it updates to the
+    // dark bitmap.
+    set_dark_mode(true);
+    ::SendMessage(progress_wnd->hwnd(), WM_SETTINGCHANGE, 0,
+                  reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
+    current_bmp = reinterpret_cast<HBITMAP>(
+        ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    EXPECT_EQ(current_bmp, progress_wnd->GetErrorIllustrationBitmap(true));
+    EXPECT_NE(current_bmp, nullptr);
+    EXPECT_NE(progress_wnd->GetErrorIllustrationBitmap(true),
+              progress_wnd->GetErrorIllustrationBitmap(false));
+
+    // 3. Switch back to light mode via WM_THEMECHANGED and verify it updates
+    // back.
+    set_dark_mode(false);
+    ::SendMessage(progress_wnd->hwnd(), WM_THEMECHANGED, 0, 0);
+    current_bmp = reinterpret_cast<HBITMAP>(
+        ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    EXPECT_EQ(current_bmp, progress_wnd->GetErrorIllustrationBitmap(false));
+
+    progress_wnd->DestroyWindow();
+  }
+
+  // 4. Starting directly in dark mode should not load bitmap while hidden,
+  // but set the dark bitmap when the error completion dialog is displayed.
+  set_dark_mode(true);
+  {
+    std::unique_ptr<ProgressWnd> progress_wnd =
+        MakeProgressWindow(&ui_message_loop);
+    const HWND error_ctl =
+        ::GetDlgItem(progress_wnd->hwnd(), IDC_ERROR_ILLUSTRATION);
+    ASSERT_NE(error_ctl, nullptr);
+    EXPECT_FALSE(::IsWindowVisible(error_ctl));
+    EXPECT_EQ(reinterpret_cast<HBITMAP>(
+                  ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0)),
+              nullptr);
+
+    progress_wnd->DisplayCompletionDialog(false, L"Error message", "");
+    EXPECT_TRUE(::IsWindowVisible(error_ctl));
+
+    HBITMAP current_bmp = reinterpret_cast<HBITMAP>(
+        ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    EXPECT_EQ(current_bmp, progress_wnd->GetErrorIllustrationBitmap(true));
+    EXPECT_NE(current_bmp, nullptr);
+
+    progress_wnd->DestroyWindow();
+  }
+
+  // 5. Calling DisplayCompletionDialog before Show() (parent dialog not yet
+  // visible) still initializes the error illustration bitmap.
+  set_dark_mode(false);
+  {
+    auto progress_wnd =
+        std::make_unique<ProgressWnd>(&ui_message_loop, nullptr);
+    progress_wnd->SetEventSink(this);
+    progress_wnd->Initialize();
+    // Intentionally do NOT call progress_wnd->Show() yet.
+    EXPECT_FALSE(::IsWindowVisible(progress_wnd->hwnd()));
+
+    const HWND error_ctl =
+        ::GetDlgItem(progress_wnd->hwnd(), IDC_ERROR_ILLUSTRATION);
+    ASSERT_NE(error_ctl, nullptr);
+    EXPECT_FALSE(::IsWindowVisible(error_ctl));
+
+    progress_wnd->DisplayCompletionDialog(false, L"Error message", "");
+    EXPECT_TRUE(::GetWindowLongPtr(error_ctl, GWL_STYLE) & WS_VISIBLE);
+    EXPECT_FALSE(::IsWindowVisible(error_ctl));
+
+    HBITMAP current_bmp = reinterpret_cast<HBITMAP>(
+        ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    EXPECT_EQ(current_bmp, progress_wnd->GetErrorIllustrationBitmap(false));
+    EXPECT_NE(current_bmp, nullptr);
+
+    progress_wnd->DestroyWindow();
+  }
+}
+
 }  // namespace updater::ui

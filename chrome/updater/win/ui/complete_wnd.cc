@@ -65,6 +65,8 @@ void CompleteWnd::OnClickedGetHelp(UINT, int, HWND) {
   }
 }
 
+void CompleteWnd::UpdateErrorIllustration() {}
+
 bool CompleteWnd::MaybeCloseWindow() {
   CloseWindow();
   return true;
@@ -108,6 +110,7 @@ HRESULT CompleteWnd::SetControlState(bool is_success) {
                        kVisibleTextAttributes);
   if (!is_success) {
     SetControlAttributes(IDC_ERROR_ILLUSTRATION, kVisibleImageAttributes);
+    UpdateErrorIllustration();
   }
   if (!help_url_.empty()) {
     SetControlAttributes(IDC_GET_HELP, kNonDefaultActiveButtonAttributes);

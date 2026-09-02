@@ -56,6 +56,10 @@ class CompleteWnd : public OmahaWnd {
   void OnClickedGetHelp(UINT notify_code, int id, HWND wnd_ctl);
   void OnClickedButton(UINT notify_code, int id, HWND wnd_ctl);
 
+  // Updates the error illustration bitmap to match the active theme.
+  // Overridden by subclasses (e.g., `ProgressWnd`) that manage theme assets.
+  virtual void UpdateErrorIllustration();
+
  private:
   // Handles requests to close the window. Returns true if the window is closed.
   bool MaybeCloseWindow() override;

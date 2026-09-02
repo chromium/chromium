@@ -14,6 +14,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_APP   ICON    "chrome/updater/win/ui/resources/google_update.ico"
 
 IDB_ERROR_ILLUSTRATION BITMAP  "chrome/updater/win/ui/resources/error.bmp"
+IDB_ERROR_ILLUSTRATION_DARK BITMAP  "chrome/updater/win/ui/resources/error_dark.bmp"
 IDB_BACKGROUND_LIGHT BITMAP  "chrome/updater/win/ui/resources/updater_gradient_background_light.bmp"
 IDB_BACKGROUND_DARK BITMAP  "chrome/updater/win/ui/resources/updater_gradient_background_dark.bmp"
 
@@ -32,7 +33,7 @@ BEGIN
     CTEXT       "",IDC_PAUSE_RESUME_TEXT,375,96,48,38,SS_NOTIFY | WS_VISIBLE
     CTEXT       "",IDC_COMPLETE_TEXT,15,64,403,98,SS_NOTIFY | WS_VISIBLE
     CTEXT       "",IDC_ERROR_TEXT,15,132,403,50,SS_NOTIFY | WS_VISIBLE
-    CONTROL     IDB_ERROR_ILLUSTRATION,IDC_ERROR_ILLUSTRATION,"Static",SS_BITMAP | SS_CENTERIMAGE | WS_VISIBLE,189,62,66,40
+    CONTROL     "",IDC_ERROR_ILLUSTRATION,"Static",SS_BITMAP | SS_CENTERIMAGE | WS_VISIBLE,189,62,66,40
     CONTROL     "",IDC_APP_BITMAP,"Static",SS_BITMAP | SS_CENTERIMAGE | WS_VISIBLE,185,162,63,17
 END
 

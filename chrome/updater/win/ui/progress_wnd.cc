@@ -519,32 +519,84 @@ HBITMAP ProgressWnd::GetBackgroundBitmap(bool is_dark_mode) {
   }
 }
 
+HBITMAP ProgressWnd::GetErrorIllustrationBitmap(bool is_dark_mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_dark_mode) {
+    if (!dark_error_illustration_bmp_.is_valid()) {
+      dark_error_illustration_bmp_.reset(static_cast<HBITMAP>(::LoadImage(
+          CURRENT_MODULE(), MAKEINTRESOURCE(IDB_ERROR_ILLUSTRATION_DARK),
+          IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
+    }
+    return dark_error_illustration_bmp_.get();
+  }
+
+  if (!light_error_illustration_bmp_.is_valid()) {
+    light_error_illustration_bmp_.reset(static_cast<HBITMAP>(
+        ::LoadImage(CURRENT_MODULE(), MAKEINTRESOURCE(IDB_ERROR_ILLUSTRATION),
+                    IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
+  }
+  return light_error_illustration_bmp_.get();
+}
+
+void ProgressWnd::UpdateErrorIllustration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsWindow()) {
+    return;
+  }
+
+  const HWND error_ctl = ::GetDlgItem(hwnd(), IDC_ERROR_ILLUSTRATION);
+  if (!error_ctl || !(::GetWindowLongPtr(error_ctl, GWL_STYLE) & WS_VISIBLE)) {
+    return;
+  }
+
+  HBITMAP current_illustration = GetErrorIllustrationBitmap(is_dark_mode());
+  if (!current_illustration) {
+    return;
+  }
+
+  if (reinterpret_cast<HBITMAP>(::SendMessage(
+          error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0)) == current_illustration) {
+    return;
+  }
+
+  ::SendMessage(error_ctl, STM_SETIMAGE, IMAGE_BITMAP,
+                reinterpret_cast<LPARAM>(current_illustration));
+  const RECT ctl_rect = GetControlClientRect(error_ctl);
+  ::InvalidateRect(hwnd(), &ctl_rect, TRUE);
+  ::InvalidateRect(error_ctl, nullptr, TRUE);
+}
+
+void ProgressWnd::ResetThemeResources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Refresh theme state early so `UpdateAppLogo()` and
+  // `UpdateErrorIllustration()` (via `is_dark_mode()`) evaluate the new theme
+  // before parent and descendant layouts repaint in `OmahaWnd`. Calling
+  // `UpdateThemeState()` here is safe and idempotent, even though `OmahaWnd`
+  // will invoke it again when the message bubbles up.
+  UpdateThemeState();
+  light_bg_bmp_.reset();
+  dark_bg_bmp_.reset();
+  if (HWND error_ctl = ::GetDlgItem(hwnd(), IDC_ERROR_ILLUSTRATION)) {
+    ::SendMessage(error_ctl, STM_SETIMAGE, IMAGE_BITMAP, 0);
+  }
+  light_error_illustration_bmp_.reset();
+  dark_error_illustration_bmp_.reset();
+  UpdateAppLogo();
+  UpdateErrorIllustration();
+}
+
 LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM, LPARAM lparam) {
   SetMsgHandled(FALSE);
   if (!lparam || std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
                      L"ImmersiveColorSet") {
-    // Refresh theme state early so `UpdateAppLogo()` (via `is_dark_mode()`)
-    // evaluates the new theme before parent and descendant layouts repaint in
-    // `OmahaWnd`. Calling `UpdateThemeState()` here is safe and idempotent,
-    // even though `OmahaWnd` will invoke it again when the message bubbles up.
-    UpdateThemeState();
-    light_bg_bmp_.reset();
-    dark_bg_bmp_.reset();
-    UpdateAppLogo();
+    ResetThemeResources();
   }
   return 0;
 }
 
 LRESULT ProgressWnd::OnThemeChanged(UINT, WPARAM, LPARAM) {
   SetMsgHandled(FALSE);
-  // Refresh theme state early so `UpdateAppLogo()` (via `is_dark_mode()`)
-  // evaluates the new theme before parent and descendant layouts repaint in
-  // `OmahaWnd`. Calling `UpdateThemeState()` here is safe and idempotent,
-  // even though `OmahaWnd` will invoke it again when the message bubbles up.
-  UpdateThemeState();
-  light_bg_bmp_.reset();
-  dark_bg_bmp_.reset();
-  UpdateAppLogo();
+  ResetThemeResources();
   return 0;
 }
 
@@ -552,10 +604,7 @@ HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND) {
   if (is_high_contrast()) {
     ::SetTextColor(dc, ::GetSysColor(COLOR_WINDOWTEXT));
     ::SetBkColor(dc, ::GetSysColor(COLOR_WINDOW));
-    ::SetBkMode(dc, TRANSPARENT);
-    return ::GetSysColorBrush(COLOR_WINDOW);
-  }
-  if (is_dark_mode()) {
+  } else if (is_dark_mode()) {
     ::SetTextColor(dc, kTextColorDark);
   }
   ::SetBkMode(dc, TRANSPARENT);
