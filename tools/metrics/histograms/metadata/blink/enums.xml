@@ -6733,6 +6733,10 @@ Called by update_use_counter_feature_enum.py.-->
       label="ConnectionAllowlistEmbeddedEnforcementAllowedByDeliveredAllowlist"/>
   <int value="5997" label="ConnectionAllowlistEmbeddedEnforcementBlocked"/>
   <int value="5998" label="WebTransportDatagramDuplexStreamCreateWritable"/>
+  <int value="5999" label="V8RTCPeerConnection_Onaddstream_AttributeGetter"/>
+  <int value="6000" label="V8RTCPeerConnection_Onaddstream_AttributeSetter"/>
+  <int value="6001" label="V8RTCPeerConnection_Onremovestream_AttributeGetter"/>
+  <int value="6002" label="V8RTCPeerConnection_Onremovestream_AttributeSetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
