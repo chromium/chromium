@@ -51,11 +51,11 @@ public class UploadImagePreviewLayoutViewBinder {
         } else if (SIDE_AND_BOTTOM_INSETS == propertyKey) {
             layout.setSideAndBottomInsets(model.get(SIDE_AND_BOTTOM_INSETS));
         } else if (propertyKey == SEARCH_BOX_WIDTH) {
-            layout.setSearchBoxWidth(model.get(SEARCH_BOX_WIDTH));
+            layout.setSearchBoxContainerWidth(model.get(SEARCH_BOX_WIDTH));
         } else if (propertyKey == SEARCH_BOX_HEIGHT) {
-            layout.setSearchBoxHeight(model.get(SEARCH_BOX_HEIGHT));
+            layout.setSearchBoxContainerHeight(model.get(SEARCH_BOX_HEIGHT));
         } else if (propertyKey == SEARCH_BOX_TOP_MARGIN) {
-            layout.setSearchBoxTopMargin(model.get(SEARCH_BOX_TOP_MARGIN));
+            layout.setSearchBoxContainerTopMargin(model.get(SEARCH_BOX_TOP_MARGIN));
         } else if (propertyKey == BUTTON_BOTTOM_MARGIN) {
             layout.setButtonBottomMargin(model.get(BUTTON_BOTTOM_MARGIN));
         }

@@ -27,7 +27,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.GlifStrokeDrawable;
@@ -37,7 +36,6 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 /** Provides the additional capabilities needed for the SearchBox container layout. */
 @NullMarked
 public class SearchBoxContainerView extends LinearLayout {
-    private final int mPaddingForShadowLateralPx;
     TextView mHintTextView;
     ImageView mDseIconView;
     View mSearchBoxView;
@@ -54,8 +52,6 @@ public class SearchBoxContainerView extends LinearLayout {
     /** Constructor for inflating from XML. */
     public SearchBoxContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mPaddingForShadowLateralPx =
-                getResources().getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
     }
 
     @Override
@@ -137,44 +133,8 @@ public class SearchBoxContainerView extends LinearLayout {
         View searchBoxShadowContainerView = findViewById(R.id.search_box_shadow_container);
         if (searchBoxShadowContainerView == null) return;
 
-        ComposeplateUtils.applySearchBoxBackground(
-                getContext(), searchBoxShadowContainerView, applyWhiteBackground);
-        applyShadow(searchBoxShadowContainerView);
-        updateSearchBoxPaddingAndMarginForShadow(mIsNtpAuroraEnabled);
-    }
-
-    private void applyShadow(View searchBoxShadowContainerView) {
-        if (mIsNtpAuroraEnabled) {
-            NtpCustomizationUtils.applyShadow(
-                    getContext(), searchBoxShadowContainerView, mIsNtpAuroraEnabled);
-            // Disable clipping to allow the shadow to be drawn outside the view bounds. This
-            // provides a solution without adding margins to the top/bottom of the view.
-            setClipToPadding(false);
-            setClipChildren(false);
-            return;
-        }
-
-        // Reset clipping to default to avoid unexpected behavior.
-        setClipToPadding(true);
-        setClipChildren(true);
-    }
-
-    private void updateSearchBoxPaddingAndMarginForShadow(boolean applyShadow) {
-        ViewGroup.MarginLayoutParams layoutParams =
-                (ViewGroup.MarginLayoutParams) getLayoutParams();
-        if (layoutParams == null) return;
-
-        if (applyShadow) {
-            setPadding(
-                    mPaddingForShadowLateralPx,
-                    getPaddingTop(),
-                    mPaddingForShadowLateralPx,
-                    getPaddingBottom());
-        } else {
-            setPadding(0, getPaddingTop(), 0, getPaddingBottom());
-        }
-
-        setLayoutParams(layoutParams);
+        NtpCustomizationUtils.applyWhiteBackgroundAndShadow(
+                getContext(), this, searchBoxShadowContainerView, applyWhiteBackground);
     }
 
     /**

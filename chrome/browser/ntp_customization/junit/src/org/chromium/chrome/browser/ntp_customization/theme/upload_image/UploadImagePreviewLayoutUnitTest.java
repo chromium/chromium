@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -25,6 +27,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 
@@ -34,7 +39,7 @@ public class UploadImagePreviewLayoutUnitTest {
     private Activity mActivity;
     private UploadImagePreviewLayout mLayout;
     private ImageView mLogoView;
-    private View mSearchBoxView;
+    private View mSearchBoxContainer;
     private Guideline mGuidelineTop;
 
     @Before
@@ -49,7 +54,7 @@ public class UploadImagePreviewLayoutUnitTest {
 
         mLogoView = mLayout.findViewById(R.id.default_search_engine_logo);
         mGuidelineTop = mLayout.findViewById(R.id.guideline_top);
-        mSearchBoxView = mLayout.findViewById(R.id.search_box_container);
+        mSearchBoxContainer = mLayout.findViewById(R.id.search_box_container);
     }
 
     @Test
@@ -105,10 +110,10 @@ public class UploadImagePreviewLayoutUnitTest {
     public void testSetLogoSearchBoxMargin() {
         int expectedMargin = 60;
 
-        mLayout.setSearchBoxTopMargin(expectedMargin);
+        mLayout.setSearchBoxContainerTopMargin(expectedMargin);
 
         ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mSearchBoxView.getLayoutParams();
+                (ViewGroup.MarginLayoutParams) mSearchBoxContainer.getLayoutParams();
 
         assertEquals(
                 "Search box top margin should be updated to create the gap",
@@ -129,5 +134,54 @@ public class UploadImagePreviewLayoutUnitTest {
                 "Guideline should only account for top inset and toolbar height",
                 topInsetAndToolBarHeight,
                 params.guideBegin);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testSearchBoxShadow_NtpAuroraEnabled() {
+        UploadImagePreviewLayout layout =
+                (UploadImagePreviewLayout)
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.ntp_customization_theme_preview_dialog_layout,
+                                        null);
+        View searchBox = layout.findViewById(R.id.search_box);
+        ViewGroup searchBoxContainer = layout.findViewById(R.id.search_box_container);
+
+        float expectedElevation =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
+        int expectedLateralPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+
+        assertEquals(expectedElevation, searchBox.getElevation(), 0.01f);
+        assertEquals(expectedLateralPadding, searchBoxContainer.getPaddingLeft());
+        assertEquals(expectedLateralPadding, searchBoxContainer.getPaddingRight());
+        assertFalse(searchBoxContainer.getClipToPadding());
+        assertFalse(searchBoxContainer.getClipChildren());
+        assertFalse(layout.getClipChildren());
+        assertFalse(layout.getClipToPadding());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testSearchBoxShadow_NtpAuroraDisabled() {
+        UploadImagePreviewLayout layout =
+                (UploadImagePreviewLayout)
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.ntp_customization_theme_preview_dialog_layout,
+                                        null);
+        View searchBox = layout.findViewById(R.id.search_box);
+        ViewGroup searchBoxContainer = layout.findViewById(R.id.search_box_container);
+
+        assertEquals(0f, searchBox.getElevation(), 0.01f);
+        assertEquals(0, searchBoxContainer.getPaddingLeft());
+        assertEquals(0, searchBoxContainer.getPaddingRight());
+        assertTrue(searchBoxContainer.getClipToPadding());
+        assertTrue(searchBoxContainer.getClipChildren());
+        assertFalse(layout.getClipChildren());
+        assertFalse(layout.getClipToPadding());
     }
 }

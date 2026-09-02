@@ -56,6 +56,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
@@ -2011,5 +2013,118 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 expectedFileName,
                 NtpCustomizationUtils.getFileName(directoryPath + expectedFileName));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testApplyWhiteBackgroundAndShadow_NtpAuroraEnabled() {
+        FrameLayout container = new FrameLayout(mContext);
+        container.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        View searchBox = new View(mContext);
+
+        NtpCustomizationUtils.applyWhiteBackgroundAndShadow(
+                mContext, container, searchBox, /* applyWhiteBackground= */ true);
+        float expectedElevation =
+                mContext.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
+        int expectedLateralPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+
+        assertEquals(expectedElevation, searchBox.getElevation(), 0.01f);
+        assertEquals(expectedLateralPadding, container.getPaddingLeft());
+        assertEquals(expectedLateralPadding, container.getPaddingRight());
+        assertFalse(container.getClipToPadding());
+        assertFalse(container.getClipChildren());
+
+        // Container without layoutParams should return early without modifying padding.
+        FrameLayout containerWithoutParams = new FrameLayout(mContext);
+        NtpCustomizationUtils.applyWhiteBackgroundAndShadow(
+                mContext, containerWithoutParams, searchBox, /* applyWhiteBackground= */ true);
+        assertEquals(0, containerWithoutParams.getPaddingLeft());
+        assertEquals(0, containerWithoutParams.getPaddingRight());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testApplyWhiteBackgroundAndShadow_NtpAuroraDisabled() {
+        FrameLayout container = new FrameLayout(mContext);
+        container.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        View searchBox = new View(mContext);
+
+        NtpCustomizationUtils.applyWhiteBackgroundAndShadow(
+                mContext, container, searchBox, /* applyWhiteBackground= */ true);
+
+        assertEquals(0f, searchBox.getElevation(), 0.01f);
+        assertEquals(0, container.getPaddingLeft());
+        assertEquals(0, container.getPaddingRight());
+        assertTrue(container.getClipToPadding());
+        assertTrue(container.getClipChildren());
+    }
+
+    @Test
+    public void testApplyShadow() {
+        FrameLayout container = new FrameLayout(mContext);
+        View searchBox = new View(mContext);
+
+        // Verifies elevation is applied and clipping is disabled when Aurora is enabled.
+        NtpCustomizationUtils.applyShadow(
+                mContext, container, searchBox, /* isNtpAuroraEnabled= */ true);
+        float expectedElevation =
+                mContext.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
+        assertEquals(expectedElevation, searchBox.getElevation(), 0.01f);
+        assertFalse(container.getClipToPadding());
+        assertFalse(container.getClipChildren());
+
+        // Verifies clipping is restored when Aurora is disabled.
+        searchBox.setElevation(0f);
+        NtpCustomizationUtils.applyShadow(
+                mContext, container, searchBox, /* isNtpAuroraEnabled= */ false);
+        assertEquals(0f, searchBox.getElevation(), 0.01f);
+        assertTrue(container.getClipToPadding());
+        assertTrue(container.getClipChildren());
+    }
+
+    @Test
+    public void testApplyShadowImpl() {
+        View view = new View(mContext);
+
+        NtpCustomizationUtils.applyShadowImpl(mContext, view);
+        float expectedElevation =
+                mContext.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
+        assertEquals(expectedElevation, view.getElevation(), 0.01f);
+    }
+
+    @Test
+    public void testUpdateSearchBoxPaddingAndMarginForShadow() {
+        FrameLayout container = new FrameLayout(mContext);
+        container.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        // Verifies lateral padding is applied when shadow is enabled.
+        NtpCustomizationUtils.updateSearchBoxPaddingAndMarginForShadow(
+                mContext, container, /* applyShadow= */ true);
+        int expectedLateralPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+        assertEquals(expectedLateralPadding, container.getPaddingLeft());
+        assertEquals(expectedLateralPadding, container.getPaddingRight());
+
+        // Verifies lateral padding is reset to 0 when shadow is disabled.
+        NtpCustomizationUtils.updateSearchBoxPaddingAndMarginForShadow(
+                mContext, container, /* applyShadow= */ false);
+        assertEquals(0, container.getPaddingLeft());
+        assertEquals(0, container.getPaddingRight());
+
+        // Container without layoutParams should return early without modifying padding.
+        FrameLayout containerWithoutParams = new FrameLayout(mContext);
+        NtpCustomizationUtils.updateSearchBoxPaddingAndMarginForShadow(
+                mContext, containerWithoutParams, /* applyShadow= */ true);
+        assertEquals(0, containerWithoutParams.getPaddingLeft());
+        assertEquals(0, containerWithoutParams.getPaddingRight());
     }
 }

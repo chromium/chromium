@@ -57,6 +57,7 @@ import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
@@ -85,7 +86,9 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -1903,23 +1906,86 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Applies or removes a drop shadow on the given view. When enabled, sets elevation and tints
-     * the shadow with the primary theme color at 30% opacity.
+     * Applies the drop shadow to the search box view if Aurora is enabled, and configures container
+     * clipping.
      *
      * @param context Context used to retrieve color and dimension resources.
-     * @param view The target view to apply or remove the shadow from.
-     * @param enableShadow Whether the drop shadow should be applied.
+     * @param container The outer search box container view group.
+     * @param searchBox The inner search box view.
+     * @param isNtpAuroraEnabled Whether the drop shadow should be applied.
      */
-    public static void applyShadow(Context context, View view, boolean enableShadow) {
-        if (enableShadow) {
-            float elevation =
-                    context.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
-            view.setElevation(elevation);
-            int shadowColor = context.getColor(R.color.search_box_shadow_color);
-            view.setOutlineAmbientShadowColor(shadowColor);
-            view.setOutlineSpotShadowColor(shadowColor);
-        } else {
-            view.setElevation(0f);
+    @VisibleForTesting
+    static void applyShadow(
+            Context context, ViewGroup container, View searchBox, boolean isNtpAuroraEnabled) {
+        if (isNtpAuroraEnabled) {
+            applyShadowImpl(context, searchBox);
         }
+
+        container.setClipToPadding(!isNtpAuroraEnabled);
+        container.setClipChildren(!isNtpAuroraEnabled);
+    }
+
+    /**
+     * Applies a drop shadow on the given view by setting elevation and tinting the shadow with the
+     * primary theme color at 30% opacity.
+     *
+     * @param context Context used to retrieve color and dimension resources.
+     * @param view The target view to apply the shadow to.
+     */
+    @VisibleForTesting
+    static void applyShadowImpl(Context context, View view) {
+        float elevation =
+                context.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
+        view.setElevation(elevation);
+        int shadowColor = context.getColor(R.color.search_box_shadow_color);
+        view.setOutlineAmbientShadowColor(shadowColor);
+        view.setOutlineSpotShadowColor(shadowColor);
+    }
+
+    /**
+     * Updates the lateral padding on the search box container view to accommodate the drop shadow.
+     *
+     * @param context Context used to retrieve dimension resources.
+     * @param container The search box container view group to update.
+     * @param applyShadow Whether the drop shadow is applied.
+     */
+    @VisibleForTesting
+    static void updateSearchBoxPaddingAndMarginForShadow(
+            Context context, ViewGroup container, boolean applyShadow) {
+        ViewGroup.MarginLayoutParams layoutParams =
+                (ViewGroup.MarginLayoutParams) container.getLayoutParams();
+        if (layoutParams == null) return;
+
+        if (applyShadow) {
+            int lateralPadding =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+            container.setPadding(
+                    lateralPadding,
+                    container.getPaddingTop(),
+                    lateralPadding,
+                    container.getPaddingBottom());
+        } else {
+            container.setPadding(0, container.getPaddingTop(), 0, container.getPaddingBottom());
+        }
+
+        container.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Applies or cleans up the white background, elevation shadow, and lateral buffer padding for
+     * the fake search box.
+     *
+     * @param context Context used to retrieve color and dimension resources.
+     * @param container The outer search box container view group.
+     * @param searchBox The inner search box view.
+     * @param applyWhiteBackground Whether to apply the white background.
+     */
+    public static void applyWhiteBackgroundAndShadow(
+            Context context, ViewGroup container, View searchBox, boolean applyWhiteBackground) {
+        boolean isNtpAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
+        ComposeplateUtils.applySearchBoxBackground(context, searchBox, applyWhiteBackground);
+        applyShadow(context, container, searchBox, isNtpAuroraEnabled);
+        updateSearchBoxPaddingAndMarginForShadow(context, container, isNtpAuroraEnabled);
     }
 }
