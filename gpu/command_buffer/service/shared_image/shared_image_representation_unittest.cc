@@ -262,4 +262,34 @@ TEST_F(SharedImageRepresentationTest, OverlayClearing) {
   EXPECT_TRUE(representation->IsCleared());
 }
 
+TEST_F(SharedImageRepresentationTest, VideoClearing) {
+  auto representation = manager_.ProduceVideo({}, mailbox_, tracker_.get());
+  EXPECT_FALSE(representation->IsCleared());
+
+  // We should not be able to begin read access.
+  {
+    auto scoped_access = representation->BeginScopedReadAccess();
+    EXPECT_FALSE(scoped_access);
+  }
+  EXPECT_FALSE(representation->IsCleared());
+
+  // We should be able to begin write access when uncleared.
+  {
+    auto scoped_access = representation->BeginScopedWriteAccess();
+    EXPECT_TRUE(scoped_access);
+  }
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Clear the SharedImage.
+  representation->SetCleared();
+  EXPECT_TRUE(representation->IsCleared());
+
+  // We can now begin read access.
+  {
+    auto scoped_access = representation->BeginScopedReadAccess();
+    EXPECT_TRUE(scoped_access);
+  }
+  EXPECT_TRUE(representation->IsCleared());
+}
+
 }  // namespace gpu

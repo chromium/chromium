@@ -2367,6 +2367,7 @@ TEST_P(D3DImageBackingFactoryTest, CanProduceVideoForExternalDevice) {
       shared_image_manager_.Register(std::move(owned_backing),
                                      memory_type_tracker_.get());
   ASSERT_TRUE(shared_image_ref);
+  shared_image_ref->SetCleared();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   UINT creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;

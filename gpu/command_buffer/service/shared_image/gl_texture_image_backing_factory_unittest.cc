@@ -379,6 +379,7 @@ TEST_F(GLTextureImageBackingFactoryTest, ProduceVideo) {
   ASSERT_TRUE(backing);
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  shared_image->SetCleared();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   UINT creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
