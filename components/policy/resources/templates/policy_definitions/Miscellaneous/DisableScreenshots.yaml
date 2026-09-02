@@ -4,6 +4,8 @@ desc: |-
   Setting the policy to Enabled disallows screenshots taken with keyboard shortcuts
   or extension APIs. Setting the policy to Disabled or not set allows screenshots.
 
+  As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 154, enabling this policy also prevents extensions from attaching the debugger via 'chrome.debugger.attach()'.
+
   Note that on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph> and <ph name="LINUX_OS_NAME">Linux</ph>,
   this does not prevent screenshots that are taken with operating system or third party applications.
 example_value: true
