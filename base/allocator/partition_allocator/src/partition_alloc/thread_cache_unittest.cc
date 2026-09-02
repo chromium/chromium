@@ -1157,6 +1157,79 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
   EXPECT_EQ(3u, alloc_miss_too_large_counter.Delta());
 }
 
+namespace {
+
+class ThreadDelegateForDynamicSizeThresholdMultipleThreads
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForDynamicSizeThresholdMultipleThreads(
+      PartitionRoot* root,
+      std::atomic<bool>& other_thread_started,
+      std::atomic<bool>& threshold_changed,
+      BucketDistribution bucket_distribution)
+      : root_(root),
+        other_thread_started_(other_thread_started),
+        threshold_changed_(threshold_changed),
+        bucket_distribution_(bucket_distribution) {}
+
+  void ThreadMain() override {
+    FillThreadCacheAndReturnIndex(
+        root_, ThreadCache::kDefaultSizeThreshold, bucket_distribution_);
+    auto* this_thread_tcache = root_->thread_cache_for_testing();
+    EXPECT_TRUE(this_thread_tcache);
+
+    DeltaCounter alloc_miss_too_large_counter{
+        this_thread_tcache->stats_for_testing().alloc_miss_too_large};
+
+    // Too large to be cached with default threshold.
+    FillThreadCacheAndReturnIndex(
+        root_, ThreadCache::kDefaultSizeThreshold + 1, bucket_distribution_);
+    EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+
+    other_thread_started_.store(true, std::memory_order_release);
+    while (!threshold_changed_.load(std::memory_order_acquire)) {
+    }
+
+    // Now large threshold is set, so it should be cached without new miss.
+    FillThreadCacheAndReturnIndex(
+        root_, ThreadCache::kDefaultSizeThreshold + 1, bucket_distribution_);
+    EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+  }
+
+ private:
+  PartitionRoot* root_ = nullptr;
+  std::atomic<bool>& other_thread_started_;
+  std::atomic<bool>& threshold_changed_;
+  BucketDistribution bucket_distribution_;
+};
+
+}  // namespace
+
+TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThresholdMultipleThreads) {
+  std::atomic<bool> other_thread_started{false};
+  std::atomic<bool> threshold_changed{false};
+
+  ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+
+  ThreadDelegateForDynamicSizeThresholdMultipleThreads delegate(
+      root(), other_thread_started, threshold_changed,
+      GetParam().bucket_distribution);
+
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
+
+  while (!other_thread_started.load(std::memory_order_acquire)) {
+  }
+
+  ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
+  threshold_changed.store(true, std::memory_order_release);
+
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
+
+  ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+}
+
 // Disabled due to flakiness: crbug.com/1287811
 TEST_P(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
   auto* tcache = root()->thread_cache_for_testing();

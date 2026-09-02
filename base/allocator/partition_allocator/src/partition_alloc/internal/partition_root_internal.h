@@ -922,9 +922,9 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
   // direct-mapped allocations are uncommon.
   internal::ThreadCache* thread_cache = GetThreadCache();
   // TODO(crbug.com/467243745): Once
-  // `internal::ThreadCache::largest_active_bucket_index_` becomes a per-class
+  // `internal::ThreadCache::active_bucket_count_` becomes a per-class
   // variable, remove the initialization check in `IsValid` and reuse the
-  // `bucket_index > largest_active_bucket_index_` within `MaybePutInCache`.
+  // `bucket_index >= active_bucket_count_` within `MaybePutInCache`.
   if (internal::ThreadCache::IsValid(thread_cache) &&
       (size_details.slot_size <= BucketIndexLookup::kMaxBucketSize))
       [[likely]] {

@@ -148,8 +148,8 @@ class ThreadCacheInspector {
   }
 
   std::vector<BucketStats> AccumulateThreadCacheBuckets();
-  std::uint16_t largest_active_bucket_index() {
-    return registry_.get()->largest_active_bucket_index_;
+  std::uint16_t active_bucket_count() {
+    return registry_.get()->active_bucket_count_;
   }
 
  private:
@@ -418,8 +418,7 @@ void DisplayPerBucketData(ThreadCacheInspector& inspector) {
     size_t bucket_index = index;
     auto& bucket = bucket_stats[bucket_index];
     total_memory += bucket.size * bucket.count;
-    DisplayBucket(bucket,
-                  inspector.largest_active_bucket_index() == bucket_index);
+    DisplayBucket(bucket, inspector.active_bucket_count() - 1 == bucket_index);
 
     std::cout << "\t| ";
 
@@ -427,7 +426,7 @@ void DisplayPerBucketData(ThreadCacheInspector& inspector) {
     bucket = bucket_stats[bucket_index];
     total_memory += bucket.size * bucket.count;
     DisplayBucket(bucket_stats[bucket_index],
-                  inspector.largest_active_bucket_index() == bucket_index);
+                  inspector.active_bucket_count() - 1 == bucket_index);
 
     std::cout << "\n";
   }
