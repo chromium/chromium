@@ -303,16 +303,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   ResetInternal();
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
-    auto old_shared = std::move(shared_image_provider_);
-    auto old_bitmap = std::move(bitmap_provider_);
-    last_recording_ = std::nullopt;
-    element->UpdateMemoryUsage();
-    if (old_shared) {
-      old_shared->SetDelegate(nullptr);
-    }
-    if (old_bitmap) {
-      old_bitmap->SetDelegate(nullptr);
-    }
+    ResetResourceProvider();
     element->DiscardResources();
     element->DiscardResourceDispatcher();
 
@@ -1172,18 +1163,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 }
 
 void CanvasRenderingContext2D::SizeChanged() {
-  auto old_shared = std::move(shared_image_provider_);
-  auto old_bitmap = std::move(bitmap_provider_);
-  last_recording_ = std::nullopt;
-  if (canvas()) {
-    canvas()->UpdateMemoryUsage();
-  }
-  if (old_shared) {
-    old_shared->SetDelegate(nullptr);
-  }
-  if (old_bitmap) {
-    old_bitmap->SetDelegate(nullptr);
-  }
+  ResetResourceProvider();
   did_fail_to_create_resource_provider_ = false;
 }
 
@@ -1195,18 +1175,7 @@ CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
 void CanvasRenderingContext2D::Dispose() {
   FlushForImageListener::Get()->RemoveObserver(this);
   hibernation_handler_ = nullptr;
-  auto old_shared = std::move(shared_image_provider_);
-  auto old_bitmap = std::move(bitmap_provider_);
-  last_recording_ = std::nullopt;
-  if (canvas()) {
-    canvas()->UpdateMemoryUsage();
-  }
-  if (old_shared) {
-    old_shared->SetDelegate(nullptr);
-  }
-  if (old_bitmap) {
-    old_bitmap->SetDelegate(nullptr);
-  }
+  ResetResourceProvider();
   CanvasRenderingContext::Dispose();
 }
 
