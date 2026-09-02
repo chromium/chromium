@@ -141,6 +141,13 @@ void OnSodaResponse(const char* serialized_proto,
     const soda::chrome::SodaRecognitionResult& result =
         response.recognition_result();
 
+    // Discard recognition events with no hypotheses. End-of-speech and session
+    // completion are signaled via SodaResponse::STOP, so empty hypothesis
+    // events contain no transcription data and should not be dispatched.
+    if (result.hypothesis_size() == 0) {
+      return;
+    }
+
     auto speech_recognition_result = media::SpeechRecognitionResult(
         result.hypothesis(0),
         result.result_type() == soda::chrome::SodaRecognitionResult::FINAL);
@@ -153,7 +160,6 @@ void OnSodaResponse(const char* serialized_proto,
           base::Microseconds(result.timing_metrics().event_end_time_usec());
     }
 
-    DCHECK(result.hypothesis_size());
     callbacks.recognition.Run(std::move(speech_recognition_result));
   }
 

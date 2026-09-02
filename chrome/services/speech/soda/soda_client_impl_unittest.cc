@@ -127,7 +127,7 @@ void SodaClientImplUnitTest::SetUp() {
   // in CIPD.
   GTEST_SKIP()
       << "SODA test binary for arm64 macOS is currently being rolled in CIPD.";
-#endif
+#else
   auto libsoda_path =
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(base::FilePath(soda::kSodaTestBinaryRelativePath));
@@ -135,6 +135,7 @@ void SodaClientImplUnitTest::SetUp() {
   soda_client_ = std::make_unique<soda::SodaClientImpl>(libsoda_path);
   ASSERT_TRUE(soda_client_.get());
   ASSERT_FALSE(soda_client_->IsInitialized());
+#endif
 }
 
 void SodaClientImplUnitTest::TearDown() {

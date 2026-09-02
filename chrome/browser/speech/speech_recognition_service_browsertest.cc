@@ -159,6 +159,7 @@ class SpeechRecognitionServiceTest
 #endif
 
  protected:
+  void SetUpOnMainThread() override;
   void CloseCaptionBubble() {
     is_client_requesting_speech_recognition_ = false;
   }
@@ -170,6 +171,7 @@ class SpeechRecognitionServiceTest
                       size_t kMaxChunkSize);
   void WaitForRecognitionResult(const std::string& expected_result);
   void WaitForRecognitionEventAfterBubbleClosed();
+  void ResetRecognizerAndWaitForDisconnect();
 
   // The root directory for test files.
   base::FilePath test_data_dir_;
@@ -198,6 +200,9 @@ class SpeechRecognitionServiceTest
   // after the caption bubble is closed).
   bool has_stopped_requesting_recognition_ = false;
 
+  // Tracks whether the speech recognition service has stopped.
+  bool has_speech_recognition_stopped_ = false;
+
   std::unique_ptr<base::RunLoop> run_loop_;
   std::string expected_recognition_result_;
 };
@@ -206,6 +211,16 @@ void SpeechRecognitionServiceTest::SetUp() {
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir_));
   InProcessBrowserTest::SetUp();
+}
+
+void SpeechRecognitionServiceTest::SetUpOnMainThread() {
+  InProcessBrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  // TODO(crbug.com/40753481): Enable test once arm64 macOS binary is available
+  // in CIPD.
+  GTEST_SKIP()
+      << "SODA test binary for arm64 macOS is currently being rolled in CIPD.";
+#endif
 }
 
 void SpeechRecognitionServiceTest::TearDownOnMainThread() {
@@ -248,19 +263,46 @@ void SpeechRecognitionServiceTest::WaitForRecognitionEventAfterBubbleClosed() {
 
 void SpeechRecognitionServiceTest::WaitForRecognitionResult(
     const std::string& expected_result) {
-  if (std::ranges::any_of(
-          recognition_results_, [&expected_result](const std::string& result) {
-            return result.find(expected_result) != std::string::npos;
-          })) {
+  auto contains_expected = [&]() {
+    return std::ranges::any_of(
+        recognition_results_, [&expected_result](const std::string& result) {
+          return result.find(expected_result) != std::string::npos;
+        });
+  };
+
+  if (has_speech_recognition_stopped_ || contains_expected()) {
+    ASSERT_TRUE(contains_expected())
+        << "Speech recognition stopped before receiving: " << expected_result;
     return;
   }
   expected_recognition_result_ = expected_result;
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   run_loop_.reset();
+  ASSERT_TRUE(contains_expected())
+      << "Finished waiting, but expected result not found: " << expected_result;
 }
 
-void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {}
+void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {
+  has_speech_recognition_stopped_ = true;
+  if (run_loop_) {
+    run_loop_->Quit();
+  }
+}
+
+void SpeechRecognitionServiceTest::ResetRecognizerAndWaitForDisconnect() {
+  if (!speech_recognition_client_receiver_.is_bound()) {
+    speech_recognition_recognizer_.reset();
+    return;
+  }
+
+  base::RunLoop disconnect_run_loop;
+  speech_recognition_client_receiver_.set_disconnect_handler(
+      disconnect_run_loop.QuitClosure());
+  speech_recognition_recognizer_.reset();
+  disconnect_run_loop.Run();
+  speech_recognition_client_receiver_.reset();
+}
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
   NOTREACHED();
@@ -419,8 +461,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   speech_recognition_recognizer_->MarkDone();
   WaitForRecognitionResult("Hey Google Hey Google");
 
-  speech_recognition_recognizer_.reset();
-  base::RunLoop().RunUntilIdle();
+  ResetRecognizerAndWaitForDisconnect();
 
   ASSERT_GT(static_cast<int>(recognition_results_.size()), kReplayAudioCount);
   EXPECT_EQ(recognition_results_.back(), "Hey Google Hey Google");
@@ -481,9 +522,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   speech_recognition_recognizer_->MarkDone();
   WaitForRecognitionEventAfterBubbleClosed();
 
-  // Flush the mojo pipe to ensure the `success = false` reply has been
-  // received and processed by the speech recognition service.
-  speech_recognition_recognizer_.FlushForTesting();
+  // Flush the client receiver pipe to ensure the `success = false` reply has
+  // been received and processed by the speech recognition service.
+  speech_recognition_client_receiver_.FlushForTesting();
 
   size_t results_size_before_third_chunk = recognition_results_.size();
 
@@ -493,8 +534,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   // Flush again to ensure the third chunk is processed by the service.
   speech_recognition_recognizer_.FlushForTesting();
 
-  speech_recognition_recognizer_.reset();
-  base::RunLoop().RunUntilIdle();
+  ResetRecognizerAndWaitForDisconnect();
 
   EXPECT_EQ(results_size_before_third_chunk, recognition_results_.size());
 

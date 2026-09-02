@@ -45,6 +45,7 @@ class SpeechRecognitionRecognizerImplTest
       const media::SpeechRecognitionResult& result,
       OnSpeechRecognitionRecognitionEventCallback reply) override {
     last_received_result_ = result;
+    ++recognition_event_count_;
     std::move(reply).Run(true);
     if (run_loop_) {
       run_loop_->Quit();
@@ -113,6 +114,7 @@ class SpeechRecognitionRecognizerImplTest
       this};
   base::flat_map<std::string, base::FilePath> config_paths_;
   media::SpeechRecognitionResult last_received_result_;
+  int recognition_event_count_ = 0;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<SpeechRecognitionRecognizerImpl> recognizer_;
   raw_ptr<NiceMock<::soda::MockSodaClient>> soda_client_ = nullptr;
@@ -415,6 +417,30 @@ TEST_F(SpeechRecognitionRecognizerImplTest, SodaClientRegistryThreadSafety) {
   recognizer_.reset();
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, EmptyHypothesisDoesNotCrash) {
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  SerializedSodaConfig saved_config;
+  EXPECT_CALL(*soda_client_, Reset(_, _, _))
+      .WillOnce(testing::SaveArg<0>(&saved_config));
+
+  recognizer_->OnLanguagePackInstalled(config_paths());
+
+  soda::chrome::SodaResponse response;
+  response.set_soda_type(soda::chrome::SodaResponse::RECOGNITION);
+  auto* result = response.mutable_recognition_result();
+  result->set_result_type(soda::chrome::SodaRecognitionResult::FINAL);
+  // Do not add any hypothesis to verify bounds check prevents crash.
+  std::string serialized;
+  response.SerializeToString(&serialized);
+
+  saved_config.callback(serialized.c_str(), serialized.size(),
+                        saved_config.callback_handle);
+
+  EXPECT_EQ(0, recognition_event_count_);
+  EXPECT_TRUE(last_received_result_.transcription.empty());
 }
 
 }  // namespace speech
