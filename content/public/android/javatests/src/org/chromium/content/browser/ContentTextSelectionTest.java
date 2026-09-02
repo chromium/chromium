@@ -394,10 +394,15 @@ public class ContentTextSelectionTest {
 
         List<ItemMatcher> matchers =
                 List.of(
+                        hasId(R.id.select_action_menu_cut),
+                        hasId(R.id.select_action_menu_copy),
                         hasId(android.R.id.paste),
+                        hasId(android.R.id.pasteAsPlainText),
                         hasId(R.id.select_action_menu_select_all),
                         isDivider(),
-                        hasTitle("testNonSelectionItem"));
+                        hasTitle("testNonSelectionItem"),
+                        hasId(R.id.select_action_menu_web_search),
+                        hasId(R.id.select_action_menu_share));
         TestSelectionDropdownMenuDelegate dropdownDelegate =
                 new TestSelectionDropdownMenuDelegate();
         MVCListAdapter.ModelList items = menu.getMenuAsDropdown(dropdownDelegate);
@@ -450,12 +455,6 @@ public class ContentTextSelectionTest {
         setUpTestCorrectSelectionMenuItemsAddedForInputSelection();
         PendingSelectionMenu menu =
                 mSelectionPopupController.getPendingSelectionMenu(MenuType.DROPDOWN);
-        boolean shareAllowed =
-                mSelectionPopupController.isSelectActionModeAllowed(
-                        ActionModeCallbackHelper.MENU_ITEM_SHARE);
-        boolean webSearchAllowed =
-                mSelectionPopupController.isSelectActionModeAllowed(
-                        ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
         List<ItemMatcher> matchers = new ArrayList<>();
         matchers.add(hasTitle("Phone"));
@@ -463,10 +462,11 @@ public class ContentTextSelectionTest {
         matchers.add(hasId(R.id.select_action_menu_cut));
         matchers.add(hasId(R.id.select_action_menu_copy));
         matchers.add(hasId(android.R.id.paste));
+        matchers.add(hasId(android.R.id.pasteAsPlainText));
         matchers.add(hasId(R.id.select_action_menu_select_all));
         matchers.add(isDivider());
-        if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
-        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
+        matchers.add(hasId(R.id.select_action_menu_web_search));
+        matchers.add(hasId(R.id.select_action_menu_share));
         matchers.add(isDivider());
         matchers.add(hasTitle("testTextProcessingItem"));
 
