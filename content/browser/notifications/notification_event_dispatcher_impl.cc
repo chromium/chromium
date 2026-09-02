@@ -92,7 +92,7 @@ PersistentNotificationStatus ConvertServiceWorkerStatus(
 void ServiceWorkerNotificationEventFinished(
     NotificationDispatchCompleteCallback dispatch_complete_callback,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::move(dispatch_complete_callback)
       .Run(ConvertServiceWorkerStatus(service_worker_status),
            service_worker_status);
@@ -106,7 +106,7 @@ void DispatchNotificationEventOnRegistration(
     NotificationDispatchCompleteCallback dispatch_complete_callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 #if BUILDFLAG(IS_ANDROID)
   // This LOG(INFO) deliberately exists to help track down the cause of
   // https://crbug.com/534537, where notifications sometimes do not react to
@@ -115,7 +115,8 @@ void DispatchNotificationEventOnRegistration(
             << blink::ServiceWorkerStatusToString(service_worker_status);
 #endif
   if (service_worker_status == blink::ServiceWorkerStatusCode::kOk) {
-    DCHECK(service_worker_registration->active_version());
+    CHECK(service_worker_registration->active_version(),
+          base::NotFatalUntil::M159);
 
     std::move(dispatch_event_action)
         .Run(service_worker_registration.get(), notification_database_data,
@@ -168,7 +169,7 @@ void FindServiceWorkerRegistration(
     NotificationDispatchCompleteCallback dispatch_complete_callback,
     bool success,
     const NotificationDatabaseData& notification_database_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 #if BUILDFLAG(IS_ANDROID)
   // This LOG(INFO) deliberately exists to help track down the cause of
   // https://crbug.com/534537, where notifications sometimes do not react to
@@ -203,7 +204,7 @@ void ReadNotificationDatabaseData(
     const scoped_refptr<PlatformNotificationContext>& notification_context,
     NotificationOperationCallback notification_read_callback,
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   notification_context->ReadNotificationDataAndRecordInteraction(
       notification_id, origin, interaction,
       base::BindOnce(&FindServiceWorkerRegistration,
@@ -222,7 +223,7 @@ void DispatchNotificationClickEventOnWorker(
     const std::optional<std::u16string>& reply,
     ServiceWorkerVersion::StatusCallback callback,
     blink::ServiceWorkerStatusCode start_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(start_worker_status);
     return;
@@ -250,7 +251,7 @@ void DoDispatchNotificationClickEvent(
     const ServiceWorkerRegistration* service_worker_registration,
     const NotificationDatabaseData& notification_database_data,
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   notifications::LogNotificationClickedEventToDevTools(
       browser_context, notification_database_data, action_index, reply);
@@ -273,7 +274,7 @@ void OnPersistentNotificationDataDeleted(
     blink::ServiceWorkerStatusCode service_worker_status,
     NotificationDispatchCompleteCallback dispatch_complete_callback,
     bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PersistentNotificationStatus status =
       success ? PersistentNotificationStatus::kSuccess
               : PersistentNotificationStatus::kDatabaseError;
@@ -290,7 +291,7 @@ void DeleteNotificationDataFromDatabase(
     const scoped_refptr<PlatformNotificationContext>& notification_context,
     NotificationDispatchCompleteCallback dispatch_complete_callback,
     blink::ServiceWorkerStatusCode status_code) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   notification_context->DeleteNotificationData(
       notification_id, origin,
       /* close_notification= */ false,
@@ -304,7 +305,7 @@ void DispatchNotificationCloseEventOnWorker(
     const NotificationDatabaseData& notification_database_data,
     ServiceWorkerVersion::StatusCallback callback,
     blink::ServiceWorkerStatusCode start_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(start_worker_status);
     return;
@@ -328,7 +329,7 @@ void DoDispatchNotificationCloseEvent(
     const ServiceWorkerRegistration* service_worker_registration,
     const NotificationDatabaseData& notification_database_data,
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (by_user) {
     service_worker_registration->active_version()->RunAfterStartWorker(
         ServiceWorkerMetrics::EventType::NOTIFICATION_CLOSE,
@@ -357,9 +358,9 @@ void DispatchNotificationEvent(
     const PlatformNotificationContext::Interaction interaction,
     NotificationOperationCallbackWithContext notification_action_callback,
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!notification_id.empty());
-  DCHECK(origin.is_valid());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
 
   StoragePartition* partition =
       browser_context->GetStoragePartitionForUrl(origin);
@@ -401,7 +402,7 @@ NotificationEventDispatcher* NotificationEventDispatcher::GetInstance() {
 
 NotificationEventDispatcherImpl*
 NotificationEventDispatcherImpl::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return base::Singleton<NotificationEventDispatcherImpl>::get();
 }
 
@@ -438,8 +439,9 @@ NotificationEventDispatcherImpl::GetListenerIfNotifiable(
   }
 
   // The non-persistent notification should not be created by service workers.
-  DCHECK(listener->second.creator_type !=
-         RenderProcessHost::NotificationServiceCreatorType::kServiceWorker);
+  CHECK(listener->second.creator_type !=
+            RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
+        base::NotFatalUntil::M159);
 
   RenderFrameHost* rfh = listener->second.document.AsRenderFrameHostIfValid();
   if (!rfh) {
@@ -481,7 +483,7 @@ void NotificationEventDispatcherImpl::DispatchNotificationClickEvent(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   PlatformNotificationContext::Interaction interaction =
       action_index.has_value()
@@ -501,7 +503,7 @@ void NotificationEventDispatcherImpl::DispatchNotificationCloseEvent(
     const GURL& origin,
     bool by_user,
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   DispatchNotificationEvent(
       browser_context, notification_id, origin,
@@ -592,7 +594,8 @@ void NotificationEventDispatcherImpl::OnNonPersistentCloseComplete(
 void NotificationEventDispatcherImpl::
     HandleConnectionErrorForNonPersistentNotificationListener(
         const std::string& notification_id) {
-  DCHECK(non_persistent_notification_listeners_.count(notification_id));
+  CHECK(non_persistent_notification_listeners_.count(notification_id),
+        base::NotFatalUntil::M159);
   non_persistent_notification_listeners_.erase(notification_id);
 }
 

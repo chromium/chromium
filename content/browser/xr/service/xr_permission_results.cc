@@ -20,7 +20,8 @@ base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
 CreatePermissionTypeToStatusMap(
     const std::vector<blink::PermissionType>& permissions,
     const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
-  DCHECK_EQ(permissions.size(), permission_statuses.size());
+  CHECK_EQ(permissions.size(), permission_statuses.size(),
+           base::NotFatalUntil::M159);
 
   base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus> result;
   for (size_t i = 0; i < permissions.size(); ++i) {

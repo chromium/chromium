@@ -44,8 +44,9 @@ std::string NotificationIdGenerator::GenerateForPersistentNotification(
     const std::string& tag,
     bool is_shown_by_browser,
     int64_t persistent_notification_id) const {
-  DCHECK(origin.is_valid());
-  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
+  CHECK_EQ(origin, origin.DeprecatedGetOriginAsURL(),
+           base::NotFatalUntil::M159);
 
   std::stringstream stream;
 
@@ -72,8 +73,8 @@ std::string NotificationIdGenerator::GenerateForPersistentNotification(
 std::string NotificationIdGenerator::GenerateForNonPersistentNotification(
     const url::Origin& origin,
     const std::string& token) const {
-  DCHECK(!origin.opaque());
-  DCHECK(!token.empty());
+  CHECK(!origin.opaque(), base::NotFatalUntil::M159);
+  CHECK(!token.empty(), base::NotFatalUntil::M159);
   return base::StringPrintf(
       "%c%c%s%c%s", kNonPersistentNotificationPrefix, kNotificationTagSeparator,
       origin.Serialize().c_str(), kNotificationTagSeparator, token.c_str());

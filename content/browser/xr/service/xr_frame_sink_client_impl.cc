@@ -45,7 +45,7 @@ bool XrFrameSinkClientImpl::IsOnUiThread() const {
 }
 
 void XrFrameSinkClientImpl::SurfaceDestroyed() {
-  DCHECK(IsOnUiThread());
+  CHECK(IsOnUiThread(), base::NotFatalUntil::M159);
   if (!initialized_)
     return;
 
@@ -80,7 +80,7 @@ void XrFrameSinkClientImpl::InitializeRootCompositorFrameSink(
     viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
     device::DomOverlaySetup dom_setup,
     base::OnceClosure on_initialized) {
-  DCHECK(!initialized_);
+  CHECK(!initialized_, base::NotFatalUntil::M159);
   DVLOG(1) << __func__;
 
   ui_thread_task_runner_->PostTask(
@@ -95,7 +95,7 @@ void XrFrameSinkClientImpl::InitializeOnUiThread(
     device::DomOverlaySetup dom_setup,
     base::OnceClosure on_initialized) {
   // AllocateFrameSinkId needs to be called from the UI thread.
-  DCHECK(IsOnUiThread());
+  CHECK(IsOnUiThread(), base::NotFatalUntil::M159);
   DVLOG(1) << __func__;
 
   root_frame_sink_id_ = AllocateFrameSinkId();
@@ -115,7 +115,7 @@ void XrFrameSinkClientImpl::InitializeOnUiThread(
 }
 
 void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
-  DCHECK(IsOnUiThread());
+  CHECK(IsOnUiThread(), base::NotFatalUntil::M159);
   base::AutoLock lock(dom_surface_lock_);
 
   // This is left outside of the OS_ANDROID ifdef to prevent warnings about the

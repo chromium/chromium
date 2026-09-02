@@ -78,7 +78,7 @@ void UkmMessageHandler::HandleRequestUkmData(const base::ListValue& args_list) {
 }
 
 void UkmMessageHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // We can use base::Unretained() here, as both the callback and this class are
   // owned by UkmInternalsUI.

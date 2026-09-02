@@ -49,7 +49,7 @@ class SessionTracker {
   void RecordEntry() {
     DVLOG(1) << __func__;
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-    DCHECK(ukm_recorder);
+    CHECK(ukm_recorder, base::NotFatalUntil::M159);
 
     ukm_entry_->Record(ukm_recorder);
   }

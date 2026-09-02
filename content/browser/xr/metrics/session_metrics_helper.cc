@@ -65,7 +65,7 @@ void ReportInitialSessionData(
 // static
 SessionMetricsHelper* SessionMetricsHelper::FromWebContents(
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!web_contents)
     return nullptr;
@@ -77,7 +77,7 @@ SessionMetricsHelper* SessionMetricsHelper::FromWebContents(
 // static
 SessionMetricsHelper* SessionMetricsHelper::CreateForWebContents(
     content::WebContents* contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   // This is not leaked as the SessionMetricsHelperData will clean it up.
   std::unique_ptr<SessionMetricsHelper> helper =
@@ -90,8 +90,8 @@ SessionMetricsHelper* SessionMetricsHelper::CreateForWebContents(
 
 SessionMetricsHelper::SessionMetricsHelper(content::WebContents* contents) {
   DVLOG(2) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(contents);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(contents, base::NotFatalUntil::M159);
 
   Observe(contents);
 }
@@ -106,10 +106,11 @@ SessionMetricsHelper::StartInlineSession(
     const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
     size_t session_id) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
-  DCHECK(webxr_inline_session_trackers_.find(session_id) ==
-         webxr_inline_session_trackers_.end());
+  CHECK(webxr_inline_session_trackers_.find(session_id) ==
+            webxr_inline_session_trackers_.end(),
+        base::NotFatalUntil::M159);
 
   // TODO(crbug.com/40122624): The code here assumes that it's called on
   // behalf of the active frame, which is not always true.
@@ -128,7 +129,7 @@ SessionMetricsHelper::StartInlineSession(
 
 void SessionMetricsHelper::StopAndRecordInlineSession(size_t session_id) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto it = webxr_inline_session_trackers_.find(session_id);
 
@@ -150,7 +151,7 @@ SessionMetricsHelper::StartImmersiveSession(
     const std::unordered_set<device::mojom::XRSessionFeature>&
         enabled_features) {
   DVLOG(1) << __func__;
-  DCHECK(!webxr_immersive_session_tracker_);
+  CHECK(!webxr_immersive_session_tracker_, base::NotFatalUntil::M159);
 
   session_timer_ = std::make_unique<SessionTimer>(session_options.trace_id);
   session_timer_->StartSession();
@@ -208,7 +209,7 @@ void SessionMetricsHelper::StopAndRecordImmersiveSession() {
 }
 
 void SessionMetricsHelper::PrimaryPageChanged(content::Page& page) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   // All sessions are terminated on navigations, so to ensure that we log
   // everything that we have, cleanup any outstanding session trackers now.
   if (webxr_immersive_session_tracker_)

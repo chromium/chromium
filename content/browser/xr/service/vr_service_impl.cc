@@ -216,7 +216,7 @@ VRServiceImpl::VRServiceImpl(content::RenderFrameHost* render_frame_host)
           content::WebContents::FromRenderFrameHost(render_frame_host)),
       render_frame_host_(render_frame_host),
       in_focused_frame_(render_frame_host->GetView()->HasFocus()) {
-  DCHECK(render_frame_host_);
+  CHECK(render_frame_host_, base::NotFatalUntil::M159);
   DVLOG(2) << __func__;
 
   runtime_manager_ =
@@ -307,7 +307,7 @@ void VRServiceImpl::RenderFrameDeleted(content::RenderFrameHost* host) {
   // Receiver should always be live here, as this is a SelfOwnedReceiver.
   // Close the receiver (and delete this VrServiceImpl) when the RenderFrameHost
   // is deleted.
-  DCHECK(receiver_.get());
+  CHECK(receiver_.get(), base::NotFatalUntil::M159);
   receiver_->Close();
 }
 
@@ -394,7 +394,7 @@ void VRServiceImpl::OnInlineSessionCreated(
 void VRServiceImpl::OnImmersiveSessionCreated(
     SessionRequestData request,
     device::mojom::XRRuntimeSessionResultPtr session_result) {
-  DCHECK(request.options);
+  CHECK(request.options, base::NotFatalUntil::M159);
   if (!session_result) {
     TRACE_EVENT("xr",
                 "VRServiceImpl::OnImmersiveSessionCreated: no session_result",
@@ -518,7 +518,7 @@ void VRServiceImpl::RequestSession(
     device::mojom::XRSessionOptionsPtr options,
     device::mojom::VRService::RequestSessionCallback callback) {
   DVLOG(2) << __func__;
-  DCHECK(options);
+  CHECK(options, base::NotFatalUntil::M159);
 
   webxr::mojom::SessionRequestedRecordPtr session_requested_record =
       webxr::mojom::SessionRequestedRecord::New();
@@ -652,9 +652,9 @@ void VRServiceImpl::DoRequestPermissions(
 void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
                                         BrowserXRRuntimeImpl* runtime) {
   DVLOG(2) << __func__;
-  DCHECK(request.options);
-  DCHECK(runtime);
-  DCHECK_EQ(runtime->GetId(), request.runtime_id);
+  CHECK(request.options, base::NotFatalUntil::M159);
+  CHECK(runtime, base::NotFatalUntil::M159);
+  CHECK_EQ(runtime->GetId(), request.runtime_id, base::NotFatalUntil::M159);
 
   // Need to calculate the permissions before the call below, as otherwise
   // std::move nulls options out before `GetRequiredPermissions()` runs.
@@ -674,7 +674,7 @@ void VRServiceImpl::OnPermissionResultsForMode(
     const std::vector<blink::mojom::PermissionStatus>& results,
     bool needs_prompt) {
   DVLOG(2) << __func__ << ": permissions.size()=" << permissions.size();
-  DCHECK_EQ(permissions.size(), results.size());
+  CHECK_EQ(permissions.size(), results.size(), base::NotFatalUntil::M159);
 
   if (needs_prompt) {
     // Prolong the user activation since the user may have taken long enough to

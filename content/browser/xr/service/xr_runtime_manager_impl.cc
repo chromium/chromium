@@ -376,7 +376,7 @@ bool XRRuntimeManagerImpl::HasPendingImmersiveRequest() {
 }
 
 bool XRRuntimeManagerImpl::IsOtherClientPresenting(VRServiceImpl* service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M159);
 
   auto* runtime = GetCurrentlyPresentingImmersiveRuntime();
   if (!runtime)
@@ -422,7 +422,8 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
     std::optional<CHROME_LUID> luid = runtime->GetLuid();
     // IsInitializedOnCompatibleAdapter should have returned true if the
     // runtime doesn't specify a LUID.
-    DCHECK(luid && (luid->HighPart != 0 || luid->LowPart != 0));
+    CHECK(luid && (luid->HighPart != 0 || luid->LowPart != 0),
+          base::NotFatalUntil::M159);
 
     // Set the XR compatible adapter LUID in GpuDataManager.
     // GpuDataManagerImpl::AppendGpuCommandLine passes this to the GPU process.
@@ -603,7 +604,7 @@ void XRRuntimeManagerImpl::AddRuntime(
     device::mojom::XRDeviceDataPtr device_data,
     mojo::PendingRemote<device::mojom::XRRuntime> runtime) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(runtimes_.find(id) == runtimes_.end());
+  CHECK(runtimes_.find(id) == runtimes_.end(), base::NotFatalUntil::M159);
 
   TRACE_EVENT_INSTANT("xr", "AddRuntime", "id", id);
 

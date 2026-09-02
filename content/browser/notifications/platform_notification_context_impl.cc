@@ -108,22 +108,22 @@ PlatformNotificationContextImpl::PlatformNotificationContextImpl(
       browser_context_(browser_context),
       service_worker_context_(service_worker_context),
       has_shutdown_(false) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 PlatformNotificationContextImpl::~PlatformNotificationContextImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // If the database has been initialized, it must be deleted on the task runner
   // thread as closing it may cause file I/O.
   if (database_) {
-    DCHECK(task_runner_);
+    CHECK(task_runner_, base::NotFatalUntil::M159);
     task_runner_->DeleteSoon(FROM_HERE, database_.release());
   }
 }
 
 void PlatformNotificationContextImpl::Initialize() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   service_proxy_ = std::make_unique<PlatformNotificationServiceProxy>(
       service_worker_context_, browser_context_);
 
@@ -147,7 +147,7 @@ void PlatformNotificationContextImpl::Initialize() {
 void PlatformNotificationContextImpl::DidGetNotifications(
     std::set<std::string> displayed_notifications,
     bool supports_synchronization) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Abort if the profile has been shut down already. This mainly happens in
   // tests and very short lived sessions.
   if (has_shutdown_.load(std::memory_order_relaxed)) {
@@ -176,7 +176,7 @@ void PlatformNotificationContextImpl::DoSyncNotificationData(
     bool supports_synchronization,
     std::set<std::string> displayed_notifications,
     bool initialized) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
   if (!initialized) {
     return;
   }
@@ -226,8 +226,8 @@ void PlatformNotificationContextImpl::DoHandleSyncNotification(
     const std::set<std::string>& displayed_notifications,
     std::set<std::string>* close_notification_ids,
     const NotificationDatabaseData& data) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(close_notification_ids);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
+  CHECK(close_notification_ids, base::NotFatalUntil::M159);
 
   // Handle pending notifications.
   if (CanTrigger(data)) {
@@ -265,7 +265,7 @@ void PlatformNotificationContextImpl::DoHandleSyncNotification(
 }
 
 void PlatformNotificationContextImpl::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   has_shutdown_.store(true, std::memory_order_relaxed);
 
   service_proxy_.reset();

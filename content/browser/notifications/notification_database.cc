@@ -80,8 +80,8 @@ std::string CreateDataPrefix(const GURL& origin) {
 // Creates the compound data key in which notification data is stored.
 std::string CreateDataKey(const GURL& origin,
                           const std::string& notification_id) {
-  DCHECK(origin.is_valid());
-  DCHECK(!notification_id.empty());
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
 
   return CreateDataPrefix(origin) + notification_id;
 }
@@ -99,8 +99,8 @@ std::string CreateResourcesPrefix(const GURL& origin) {
 // Creates the compound data key in which notification resources are stored.
 std::string CreateResourcesKey(const GURL& origin,
                                const std::string& notification_id) {
-  DCHECK(origin.is_valid());
-  DCHECK(!notification_id.empty());
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
 
   return CreateResourcesPrefix(origin) + notification_id;
 }
@@ -110,7 +110,7 @@ std::string CreateResourcesKey(const GURL& origin,
 NotificationDatabase::Status DeserializedNotificationData(
     const std::string& serialized_data,
     NotificationDatabaseData* notification_database_data) {
-  DCHECK(notification_database_data);
+  CHECK(notification_database_data, base::NotFatalUntil::M159);
   if (DeserializeNotificationDatabaseData(serialized_data,
                                           notification_database_data)) {
     return NotificationDatabase::STATUS_OK;
@@ -125,7 +125,7 @@ NotificationDatabase::Status DeserializedNotificationData(
 NotificationDatabase::Status DeserializedNotificationResources(
     const std::string& serialized_resources,
     blink::NotificationResources* notification_resources) {
-  DCHECK(notification_resources);
+  CHECK(notification_resources, base::NotFatalUntil::M159);
   if (DeserializeNotificationDatabaseResources(serialized_resources,
                                                notification_resources)) {
     return NotificationDatabase::STATUS_OK;
@@ -157,7 +157,7 @@ NotificationDatabase::~NotificationDatabase() {
 NotificationDatabase::Status NotificationDatabase::Open(
     bool create_if_missing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::UNINITIALIZED, state_);
+  CHECK_EQ(State::UNINITIALIZED, state_, base::NotFatalUntil::M159);
 
   if (!create_if_missing) {
     if (IsInMemoryDatabase() || !base::PathExists(path_) ||
@@ -191,10 +191,10 @@ NotificationDatabase::Status NotificationDatabase::ReadNotificationData(
     const GURL& origin,
     NotificationDatabaseData* notification_database_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::INITIALIZED, state_);
-  DCHECK(!notification_id.empty());
-  DCHECK(origin.is_valid());
-  DCHECK(notification_database_data);
+  CHECK_EQ(State::INITIALIZED, state_, base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
+  CHECK(notification_database_data, base::NotFatalUntil::M159);
 
   std::string key = CreateDataKey(origin, notification_id);
   std::string serialized_data;
@@ -213,10 +213,10 @@ NotificationDatabase::Status NotificationDatabase::ReadNotificationResources(
     const GURL& origin,
     blink::NotificationResources* notification_resources) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::INITIALIZED, state_);
-  DCHECK(!notification_id.empty());
-  DCHECK(origin.is_valid());
-  DCHECK(notification_resources);
+  CHECK_EQ(State::INITIALIZED, state_, base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
+  CHECK(notification_resources, base::NotFatalUntil::M159);
 
   std::string key = CreateResourcesKey(origin, notification_id);
   std::string serialized_resources;
@@ -305,11 +305,11 @@ NotificationDatabase::Status NotificationDatabase::WriteNotificationData(
     const GURL& origin,
     const NotificationDatabaseData& notification_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::INITIALIZED, state_);
-  DCHECK(origin.is_valid());
+  CHECK_EQ(State::INITIALIZED, state_, base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
 
   const std::string& notification_id = notification_data.notification_id;
-  DCHECK(!notification_id.empty());
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
 
   std::string serialized_data;
   if (!SerializeNotificationDatabaseData(notification_data, &serialized_data)) {
@@ -343,9 +343,9 @@ NotificationDatabase::Status NotificationDatabase::DeleteNotificationData(
     const std::string& notification_id,
     const GURL& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::INITIALIZED, state_);
-  DCHECK(!notification_id.empty());
-  DCHECK(origin.is_valid());
+  CHECK_EQ(State::INITIALIZED, state_, base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
 
   NotificationDatabaseData data;
   Status status = ReadNotificationData(notification_id, origin, &data);
@@ -366,9 +366,9 @@ NotificationDatabase::Status NotificationDatabase::DeleteNotificationResources(
     const std::string& notification_id,
     const GURL& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(State::INITIALIZED, state_);
-  DCHECK(!notification_id.empty());
-  DCHECK(origin.is_valid());
+  CHECK_EQ(State::INITIALIZED, state_, base::NotFatalUntil::M159);
+  CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
 
   std::string key = CreateResourcesKey(origin, notification_id);
   return LevelDBStatusToNotificationDatabaseStatus(
@@ -422,7 +422,7 @@ NotificationDatabase::ReadAllNotificationDataInternal(
     std::optional<bool> is_shown_by_browser,
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(notification_data_vector);
+  CHECK(notification_data_vector, base::NotFatalUntil::M159);
 
   return ForEachNotificationDataInternal(
       origin, service_worker_registration_id, is_shown_by_browser,
@@ -482,8 +482,8 @@ NotificationDatabase::DeleteAllNotificationDataInternal(
     int64_t service_worker_registration_id,
     std::set<std::string>* deleted_notification_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(deleted_notification_ids);
-  DCHECK(origin.is_valid());
+  CHECK(deleted_notification_ids, base::NotFatalUntil::M159);
+  CHECK(origin.is_valid(), base::NotFatalUntil::M159);
 
   const std::string prefix = CreateDataPrefix(origin);
 
@@ -527,7 +527,7 @@ NotificationDatabase::DeleteAllNotificationDataInternal(
     }
 
     std::string notification_id = notification_database_data.notification_id;
-    DCHECK(!notification_id.empty());
+    CHECK(!notification_id.empty(), base::NotFatalUntil::M159);
 
     batch.Delete(iter->key());
     batch.Delete(CreateResourcesKey(origin, notification_id));
