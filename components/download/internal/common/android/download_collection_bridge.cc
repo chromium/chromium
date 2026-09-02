@@ -10,10 +10,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_util.h"
-#include "components/download/public/common/download_interrupt_reasons.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/download/internal/common/android/download_document_uri_bridge.h"
 #include "components/download/internal/common/jni_headers/DownloadCollectionBridge_jni.h"
+#include "components/download/public/common/download_interrupt_reasons.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -29,6 +28,7 @@ const int kDefaultExpirationDurationInDays = 3;
 std::set<base::FilePath>* g_existing_file_names = nullptr;
 
 }  // namespace
+
 // static
 base::FilePath DownloadCollectionBridge::CreateIntermediateUriForPublish(
     const GURL& original_url,
@@ -45,6 +45,9 @@ base::FilePath DownloadCollectionBridge::CreateIntermediateUriForPublish(
 // static
 bool DownloadCollectionBridge::ShouldPublishDownload(
     const base::FilePath& file_path) {
+  if (file_path.IsContentUri()) {
+    return true;
+  }
   return Java_DownloadCollectionBridge_shouldPublishDownload(
       base::android::AttachCurrentThread(), file_path.value());
 }
@@ -55,6 +58,11 @@ DownloadInterruptReason DownloadCollectionBridge::MoveFileToIntermediateUri(
     const base::FilePath& destination_uri) {
   DCHECK(!source_path.IsContentUri());
   DCHECK(destination_uri.IsContentUri());
+
+  if (DownloadDocumentUriBridge::IsDocumentUri(destination_uri)) {
+    return DownloadDocumentUriBridge::MoveFileToDocumentUri(source_path,
+                                                            destination_uri);
+  }
 
   bool success = Java_DownloadCollectionBridge_copyFileToIntermediateUri(
       base::android::AttachCurrentThread(), source_path.value(),
@@ -67,6 +75,10 @@ DownloadInterruptReason DownloadCollectionBridge::MoveFileToIntermediateUri(
 // static
 void DownloadCollectionBridge::DeleteIntermediateUri(
     const base::FilePath& intermediate_uri) {
+  if (DownloadDocumentUriBridge::IsDocumentUri(intermediate_uri)) {
+    DownloadDocumentUriBridge::DeleteDocumentUri(intermediate_uri);
+    return;
+  }
   Java_DownloadCollectionBridge_deleteIntermediateUri(
       base::android::AttachCurrentThread(), intermediate_uri.value());
 }
@@ -74,6 +86,9 @@ void DownloadCollectionBridge::DeleteIntermediateUri(
 // static
 base::FilePath DownloadCollectionBridge::PublishDownload(
     const base::FilePath& intermediate_uri) {
+  if (DownloadDocumentUriBridge::IsDocumentUri(intermediate_uri)) {
+    return DownloadDocumentUriBridge::PublishDownload(intermediate_uri);
+  }
   std::string final_uri = Java_DownloadCollectionBridge_publishDownload(
       base::android::AttachCurrentThread(), intermediate_uri.value());
   return base::FilePath(final_uri);
@@ -82,6 +97,9 @@ base::FilePath DownloadCollectionBridge::PublishDownload(
 // static
 base::File DownloadCollectionBridge::OpenIntermediateUri(
     const base::FilePath& intermediate_uri) {
+  if (DownloadDocumentUriBridge::IsDocumentUri(intermediate_uri)) {
+    return DownloadDocumentUriBridge::OpenDocumentUri(intermediate_uri);
+  }
   int fd = Java_DownloadCollectionBridge_openIntermediateUri(
       base::android::AttachCurrentThread(), intermediate_uri.value());
   if (fd < 0)
@@ -103,6 +121,10 @@ bool DownloadCollectionBridge::FileNameExists(const base::FilePath& file_name) {
 bool DownloadCollectionBridge::RenameDownloadUri(
     const base::FilePath& download_uri,
     const base::FilePath& new_display_name) {
+  if (DownloadDocumentUriBridge::IsDocumentUri(download_uri)) {
+    return DownloadDocumentUriBridge::RenameDocumentUri(download_uri,
+                                                        new_display_name);
+  }
   return Java_DownloadCollectionBridge_renameDownloadUri(
       base::android::AttachCurrentThread(), download_uri.value(),
       new_display_name.value());
@@ -133,6 +155,9 @@ void DownloadCollectionBridge::GetDisplayNamesForDownloads(
 // static
 base::FilePath DownloadCollectionBridge::GetDisplayName(
     const base::FilePath& download_uri) {
+  if (DownloadDocumentUriBridge::IsDocumentUri(download_uri)) {
+    return DownloadDocumentUriBridge::GetDisplayName(download_uri);
+  }
   std::string display_name = Java_DownloadCollectionBridge_getDisplayName(
       base::android::AttachCurrentThread(), download_uri.value());
   return base::FilePath(display_name);
