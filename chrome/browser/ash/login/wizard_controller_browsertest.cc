@@ -569,6 +569,8 @@ class WizardControllerFlowTest : public WizardControllerTest {
     device_disabled_screen_view_ =
         std::make_unique<MockDeviceDisabledScreenView>();
     MockScreen(std::make_unique<DeviceDisabledScreen>(
+        g_browser_process->platform_part()
+            ->device_restriction_schedule_controller(),
         device_disabled_screen_view_->AsWeakPtr()));
     EXPECT_CALL(*device_disabled_screen_view_, Show(_)).Times(0);
 

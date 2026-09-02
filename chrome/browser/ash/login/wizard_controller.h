@@ -105,6 +105,7 @@ class MetricsService;
 namespace policy {
 class AutoEnrollmentController;
 class BrowserPolicyConnectorAsh;
+class DeviceRestrictionScheduleController;
 }  // namespace policy
 
 namespace ash {
@@ -137,6 +138,8 @@ class WizardController : public OobeUI::Observer {
   // `application_locale_storage` and `browser_policy_connector_ash` must be
   // non-null and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
+  // `device_restriction_schedule_controller` may be null in unit tests, but
+  // must outlive `this` if it's non-null.
   WizardController(
       PrefService* local_state,
       ::metrics::MetricsService* metrics_service,
@@ -145,6 +148,8 @@ class WizardController : public OobeUI::Observer {
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
+      policy::DeviceRestrictionScheduleController*
+          device_restriction_schedule_controller,
       WizardContext* wizard_context);
 
   WizardController(const WizardController&) = delete;
@@ -660,6 +665,8 @@ class WizardController : public OobeUI::Observer {
       browser_policy_connector_ash_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
+  const raw_ptr<policy::DeviceRestrictionScheduleController>
+      device_restriction_schedule_controller_;
 
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;

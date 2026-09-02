@@ -653,6 +653,8 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
         &application_locale_storage_.get(), shared_url_loader_factory_.get(),
         &browser_policy_connector_ash_.get(),
         g_browser_process->platform_part()->component_manager_ash(),
+        g_browser_process->platform_part()
+            ->device_restriction_schedule_controller(),
         GetWizardContext());
     NotifyWizardCreated();
     wizard_controller_->Init(first_screen);
@@ -726,6 +728,8 @@ void LoginDisplayHostWebUI::OnStartAppLaunch() {
         &application_locale_storage_.get(), shared_url_loader_factory_.get(),
         &browser_policy_connector_ash_.get(),
         g_browser_process->platform_part()->component_manager_ash(),
+        g_browser_process->platform_part()
+            ->device_restriction_schedule_controller(),
         GetWizardContext());
     NotifyWizardCreated();
   }

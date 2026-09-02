@@ -483,6 +483,9 @@ class WizardControllerTest : public WizardControllerTestBase {
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->component_manager_ash(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->device_restriction_schedule_controller(),
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));

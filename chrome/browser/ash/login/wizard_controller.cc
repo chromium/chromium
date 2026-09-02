@@ -454,6 +454,8 @@ WizardController::WizardController(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
+    policy::DeviceRestrictionScheduleController*
+        device_restriction_schedule_controller,
     WizardContext* wizard_context)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(metrics_service),
@@ -461,12 +463,17 @@ WizardController::WizardController(
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       component_manager_ash_(std::move(component_manager_ash)),
+      device_restriction_schedule_controller_(
+          device_restriction_schedule_controller),
       quickstart_controller_(
           std::make_unique<quick_start::QuickStartController>(
               &local_state_.get())),
       screen_manager_(std::make_unique<ScreenManager>()),
       wizard_context_(wizard_context) {
   if (!metrics_service_) {
+    CHECK_IS_TEST();
+  }
+  if (!device_restriction_schedule_controller_) {
     CHECK_IS_TEST();
   }
   CHECK(component_manager_ash_);
@@ -824,7 +831,9 @@ WizardController::CreateScreens() {
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnAutoEnrollmentCheckScreenExit,
                           weak_factory_.GetWeakPtr())));
+  CHECK(device_restriction_schedule_controller_);
   append(std::make_unique<DeviceDisabledScreen>(
+      device_restriction_schedule_controller_,
       oobe_ui->GetView<DeviceDisabledScreenHandler>()->AsWeakPtr()));
   append(std::make_unique<EncryptionMigrationScreen>(
       oobe_ui->GetView<EncryptionMigrationScreenHandler>()->AsWeakPtr()));

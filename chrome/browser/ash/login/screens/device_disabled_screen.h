@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
+
+namespace policy {
+class DeviceRestrictionScheduleController;
+}  // namespace policy
 
 namespace ash {
 
@@ -18,7 +23,11 @@ class DeviceDisabledScreenView;
 class DeviceDisabledScreen : public BaseScreen,
                              public system::DeviceDisablingManager::Observer {
  public:
-  explicit DeviceDisabledScreen(base::WeakPtr<DeviceDisabledScreenView> view);
+  // `device_restriction_schedule_controller` must be non-null and must outlive
+  // `this`.
+  DeviceDisabledScreen(policy::DeviceRestrictionScheduleController*
+                           device_restriction_schedule_controller,
+                       base::WeakPtr<DeviceDisabledScreenView> view);
 
   DeviceDisabledScreen(const DeviceDisabledScreen&) = delete;
   DeviceDisabledScreen& operator=(const DeviceDisabledScreen&) = delete;
@@ -36,6 +45,8 @@ class DeviceDisabledScreen : public BaseScreen,
   void ShowImpl() override;
   void HideImpl() override;
 
+  const raw_ref<policy::DeviceRestrictionScheduleController>
+      device_restriction_schedule_controller_;
   base::WeakPtr<DeviceDisabledScreenView> view_;
   base::ScopedObservation<system::DeviceDisablingManager, DeviceDisabledScreen>
       observation_{this};
