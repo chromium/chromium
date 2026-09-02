@@ -277,6 +277,12 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     return false;
   }
 
+  gfx::ColorSpace color_space;
+  if (!input.ReadColorSpace(&color_space)) {
+    DLOG(ERROR) << "Failed to read color_space";
+    return false;
+  }
+
   scoped_refptr<media::VideoFrame> frame;
   if (data.is_shared_memory_data()) {
     media::mojom::SharedMemoryVideoFrameDataDataView shared_memory_data;
@@ -433,6 +439,13 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       DLOG(ERROR) << "coded_size (" << coded_size.ToString()
                   << ") does not match shared_image size ("
                   << shared_image->size().ToString() << ")";
+      return false;
+    }
+
+    if (color_space != shared_image->color_space()) {
+      DLOG(ERROR) << "color_space (" << color_space.ToString()
+                  << ") does not match shared_image color_space ("
+                  << shared_image->color_space().ToString() << ")";
       return false;
     }
 
@@ -680,12 +693,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
   }
 
   frame->set_metadata(metadata);
-
-  gfx::ColorSpace color_space;
-  if (!input.ReadColorSpace(&color_space)) {
-    DLOG(ERROR) << "Failed to read color_space";
-    return false;
-  }
   frame->set_color_space(color_space);
 
   gfx::HDRMetadata hdr_metadata;

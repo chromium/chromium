@@ -448,6 +448,42 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrameMismatchedSize) {
                                                          &new_frame));
 }
 
+TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrameMismatchedColorSpace) {
+  constexpr gfx::Size kSize(100, 100);
+  constexpr gfx::Rect kVisibleRect(10, 10, 80, 80);
+  constexpr gfx::Size kNaturalSize(200, 100);
+  constexpr base::TimeDelta kTimestamp = base::Seconds(100);
+
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = kSize;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu::ClientSharedImage::CreateForTesting(metadata);
+
+  auto exported_si = shared_image->Export();
+  auto mojo_si_data = mojom::SharedImageVideoFrameData::New(
+      std::move(exported_si), gpu::SyncToken(), /*is_mappable=*/false);
+
+  auto mojo_frame = mojom::VideoFrame::New(
+      PIXEL_FORMAT_ABGR, kSize, kVisibleRect, kNaturalSize, kTimestamp,
+      mojom::VideoFrameData::NewSharedImageData(std::move(mojo_si_data)),
+      VideoFrameMetadata(), gfx::ColorSpace::CreateREC709(),
+      gfx::HDRMetadata());
+
+  auto message = mojom::VideoFrame::SerializeAsMessage(&mojo_frame);
+  mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
+  message = mojo::Message::CreateFromMessageHandle(&handle);
+
+  scoped_refptr<VideoFrame> new_frame;
+  // Should fail deserialization safely without crashing on CHECK.
+  EXPECT_FALSE(mojom::VideoFrame::DeserializeFromMessage(std::move(message),
+                                                         &new_frame));
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(VideoFrameStructTraitsTest, DmabufsVideoFrame) {
   constexpr gfx::Size kCodedSize = gfx::Size(256, 256);
