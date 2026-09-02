@@ -107,9 +107,6 @@ const CGFloat kMinDragHandleHeight = 24.0;
 @property(nonatomic, assign, readwrite) CGFloat collectionShiftingOffset;
 @property(nonatomic, assign, readwrite) BOOL scrolledToMinimumHeight;
 
-// Private helpers
-- (void)handleTraitChanges;
-
 @end
 
 @implementation NewTabPageRedesignViewController {
@@ -346,15 +343,11 @@ const CGFloat kMinDragHandleHeight = 24.0;
       [_identityDiscButton setSignedOutAccountImage];
     }
   }
-  __weak __typeof(self) weakSelf = self;
   [self registerForTraitChanges:@[
     UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,
     UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
   ]
-                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                  UITraitCollection* previousCollection) {
-                      [weakSelf handleTraitChanges];
-                    }];
+                     withAction:@selector(handleTraitChanges)];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -394,6 +387,37 @@ const CGFloat kMinDragHandleHeight = 24.0;
   }
 }
 
+- (void)detachChildViewController:(UIViewController*)child {
+  if (!child || child.parentViewController != self) {
+    return;
+  }
+  [child willMoveToParentViewController:nil];
+  [child.view removeFromSuperview];
+  [child removeFromParentViewController];
+}
+
+- (void)containChildViewController:(UIViewController*)child
+                      insideParent:(UIViewController*)parent
+                     containerView:(UIView*)containerView {
+  if (!child || !parent || !containerView) {
+    return;
+  }
+  if (child.parentViewController == parent &&
+      child.view.superview == containerView) {
+    return;
+  }
+  if (child.parentViewController) {
+    [child willMoveToParentViewController:nil];
+    [child.view removeFromSuperview];
+    [child removeFromParentViewController];
+  }
+  [parent addChildViewController:child];
+  child.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [containerView addSubview:child.view];
+  AddSameConstraints(child.view, containerView);
+  [child didMoveToParentViewController:parent];
+}
+
 - (void)setUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton {
   if (_useNewBadgeForLensButton == useNewBadgeForLensButton) {
     return;
@@ -412,8 +436,15 @@ const CGFloat kMinDragHandleHeight = 24.0;
   _mostVisitedView = nil;
   self.magicStackViewController = nil;
   [self setFeedViewController:nil];
-  [_bottomSheetViewController invalidate];
-  _bottomSheetViewController = nil;
+  if (_quickActionsViewController) {
+    [self detachChildViewController:_quickActionsViewController];
+    _quickActionsViewController = nil;
+  }
+  if (_bottomSheetViewController) {
+    [_bottomSheetViewController invalidate];
+    [self detachChildViewController:_bottomSheetViewController];
+    _bottomSheetViewController = nil;
+  }
   _identityDiscButton = nil;
   _avatarImage = nil;
   _avatarName = nil;
