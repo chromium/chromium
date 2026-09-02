@@ -2552,7 +2552,7 @@ void DownloadImageTestInternal(Shell* shell,
       .WillByDefault(
           InvokeWithoutArgs(loop_runner.get(), &MessageLoopRunner::Quit));
 
-  shell->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell, GURL("about:blank")));
   shell->web_contents()->DownloadImage(
       image_url, false, gfx::Size(), 1024, false,
       base::BindOnce(&DownloadImageObserver::OnFinishDownloadImage,
@@ -2622,7 +2622,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DownloadImage_NoValidImage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/invalid.ico");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
       kImageUrl, false, gfx::Size(), 2, false,
@@ -2655,7 +2655,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DownloadImage_PreferredSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
       kImageUrl, false, gfx::Size(30, 30), 1024, false,
@@ -2669,7 +2669,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DownloadImage_PreferredSizeZero) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
       kImageUrl, false, gfx::Size(), 1024, false,
@@ -2683,7 +2683,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DownloadImage_PreferredSizeClampedByMaxSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
       kImageUrl, false, gfx::Size(60, 60), 30, false,
@@ -2697,7 +2697,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DownloadImage_PreferredWidthClampedByMaxSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
       kImageUrl, false, gfx::Size(60, 30), 30, false,
@@ -2711,7 +2711,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DownloadImage_PreferredHeightClampedByMaxSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
       kImageUrl, false, gfx::Size(30, 60), 30, false,
@@ -2748,7 +2748,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl =
       embedded_test_server()->GetURL("/icon-with-two-entries.ico");
-  shell()->LoadURL(GURL("about:blank"));
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   base::RunLoop run_loop;
   std::vector<gfx::Size> expected_sizes{{16, 16}, {32, 32}};
   shell()->web_contents()->DownloadImage(
