@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -75,6 +76,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/is_potentially_trustworthy.h"
+#include "net/base/switches.h"
 #include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -307,6 +310,13 @@ WebTestContentBrowserClient::WebTestContentBrowserClient() {
   static storage::QuotaSettings quota_settings(
       storage::GetHardCodedSettings(1024 * 1024 * 1024));
   StoragePartition::SetDefaultQuotaSettingsForTesting(&quota_settings);
+
+  // DevTools frontend in web tests is loaded over
+  // http://debug-frontend.test:8000 (see WebTestDevToolsBindings::Inspect).
+  // Treat this origin as secure so that the DevTools frontend has access to
+  // [SecureContext] APIs (e.g. crypto.randomUUID).
+  net::SecureOriginAllowlist::GetInstance().SetAuxiliaryAllowlist(
+      "http://debug-frontend.test:8000", nullptr);
 }
 
 WebTestContentBrowserClient::~WebTestContentBrowserClient() {
@@ -455,6 +465,14 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                  kForwardSwitches);
+
+  std::vector<std::string> allowlist =
+      net::SecureOriginAllowlist::GetInstance().GetCurrentAllowlist();
+  if (!allowlist.empty()) {
+    command_line->AppendSwitchASCII(
+        net::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        base::JoinString(allowlist, ","));
+  }
 }
 
 std::unique_ptr<BrowserMainParts>
