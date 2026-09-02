@@ -19,10 +19,8 @@
 namespace blink {
 
 PeriodicSyncManager::PeriodicSyncManager(
-    ServiceWorkerRegistration* registration,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    ServiceWorkerRegistration* registration)
     : registration_(registration),
-      task_runner_(std::move(task_runner)),
       background_sync_service_(registration_->GetExecutionContext()) {
   DCHECK(registration_);
 }
@@ -47,6 +45,15 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
     return EmptyPromise();
   }
 
+  auto* background_sync_service = GetBackgroundSyncServiceRemote();
+  if (!background_sync_service) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The service worker registration is not associated with an execution "
+        "context.");
+    return EmptyPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
@@ -54,7 +61,7 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
   mojom::blink::SyncRegistrationOptionsPtr sync_registration =
       mojom::blink::SyncRegistrationOptions::New(tag, options->minInterval());
 
-  GetBackgroundSyncServiceRemote()->Register(
+  background_sync_service->Register(
       std::move(sync_registration), registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(BindOnce(
           &PeriodicSyncManager::RegisterCallback, WrapPersistent(this))));
@@ -84,9 +91,18 @@ ScriptPromise<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
   if (!registration_->active()) {
     resolver->Resolve(Vector<String>());
   } else {
+    auto* background_sync_service = GetBackgroundSyncServiceRemote();
+    if (!background_sync_service) {
+      return ScriptPromise<IDLSequence<IDLString>>::RejectWithDOMException(
+          script_state,
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kInvalidStateError,
+              "The service worker registration is not associated with an "
+              "execution context."));
+    }
     // TODO(crbug.com/932591): Optimize this to only get the tags from the
     // browser process instead of the registrations themselves.
-    GetBackgroundSyncServiceRemote()->GetRegistrations(
+    background_sync_service->GetRegistrations(
         registration_->RegistrationId(),
         resolver->WrapCallbackInScriptScope(
             BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
@@ -117,7 +133,17 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::unregister(
     return promise;
   }
 
-  GetBackgroundSyncServiceRemote()->Unregister(
+  auto* background_sync_service = GetBackgroundSyncServiceRemote();
+  if (!background_sync_service) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "The service worker registration is not associated with an "
+            "execution context."));
+  }
+
+  background_sync_service->Unregister(
       registration_->RegistrationId(), tag,
       resolver->WrapCallbackInScriptScope(BindOnce(
           &PeriodicSyncManager::UnregisterCallback, WrapPersistent(this))));
@@ -127,10 +153,12 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::unregister(
 mojom::blink::PeriodicBackgroundSyncService*
 PeriodicSyncManager::GetBackgroundSyncServiceRemote() {
   if (!background_sync_service_.is_bound()) {
-    registration_->GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(
-            background_sync_service_.BindNewPipeAndPassReceiver(task_runner_));
+    ExecutionContext* execution_context = registration_->GetExecutionContext();
+    if (execution_context) {
+      execution_context->GetBrowserInterfaceBroker().GetInterface(
+          background_sync_service_.BindNewPipeAndPassReceiver(
+              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    }
   }
   return background_sync_service_.get();
 }

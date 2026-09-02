@@ -21,13 +21,23 @@
 
 namespace blink {
 
-SyncManager::SyncManager(ServiceWorkerRegistration* registration,
-                         scoped_refptr<base::SequencedTaskRunner> task_runner)
+SyncManager::SyncManager(ServiceWorkerRegistration* registration)
     : registration_(registration),
       background_sync_service_(registration->GetExecutionContext()) {
   DCHECK(registration);
-  registration->GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      background_sync_service_.BindNewPipeAndPassReceiver(task_runner));
+}
+
+mojom::blink::OneShotBackgroundSyncService*
+SyncManager::GetBackgroundSyncServiceRemote() {
+  if (!background_sync_service_.is_bound()) {
+    ExecutionContext* execution_context = registration_->GetExecutionContext();
+    if (execution_context) {
+      execution_context->GetBrowserInterfaceBroker().GetInterface(
+          background_sync_service_.BindNewPipeAndPassReceiver(
+              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    }
+  }
+  return background_sync_service_.get();
 }
 
 ScriptPromise<IDLUndefined> SyncManager::registerFunction(
@@ -49,6 +59,15 @@ ScriptPromise<IDLUndefined> SyncManager::registerFunction(
     return EmptyPromise();
   }
 
+  auto* background_sync_service = GetBackgroundSyncServiceRemote();
+  if (!background_sync_service) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The service worker registration is not associated with an execution "
+        "context.");
+    return EmptyPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
@@ -57,7 +76,7 @@ ScriptPromise<IDLUndefined> SyncManager::registerFunction(
       mojom::blink::SyncRegistrationOptions::New();
   sync_registration->tag = tag;
 
-  background_sync_service_->Register(
+  background_sync_service->Register(
       std::move(sync_registration), registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(
           BindOnce(&SyncManager::RegisterCallback, WrapPersistent(this))));
@@ -75,12 +94,22 @@ ScriptPromise<IDLSequence<IDLString>> SyncManager::getTags(
                           "Background Sync is not allowed in fenced frames."));
   }
 
+  auto* background_sync_service = GetBackgroundSyncServiceRemote();
+  if (!background_sync_service) {
+    return ScriptPromise<IDLSequence<IDLString>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "The service worker registration is not associated with an "
+            "execution context."));
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state);
   auto promise = resolver->Promise();
 
-  background_sync_service_->GetRegistrations(
+  background_sync_service->GetRegistrations(
       registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(
           BindOnce(&SyncManager::GetRegistrationsCallback)));
