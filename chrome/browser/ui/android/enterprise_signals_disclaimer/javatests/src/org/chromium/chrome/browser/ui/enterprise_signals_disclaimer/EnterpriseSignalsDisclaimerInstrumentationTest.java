@@ -21,11 +21,13 @@ import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
+import android.view.FocusFinder;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -60,6 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -267,6 +270,20 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     private void waitForSignout() {
         CriteriaHelper.pollUiThread(() -> Assert.assertNull(mSigninTestRule.getPrimaryAccount()));
+    }
+
+    private View getDialogView() {
+        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
+        if (isTablet) {
+            AppModalPresenter presenter =
+                    (AppModalPresenter) modalDialogManager().getCurrentPresenterForTest();
+            assert presenter != null;
+            View dialogView = presenter.getDialogViewForTesting();
+            assert dialogView != null;
+            return dialogView;
+        } else {
+            return activity().getWindow().getDecorView();
+        }
     }
 
     @Test
@@ -486,5 +503,49 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         ThreadUtils.runOnUiThreadBlocking(fakeDialog::close);
 
         waitForDisclaimerVisible();
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void focusSearchConfinesFocusToDisclaimer() {
+        InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
+        final EnterpriseSignalsDisclaimerController controller =
+                createControllerAndShowDisclaimer();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View acceptButton = getDialogView().findViewById(R.id.disclaimer_accept_button);
+                    Assert.assertNotNull(acceptButton);
+
+                    View scrollView = getDialogView().findViewById(R.id.disclaimer_scroll_view);
+                    Assert.assertNotNull(scrollView);
+                    EnterpriseSignalsDisclaimerView disclaimerView =
+                            (EnterpriseSignalsDisclaimerView) scrollView.getParent();
+
+                    View firstFocusable =
+                            FocusFinder.getInstance()
+                                    .findNextFocus(disclaimerView, null, View.FOCUS_FORWARD);
+                    View lastFocusable =
+                            FocusFinder.getInstance()
+                                    .findNextFocus(disclaimerView, null, View.FOCUS_BACKWARD);
+                    Assert.assertNotNull(firstFocusable);
+                    Assert.assertNotNull(lastFocusable);
+
+                    // Forward focus from the last focusable element should wrap to the first
+                    // focusable element.
+                    View nextAfterLast =
+                            disclaimerView.focusSearch(lastFocusable, View.FOCUS_FORWARD);
+                    Assert.assertEquals(firstFocusable, nextAfterLast);
+
+                    // Backward focus from the first focusable element should wrap to the last
+                    // focusable element.
+                    View prevBeforeFirst =
+                            disclaimerView.focusSearch(firstFocusable, View.FOCUS_BACKWARD);
+                    Assert.assertEquals(lastFocusable, prevBeforeFirst);
+                });
+
+        waitForDisclaimerVisible();
+        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 }
