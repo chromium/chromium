@@ -1,37 +1,87 @@
-- name: 2d.color.space.p3.to.p3
-  desc: test getImageData with display-p3 and uint8 from display p3 uint8 canvas
-  attributes: '{colorSpace: "display-p3"}'
+- name: 2d.color.space.getImageData.convert
+  desc: Test getImageData color conversions from a {{ canvas_cs }} canvas
+  attributes: '{colorSpace: "{{ canvas_cs }}"}'
+  variants_layout: [single_file]
   code: |
-    var color_style = 'rgb(50, 100, 150)';
-    // [0.24304, 0.38818, 0.57227, 1.0] * 255 = [62, 99, 146, 255]
-    var pixel_expected = [62, 99, 146, 255];
-    var epsilon = 2;
-    ctx.fillStyle = color_style;
-    ctx.fillRect(0, 0, 10, 10);
+    const color_style_1 = '{{ color_style_1 }}';
+    const color_style_2 = '{{ color_style_2 }}';
+    const color_spaces = ['srgb', 'srgb-linear', 'display-p3', 'display-p3-linear'];
+    const expected_pixels_1 = {{ expected_pixels_1 }};
+    const expected_pixels_2 = {{ expected_pixels_2 }};
+    const epsilon = 2;
 
-    var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: "display-p3"}).data;
-    @assert pixel.length === pixel_expected.length;
-    assert_approx_equals(pixel[0], pixel_expected[0], 2);
-    assert_approx_equals(pixel[1], pixel_expected[1], 2);
-    assert_approx_equals(pixel[2], pixel_expected[2], 2);
-    assert_approx_equals(pixel[3], pixel_expected[3], 2);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, 1, 1);
+    ctx.fillStyle = color_style_1;
+    ctx.fillRect(1, 0, 1, 1);
+    ctx.fillStyle = color_style_2;
+    ctx.fillRect(0, 1, 1, 1);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(1, 1, 1, 1);
 
-- name: 2d.color.space.p3.to.srgb
-  desc: test getImageData with srgb and uint8 from display p3 uint8 canvas
-  attributes: '{colorSpace: "display-p3"}'
-  code: |
-    var color_style = 'rgb(50, 100, 150)';
-    var pixel_expected = [50, 100, 150, 255];
-    var epsilon = 2;
-    ctx.fillStyle = color_style;
-    ctx.fillRect(0, 0, 10, 10);
+    for (const img_cs of color_spaces) {
+      const image_data = ctx.getImageData(0, 0, 2, 2, {colorSpace: img_cs});
+      @assert image_data.colorSpace === img_cs;
+      const pixels = image_data.data;
+      const expected = [
+        [0, 0, 0, 255],
+        expected_pixels_1[img_cs],
+        expected_pixels_2[img_cs],
+        [255, 255, 255, 255]
+      ];
+      for (let i = 0; i < 4; ++i) {
+        for (let c = 0; c < 4; ++c) {
+          assert_approx_equals(pixels[4 * i + c], expected[i][c], epsilon,
+              `Pixel ${i} component ${c} mismatch for img: ${img_cs}`);
+        }
+      }
+    }
 
-    var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: "srgb"}).data;
-    @assert pixel.length === pixel_expected.length;
-    assert_approx_equals(pixel[0], pixel_expected[0], 2);
-    assert_approx_equals(pixel[1], pixel_expected[1], 2);
-    assert_approx_equals(pixel[2], pixel_expected[2], 2);
-    assert_approx_equals(pixel[3], pixel_expected[3], 2);
+  variants:
+    - srgb:
+        canvas_cs: "srgb"
+        color_style_1: &srgb-color-1 "color(srgb 0 1 1)"
+        color_style_2: &srgb-color-2 "color(srgb 0.8 0.2 0.8)"
+        expected_pixels_1: &srgb-expected-1 {
+          'srgb': [0, 255, 255, 255],
+          'srgb-linear': [0, 255, 255, 255],
+          'display-p3': [117, 251, 253, 255],
+          'display-p3-linear': [45, 247, 251, 255]
+        }
+        expected_pixels_2: &srgb-expected-2 {
+          'srgb': [204, 51, 204, 255],
+          'srgb-linear': [154, 8, 154, 255],
+          'display-p3': [188, 64, 198, 255],
+          'display-p3-linear': [128, 13, 143, 255]
+        }
+      srgb-linear:
+        canvas_cs: "srgb-linear"
+        color_style_1: *srgb-color-1
+        color_style_2: *srgb-color-2
+        expected_pixels_1: *srgb-expected-1
+        expected_pixels_2: *srgb-expected-2
+      display-p3:
+        canvas_cs: "display-p3"
+        color_style_1: &p3-color-1 "color(display-p3 1 0 0)"
+        color_style_2: &p3-color-2 "color(display-p3 0.2 0.8 0.2)"
+        expected_pixels_1: &p3-expected-1 {
+          'srgb': [255, 0, 0, 255],
+          'srgb-linear': [255, 0, 0, 255],
+          'display-p3': [255, 0, 0, 255],
+          'display-p3-linear': [255, 0, 0, 255]
+        }
+        expected_pixels_2: &p3-expected-2 {
+          'srgb': [0, 208, 0, 255],
+          'srgb-linear': [0, 160, 0, 255],
+          'display-p3': [51, 204, 51, 255],
+          'display-p3-linear': [8, 154, 8, 255]
+        }
+      display-p3-linear:
+        canvas_cs: "display-p3-linear"
+        color_style_1: *p3-color-1
+        color_style_2: *p3-color-2
+        expected_pixels_1: *p3-expected-1
+        expected_pixels_2: *p3-expected-2
 
 - name: 2d.color.space.p3.toBlob.p3.canvas
   desc: test if toblob returns p3 data from p3 color space canvas
@@ -310,64 +360,4 @@
             t.done();
         });
     });
-
-- name: 2d.color.space.srgb-linear
-  desc: test getImageData color conversion with a srgb-linear uint8 canvas
-  attributes: '{colorSpace: "srgb-linear"}'
-  code: |
-    const color_style = 'color(srgb-linear 0.0392 0.3922 0.7843)';
-    // [0.0392, 0.3922, 0.7843, 1.0] * 255 = [10, 100, 200, 255]
-    const epsilon = 2;
-    ctx.fillStyle = color_style;
-    ctx.fillRect(0, 0, 10, 10);
-
-    // Read without specifying a color space. The result should be the specified
-    // color.
-    let pixel_expected = [10, 100, 200, 255];
-    let image_data = ctx.getImageData(5, 5, 1, 1);
-    @assert image_data.colorSpace === "srgb-linear";
-    assert_approx_equals(image_data.data[0], pixel_expected[0], 2);
-    assert_approx_equals(image_data.data[1], pixel_expected[1], 2);
-    assert_approx_equals(image_data.data[2], pixel_expected[2], 2);
-    assert_approx_equals(image_data.data[3], pixel_expected[3], 2);
-
-    // Read back to srgb. This will convert from linear to sRGB transfer
-    // function.
-    pixel_expected = [58, 168, 229, 255];
-    image_data = ctx.getImageData(5, 5, 1, 1, {colorSpace:"srgb"});
-    @assert image_data.colorSpace === "srgb";
-    assert_approx_equals(image_data.data[0], pixel_expected[0], 2);
-    assert_approx_equals(image_data.data[1], pixel_expected[1], 2);
-    assert_approx_equals(image_data.data[2], pixel_expected[2], 2);
-    assert_approx_equals(image_data.data[3], pixel_expected[3], 2);
-
-- name: 2d.color.space.display-p3-linear
-  desc: test getImageData color conversion with a display-p3-linear uint8 canvas
-  attributes: '{colorSpace: "display-p3-linear"}'
-  code: |
-    const color_style = 'color(display-p3-linear 0.0392 0.3922 0.7843)';
-    // [0.0392, 0.3922, 0.7843, 1.0] * 255 = [10, 100, 200, 255]
-    const epsilon = 2;
-    ctx.fillStyle = color_style;
-    ctx.fillRect(0, 0, 10, 10);
-
-    // Read without specifying a color space. The result should be the specified
-    // color.
-    let pixel_expected = [10, 100, 200, 255];
-    let image_data = ctx.getImageData(5, 5, 1, 1);
-    @assert image_data.colorSpace === "display-p3-linear";
-    assert_approx_equals(image_data.data[0], pixel_expected[0], 2);
-    assert_approx_equals(image_data.data[1], pixel_expected[1], 2);
-    assert_approx_equals(image_data.data[2], pixel_expected[2], 2);
-    assert_approx_equals(image_data.data[3], pixel_expected[3], 2);
-
-    // Read back to display-p3. This will convert from linear to sRGB transfer
-    // function.
-    pixel_expected = [58, 168, 229, 255];
-    image_data = ctx.getImageData(5, 5, 1, 1, {colorSpace:"display-p3"});
-    @assert image_data.colorSpace === "display-p3";
-    assert_approx_equals(image_data.data[0], pixel_expected[0], 2);
-    assert_approx_equals(image_data.data[1], pixel_expected[1], 2);
-    assert_approx_equals(image_data.data[2], pixel_expected[2], 2);
-    assert_approx_equals(image_data.data[3], pixel_expected[3], 2);
 
