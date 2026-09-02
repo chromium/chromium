@@ -897,16 +897,23 @@ export class OmniboxPopupSearchboxElement extends
    * document is visible, focuses and selects all input text immediately.
    * If hidden, defers the action until `visibilitychange`.
    */
-  private onSetFocus_(isFocused: boolean) {
+  private onSetFocus_(isFocused: boolean, queryZps: boolean = false) {
     this.isLogicallyFocused_ = isFocused;
     if (isFocused) {
       if (document.visibilityState === 'visible') {
         this.deferredFocusAction_ = null;
         this.$.input.focus();
+        this.getInputElement().select();
       } else {
         // Defer focusing and selecting text if the document is currently
         // hidden, as DOM focus calls on hidden documents may be ignored.
         this.deferredFocusAction_ = DeferredFocusAction.FOCUS_AND_SELECT;
+      }
+      if (queryZps && !this.userInputInProgress_ && !this.dropdownIsVisible) {
+        this.queryAutocomplete(
+            this.getInputElement().inputElement.value,
+            /*preventInlineAutocomplete=*/ false,
+            /*isOnFocus=*/ true);
       }
     } else {
       this.deferredFocusAction_ = null;

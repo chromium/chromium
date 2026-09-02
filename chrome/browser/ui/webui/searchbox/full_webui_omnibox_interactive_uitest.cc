@@ -965,6 +965,38 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       WaitForOmniboxFocus(false));
 }
 
+// Verifies that pressing Ctrl+L / Cmd+L while typing a query selects the typed
+// text and keeps the suggestions dropdown open without interruption.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       RefocusWhileTypingPreservesDropdownAndSelectsText) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"),
+
+      // Type "a" and wait for suggestions dropdown.
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+
+      // Press Ctrl+L / Cmd+L from keyboard.
+      WaitForPopupTransitionLockout(),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+
+#if !BUILDFLAG(IS_MAC)
+      // Verify typed text "a" is fully selected. Text selection
+      // modification/inspection on macOS inputs follows different platform
+      // conventions.
+      InAnyContext(CheckWebUIInputSelection(0, 1)),
+#endif
+      InAnyContext(CheckWebUIInputFocus(true)),
+      // Verify suggestions dropdown remains open.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"));
+}
+
 class FullWebUIOmniboxAimInteractiveTestBase
     : public FullWebUIOmniboxInteractiveTestBase {
  public:
