@@ -1152,7 +1152,15 @@ void LayoutBox::UpdateAfterLayout() {
       frame.GetChromeClient().ResizeAfterLayout();
     }
     if (IsScrollContainer()) {
-      GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
+      auto* scrollable_area = GetScrollableArea();
+      using ClampScope = PaintLayerScrollableArea::DelayScrollOffsetClampScope;
+      if (GetFrameView()->IsAutoSizeModeEnabled() &&
+          RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled() &&
+          ClampScope::ClampingIsDelayed()) {
+        ClampScope::SetNeedsClamp(scrollable_area);
+      } else {
+        scrollable_area->ClampScrollOffsetAfterOverflowChange();
+      }
     }
   }
 

@@ -1398,7 +1398,16 @@ void LocalFrameView::ViewportSizeChanged() {
     // specially notified.
     if (GetFrame().IsOutermostMainFrame()) {
       if (auto* scrollable_area = layout_view->GetScrollableArea()) {
-        scrollable_area->ClampScrollOffsetAfterOverflowChange();
+        using ClampScope =
+            PaintLayerScrollableArea::DelayScrollOffsetClampScope;
+        if (auto_size_info_ &&
+            RuntimeEnabledFeatures::
+                AutoSizeUsesScrollWidthForOverflowEnabled() &&
+            ClampScope::ClampingIsDelayed()) {
+          ClampScope::SetNeedsClamp(scrollable_area);
+        } else {
+          scrollable_area->ClampScrollOffsetAfterOverflowChange();
+        }
         scrollable_area->EnqueueForSnapUpdateIfNeeded();
       }
     }
@@ -3454,6 +3463,13 @@ void LocalFrameView::UpdateStyleAndLayout() {
     return;
   }
 
+  std::optional<PaintLayerScrollableArea::DelayScrollOffsetClampScope>
+      delay_scroll_offset_clamp_scope;
+  if (auto_size_info_ &&
+      RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled()) {
+    delay_scroll_offset_clamp_scope.emplace();
+  }
+
   gfx::Size visual_viewport_size =
       GetScrollableArea()->VisibleContentRect(kExcludeScrollbars).size();
 
@@ -3469,7 +3485,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
   // generated ::scroll-markers.
   frame_->GetDocument()->GetStyleEngine().UpdateCounters();
 
-  // Second pass: run autosize until it stabilizes
+  // Second pass: run autosize until it stabilizes.
   if (auto_size_info_) {
     bool should_reset_for_layout = did_layout;
     while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
@@ -3495,6 +3511,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
     base::AutoReset<bool> suppress(&suppress_adjust_view_size_, true);
     did_layout |= UpdateStyleAndLayoutInternal();
   }
+  delay_scroll_offset_clamp_scope.reset();
 
 #if DCHECK_IS_ON()
   if (!Lifecycle().LifecyclePostponed() && !ShouldThrottleRendering()) {
