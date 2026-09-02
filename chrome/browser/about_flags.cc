@@ -14047,6 +14047,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidKeyboardShortcutOpenFileDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidKeyboardShortcutOpenFile)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"auto-resize-minimum-page-scale-factor",
+     flag_descriptions::kAutoResizeMinimumPageScaleFactorName,
+     flag_descriptions::kAutoResizeMinimumPageScaleFactorDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kAutoResizeMinimumPageScaleFactor)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

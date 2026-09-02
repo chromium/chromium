@@ -3426,6 +3426,17 @@ float WebViewImpl::DefaultMaximumPageScaleFactor() const {
 }
 
 float WebViewImpl::MinimumPageScaleFactor() const {
+#if BUILDFLAG(IS_ANDROID)
+  // We have to force this on Android because WebViewImpl::ApplyWebPreferences()
+  // sets SetIgnoreViewportTagScaleLimits(prefs.force_enable_zoom) on Android,
+  // which sometimes overrides the minimum scale that we set in
+  // WebViewImpl::ConfigureAutoResizeMode().
+  if (base::FeatureList::IsEnabled(
+          features::kAutoResizeMinimumPageScaleFactor) &&
+      should_auto_resize_) {
+    return 1.0f;
+  }
+#endif
   return GetPageScaleConstraintsSet().FinalConstraints().minimum_scale;
 }
 

@@ -5724,6 +5724,11 @@ inline constexpr char kAndroidWindowOcclusionDescription[] =
     "Enables occlusion tracking on Android, which can save CPU and memory in "
     "multi-window environments.";
 
+inline constexpr char kAutoResizeMinimumPageScaleFactorName[] =
+    "Auto resize minimum page scale factor";
+inline constexpr char kAutoResizeMinimumPageScaleFactorDescription[] =
+    "Enables setting the minimum page scale factor to 1.0 during auto-resize.";
+
 inline constexpr char kCctTabResumptionName[] = "Custom Tabs Tab Resumption";
 inline constexpr char kCctTabResumptionDescription[] =
     "Enables showing tab resumption suggestions within Custom Tabs.";
