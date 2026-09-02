@@ -489,12 +489,19 @@ TEST_P(SceneIdentifierMapImplTest, RestoreMappingFromHistoricalPrefs) {
   std::ignore = SceneIdentifierMapImpl(
       local_state(), profile_attributes_storage(), IsMultipleScenesSupported());
 
-  // The mapping should be initialized with the three identifiers pair (where
-  // key and value are equal since this is how the historical mapping worked).
-  EXPECT_THAT(SceneSessionIdentifierMap(),
-              UnorderedElementsAre(Pair(kSystemId0, kSystemId0),
-                                   Pair(kSystemId1, kSystemId1),
-                                   Pair(kSystemId2, kSystemId2)));
+  if (IsMultipleScenesSupported()) {
+    // The mapping should be initialized with the three identifiers pair (where
+    // key and value are equal since this is how the historical mapping worked).
+    EXPECT_THAT(SceneSessionIdentifierMap(),
+                UnorderedElementsAre(Pair(kSystemId0, kSystemId0),
+                                     Pair(kSystemId1, kSystemId1),
+                                     Pair(kSystemId2, kSystemId2)));
+  } else {
+    // The mapping should not be initialized as the legacy mapping used a
+    // constant identifier on those devices and recovering the identifier
+    // of UISceneSession is not possible.
+    EXPECT_THAT(SceneSessionIdentifierMap(), IsEmpty());
+  }
 
   // As there is more than one scene identifier, the identifier of the last
   // connected scene should be left empty (it is not possible to decide the
@@ -525,10 +532,17 @@ TEST_P(SceneIdentifierMapImplTest,
   std::ignore = SceneIdentifierMapImpl(
       local_state(), profile_attributes_storage(), IsMultipleScenesSupported());
 
-  // The mapping should be initialized with one identifier pair (where key and
-  // value are equal since this is how the historical mapping worked).
-  EXPECT_THAT(SceneSessionIdentifierMap(),
-              UnorderedElementsAre(Pair(kSystemId0, kSystemId0)));
+  if (IsMultipleScenesSupported()) {
+    // The mapping should be initialized with one identifier pair (where key
+    // and value are equal since this is how the historical mapping worked).
+    EXPECT_THAT(SceneSessionIdentifierMap(),
+                UnorderedElementsAre(Pair(kSystemId0, kSystemId0)));
+  } else {
+    // The mapping should not be initialized as the legacy mapping used a
+    // constant identifier on those devices and recovering the identifier
+    // of UISceneSession is not possible.
+    EXPECT_THAT(SceneSessionIdentifierMap(), IsEmpty());
+  }
 
   // As there is exactly one scene identifier, the identifier of the last
   // connected scene should be initialized to that identifier.

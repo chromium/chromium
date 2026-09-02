@@ -116,10 +116,12 @@ SceneIdentifierMapImpl::SceneIdentifierMapImpl(
       last_connected_scene_ = chrome_id;
     }
 
-    // On iPad, historically the SceneState identifier was initialized
-    // as a copy of the UISceneSession identifier.
-    for (const ChromeIdentifier& chrome_id : identifiers) {
-      mapping_.emplace(SystemIdentifier(*chrome_id), chrome_id);
+    if (device_supports_multiple_scenes_) {
+      // On iPad, historically the SceneState identifier was initialized
+      // as a copy of the UISceneSession identifier.
+      for (const ChromeIdentifier& chrome_id : identifiers) {
+        mapping_.emplace(SystemIdentifier(*chrome_id), chrome_id);
+      }
     }
 
     SaveMappingToPreferences();
