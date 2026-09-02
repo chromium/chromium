@@ -12,6 +12,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -1123,7 +1125,8 @@ public class SettingsIndexData {
         return results;
     }
 
-    Map<String, Entry> getEntriesForTesting() {
+    @VisibleForTesting
+    public Map<String, Entry> getEntriesForTesting() {
         return mEntries;
     }
 

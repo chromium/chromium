@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
 
@@ -23,17 +24,24 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Tests that the Settings Search Index can be built for all registered fragments without crashing.
- * This test requires the native library to be loaded.
+ * Tests that the Settings Search Index can be built for all registered fragments without crashing,
+ * with valid XML resources, and that all XML fragment links map to registered providers. This test
+ * requires the native library to be loaded.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -46,6 +54,16 @@ import java.util.List;
     ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })
 public class SearchIndexProviderRegistryTest {
+
+    /**
+     * Fragments referenced by preference XMLs that are intentionally not indexed (e.g. multi-step
+     * onboarding wizards or dynamic site-list pages).
+     */
+    private static final Set<String> UNINDEXED_FRAGMENTS_ALLOWLIST =
+            Set.of(
+                    AddressBarSettingsFragment.class.getName(),
+                    AllSiteSettings.class.getName(),
+                    PrivacyGuideFragment.class.getName());
 
     private Context mContext;
     private Profile mProfile;
@@ -126,6 +144,50 @@ public class SearchIndexProviderRegistryTest {
                                 String.format(
                                         "Full index build failed: %s\n%s",
                                         e.getMessage(), Log.getStackTraceString(e)));
+                    }
+                });
+    }
+
+    /**
+     * Verifies that every preference entry that declares a fragment target links to a fragment
+     * whose provider is registered in SearchIndexProviderRegistry.
+     */
+    @Test
+    @SmallTest
+    public void testAllXmlFragmentLinksAreRegistered() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SettingsSearchCoordinator.buildIndexInternal(mContext, mProfile, mIndexData);
+
+                    Set<String> registeredFragments = new HashSet<>();
+                    for (SearchIndexProvider provider : SearchIndexProviderRegistry.ALL_PROVIDERS) {
+                        registeredFragments.add(provider.getPrefFragmentName());
+                    }
+
+                    List<String> unindexedFragments = new ArrayList<>();
+                    for (SettingsIndexData.Entry entry :
+                            mIndexData.getEntriesForTesting().values()) {
+                        if (!TextUtils.isEmpty(entry.fragment)
+                                && !registeredFragments.contains(entry.fragment)
+                                && !UNINDEXED_FRAGMENTS_ALLOWLIST.contains(entry.fragment)) {
+                            unindexedFragments.add(
+                                    String.format(
+                                            "Entry '%s' (in %s) links to child fragment '%s' which"
+                                                    + " has no SearchIndexProvider in"
+                                                    + " SearchIndexProviderRegistry.",
+                                            entry.id, entry.parentFragment, entry.fragment));
+                        }
+                    }
+
+                    if (!unindexedFragments.isEmpty()) {
+                        StringBuilder sb =
+                                new StringBuilder(
+                                        "Found preference entries linking to unindexed"
+                                                + " fragments:\n");
+                        for (String msg : unindexedFragments) {
+                            sb.append("  - ").append(msg).append("\n");
+                        }
+                        fail(sb.toString());
                     }
                 });
     }
