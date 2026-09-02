@@ -1601,7 +1601,7 @@
       // The symbols() function for defining an anonymous counter style inline.
       // https://drafts.csswg.org/css-counter-styles-3/#symbols-function
       name: "CSSCounterStyleSymbolsFunction",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Unprefixed cross-fade() (in addition to the existing -webkit-cross-fade()).
