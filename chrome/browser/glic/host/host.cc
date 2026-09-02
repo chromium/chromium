@@ -556,15 +556,15 @@ content::RenderFrameHost* Host::GetGuestMainFrame() const {
 }
 
 GlicWebClientManager* Host::web_client_manager() {
-  if (auto* glic_ui = GlicUI::From(webui_contents())) {
-    return glic_ui->web_client_manager();
+  if (contents_) {
+    return &contents_->web_client_manager();
   }
   return nullptr;
 }
 
 const GlicWebClientManager* Host::web_client_manager() const {
-  if (auto* glic_ui = GlicUI::From(webui_contents())) {
-    return glic_ui->web_client_manager();
+  if (contents_) {
+    return &contents_->web_client_manager();
   }
   return nullptr;
 }

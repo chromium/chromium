@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_source.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
@@ -362,10 +363,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableStructuredYieldMetadata",
       base::FeatureList::IsEnabled(features::kGlicStructuredYieldMetadata));
-
-  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
-    web_client_manager_ = std::make_unique<GlicWebClientManager>();
-  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)
@@ -413,7 +410,7 @@ void GlicUI::BindInterface(
 void GlicUI::AttachToHost(Host* host) {
   // GlicUI should not be attached to Host in NoWebview mode, where
   // NoWebviewContentsContainerImpl owns and manages the web client.
-  CHECK(web_client_manager_);
+  CHECK(!base::FeatureList::IsEnabled(features::kGlicNoWebview));
   if (host_) {
     // This might be called multiple times, but it's not allowed to change the
     // attached host.
@@ -422,7 +419,7 @@ void GlicUI::AttachToHost(Host* host) {
   }
   CHECK(host);
   host_ = host;
-  web_client_manager_->AttachToHost(host);
+
   if (pending_receiver_.is_valid()) {
     page_handler_ = std::make_unique<GlicPageHandler>(
         web_ui()->GetWebContents(), host, std::move(pending_receiver_),
@@ -470,12 +467,13 @@ void GlicUI::CreatePreloadHandler(
       web_ui()->GetWebContents()->GetBrowserContext();
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
-  if (!service || !web_client_manager_) {
+  GlicWebClientManager* manager =
+      GetWebClientManagerForWebContents(web_ui()->GetWebContents());
+  if (!service || !manager) {
     return;
   }
   preload_handler_ = std::make_unique<GlicPreloadHandler>(
-      browser_context, web_client_manager_.get(), std::move(receiver),
-      std::move(page));
+      browser_context, manager, std::move(receiver), std::move(page));
 }
 
 bool GlicUI::IsProfileEligible() {

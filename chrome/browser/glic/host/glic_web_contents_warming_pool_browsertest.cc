@@ -168,13 +168,11 @@ IN_PROC_BROWSER_TEST_F(GlicManualWarmingPoolBrowserTest,
   // 2. Verify that guest is created and loaded.
   auto* warmed_container = pool().GetWarmedContainerForTesting();
   ASSERT_TRUE(warmed_container);
-  auto* glic_ui = GlicUI::From(warmed_container->web_contents());
-  ASSERT_TRUE(glic_ui);
 
   ASSERT_TRUE(RunUntil(
-      [glic_ui]() -> bool {
+      [warmed_container]() -> bool {
         auto* guest_contents =
-            glic_ui->web_client_manager()->web_client_contents();
+            warmed_container->web_client_manager().web_client_contents();
         return guest_contents != nullptr && !guest_contents->IsLoading();
       },
       "Wait for guest web contents to load"));

@@ -133,6 +133,11 @@ class GlicWebUiData : public content::WebContentsUserData<GlicWebUiData>,
     Observe(guest_contents);
   }
 
+  void SetContentsManager(GlicWebContentsManager* contents_manager) {
+    contents_manager_ = contents_manager;
+  }
+  GlicWebContentsManager* contents_manager() const { return contents_manager_; }
+
   // Returns the guest WebContents if it is attached and valid, nullptr
   // otherwise.
   content::WebContents* guest_contents() const {
@@ -157,6 +162,7 @@ class GlicWebUiData : public content::WebContentsUserData<GlicWebUiData>,
 
   using WebContentsObserver::web_contents;
 
+  raw_ptr<GlicWebContentsManager> contents_manager_ = nullptr;
   raw_ptr<content::WebContents> webui_contents_;
 };
 
@@ -224,8 +230,9 @@ void ConfigureGuestZoom(content::WebContents& guest_contents) {
 
 }  // namespace
 
-void PrepareGlicGuestWebContents(content::WebContents& guest_contents) {
-  GlicGuestObserver::CreateForWebContents(guest_contents);
+void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
+                                 GlicWebContentsManager& contents_manager) {
+  GlicGuestObserver::CreateForWebContents(guest_contents, contents_manager);
 
   if (guest_contents.GetPrimaryMainFrame()) {
     GlicProcessUserData::MarkProcess(
@@ -257,6 +264,43 @@ void MarkProcessAsGlic(content::RenderProcessHost* rph) {
 
 void CreateGlicWebUiData(content::WebContents* webui_contents) {
   GlicWebUiData::CreateForWebContents(webui_contents);
+}
+
+void SetContentsManagerForWebContents(
+    content::WebContents* web_contents,
+    GlicWebContentsManager* contents_manager) {
+  if (!web_contents) {
+    return;
+  }
+  if (auto* data = GlicWebUiData::FromWebContents(web_contents)) {
+    data->SetContentsManager(contents_manager);
+  }
+}
+
+GlicWebContentsManager* GetContentsManagerForWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  if (auto* observer = GlicGuestObserver::FromWebContents(web_contents)) {
+    return &observer->contents_manager();
+  }
+  // Only needed for the legacy nested <webview> mode where the outer WebUI
+  // WebContents holds the GlicWebUiData.
+  if (auto* data = GlicWebUiData::FromWebContents(web_contents)) {
+    if (data->contents_manager()) {
+      return data->contents_manager();
+    }
+  }
+  return nullptr;
+}
+
+GlicWebClientManager* GetWebClientManagerForWebContents(
+    content::WebContents* web_contents) {
+  if (auto* contents_manager = GetContentsManagerForWebContents(web_contents)) {
+    return &contents_manager->web_client_manager();
+  }
+  return nullptr;
 }
 
 GURL GetGuestURL() {
@@ -406,17 +450,10 @@ void BindGlicWebClientHandler(
     observer->host()->CreateWebClient(std::move(receiver));
     return;
   }
-  content::WebContents* top =
-      guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
-  if (!top) {
+  if (auto* manager = GetWebClientManagerForWebContents(guest_contents)) {
+    manager->SetPendingWebClientReceiver(std::move(receiver));
     return;
   }
-  auto* glic_ui = GlicUI::From(top);
-  if (!glic_ui || !glic_ui->web_client_manager()) {
-    return;
-  }
-  glic_ui->web_client_manager()->SetPendingWebClientReceiver(
-      std::move(receiver));
 }
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     content::BrowserContext* browser_context) {
@@ -543,15 +580,18 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
     return false;
   }
 
+  // The outer WebUI WebContents (top) is always created and managed by a
+  // GlicWebUIContentsManager in <webview> mode.
+  GlicWebContentsManager* contents_manager =
+      GetContentsManagerForWebContents(top);
+  CHECK(contents_manager);
   if (auto* data = GlicWebUiData::FromWebContents(top)) {
     data->SetGuestContents(guest_contents);
-    PrepareGlicGuestWebContents(*guest_contents);
+    PrepareGlicGuestWebContents(*guest_contents, *contents_manager);
   }
 
-  if (auto* glic_ui = GlicUI::From(top)) {
-    if (glic_ui->web_client_manager()) {
-      glic_ui->web_client_manager()->AttachGuestContents(guest_contents);
-    }
+  if (contents_manager) {
+    contents_manager->web_client_manager().AttachGuestContents(guest_contents);
   }
   return true;
 }

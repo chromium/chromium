@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
@@ -46,12 +47,15 @@ class FakeWebContentsManager : public GlicWebContentsManager {
       WebContentsChangedCallback callback) override {
     return base::CallbackListSubscription();
   }
-  GlicWebClientManager* web_client_manager() override { return nullptr; }
+  GlicWebClientManager& web_client_manager() override {
+    return web_client_manager_;
+  }
   bool IsCrashed() const override {
     return web_contents_ ? web_contents_->IsCrashed() : false;
   }
 
  private:
+  GlicWebClientManager web_client_manager_;
   raw_ptr<content::WebContents> web_contents_;
 };
 

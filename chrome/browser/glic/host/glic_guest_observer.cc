@@ -33,17 +33,21 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicGuestObserver);
 
 // static
 void GlicGuestObserver::CreateForWebContents(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    GlicWebContentsManager& contents_manager) {
   if (FromWebContents(&web_contents)) {
     return;
   }
   web_contents.SetUserData(
-      UserDataKey(), base::WrapUnique(new GlicGuestObserver(web_contents)));
+      UserDataKey(),
+      base::WrapUnique(new GlicGuestObserver(web_contents, contents_manager)));
 }
 
-GlicGuestObserver::GlicGuestObserver(content::WebContents& web_contents)
+GlicGuestObserver::GlicGuestObserver(content::WebContents& web_contents,
+                                     GlicWebContentsManager& contents_manager)
     : content::WebContentsObserver(&web_contents),
-      content::WebContentsUserData<GlicGuestObserver>(web_contents) {}
+      content::WebContentsUserData<GlicGuestObserver>(web_contents),
+      contents_manager_(contents_manager) {}
 
 GlicGuestObserver::~GlicGuestObserver() = default;
 
@@ -88,9 +92,14 @@ void GlicGuestObserver::MaybeEnableMojoJsBindings(
   if (!navigation_handle->IsInMainFrame()) {
     return;
   }
-  auto* rfh = navigation_handle->GetRenderFrameHost();
-  if (IsFrameAllowedGlicApi(*rfh)) {
-    rfh->EnableMojoJsBindings(/*features=*/nullptr);
+  // Enable MojoJS bindings if the pending navigation is targeting an allowed
+  // origin so Blink can initialize the Mojo context during document load.
+  // The frame's committed origin is checked in `BindGlicWebClientHandler()`
+  // when the page attempts to bind the pipe.
+  if (IsOriginAllowedGlicApi(
+          url::Origin::Create(navigation_handle->GetURL()))) {
+    navigation_handle->GetRenderFrameHost()->EnableMojoJsBindings(
+        /*features=*/nullptr);
   }
 }
 

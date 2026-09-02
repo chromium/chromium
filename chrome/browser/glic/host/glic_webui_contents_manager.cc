@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -50,15 +51,15 @@ content::WebContents::CreateParams MakeCreateParams(Profile* profile,
 
 GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
                                                    bool initially_hidden)
-    : web_contents_(content::WebContents::Create(
-          MakeCreateParams(profile, initially_hidden))),
-      web_contents_ptr_(web_contents_.get()),
-      profile_(profile) {
+    : profile_(profile),
+      web_contents_(content::WebContents::Create(
+          MakeCreateParams(profile, initially_hidden))) {
   TRACE_EVENT_INSTANT("glic",
                       "GlicWebUIContentsManager::GlicWebUIContentsManager",
                       perfetto::Flow::FromPointer(this));
   CHECK(web_contents_);
   CreateGlicWebUiData(web_contents_.get());
+  SetContentsManagerForWebContents(web_contents_.get(), this);
   Observe(web_contents_.get());
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(
@@ -81,9 +82,11 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 }
 
 GlicWebUIContentsManager::~GlicWebUIContentsManager() {
+  SetContentsManagerForWebContents(web_contents(), nullptr);
   Observe(nullptr);
   if (web_contents_) {
     web_contents_->ClosePage();
+    web_contents_.reset();
   }
 }
 
@@ -91,6 +94,7 @@ void GlicWebUIContentsManager::AttachToHost(Host* host) {
   // This is only allowed to be called once.
   CHECK(!host_);
   host_ = host;
+  web_client_manager_.AttachToHost(host);
   if (auto* glic_ui = GlicUI::From(web_contents())) {
     glic_ui->AttachToHost(host);
   }
@@ -160,16 +164,12 @@ void GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone(
   // WARNING: Do not do any more work, as `this` may have been destroyed.
 }
 
-void GlicWebUIContentsManager::WebContentsDestroyed() {
-  web_contents_ptr_ = nullptr;
-}
-
 void GlicWebUIContentsManager::SetVisibility(content::Visibility visibility) {
   web_contents()->UpdateWebContentsVisibility(visibility);
 }
 
 content::WebContents* GlicWebUIContentsManager::web_contents() const {
-  return web_contents_ptr_;
+  return WebContentsObserver::web_contents();
 }
 
 void GlicWebUIContentsManager::OnActuatingChanged(bool actuating) {
@@ -243,13 +243,8 @@ GlicWebUIContentsManager::RegisterWebContentsChangedCallback(
   return base::CallbackListSubscription();
 }
 
-GlicWebClientManager* GlicWebUIContentsManager::web_client_manager() {
-  // TODO: Move GlicWebClientManager ownership from GlicUI directly into
-  // GlicWebUIContentsManager for architectural symmetry.
-  if (auto* glic_ui = GlicUI::From(web_contents())) {
-    return glic_ui->web_client_manager();
-  }
-  return nullptr;
+GlicWebClientManager& GlicWebUIContentsManager::web_client_manager() {
+  return web_client_manager_;
 }
 
 bool GlicWebUIContentsManager::IsCrashed() const {

@@ -77,9 +77,7 @@ class GlicWebContentsManager {
       WebContentsChangedCallback callback) = 0;
 
   // Returns the manager responsible for Mojo routing to the guest web client.
-  // This is always non-null (changed to return a reference in the following
-  // commit where GlicWebClientManager ownership is moved to the manager).
-  virtual GlicWebClientManager* web_client_manager() = 0;
+  virtual GlicWebClientManager& web_client_manager() = 0;
 
   // Returns true if any of the underlying WebContents managed by this object
   // have crashed (e.g. renderer process gone).

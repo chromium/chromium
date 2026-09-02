@@ -26,7 +26,6 @@ namespace glic {
 class GlicPreloadHandler;
 class GlicPageHandler;
 class GlicInternalsPageHandler;
-class GlicWebClientManager;
 class GlicUI;
 class Host;
 
@@ -81,12 +80,6 @@ class GlicUI : public ui::MojoWebUIController,
   // Returns the host. This is null before the host is attached.
   Host* host() const { return host_; }
 
-  GlicWebClientManager* web_client_manager() {
-    return web_client_manager_.get();
-  }
-  const GlicWebClientManager* web_client_manager() const {
-    return web_client_manager_.get();
-  }
 
  private:
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -108,7 +101,6 @@ class GlicUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<glic::mojom::GlicPreloadHandler> receiver,
       mojo::PendingRemote<glic::mojom::PreloadPage> page) override;
 
-  std::unique_ptr<GlicWebClientManager> web_client_manager_;
   std::unique_ptr<GlicPreloadHandler> preload_handler_;
   std::unique_ptr<GlicPageHandler> page_handler_;
   std::unique_ptr<GlicInternalsPageHandler> internals_page_handler_;

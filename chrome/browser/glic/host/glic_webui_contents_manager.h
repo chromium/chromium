@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -43,7 +44,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
       std::unique_ptr<content::WebContents> web_contents) override;
   base::CallbackListSubscription RegisterWebContentsChangedCallback(
       WebContentsChangedCallback callback) override;
-  GlicWebClientManager* web_client_manager() override;
+  GlicWebClientManager& web_client_manager() override;
   bool IsCrashed() const override;
 
  private:
@@ -54,14 +55,13 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
       content::NavigationHandle* navigation_handle) override;
   void PrimaryMainDocumentElementAvailable() override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
-  void WebContentsDestroyed() override;
   void UpdateActuationTracker();
 
   const base::TimeTicks creation_time_ = base::TimeTicks::Now();
   base::TimeTicks navigation_commit_time_;
-  std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<content::WebContents> web_contents_ptr_ = nullptr;
   const raw_ptr<Profile> profile_;
+  GlicWebClientManager web_client_manager_;
+  std::unique_ptr<content::WebContents> web_contents_;
   // Raw pointer to the host this UI is attached to. This object is not owned
   // by GlicUI. Its lifetime is managed by GlicInstanceImpl (multi-instance),
   // which owns Host.
