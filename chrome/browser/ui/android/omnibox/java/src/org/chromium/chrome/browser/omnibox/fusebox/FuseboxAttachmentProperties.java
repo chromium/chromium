@@ -27,7 +27,7 @@ class FuseboxAttachmentProperties {
             new WritableObjectPropertyKey<>();
 
     /** Whether the remove button should be selected. */
-    public static WritableBooleanPropertyKey REMOVE_BUTTON_SELECTED =
+    public static final WritableBooleanPropertyKey REMOVE_BUTTON_SELECTED =
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
