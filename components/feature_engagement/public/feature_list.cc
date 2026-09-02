@@ -353,7 +353,6 @@ const base::Feature* const kAllFeatures[] = {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
     // keep-sorted start case=no
     &kIPHAutofillAccountNameEmailSuggestionFeature,
-    &kIPHAutofillAiOptInFeature,
     &kIPHAutofillAiValuablesFeature,
     &kIPHAutofillAtMemoryFeature,
     &kIPHAutofillBnplAffirmOrZipSuggestionFeature,

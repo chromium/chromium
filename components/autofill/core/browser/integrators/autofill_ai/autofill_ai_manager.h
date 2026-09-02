@@ -69,16 +69,6 @@ class AutofillAiManager
   virtual bool OnFormSubmitted(const FormStructure& form,
                                ukm::SourceId ukm_source_id);
 
-  // Indicates whether to try to display IPH for opting into AutofillAI. It
-  // checks that all of the following is true:
-  // - The user is eligible for AutofillAI and has not already opted in.
-  // - The user has at least one address or payments instrument saved.
-  // - `field` has AutofillAI predictions.
-  // - If `form` is submitted (with appropriate values), there is at least one
-  //   entity that meets the criteria for import.
-  virtual bool ShouldDisplayIph(const FormStructure& form,
-                                FieldGlobalId field) const;
-
   // TODO(crbug.com/389629573): The "On*" methods below are used only for
   // logging purposes. Explore different approaches.
 

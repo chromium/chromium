@@ -1034,9 +1034,6 @@ BASE_FEATURE(kIPHAutofillHomeWorkProfileSuggestionFeature,
 BASE_FEATURE(kIPHAutofillAccountNameEmailSuggestionFeature,
              "IPH_AutofillAccountNameEmailSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAutofillAiOptInFeature,
-             "IPH_AutofillAiOptIn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillAiValuablesFeature,
              "IPH_AutofillAiValuables",
              base::FEATURE_ENABLED_BY_DEFAULT);

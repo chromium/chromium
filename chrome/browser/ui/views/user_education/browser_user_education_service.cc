@@ -484,37 +484,6 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered after a name and email suggestion is available to "
               "user for filling")));
 
-  // kIPHAutofillAiOptInFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHAutofillAiOptInFeature,
-          autofill::PopupViewViews::kAutofillAiOptInIphElementId,
-          IDS_AUTOFILL_AI_OPT_IN_IPH_BODY, IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON,
-          base::BindRepeating(
-              [](ContextPtr ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                BrowserWindowInterface* const browser = GetBrowser(ctx);
-                TabStripModel* const tab_strip_model =
-                    browser->GetTabStripModel();
-                if (!tab_strip_model) {
-                  return;
-                }
-                content::WebContents* const web_contents =
-                    tab_strip_model->GetActiveWebContents();
-                feature_first_run::ShowAutofillAiFirstRunDialog(web_contents);
-              }))
-          .SetCustomActionIsDefault(true)
-          .SetCustomActionDismissText(IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER)
-          .SetBubbleTitleText(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .AddPreconditionExemption(kUserNotActivePrecondition)
-          .SetMetadata(136, "brunobraga@google.com",
-                       "Displayed on input fields that are eligible for "
-                       "AutofillAI. These can be input fields on any website "
-                       "as long as the field has AutofillAI predictions. "
-                       "The IPH is displayed when the user clicks on such an "
-                       "input field and is anchored against it.")));
-
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillAiValuablesFeature,

@@ -73,7 +73,7 @@ class AutofillFieldPromoControllerWrapper
       : content::WebContentsUserData<AutofillFieldPromoControllerWrapper>(
             *web_contents) {
     promo_controller_ = std::make_unique<AutofillFieldPromoControllerImpl>(
-        web_contents, feature_engagement::kIPHAutofillAiOptInFeature,
+        web_contents, feature_engagement::kIPHAutofillAiValuablesFeature,
         PopupViewViews::kAutofillStandaloneCvcSuggestionElementId);
   }
   WEB_CONTENTS_USER_DATA_KEY_DECL();

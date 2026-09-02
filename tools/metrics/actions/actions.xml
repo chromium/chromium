@@ -275,7 +275,8 @@ should be able to be added at any place in this file.
       summary="For AutoDarkUserEducationMessageOptIn feature."/>
   <variant name="_AutofillAccountNameEmailSuggestion"
       summary="For AutofillAccountNameEmailSuggestion feature."/>
-  <variant name="_AutofillAiOptIn" summary="For AutofillAiOptIn feature."/>
+  <variant name="_AutofillAiOptIn"
+      summary="For AutofillAiOptIn feature. (obsolete)"/>
   <variant name="_AutofillAiValuables"
       summary="For AutofillAiValuables feature."/>
   <variant name="_AutofillAtMemory"

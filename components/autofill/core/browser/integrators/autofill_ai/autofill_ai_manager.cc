@@ -653,43 +653,6 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
   return suggestions;
 }
 
-bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
-                                         FieldGlobalId field_id) const {
-  // This early return is just a performance optimization:
-  // AutofillAiAction::kIphForOptIn requires an EntityType, which we don't know
-  // at this point yet. Since kIphForOptIn is a stronger requirement than
-  // kOptIn, we can check kOptIn first.
-  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kOptIn)) {
-    return false;
-  }
-
-  const AutofillField* const focused_field = form.GetFieldById(field_id);
-  if (!focused_field) {
-    return false;
-  }
-
-  // We want to show IPH if filling the `focused_field` and fields that belong
-  // to the same entity leads to an import.
-  std::map<EntityType, DenseSet<AttributeType>> attributes_in_form;
-  for (auto [entity, fields_and_types] : RationalizeAndDetermineAttributeTypes(
-           form.fields(), focused_field->section())) {
-    if (std::ranges::contains(fields_and_types, focused_field->global_id(),
-                              [](const AutofillFieldWithAttributeType& f) {
-                                return f.field->global_id();
-                              }) &&
-        MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn,
-                                   entity)) {
-      attributes_in_form[entity].insert_all(
-          DenseSet(fields_and_types, &AutofillFieldWithAttributeType::type));
-    }
-  }
-
-  return std::ranges::any_of(attributes_in_form, [](const auto& p) {
-    return !p.first.read_only() &&
-           AttributesMeetImportConstraints(p.first, p.second);
-  });
-}
-
 LogManager* AutofillAiManager::GetCurrentLogManager() {
   return client_->GetCurrentLogManager();
 }

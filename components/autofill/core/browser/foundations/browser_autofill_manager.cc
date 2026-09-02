@@ -1553,13 +1553,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       return;
     }
   }
-  if (suggestions.empty() && ai_manager && form_structure &&
-      ai_manager->ShouldDisplayIph(*form_structure, field.global_id()) &&
-      client().ShowAutofillFieldIphForFeature(
-          field, AutofillClient::IphFeature::kAutofillAi)) {
-    std::move(callback).Run(/*show_suggestions=*/false, /*suggestions=*/{});
-    return;
-  }
 
   if (!suggestions.empty()) {
     // Show the list of `suggestions` if not empty. These may include address or

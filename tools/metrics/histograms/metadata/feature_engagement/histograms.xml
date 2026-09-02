@@ -86,8 +86,8 @@ chromium-metrics-reviews@google.com.
       summary="message shown along with the account name and email suggestion
                option in the Autofill dropdown"/>
   <variant name="IPH_AutofillAiOptIn"
-      summary="snooze educating users about the possibility of turning on the
-               AutofillAi feature"/>
+      summary="(obsolete) snooze educating users about the possibility of
+               turning on the AutofillAi feature"/>
   <variant name="IPH_AutofillAiValuables"
       summary="snooze educating users about the possibility of autofilling
                Google Wallet passses"/>

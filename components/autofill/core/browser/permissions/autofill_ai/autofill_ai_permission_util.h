@@ -41,7 +41,7 @@ class AutofillClient;
 class EntityDataManager;
 
 // An AutofillAI-related action that a user may take directly or indirectly
-// (e.g., IPH).
+// (e.g., Import entities to Google wallet).
 enum class AutofillAiAction {
   // Add new locally stored AutofillAI data in settings.
   kAddLocalEntityInstanceInSettings,
@@ -53,10 +53,6 @@ enum class AutofillAiAction {
   kFilling,
   // Import (i.e. saving or updating) AutofillAI data on form submission.
   kImport,
-  // Show the IPH for opting into AutofillAI.
-  // TODO(crbug.com/440488776): Remove. Default availability is enabled by
-  // default and thus no IPH for opt-in is shown anymore.
-  kIphForOptIn,
   // List existing AutofillAI data in settings.
   kListEntityInstancesInSettings,
   // Log quality metrics to the `ModelQualityLogsService`. Doesn't control
@@ -119,7 +115,7 @@ enum class AutofillAiOptInStatus {
 //   prefs.)
 // - Account state (sign-in status).
 // - Whether the `action` can be performed for the `entity_type`.
-//   `entity_type` is only considered to kFilling, kIphForOptIn, kImport,
+//   `entity_type` is only considered to kFilling, kImport,
 //   kImportToWallet, kTypeSupportsAmbientAutofillData and must be non-empty in
 //   these cases.
 // - Miscellaneous state (OTR, locale, GeoIP).

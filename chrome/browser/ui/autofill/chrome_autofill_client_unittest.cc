@@ -575,7 +575,7 @@ TEST_F(ChromeAutofillClientTest,
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiValuablesFeature);
 
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
       .WillRepeatedly(Return(false));
@@ -585,7 +585,7 @@ TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiValuablesFeature);
 
   InSequence sequence;
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
@@ -599,7 +599,7 @@ TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiValuablesFeature);
 
   InSequence sequence;
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
@@ -628,7 +628,7 @@ TEST_F(ChromeAutofillClientTest, AutofillWalletDirectOffersFieldIPH_IsShown) {
 
 TEST_F(ChromeAutofillClientTest,
        AutofillFieldIPH_HideOnShowAutofillSuggestions) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiValuablesFeature);
   auto delegate = std::make_unique<MockAutofillSuggestionDelegate>();
 
   EXPECT_CALL(*autofill_field_promo_controller(), Hide);
@@ -834,7 +834,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
 
   EXPECT_CALL(mock_user_education,
               NotifyFeaturePromoFeatureUsed(
-                  Ref(feature_engagement::kIPHAutofillAiOptInFeature),
+                  Ref(feature_engagement::kIPHAutofillAiValuablesFeature),
                   FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
   client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
 }

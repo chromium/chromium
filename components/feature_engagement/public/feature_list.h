@@ -572,7 +572,6 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsSharedTabFeedbackFeature,
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 DEFINE_VARIATION_PARAM(kIPHAutofillAccountNameEmailSuggestionFeature,
                        "IPH_AutofillAccountNameEmailSuggestion");
-DEFINE_VARIATION_PARAM(kIPHAutofillAiOptInFeature, "IPH_AutofillAiOptIn");
 DEFINE_VARIATION_PARAM(kIPHAutofillAiValuablesFeature,
                        "IPH_AutofillAiValuables");
 DEFINE_VARIATION_PARAM(kIPHAutofillAtMemoryFeature, "IPH_AutofillAtMemory");
@@ -957,7 +956,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // keep-sorted start case=no
         VARIATION_ENTRY(kIPHAutofillAccountNameEmailSuggestionFeature),
-        VARIATION_ENTRY(kIPHAutofillAiOptInFeature),
         VARIATION_ENTRY(kIPHAutofillAiValuablesFeature),
         VARIATION_ENTRY(kIPHAutofillAtMemoryFeature),
         VARIATION_ENTRY(kIPHAutofillCardInfoRetrievalSuggestionFeature),

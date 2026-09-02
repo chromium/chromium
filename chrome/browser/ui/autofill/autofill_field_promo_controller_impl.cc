@@ -105,8 +105,6 @@ void AutofillFieldPromoControllerImpl::OnShowPromoResult(
   // On failure to show, hide the invisible view.
   if (!result) {
     Hide();
-  } else if (feature_promo_ == feature_engagement::kIPHAutofillAiOptInFeature) {
-    LogOptInFunnelEvent(AutofillAiOptInFunnelEvents::kIphShown);
   }
 }
 

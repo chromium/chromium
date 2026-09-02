@@ -6145,41 +6145,6 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
 }
 
-// Tests that the Autofill AI IPH is attempted to be shown if there are no
-// Autofill suggestions and the delegate returns that IPH should show.
-TEST_F(BrowserAutofillManagerTest_MockAutofillAi, AutofillAiIph) {
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-  ON_CALL(mock_ai_manager(), ShouldDisplayIph).WillByDefault(Return(true));
-  personal_data().test_address_data_manager().ClearProfiles();
-
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillFieldIphForFeature(
-                  _, AutofillClient::IphFeature::kAutofillAi));
-  OnAskForValuesToFill(
-      form, form.fields().front(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
-}
-
-// Tests that the Autofill AI IPH is not shown if there are Autofill
-// suggestions.
-TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
-       NoAutofillAiIphWhenThereAreAutofillSuggestions) {
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-  ON_CALL(mock_ai_manager(), ShouldDisplayIph).WillByDefault(Return(false));
-  ASSERT_THAT(personal_data().test_address_data_manager().GetProfiles(),
-              Not(IsEmpty()));
-
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillFieldIphForFeature(
-                  _, AutofillClient::IphFeature::kAutofillAi))
-      .Times(0);
-  OnAskForValuesToFill(
-      form, form.fields().front(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
-}
-
 // Tests that an Autofill profile is not imported into the address data manager
 // when the submitted form was imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,

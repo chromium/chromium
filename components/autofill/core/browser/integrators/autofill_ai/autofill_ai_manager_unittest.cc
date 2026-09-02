@@ -396,48 +396,8 @@ TEST_F(AutofillAiManagerTest,
   manager().OnAfterLoadedServerPredictions(autofill_manager(), {form_id});
 }
 
-// Tests that IPH should not be displayed if the user is opted into AutofillAI
-// already.
-TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphWhenOptedIn) {
-  test::FormDescription form_description = {.fields = {{}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
-  AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedIn);
 
-  EXPECT_FALSE(
-      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
-}
 
-// Tests that IPH should not be displayed if the page does not contain enough
-// information for an import.
-TEST_F(AutofillAiManagerTest,
-       ShouldNotDisplayIphWhenInsufficientDataForImport) {
-  test::FormDescription form_description = {.fields = {{}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  AddPredictionsToFormStructure(form_structure, {{PASSPORT_ISSUE_DATE}});
-  AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-
-  EXPECT_FALSE(
-      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
-}
-
-// Tests that IPH is not displayed on a field without AutofillAI predictions.
-TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphOnUnrelatedField) {
-  test::FormDescription form_description = {.fields = {{}, {}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  AddPredictionsToFormStructure(
-      form_structure, {{PASSPORT_NUMBER}, {PHONE_HOME_CITY_AND_NUMBER}});
-  AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-
-  EXPECT_FALSE(
-      manager().ShouldDisplayIph(form_structure, form.fields()[1].global_id()));
-}
 
 TEST_F(AutofillAiManagerTest,
        FillingMomentSurvey_SuggestionAccepted_ShowSurvey) {
