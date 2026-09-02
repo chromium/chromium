@@ -652,37 +652,76 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   group_ = browser()->GetTabStripModel()->AddToNewGroup({0});
   ASSERT_TRUE(group_.has_value());
 
-  // Try showing the bubble near the top of the window. The arrow should be on
-  // the top left.
-  gfx::Rect top_anchor_rect(100, 100, 50, 50);
-  std::unique_ptr<views::Widget> top_widget = TabGroupEditorBubbleView::Show(
-      browser(), group_.value(),
-      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
-      top_anchor_rect, false);
-  views::test::WidgetVisibleWaiter(top_widget.get()).Wait();
+  // Try showing the bubble near the top left of the window. The arrow should be
+  // on the top left.
+  gfx::Rect top_left_anchor_rect(100, 100, 50, 50);
+  std::unique_ptr<views::Widget> top_left_widget =
+      TabGroupEditorBubbleView::Show(
+          browser(), group_.value(),
+          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
+          top_left_anchor_rect, false);
+  views::test::WidgetVisibleWaiter(top_left_widget.get()).Wait();
 
-  TabGroupEditorBubbleView* top_bubble_view =
+  TabGroupEditorBubbleView* top_left_bubble_view =
       static_cast<TabGroupEditorBubbleView*>(
-          top_widget->widget_delegate()->AsBubbleDialogDelegate());
+          top_left_widget->widget_delegate()->AsBubbleDialogDelegate());
 
-  EXPECT_EQ(top_bubble_view->arrow(), views::BubbleBorder::Arrow::TOP_LEFT);
-  top_widget->CloseNow();
+  EXPECT_EQ(top_left_bubble_view->arrow(),
+            views::BubbleBorder::Arrow::TOP_LEFT);
+  top_left_widget->CloseNow();
 
-  // Try showing the bubble near the bottom of the window. The arrow should be
-  // on the bottom left.
-  gfx::Rect bottom_anchor_rect(100, 900, 50, 50);
-  std::unique_ptr<views::Widget> bottom_widget = TabGroupEditorBubbleView::Show(
-      browser(), group_.value(),
-      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
-      bottom_anchor_rect, false);
-  views::test::WidgetVisibleWaiter(bottom_widget.get()).Wait();
+  // Try showing the bubble near the bottom left of the window. The arrow should
+  // be on the bottom left.
+  gfx::Rect bottom_left_anchor_rect(100, 900, 50, 50);
+  std::unique_ptr<views::Widget> bottom_left_widget =
+      TabGroupEditorBubbleView::Show(
+          browser(), group_.value(),
+          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
+          bottom_left_anchor_rect, false);
+  views::test::WidgetVisibleWaiter(bottom_left_widget.get()).Wait();
 
-  TabGroupEditorBubbleView* bottom_bubble_view =
+  TabGroupEditorBubbleView* bottom_left_bubble_view =
       static_cast<TabGroupEditorBubbleView*>(
-          bottom_widget->widget_delegate()->AsBubbleDialogDelegate());
+          bottom_left_widget->widget_delegate()->AsBubbleDialogDelegate());
 
-  EXPECT_EQ(bottom_bubble_view->arrow(),
+  EXPECT_EQ(bottom_left_bubble_view->arrow(),
             views::BubbleBorder::Arrow::BOTTOM_LEFT);
-  bottom_widget->CloseNow();
+  bottom_left_widget->CloseNow();
+
+  // Try showing the bubble near the top right of the window. The arrow should
+  // be on the top right.
+  gfx::Rect top_right_anchor_rect(900, 100, 50, 50);
+  std::unique_ptr<views::Widget> top_right_widget =
+      TabGroupEditorBubbleView::Show(
+          browser(), group_.value(),
+          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
+          top_right_anchor_rect, false);
+  views::test::WidgetVisibleWaiter(top_right_widget.get()).Wait();
+
+  TabGroupEditorBubbleView* top_right_bubble_view =
+      static_cast<TabGroupEditorBubbleView*>(
+          top_right_widget->widget_delegate()->AsBubbleDialogDelegate());
+
+  EXPECT_EQ(top_right_bubble_view->arrow(),
+            views::BubbleBorder::Arrow::TOP_RIGHT);
+  top_right_widget->CloseNow();
+
+  // Try showing the bubble near the bottom right of the window. The arrow
+  // should be on the bottom right.
+  gfx::Rect bottom_right_anchor_rect(900, 900, 50, 50);
+  std::unique_ptr<views::Widget> bottom_right_widget =
+      TabGroupEditorBubbleView::Show(
+          browser(), group_.value(),
+          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
+          bottom_right_anchor_rect, false);
+  views::test::WidgetVisibleWaiter(bottom_right_widget.get()).Wait();
+
+  TabGroupEditorBubbleView* bottom_right_bubble_view =
+      static_cast<TabGroupEditorBubbleView*>(
+          bottom_right_widget->widget_delegate()->AsBubbleDialogDelegate());
+
+  EXPECT_EQ(bottom_right_bubble_view->arrow(),
+            views::BubbleBorder::Arrow::BOTTOM_RIGHT);
+  bottom_right_widget->CloseNow();
 }
 #endif
