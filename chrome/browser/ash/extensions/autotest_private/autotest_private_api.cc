@@ -79,8 +79,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -183,7 +181,11 @@
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -3266,43 +3268,48 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetAllInstalledAppsFunction";
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  const AccountId* account_id =
+      ash::AnnotatedAccountId::Get(profile->GetOriginalProfile());
+  apps::AppService* app_service =
+      account_id ? apps::AppServiceRegistry::Get()->Find(*account_id) : nullptr;
 
   std::vector<api::autotest_private::App> installed_apps;
-  proxy->AppRegistryCache().ForEachApp(
-      [&installed_apps](const apps::AppUpdate& update) {
-        if (!apps_util::IsInstalled(update.Readiness())) {
-          return;
-        }
+  if (app_service) {
+    app_service->AppRegistryCache().ForEachApp(
+        [&installed_apps](const apps::AppUpdate& update) {
+          if (!apps_util::IsInstalled(update.Readiness())) {
+            return;
+          }
 
-        api::autotest_private::App app;
-        app.app_id = update.AppId();
+          api::autotest_private::App app;
+          app.app_id = update.AppId();
 
-        // Assume that when `switches::kForceDirectionRTL` is enabled, the
-        // system language still follows the left-to-right fashion. Because the
-        // app names carried by `update` are adapted to RTL by inserting extra
-        // characters that indicate the text direction, we should recover the
-        // original app names before returning them as the result.
-        if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                switches::kForceUIDirection) == switches::kForceDirectionRTL) {
-          std::u16string name = base::UTF8ToUTF16(update.Name());
-          base::i18n::UnadjustStringForLocaleDirection(&name);
-          app.name = base::UTF16ToUTF8(name);
-        } else {
-          app.name = update.Name();
-        }
+          // Assume that when `switches::kForceDirectionRTL` is enabled, the
+          // system language still follows the left-to-right fashion. Because
+          // the app names carried by `update` are adapted to RTL by inserting
+          // extra characters that indicate the text direction, we should
+          // recover the original app names before returning them as the result.
+          if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  switches::kForceUIDirection) ==
+              switches::kForceDirectionRTL) {
+            std::u16string name = base::UTF8ToUTF16(update.Name());
+            base::i18n::UnadjustStringForLocaleDirection(&name);
+            app.name = base::UTF16ToUTF8(name);
+          } else {
+            app.name = update.Name();
+          }
 
-        app.short_name = update.ShortName();
-        app.publisher_id = update.PublisherId();
-        app.additional_search_terms = update.AdditionalSearchTerms();
-        app.type = GetAppType(update.AppType());
-        app.install_source = GetAppInstallSource(update.InstallReason());
-        app.readiness = GetAppReadiness(update.Readiness());
-        app.show_in_launcher = update.ShowInLauncher();
-        app.show_in_search = update.ShowInSearch();
-        installed_apps.emplace_back(std::move(app));
-      });
+          app.short_name = update.ShortName();
+          app.publisher_id = update.PublisherId();
+          app.additional_search_terms = update.AdditionalSearchTerms();
+          app.type = GetAppType(update.AppType());
+          app.install_source = GetAppInstallSource(update.InstallReason());
+          app.readiness = GetAppReadiness(update.Readiness());
+          app.show_in_launcher = update.ShowInLauncher();
+          app.show_in_search = update.ShowInSearch();
+          installed_apps.emplace_back(std::move(app));
+        });
+  }
 
   return RespondNow(
       ArgumentList(api::autotest_private::GetAllInstalledApps::Results::Create(
