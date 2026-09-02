@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -25,7 +24,6 @@ import java.net.URL;
 
 /** Unittests for {@link MinidumpUploader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MinidumpUploaderTest {
     @Rule public CrashTestRule mTestRule = new CrashTestRule();
     private File mUploadTestFile;

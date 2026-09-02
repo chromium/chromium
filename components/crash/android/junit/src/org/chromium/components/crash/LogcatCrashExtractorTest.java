@@ -13,7 +13,6 @@ import static org.chromium.components.crash.LogcatCrashExtractor.SNIPPED_MICRODU
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -23,7 +22,6 @@ import java.util.List;
 
 /** junit tests for {@link LogcatCrashExtractor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LogcatCrashExtractorTest {
     private static final int MAX_LINES = 5;
 

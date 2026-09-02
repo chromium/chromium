@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,7 +30,6 @@ import java.util.List;
 
 /** Tests for the common MinidumpUploadJob implementation within the minidump_uploader component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MinidumpUploadJobImplTest {
     @Rule public CrashTestRule mCrashTestRule = new CrashTestRule();
 
