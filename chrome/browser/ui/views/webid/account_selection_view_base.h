@@ -228,7 +228,7 @@ class AccountSelectionViewBase {
       const IdentityRequestAccountPtr& account,
       std::optional<int> clickable_position,
       bool should_include_idp,
-      bool is_modal_dialog = false,
+      bool is_modal_dialog,
       int additional_vertical_padding = 0,
       std::optional<std::u16string> used_string = std::nullopt);
 
@@ -261,6 +261,9 @@ class AccountSelectionViewBase {
 
   // The device's scale factor.
   float device_scale_factor_;
+
+  // Whether this dialog is for a multi-IDP request.
+  bool is_multi_idp_{false};
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.

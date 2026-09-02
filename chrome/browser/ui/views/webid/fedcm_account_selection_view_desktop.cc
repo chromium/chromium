@@ -525,8 +525,12 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   state_ = State::LOADING;
   ResetDialogWidgetStateOnAnyShow();
 
-  CreateOrUpdateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
-                              rp_context, rp_mode,
+  std::optional<std::u16string> idp_title =
+      idp_etld_plus_one.empty()
+          ? std::nullopt
+          : std::make_optional(base::UTF8ToUTF16(idp_etld_plus_one));
+
+  CreateOrUpdateViewAndWidget(rp_data, idp_title, rp_context, rp_mode,
                               /*has_modal_support=*/true);
 
   UpdateDialogVisibilityAndPosition();

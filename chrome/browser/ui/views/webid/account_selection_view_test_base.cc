@@ -253,8 +253,7 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
   EXPECT_TRUE(icon_view);
   EXPECT_EQ(icon_view->GetClassName(), "AccountImageView");
 
-  // Check for the IDP eTLD+1 in footer. This is not passed to the method but
-  // in our tests they all start with 'idp'.
+  // Check for the IDP eTLD+1 in footer.
   if (expect_idp) {
     EXPECT_TRUE(
         GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
@@ -264,7 +263,11 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
   EXPECT_EQ(
       icon_view->size(),
       is_modal_dialog
-          ? gfx::Size(webid::kModalAvatarSize, webid::kModalAvatarSize)
+          ? (expect_idp
+                 ? gfx::Size(
+                       webid::kModalAvatarSize + webid::kIdpBadgeOffset,
+                       webid::kModalAvatarSize + 2 * webid::kIdpBadgeOffset)
+                 : gfx::Size(webid::kModalAvatarSize, webid::kModalAvatarSize))
       // Height is increased by 2 * offset so that the account icon is centered.
       : expect_idp
           ? gfx::Size(webid::kDesiredAvatarSize + webid::kIdpBadgeOffset,

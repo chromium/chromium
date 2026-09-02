@@ -194,6 +194,8 @@ class AccountSelectionModalView : public views::BoxLayoutView,
 
   // Helper method to show the given accounts.
   void ShowAccounts(const std::vector<IdentityRequestAccountPtr>& accounts,
+                    const std::vector<IdentityProviderDataPtr>& idp_list,
+                    const gfx::Image& rp_icon,
                     bool is_single_account_chooser);
 
   // The following are raw_ptrs for views in the header. These do not need to be

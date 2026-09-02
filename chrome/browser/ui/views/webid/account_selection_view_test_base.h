@@ -31,6 +31,8 @@ inline constexpr char16_t kSubtitleIframeSignIn[] =
     u"rp-example.com embeds content from iframe-example.com";
 inline constexpr char16_t kTitleSignInWithoutIdp[] =
     u"Sign in to rp-example.com";
+inline constexpr char16_t kTitleIframeSignInWithoutIdp[] =
+    u"Sign in to iframe-example.com";
 inline constexpr char16_t kTitleSigningIn[] = u"Verifying…";
 inline constexpr char16_t kTitleSigningInWithAutoReauthn[] = u"Signing you in…";
 inline constexpr char16_t kTitleRequestPermission[] =

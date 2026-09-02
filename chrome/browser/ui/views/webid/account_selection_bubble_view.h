@@ -123,8 +123,7 @@ class AccountSelectionBubbleView : public views::BoxLayoutView,
   // Adds the accounts provided to the given view. This method does not reorder
   // the accounts, and assumes they are provided in the correct order.
   void AddAccounts(const std::vector<IdentityRequestAccountPtr>& accounts,
-                   views::View* accounts_content,
-                   bool is_multi_idp);
+                   views::View* accounts_content);
 
   // Invoked whenever the expandable account chooser is scrolled.
   void OnExpandableAccountsScrolled();

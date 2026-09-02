@@ -163,7 +163,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void PerformHeaderChecks(views::View* header,
                            bool expect_visible_idp_icon = true,
-                           bool expect_visible_combined_icons = false) {
+                           bool expect_visible_combined_icons = false,
+                           bool is_multi_idp = false) {
     // Perform some basic dialog checks.
     auto* delegate = dialog_delegate();
     ASSERT_TRUE(delegate);
@@ -276,7 +277,17 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Check title text.
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
     ASSERT_TRUE(title_view);
-    if (iframe_for_display_.empty()) {
+    if (is_multi_idp) {
+      if (iframe_for_display_.empty()) {
+        EXPECT_EQ(title_view->GetText(), kTitleSignInWithoutIdp);
+        EXPECT_EQ(dialog()->GetDialogTitle(),
+                  base::UTF16ToUTF8(kTitleSignInWithoutIdp));
+      } else {
+        EXPECT_EQ(title_view->GetText(), kTitleIframeSignInWithoutIdp);
+        EXPECT_EQ(dialog()->GetDialogTitle(),
+                  base::UTF16ToUTF8(kTitleIframeSignInWithoutIdp));
+      }
+    } else if (iframe_for_display_.empty()) {
       EXPECT_EQ(title_view->GetText(), kTitleSignIn);
       EXPECT_EQ(dialog()->GetDialogTitle(), base::UTF16ToUTF8(kTitleSignIn));
     } else {
@@ -424,6 +435,89 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                               /*expect_idp=*/false, /*is_modal_dialog=*/true);
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
                    supports_add_account, /*expect_back_button=*/false);
+  }
+
+  void CreateAndShowMultiIdpPicker(
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityProviderDataPtr>& idp_list) {
+    CreateAccountSelectionModal();
+    dialog_->ShowMultiAccountPicker(accounts, idp_list,
+                                    /*rp_icon=*/gfx::Image(),
+                                    /*show_back_button=*/false);
+    account_selection_view_->UpdateDialogPosition();
+  }
+
+  void TestMultipleIdps() {
+    IdentityProviderDataPtr idp_data_2 =
+        base::MakeRefCounted<content::IdentityProviderData>(
+            kSecondIdpForDisplay, content::IdentityProviderMetadata(),
+            CreateTestClientMetadata(), blink::mojom::RpContext::kSignIn,
+            /*format=*/std::nullopt, kDefaultDisclosureFields,
+            /*has_login_status_mismatch=*/false);
+
+    account_list_ = {CreateTestIdentityRequestAccount(
+                         "1", idp_data_,
+                         content::IdentityRequestAccount::LoginState::kSignUp),
+                     CreateTestIdentityRequestAccount(
+                         "2", idp_data_2,
+                         content::IdentityRequestAccount::LoginState::kSignUp)};
+
+    CreateAndShowMultiIdpPicker(account_list_, {idp_data_, idp_data_2});
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
+    PerformHeaderChecks(children[0], /*expect_visible_idp_icon=*/true,
+                        /*expect_visible_combined_icons=*/false,
+                        /*is_multi_idp=*/true);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+    size_t accounts_index = 0;
+    CheckHoverableAccountRows(accounts, {"1", "2"}, accounts_index,
+                              /*expect_idp=*/true, /*is_modal_dialog=*/true);
+    ASSERT_EQ("Separator", accounts[accounts_index++]->GetClassName());
+    EXPECT_EQ(accounts_index, 5u);
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/false,
+                   /*expect_back_button=*/false);
+  }
+
+  void TestMultipleIdpsWithMismatch() {
+    IdentityProviderDataPtr idp_data_2 =
+        base::MakeRefCounted<content::IdentityProviderData>(
+            kSecondIdpForDisplay, content::IdentityProviderMetadata(),
+            CreateTestClientMetadata(), blink::mojom::RpContext::kSignIn,
+            /*format=*/std::nullopt, kDefaultDisclosureFields,
+            /*has_login_status_mismatch=*/true);
+
+    account_list_ = {CreateTestIdentityRequestAccount(
+        "1", idp_data_, content::IdentityRequestAccount::LoginState::kSignUp)};
+
+    CreateAndShowMultiIdpPicker(account_list_, {idp_data_, idp_data_2});
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
+    PerformHeaderChecks(children[0], /*expect_visible_idp_icon=*/true,
+                        /*expect_visible_combined_icons=*/false,
+                        /*is_multi_idp=*/true);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+    ASSERT_EQ(accounts.size(), 3u);
+    size_t accounts_index = 0;
+    CheckHoverableAccountRows(accounts, {"1"}, accounts_index,
+                              /*expect_idp=*/true, /*is_modal_dialog=*/true);
+    ASSERT_EQ("Separator", accounts[accounts_index++]->GetClassName());
+    EXPECT_EQ(accounts_index, 3u);
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/false,
+                   /*expect_back_button=*/false);
   }
 
   std::vector<raw_ptr<views::View, VectorExperimental>>
@@ -1082,6 +1176,32 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, IframeTitle) {
   iframe_for_display_ = kIframeETLDPlusOne;
   // This will also run the header/title tests.
   CreateAccountSelectionModal();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleIdps) {
+  TestMultipleIdps();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleIdpsWithMismatch) {
+  TestMultipleIdpsWithMismatch();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleIdpsInIframe) {
+  iframe_for_display_ = kIframeETLDPlusOne;
+  TestMultipleIdps();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       RequestPermissionAfterMultipleIdps) {
+  TestMultipleIdps();
+  TestRequestPermission(/*has_display_identifier=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleIdpsAfterRequestPermission) {
+  TestRequestPermission(/*has_display_identifier=*/true);
+  TestMultipleIdps();
 }
 
 }  //  namespace webid

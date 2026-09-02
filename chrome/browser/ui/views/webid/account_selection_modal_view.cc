@@ -63,6 +63,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace webid {
@@ -370,13 +371,20 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  views::View* const content = scroll_view->SetContents(CreateAccountRows(
+  if (accounts.empty()) {
+    // TODO(crbug.com/552477973): Support modal UI when all accounts are
+    // filtered out or mismatched.
+    return scroll_view;
+  }
+  std::unique_ptr<views::View> content = CreateAccountRows(
       accounts, /*should_hover=*/true, /*show_separator=*/true,
-      /*is_request_permission_dialog=*/false));
+      /*is_request_permission_dialog=*/false);
+
+  views::View* const content_ptr = scroll_view->SetContents(std::move(content));
 
   constexpr float kMaxAccountsToShow = 3.5f;
   const int per_account_size =
-      content->GetPreferredSize().height() / accounts.size();
+      content_ptr->GetPreferredSize().height() / accounts.size();
   scroll_view->ClipHeightTo(
       0, static_cast<int>(per_account_size * kMaxAccountsToShow));
   return scroll_view;
@@ -406,7 +414,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
         account,
         /*clickable_position=*/
         should_hover ? std::make_optional<int>(num_rows++) : std::nullopt,
-        /*should_include_idp=*/false,
+        /*should_include_idp=*/!is_request_permission_dialog && is_multi_idp_,
         /*is_modal_dialog=*/true,
         /*additional_vertical_padding=*/
         is_request_permission_dialog ? 0 : kAccountRowVerticalPadding));
@@ -424,20 +432,30 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
     const gfx::Image& rp_icon,
     bool show_back_button) {
   DCHECK(!show_back_button);
-  CHECK_EQ(idp_list.size(), 1u);
-  ShowAccounts(accounts, /*is_single_account_chooser=*/false);
+  ShowAccounts(accounts, idp_list, rp_icon,
+               /*is_single_account_chooser=*/false);
 }
 
 void AccountSelectionModalView::ShowAccounts(
     const std::vector<IdentityRequestAccountPtr>& accounts,
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
     bool is_single_account_chooser) {
   RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
-  const content::IdentityProviderMetadata& idp_metadata =
-      accounts[0]->identity_provider->idp_metadata;
-  // If `brand_decoded_icon` is empty, a globe icon is shown instead.
-  if (!idp_metadata.brand_decoded_icon.IsEmpty()) {
-    if (idp_brand_icon_->SetBrandIconImage(idp_metadata.brand_decoded_icon,
+  is_multi_idp_ = idp_list.size() > 1u;
+  idp_title_ = is_multi_idp_
+                   ? std::nullopt
+                   : std::make_optional<std::u16string>(
+                         base::UTF8ToUTF16(idp_list[0]->idp_for_display));
+  UpdateTitleAndSubtitle(rp_data_);
+
+  // TODO(crbug.com/551927981): RP icon is provided by the IDP, which is
+  // problematic in multi-IDP mode.
+  const gfx::Image& icon =
+      is_multi_idp_ ? rp_icon : idp_list[0]->idp_metadata.brand_decoded_icon;
+  if (!icon.IsEmpty()) {
+    if (idp_brand_icon_->SetBrandIconImage(icon,
                                            /*should_circle_crop=*/true)) {
       OnIdpBrandIconSet();
     }
@@ -471,19 +489,18 @@ void AccountSelectionModalView::ShowAccounts(
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
 
-  // TODO(crbug.com/324052630): Support add account with multi IDP API.
-  if (idp_metadata.supports_add_account ||
-      idp_metadata.has_filtered_out_account) {
+  // TODO(crbug.com/552477973): Support add account for multiple IDPs in modal
+  // view.
+  if (!is_multi_idp_ && (idp_list[0]->idp_metadata.supports_add_account ||
+                         idp_list[0]->idp_metadata.has_filtered_out_account)) {
     use_other_account_callback = base::BindRepeating(
         &AccountSelectionModalView::OnUseOtherAccountButtonClicked,
-        base::Unretained(this), idp_metadata.config_url,
-        idp_metadata.idp_login_url);
+        base::Unretained(this), idp_list[0]->idp_metadata.config_url,
+        idp_list[0]->idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback),
                                /*back_callback=*/std::nullopt));
-
-  // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
 
 void AccountSelectionModalView::ShowVerifyingSheet(
@@ -520,18 +537,22 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // multiple account chooser and the HoverButtons are embedded within a
   // ScrollView.
   if (!is_single_account_chooser) {
-    views::View* wrapper = account_chooser_->children()[0];
-    views::View* contents = wrapper->children()[0];
-    for (const auto& child : contents->children()) {
-      if (child->GetClassName() == "HoverButton") {
-        AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
-        if (button->HasBeenClicked()) {
-          has_spinner_ = true;
-          button->ReplaceSecondaryViewWithSpinner();
-          verifying_focus_view_ = button;
-        } else {
-          button->SetEnabled(false);
-          button->SetDisabledOpacity();
+    if (auto* scroll_view =
+            views::AsViewClass<views::ScrollView>(account_chooser_)) {
+      if (views::View* contents = scroll_view->contents()) {
+        for (const auto& child : contents->children()) {
+          if (child->GetClassName() == "HoverButton") {
+            AccountHoverButton* button =
+                static_cast<AccountHoverButton*>(child);
+            if (button->HasBeenClicked()) {
+              has_spinner_ = true;
+              button->ReplaceSecondaryViewWithSpinner();
+              verifying_focus_view_ = button;
+            } else {
+              button->SetEnabled(false);
+              button->SetDisabledOpacity();
+            }
+          }
         }
       }
     }
@@ -570,7 +591,9 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const IdentityRequestAccountPtr& account,
     bool show_back_button) {
   std::vector<IdentityRequestAccountPtr> accounts = {account};
-  ShowAccounts(accounts, /*is_single_account_chooser=*/true);
+  std::vector<IdentityProviderDataPtr> idp_list = {account->identity_provider};
+  ShowAccounts(accounts, idp_list, /*rp_icon=*/gfx::Image(),
+               /*is_single_account_chooser=*/true);
 }
 
 void AccountSelectionModalView::ShowFailureDialog(
@@ -642,6 +665,9 @@ void AccountSelectionModalView::OnCombinedIconsSet() {
 void AccountSelectionModalView::ShowRequestPermissionDialog(
     const IdentityRequestAccountPtr& account) {
   RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
+
+  idp_title_ = base::UTF8ToUTF16(account->identity_provider->idp_for_display);
+  UpdateTitleAndSubtitle(rp_data_);
 
   const content::IdentityProviderData& idp_data = *account->identity_provider;
   const gfx::Image& idp_brand_icon = idp_data.idp_metadata.brand_decoded_icon;
@@ -902,7 +928,10 @@ void AccountSelectionModalView::UpdateTitleAndSubtitle(
   title_label_->SetText(title_);
   title_label_->SetVisible(true);
   if (body_label_) {
-    body_label_->SetText(subtitle_);
+    body_label_->SetText(
+        subtitle_.empty()
+            ? l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT)
+            : subtitle_);
     body_label_->SetVisible(true);
   }
   // Otherwise, we will set the text when we create body_label_.

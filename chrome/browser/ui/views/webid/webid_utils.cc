@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/webid_utils.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/base/l10n/l10n_util.h"
