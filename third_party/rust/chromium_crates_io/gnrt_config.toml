@@ -369,6 +369,7 @@ ban_features = [
     # audited).
     'any_zlib',
 ]
+extra_input_roots = ["../README.md"]
 [crate.flate2.extra_kv]
 # Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
 # PNG encoding and decoding even in Debug builds.  See
