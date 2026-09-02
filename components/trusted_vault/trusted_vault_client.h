@@ -41,7 +41,7 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kPasswordManagerErrorMessage = 4,
   // Used on iOS only, from the account menu.
   kAccountMenu = 5,
-  // From the Password Manager Settings (currently used only on iOS).
+  // From the Password Manager Settings (used on iOS and Desktop).
   kPasswordManagerSettings = 6,
   // From the passwords keyboard accessory (only used on Android).
   kPasswordManagerKeyboardAccessory = 7,

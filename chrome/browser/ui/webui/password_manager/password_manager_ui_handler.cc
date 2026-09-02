@@ -482,6 +482,7 @@ void PasswordManagerUIHandler::StartTrustedVaultUnlock() {
           GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
               web_contents_)) {
     OpenTabForSyncKeyRetrieval(
-        browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings);
+        browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                     kPasswordManagerSettings);
   }
 }
