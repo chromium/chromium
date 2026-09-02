@@ -884,7 +884,7 @@ TEST_F(MenuRunnerImplDeathTest, MenuControllerDeletedDuringShowAtCHECK) {
   ASSERT_TRUE(nested_widget);
 
   // We expect the deletion to crash the process.
-  EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
         bool fired = false;
