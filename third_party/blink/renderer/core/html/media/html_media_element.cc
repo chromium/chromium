@@ -477,6 +477,10 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
   SetHasCustomStyleCallbacks();
   AddElementToDocumentMap(this, &document);
 
+  if (!CanPlayWhileHidden()) {
+    UseCounter::Count(
+        document, WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
+  }
   UseCounter::Count(document, WebFeature::kHTMLMediaElement);
 }
 
@@ -500,6 +504,12 @@ void HTMLMediaElement::Dispose() {
 
 void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   DVLOG(3) << "didMoveToNewDocument(" << *this << ")";
+
+  if (!CanPlayWhileHidden()) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
+  }
 
   load_timer_.MoveToNewTaskRunner(
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
@@ -690,7 +700,7 @@ bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
 
 bool HTMLMediaElement::CanPlayWhileHidden() const {
   ExecutionContext* context = GetDocument().GetExecutionContext();
-  return context &&
+  return !context ||
          context->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
                                        kMediaPlaybackWhileNotVisible,
                                    ReportOptions::kDoNotReport);
@@ -1786,30 +1796,7 @@ void HTMLMediaElement::StartPlayerLoad() {
   web_media_player_->RequestRemotePlaybackDisabled(
       FastHasAttribute(html_names::kDisableremoteplaybackAttr));
 
-  if (RuntimeEnabledFeatures::
-          MediaPlaybackWhileNotVisiblePermissionPolicyEnabled(
-              GetExecutionContext())) {
-    UseCounter::Count(
-        GetDocument(),
-        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
-    web_media_player_->SetShouldPauseWhenFrameIsHidden(
-        !GetDocument().GetExecutionContext()->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::
-                kMediaPlaybackWhileNotVisible,
-            ReportOptions::kDoNotReport));
-  }
-
-  if (!CanPlayWhileHidden()) {
-    // The "media-playback-while-not-visible" permission policy default value
-    // was overridden, which means that either this frame or an ancestor frame
-    // changed the permission policy's default value. This should only happen if
-    // the MediaPlaybackWhileNotVisiblePermissionPolicyEnabled runtime flag is
-    // enabled.
-    UseCounter::Count(
-        GetDocument(),
-        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
-    web_media_player_->SetShouldPauseWhenFrameIsHidden(true);
-  }
+  web_media_player_->SetShouldPauseWhenFrameIsHidden(!CanPlayWhileHidden());
 
   bool is_cache_disabled = false;
   probe::IsCacheDisabled(GetDocument().GetExecutionContext(),

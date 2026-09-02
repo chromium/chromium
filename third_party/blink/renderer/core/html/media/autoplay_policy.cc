@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -288,19 +287,9 @@ bool AutoplayPolicy::HasTransientUserActivation() const {
 }
 
 std::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
-  if (!element_->CanPlayWhileHidden()) {
-    // The "media-playback-while-not-visible" permission policy default value
-    // was overridden, which means that either this frame or an ancestor frame
-    // changed the permission policy's default value. This should only happen if
-    // the MediaPlaybackWhileNotVisiblePermissionPolicyEnabled runtime flag is
-    // enabled.
-    UseCounter::Count(
-        element_->GetExecutionContext(),
-        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
-    // Block autoplay only if the media element's visibility state is known.
-    if (element_->IsFrameHidden()) {
-      return DOMExceptionCode::kNotAllowedError;
-    }
+  // Block autoplay only if the media element's visibility state is known.
+  if (!element_->CanPlayWhileHidden() && element_->IsFrameHidden()) {
+    return DOMExceptionCode::kNotAllowedError;
   }
 
   if (!HasTransientUserActivation()) {
