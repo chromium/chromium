@@ -10,12 +10,8 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
-#include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
-#include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/tabs/public/tab_interface.h"
@@ -38,7 +34,6 @@ class View;
 
 class ReadAnythingSidePanelController;
 class ReadAnythingSidePanelWebView;
-class ReadAnythingUntrustedPageHandler;
 
 // Conceptually, if the side panel is open, then ReadAnythingSidePanelController
 // owns the WebContents (even though this is not the case in practice). The
@@ -70,7 +65,6 @@ class ReadAnythingSidePanelController
     : public SidePanelEntryObserver,
       public tabs::ContentsObservingTabFeature {
  public:
-  using Observer = ReadAnythingLifecycleObserver;
   ReadAnythingSidePanelController(tabs::TabInterface* tab,
                                   SidePanelRegistry* side_panel_registry);
   ReadAnythingSidePanelController(const ReadAnythingSidePanelController&) =
@@ -82,22 +76,11 @@ class ReadAnythingSidePanelController
   // Removes the ReadAnythingControllerGlue from the web contents.
   void RemoveReadAnythingControllerGlue();
 
-  void AddPageHandlerAsObserver(
-      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
-  void RemovePageHandlerAsObserver(
-      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
-
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
   void OnEntryWillHide(SidePanelEntry* entry,
                        SidePanelEntryHideReason reason) override;
-
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  void SetDwellTimeForTesting(base::TimeTicks test_time);
 
   tabs::TabInterface* tab() { return tab_.get(); }
 
@@ -129,15 +112,6 @@ class ReadAnythingSidePanelController
   void UpdateIphVisibility();
 
   std::string default_language_code_;
-
-  std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
-
-  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
-  base::ObserverList<
-      Observer,
-      /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
-      observers_;
 
   const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;

@@ -364,6 +364,91 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseSidePanelUI_NotifiesObserversOfCloseReason) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  // Show it first in side panel
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingContextMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
+  controller->AddObserver(&observer);
+
+  // Close it
+  auto reason = ReadAnythingCloseReason::kClosedByUser;
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnWillClose(reason)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  controller->CloseSidePanelUI(reason);
+  run_loop.Run();
+
+  // Cleanup
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseSidePanelUI_RendererCrashed_NotifiesObservers) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingContextMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
+  controller->AddObserver(&observer);
+
+  auto reason = ReadAnythingCloseReason::kRendererCrashed;
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnWillClose(reason)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  controller->CloseSidePanelUI(reason);
+  run_loop.Run();
+
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       SidePanelBackgrounded_NotifiesObserversOfTabSwitched) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingContextMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
+  controller->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnWillClose(ReadAnythingCloseReason::kTabSwitched))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  controller->OnSidePanelWillHide(SidePanelEntryHideReason::kBackgrounded);
+  run_loop.Run();
+
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        TabDetached_NotifiesObservers) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
