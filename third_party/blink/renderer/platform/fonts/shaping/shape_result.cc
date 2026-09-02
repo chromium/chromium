@@ -297,6 +297,16 @@ float ShapeResultRun::XPositionForOffset(
       accumulated_position += glyph_sequence_advance;
       glyph_sequence_advance = glyph_data_[i].advance;
     }
+
+    // If |offset| precedes every glyph in this run, the leading characters have
+    // no glyph of their own. This happens when the run starts in the middle of
+    // a cluster, e.g. a ShapeResultView that begins inside a ligature. Extend
+    // the logically first glyph sequence down to the start of the run so that
+    // [glyph_sequence_start, glyph_sequence_end) contains |offset|, matching
+    // what the LTR branch achieves by initializing the start to 0.
+    if (glyph_sequence_start > offset) {
+      glyph_sequence_start = 0;
+    }
   }
 
   // Determine if the offset is at the beginning of the current glyph sequence.
