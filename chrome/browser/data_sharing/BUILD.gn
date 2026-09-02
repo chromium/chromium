@@ -431,18 +431,36 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
 
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityBottomSheetRenderTest.java",
+    ]
     deps = [
+      ":data_sharing_public_java",
       ":factory_java",
+      ":recent_activity_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab_group_sync:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_transit",
+      "//components/browser_ui/bottomsheet/android:factory_java",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/bottomsheet/android:manager_java",
+      "//components/browser_ui/bottomsheet/android/test:java",
+      "//components/browser_ui/desktop_windowing/android:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/collaboration/public:java",
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
       "//content/public/test/android:content_java_test_support",
+      "//google_apis/gaia/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+      "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
@@ -450,6 +468,7 @@ if (is_android) {
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
+      "//url:url_java",
     ]
   }
 
