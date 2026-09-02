@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -36,10 +37,6 @@
 namespace {
 
 NSString* const kTargetDeviceName = @"My other device";
-NSString* const kSendTabToSelfModalCancelButtonId =
-    @"kSendTabToSelfModalCancelButton";
-NSString* const kSendTabToSelfModalMenuButtonId =
-    @"kSendTabToSelfModalMenuButton";
 NSString* const kExampleURL = @"https://www.example.com/";
 
 // Helpers for web element selectors.
@@ -151,7 +148,7 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Clean up the promo sheet.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButtonId)]
+                                          kSendTabToSelfModalCancelButton)]
       performAction:grey_tap()];
 }
 
@@ -170,7 +167,7 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Tap the menu button on the top left.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalMenuButtonId)]
+                                          kSendTabToSelfModalMenuButton)]
       performAction:grey_tap()];
 
   // The menu should pop up and show the "Manage your devices" action. Tap it.
@@ -243,7 +240,7 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Clean up.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButtonId)]
+                                          kSendTabToSelfModalCancelButton)]
       performAction:grey_tap()];
 }
 
@@ -271,12 +268,12 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Tap "Send".
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          @"kSendTabToSelfModalSendButton")]
+                                          kSendTabToSelfModalSendButton)]
       performAction:grey_tap()];
 
   // Verify that the bottom sheet is dismissed.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(@"kSendTabToSelfModalSendButton")];
+                      grey_accessibilityID(kSendTabToSelfModalSendButton)];
 
   // Wait for and verify the snackbar message.
   NSString* snackbarMessage =
@@ -324,12 +321,12 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Tap "Send".
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          @"kSendTabToSelfModalSendButton")]
+                                          kSendTabToSelfModalSendButton)]
       performAction:grey_tap()];
 
   // Verify that the bottom sheet is dismissed.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(@"kSendTabToSelfModalSendButton")];
+                      grey_accessibilityID(kSendTabToSelfModalSendButton)];
 
   // Wait for and verify the success snackbar message.
   NSString* snackbarMessage =
@@ -368,12 +365,12 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Tap "Send".
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          @"kSendTabToSelfModalSendButton")]
+                                          kSendTabToSelfModalSendButton)]
       performAction:grey_tap()];
 
   // Verify that the bottom sheet is dismissed after the failure.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(@"kSendTabToSelfModalSendButton")];
+                      grey_accessibilityID(kSendTabToSelfModalSendButton)];
 
   // Wait for and verify the error snackbar message ("Something went wrong.
   // Check your internet connection and try again.").
@@ -689,10 +686,10 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Clean up.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButtonId)]
+                                          kSendTabToSelfModalCancelButton)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
+                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
 }
 
 // Tests that when the "Send to your device" bottom sheet is opened from the tab
@@ -793,10 +790,10 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Clean up.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButtonId)]
+                                          kSendTabToSelfModalCancelButton)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
+                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
 }
 
 // Tests that long-pressing the defocused location view shows "Send to your
@@ -840,10 +837,10 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Clean up.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSendTabToSelfModalCancelButtonId)]
+                                          kSendTabToSelfModalCancelButton)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
+                      grey_accessibilityID(kSendTabToSelfModalCancelButton)];
 }
 
 @end

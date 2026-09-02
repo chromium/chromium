@@ -15,6 +15,7 @@
 #import "components/send_tab_to_self/target_device_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_device_info/device_info.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_manage_devices_item.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
@@ -32,13 +33,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Accessibility identifier of the Modal Cancel Button.
-NSString* const kSendTabToSelfModalCancelButton =
-    @"kSendTabToSelfModalCancelButton";
-// Accessibility identifier of the Modal Cancel Button.
-NSString* const kSendTabToSelfModalSendButton =
-    @"kSendTabToSelfModalSendButton";
 
 constexpr CGFloat kSymbolSize = 22;
 

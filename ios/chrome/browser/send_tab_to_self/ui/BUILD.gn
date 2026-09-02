@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "send_tab_to_self_constants.h",
+    "send_tab_to_self_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("ui") {
   sources = [
     "send_tab_to_self_bottom_sheet_view_controller.h",
@@ -17,6 +25,7 @@ source_set("ui") {
     "send_tab_to_self_table_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/send_tab_to_self",
     "//components/strings:components_strings_grit",

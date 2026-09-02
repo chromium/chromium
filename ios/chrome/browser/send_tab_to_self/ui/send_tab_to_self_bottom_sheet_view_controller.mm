@@ -9,6 +9,7 @@
 #import "components/send_tab_to_self/target_device_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_device_info/device_info.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -23,12 +24,6 @@
 
 namespace {
 constexpr CGFloat kSymbolSize = 22;
-NSString* const kSendTabToSelfModalSendButton =
-    @"kSendTabToSelfModalSendButton";
-NSString* const kSendTabToSelfModalCancelButton =
-    @"kSendTabToSelfModalCancelButton";
-NSString* const kSendTabToSelfModalMenuButton =
-    @"kSendTabToSelfModalMenuButton";
 }  // namespace
 
 @interface SendTabToSelfBottomSheetViewController () <
