@@ -8,10 +8,12 @@ use athm::{
     Encodable, Params, PrivateKey, PublicKey, PublicKeyProof, Token, TokenRequest, TokenResponse,
 };
 
-use crate::privacy_pass_common::{Frame, TruncatedKeyId, UnframeError, TOKEN_REQUEST_FRAMED_SIZE};
-use crate::types::AthmStatus;
+use crate::privacy_pass_common::{
+    AthmStatus, Frame, TruncatedKeyId, UnframeError, TOKEN_REQUEST_FRAMED_SIZE,
+};
 
 /// Parsed results from a token issuance request as seen by the server.
+#[derive(Clone)]
 pub struct TokenRequestInboundBatch {
     pub version: u32,
     pub truncated_key_id: u8,
@@ -43,6 +45,7 @@ impl TokenRequestInboundBatch {
     }
 }
 
+#[derive(Clone)]
 pub struct PrivacyPassAthmIssuer {
     private_key: PrivateKey,
     pub public_key: PublicKey,
@@ -68,14 +71,6 @@ impl PrivacyPassAthmIssuer {
         let mut out = Vec::new();
         self.public_key_proof.encode(&mut out);
         out
-    }
-
-    pub fn key_id(&self) -> [u8; 32] {
-        self.public_key.key_id()
-    }
-
-    pub fn truncated_key_id(&self) -> u8 {
-        self.public_key.truncated_key_id()
     }
 
     pub fn issue(

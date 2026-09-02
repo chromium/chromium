@@ -21,7 +21,6 @@ source_set("unit_tests") {
   # C++ via the cxx bridge. The ATHM targets live in common/.
   if (enable_rust) {
     deps += [
-      "//components/private_verification_tokens/common:athm_test_issuer_unittest",
       "//components/private_verification_tokens/common:privacy_pass_athm_batch_request_unittest",
       "//components/private_verification_tokens/common/athm_ffi:privacy_pass_unittests",
     ]

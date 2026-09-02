@@ -185,44 +185,19 @@ source_set("private_verification_tokens_issuer_config_unittest") {
 source_set("test_support") {
   testonly = true
   sources = [ "private_verification_tokens_test_util.h" ]
-  deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/private_verification_tokens/common/athm_ffi:athm_ffi_bindings",
+  ]
 }
 
 # ATHM (Anonymous Tokens with Hidden Metadata): Crubit bindings over
 # //third_party/anonymous_tokens:athm and the C++ that calls it.
 if (enable_rust) {
-  # Test issuer modeled on network::TestTrustTokenIssuer: holds the secret ATHM
-  # key material and exposes issuer-side (Issue/Verify) and client-side
-  # (request/finalize) operations over Crubit bindings.
-  # This is to be used in tests only. Chrome does not need/use
-  # issuer side capability.
-  source_set("athm_test_issuer") {
-    testonly = true
-    sources = [
-      "athm_test_issuer.cc",
-      "athm_test_issuer.h",
-    ]
-    public_deps = [
-      "//base",
-      "//components/private_verification_tokens/common/athm_ffi:athm_ffi_bindings",
-    ]
-    deps = [
-      ":private_verification_tokens_parameters",
-      "//crypto",
-      "//third_party/anonymous_tokens:athm_token_encodings_utils",
-    ]
-  }
-
   source_set("privacy_pass_athm_batch_request") {
     sources = [
       "privacy_pass_athm_batch_request.cc",
       "privacy_pass_athm_batch_request.h",
-    ]
-    deps = [
-      ":private_verification_tokens_parameters",
-      ":private_verification_tokens_public_key",
-      "//crypto",
-      "//third_party/anonymous_tokens:athm_token_encodings_utils",
     ]
     public_deps = [
       ":private_verification_tokens_issuer_config",
@@ -235,33 +210,14 @@ if (enable_rust) {
     testonly = true
     sources = [ "privacy_pass_athm_batch_request_unittest.cc" ]
     deps = [
-      ":athm_test_issuer",
       ":privacy_pass_athm_batch_request",
       ":private_verification_tokens_issuer_config",
       ":private_verification_tokens_parameters",
       ":private_verification_tokens_public_key",
       "//base",
+      "//components/private_verification_tokens/common/athm_ffi:athm_ffi_bindings",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/anonymous_tokens:athm_token_encodings_utils",
-      "//url",
-    ]
-  }
-
-  source_set("athm_test_issuer_unittest") {
-    testonly = true
-    sources = [ "athm_test_issuer_unittest.cc" ]
-    deps = [
-      ":athm_test_issuer",
-      ":privacy_pass_athm_batch_request",
-      ":private_verification_tokens_issuer_config",
-      ":private_verification_tokens_parameters",
-      ":private_verification_tokens_public_key",
-      "//base",
-      "//crypto",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/anonymous_tokens:athm_token_encodings_utils",
       "//url",
     ]
   }

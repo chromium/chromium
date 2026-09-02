@@ -24,7 +24,7 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/private_verification_tokens/common/athm_test_issuer.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
@@ -42,11 +42,13 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/crubit/support/rs_std/slice_ref.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
 
+using ::private_verification_tokens::test::CreateTestIssuer;
 using ::private_verification_tokens::test::FutureExpiration;
 using ::private_verification_tokens::test::GetFutureExpiration;
 
@@ -137,9 +139,9 @@ class PrivateVerificationTokensURLLoaderThrottleTest : public testing::Test {
     const GURL issuer_request_url_c("https://c.net/p/v/t/issue");
     const url::Origin redeemer_c = url::Origin::Create(GURL("https://c.net"));
     const std::string encoded_public_key =
-        base::Base64Encode(test_issuer_->public_key());
+        base::Base64Encode(test_issuer_->public_key_bytes());
     const std::string encoded_public_key_proof =
-        base::Base64Encode(test_issuer_->public_key_proof());
+        base::Base64Encode(test_issuer_->public_key_proof_bytes());
     const FutureExpiration future_expiration = GetFutureExpiration();
     const std::string expiration_str = future_expiration.string_rep;
     const std::string json_str = base::StringPrintf(
@@ -232,10 +234,8 @@ class PrivateVerificationTokensURLLoaderThrottleTest : public testing::Test {
 
  private:
   // All origins use the same test issuer.
-  std::optional<private_verification_tokens::AthmTestIssuer> test_issuer_ =
-      private_verification_tokens::AthmTestIssuer::Create(
-          /*num_buckets=*/2,
-          base::as_byte_span(std::string_view("dummy-deployment-id")));
+  std::optional<private_verification_tokens::PrivacyPassAthmIssuer>
+      test_issuer_ = CreateTestIssuer(/*num_buckets=*/2, "dummy-deployment-id");
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

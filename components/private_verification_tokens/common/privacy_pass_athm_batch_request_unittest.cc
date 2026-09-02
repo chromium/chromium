@@ -14,13 +14,13 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
-#include "components/private_verification_tokens/common/athm_test_issuer.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.h"
+#include "third_party/crubit/support/rs_std/slice_ref.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -35,39 +35,31 @@ std::vector<uint8_t> DeploymentIdBytes() {
   return base::ToVector(base::as_byte_span(std::string_view(kDeploymentId)));
 }
 
-IssuerConfig CreateTestIssuerConfig(const AthmTestIssuer& issuer,
+IssuerConfig CreateTestIssuerConfig(const PrivacyPassAthmIssuer& issuer,
                                     int32_t batch_size) {
   PrivateVerificationTokensPublicKey public_key(
       url::Origin::Create(GURL("https://issuer.example.com")),
-      issuer.public_key(), issuer.public_key_proof(),
+      base::ToVector(issuer.public_key_bytes()),
+      base::ToVector(issuer.public_key_proof_bytes()),
       base::Time::Now() + base::Days(30), /*version=*/1);
   return IssuerConfig(GURL("https://issuer.example.com/request"), batch_size,
                       std::move(public_key), {}, kDeploymentId);
 }
 
 void VerifyFinalizedTokenMetadata(
-    const AthmTestIssuer& issuer,
+    const PrivacyPassAthmIssuer& issuer,
     base::span<const uint8_t> finalized_token_bytes,
     uint8_t expected_metadata) {
   EXPECT_EQ(finalized_token_bytes.size(), kSingleTokenSize);
-  std::string_view finalized_token_str(
-      reinterpret_cast<const char*>(finalized_token_bytes.data()),
-      finalized_token_bytes.size());
-  anonymous_tokens::AthmToken unmarshaled_token;
-  absl::Status unmarshal_status = anonymous_tokens::UnmarshalAthmToken(
-      finalized_token_str, &unmarshaled_token);
-  ASSERT_TRUE(unmarshal_status.ok());
-  std::vector<uint8_t> raw_token(unmarshaled_token.token.begin(),
-                                 unmarshaled_token.token.end());
-
-  std::optional<uint8_t> recovered_metadata = issuer.Verify(raw_token);
+  auto recovered_metadata = issuer.verify_wire_token(
+      rs_std::SliceRef<const uint8_t>(finalized_token_bytes));
   ASSERT_TRUE(recovered_metadata.has_value());
-  EXPECT_EQ(recovered_metadata.value(), expected_metadata);
+  EXPECT_EQ(*recovered_metadata, expected_metadata);
 }
 
 TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
-  std::optional<AthmTestIssuer> issuer =
-      AthmTestIssuer::Create(kNumBuckets, DeploymentIdBytes());
+  auto issuer = PrivacyPassAthmIssuer::try_new(
+      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   constexpr int32_t kBatchSize = 10;
@@ -88,8 +80,9 @@ TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
       issuer_config.public_key.version());
 
   const uint8_t hidden_metadata = 1;
-  std::optional<std::string> batch_response = issuer->BatchIssue(
-      base::as_string_view(batch_request->request_body()), hidden_metadata);
+  auto batch_response = issuer->issue_batch_from_bytes(
+      rs_std::SliceRef<const uint8_t>(batch_request->request_body()),
+      hidden_metadata);
   ASSERT_TRUE(batch_response.has_value());
 
   // Finalize the batch request.
@@ -110,8 +103,8 @@ TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
 }
 
 TEST(PrivacyPassAthmBatchRequestTest, InvalidBatchParameters) {
-  std::optional<AthmTestIssuer> issuer =
-      AthmTestIssuer::Create(kNumBuckets, DeploymentIdBytes());
+  auto issuer = PrivacyPassAthmIssuer::try_new(
+      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   // Zero batch size.
@@ -140,8 +133,8 @@ TEST(PrivacyPassAthmBatchRequestTest, InvalidBatchParameters) {
 }
 
 TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
-  std::optional<AthmTestIssuer> issuer =
-      AthmTestIssuer::Create(kNumBuckets, DeploymentIdBytes());
+  auto issuer = PrivacyPassAthmIssuer::try_new(
+      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   IssuerConfig issuer_config =
@@ -160,18 +153,9 @@ TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
           base::span(batch_request->request_body()).last<sizeof(uint32_t)>()),
       issuer_config.public_key.version());
 
-  std::string_view req_str(
-      reinterpret_cast<const char*>(batch_request->request_body().data()),
-      params->single_request_size);
-  anonymous_tokens::AthmTokenRequest unmarshaled_req;
-  absl::Status req_status =
-      anonymous_tokens::UnmarshalAthmTokenRequest(req_str, &unmarshaled_req);
-  ASSERT_TRUE(req_status.ok());
-
-  std::vector<uint8_t> raw_req(unmarshaled_req.encoded_request.begin(),
-                               unmarshaled_req.encoded_request.end());
-  std::optional<std::vector<uint8_t>> token_resp =
-      issuer->Issue(raw_req, /*hidden_metadata=*/1);
+  auto token_resp = issuer->issue_batch_from_bytes(
+      rs_std::SliceRef<const uint8_t>(batch_request->request_body()),
+      /*hidden_metadata=*/1);
   ASSERT_TRUE(token_resp.has_value());
 
   auto res1 = batch_request->Finalize(*token_resp);
@@ -187,26 +171,27 @@ TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
 }
 
 TEST(PrivacyPassAthmBatchRequestTest, MalformedResponseBody) {
-  std::optional<AthmTestIssuer> issuer =
-      AthmTestIssuer::Create(kNumBuckets, DeploymentIdBytes());
+  auto issuer = PrivacyPassAthmIssuer::try_new(
+      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   IssuerConfig issuer_config =
       CreateTestIssuerConfig(*issuer, /*batch_size=*/2);
-  base::expected<PrivacyPassAthmBatchRequest, PrivacyPassAthmBatchRequestError>
-      batch_request =
-          PrivacyPassAthmBatchRequest::Create(issuer_config, kNumBuckets);
-  ASSERT_TRUE(batch_request.has_value());
+  auto make_batch_request = [&]() {
+    auto req = PrivacyPassAthmBatchRequest::Create(issuer_config, kNumBuckets);
+    EXPECT_TRUE(req.has_value());
+    return std::move(*req);
+  };
 
   // Empty response body.
-  auto empty_res = batch_request->Finalize({});
+  auto empty_res = make_batch_request().Finalize({});
   EXPECT_FALSE(empty_res.has_value());
   EXPECT_EQ(empty_res.error(),
             PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
 
   // Indivisible response body (odd number of bytes for batch_size = 2).
   std::vector<uint8_t> odd_bytes(15, 0xAA);
-  auto odd_res = batch_request->Finalize(odd_bytes);
+  auto odd_res = make_batch_request().Finalize(odd_bytes);
   EXPECT_FALSE(odd_res.has_value());
   EXPECT_EQ(odd_res.error(),
             PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
@@ -214,7 +199,7 @@ TEST(PrivacyPassAthmBatchRequestTest, MalformedResponseBody) {
   // Divisible by batch_size, but incorrect total length (e.g. 100 bytes per
   // token instead of expected 483 bytes for 4 buckets).
   std::vector<uint8_t> wrong_chunk_size_bytes(200, 0xAA);
-  auto wrong_chunk_res = batch_request->Finalize(wrong_chunk_size_bytes);
+  auto wrong_chunk_res = make_batch_request().Finalize(wrong_chunk_size_bytes);
   EXPECT_FALSE(wrong_chunk_res.has_value());
   EXPECT_EQ(wrong_chunk_res.error(),
             PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
@@ -224,14 +209,14 @@ TEST(PrivacyPassAthmBatchRequestTest, MalformedResponseBody) {
 
   // Correct size minus one byte (truncated).
   std::vector<uint8_t> truncated_bytes(kExpectedBatchResponseSize - 1, 0xAA);
-  auto truncated_res = batch_request->Finalize(truncated_bytes);
+  auto truncated_res = make_batch_request().Finalize(truncated_bytes);
   EXPECT_FALSE(truncated_res.has_value());
   EXPECT_EQ(truncated_res.error(),
             PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
 
   // Correct size plus one byte (extra).
   std::vector<uint8_t> extra_bytes(kExpectedBatchResponseSize + 1, 0xAA);
-  auto extra_res = batch_request->Finalize(extra_bytes);
+  auto extra_res = make_batch_request().Finalize(extra_bytes);
   EXPECT_FALSE(extra_res.has_value());
   EXPECT_EQ(extra_res.error(),
             PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);

@@ -7,10 +7,9 @@ chromium::import! {
 }
 
 use athm::{Decodable, Encodable, Token, TokenRequest};
-use athm_ffi::types::AthmStatus;
 use athm_ffi::{
-    Frame, PrivacyPassAthmClient, PrivacyPassAthmIssuer, PrivacyPassBatchClient,
-    TokenRequestInboundBatch, TokenResponseInboundBatch, UnframeError,
+    AthmStatus, Frame, PrivacyPassAthmClient, PrivacyPassAthmIssuer, PrivacyPassBatchClient,
+    TokenRequestInboundBatch, TokenResponseInboundBatch, TruncatedKeyId, UnframeError,
 };
 use rust_gtest_interop::prelude::*;
 
@@ -734,7 +733,7 @@ fn test_issuer_wire_methods_roundtrip() {
     let proof_bytes = issuer.public_key_proof_bytes();
     expect_false!(pk_bytes.is_empty());
     expect_false!(proof_bytes.is_empty());
-    expect_eq!(issuer.truncated_key_id(), issuer.key_id()[31]);
+    expect_eq!(issuer.public_key.truncated_key_id(), issuer.public_key.key_id()[31]);
 
     let batch_size = 2;
     let mut batch_req =

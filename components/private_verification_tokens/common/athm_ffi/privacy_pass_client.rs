@@ -7,11 +7,13 @@
 
 use athm::{Decodable, Params, PublicKey, PublicKeyProof, Token, TokenResponse};
 
-use crate::privacy_pass_common::{Frame, TokenState, UnframeError, TOKEN_REQUEST_FRAMED_SIZE};
+use crate::privacy_pass_common::{
+    AthmStatus, Frame, TokenState, UnframeError, TOKEN_REQUEST_FRAMED_SIZE,
+};
 use crate::privacy_pass_issuer::PrivacyPassAthmIssuer;
-use crate::types::AthmStatus;
 
 /// Client key material and cryptographic parameters.
+#[derive(Clone)]
 pub struct PrivacyPassAthmClient {
     public_key: PublicKey,
     public_key_proof: PublicKeyProof,
@@ -64,6 +66,7 @@ impl PrivacyPassAthmClient {
 }
 
 /// Parsed token responses as seen by the client.
+#[derive(Clone)]
 pub struct TokenResponseInboundBatch {
     pub responses: Vec<TokenResponse>,
 }
@@ -106,6 +109,7 @@ impl TokenResponseInboundBatch {
     }
 }
 
+#[derive(Clone)]
 pub struct PrivacyPassBatchClient {
     client: PrivacyPassAthmClient,
     states: Vec<TokenState>,

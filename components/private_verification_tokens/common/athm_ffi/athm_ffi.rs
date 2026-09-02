@@ -28,16 +28,10 @@
 //! TODO: These entry points decode untrusted serialized input and are prime
 //! fuzz targets; add cargo-fuzz/libfuzzer coverage for them in a follow-up.
 
-pub mod client;
-pub mod issuer;
 pub mod privacy_pass_client;
 pub mod privacy_pass_common;
 pub mod privacy_pass_issuer;
-pub mod types;
 
-pub use client::AthmClientRequest;
-pub use issuer::AthmKeyMaterial;
 pub use privacy_pass_client::*;
 pub use privacy_pass_common::*;
 pub use privacy_pass_issuer::*;
-pub use types::{AthmParameters, AthmStatus, TokenRequest};

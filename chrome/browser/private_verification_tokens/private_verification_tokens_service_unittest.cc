@@ -26,7 +26,7 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/private_verification_tokens/common/athm_test_issuer.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
@@ -38,11 +38,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/crubit/support/rs_std/slice_ref.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
 
+using ::private_verification_tokens::test::CreateTestIssuer;
 using ::private_verification_tokens::test::FutureExpiration;
 using ::private_verification_tokens::test::GetFutureExpiration;
 
@@ -52,9 +54,7 @@ const base::FilePath::CharType kDatabaseName[] =
 class PrivateVerificationTokensServiceTest : public testing::Test {
  public:
   PrivateVerificationTokensServiceTest()
-      : test_issuer_(private_verification_tokens::AthmTestIssuer::Create(
-            2,
-            base::as_byte_span(std::string_view("1")))) {
+      : test_issuer_(CreateTestIssuer(2, "1")) {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kEnablePrivateVerificationTokens);
   }
@@ -113,7 +113,8 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
   const base::FilePath& temp_dir_path() const { return temp_dir_.GetPath(); }
   const base::FilePath& db_path() const { return db_path_; }
 
-  const private_verification_tokens::AthmTestIssuer& test_issuer() const {
+  const private_verification_tokens::PrivacyPassAthmIssuer& test_issuer()
+      const {
     return *test_issuer_;
   }
 
@@ -190,9 +191,9 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
     const GURL issuer_request_url_d("https://d.com/pvt/i");
     const url::Origin redeemer_d = url::Origin::Create(GURL("https://d.com"));
     const std::string encoded_public_key =
-        base::Base64Encode(test_issuer_->public_key());
+        base::Base64Encode(test_issuer_->public_key_bytes());
     const std::string encoded_public_key_proof =
-        base::Base64Encode(test_issuer_->public_key_proof());
+        base::Base64Encode(test_issuer_->public_key_proof_bytes());
     const FutureExpiration future_expiration = GetFutureExpiration();
     const std::string expiration_str = future_expiration.string_rep;
     const std::string json_str = base::StringPrintf(
@@ -270,7 +271,8 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
   }
 
  private:
-  std::optional<private_verification_tokens::AthmTestIssuer> test_issuer_;
+  std::optional<private_verification_tokens::PrivacyPassAthmIssuer>
+      test_issuer_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -838,11 +840,13 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
           }
         }
 
-        std::optional<std::string> response =
-            test_issuer().BatchIssue(request_body, /*hidden_metadata=*/0);
+        auto response = test_issuer().issue_batch_from_bytes(
+            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            /*hidden_metadata=*/0);
         ASSERT_TRUE(response.has_value());
-        test_url_loader_factory.AddResponse(request.url.spec(),
-                                            std::move(*response));
+        test_url_loader_factory.AddResponse(
+            request.url.spec(),
+            std::string(response->begin(), response->end()));
       }));
 
   service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),
@@ -966,11 +970,13 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
             }
           }
         }
-        std::optional<std::string> response =
-            test_issuer().BatchIssue(request_body, /*hidden_metadata=*/0);
+        auto response = test_issuer().issue_batch_from_bytes(
+            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            /*hidden_metadata=*/0);
         ASSERT_TRUE(response.has_value());
-        test_url_loader_factory.AddResponse(request.url.spec(),
-                                            std::move(*response));
+        test_url_loader_factory.AddResponse(
+            request.url.spec(),
+            std::string(response->begin(), response->end()));
       }));
 
   service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),

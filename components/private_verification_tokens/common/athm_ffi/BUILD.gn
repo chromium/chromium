@@ -11,12 +11,9 @@ rust_static_library("athm_ffi") {
   crate_root = "athm_ffi.rs"
   sources = [
     "athm_ffi.rs",
-    "client.rs",
-    "issuer.rs",
     "privacy_pass_client.rs",
     "privacy_pass_common.rs",
     "privacy_pass_issuer.rs",
-    "types.rs",
   ]
   cpp_api_from_rust = {
     target_name = "athm_ffi_bindings"

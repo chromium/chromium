@@ -99,6 +99,18 @@ impl Frame<[u8; 32]> for Token {
     }
 }
 
+/// Error outcome of a bridge operation.
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AthmStatus {
+    /// One of the serialized inputs failed to decode.
+    InvalidInput = 1,
+    /// Inputs decoded, but the cryptographic operation failed (e.g. invalid
+    /// proof, out-of-range metadata, or a token that did not verify).
+    OperationFailed = 2,
+}
+
+#[derive(Clone)]
 pub struct TokenState {
     pub(crate) context: TokenContext,
     pub request: TokenRequest,
