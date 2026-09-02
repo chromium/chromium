@@ -4523,8 +4523,7 @@ void Element::DidChangeIsInCanvasSubtree() {
 
 const gfx::Transform* Element::GetCanvasTransform() const {
   if (const NodeRareData* data = RareData()) {
-    return data->GetWrappedField<gfx::Transform>(
-        NodeRareData::FieldId::kCanvasTransform);
+    return data->GetCanvasTransform();
   }
   return nullptr;
 }
@@ -4555,8 +4554,8 @@ void Element::SetCanvasTransform(const gfx::Transform& transform) {
 }
 
 void Element::ClearCanvasTransform() {
-  if (RareData()) {
-    RareData()->SetFieldToNullIfExists(NodeRareData::FieldId::kCanvasTransform);
+  if (NodeRareData* data = RareData()) {
+    data->ClearCanvasTransform();
     InvalidateForCanvasTransformChange(GetLayoutObject());
   }
 }

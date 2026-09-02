@@ -131,7 +131,6 @@ class ScrollTimelineHashSet final
 // marked by [[nodiscard]] so that you do not accidentally forget to do so.
 class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   friend class NodeRareDataTest;
-  friend class Element;
 
  public:
   using PassKey = base::PassKey<NodeRareData>;
@@ -518,8 +517,10 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   [[nodiscard]] RareDataUpdate<void> SetAltContentData(
       ContentData* content_data);
 
+  const gfx::Transform* GetCanvasTransform() const;
   [[nodiscard]] RareDataUpdate<void> SetCanvasTransform(
       const gfx::Transform& transform);
+  void ClearCanvasTransform();
 
   bool WasLastFocusFromUserGesture() const {
     return flags_.was_last_focus_from_user_gesture;

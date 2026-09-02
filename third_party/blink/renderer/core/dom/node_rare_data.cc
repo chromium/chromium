@@ -798,9 +798,17 @@ RareDataUpdate<void> NodeRareData::SetAltContentData(
   }
 }
 
+const gfx::Transform* NodeRareData::GetCanvasTransform() const {
+  return GetWrappedField<gfx::Transform>(FieldId::kCanvasTransform);
+}
+
 RareDataUpdate<void> NodeRareData::SetCanvasTransform(
     const gfx::Transform& transform) {
   return SetWrappedField<gfx::Transform>(FieldId::kCanvasTransform, transform);
+}
+
+void NodeRareData::ClearCanvasTransform() {
+  SetFieldToNullIfExists(FieldId::kCanvasTransform);
 }
 
 RareDataUpdate<void> NodeRareData::SetOverscrollContainer(Element* element) {
