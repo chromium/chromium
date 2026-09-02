@@ -751,11 +751,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       "energyEffectEnabled",
       base::FeatureList::IsEnabled(contextual_tasks::kEnergyEffectInNextbox));
 
-  dict.Set("useStratusDarkModeColors",
-           contextual_tasks::ShouldUseStratusDarkModeColors());
-  dict.Set(
-      "useStratusDarkModeColorsAttr",
-      contextual_tasks::ShouldUseStratusDarkModeColors() ? "true" : "false");
 
   dict.Set("smartTabSharingEnabled",
            contextual_tasks::ContextualTasksContextService::

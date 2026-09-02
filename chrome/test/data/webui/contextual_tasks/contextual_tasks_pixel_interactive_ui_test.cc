@@ -81,8 +81,7 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
         {{contextual_tasks::kContextualTasks,
           {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {contextual_tasks::kContextualTasksContextMenu, {}},
-         {contextual_tasks::kContextualTasksUseStratusDarkModeColors, {}}},
+         {contextual_tasks::kContextualTasksContextMenu, {}}},
         /*disabled_features=*/
         {contextual_tasks::kContextualTasksAnimatedCaret,
          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
@@ -267,7 +266,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
                 el.isZeroState_ = true;
                 el.isInputHidden_ = false;
                 el.isComposeboxHidden_ = () => false;
-                el.useStratusDarkModeColors_ = true;
                 if (el.requestUpdate) el.requestUpdate();
 
                 const inputState = {
@@ -473,7 +471,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, MAYBE_Screenshots) {
                              "  el.isZeroState_ = %s; "
                              "  el.isAiPage_ = %s; "
                              "  el.isGhostLoaderVisible_ = %s; "
-                             "  el.useStratusDarkModeColors_ = true; "
                              "  el.requestUpdate(); "
                              "}",
                              GetParam().is_side_panel ? "false" : "true",
