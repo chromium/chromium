@@ -943,7 +943,6 @@ source_set("prevent_close_test_support") {
     ":web_applications_test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/policy/core/common:test_support",
     "//components/webapps/common",
@@ -1602,7 +1601,6 @@ if (!is_android) {
     deps = [
       ":web_applications_test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/common:constants",
     ]
 

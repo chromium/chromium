@@ -63,7 +63,6 @@ source_set("test_support") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
-    "//chrome/browser/ui",
   ]
 }
 

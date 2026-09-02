@@ -357,7 +357,6 @@ source_set("test_support") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//content/public/browser",
     "//net",
     "//services/network:test_support",

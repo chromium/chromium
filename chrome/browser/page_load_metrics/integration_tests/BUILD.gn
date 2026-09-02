@@ -24,7 +24,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//chrome/browser/ui",
     "//chrome/common:constants",
     "//content/test:test_support",
     "//net:test_support",

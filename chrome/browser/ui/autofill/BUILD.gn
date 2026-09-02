@@ -571,7 +571,6 @@ source_set("test_support_unit") {
     ":test_support",
     "//base",
     "//chrome/browser/autofill",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/common:test_support",

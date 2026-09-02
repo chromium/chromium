@@ -426,7 +426,6 @@ if (enable_print_preview) {
     deps = [
       ":printing",
       "//base",
-      "//chrome/browser",
       "//chrome/browser:test_support",
       "//chrome/services/printing/public/mojom",
       "//content/public/browser",

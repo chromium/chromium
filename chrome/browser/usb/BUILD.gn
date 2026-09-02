@@ -282,7 +282,6 @@ source_set("browser_test_support") {
   deps = [
     ":usb",
     "//base",
-    "//chrome/browser",
     "//chrome/browser:chrome_content_browser_client",
   ]
 }

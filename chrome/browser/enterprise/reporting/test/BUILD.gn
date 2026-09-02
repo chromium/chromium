@@ -20,7 +20,6 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/profiles:profile",

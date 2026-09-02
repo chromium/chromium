@@ -203,7 +203,6 @@ source_set("test_support") {
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",

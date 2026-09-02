@@ -37,10 +37,8 @@ if (!is_android) {
 
     public_deps = [
       "//base",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/sync",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/webui/signin",
       "//chrome/test:test_support_ui",
       "//components/signin/core/browser",

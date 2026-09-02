@@ -349,7 +349,6 @@ if (!is_android) {
       "//ui/gfx/geometry",
     ]
     deps = [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//content/public/browser",

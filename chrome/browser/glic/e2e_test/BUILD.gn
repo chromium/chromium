@@ -25,7 +25,6 @@ source_set("e2e_test_support") {
 
   # Internal targets also use the dependencies by depending on this target.
   public_deps = [
-    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/glic",

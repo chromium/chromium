@@ -217,7 +217,6 @@ if (!is_android) {
 
     public_deps = [
       ":payments",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/autofill",
       "//components/autofill/core/browser",
       "//components/prefs",
@@ -364,7 +363,6 @@ source_set("test_support") {
   public_deps = [
     ":payments",
     "//base",
-    "//chrome/browser/ui",
     "//components/autofill/core/browser",
     "//ui/gfx/geometry",
   ]

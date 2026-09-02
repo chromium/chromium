@@ -219,7 +219,6 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ui",
     "//components/autofill/core/browser",
   ]
 
@@ -229,7 +228,6 @@ static_library("test_support") {
       "mock_manual_filling_view.h",
     ]
     deps += [
-      "//chrome/browser",
       "//chrome/browser/autofill",
       "//chrome/browser/keyboard_accessory/test_utils/android",
     ]

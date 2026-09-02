@@ -3844,7 +3844,6 @@ static_library("test_support") {
 
   deps = [
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser",
     "//chrome/browser/devtools",
     "//chrome/browser/payments",
     "//chrome/browser/profiles:profile",

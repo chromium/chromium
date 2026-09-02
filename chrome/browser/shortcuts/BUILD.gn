@@ -115,7 +115,6 @@ source_set("test_support") {
       "shortcut_creation_test_support_linux.cc",
     ]
     deps += [
-      "//chrome/browser",
       "//chrome/browser:chrome_browser_main",
       "//chrome/browser:shell_integration_linux",
     ]
@@ -125,10 +124,7 @@ source_set("test_support") {
   }
   if (is_win) {
     sources += [ "shortcut_creation_test_support_win.cc" ]
-    deps += [
-      "//chrome/browser",
-      "//chrome/browser:chrome_browser_main",
-    ]
+    deps += [ "//chrome/browser:chrome_browser_main" ]
   }
 }
 

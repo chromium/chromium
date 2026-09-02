@@ -83,6 +83,7 @@ source_set("signin_utils_impl") {
     deps += [ ":signin_ui_error" ]
   }
 }
+
 source_set("signin") {
   sources = [
     "signin_web_dialog_ui.h",
@@ -613,10 +614,8 @@ source_set("test_support_ui") {
     ":login_ui_service",
     ":signin_utils",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin:signin_promo",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/signin",
     "//chrome/test:test_support_ui",

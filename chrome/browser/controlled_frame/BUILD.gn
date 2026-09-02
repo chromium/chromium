@@ -79,7 +79,6 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/version_info",
-    "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/preloading:test_support",
     "//chrome/browser/profiles:profile",

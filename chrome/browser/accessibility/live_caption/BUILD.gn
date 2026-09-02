@@ -139,7 +139,6 @@ source_set("test_support") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility",
-    "//chrome/browser/ui",
     "//components/live_caption:constants",
     "//components/soda",
     "//components/soda:constants",

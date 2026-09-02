@@ -83,7 +83,6 @@ source_set("test_support") {
   deps = [
     ":translate",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/translate",
     "//chrome/browser/ui/translate:test_support",

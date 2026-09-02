@@ -59,6 +59,7 @@ if (enable_devtools_frontend) {
 
 _concatenated_protocol_path =
     "$root_gen_dir/chrome/browser/devtools/protocol.json"
+
 action("concatenate_protocols") {
   script = _inspector_protocol + "/concatenate_protocols.py"
 
@@ -503,9 +504,7 @@ static_library("test_support") {
     deps += [
       ":devtools",
       "//base",
-      "//chrome/browser",
       "//chrome/browser:browser_features",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//components/policy/core/common:test_support",
       "//content/public/browser",

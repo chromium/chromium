@@ -83,7 +83,6 @@ source_set("test_support") {
     public_deps = [ ":banners" ]
     deps += [
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
       "//components/password_manager/content/common",

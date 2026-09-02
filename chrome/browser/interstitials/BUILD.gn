@@ -102,7 +102,6 @@ if (!is_android) {
 
     deps = [
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

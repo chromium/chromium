@@ -356,7 +356,6 @@ source_set("test_support") {
     ]
 
     deps += [
-      "//chrome/browser",
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/profiles",

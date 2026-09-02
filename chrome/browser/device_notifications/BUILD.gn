@@ -89,7 +89,6 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//url",
   ]
@@ -157,10 +156,12 @@ source_set("browser_test_support") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser",
+      "//chrome/browser:browser_process",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/notifications:system_notification_helper",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/profiles:profile_test_util",
       "//chrome/browser/ui/browser_window",
       "//extensions:test_support",
       "//extensions/common",

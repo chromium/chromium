@@ -483,7 +483,6 @@ source_set("sync_integration_test_support") {
   ]
 
   public_deps = [
-    "//chrome/browser",
     "//chrome/browser/favicon",
     "//chrome/test:test_support",
     "//components/autofill/content/browser",

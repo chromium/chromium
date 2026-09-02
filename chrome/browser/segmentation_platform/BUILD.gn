@@ -63,6 +63,7 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
     ]
   }
+
   generate_jni("client_util_jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/client_util/HomeModulesRankingHelper.java" ]
   }
@@ -216,7 +217,6 @@ static_library("test_utils") {
     ":impl",
     ":segmentation_platform",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/history",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",

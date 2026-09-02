@@ -19,7 +19,6 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/security_state/core",
     "//net:test_support",

@@ -456,7 +456,6 @@ static_library("test_support") {
 
   deps = [
     ":supervised_user",
-    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/content_settings:content_settings_factory",

@@ -26,7 +26,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/data_controls/core/browser",
@@ -51,7 +50,6 @@ source_set("test_support") {
 
     public_deps += [
       "//chrome/browser/safe_browsing",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//components/policy/core/common:common_constants",
       "//components/policy/core/common:test_support",

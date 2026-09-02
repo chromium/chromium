@@ -261,7 +261,6 @@ static_library("test_support") {
 
   deps = [
     ":impl",
-    "//chrome/browser",
     "//testing/gtest",
     "//ui/base",
   ]

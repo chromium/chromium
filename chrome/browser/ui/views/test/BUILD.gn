@@ -17,7 +17,6 @@ if (!is_android) {
     public_deps = [
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

@@ -315,7 +315,6 @@ if (is_win || is_mac || is_linux) {
       ":profile_management_flow_controller",
       ":profile_picker_web_contents_host",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/webui/signin:signin_ui_error",
       "//content/public/browser",

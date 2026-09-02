@@ -87,7 +87,6 @@ source_set("test_support") {
   ]
   public_deps = [
     ":tab_model",
-    "//chrome/browser",
     "//content/test:test_support",
     "//ui/base/unowned_user_data",
   ]

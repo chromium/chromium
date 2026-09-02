@@ -66,7 +66,6 @@ if (toolkit_views) {
 
     deps = [
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",

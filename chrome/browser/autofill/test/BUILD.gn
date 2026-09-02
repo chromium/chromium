@@ -74,7 +74,6 @@ static_library("test_support") {
   deps = [
     ":jni_headers",
     "//base",
-    "//chrome/browser",
     "//chrome/browser/autofill",
     "//components/autofill/core/browser",
   ]

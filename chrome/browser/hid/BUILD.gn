@@ -133,7 +133,6 @@ source_set("test_support") {
     ":hid",
     "//testing/gmock",
   ]
-  deps = [ "//chrome/browser" ]
   if (!is_android) {
     sources += [
       "hid_test_utils.cc",

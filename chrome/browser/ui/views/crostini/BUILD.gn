@@ -43,13 +43,11 @@ static_library("browser_test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/crostini:browser_test_support",
     "//chrome/browser/ash/crostini:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/component_updater:component_updater_paths",
     "//components/component_updater/ash:test_support",

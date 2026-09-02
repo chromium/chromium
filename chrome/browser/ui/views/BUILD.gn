@@ -24,7 +24,6 @@ source_set("external_protocol_dialog_test_support") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/external_protocol",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/test:dialog",
     "//url",
   ]

@@ -10,7 +10,6 @@ source_set("webapk_test_support") {
   ]
   deps = [
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/android/webapk:webapk_sources",
     "//components/sync:test_support",
   ]
