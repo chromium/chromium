@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.UngroupBarStatusHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
@@ -162,24 +163,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TabListMediator implements TabListNotificationHandler {
-    /** An interface to handle requests about updating TabGridDialog. */
-    public interface TabGridDialogHandler {
-        /**
-         * This method updates the status of the ungroup bar in TabGridDialog.
-         *
-         * @param status The status in {@link TabGridDialogView.UngroupBarStatus} that the ungroup
-         *         bar should be updated to.
-         */
-        void updateUngroupBarStatus(@TabGridDialogView.UngroupBarStatus int status);
-
-        /**
-         * This method updates the content of the TabGridDialog.
-         *
-         * @param tabId The id of the {@link Tab} that is used to update TabGridDialog.
-         */
-        void updateDialogContent(int tabId);
-    }
-
     /**
      * An interface to expose functionality needed to support reordering in grid layouts in
      * accessibility mode.
@@ -385,7 +368,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final @Nullable SelectionDelegateProvider<TabListEditorItemSelectionId>
             mSelectionDelegateProvider;
     private final @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider;
-    private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
+    private final @Nullable UngroupBarStatusHandler mUngroupBarStatusHandler;
     private final @Nullable Supplier<@Nullable PriceWelcomeMessageController>
             mPriceWelcomeMessageControllerSupplier;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
@@ -552,6 +535,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     // No-op.
                 }
             };
+
     /**
      * Construct the Mediator with the given Models and observing hooks from the given
      * ChromeActivity.
@@ -568,7 +552,7 @@ public class TabListMediator implements TabListNotificationHandler {
      *     group cards.
      * @param tabListConfig Configuration policies and visual capabilities (e.g. nested tab groups,
      *     message cards, etc).
-     * @param dialogHandler A handler to handle requests about updating TabGridDialog.
+     * @param ungroupBarStatusHandler A handler to update the ungroup bar status.
      * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
      *     PriceWelcomeMessage.
      * @param componentId The {@link TabComponentId} identifying the parent UI container hosting
@@ -594,7 +578,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     selectionDelegateProvider,
             @Nullable TabListItemOnClickListenerProvider tabListItemOnClickListenerProvider,
             TabListConfig tabListConfig,
-            @Nullable TabGridDialogHandler dialogHandler,
+            @Nullable UngroupBarStatusHandler ungroupBarStatusHandler,
             @Nullable Supplier<@Nullable PriceWelcomeMessageController>
                     priceWelcomeMessageControllerSupplier,
             @TabComponentId int componentId,
@@ -621,7 +605,7 @@ public class TabListMediator implements TabListNotificationHandler {
         if (mTabUnderlineManager != null) {
             mTabUnderlineManager.addObserver(mTabUnderlineObserver);
         }
-        mTabGridDialogHandler = dialogHandler;
+        mUngroupBarStatusHandler = ungroupBarStatusHandler;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mComponentId = componentId;
         mTabActionState = initialTabActionState;
@@ -638,8 +622,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         switch (mLayoutType) {
             case TabListLayoutType.FLAT:
-                mTabListLayoutDelegate =
-                        new FlatLayoutDelegate(this, mModelList, mTabGridDialogHandler);
+                mTabListLayoutDelegate = new FlatLayoutDelegate(this, mModelList);
                 break;
             case TabListLayoutType.GROUPED:
                 mTabListLayoutDelegate =
@@ -905,7 +888,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         mModelList,
                         () -> assertNonNull(mCurrentTabModelSupplier.get()),
                         swipeSafeTabActionListener,
-                        mTabGridDialogHandler,
+                        mUngroupBarStatusHandler,
                         TabUiMetricsHelper.getComponentNameForMetrics(componentId),
                         mLayoutType,
                         onDragStateChangedListener);

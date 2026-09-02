@@ -436,7 +436,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             /* actionOnRelatedTabs= */ true,
                             dataSharingTabManager,
                             getTabListItemOnClickListenerProvider(),
-                            /* dialogHandler= */ null,
+                            /* ungroupBarStatusHandler= */ null,
                             TabProperties.TabActionState.CLOSABLE,
                             /* selectionDelegateProvider= */ null,
                             this::getPriceWelcomeMessageController,

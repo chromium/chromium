@@ -242,7 +242,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* actionOnRelatedTabs= */ false,
                             dataSharingTabManager,
                             tabListItemOnClickListenerProvider,
-                            mMediator.getTabGridDialogHandler(),
+                            mMediator::updateUngroupBarStatus,
                             TabProperties.TabActionState.CLOSABLE,
                             /* selectionDelegateProvider= */ null,
                             /* priceWelcomeMessageControllerSupplier= */ null,

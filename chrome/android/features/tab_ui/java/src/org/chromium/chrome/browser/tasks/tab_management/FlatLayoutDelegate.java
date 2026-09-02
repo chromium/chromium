@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,14 +26,8 @@ import java.util.Objects;
  */
 @NullMarked
 class FlatLayoutDelegate extends TabListLayoutDelegate {
-    private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
-
-    FlatLayoutDelegate(
-            TabListMediator mediator,
-            TabListModel modelList,
-            @Nullable TabGridDialogHandler dialogHandler) {
+    FlatLayoutDelegate(TabListMediator mediator, TabListModel modelList) {
         super(mediator, modelList);
-        mTabGridDialogHandler = dialogHandler;
     }
 
     @Override
@@ -124,11 +117,6 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
         if (!mModelList.isValidIndex(curTabListModelIndex)) return;
 
         mModelList.removeAt(curTabListModelIndex);
-        if (mTabGridDialogHandler != null) {
-            boolean isUngroupingLastTabInGroup = previousGroupTabId == movedTabId;
-            mTabGridDialogHandler.updateDialogContent(
-                    isUngroupingLastTabInGroup ? Tab.INVALID_TAB_ID : previousGroupTabId);
-        }
     }
 
     @Override
@@ -150,9 +138,5 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
 
         mMediator.addObserversForTab(movedTab);
         onTabAdded(movedTab);
-        if (mTabGridDialogHandler != null) {
-            mTabGridDialogHandler.updateDialogContent(
-                    tabModel.getGroupLastShownTabId(firstTab.getTabGroupId()));
-        }
     }
 }

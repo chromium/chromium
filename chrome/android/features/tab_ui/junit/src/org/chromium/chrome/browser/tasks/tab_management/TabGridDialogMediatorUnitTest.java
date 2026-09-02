@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -1770,6 +1771,76 @@ public class TabGridDialogMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);
 
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(newTitle));
+    }
+
+    @Test
+    public void testTabGroupObserver_didMoveTabOutOfGroup() {
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB_GROUP_ID);
+        assertTrue(mMediator.onReset(tabGroup));
+
+        // Simulate moving mTab2 out of group so group now only has mTab1.
+        List<Tab> remainingTabs = new ArrayList<>(Arrays.asList(mTab1));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(remainingTabs);
+
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, 1);
+
+        // Header title should update to reflect 1 tab.
+        assertEquals(
+                TabGroupTitleUtils.getDefaultTitle(mActivity, 1),
+                mModel.get(TabGridDialogProperties.HEADER_TITLE));
+    }
+
+    @Test
+    public void testTabGroupObserver_didMoveTabOutOfGroup_LastTabClosesDialog() {
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1));
+        createTabGroup(tabGroup, TAB_GROUP_ID);
+        assertTrue(mMediator.onReset(tabGroup));
+
+        // Simulate moving the last tab out of the group.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, 0);
+
+        // Verify dialog is hidden/dismissed.
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+    }
+
+    @Test
+    public void testTabGroupObserver_didMergeTabToGroup() {
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1));
+        createTabGroup(tabGroup, TAB_GROUP_ID);
+        assertTrue(mMediator.onReset(tabGroup));
+
+        // Merge mTab2 into the current group.
+        List<Tab> mergedTabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mergedTabs);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
+
+        // Header title should update to reflect 2 tabs.
+        assertEquals(
+                TabGroupTitleUtils.getDefaultTitle(mActivity, 2),
+                mModel.get(TabGridDialogProperties.HEADER_TITLE));
+    }
+
+    @Test
+    public void testTabGroupObserver_didMergeTabToGroup_DifferentGroup() {
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1));
+        createTabGroup(tabGroup, TAB_GROUP_ID);
+        assertTrue(mMediator.onReset(tabGroup));
+
+        // Merge a tab into a different group.
+        Token otherGroupId = new Token(3L, 4L);
+        when(mTab2.getTabGroupId()).thenReturn(otherGroupId);
+
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
+
+        // Header title should remain 1 tab.
+        assertEquals(
+                TabGroupTitleUtils.getDefaultTitle(mActivity, 1),
+                mModel.get(TabGridDialogProperties.HEADER_TITLE));
     }
 
     @Test

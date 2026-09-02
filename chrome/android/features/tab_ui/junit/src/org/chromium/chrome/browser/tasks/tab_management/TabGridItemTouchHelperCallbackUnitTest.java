@@ -112,7 +112,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Spy private TabModel mTabModel;
     @Mock private TabActionListener mTabClosedListener;
     @Mock private TabUngrouper mTabUngrouper;
-    @Mock private TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
+    @Mock private TabGridItemTouchHelperCallback.UngroupBarStatusHandler mUngroupBarStatusHandler;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private GridLayoutManager mGridLayoutManager;
@@ -223,7 +223,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         mModel,
                         mTabModelSupplier,
                         mTabClosedListener,
-                        isDialog ? mTabGridDialogHandler : null,
+                        isDialog ? mUngroupBarStatusHandler : null,
                         "",
                         isDialog ? TabListLayoutType.FLAT : TabListLayoutType.GROUPED,
                         CallbackUtils.emptyRunnable());
@@ -458,7 +458,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabGridDialogHandler)
+        verify(mUngroupBarStatusHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
     }
 
@@ -475,7 +475,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         List.of(mTabModel.getTabById(TAB1_ID)),
                         /* trailing= */ true,
                         /* allowDialog= */ true);
-        verify(mTabGridDialogHandler)
+        verify(mUngroupBarStatusHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
         verify(mGridLayoutManager).removeView(mItemView1);
     }
@@ -496,7 +496,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         List.of(mTabModel.getTabById(TAB1_ID)),
                         /* trailing= */ true,
                         /* allowDialog= */ true);
-        verify(mTabGridDialogHandler)
+        verify(mUngroupBarStatusHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -517,7 +517,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         List.of(mTabModel.getTabById(TAB1_ID)),
                         /* trailing= */ true,
                         /* allowDialog= */ true);
-        verify(mTabGridDialogHandler)
+        verify(mUngroupBarStatusHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -665,7 +665,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 
-        verify(mTabGridDialogHandler)
+        verify(mUngroupBarStatusHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HOVERED);
 
         // Simulate dragging card#3 down to the ungroup bar.
@@ -678,7 +678,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 
-        verify(mTabGridDialogHandler)
+        verify(mUngroupBarStatusHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HOVERED);
     }
 
@@ -709,10 +709,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 
-        verify(mTabGridDialogHandler, times(2))
+        verify(mUngroupBarStatusHandler, times(2))
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.SHOW);
 
-        verify(mTabGridDialogHandler, never())
+        verify(mUngroupBarStatusHandler, never())
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HOVERED);
     }
 
@@ -733,7 +733,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 
-        verify(mTabGridDialogHandler, never()).updateUngroupBarStatus(anyInt());
+        verify(mUngroupBarStatusHandler, never()).updateUngroupBarStatus(anyInt());
     }
 
     private void clearViewBeforePost() {

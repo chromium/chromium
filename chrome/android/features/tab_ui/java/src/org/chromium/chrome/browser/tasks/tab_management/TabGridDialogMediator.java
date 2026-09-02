@@ -230,7 +230,6 @@ public class TabGridDialogMediator
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final @Nullable AnimationSourceViewProvider mAnimationSourceViewProvider;
-    private final DialogHandler mTabGridDialogHandler;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final BottomSheetController mBottomSheetController;
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -282,7 +281,6 @@ public class TabGridDialogMediator
         mCurrentTabModelSupplier = currentTabModelSupplier;
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
-        mTabGridDialogHandler = new DialogHandler();
         mSnackbarManager = snackbarManager;
         mBottomSheetController = bottomSheetController;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
@@ -518,6 +516,20 @@ public class TabGridDialogMediator
                             Token tabGroupId, @TabGroupColorId int newColor) {
                         if (currentTabGroupIdMatches(tabGroupId)) {
                             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, newColor);
+                        }
+                    }
+
+                    @Override
+                    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                        if (!isVisible()) return;
+                        updateDialog();
+                    }
+
+                    @Override
+                    public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
+                        if (!isVisible() || mCurrentTabGroupId == null) return;
+                        if (currentTabGroupIdMatches(movedTab.getTabGroupId())) {
+                            updateDialog();
                         }
                     }
                 };
@@ -1252,10 +1264,6 @@ public class TabGridDialogMediator
         mCurrentGroupModifiedTitle = null;
     }
 
-    TabListMediator.TabGridDialogHandler getTabGridDialogHandler() {
-        return mTabGridDialogHandler;
-    }
-
     // SnackbarManager.SnackbarController implementation.
     @Override
     public void onAction(@Nullable Object actionData) {
@@ -1319,6 +1327,15 @@ public class TabGridDialogMediator
         return null;
     }
 
+    /**
+     * Updates the status of the ungroup bar in the dialog view.
+     *
+     * @param status The {@link TabGridDialogView.UngroupBarStatus} to set.
+     */
+    void updateUngroupBarStatus(@TabGridDialogView.UngroupBarStatus int status) {
+        mModel.set(TabGridDialogProperties.UNGROUP_BAR_STATUS, status);
+    }
+
     private boolean setupAndShowTabListEditor(@Nullable Token currentTabGroupId) {
         if (mTabListEditorControllerSupplier == null) return false;
 
@@ -1353,26 +1370,6 @@ public class TabGridDialogMediator
 
     private boolean currentTabGroupIdMatches(@Nullable Token otherTabGroupId) {
         return mCurrentTabGroupId != null && mCurrentTabGroupId.equals(otherTabGroupId);
-    }
-
-    /**
-     * A handler that handles TabGridDialog related changes originated from {@link TabListMediator}
-     * and {@link TabGridItemTouchHelperCallback}.
-     */
-    class DialogHandler implements TabListMediator.TabGridDialogHandler {
-        @Override
-        public void updateUngroupBarStatus(@TabGridDialogView.UngroupBarStatus int status) {
-            mModel.set(TabGridDialogProperties.UNGROUP_BAR_STATUS, status);
-        }
-
-        @Override
-        public void updateDialogContent(int tabId) {
-            TabModel tabModel = mCurrentTabModelSupplier.get();
-            assumeNonNull(tabModel);
-            Tab tab = tabModel.getTabById(tabId);
-            mCurrentTabGroupId = tab != null ? tab.getTabGroupId() : null;
-            updateDialog();
-        }
     }
 
     @Nullable Token getCurrentTabGroupIdForTesting() {

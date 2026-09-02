@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -65,11 +64,23 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         void onDropTab(@TabId int tabId);
     }
 
+    /** An interface to handle ungroup bar status updates during drag-and-drop. */
+    @FunctionalInterface
+    public interface UngroupBarStatusHandler {
+        /**
+         * Updates the status of the ungroup bar in TabGridDialog.
+         *
+         * @param status The status in {@link TabGridDialogView.UngroupBarStatus} that the ungroup
+         *     bar should be updated to.
+         */
+        void updateUngroupBarStatus(@TabGridDialogView.UngroupBarStatus int status);
+    }
+
     private final SettableNonNullObservableSupplier<Integer> mRecentlySwipedTabIdSupplier =
             ObservableSuppliers.createNonNull(Tab.INVALID_TAB_ID);
     private final TabActionListener mTabClosedListener;
     private final String mComponentName;
-    private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
+    private final @Nullable UngroupBarStatusHandler mUngroupBarStatusHandler;
     private final int mLongPressDpThresholdSquared;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final @TabListLayoutType int mLayoutType;
@@ -92,7 +103,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
      * @param currentTabModelSupplier The supplier of the current {@link TabModel}. It should never
      *     return null.
      * @param tabClosedListener The listener to invoke when a tab is closed.
-     * @param tabGridDialogHandler The interface for sending updates when using a tab grid dialog.
+     * @param ungroupBarStatusHandler The interface for sending ungroup bar status updates.
      * @param componentName The name of the component for metrics logging.
      * @param layoutType The layout type of the tab list.
      * @param onDragStateChangedListener The listener to notify when the active drag state changes.
@@ -103,7 +114,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             TabListModel tabListModel,
             Supplier<TabModel> currentTabModelSupplier,
             TabActionListener tabClosedListener,
-            @Nullable TabGridDialogHandler tabGridDialogHandler,
+            @Nullable UngroupBarStatusHandler ungroupBarStatusHandler,
             String componentName,
             @TabListLayoutType int layoutType,
             Runnable onDragStateChangedListener) {
@@ -111,7 +122,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         mTabClosedListener = tabClosedListener;
         mComponentName = componentName;
         mLayoutType = layoutType;
-        mTabGridDialogHandler = tabGridDialogHandler;
+        mUngroupBarStatusHandler = ungroupBarStatusHandler;
         mTabGroupCreationDialogManager = tabGroupCreationDialogManager;
         mOnDragStateChangedListener = onDragStateChangedListener;
 
@@ -375,8 +386,8 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
             mSelectedTabId = Tab.INVALID_TAB_ID;
             mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
-            if (mTabGridDialogHandler != null) {
-                mTabGridDialogHandler.updateUngroupBarStatus(
+            if (mUngroupBarStatusHandler != null) {
+                mUngroupBarStatusHandler.updateUngroupBarStatus(
                         TabGridDialogView.UngroupBarStatus.HIDE);
             }
         }
@@ -500,7 +511,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
                 mModel.updateHoveredCardForHover(prevHovered, false);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG
-                && mTabGridDialogHandler != null) {
+                && mUngroupBarStatusHandler != null) {
             int itemMiddle =
                     Math.floorDiv(
                             viewHolder.itemView.getBottom() + viewHolder.itemView.getTop(), 2);
@@ -511,7 +522,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
                     isHoveredOnUngroupBar
                             ? viewHolder.getAdapterPosition()
                             : TabModel.INVALID_TAB_INDEX;
-            mTabGridDialogHandler.updateUngroupBarStatus(
+            mUngroupBarStatusHandler.updateUngroupBarStatus(
                     isHoveredOnUngroupBar
                             ? TabGridDialogView.UngroupBarStatus.HOVERED
                             : (mSelectedTabIndex == TabModel.INVALID_TAB_INDEX

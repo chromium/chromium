@@ -645,7 +645,7 @@ public class TabListEditorCoordinator {
                         mDisplayGroups,
                         /* dataSharingTabManager= */ null,
                         mTabListItemOnClickListenerProvider,
-                        /* dialogHandler= */ null,
+                        /* ungroupBarStatusHandler= */ null,
                         mTabActionState,
                         this::getSelectionDelegate,
                         /* priceWelcomeMessageControllerSupplier= */ null,

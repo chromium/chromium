@@ -621,7 +621,7 @@ public class VerticalTabListCoordinator {
                         /* selectionDelegateProvider */ null,
                         new VerticalTabListClickHandler(),
                         tabListConfig,
-                        /* dialogHandler */ null,
+                        /* ungroupBarStatusHandler= */ null,
                         /* priceWelcomeMessageControllerSupplier */ null,
                         TabComponentId.VERTICAL_TABS,
                         TabProperties.TabActionState.CLOSABLE,

@@ -216,7 +216,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* actionOnRelatedTabs= */ false,
                             mDataSharingTabManager,
                             /* tabListItemOnClickListenerProvider= */ null,
-                            /* dialogHandler= */ null,
+                            /* ungroupBarStatusHandler= */ null,
                             TabProperties.TabActionState.UNSET,
                             /* selectionDelegateProvider= */ null,
                             /* priceWelcomeMessageControllerSupplier= */ null,
