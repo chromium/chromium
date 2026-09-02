@@ -240,9 +240,15 @@ bool MenuItemView::HandleAccessibleAction(const ui::AXActionData& action_data) {
   switch (action_data.action) {
     case ax::mojom::Action::kExpand: {
       DCHECK(HasSubmenu());
-      [[fallthrough]];
+      GetMenuController()->SelectItemAndOpenSubmenu(this);
+      return true;
     }
     case ax::mojom::Action::kDoDefault: {
+      if (HasSubmenu()) {
+        GetMenuController()->SelectItemAndOpenSubmenu(this);
+        return true;
+      }
+
       // kDoDefault in View would simulate a mouse click in the center of this
       // MenuItemView. However, mouse events for menus are dispatched via
       // Widget::SetCapture() to the MenuController rather than to
