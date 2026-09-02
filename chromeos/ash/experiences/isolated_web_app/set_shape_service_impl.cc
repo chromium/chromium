@@ -68,6 +68,23 @@ bool IsAtLeastMinimumSize(const gfx::Rect& rect) {
          rect.height() >= blink::mojom::kMinimumIwaSetShapeSize;
 }
 
+// Returns the window bounds with 1px tolerance on width and height.
+//
+// The 1px tolerance accounts for rounding differences between window sizes in
+// Blink and Views in screens with fractional device scale factors.
+gfx::Rect WindowBoundsWithTolerance(const gfx::Size& window_size) {
+  return gfx::Rect(0, 0, window_size.width() + 1, window_size.height() + 1);
+}
+
+// Returns true if `rect` has dimensions of at least `kMinimumIwaSetShapeSize`
+// within `window_bounds`.
+bool IsAtLeastMinimumSizeInBounds(const gfx::Rect& rect,
+                                  const gfx::Rect& window_bounds) {
+  gfx::Rect visible_rect = gfx::IntersectRects(rect, window_bounds);
+  return visible_rect.width() >= blink::mojom::kMinimumIwaSetShapeSize &&
+         visible_rect.height() >= blink::mojom::kMinimumIwaSetShapeSize;
+}
+
 }  // namespace
 
 // static
@@ -159,6 +176,22 @@ void SetShapeServiceImpl::SetShape(const std::vector<gfx::Rect>& rects,
     receiver_.ReportBadMessage(
         "SetShape called with invalid shape (no rect meets minimum size "
         "requirement).");
+    return;
+  }
+
+  const gfx::Rect bounds =
+      WindowBoundsWithTolerance(widget->GetWindowBoundsInScreen().size());
+  if (!rects.empty() && std::ranges::none_of(rects, [&](const gfx::Rect& rect) {
+        return IsAtLeastMinimumSizeInBounds(rect, bounds);
+      })) {
+    // This is not a `ReportBadMessage` because it can happen if there is a race
+    // between the `setShape` call and widget resizing.
+    //
+    // A well-behaving renderer could check the shape, find it is valid for the
+    // window size, and make the mojo call. Meanwhile, the window resize happens
+    // asynchronously. Then this service receives the mojo call, checks the
+    // shape against the latest window bounds, and finds it is not valid.
+    std::move(callback).Run(blink::mojom::SetShapeResult::kOutOfBounds);
     return;
   }
 

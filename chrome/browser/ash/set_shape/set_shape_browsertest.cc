@@ -169,6 +169,14 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, ValidatesInput) {
       "[new DOMRect(0, 0, 9, 10)]",
       "[new DOMRect(0, 0, 10, 9)]",
       "[new DOMRect(0, 0, 9, 9), new DOMRect(10, 10, 5, 5)]",
+      // Rectangles outside window bounds.
+      "[new DOMRect(-100000, -100000, 10, 10)]",
+      "[new DOMRect(window.innerWidth, 0, 10, 10)]",
+      "[new DOMRect(0, window.innerHeight, 10, 10)]",
+      // Rectangles that intersect with the window bounds but are too small.
+      "[new DOMRect(-5, -5, 10, 10)]",
+      "[new DOMRect(window.innerWidth - 5, 0, 10, 10)]",
+      "[new DOMRect(0, window.innerHeight - 5, 10, 10)]",
   });
   for (const auto& input : invalid_inputs) {
     std::string script = base::StrCat({
@@ -255,6 +263,18 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, AllowsMixOfSmallAndLargeRects) {
                          gfx::Rect(0, 0, 9, 9),
                          gfx::Rect(10, 10, 10, 10),
                      }));
+}
+
+IN_PROC_BROWSER_TEST_F(SetShapeTest, AllowsPartiallyOutOfBoundsRectangles) {
+  content::RenderFrameHost* frame = OpenApp(app_url_info_->app_id());
+
+  auto result = content::EvalJs(frame, R"(
+      window.setShape([
+        new DOMRect(-10, 0, 100, 100)
+      ])
+    )");
+  EXPECT_EQ(base::Value(), result);
+  EXPECT_THAT(frame, ShapeRectanglesAre({gfx::Rect(-10, 0, 100, 100)}));
 }
 
 IN_PROC_BROWSER_TEST_F(SetShapeTest, EmptyListClearsShape) {

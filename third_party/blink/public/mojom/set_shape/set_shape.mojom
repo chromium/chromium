@@ -32,6 +32,9 @@ enum SetShapeResult {
   kNoWindow,
   // The window is not in unframed mode.
   kNotUnframed,
+  // The shape does not meet the minimum size requirement within the window
+  // bounds.
+  kOutOfBounds,
 };
 
 // The maximum number of rectangles allowed to be passed in to `SetShape`.
