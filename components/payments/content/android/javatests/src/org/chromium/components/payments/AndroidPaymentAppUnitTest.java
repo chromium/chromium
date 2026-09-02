@@ -11,7 +11,6 @@ import android.os.Bundle;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
-import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +24,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentEventResponseType;
@@ -147,6 +149,39 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertNull(mPaymentDetails);
     }
 
+    @SmallTest
+    @Test
+    @UiThreadTest
+    @EnableFeatures({PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT})
+    public void testInternalAppErrorPaymentWithWalletErrorCode() throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
+        queryReadyToPay(app);
+        Bundle extras = new Bundle();
+        extras.putInt(WebPaymentIntentHelper.EXTRA_WALLET_ERROR_CODE, 409);
+        invokePaymentApp(app, WebPaymentIntentHelper.RESULT_INTERNAL_APP_ERROR, extras);
+        Assert.assertEquals(
+                "Internal payment app returned error with status code: 409", mErrorMessage);
+        Assert.assertNull(mPaymentMethodName);
+        Assert.assertNull(mPaymentDetails);
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    @DisableFeatures({PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT})
+    public void
+            surfaceWalletErrorCodeFromIntentDisabled_testInternalAppErrorPaymentWithWalletErrorCode()
+                    throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
+        queryReadyToPay(app);
+        Bundle extras = new Bundle();
+        extras.putInt(WebPaymentIntentHelper.EXTRA_WALLET_ERROR_CODE, 409);
+        invokePaymentApp(app, WebPaymentIntentHelper.RESULT_INTERNAL_APP_ERROR, extras);
+        Assert.assertEquals(ErrorStrings.RESULT_INTERNAL_APP_ERROR, mErrorMessage);
+        Assert.assertNull(mPaymentMethodName);
+        Assert.assertNull(mPaymentDetails);
+    }
+
     private AndroidPaymentApp createApp(boolean showReadyToPayDebugInfo) {
         AndroidPaymentApp app =
                 new AndroidPaymentApp(
@@ -189,6 +224,11 @@ public class AndroidPaymentAppUnitTest {
     }
 
     private void invokePaymentApp(AndroidPaymentApp app, int resultCode) throws Exception {
+        invokePaymentApp(app, resultCode, new Bundle());
+    }
+
+    private void invokePaymentApp(AndroidPaymentApp app, int resultCode, Bundle additionalExtras)
+            throws Exception {
         PaymentItem total = new PaymentItem();
         total.amount = new PaymentCurrencyAmount();
         total.amount.currency = "USD";
@@ -226,6 +266,7 @@ public class AndroidPaymentAppUnitTest {
         Bundle extras = new Bundle();
         extras.putString("methodName", "https://company.com/pay");
         extras.putString("details", "{}");
+        extras.putAll(additionalExtras);
         data.putExtras(extras);
         app.onIntentCompleted(resultCode, data);
 

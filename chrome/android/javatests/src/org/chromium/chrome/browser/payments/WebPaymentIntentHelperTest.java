@@ -21,10 +21,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Address;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.PayerData;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentCurrencyAmount;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentDetailsModifier;
@@ -919,6 +922,56 @@ public class WebPaymentIntentHelperTest {
     public void parsePaymentResponseResultInternalAppErrorTest() throws Throwable {
         Intent intent = new Intent();
         intent.putExtras(new Bundle());
+        mErrorString = null;
+        WebPaymentIntentHelper.parsePaymentResponse(
+                WebPaymentIntentHelper.RESULT_INTERNAL_APP_ERROR,
+                intent,
+                /* requestedPaymentOptions= */ null,
+                paymentAppError -> {
+                    mErrorType = paymentAppError.responseType;
+                    mErrorString = paymentAppError.errorMessage;
+                },
+                (methodName, details, payerData) -> Assert.fail("Payment should have error."));
+        Assert.assertEquals(PaymentEventResponseType.PAYMENT_EVENT_INTERNAL_ERROR, mErrorType);
+        Assert.assertEquals(ErrorStrings.RESULT_INTERNAL_APP_ERROR, mErrorString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT})
+    public void parsePaymentResponseResultInternalAppErrorWithWalletErrorCodeTest()
+            throws Throwable {
+        Intent intent = new Intent();
+        Bundle extras = new Bundle();
+        extras.putInt(WebPaymentIntentHelper.EXTRA_WALLET_ERROR_CODE, 409);
+        intent.putExtras(extras);
+        mErrorString = null;
+        WebPaymentIntentHelper.parsePaymentResponse(
+                WebPaymentIntentHelper.RESULT_INTERNAL_APP_ERROR,
+                intent,
+                /* requestedPaymentOptions= */ null,
+                paymentAppError -> {
+                    mErrorType = paymentAppError.responseType;
+                    mErrorString = paymentAppError.errorMessage;
+                },
+                (methodName, details, payerData) -> Assert.fail("Payment should have error."));
+        Assert.assertEquals(PaymentEventResponseType.PAYMENT_EVENT_INTERNAL_ERROR, mErrorType);
+        Assert.assertEquals(
+                "Internal payment app returned error with status code: 409", mErrorString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT})
+    public void
+            surfaceWalletErrorCodeFromIntentDisabled_parsePaymentResponseResultInternalAppErrorWithWalletErrorCodeTest()
+                    throws Throwable {
+        Intent intent = new Intent();
+        Bundle extras = new Bundle();
+        extras.putInt(WebPaymentIntentHelper.EXTRA_WALLET_ERROR_CODE, 409);
+        intent.putExtras(extras);
         mErrorString = null;
         WebPaymentIntentHelper.parsePaymentResponse(
                 WebPaymentIntentHelper.RESULT_INTERNAL_APP_ERROR,

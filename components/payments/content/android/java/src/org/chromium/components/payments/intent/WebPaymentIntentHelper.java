@@ -17,6 +17,7 @@ import org.chromium.components.payments.Address;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentAppError;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentDetailsModifier;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentItem;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentMethodData;
@@ -93,6 +94,8 @@ public class WebPaymentIntentHelper {
     public static final String EXTRA_RESPONSE_PAYER_EMAIL = "payerEmail";
     public static final String EXTRA_RESPONSE_PAYER_PHONE = "payerPhone";
     public static final String EXTRA_SHIPPING_OPTION_ID = "shippingOptionId";
+    public static final String EXTRA_WALLET_ERROR_CODE =
+            "com.google.android.gms.wallet.EXTRA_ERROR_CODE";
 
     // Shipping address bundle used in payment response and shippingAddressChange.
     public static final String EXTRA_SHIPPING_ADDRESS = "shippingAddress";
@@ -156,10 +159,26 @@ public class WebPaymentIntentHelper {
             return;
         }
         if (resultCode == RESULT_INTERNAL_APP_ERROR) {
+            String errorMessage = ErrorStrings.RESULT_INTERNAL_APP_ERROR;
+            // Temporary workaround to support Google Pay intent-based errors by surfacing the
+            // status code in the error message, matching the legacy pattern so the frontend can
+            // detect status code 409 and cleanly trigger silent fallback.
+            // TODO(https://github.com/w3c/payment-request/issues/1076): Standardize payment app
+            // error reporting and remove custom error message with wallet error code.
+            if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                            PaymentFeatureList.SURFACE_WALLET_ERROR_CODE_FROM_INTENT)
+                    && data != null
+                    && data.hasExtra(EXTRA_WALLET_ERROR_CODE)) {
+                int errorCode = data.getIntExtra(EXTRA_WALLET_ERROR_CODE, 0);
+                errorMessage =
+                        String.format(
+                                Locale.US,
+                                "Internal payment app returned error with status code: %d",
+                                errorCode);
+            }
             errorCallback.onPaymentError(
                     new PaymentAppError(
-                            PaymentEventResponseType.PAYMENT_EVENT_INTERNAL_ERROR,
-                            ErrorStrings.RESULT_INTERNAL_APP_ERROR));
+                            PaymentEventResponseType.PAYMENT_EVENT_INTERNAL_ERROR, errorMessage));
             return;
         }
         if (resultCode != Activity.RESULT_OK) {
