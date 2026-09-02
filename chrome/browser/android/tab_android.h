@@ -214,7 +214,6 @@ class TabAndroid : public tabs::TabInterface,
   void SendWillDetachUpdate(JNIEnv* env, int32_t detach_reason);
   void SendDidInsertUpdate(JNIEnv* env);
   tabs::TabDestroyStatus DestroyWebContents();
-  tabs::TabDestroyStatus DestroyWebContentsSlowShutdownForTesting();
   void ReleaseWebContents();
   std::unique_ptr<content::WebContents> ReleaseWebContentsForTesting();
 

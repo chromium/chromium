@@ -6072,6 +6072,7 @@ test("unit_tests") {
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
       "../browser/android/selection/chrome_selection_dropdown_menu_delegate_unittest.cc",
       "../browser/android/tab_android_unittest.cc",
+      "../browser/android/tab_web_contents_destroyer_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
       "../browser/android/webapk/webapk_database_unittest.cc",
       "../browser/android/webapk/webapk_helpers_unittest.cc",

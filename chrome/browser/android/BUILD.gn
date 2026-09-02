@@ -407,6 +407,8 @@ if (is_android) {
       "tab_storage_packager_android.h",
       "tab_web_contents_delegate_android.cc",
       "tab_web_contents_delegate_android.h",
+      "tab_web_contents_destroyer.cc",
+      "tab_web_contents_destroyer.h",
       "tabbed_startup_window_policy_delegate_bridge.cc",
       "thin_webview/chrome_thin_webview_initializer.cc",
       "thin_webview/chrome_thin_webview_initializer.h",

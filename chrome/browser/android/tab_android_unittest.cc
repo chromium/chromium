@@ -22,29 +22,23 @@
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
-#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/javascript_dialog_manager.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/common/window_container_type.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/public/test/test_utils.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -450,135 +444,6 @@ TEST_F(TabAndroidTest, ReverseInitializationOrder) {
   EXPECT_TRUE(reset_layer->children().empty());
 }
 
-TEST_F(TabAndroidTest, DestroyWebContentsWithOpenDialog_GracefulShutdown) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chrome::android::kTabAndroidGracefulShutdown);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(profile_.get()));
-  content::WebContents* raw_web_contents = web_contents.get();
-
-  javascript_dialogs::TabModalDialogManager::CreateForWebContents(
-      raw_web_contents,
-      std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
-          raw_web_contents));
-
-  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
-      profile_.get(), kTabId + 1, std::move(web_contents));
-
-  auto* dialog_manager =
-      javascript_dialogs::TabModalDialogManager::FromWebContents(
-          raw_web_contents);
-  ASSERT_NE(nullptr, dialog_manager);
-
-  bool did_suppress = false;
-  dialog_manager->RunJavaScriptDialog(
-      raw_web_contents, raw_web_contents->GetPrimaryMainFrame(),
-      content::JavaScriptDialogType::JAVASCRIPT_DIALOG_TYPE_ALERT,
-      u"Test alert", u"",
-      base::BindOnce([](bool accept, const std::u16string& user_input) {}),
-      &did_suppress);
-
-  tab->DestroyWebContentsSlowShutdownForTesting();
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(TabAndroidTest, DestroyWebContentsSlowShutdown_StopsNavigations) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chrome::android::kTabAndroidGracefulShutdown);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(profile_.get()));
-  content::WebContents* raw_web_contents = web_contents.get();
-
-  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
-      profile_.get(), kTabId + 1, std::move(web_contents));
-
-  // Perform slow shutdown.
-  tab->DestroyWebContentsSlowShutdownForTesting();
-
-  // Verify that web_contents is stopped and new navigations do not proceed.
-  EXPECT_FALSE(raw_web_contents->IsLoading());
-
-  task_environment_.RunUntilIdle();
-}
-
-namespace {
-class ObserverUAFTestObserver : public content::WebContentsObserver {
- public:
-  explicit ObserverUAFTestObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents) {}
-
-  void DidStartNavigation(content::NavigationHandle* handle) override {
-    EXPECT_TRUE(handle != nullptr);
-    did_start_called_ = true;
-  }
-
-  bool did_start_called_ = false;
-};
-}  // namespace
-
-TEST_F(TabAndroidTest, GracefulShutdownNavigationObserverSafety) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chrome::android::kTabAndroidGracefulShutdown);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(profile_.get()));
-  content::WebContents* raw_web_contents = web_contents.get();
-
-  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
-      profile_.get(), kTabId + 1, std::move(web_contents));
-
-  tab->DestroyWebContentsSlowShutdownForTesting();
-
-  ObserverUAFTestObserver test_observer(raw_web_contents);
-
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://example.com"), raw_web_contents->GetPrimaryMainFrame());
-
-  EXPECT_TRUE(test_observer.did_start_called_);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(TabAndroidTest,
-       DestroyWebContentsSlowShutdown_ImmediateDestructionOnProfileShutdown) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chrome::android::kTabAndroidGracefulShutdown);
-
-  Profile* otr_profile =
-      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(otr_profile));
-  content::WebContents* raw_web_contents = web_contents.get();
-  content::WebContentsDestroyedWatcher watcher(raw_web_contents);
-
-  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
-      otr_profile, kTabId + 1, std::move(web_contents));
-
-  // Perform slow shutdown.
-  tab->DestroyWebContentsSlowShutdownForTesting();
-  EXPECT_FALSE(watcher.IsDestroyed());
-
-  // Release the tab before destroying the profile to avoid dangling pointer
-  // warnings.
-  tab.reset();
-  EXPECT_FALSE(watcher.IsDestroyed());
-
-  // Initiating OffTheRecord profile destruction during slow shutdown should
-  // immediately destroy the WebContents without advancing mock time.
-  profile_->DestroyOffTheRecordProfile(otr_profile);
-  EXPECT_TRUE(watcher.IsDestroyed());
-}
 
 TEST_F(TabAndroidTest, CollectionDestructionClearsParentPointer) {
   EXPECT_EQ(tab_android_->GetParentCollection(), nullptr);
