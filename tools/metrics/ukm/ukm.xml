@@ -18575,7 +18575,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PartitionedCookiePresentV3">
-  <owner>selya@chromium.org</owner>
+  <owner>selya@google.com</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
     Recorded when a page has a partitioned cookie present and the cookie's name
