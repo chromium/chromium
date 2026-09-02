@@ -165,6 +165,17 @@ struct InlineBoxState {
 #endif
 };
 
+// The mode to use for inline box struts.
+enum class LineHeightMode : uint8_t {
+  // Normal mode, all inline boxes have a strut.
+  kNormal,
+  // With the line height quirk, inline boxes have no strut.
+  kQuirk,
+  // For the line-clamp displaced ellipsis, only the root inline box has a
+  // strut.
+  kLineClampDisplacedEllipsis,
+};
+
 // Represents the inline tree structure. This class provides:
 // 1) Allow access to fragments belonging to the current box.
 // 2) Performs layout when the positin/size of a box was computed.
@@ -184,7 +195,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   InlineBoxState* OnBeginPlaceItems(const InlineNode& node,
                                     const LineInfo& line_info,
                                     FontBaseline,
-                                    bool line_height_quirk,
+                                    LineHeightMode line_height_mode,
                                     bool should_scale_line_height,
                                     LogicalLineItems* line_box);
 

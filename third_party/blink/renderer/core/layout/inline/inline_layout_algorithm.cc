@@ -322,10 +322,15 @@ void InlineLayoutAlgorithm::CheckBoxStates(
                      should_scale_line_height)
       .RebuildBoxStates(line_info, 0u, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
-  const bool is_only_line_clamp_ellipsis =
-      line_clamp_ellipsis_.has_value() && line_info.Results().empty();
-  rebuilt.OnBeginPlaceItems(Node(), line_info, baseline_type_,
-                            quirks_mode_ || is_only_line_clamp_ellipsis,
+  LineHeightMode line_height_mode;
+  if (line_clamp_ellipsis_.has_value() && line_info.Results().empty()) {
+    line_height_mode = LineHeightMode::kLineClampDisplacedEllipsis;
+  } else if (quirks_mode_) {
+    line_height_mode = LineHeightMode::kQuirk;
+  } else {
+    line_height_mode = LineHeightMode::kNormal;
+  }
+  rebuilt.OnBeginPlaceItems(Node(), line_info, baseline_type_, line_height_mode,
                             should_scale_line_height, &line_box);
   DCHECK(box_states_);
   box_states_->CheckSame(rebuilt);
