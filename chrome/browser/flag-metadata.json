@@ -4823,7 +4823,7 @@
       "ruoxih@google.com",
       "shomizoe@google.com"
     ],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "energy-effect-animation",
@@ -4831,7 +4831,7 @@
       "ruoxih@google.com",
       "shomizoe@google.com"
     ],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "enforce-can-sign-in-to-chrome-capability",
