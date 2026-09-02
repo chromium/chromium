@@ -11,6 +11,23 @@
  * #include=cr-shared-style-lit search-highlight-style-lit
  * #css_wrapper_metadata_end */
 
+/* Style overrides for Settings Refresh 2026 experiment */
+:host-context([settings-refresh-2026]) {
+  --cr-title-text-color: var(--color-settings-title-text);
+
+  .cr-title-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+    padding: 16px 20px;
+  }
+
+  .cr-row:has(.cr-title-text) {
+    padding: 0;
+  }
+}
+
 /* Common styles for Material Design settings. */
 
 /* Prevent action-links from being selected to avoid accidental

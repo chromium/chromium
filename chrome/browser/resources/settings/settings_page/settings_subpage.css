@@ -23,6 +23,26 @@
   top: 0;
 }
 
+:host-context([settings-refresh-2026]) {
+  #headerLine {
+    min-height: 0;
+    padding: 0;
+  }
+
+  #closeButton {
+    --cr-icon-button-size: 24px;
+    --cr-icon-button-margin-start: -12px;
+    --cr-icon-button-margin-end: 8px;
+    position: absolute;
+  }
+
+  #infoButton {
+    --cr-icon-button-size: 24px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
+  }
+}
+
 :host(:not(.multi-card)) {
   background-color: var(--cr-card-background-color);
   box-shadow: var(--cr-card-shadow);

@@ -61,6 +61,7 @@ void ApplyChromeSettingsRefresh2026ColorOverrides(ui::ColorMixer& mixer) {
 
   // Settings page colors.
   mixer[kColorSettingsWebuiPageBackground] = {ui::kColorSysSurface2};
+  mixer[kColorSettingsTitleText] = {ui::kColorSysOnSurface};
 }
 
 }  // namespace
