@@ -41,7 +41,7 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
-        holder.itemView.setSelected(false);
+        holder.itemView.setSelected(/* selected= */ false);
     }
 
     @Override

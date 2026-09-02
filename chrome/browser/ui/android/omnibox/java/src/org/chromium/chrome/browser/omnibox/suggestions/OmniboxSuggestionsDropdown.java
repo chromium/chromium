@@ -317,8 +317,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     runsOnExpectedThread);
             mHandler = new Handler(Looper.getMainLooper());
 
-            setFocusable(true);
-            setFocusableInTouchMode(true);
+            setFocusable(/* focusable= */ true);
+            setFocusableInTouchMode(/* focusable= */ true);
             setId(R.id.omnibox_suggestions_dropdown);
 
             // By default RecyclerViews come with item animators.
@@ -339,7 +339,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
             // Disable the scrollbar since it causes the hover events happening near the
             // scrollbar not dispatched to the underlying views.
-            setVerticalScrollBarEnabled(false);
+            setVerticalScrollBarEnabled(/* verticalScrollBarEnabled= */ false);
 
             mViewHolderFactory = new OmniboxViewHolderFactory();
             if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
