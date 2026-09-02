@@ -251,8 +251,6 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   auto* power_status = PowerStatus::Get();
   CHECK(power_status);
 
-  std::optional<base::TimeDelta> time_to_empty =
-      power_status->GetBatteryTimeToEmpty();
   double battery_percent = power_status->GetBatteryPercent();
 
   if (active && !enable_record_) {
@@ -261,20 +259,10 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     enable_record_ = EnableRecord{base::TimeTicks::Now(), reason};
     base::UmaHistogramPercentage("Ash.BatterySaver.BatteryPercent.Enabled",
                                  static_cast<int>(battery_percent));
-    if (time_to_empty) {
-      base::UmaHistogramCustomTimes("Ash.BatterySaver.TimeToEmpty.Enabled",
-                                    *time_to_empty, base::Hours(0),
-                                    base::Hours(10), 100);
-    }
     if (reason == UpdateReason::kSettings) {
       base::UmaHistogramPercentage(
           "Ash.BatterySaver.BatteryPercent.EnabledSettings",
           static_cast<int>(battery_percent));
-      if (time_to_empty) {
-        base::UmaHistogramCustomTimes(
-            "Ash.BatterySaver.TimeToEmpty.EnabledSettings", *time_to_empty,
-            base::Hours(0), base::Hours(10), 100);
-      }
     }
   }
 
@@ -289,11 +277,6 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     // Log metrics.
     base::UmaHistogramPercentage("Ash.BatterySaver.BatteryPercent.Disabled",
                                  static_cast<int>(battery_percent));
-    if (time_to_empty) {
-      base::UmaHistogramCustomTimes("Ash.BatterySaver.TimeToEmpty.Disabled",
-                                    *time_to_empty, base::Hours(0),
-                                    base::Hours(10), 100);
-    }
     auto duration = base::TimeTicks::Now() - enable_record_->time;
     base::UmaHistogramCustomTimes("Ash.BatterySaver.Duration", duration,
                                   base::Hours(0), base::Hours(10), 100);
@@ -342,11 +325,6 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
         base::UmaHistogramPercentage(
             "Ash.BatterySaver.BatteryPercent.DisabledSettings",
             static_cast<int>(battery_percent));
-        if (time_to_empty) {
-          base::UmaHistogramCustomTimes(
-              "Ash.BatterySaver.TimeToEmpty.DisabledSettings", *time_to_empty,
-              base::Hours(0), base::Hours(10), 100);
-        }
         break;
     }
   }
