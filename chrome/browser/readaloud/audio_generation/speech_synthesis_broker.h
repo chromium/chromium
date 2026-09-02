@@ -28,7 +28,7 @@ namespace readaloud {
 // ReadAloudService initialization and destroyed with the service.
 class SpeechSynthesisBroker {
  public:
-  static constexpr char kDefaultVoiceId[] = "en-US-Wavenet-A";
+  static constexpr char kDefaultVoiceId[] = "msf00006";
   static inline const base::i18n::LanguageTag kDefaultLanguageTag =
       base::i18n::GetKnownLanguageTag("en");
 

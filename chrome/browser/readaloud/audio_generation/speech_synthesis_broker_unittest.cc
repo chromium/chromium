@@ -28,7 +28,7 @@ TEST_F(SpeechSynthesisBrokerTest,
   optimization_guide::proto::ReadAloudSynthesizeRequest default_request =
       broker_.BuildSynthesizeRequest(u"Hello world");
   EXPECT_EQ(default_request.text_chunk(), "Hello world");
-  EXPECT_EQ(default_request.voice_id(), "en-US-Wavenet-A");
+  EXPECT_EQ(default_request.voice_id(), "msf00006");
   EXPECT_EQ(default_request.language_code(), "en");
 
   // 2. Verify custom voice and language configuration.
@@ -45,7 +45,7 @@ TEST_F(SpeechSynthesisBrokerTest,
   broker_.SetLanguageCode("");
   optimization_guide::proto::ReadAloudSynthesizeRequest fallback_request =
       broker_.BuildSynthesizeRequest(u"Hello again");
-  EXPECT_EQ(fallback_request.voice_id(), "en-US-Wavenet-A");
+  EXPECT_EQ(fallback_request.voice_id(), "msf00006");
   EXPECT_EQ(fallback_request.language_code(), "en");
 }
 
@@ -59,7 +59,7 @@ TEST_F(SpeechSynthesisBrokerTest, BuildSynthesizeRequestEmptyTextChunk) {
   optimization_guide::proto::ReadAloudSynthesizeRequest request =
       broker_.BuildSynthesizeRequest(u"");
   EXPECT_TRUE(request.text_chunk().empty());
-  EXPECT_EQ(request.voice_id(), "en-US-Wavenet-A");
+  EXPECT_EQ(request.voice_id(), "msf00006");
   EXPECT_EQ(request.language_code(), "en");
 }
 
