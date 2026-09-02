@@ -146,7 +146,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
@@ -7000,7 +6999,6 @@ public class TabListMediatorUnitTest {
 
     private void updateTabAlertState(Tab tab, @TabAlert int alertState) {
         when(tab.getAlertState()).thenReturn(alertState);
-        when(tab.getMediaState()).thenReturn(TabUtils.getMediaStateForAlert(alertState));
         mTabObserverCaptor.getValue().onAlertStateChanged(tab, alertState);
     }
 

@@ -19,7 +19,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
@@ -240,14 +239,6 @@ public class TabProperties {
     public static final WritableIntDefPropertyKey<TabAlert> ALERT_STATE =
             new WritableIntDefPropertyKey<>(TabAlert.NONE);
 
-    /**
-     * The {@link MediaState} indicator of the tab.
-     *
-     * @deprecated Use {@link #ALERT_STATE} instead.
-     */
-    @Deprecated
-    public static final WritableIntPropertyKey MEDIA_INDICATOR = new WritableIntPropertyKey();
-
     /** Whether Glic context sharing is active for the tab. */
     public static final WritableBooleanPropertyKey IS_GLIC_ACTIVE =
             new WritableBooleanPropertyKey();
@@ -311,7 +302,6 @@ public class TabProperties {
                         IS_GLIC_ACTIVE,
                         TAB_GROUP_ID,
                         TAB_GROUP_HEADER_ID,
-                        MEDIA_INDICATOR,
                         IS_LOADING,
                         TAB_HOVER_CARD_LISTENER
                     },
@@ -366,7 +356,6 @@ public class TabProperties {
                 IS_MULTI_SELECTED,
                 IS_PINNED,
                 IS_SELECTED,
-                MEDIA_INDICATOR,
                 RAIL_COLLAPSE_STATE,
                 TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,

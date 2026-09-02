@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -230,7 +229,6 @@ public class FlatLayoutDelegateUnitTest {
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
         assertEquals(TabAlert.AUDIO_PLAYING, model.get(TabProperties.ALERT_STATE));
-        assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
     }
 
     @Test

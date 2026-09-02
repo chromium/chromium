@@ -310,10 +310,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         }
         @TabAlert int alertStateToSet = getAlertState(updatedTab, model);
         model.set(TabProperties.ALERT_STATE, alertStateToSet);
-        if (model.containsKey(TabProperties.MEDIA_INDICATOR)) {
-            model.set(
-                    TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertStateToSet));
-        }
     }
 
     @Override

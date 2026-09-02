@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -1328,9 +1327,6 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.IS_PINNED, tab.getIsPinned());
         @TabAlert int alertState = getTabGridAlertState(tab, model);
         model.set(TabProperties.ALERT_STATE, alertState);
-        if (model.containsKey(TabProperties.MEDIA_INDICATOR)) {
-            model.set(TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertState));
-        }
 
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
@@ -1902,9 +1898,6 @@ public class TabListMediator implements TabListNotificationHandler {
         tabInfo.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, tabInfo));
         @TabAlert int alertState = getTabGridAlertState(tab, tabInfo);
         tabInfo.set(TabProperties.ALERT_STATE, alertState);
-        if (tabInfo.containsKey(TabProperties.MEDIA_INDICATOR)) {
-            tabInfo.set(TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertState));
-        }
         tabInfo.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         tabInfo.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
         tabInfo.set(
@@ -1961,10 +1954,6 @@ public class TabListMediator implements TabListNotificationHandler {
         groupInfo.set(TabProperties.FAVICON_FETCHER, null);
         @TabAlert int alertState = getTabGridAlertState(tab, groupInfo);
         groupInfo.set(TabProperties.ALERT_STATE, alertState);
-        if (groupInfo.containsKey(TabProperties.MEDIA_INDICATOR)) {
-            groupInfo.set(
-                    TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertState));
-        }
 
         bindTabActionStateProperties(mTabActionState, tab, groupInfo);
 

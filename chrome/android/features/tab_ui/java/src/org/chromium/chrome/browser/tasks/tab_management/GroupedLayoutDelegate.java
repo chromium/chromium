@@ -289,11 +289,6 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             Tab representativeTab = indexAndTab.second;
             @TabAlert int alertStateToSet = getAlertState(representativeTab, model);
             model.set(TabProperties.ALERT_STATE, alertStateToSet);
-            if (model.containsKey(TabProperties.MEDIA_INDICATOR)) {
-                model.set(
-                        TabProperties.MEDIA_INDICATOR,
-                        TabUtils.getMediaStateForAlert(alertStateToSet));
-            }
             mMediator.updateDescriptionString(model);
         } else {
             super.onAlertStateChanged(updatedTab, alertState);
