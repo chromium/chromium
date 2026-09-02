@@ -33,75 +33,16 @@ String CSSCounterStyleRule::cssText() const {
   result.Append(" {");
 
   // Note: The exact serialization isn't well specified.
-  String system_text = system();
-  if (system_text.length()) {
-    result.Append(" system: ");
-    result.Append(system_text);
-    result.Append(";");
-  }
-
-  String symbols_text = symbols();
-  if (symbols_text.length()) {
-    result.Append(" symbols: ");
-    result.Append(symbols_text);
-    result.Append(";");
-  }
-
-  String additive_symbols_text = additiveSymbols();
-  if (additive_symbols_text.length()) {
-    result.Append(" additive-symbols: ");
-    result.Append(additive_symbols_text);
-    result.Append(";");
-  }
-
-  String negative_text = negative();
-  if (negative_text.length()) {
-    result.Append(" negative: ");
-    result.Append(negative_text);
-    result.Append(";");
-  }
-
-  String prefix_text = prefix();
-  if (prefix_text.length()) {
-    result.Append(" prefix: ");
-    result.Append(prefix_text);
-    result.Append(";");
-  }
-
-  String suffix_text = suffix();
-  if (suffix_text.length()) {
-    result.Append(" suffix: ");
-    result.Append(suffix_text);
-    result.Append(";");
-  }
-
-  String pad_text = pad();
-  if (pad_text.length()) {
-    result.Append(" pad: ");
-    result.Append(pad_text);
-    result.Append(";");
-  }
-
-  String range_text = range();
-  if (range_text.length()) {
-    result.Append(" range: ");
-    result.Append(range_text);
-    result.Append(";");
-  }
-
-  String fallback_text = fallback();
-  if (fallback_text.length()) {
-    result.Append(" fallback: ");
-    result.Append(fallback_text);
-    result.Append(";");
-  }
-
-  String speak_as_text = speakAs();
-  if (speak_as_text.length()) {
-    result.Append(" speak-as: ");
-    result.Append(speak_as_text);
-    result.Append(";");
-  }
+  AppendDescriptorIfNotEmpty(result, "system", system());
+  AppendDescriptorIfNotEmpty(result, "symbols", symbols());
+  AppendDescriptorIfNotEmpty(result, "additive-symbols", additiveSymbols());
+  AppendDescriptorIfNotEmpty(result, "negative", negative());
+  AppendDescriptorIfNotEmpty(result, "prefix", prefix());
+  AppendDescriptorIfNotEmpty(result, "suffix", suffix());
+  AppendDescriptorIfNotEmpty(result, "pad", pad());
+  AppendDescriptorIfNotEmpty(result, "range", range());
+  AppendDescriptorIfNotEmpty(result, "fallback", fallback());
+  AppendDescriptorIfNotEmpty(result, "speak-as", speakAs());
 
   result.Append(" }");
   return result.ReleaseString();
@@ -120,73 +61,44 @@ String CSSCounterStyleRule::name() const {
 }
 
 String CSSCounterStyleRule::system() const {
-  if (const CSSValue* value = counter_style_rule_->GetSystem()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetSystem());
 }
 
 String CSSCounterStyleRule::symbols() const {
-  if (const CSSValue* value = counter_style_rule_->GetSymbols()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetSymbols());
 }
 
 String CSSCounterStyleRule::additiveSymbols() const {
-  if (const CSSValue* value = counter_style_rule_->GetAdditiveSymbols()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(
+      counter_style_rule_->GetAdditiveSymbols());
 }
 
 String CSSCounterStyleRule::negative() const {
-  if (const CSSValue* value = counter_style_rule_->GetNegative()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetNegative());
 }
 
 String CSSCounterStyleRule::prefix() const {
-  if (const CSSValue* value = counter_style_rule_->GetPrefix()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetPrefix());
 }
 
 String CSSCounterStyleRule::suffix() const {
-  if (const CSSValue* value = counter_style_rule_->GetSuffix()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetSuffix());
 }
 
 String CSSCounterStyleRule::range() const {
-  if (const CSSValue* value = counter_style_rule_->GetRange()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetRange());
 }
 
 String CSSCounterStyleRule::pad() const {
-  if (const CSSValue* value = counter_style_rule_->GetPad()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetPad());
 }
 
 String CSSCounterStyleRule::speakAs() const {
-  if (const CSSValue* value = counter_style_rule_->GetSpeakAs()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetSpeakAs());
 }
 
 String CSSCounterStyleRule::fallback() const {
-  if (const CSSValue* value = counter_style_rule_->GetFallback()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(counter_style_rule_->GetFallback());
 }
 
 void CSSCounterStyleRule::SetterInternal(

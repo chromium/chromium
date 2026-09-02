@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_view_transition_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
@@ -26,33 +27,17 @@ CSSViewTransitionRule::CSSViewTransitionRule(
 
 String CSSViewTransitionRule::cssText() const {
   StringBuilder result;
-
-  result.Append("@view-transition { ");
-
-  String navigation_value = navigation();
-  if (!navigation_value.empty()) {
-    result.Append("navigation: ");
-    result.Append(navigation_value);
-    result.Append("; ");
-  }
-
-  if (const CSSValue* types_value = view_transition_rule_->GetTypesValue()) {
-    result.Append("types: ");
-    result.Append(types_value->CssText());
-    result.Append("; ");
-  }
-
-  result.Append("}");
-
+  result.Append("@view-transition {");
+  AppendDescriptorIfNotEmpty(result, "navigation", navigation());
+  AppendDescriptorIfNotEmpty(result, "types",
+                             view_transition_rule_->GetTypesValue());
+  result.Append(" }");
   return result.ReleaseString();
 }
 
 String CSSViewTransitionRule::navigation() const {
-  if (const CSSValue* value = view_transition_rule_->GetNavigationValue()) {
-    return value->CssText();
-  }
-
-  return String();
+  return CSSValue::CssTextOrEmptyString(
+      view_transition_rule_->GetNavigationValue());
 }
 
 Vector<String> CSSViewTransitionRule::types() const {

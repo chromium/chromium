@@ -31,26 +31,9 @@ String CSSFontPaletteValuesRule::cssText() const {
   SerializeIdentifier(name(), result);
   result.Append(" {");
 
-  String font_family = fontFamily();
-  if (font_family) {
-    result.Append(" font-family: ");
-    result.Append(font_family);
-    result.Append(";");
-  }
-
-  String base_palette = basePalette();
-  if (base_palette) {
-    result.Append(" base-palette: ");
-    result.Append(base_palette);
-    result.Append(";");
-  }
-
-  String override_colors = overrideColors();
-  if (!override_colors.empty()) {
-    result.Append(" override-colors: ");
-    result.Append(override_colors);
-    result.Append(";");
-  }
+  AppendDescriptorIfNotEmpty(result, "font-family", fontFamily());
+  AppendDescriptorIfNotEmpty(result, "base-palette", basePalette());
+  AppendDescriptorIfNotEmpty(result, "override-colors", overrideColors());
 
   result.Append(" }");
   return result.ReleaseString();
@@ -66,24 +49,18 @@ String CSSFontPaletteValuesRule::name() const {
 }
 
 String CSSFontPaletteValuesRule::fontFamily() const {
-  if (const CSSValue* value = font_palette_values_rule_->GetFontFamily()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(
+      font_palette_values_rule_->GetFontFamily());
 }
 
 String CSSFontPaletteValuesRule::basePalette() const {
-  if (const CSSValue* value = font_palette_values_rule_->GetBasePalette()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(
+      font_palette_values_rule_->GetBasePalette());
 }
 
 String CSSFontPaletteValuesRule::overrideColors() const {
-  if (const CSSValue* value = font_palette_values_rule_->GetOverrideColors()) {
-    return value->CssText();
-  }
-  return String();
+  return CSSValue::CssTextOrEmptyString(
+      font_palette_values_rule_->GetOverrideColors());
 }
 
 StyleRuleFontPaletteValues* CSSFontPaletteValuesRule::FontPaletteValues()

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -29,26 +30,19 @@ String CSSPropertyRule::cssText() const {
   StringBuilder builder;
   builder.Append("@property ");
   SerializeIdentifier(property_rule_->GetName(), builder);
-  builder.Append(" { ");
+  builder.Append(" {");
   if (const CSSValue* syntax = property_rule_->GetSyntax()) {
     DCHECK(syntax->IsStringValue());
-    builder.Append("syntax: ");
-    builder.Append(syntax->CssText());
-    builder.Append("; ");
+    AppendDescriptorIfNotEmpty(builder, "syntax", syntax->CssText());
   }
   if (const CSSValue* inherits = property_rule_->Inherits()) {
     DCHECK(*inherits == *CSSIdentifierValue::Create(CSSValueID::kTrue) ||
            *inherits == *CSSIdentifierValue::Create(CSSValueID::kFalse));
-    builder.Append("inherits: ");
-    builder.Append(inherits->CssText());
-    builder.Append("; ");
+    AppendDescriptorIfNotEmpty(builder, "inherits", inherits->CssText());
   }
-  if (const CSSValue* initial = property_rule_->GetInitialValue()) {
-    builder.Append("initial-value: ");
-    builder.Append(initial->CssText());
-    builder.Append("; ");
-  }
-  builder.Append("}");
+  AppendDescriptorIfNotEmpty(builder, "initial-value",
+                             property_rule_->GetInitialValue());
+  builder.Append(" }");
   return builder.ReleaseString();
 }
 
@@ -100,10 +94,7 @@ bool CSSPropertyRule::inherits() const {
 }
 
 String CSSPropertyRule::initialValue() const {
-  if (const CSSValue* initial = property_rule_->GetInitialValue()) {
-    return initial->CssText();
-  }
-  return g_null_atom;
+  return CSSValue::CssTextOrEmptyString(property_rule_->GetInitialValue());
 }
 
 CSSStyleDeclaration* CSSPropertyRule::Style() const {

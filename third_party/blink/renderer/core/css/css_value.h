@@ -43,6 +43,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   static CSSValue* Create(const Length& value, float zoom);
 
   String CssText() const;
+  // Returns value->CssText() if value is non-null, or String() otherwise.
+  static String CssTextOrEmptyString(const CSSValue* value);
   unsigned Hash() const;
 
   bool IsNumericLiteralValue() const {

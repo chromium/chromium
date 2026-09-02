@@ -32,6 +32,7 @@
 
 namespace blink {
 
+class CSSValue;
 struct CSSUrlRequestModifiers;
 
 CORE_EXPORT bool IsCSSTokenizerIdentifier(const StringView&);
@@ -45,6 +46,14 @@ void SerializeString(const String&, StringBuilder& append_to);
 String SerializeString(const String&);
 String SerializeURI(const String&, const CSSUrlRequestModifiers&);
 CORE_EXPORT String SerializeFontFamily(const AtomicString&);
+
+// Appends " name: value;" to |result| if |value| is non-empty.
+void AppendDescriptorIfNotEmpty(StringBuilder& result,
+                                const char* name,
+                                const String& value);
+void AppendDescriptorIfNotEmpty(StringBuilder& result,
+                                const char* name,
+                                const CSSValue* value);
 
 }  // namespace blink
 

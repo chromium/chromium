@@ -22,48 +22,16 @@ String CSSLocationRule::cssText() const {
   StringBuilder result;
   result.Append("@location ");
   SerializeIdentifier(location_rule_->GetName(), result);
-  result.Append(" { ");
-  if (const CSSURLPatternValue* pattern = location_rule_->GetPattern()) {
-    result.Append("pattern: ");
-    result.Append(pattern->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* protocol = location_rule_->GetProtocol()) {
-    result.Append("protocol: ");
-    result.Append(protocol->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* hostname = location_rule_->GetHostname()) {
-    result.Append("hostname: ");
-    result.Append(hostname->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* port = location_rule_->GetPort()) {
-    result.Append("port: ");
-    result.Append(port->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* pathname = location_rule_->GetPathname()) {
-    result.Append("pathname: ");
-    result.Append(pathname->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* search = location_rule_->GetSearch()) {
-    result.Append("search: ");
-    result.Append(search->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* hash = location_rule_->GetHash()) {
-    result.Append("hash: ");
-    result.Append(hash->CssText());
-    result.Append("; ");
-  }
-  if (const CSSStringValue* base_url = location_rule_->GetBaseUrl()) {
-    result.Append("base-url: ");
-    result.Append(base_url->CssText());
-    result.Append("; ");
-  }
-  result.Append('}');
+  result.Append(" {");
+  AppendDescriptorIfNotEmpty(result, "pattern", location_rule_->GetPattern());
+  AppendDescriptorIfNotEmpty(result, "protocol", location_rule_->GetProtocol());
+  AppendDescriptorIfNotEmpty(result, "hostname", location_rule_->GetHostname());
+  AppendDescriptorIfNotEmpty(result, "port", location_rule_->GetPort());
+  AppendDescriptorIfNotEmpty(result, "pathname", location_rule_->GetPathname());
+  AppendDescriptorIfNotEmpty(result, "search", location_rule_->GetSearch());
+  AppendDescriptorIfNotEmpty(result, "hash", location_rule_->GetHash());
+  AppendDescriptorIfNotEmpty(result, "base-url", location_rule_->GetBaseUrl());
+  result.Append(" }");
   return result.ReleaseString();
 }
 
