@@ -12,16 +12,13 @@ import android.content.res.Resources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -31,7 +28,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.List;
 
@@ -51,30 +47,14 @@ import java.util.List;
 })
 public class SearchIndexProviderRegistryTest {
 
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Context sContext;
+    private Context mContext;
     private Profile mProfile;
     private SettingsIndexData mIndexData;
-
-    @BeforeClass
-    public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        sContext = sActivityTestRule.getActivity();
-    }
-
-    @AfterClass
-    public static void tearDownSuite() {
-        // Clear the static reference to BlankUiTestActivity so it doesn't get retained
-        // via the test class after the activity is finished.
-        sContext = null;
-    }
 
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+        mContext = ContextUtils.getApplicationContext();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -107,7 +87,7 @@ public class SearchIndexProviderRegistryTest {
             int xmlResId = provider.getXmlRes();
             if (xmlResId > 0) {
                 try {
-                    sContext.getResources().getXml(xmlResId);
+                    mContext.getResources().getXml(xmlResId);
                 } catch (Resources.NotFoundException e) {
                     failureCount++;
                     errorLog.append(
@@ -140,7 +120,7 @@ public class SearchIndexProviderRegistryTest {
 
                     try {
                         SettingsSearchCoordinator.buildIndexInternal(
-                                sContext, mProfile, mIndexData);
+                                mContext, mProfile, mIndexData);
                     } catch (Exception e) {
                         fail(
                                 String.format(
