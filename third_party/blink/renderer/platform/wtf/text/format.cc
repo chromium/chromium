@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 
+#include <type_traits>
 #include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/span_printf.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
@@ -333,11 +335,64 @@ void FormatValue(const void* val,
                 builder);
 }
 
+// Pre-allocates buffer capacity in `builder` using a rough estimation of the
+// formatted string and arguments. This estimation does not account for format
+// specifiers like width (e.g. "{:100}"), precision, or brace escapes, but
+// provides a fast, reasonable upper bound for typical cases to avoid repeated
+// reallocations.
+void ReserveEstimatedCapacity(const StringView& format,
+                              FormatArgs args,
+                              StringBuilder& builder) {
+  base::CheckedNumeric<wtf_size_t> estimated_len = builder.length();
+  estimated_len += format.length();
+  bool is_8bit = format.Is8Bit();
+
+  for (const FormatArg& arg : args) {
+    std::visit(
+        [&](const auto& val) {
+          using T = std::decay_t<decltype(val)>;
+          if constexpr (std::is_same_v<T, StringView>) {
+            estimated_len += val.length();
+            if (!val.Is8Bit()) {
+              is_8bit = false;
+            }
+          } else if constexpr (std::is_same_v<T, int64_t> ||
+                               std::is_same_v<T, uint64_t> ||
+                               std::is_same_v<T, double> ||
+                               std::is_same_v<T, const void*>) {
+            // Numbers, pointers, and floats rarely exceed 20 characters in
+            // standard formatting.
+            estimated_len += 20;
+          } else if constexpr (std::is_same_v<T, bool>) {
+            // "false" is 5 characters, "true" is 4 characters.
+            estimated_len += 5;
+          } else if constexpr (std::is_same_v<T, UChar>) {
+            // A single character.
+            estimated_len += 1;
+            if (val > 0xff) {
+              is_8bit = false;
+            }
+          }
+        },
+        arg.GetValue());
+  }
+
+  if (estimated_len.IsValid()) {
+    if (is_8bit) {
+      builder.ReserveCapacity(estimated_len.ValueOrDie());
+    } else {
+      builder.Reserve16BitCapacity(estimated_len.ValueOrDie());
+    }
+  }
+}
+
 }  // namespace
 
 StringBuilder& VFormatTo(StringBuilder& builder,
                          const StringView& format,
                          FormatArgs args) {
+  ReserveEstimatedCapacity(format, args, builder);
+
   size_t arg_index = 0;
   wtf_size_t len = format.length();
 
