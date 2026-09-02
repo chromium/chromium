@@ -1835,11 +1835,6 @@
       dismissPasskeySuggestions];
 }
 
-- (void)dismissPaymentSuggestions {
-  // TODO(crbug.com/543382844): Remove this.
-  [HandlerForProtocol(self.dispatcher, AutofillCommands)
-      dismissPaymentAndScanCardSheets];
-}
 
 - (void)legacyDismissCardUnmaskAuthentication {
   // TODO(crbug.com/543382844): Remove this.

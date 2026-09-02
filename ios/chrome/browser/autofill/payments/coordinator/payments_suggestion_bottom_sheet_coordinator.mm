@@ -13,7 +13,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/web_state.h"
 
@@ -41,6 +42,9 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 // Used to find the CreditCard object and use it to open the credit card details
 // view.
 @property(nonatomic, assign) autofill::PersonalDataManager* personalDataManager;
+
+// Handler for Autofill Commands.
+@property(nonatomic, readonly) id<AutofillCommands> autofillHandler;
 
 @end
 
@@ -113,7 +117,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   // stopped.
   if (!self.viewController.presentingViewController) {
     [self.mediator logExitReason:kCouldNotPresent];
-    [self.browserCoordinatorCommandsHandler dismissPaymentSuggestions];
+    [self.autofillHandler dismissPaymentsBottomSheet];
   }
 }
 
@@ -135,8 +139,8 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf.settingsHandler showCreditCardSettings];
-                           [weakSelf.browserCoordinatorCommandsHandler
-                                   dismissPaymentSuggestions];
+                           [weakSelf
+                                   .autofillHandler dismissPaymentsBottomSheet];
                          }];
 }
 
@@ -153,8 +157,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
         [](__weak __typeof(self) weak_self, autofill::CreditCard credit_card) {
           [weak_self.settingsHandler showCreditCardDetails:credit_card
                                                 inEditMode:NO];
-          [weak_self
-                  .browserCoordinatorCommandsHandler dismissPaymentSuggestions];
+          [weak_self.autofillHandler dismissPaymentsBottomSheet];
         },
         weakSelf, std::move(*creditCard));
     [self.baseViewController.presentedViewController
@@ -186,8 +189,8 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
                            [weakSelf dismissSoftKeyboard];
                            [weakSelf didSelectCreditCard:creditCardData
                                                  atIndex:index];
-                           [weakSelf.browserCoordinatorCommandsHandler
-                                   dismissPaymentSuggestions];
+                           [weakSelf
+                                   .autofillHandler dismissPaymentsBottomSheet];
                          }];
 }
 
@@ -203,7 +206,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
   [self.mediator logExitReason:kDismissal];
   [self.mediator disconnect];
-  [_browserCoordinatorCommandsHandler dismissPaymentSuggestions];
+  [self.autofillHandler dismissPaymentsBottomSheet];
 }
 
 #pragma mark - Private
@@ -229,6 +232,12 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   if (activeWebState) {
     [activeWebState->GetView() endEditing:NO];
   }
+}
+
+// Returns the AutofillCommands handler.
+- (id<AutofillCommands>)autofillHandler {
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            AutofillCommands);
 }
 
 @end

@@ -17,13 +17,16 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/web/public/web_state.h"
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetCoordinator () <
     PaymentsScanSaveAndFillOfferBottomSheetDelegate,
     WebStateListObserving>
+
+// Handler for Autofill Commands.
+@property(nonatomic, readonly) id<AutofillCommands> autofillHandler;
 
 @end
 
@@ -96,9 +99,7 @@
   if (!_viewController.presentingViewController) {
     [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::
                                     kCouldNotPresent];
-    id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-    [handler dismissPaymentSuggestions];
+    [self.autofillHandler dismissScanCardSaveAndFillBottomSheet];
   }
 }
 
@@ -118,9 +119,7 @@
   // the bottom sheet.
   if (status.active_web_state_change()) {
     [_mediator setProvider:nil];
-    id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-    [handler dismissPaymentSuggestions];
+    [self.autofillHandler dismissScanCardSaveAndFillBottomSheet];
   }
 }
 
@@ -138,9 +137,7 @@
   [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::kIgnore];
   [_mediator refocus];
   [_mediator disconnect];
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [handler dismissPaymentSuggestions];
+  [self.autofillHandler dismissScanCardSaveAndFillBottomSheet];
 }
 
 - (void)didTapScanCardButton {
@@ -157,15 +154,16 @@
   [_mediator disconnect];
   _mediator = nil;
 
-  __weak id<BrowserCoordinatorCommands> weakHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [_viewController dismissViewControllerAnimated:YES
-                                      completion:^{
-                                        if (postDismissBlock) {
-                                          postDismissBlock();
-                                        }
-                                        [weakHandler dismissPaymentSuggestions];
-                                      }];
+  __weak __typeof(self) weakSelf = self;
+  [_viewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           if (postDismissBlock) {
+                             postDismissBlock();
+                           }
+                           [weakSelf.autofillHandler
+                                   dismissScanCardSaveAndFillBottomSheet];
+                         }];
 }
 
 - (void)didTapOnCancelButton {
@@ -175,13 +173,13 @@
   [_mediator didCancelScanCardSuggestion];
   [_mediator disconnect];
 
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  __weak id<BrowserCoordinatorCommands> weakHandler = handler;
-  [_viewController dismissViewControllerAnimated:YES
-                                      completion:^{
-                                        [weakHandler dismissPaymentSuggestions];
-                                      }];
+  __weak __typeof(self) weakSelf = self;
+  [_viewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf.autofillHandler
+                                   dismissScanCardSaveAndFillBottomSheet];
+                         }];
 }
 
 #pragma mark - Private
@@ -193,6 +191,12 @@
     [_mediator logExitReason:exitReason];
     _exitReasonLogged = YES;
   }
+}
+
+// Returns the AutofillCommands handler.
+- (id<AutofillCommands>)autofillHandler {
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            AutofillCommands);
 }
 
 @end

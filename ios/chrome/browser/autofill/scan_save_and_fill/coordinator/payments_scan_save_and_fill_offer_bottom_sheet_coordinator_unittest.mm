@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -51,11 +51,10 @@ class PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest
     autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
         browser_->GetWebStateList()->GetActiveWebState(), nil);
 
-    mock_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    mock_commands_handler_ = OCMStrictProtocolMock(@protocol(AutofillCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_commands_handler_
-                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+                     forProtocol:@protocol(AutofillCommands)];
 
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
@@ -84,12 +83,12 @@ class PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest
 };
 
 // Tests that `paymentsBottomSheetDidDisappear` triggers the
-// `dismissPaymentSuggestions` command.
+// `dismissScanCardSaveAndFillBottomSheet` command.
 TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
        PaymentsBottomSheetDidDisappear) {
   [coordinator_ start];
 
-  [[mock_commands_handler_ expect] dismissPaymentSuggestions];
+  [[mock_commands_handler_ expect] dismissScanCardSaveAndFillBottomSheet];
 
   [coordinator_ paymentsBottomSheetDidDisappear];
 
@@ -97,7 +96,7 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
 }
 
 // Tests that `didTapScanCardButton` triggers the
-// `dismissPaymentSuggestions` command and sets the cancellation flag.
+// `dismissScanCardSaveAndFillBottomSheet` command and sets the acceptance flag.
 TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
        DidTapScanCardButton) {
   [coordinator_ start];
@@ -105,7 +104,7 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
   __block BOOL method_invoked = NO;
   [[[mock_commands_handler_ expect] andDo:^(NSInvocation* invocation) {
     method_invoked = YES;
-  }] dismissPaymentSuggestions];
+  }] dismissScanCardSaveAndFillBottomSheet];
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   autofill::AutofillClientIOS* client =
@@ -129,7 +128,8 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
 }
 
 // Tests that `didTapOnCancelButton` triggers the
-// `dismissPaymentSuggestions` command and sets the cancellation flag.
+// `dismissScanCardSaveAndFillBottomSheet` command and sets the cancellation
+// flag.
 TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
        DidTapOnCancelButton) {
   [coordinator_ start];
@@ -137,7 +137,7 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
   __block BOOL method_invoked = NO;
   [[[mock_commands_handler_ expect] andDo:^(NSInvocation* invocation) {
     method_invoked = YES;
-  }] dismissPaymentSuggestions];
+  }] dismissScanCardSaveAndFillBottomSheet];
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   autofill::AutofillClientIOS* client =

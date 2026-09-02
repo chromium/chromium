@@ -361,10 +361,8 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissSaveEntityDialog];
   [self dismissAmbientAutofillNotice];
   [self dismissAutofillAIPrivateInferenceNotice];
-  [_paymentsScanCoordinator stop];
-  _paymentsScanCoordinator = nil;
-  [_paymentsSuggestionBottomSheetCoordinator stop];
-  _paymentsSuggestionBottomSheetCoordinator = nil;
+  [self dismissScanCardSaveAndFillBottomSheet];
+  [self dismissPaymentsBottomSheet];
   [_cardUnmaskAuthenticationCoordinator stop];
   _cardUnmaskAuthenticationCoordinator = nil;
   [_virtualCardEnrollmentBottomSheetCoordinator stop];
@@ -827,10 +825,12 @@ const char kContextPanelDismissedHistogram[] =
   // TODO(crbug.com/544597172): Don't pass the handler to the coordinator.
   _paymentsSuggestionBottomSheetCoordinator.settingsHandler =
       HandlerForProtocol(self.dispatcher, SettingsCommands);
-  // TODO(crbug.com/544597172): Don't pass the handler to the coordinator.
-  _paymentsSuggestionBottomSheetCoordinator.browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [_paymentsSuggestionBottomSheetCoordinator start];
+}
+
+- (void)dismissPaymentsBottomSheet {
+  [_paymentsSuggestionBottomSheetCoordinator stop];
+  _paymentsSuggestionBottomSheetCoordinator = nil;
 }
 
 - (void)showScanCardSaveAndFillBottomSheet:
@@ -846,11 +846,7 @@ const char kContextPanelDismissedHistogram[] =
   [_paymentsScanCoordinator start];
 }
 
-- (void)dismissPaymentAndScanCardSheets {
-  // TODO(crbug.com/543394820): Why is this dismiss two coordinators? Should it
-  // be two distinct commands instead?
-  [_paymentsSuggestionBottomSheetCoordinator stop];
-  _paymentsSuggestionBottomSheetCoordinator = nil;
+- (void)dismissScanCardSaveAndFillBottomSheet {
   [_paymentsScanCoordinator stop];
   _paymentsScanCoordinator = nil;
 }

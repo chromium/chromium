@@ -23,6 +23,9 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -36,6 +39,7 @@
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Tests the SetUpListView and subviews.
 class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
@@ -62,6 +66,15 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     // Set circular SyncService dependency to null.
     personal_data_manager->SetSyncServiceForTest(nullptr);
 
+    mock_autofill_commands_handler_ =
+        OCMProtocolMock(@protocol(AutofillCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_autofill_commands_handler_
+                     forProtocol:@protocol(AutofillCommands)];
+
+    mock_settings_commands_handler_ =
+        OCMProtocolMock(@protocol(SettingsCommands));
+
     window_ = [[UIWindow alloc]
         initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window_.rootViewController = [[UIViewController alloc] init];
@@ -79,6 +92,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
         initWithBaseViewController:window_.rootViewController
                            browser:browser_.get()
                             params:params_];
+    coordinator_.settingsHandler = mock_settings_commands_handler_;
   }
 
  protected:
@@ -105,6 +119,8 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+  id mock_autofill_commands_handler_;
+  id mock_settings_commands_handler_;
   UIWindow* window_;
   PaymentsSuggestionBottomSheetCoordinator* coordinator_;
   autofill::FormActivityParams params_;
@@ -120,6 +136,8 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 
   [coordinator_ start];
 
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+
   [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
                                                initWithCreditCard:credit_card_
                                                              icon:nil]
@@ -127,6 +145,7 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
+  EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
       "IOS.PaymentsBottomSheet.ExitReason",
       PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion, 1);
@@ -139,6 +158,8 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
 
   [coordinator_ start];
 
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+
   [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
                                                initWithCreditCard:virtual_card_
                                                              icon:nil]
@@ -146,6 +167,7 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
+  EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
       "IOS.PaymentsBottomSheet.ExitReason",
       PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion, 1);
@@ -157,12 +179,15 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, SecondaryButton) {
 
   [coordinator_ start];
 
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+
   [coordinator_ secondaryButtonTapped];
   [coordinator_ viewDidDisappear];
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
+  EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
       "IOS.PaymentsBottomSheet.ExitReason",
       PaymentsSuggestionBottomSheetExitReason::kDismissal, 1);
@@ -175,11 +200,16 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PaymentsMethods) {
 
   [coordinator_ start];
 
+  OCMExpect([mock_settings_commands_handler_ showCreditCardSettings]);
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+
   [coordinator_ displayPaymentMethods];
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
+  EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
       "IOS.PaymentsBottomSheet.ExitReason",
       PaymentsSuggestionBottomSheetExitReason::kShowPaymentMethods, 1);
@@ -192,12 +222,15 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PaymentsDetails) {
 
   [coordinator_ start];
 
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+
   [coordinator_
       displayPaymentDetailsForCreditCardIdentifier:BackendIdentifier()];
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
+  EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
       "IOS.PaymentsBottomSheet.ExitReason",
       PaymentsSuggestionBottomSheetExitReason::kShowPaymentDetails, 1);

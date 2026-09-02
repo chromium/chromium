@@ -118,9 +118,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // TODO(crbug.com/543354673): Remove this.
 - (void)dismissPasswordSuggestions;
 
-// Dismiss the payments suggestions.
-- (void)dismissPaymentSuggestions;
-
 // Dismiss the card unmask authentication prompt.
 // Deprecated: use AutofillCommands instead.
 - (void)legacyDismissCardUnmaskAuthentication;
