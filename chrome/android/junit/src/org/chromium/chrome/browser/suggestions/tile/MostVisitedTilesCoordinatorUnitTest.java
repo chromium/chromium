@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -86,15 +87,16 @@ public class MostVisitedTilesCoordinatorUnitTest {
 
     @Test
     public void testUpdateMvtWidth_WithWidth() {
-        int totalWidth = 1000;
+        int widthMvt = 1000;
+        int lateralMargin = 48;
         when(mMvTilesContainerLayout.getVisibility()).thenReturn(View.VISIBLE);
-        mCoordinator.updateMvtWidth(totalWidth);
-        verify(mMediator).updateMvtWidth(eq(totalWidth));
+        mCoordinator.updateMvtWidth(widthMvt, lateralMargin);
+        verify(mMediator).updateMvtWidth(eq(widthMvt), eq(lateralMargin));
 
         clearInvocations(mMediator);
         when(mMvTilesContainerLayout.getVisibility()).thenReturn(View.GONE);
-        mCoordinator.updateMvtWidth(totalWidth);
-        verify(mMediator, never()).updateMvtWidth(any(Integer.class));
+        mCoordinator.updateMvtWidth(widthMvt, lateralMargin);
+        verify(mMediator, never()).updateMvtWidth(anyInt(), anyInt());
     }
 
     @Test

@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
+import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -100,6 +101,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -118,6 +120,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2,
+    ChromeFeatureList.FEED_CONTAINMENT,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT
@@ -513,7 +516,29 @@ public class NewTabPageCoordinatorUnitTest {
 
         View mvtView = layout.findViewById(R.id.mv_tiles_container);
         assertNotNull(mvtView);
+        int feedPadding =
+                -FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(
+                        mActivity.getResources(), mUiConfig);
+        assertEquals(measureWidth - (feedPadding * 2), mvtView.getLayoutParams().width);
+
+        // Verify that the applied MVT margins are non-negative on Mobile
+        ViewGroup.MarginLayoutParams mvtMarginParams =
+                (ViewGroup.MarginLayoutParams) mvtView.getLayoutParams();
+        assertTrue(mvtMarginParams.leftMargin >= 0);
+        assertTrue(mvtMarginParams.rightMargin >= 0);
+
+        // On Desktop Android, the MVT width cap is applied
+        DeviceInfo.setIsDesktopForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mvtView.setVisibility(View.VISIBLE);
+        mCoordinator.onMeasure(measureWidth);
         assertEquals(expectedBoundedWidth, mvtView.getLayoutParams().width);
+
+        // Verify that the applied MVT margins are non-negative on Desktop
+        ViewGroup.MarginLayoutParams desktopMarginParams =
+                (ViewGroup.MarginLayoutParams) mvtView.getLayoutParams();
+        assertTrue(desktopMarginParams.leftMargin >= 0);
+        assertTrue(desktopMarginParams.rightMargin >= 0);
     }
 
     @Test

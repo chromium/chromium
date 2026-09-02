@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
+import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -1460,26 +1461,50 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     /**
-     * Unifies the widths of the elements on the New Tab Page. The Search Box, Composeplate, and
-     * Most Visited Tiles are capped at a maximum width, while the Logo always receives the full
-     * width.
+     * Calculates the lateral margin to apply to the MVT container to match the Feed card bounds.
+     *
+     * <p>NewTabPageLayout (inside the Discover Feed scroll container) may be assigned negative
+     * lateral margins so that other container Views can keep their margin / padding settings.
+     *
+     * <p>Meanwhile, Feeds exists outside of NewTabPageLayout. So for a View inside NewTabPageLayout
+     * to align with Feeds, we'd need to compensate for the negative margin by subtracing it. This
+     * approach should work for all phone orientations, wide screens, and tablet configurations.
+     *
+     * @return The lateral margin, in pixels.
      */
-    private void unifyElementWidths(int width) {
-        int boundedSearchBoxWidth = Math.min(width - mSearchBoxTwoSideMargin, mSearchBoxMaxWidth);
-        if (mNtpSearchBox != null) {
-            mNtpSearchBox.setLayoutWidth(boundedSearchBoxWidth);
-        }
+    @VisibleForTesting
+    int getLateralMarginToMatchFeeds() {
+        // Value is non-negative, since the compensation margin is non-positive.
+        return -FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(
+                mActivity.getResources(), assertNonNull(mUiConfig));
+    }
 
+    /** Unifies the layout widths of the New Tab Page elements. */
+    private void unifyElementWidths(int width) {
+        // Search Provider Logo spans the full available width to properly support wide doodles.
         if (mLogoCoordinator != null) {
             mLogoCoordinator.setLayoutWidth(width);
         }
 
-        if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.setLayoutWidth(boundedSearchBoxWidth);
+        int searchBoxWidth = Math.min(width - mSearchBoxTwoSideMargin, mSearchBoxMaxWidth);
+
+        // Search Box always receives a capped layout width to maintain central focus.
+        if (mNtpSearchBox != null) {
+            mNtpSearchBox.setLayoutWidth(searchBoxWidth);
         }
 
+        // Composeplate is capped to align perfectly with the Search Box.
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.setLayoutWidth(searchBoxWidth);
+        }
+
+        // Most Visited Tiles: Match Search Box on Desktop, and Feeds width on Mobile.
         if (mMostVisitedTilesCoordinator != null) {
-            mMostVisitedTilesCoordinator.updateMvtWidth(boundedSearchBoxWidth);
+            int mvtWidth =
+                    OmniboxCapabilities.isDesktopPlatform()
+                            ? searchBoxWidth
+                            : (width - getLateralMarginToMatchFeeds() * 2);
+            mMostVisitedTilesCoordinator.updateMvtWidth(width, mvtWidth);
         }
 
         if (mSigninPromoCoordinator != null) {

@@ -182,14 +182,15 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     }
 
     /**
-     * Updates the width and margins of the MV tiles container.
+     * Updates the width and lateral margins of the MVT container.
      *
-     * @param totalWidth The total width of the MV tiles layout.
+     * @param totalWidth The total available width of the parent layout.
+     * @param mvtWidth The target width that the MVT layout should align to.
      */
-    public void updateMvtWidth(int totalWidth) {
-        if (mMvTilesContainerLayout.getVisibility() == GONE) return;
-
-        mMediator.updateMvtWidth(totalWidth);
+    public void updateMvtWidth(int totalWidth, int mvtWidth) {
+        if (mMvTilesContainerLayout.getVisibility() != GONE) {
+            mMediator.updateMvtWidth(totalWidth, mvtWidth);
+        }
     }
 
     /**

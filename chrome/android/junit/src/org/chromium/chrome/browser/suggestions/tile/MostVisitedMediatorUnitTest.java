@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -45,7 +43,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -383,30 +380,22 @@ public class MostVisitedMediatorUnitTest {
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
-        when(mMvTilesLayout.contentFitsOnLff(totalWidth)).thenReturn(true);
-
-        // Test case of regular LFF devices.
-        UiConfig.DisplayStyle displayStyleWide =
-                new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleWide);
-        assertFalse(NtpCustomizationUtils.isInNarrowWindowOnLff(/* isLff= */ true, mUiConfig));
-
         int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
-        mMediator.updateMvtWidth(totalWidth);
+        int mvtWidth = totalWidth - (lateralMargin * 2);
+        when(mMvTilesLayout.contentFitsOnLff(mvtWidth)).thenReturn(true);
+
+        mMediator.updateMvtWidth(totalWidth, mvtWidth);
         verifyLayoutParams(marginLayoutParams, LayoutParams.WRAP_CONTENT, lateralMargin);
 
         // Test case of narrow window on LFF devices.
-        when(mMvTilesLayout.contentFitsOnLff(totalWidth)).thenReturn(false);
-        UiConfig.DisplayStyle displayStyleRegular =
-                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
-        assertTrue(NtpCustomizationUtils.isInNarrowWindowOnLff(true, mUiConfig));
-
         int lateralMarginNarrowWindowTablet =
                 mResources.getDimensionPixelSize(
                         R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
-        mMediator.updateMvtWidth(totalWidth);
-        verifyLayoutParams(marginLayoutParams, totalWidth, lateralMarginNarrowWindowTablet);
+        int mvtWidthNarrow = totalWidth - (lateralMarginNarrowWindowTablet * 2);
+        when(mMvTilesLayout.contentFitsOnLff(mvtWidthNarrow)).thenReturn(false);
+
+        mMediator.updateMvtWidth(totalWidth, mvtWidthNarrow);
+        verifyLayoutParams(marginLayoutParams, mvtWidthNarrow, lateralMarginNarrowWindowTablet);
     }
 
     @Test
@@ -418,21 +407,9 @@ public class MostVisitedMediatorUnitTest {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
 
-        // On phones, the display style shouldn't trigger narrow window LFF logic.
-        UiConfig.DisplayStyle displayStyleRegular =
-                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
-        assertFalse(NtpCustomizationUtils.isInNarrowWindowOnLff(/* isLff= */ false, mUiConfig));
-
         int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
-
-        // When width is provided, it should be applied directly.
-        mMediator.updateMvtWidth(totalWidth);
-        verifyLayoutParams(marginLayoutParams, totalWidth, lateralMargin);
-
-        // When width is null, it should fall back to MATCH_PARENT.
-        mMediator.updateMvtWidth(null);
-        verifyLayoutParams(marginLayoutParams, LayoutParams.MATCH_PARENT, lateralMargin);
+        mMediator.updateMvtWidth(totalWidth, totalWidth - (lateralMargin * 2));
+        verifyLayoutParams(marginLayoutParams, totalWidth - (lateralMargin * 2), lateralMargin);
     }
 
     private void createMediator() {

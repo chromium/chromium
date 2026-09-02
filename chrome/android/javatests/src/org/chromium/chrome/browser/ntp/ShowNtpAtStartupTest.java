@@ -758,14 +758,23 @@ public class ShowNtpAtStartupTest {
                             mvTilesLayout.getChildCount(),
                             Matchers.greaterThan(1));
 
-                    // Expected: Calculate the expected slack mathematically from constants.
-                    int expectedContainerWidthSlack = calculateExpectedWidthSlack(width, res);
+                    int expectedMvtLateralMargin =
+                            ntp.getNewTabPageCoordinator().getLateralMarginToMatchFeeds();
 
-                    // Actual: Assert the actual container matches the expected slack.
-                    Criteria.checkThat(
-                            "MVT container width is inconsistent with screen width.",
-                            width - mvtContainer.getWidth(),
-                            Matchers.is(expectedContainerWidthSlack));
+                    if (mvtContainer.getLayoutParams().width
+                            == android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
+                        // On tablets, if the content fits, WRAP_CONTENT is used to center MVT.
+                        Criteria.checkThat(
+                                mvtContainer.getLayoutParams().width,
+                                Matchers.is(android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+                    } else {
+                        // If it doesn't fit, it scales to match the Feed width.
+                        int expectedContainerWidthSlack = expectedMvtLateralMargin * 2;
+                        Criteria.checkThat(
+                                "MVT container width is inconsistent with screen width.",
+                                width - mvtContainer.getWidth(),
+                                Matchers.is(expectedContainerWidthSlack));
+                    }
 
                     int mvt1LeftMargin =
                             ((MarginLayoutParams) mvTilesLayout.getTileAt(0).getLayoutParams())
