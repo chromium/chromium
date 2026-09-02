@@ -9965,7 +9965,7 @@
   {
     "name": "unthrottle-async-touch-moves",
     "owners": [ "woa-performance-team@google.com", "kartarsingh@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "update-menu-item-custom-summary",
