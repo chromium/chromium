@@ -163,7 +163,8 @@ class AXRelationCache {
   // specific time in the lifecycle.
   // Pass |force=true| when the mappings must be updated even though the
   // owned ids have not changed, e.g. when an object has been refreshed.
-  void UpdateAriaOwnsWithCleanLayout(AXObject* owner, bool force = false);
+  // Returns true when the owner's child mapping changes.
+  bool UpdateAriaOwnsWithCleanLayout(AXObject* owner, bool force = false);
   void QueueOwnerToUpdate(AXObject* owner);
 
   // Is there work to be done when layout becomes clean?

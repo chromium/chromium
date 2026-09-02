@@ -252,17 +252,25 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
 #endif  // AX_FAIL_FAST_BUILD()
 
 void AXRelationCache::ProcessUpdatesWithCleanLayout() {
-  HashSet<DOMNodeId> old_owner_axids_to_update;
-  old_owner_axids_to_update.swap(owner_axids_to_update_);
+  while (!owner_axids_to_update_.empty()) {
+    HashSet<DOMNodeId> old_owner_axids_to_update;
+    old_owner_axids_to_update.swap(owner_axids_to_update_);
 
-  for (DOMNodeId aria_owner_axid : old_owner_axids_to_update) {
-    AXObject* obj = ObjectFromAXID(aria_owner_axid);
-    if (obj) {
-      UpdateAriaOwnsWithCleanLayout(obj);
+    for (DOMNodeId aria_owner_axid : old_owner_axids_to_update) {
+      AXObject* obj = ObjectFromAXID(aria_owner_axid);
+      if (!obj) {
+        owner_axids_to_update_.erase(aria_owner_axid);
+        continue;
+      }
+
+      if (!UpdateAriaOwnsWithCleanLayout(obj)) {
+        // Processing can requeue the same owner even when its validated mapping
+        // is unchanged. Drop only that redundant self-requeue; other owners
+        // queued while processing remain pending.
+        owner_axids_to_update_.erase(aria_owner_axid);
+      }
     }
   }
-
-  owner_axids_to_update_.clear();
 }
 
 void AXRelationCache::QueueOwnerToUpdate(AXObject* owner) {
@@ -844,6 +852,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     if (added_child->ChildrenNeedToUpdateCachedValues()) {
       object_cache_->RemoveSubtree(added_child->GetNode(),
                                    /*remove_root*/ false);
+      added_child->UpdateChildrenIfNecessary();
     }
   }
 }
@@ -902,15 +911,22 @@ void AXRelationCache::ValidatedAriaOwnedChildren(
   }
 }
 
-void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
+bool AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
                                                     bool force) {
   CHECK(!object_cache_->IsFrozen());
   DCHECK(owner);
   Element* element = owner->GetElement();
   if (!element)
-    return;
+    return false;
 
   DCHECK(!element->GetDocument().NeedsLayoutTreeUpdateForNode(*element));
+
+  Vector<AXID> previously_owned_child_ids;
+  auto previous_mapping =
+      aria_owner_to_children_mapping_.find(owner->AXObjectID());
+  if (previous_mapping != aria_owner_to_children_mapping_.end()) {
+    previously_owned_child_ids = previous_mapping->value;
+  }
 
   // A refresh can occur even if not a valid owner, because the old object
   // that |owner| is replacing may have previously been a valid owner. In this
@@ -921,7 +937,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
     // aria-owns is empty, or the object is not a valid owner. This protects
     // from ending up with a previous owner containing invalid children.
     ChildrenChangedWithCleanLayout(owner);
-    return;
+    return false;
   }
 
   HeapVector<Member<AXObject>> owned_children;
@@ -994,6 +1010,13 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
   // Update the internal validated mapping of owned children. This will
   // fire an event if the mapping has changed.
   UpdateAriaOwnerToChildrenMappingWithCleanLayout(owner, owned_children, force);
+
+  auto updated_mapping =
+      aria_owner_to_children_mapping_.find(owner->AXObjectID());
+  if (updated_mapping == aria_owner_to_children_mapping_.end()) {
+    return !previously_owned_child_ids.empty();
+  }
+  return previously_owned_child_ids != updated_mapping->value;
 }
 
 void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -155,6 +156,57 @@ TEST_F(AccessibilityTest, HistogramTest) {
     histogram_tester.ExpectTotalCount(
         "Accessibility.Performance.AXObjectCacheImpl.Incremental.String", 1);
   }
+}
+
+TEST_F(AccessibilityTest, SnapshotWithDanglingAriaOwnsInOwnedSubtree) {
+  SetBodyInnerHTML(R"HTML(
+    <button aria-owns="target">Owner</button>
+    <div id="target">
+      <button aria-owns="does-not-exist">Dangling owner</button>
+    </div>
+  )HTML");
+
+  Member<AXObjectCache> snapshot_cache = AXObjectCache::CreateSnapshotter(
+      GetDocument(), ui::AXMode(ui::AXMode::kPDFPrinting));
+  ui::AXTreeUpdate response;
+  std::set<ui::AXSerializationErrorFlag> out_error;
+  snapshot_cache->SerializeEntireTreeAndDispose(
+      /*max_nodes=*/1000, base::TimeDelta::FiniteMax(), &response, &out_error);
+
+  EXPECT_FALSE(response.nodes.empty());
+  EXPECT_TRUE(out_error.empty());
+}
+
+TEST_F(AccessibilityTest, SnapshotWithValidAriaOwnsInOwnedSubtree) {
+  SetBodyInnerHTML(R"HTML(
+    <button aria-owns="target">Owner</button>
+    <div id="target">
+      <button id="inner-owner" aria-owns="inner-target">Inner owner</button>
+    </div>
+    <div id="inner-target">Inner target</div>
+  )HTML");
+
+  AXID inner_owner_id = GetElementById("inner-owner")->GetDomNodeId();
+  AXID inner_target_id = GetElementById("inner-target")->GetDomNodeId();
+  Member<AXObjectCache> snapshot_cache = AXObjectCache::CreateSnapshotter(
+      GetDocument(), ui::AXMode(ui::AXMode::kPDFPrinting));
+  ui::AXTreeUpdate response;
+  std::set<ui::AXSerializationErrorFlag> out_error;
+  snapshot_cache->SerializeEntireTreeAndDispose(
+      /*max_nodes=*/1000, base::TimeDelta::FiniteMax(), &response, &out_error);
+
+  EXPECT_FALSE(response.nodes.empty());
+  EXPECT_TRUE(out_error.empty());
+  bool inner_target_is_owned = false;
+  for (const ui::AXNodeData& node : response.nodes) {
+    if (node.id == inner_owner_id) {
+      inner_target_is_owned =
+          std::ranges::find(node.child_ids, inner_target_id) !=
+          node.child_ids.end();
+      break;
+    }
+  }
+  EXPECT_TRUE(inner_target_is_owned);
 }
 
 TEST_F(AccessibilityTest, RemoveReferencesToAXID) {
