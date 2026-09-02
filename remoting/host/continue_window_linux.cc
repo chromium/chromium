@@ -83,7 +83,7 @@ void ContinueWindowGtk::CreateWindow() {
       nullptr);
 
   gtk_dialog_set_default_response(GTK_DIALOG(continue_window_.get()),
-                                  GTK_RESPONSE_OK);
+                                  GTK_RESPONSE_CANCEL);
   gtk_window_set_resizable(GTK_WINDOW(continue_window_.get()), FALSE);
 
   // Set always-on-top, otherwise this window tends to be obscured by the

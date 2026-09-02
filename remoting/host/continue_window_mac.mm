@@ -16,7 +16,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 
 // Handles the ContinueWindow.
-@interface ContinueWindowMacController : NSObject {
+@interface ContinueWindowMacController : NSObject <NSWindowDelegate> {
  @private
   NSMutableArray<NSWindow*>* __strong _shades;
   NSAlert* __strong _continue_alert;
@@ -26,6 +26,7 @@
 - (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window;
 - (void)show;
 - (void)hide;
+- (void)cancelOperation:(id)sender;
 - (void)onCancel:(id)sender;
 - (void)onContinue:(id)sender;
 @end
@@ -125,15 +126,16 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   _continue_alert = [[NSAlert alloc] init];
   _continue_alert.messageText = l10n_util::GetNSString(IDS_CONTINUE_PROMPT);
 
-  NSButton* continue_button = [_continue_alert
-      addButtonWithTitle:l10n_util::GetNSString(IDS_CONTINUE_BUTTON)];
-  continue_button.action = @selector(onContinue:);
-  continue_button.target = self;
-
   NSButton* cancel_button = [_continue_alert
       addButtonWithTitle:l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON)];
   cancel_button.action = @selector(onCancel:);
   cancel_button.target = self;
+
+  NSButton* continue_button = [_continue_alert
+      addButtonWithTitle:l10n_util::GetNSString(IDS_CONTINUE_BUTTON)];
+  continue_button.action = @selector(onContinue:);
+  continue_button.target = self;
+  continue_button.keyEquivalent = @"";
 
   NSBundle* bundle = [NSBundle bundleForClass:[self class]];
   NSString* imagePath = [bundle pathForResource:@"chromoting128" ofType:@"png"];
@@ -143,6 +145,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
 
   // Force alert to be at the proper level and location.
   NSWindow* continue_window = _continue_alert.window;
+  continue_window.delegate = self;
   [continue_window center];
   continue_window.level = NSModalPanelWindowLevel;
   continue_window.collectionBehavior =
@@ -161,9 +164,14 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   }
   _shades = nil;
   if (_continue_alert) {
+    _continue_alert.window.delegate = nil;
     [_continue_alert.window close];
     _continue_alert = nil;
   }
+}
+
+- (void)cancelOperation:(id)sender {
+  [self onCancel:sender];
 }
 
 - (void)onCancel:(id)sender {

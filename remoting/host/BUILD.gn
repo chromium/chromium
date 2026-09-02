@@ -888,6 +888,7 @@ source_set("unit_tests") {
     "chromoting_host_unittest.cc",
     "client_session_unittest.cc",
     "config_file_watcher_unittest.cc",
+    "continue_window_unittest.cc",
     "corp_host_status_logger_unittest.cc",
     "corp_signaling_connector_unittest.cc",
     "delegating_desktop_display_info_monitor_unittest.cc",
@@ -1429,6 +1430,7 @@ if (enable_me2me_host) {
     group("remoting_me2me_host") {
       deps = [ "//remoting/host/win:remoting_me2me_host" ]
     }
+
     group("remoting_native_messaging_host") {
       deps = [ "//remoting/host/win:remoting_native_messaging_host" ]
     }
@@ -1436,6 +1438,7 @@ if (enable_me2me_host) {
     group("remoting_me2me_host") {
       deps = [ "//remoting/host/mac:remoting_me2me_host" ]
     }
+
     group("remoting_native_messaging_host") {
       deps = [ "//remoting/host/mac:remoting_native_messaging_host" ]
     }
@@ -1446,6 +1449,7 @@ if (enable_me2me_host) {
       # https://crbug.com/1198747
       assert_no_deps = [ "//ui/gtk" ]
     }
+
     group("remoting_native_messaging_host") {
       public_deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
     }

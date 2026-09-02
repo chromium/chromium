@@ -110,15 +110,14 @@ BOOL ContinueWindowWin::OnDialogMessage(HWND hwnd,
       return TRUE;
     case WM_COMMAND:
       switch (LOWORD(wParam)) {
-        case IDC_CONTINUE_DEFAULT:
+        case IDC_CONTINUE_BUTTON:
           ContinueSession();
-          ::EndDialog(hwnd, LOWORD(wParam));
-          hwnd_ = nullptr;
+          EndDialog();
           return TRUE;
         case IDC_CONTINUE_CANCEL:
+        case IDCANCEL:
           DisconnectSession();
-          ::EndDialog(hwnd, LOWORD(wParam));
-          hwnd_ = nullptr;
+          EndDialog();
           return TRUE;
       }
   }
