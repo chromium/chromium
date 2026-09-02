@@ -1268,7 +1268,7 @@ TEST_F(SpeculationRuleSetTest, RemoveInMicrotask) {
       InsertSpeculationRules(page_holder.GetDocument(),
                              R"({"prefetch": [
              {"source": "list", "urls": ["https://example.com/bar"]}]})");
-  scoped_refptr<scheduler::EventLoop> event_loop =
+  scheduler::EventLoop* event_loop =
       frame.DomWindow()->GetAgent()->event_loop();
   event_loop->PerformMicrotaskCheckpoint();
   frame.View()->UpdateAllLifecyclePhasesForTest();
@@ -3902,7 +3902,7 @@ TEST_F(DocumentRulesTest, RemoveForcesStyleUpdate) {
   HTMLScriptElement* to_remove = InsertSpeculationRules(doc,
                                                         R"({"prefetch": [
              {"source": "list", "urls": ["https://example.com/bar"]}]})");
-  scoped_refptr<scheduler::EventLoop> event_loop =
+  scheduler::EventLoop* event_loop =
       frame.DomWindow()->GetAgent()->event_loop();
   event_loop->PerformMicrotaskCheckpoint();
   frame.View()->UpdateAllLifecyclePhasesForTest();
@@ -3952,7 +3952,7 @@ TEST_F(DocumentRulesTest, RemoveWhileWaitingForStyle) {
   broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
                              BindRepeating(&StubSpeculationHost::BindUnsafe,
                                            Unretained(&speculation_host)));
-  auto event_loop = frame.DomWindow()->GetAgent()->event_loop();
+  auto* event_loop = frame.DomWindow()->GetAgent()->event_loop();
 
   // First, add the rule set and matching links. Style is not yet clean for the
   // newly added links, even after the microtask. We also add a rule set with a

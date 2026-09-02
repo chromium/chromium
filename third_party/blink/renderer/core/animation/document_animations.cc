@@ -465,8 +465,7 @@ void DocumentAnimations::RemoveReplacedAnimations(
         animations_to_remove.push_back(*anim_it);
     }
   }
-  scoped_refptr<scheduler::EventLoop> event_loop =
-      document_->GetAgent().event_loop();
+  scheduler::EventLoop* event_loop = document_->GetAgent().event_loop();
 
   // The list of animations for removal is constructed in reverse composite
   // ordering for efficiency. Flip the ordering to ensure that events are

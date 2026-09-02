@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -37,7 +38,7 @@ Agent::Agent(v8::Isolate* isolate,
              AgentType agent_type)
     : isolate_(isolate),
       rejected_promises_(RejectedPromises::Create()),
-      event_loop_(base::AdoptRef(
+      event_loop_(base::WrapUnique(
           new scheduler::EventLoop(this, isolate, microtask_queue))),
       cluster_id_(cluster_id),
       agent_cluster_key_(agent_cluster_key),

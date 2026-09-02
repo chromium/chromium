@@ -849,7 +849,7 @@ v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState* script_state) {
 
 scheduler::EventLoop& ToEventLoop(ExecutionContext* execution_context) {
   DCHECK(execution_context);
-  return *execution_context->GetAgent()->event_loop().get();
+  return *execution_context->GetAgent()->event_loop();
 }
 
 scheduler::EventLoop& ToEventLoop(ScriptState* script_state) {

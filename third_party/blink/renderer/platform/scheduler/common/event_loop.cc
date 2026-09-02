@@ -34,8 +34,10 @@ class EventLoopMicrotaskWrapper final
 };
 
 EventLoop::PauseMicrotasksHandle::~PauseMicrotasksHandle() {
-  CHECK_GT(loop_->microtasks_pause_count_, 0);
-  --loop_->microtasks_pause_count_;
+  if (loop_) {
+    CHECK_GT(loop_->microtasks_pause_count_, 0);
+    --loop_->microtasks_pause_count_;
+  }
 }
 
 EventLoop::EventLoop(Delegate* delegate,
@@ -115,7 +117,7 @@ void EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(v8::Isolate* isolate) {
 }
 
 std::unique_ptr<EventLoop::PauseMicrotasksHandle> EventLoop::PauseMicrotasks() {
-  return base::WrapUnique(new PauseMicrotasksHandle(this));
+  return base::WrapUnique(new PauseMicrotasksHandle(*this));
 }
 
 // static

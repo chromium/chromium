@@ -17,13 +17,12 @@ namespace blink {
 
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          DOMWrapperWorld* world,
-                         scoped_refptr<scheduler::EventLoop> event_loop)
+                         scheduler::EventLoop* event_loop)
     : isolate_(world->GetIsolate()),
       context_(isolate_, context),
       world_(world),
       per_context_data_(
-          MakeGarbageCollected<V8PerContextData>(context,
-                                                 std::move(event_loop))) {
+          MakeGarbageCollected<V8PerContextData>(context, event_loop)) {
   CHECK(isolate_);
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);

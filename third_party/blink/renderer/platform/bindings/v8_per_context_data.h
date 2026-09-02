@@ -63,7 +63,7 @@ struct WrapperTypeInfo;
 class PLATFORM_EXPORT V8PerContextData final
     : public GarbageCollected<V8PerContextData> {
  public:
-  V8PerContextData(v8::Local<v8::Context>, scoped_refptr<scheduler::EventLoop>);
+  V8PerContextData(v8::Local<v8::Context>, scheduler::EventLoop*);
   V8PerContextData(const V8PerContextData&) = delete;
   V8PerContextData& operator=(const V8PerContextData&) = delete;
 
@@ -147,7 +147,7 @@ class PLATFORM_EXPORT V8PerContextData final
   using DataMap = HeapHashMap<const char*, Member<Data>>;
   DataMap data_map_;
 
-  scoped_refptr<scheduler::EventLoop> event_loop_;
+  raw_ptr<scheduler::EventLoop> event_loop_;
 };
 
 }  // namespace blink

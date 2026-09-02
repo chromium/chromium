@@ -238,9 +238,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   }
 
  protected:
-  ScriptState(v8::Local<v8::Context>,
-              DOMWrapperWorld*,
-              scoped_refptr<scheduler::EventLoop>);
+  ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, scheduler::EventLoop*);
 
  private:
   static void OnV8ContextCollectedCallback(

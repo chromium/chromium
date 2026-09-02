@@ -119,7 +119,7 @@ TEST_F(LocalFrameBackForwardCacheTest, PauseMicrotaskExecution) {
   ScriptState::Scope scope(script_state);
 
   int microtask_execution_count = 0;
-  scoped_refptr<scheduler::EventLoop> event_loop =
+  scheduler::EventLoop* event_loop =
       frame->DomWindow()->GetAgent()->event_loop();
   event_loop->EnqueueMicrotask(base::BindLambdaForTesting(
       [&microtask_execution_count]() { microtask_execution_count++; }));

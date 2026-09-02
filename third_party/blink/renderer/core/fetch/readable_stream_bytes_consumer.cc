@@ -181,7 +181,7 @@ void ReadableStreamBytesConsumer::OnRead(DOMUint8Array* buffer) {
   DCHECK(!pending_buffer_);
   DCHECK(!pending_offset_);
   if (is_inside_read_) {
-    scoped_refptr<scheduler::EventLoop> event_loop =
+    scheduler::EventLoop* event_loop =
         ExecutionContext::From(script_state_)->GetAgent()->event_loop();
     event_loop->EnqueueMicrotask(BindOnce(&ReadableStreamBytesConsumer::OnRead,
                                           WrapPersistent(this),
@@ -201,7 +201,7 @@ void ReadableStreamBytesConsumer::OnReadDone() {
   DCHECK(is_reading_);
   DCHECK(!pending_buffer_);
   if (is_inside_read_) {
-    scoped_refptr<scheduler::EventLoop> event_loop =
+    scheduler::EventLoop* event_loop =
         ExecutionContext::From(script_state_)->GetAgent()->event_loop();
     event_loop->EnqueueMicrotask(BindOnce(
         &ReadableStreamBytesConsumer::OnReadDone, WrapPersistent(this)));
@@ -223,7 +223,7 @@ void ReadableStreamBytesConsumer::OnRejected() {
   DCHECK(is_reading_);
   DCHECK(!pending_buffer_);
   if (is_inside_read_) {
-    scoped_refptr<scheduler::EventLoop> event_loop =
+    scheduler::EventLoop* event_loop =
         ExecutionContext::From(script_state_)->GetAgent()->event_loop();
     event_loop->EnqueueMicrotask(BindOnce(
         &ReadableStreamBytesConsumer::OnRejected, WrapPersistent(this)));
