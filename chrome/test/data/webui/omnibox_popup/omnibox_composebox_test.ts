@@ -2150,7 +2150,17 @@ suite('OmniboxComposeboxTest', () => {
         metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
       });
 
+      loadTimeData.overrideValues({
+        voiceSearchCoherenceComposeboxesEnabled: true,
+      });
+
+      // Recreate omniboxComposebox so updated loadTimeData and WindowProxy
+      // mock take effect.
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      omniboxComposebox = document.createElement('cr-omnibox-composebox');
       omniboxComposebox.showVoiceSearch = true;
+      document.body.appendChild(omniboxComposebox);
+      await microtasksFinished();
       await omniboxComposebox.updateComplete;
     });
 

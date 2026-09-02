@@ -167,38 +167,52 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-
   // Ensure we are observing the deletion of |web_contents|.
   web_contents_collection_.StartObserving(web_contents);
 
-  // Add 1 second cooldown for permission prompts without a user gesture
-  // to prevent duplicate permission prompts if speech API and mojo both
-  // send prompt requests. Also, this is a reasonable rate limiter rate to
-  // prevent spam.
+  // Add 2 second cooldown rate limiter for permission prompts of current web
+  // contents without a user gesture to show again. This is to prevent
+  // duplicate permission prompts if speech API and mojo both send prompt
+  // requests. Only limit dismissals since dismissals lead to more prompts
+  // while acceptances mean no more permission prompts.
   auto dismissal_it = recent_dismissals_.find(web_contents);
   if (dismissal_it != recent_dismissals_.end()) {
     base::TimeTicks now = base::TimeTicks::Now();
     auto& records = dismissal_it->second;
+    // Erase if not within rate limit window.
     std::erase_if(records, [now](const DismissalRecord& record) {
-      return now - record.timestamp >= base::Milliseconds(1000);
+      return now - record.timestamp >= base::Seconds(2);
     });
     if (records.empty()) {
       recent_dismissals_.erase(dismissal_it);
     } else if (!request.user_gesture) {
+      // If audio/video are requested in this prompt.
       bool target_audio =
           request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
       bool target_video =
           request.video_type != blink::mojom::MediaStreamType::NO_SERVICE;
-      // Check if a request for the same media device
-      // type was recently dismissed:
+      // Check if all requested media device types were covered by recently
+      // dismissed prompts at least once.
+      bool dismissed_audio = false;
+      bool dismissed_video = false;
+      blink::mojom::MediaStreamRequestResult last_result =
+          blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED;
       for (const auto& record : records) {
-        if (record.origin == request.security_origin &&
-            ((target_audio && record.has_audio) ||
-             (target_video && record.has_video))) {
-          std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                                  record.result, nullptr);
-          return;
+        if (record.origin == request.security_origin) {
+          dismissed_audio |= record.has_audio;
+          dismissed_video |= record.has_video;
+          last_result = record.result;
         }
+      }
+      // If audio or video are covered in this request (meaning either
+      // are not required, or have been recently asked in a past prompt and
+      // dismissed), then dismiss this new prompt request.
+      bool audio_covered = !target_audio || dismissed_audio;
+      bool video_covered = !target_video || dismissed_video;
+      if ((target_audio || target_video) && audio_covered && video_covered) {
+        std::move(callback).Run(blink::mojom::StreamDevicesSet(), last_result,
+                                nullptr);
+        return;
       }
     }
   }
@@ -385,10 +399,12 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         should_deduplicate =
             (it_audio == target_audio) && (it_video == target_video);
       } else {
-        // In declined request path: any slightly overlapping requested stream
-        // type is considered a duplicate.
+        // In declined request path: only deduplicate if the target covered all
+        // media types requested by the pending request.
+        bool audio_covered = !it_audio || target_audio;
+        bool video_covered = !it_video || target_video;
         should_deduplicate =
-            (target_audio && it_audio) || (target_video && it_video);
+            (it_audio || it_video) && audio_covered && video_covered;
       }
       if (should_deduplicate) {
         callbacks_to_run.push_back(std::move(it->second.callback));
