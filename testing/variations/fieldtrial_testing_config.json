@@ -13204,7 +13204,6 @@
                         "NetTaskScheduler"
                     ],
                     "disable_features": [
-                        "BindURLLoaderFactoryToHighPriorityTaskRunner",
                         "NetTaskScheduler2",
                         "NetTaskSchedulerHostResolver",
                         "NetworkServicePerPriorityTaskQueues"
