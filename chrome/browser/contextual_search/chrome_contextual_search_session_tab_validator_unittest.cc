@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_search/chrome_contextual_search_session_tab_validator.h"
 
 #include "chrome/test/base/testing_profile.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

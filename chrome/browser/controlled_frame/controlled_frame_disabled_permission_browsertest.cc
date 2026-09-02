@@ -16,7 +16,6 @@
 #include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"

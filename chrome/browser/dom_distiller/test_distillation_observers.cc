@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/dom_distiller/test_distillation_observers.h"
+
 #include "components/dom_distiller/core/url_constants.h"
+#include "content/public/browser/navigation_entry.h"
 #include "url/gurl.h"
 
 namespace dom_distiller {

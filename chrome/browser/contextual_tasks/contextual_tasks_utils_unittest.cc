@@ -22,6 +22,7 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

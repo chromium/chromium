@@ -41,6 +41,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "components/sessions/core/session_id.h"
+#include "extensions/buildflags/buildflags.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"

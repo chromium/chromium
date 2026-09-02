@@ -28,6 +28,7 @@
 #include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
 #include "components/enterprise/device_trust/core/device_trust_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

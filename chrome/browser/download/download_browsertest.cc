@@ -111,6 +111,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -159,6 +160,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)

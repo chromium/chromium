@@ -20,7 +20,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/service_worker_apitest.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"

@@ -11,6 +11,6 @@ specific_include_rules = {
     "+chrome/browser/net/profile_network_context_service.h",
     "+chrome/browser/policy/policy_test_utils.h",
     "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
 }

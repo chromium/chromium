@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 

@@ -62,7 +62,9 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {

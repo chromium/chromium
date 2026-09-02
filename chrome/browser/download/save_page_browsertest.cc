@@ -68,6 +68,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

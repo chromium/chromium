@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
+
 #include <string_view>
 
 #include "base/callback_list.h"
@@ -14,7 +16,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

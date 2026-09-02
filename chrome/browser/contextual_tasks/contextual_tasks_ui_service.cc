@@ -71,6 +71,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"

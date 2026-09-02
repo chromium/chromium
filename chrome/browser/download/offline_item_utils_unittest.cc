@@ -13,6 +13,7 @@
 #include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 
 using ContentId = offline_items_collection::ContentId;
 using OfflineItem = offline_items_collection::OfflineItem;

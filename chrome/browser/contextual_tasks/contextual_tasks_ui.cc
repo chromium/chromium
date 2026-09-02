@@ -88,6 +88,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
@@ -99,6 +100,7 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/webui/buildflags.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
@@ -403,9 +405,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<lens::LensOverlayInvocationSource> invocation_source;
   if (auto* browser = GetBrowser()) {
-    if (auto* controller = LensSearchController::FromTabWebContents(
-            browser->GetTabStripModel()->GetActiveWebContents())) {
-      invocation_source = controller->invocation_source();
+    if (auto* active_tab = browser->GetActiveTabInterface()) {
+      if (auto* controller = LensSearchController::FromTabWebContents(
+              active_tab->GetContents())) {
+        invocation_source = controller->invocation_source();
+      }
     }
   }
   source->AddBoolean("clearAllInputsWhenSubmittingQuery",

@@ -32,10 +32,12 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 namespace contextual_tasks {

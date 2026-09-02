@@ -22,6 +22,7 @@ specific_include_rules = {
   r"|search_ai_mode_promo_tab_helper_browsertest"
   r"|aim_user_agent_tab_helper_browsertest"
   r"|contextual_tasks_side_panel_coordinator_unittest"
+  r"|contextual_tasks_interactive_uitest"
   r").*\.(cc|h)": [
      "+chrome/browser/ui/tabs/tab_strip_model.h",
      "+chrome/browser/ui/lens/test_lens_search_controller.h",

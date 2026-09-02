@@ -32,6 +32,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 
 using base::android::AttachCurrentThread;
 

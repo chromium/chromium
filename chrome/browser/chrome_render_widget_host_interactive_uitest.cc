@@ -7,7 +7,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"

@@ -9,6 +9,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/platform_auth/mock_platform_auth_provider.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_set_provider_for_testing.h"
+#include "content/public/browser/navigation_controller.h"
+#include "ui/base/page_transition_types.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

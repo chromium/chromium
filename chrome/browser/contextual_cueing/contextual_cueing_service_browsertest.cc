@@ -9,7 +9,6 @@
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"

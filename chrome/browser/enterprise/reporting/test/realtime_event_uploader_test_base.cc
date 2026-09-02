@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

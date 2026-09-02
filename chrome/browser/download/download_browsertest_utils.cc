@@ -14,10 +14,12 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +30,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/views_switches.h"
 
 using content::DownloadManager;

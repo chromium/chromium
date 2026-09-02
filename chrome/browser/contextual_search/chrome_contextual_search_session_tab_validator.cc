@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/public/utils.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"

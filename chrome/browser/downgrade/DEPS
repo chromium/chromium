@@ -36,7 +36,7 @@ specific_include_rules = {
     "+chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h",
     "+chrome/browser/history/history_service_factory.h",
     "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
 }

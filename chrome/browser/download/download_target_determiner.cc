@@ -49,6 +49,7 @@
 #include "net/http/http_content_disposition.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/origin.h"
 

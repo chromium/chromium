@@ -11,6 +11,7 @@
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 
 namespace data_sharing {
 

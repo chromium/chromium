@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/command_updater_delegate.h"
+#include "ui/base/window_open_disposition.h"
 
 struct CommandUpdaterImpl::Command {
   // Empty optional means not specified yet and thus implicitly disabled.

@@ -10,6 +10,7 @@
 #include "components/data_sharing/public/android/conversion_utils.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 

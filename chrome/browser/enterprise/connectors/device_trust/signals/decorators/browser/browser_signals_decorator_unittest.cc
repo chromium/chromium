@@ -28,6 +28,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)

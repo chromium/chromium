@@ -36,6 +36,7 @@
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"

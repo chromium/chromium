@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"

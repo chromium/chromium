@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"

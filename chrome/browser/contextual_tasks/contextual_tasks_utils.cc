@@ -24,6 +24,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"

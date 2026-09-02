@@ -31,6 +31,7 @@
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"

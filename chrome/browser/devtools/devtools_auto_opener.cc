@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 DevToolsAutoOpener::DevToolsAutoOpener()
     : browser_tab_strip_tracker_(this, nullptr) {

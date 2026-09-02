@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/gfx/image/image.h"
 

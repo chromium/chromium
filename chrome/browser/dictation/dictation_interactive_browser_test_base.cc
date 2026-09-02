@@ -10,7 +10,6 @@
 #include "chrome/browser/dictation/session_ui_impl.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"

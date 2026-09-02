@@ -21,12 +21,14 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"

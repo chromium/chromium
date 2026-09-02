@@ -32,6 +32,8 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace profile_management {

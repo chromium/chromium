@@ -42,6 +42,7 @@
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"

@@ -26,6 +26,8 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {

@@ -12,7 +12,7 @@ include_rules = [
     "+chrome/browser/profiles/profile.h",
     "+chrome/browser/profiles/profile_keyed_service_factory.h",
     "+chrome/browser/profiles/profile_manager.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",

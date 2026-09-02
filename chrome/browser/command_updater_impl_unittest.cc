@@ -8,6 +8,7 @@
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 class FakeCommandUpdaterDelegate : public CommandUpdaterDelegate {
  public:

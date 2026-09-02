@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/site_engagement/content/engagement_type.h"

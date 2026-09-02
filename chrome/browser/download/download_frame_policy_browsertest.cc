@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"

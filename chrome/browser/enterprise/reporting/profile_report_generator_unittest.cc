@@ -32,6 +32,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

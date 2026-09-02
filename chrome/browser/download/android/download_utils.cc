@@ -17,6 +17,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 // Must come after other headers because it uses

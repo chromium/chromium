@@ -14,6 +14,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/TaskTabHelper_jni.h"

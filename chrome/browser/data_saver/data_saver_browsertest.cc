@@ -29,6 +29,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 

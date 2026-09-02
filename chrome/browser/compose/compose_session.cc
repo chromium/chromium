@@ -54,6 +54,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"

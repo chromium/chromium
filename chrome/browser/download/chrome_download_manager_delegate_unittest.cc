@@ -72,6 +72,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/origin.h"

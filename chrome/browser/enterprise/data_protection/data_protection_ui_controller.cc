@@ -18,6 +18,7 @@
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
 #include "components/enterprise/watermarking/watermark.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 

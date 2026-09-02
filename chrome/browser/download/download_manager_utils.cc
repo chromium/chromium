@@ -25,6 +25,7 @@
 #include "content/public/browser/download_request_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"

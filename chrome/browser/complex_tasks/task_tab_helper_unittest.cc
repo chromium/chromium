@@ -12,10 +12,12 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/content/navigation_task_id.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 
 class MockTaskTabHelper : public tasks::TaskTabHelper {
  public:

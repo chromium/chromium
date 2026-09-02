@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"

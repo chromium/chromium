@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -41,6 +42,7 @@
 #include "extensions/common/switches.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "url/gurl.h"
 

@@ -30,6 +30,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

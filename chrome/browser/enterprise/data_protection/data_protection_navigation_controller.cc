@@ -16,6 +16,7 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/data_protection/utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 

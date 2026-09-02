@@ -21,6 +21,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 

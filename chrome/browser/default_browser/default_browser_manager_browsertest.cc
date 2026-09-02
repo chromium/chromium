@@ -20,7 +20,6 @@
 #include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"

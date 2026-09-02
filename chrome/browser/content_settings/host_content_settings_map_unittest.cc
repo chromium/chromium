@@ -60,6 +60,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"

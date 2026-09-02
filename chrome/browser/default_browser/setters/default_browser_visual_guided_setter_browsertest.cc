@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/setters/default_browser_visual_guided_setter.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

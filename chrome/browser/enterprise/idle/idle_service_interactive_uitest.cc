@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/idle/idle_service.h"
+
 #include <array>
 #include <memory>
 
@@ -14,12 +16,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
-#include "chrome/browser/enterprise/idle/idle_service.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
