@@ -28,7 +28,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 /** Unit tests for {@link LocationBarEmbedderUiOverrides}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LocationBarEmbedderUiOverridesUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Callback<SideUiStateProvider> mObserver1;
     @Mock private Callback<SideUiStateProvider> mObserver2;

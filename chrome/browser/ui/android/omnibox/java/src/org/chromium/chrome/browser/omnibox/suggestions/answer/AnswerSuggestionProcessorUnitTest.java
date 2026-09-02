@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -46,14 +47,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.function.Supplier;
 
 /** Tests for {@link AnswerSuggestionProcessor}. */
-@RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class AnswerSuggestionProcessorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock SuggestionHost mSuggestionHost;
-    @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
-    @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock OmniboxActionDelegate mActionDelegate;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private UrlBarEditingTextStateProvider mUrlStateProvider;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private OmniboxActionDelegate mActionDelegate;
 
     private Activity mContext;
     private AnswerSuggestionProcessor mProcessor;
