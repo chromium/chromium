@@ -32,9 +32,14 @@ class EnterpriseProxyErrorService : public KeyedService {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual const EnterpriseProxyErrorData* GetDisguisedErrorData() const = 0;
+
+    // TODO(crbug.com/543017119): Remove once disguised error page uses
+    // NavigationID correlation instead of Delegate.
+    virtual const EnterpriseProxyErrorData* GetDisguisedErrorData() const;
     virtual void AttachDisguisedErrorData(
-        const EnterpriseProxyErrorData& error_data) = 0;
+        const EnterpriseProxyErrorData& error_data);
+    // Called when proxy authentication requires the user to sign in or re-auth.
+    virtual void OnSignInRequired(const GURL& destination_url);
   };
 
   explicit EnterpriseProxyErrorService(

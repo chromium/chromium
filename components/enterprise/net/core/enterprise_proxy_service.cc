@@ -153,9 +153,7 @@ EnterpriseProxyService::FindMatchingProxyEndpoint(
     const net::ProxyChain& proxy_chain) const {
   for (const auto& domain_manager : provisioning_domain_managers_) {
     if (domain_manager->state() ==
-            ProvisioningDomainProxyConfig::State::kFailedPermanent ||
-        domain_manager->state() ==
-            ProvisioningDomainProxyConfig::State::kFailedBlocked) {
+        ProvisioningDomainProxyConfig::State::kFailedPermanent) {
       continue;
     }
     const auto* endpoint = enterprise_net::FindMatchingProxyEndpoint(
@@ -245,13 +243,12 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
   auto request =
       std::make_unique<PendingAuthRequest>(std::move(callback), *matched_proxy);
   PendingAuthRequest* request_ptr = request.get();
+  pending_auth_requests_.push_back(std::move(request));
 
   auth_service_->FetchAccessToken(
       matched_proxy->auth->scope,
       base::BindOnce(&EnterpriseProxyService::OnProxyAuthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), request_ptr));
-
-  pending_auth_requests_.push_back(std::move(request));
 }
 
 void EnterpriseProxyService::Shutdown() {
@@ -427,10 +424,13 @@ void EnterpriseProxyService::OnProxyAuthTokenFetched(
   }
 
   if (!token_result.has_value()) {
+    ProxyAuthChallengeResult result =
+        (token_result.error() == TokenFetchError::kNoPrimaryAccount ||
+         token_result.error() == TokenFetchError::kInvalidCredentials)
+            ? ProxyAuthChallengeResult::kSignInRequired
+            : ProxyAuthChallengeResult::kCredentialFetchFailure;
     for (auto& cb : owned_request->callbacks) {
-      RecordResultAndRunAuthCallback(
-          std::move(cb), ProxyAuthChallengeResult::kCredentialFetchFailure,
-          std::nullopt);
+      RecordResultAndRunAuthCallback(std::move(cb), result, std::nullopt);
     }
     return;
   }

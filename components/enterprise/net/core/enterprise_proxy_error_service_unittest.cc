@@ -63,8 +63,13 @@ constexpr char kPvdConfigJsonTemplate[] = R"({
 class TestDelegate : public EnterpriseProxyErrorService::Delegate {
  public:
   explicit TestDelegate(bool* attached_flag = nullptr,
-                        EnterpriseProxyErrorData* error_data_out = nullptr)
-      : attached_flag_(attached_flag), error_data_out_(error_data_out) {}
+                        EnterpriseProxyErrorData* error_data_out = nullptr,
+                        bool* signin_prompt_shown_out = nullptr,
+                        GURL* signin_destination_url_out = nullptr)
+      : attached_flag_(attached_flag),
+        error_data_out_(error_data_out),
+        signin_prompt_shown_out_(signin_prompt_shown_out),
+        signin_destination_url_out_(signin_destination_url_out) {}
   ~TestDelegate() override = default;
 
   const EnterpriseProxyErrorData* GetDisguisedErrorData() const override {
@@ -83,9 +88,20 @@ class TestDelegate : public EnterpriseProxyErrorService::Delegate {
     }
   }
 
+  void OnSignInRequired(const GURL& destination_url) override {
+    if (signin_prompt_shown_out_) {
+      *signin_prompt_shown_out_ = true;
+    }
+    if (signin_destination_url_out_) {
+      *signin_destination_url_out_ = destination_url;
+    }
+  }
+
  private:
   raw_ptr<bool> attached_flag_ = nullptr;
   raw_ptr<EnterpriseProxyErrorData> error_data_out_ = nullptr;
+  raw_ptr<bool> signin_prompt_shown_out_ = nullptr;
+  raw_ptr<GURL> signin_destination_url_out_ = nullptr;
   bool has_error_data_ = false;
   EnterpriseProxyErrorData error_data_;
 };
@@ -332,12 +348,38 @@ TEST_F(EnterpriseProxyErrorServiceTest, CredentialFetchFailure_ReturnsNullopt) {
       /*delegate=*/nullptr, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromServiceUnavailable("error"));
+
+  EXPECT_TRUE(handled);
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       SignInRequired_InvokesDelegateOnSignInRequired) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  bool signin_prompt_shown = false;
+  GURL signin_destination_url;
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  bool handled = error_service_->InterceptProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr,
+      std::make_unique<TestDelegate>(/*attached_flag=*/nullptr,
+                                     /*error_data_out=*/nullptr,
+                                     &signin_prompt_shown,
+                                     &signin_destination_url),
+      future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
 
   EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
+  EXPECT_TRUE(signin_prompt_shown);
+  EXPECT_EQ(signin_destination_url, GURL("https://target.example.com/test"));
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_NullDelegate) {

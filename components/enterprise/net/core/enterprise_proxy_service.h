@@ -120,7 +120,10 @@ class EnterpriseProxyService
     kCredentialFetchSuccess,
     // Token fetch failed
     kCredentialFetchFailure,
-    kMaxValue = kCredentialFetchFailure,
+    // Token fetch failed because no primary account exists or credentials are
+    // invalid
+    kSignInRequired,
+    kMaxValue = kSignInRequired,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseProxyAuthChallengeResult)
 
@@ -128,7 +131,7 @@ class EnterpriseProxyService
   // routes and initiates credential fetching if applicable.
   // Note that in-flight auth requests will not adjust for any config changes
   // that occurred after endpoint-matching is finished.
-  void HandleProxyAuthChallenge(
+  virtual void HandleProxyAuthChallenge(
       const net::AuthChallengeInfo& auth_info,
       const GURL& destination_url,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,

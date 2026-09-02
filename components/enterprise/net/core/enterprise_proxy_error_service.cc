@@ -24,6 +24,17 @@ EnterpriseProxyErrorService::EnterpriseProxyErrorService(
 
 EnterpriseProxyErrorService::~EnterpriseProxyErrorService() = default;
 
+const EnterpriseProxyErrorData*
+EnterpriseProxyErrorService::Delegate::GetDisguisedErrorData() const {
+  return nullptr;
+}
+
+void EnterpriseProxyErrorService::Delegate::AttachDisguisedErrorData(
+    const EnterpriseProxyErrorData& error_data) {}
+
+void EnterpriseProxyErrorService::Delegate::OnSignInRequired(
+    const GURL& destination_url) {}
+
 std::string EnterpriseProxyErrorService::GetErrorPageHTML(
     Delegate* delegate) const {
   if (!IsEnterpriseProxyErrorHandlingEnabled() || !delegate) {
@@ -105,6 +116,12 @@ void EnterpriseProxyErrorService::OnProxyAuthChallengeResult(
       if (delegate) {
         delegate->AttachDisguisedErrorData(
             EnterpriseProxyErrorData(destination_url, proxy_url, error_code));
+      }
+      std::move(coord_callback).Run(std::nullopt);
+      return;
+    case EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired:
+      if (delegate) {
+        delegate->OnSignInRequired(destination_url);
       }
       std::move(coord_callback).Run(std::nullopt);
       return;

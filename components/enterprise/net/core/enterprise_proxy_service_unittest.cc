@@ -1009,9 +1009,7 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchFailure) {
       GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
+      GoogleServiceAuthError::FromServiceUnavailable("error"));
 
   EXPECT_EQ(
       EnterpriseProxyService::ProxyAuthChallengeResult::kCredentialFetchFailure,
@@ -1020,6 +1018,29 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest, CredentialFetchFailure) {
   ExpectChallengeResultHistogram(
       histogram_tester, EnterpriseProxyService::ProxyAuthChallengeResult::
                             kCredentialFetchFailure);
+}
+
+TEST_F(EnterpriseProxyServiceAuthChallengeTest,
+       SignInRequired_InvalidCredentials) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<EnterpriseProxyService::ProxyAuthChallengeResult,
+                         const std::optional<net::AuthCredentials>&>
+      future;
+  service_->HandleProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy1.example.com"),
+      GURL("https://foo.example.com/test"), nullptr, future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  EXPECT_EQ(EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired,
+            future.Get<0>());
+  EXPECT_FALSE(future.Get<1>().has_value());
+  ExpectChallengeResultHistogram(
+      histogram_tester,
+      EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired);
 }
 
 }  // namespace

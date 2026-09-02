@@ -8,6 +8,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("login") {
   sources = [
+    "enterprise_proxy_login_delegate.h",
     "http_auth_coordinator.h",
     "login_handler.h",
     "login_navigation_throttle.h",
@@ -15,6 +16,7 @@ source_set("login") {
   ]
   public_deps = [
     "//base",
+    "//components/enterprise/net/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
     "//content/public/browser",
@@ -25,6 +27,7 @@ source_set("login") {
 
 source_set("impl") {
   sources = [
+    "enterprise_proxy_login_delegate.cc",
     "http_auth_coordinator.cc",
     "login_handler.cc",
     "login_navigation_throttle.cc",
@@ -37,7 +40,6 @@ source_set("impl") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/tab_contents",
     "//components/autofill/core/browser",
-    "//components/enterprise/net/content",
     "//components/no_state_prefetch/browser",
     "//components/strings:components_strings",
     "//components/url_formatter",
@@ -55,7 +57,13 @@ source_set("impl") {
       "//extensions/common:mojom",
     ]
   }
-  if (!is_android) {
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/signin",
+      "//components/signin/public/identity_manager",
+    ]
+  } else {
     deps += [ "//components/web_modal" ]
   }
 

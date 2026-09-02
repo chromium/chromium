@@ -3736,6 +3736,7 @@ shown properly on the user-facing crash UI.
   <int value="2" label="No credentials needed"/>
   <int value="3" label="Credential fetch success"/>
   <int value="4" label="Credential fetch failure"/>
+  <int value="5" label="Sign-in required"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_service.h:ProxyAuthChallengeResult) -->
