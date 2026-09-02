@@ -157,7 +157,6 @@ base::DictValue NetLogOsConfigChangedParams(
 
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_IOS)
 // Get the connection type from `path`. If `path` references more than one
 // interfaces, return CONNECTION_UNKNOWN unless all the interfaces are of
 // the same type (to mirror the logic in ConnectionTypeFromInterfaceList).
@@ -208,7 +207,6 @@ NetworkChangeNotifier::ConnectionType ConnectionTypeFromPath(nw_path_t path) {
   DLOG(WARNING) << "unknown connection type: " << type;
   return NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
 }
-#endif
 
 }  // namespace
 
@@ -664,15 +662,9 @@ bool NetworkChangeNotifierApple::EnsureNetworkPathMonitorStarted() {
         NetworkChangeNotifier::CONNECTION_NONE;
     switch (nw_path_get_status(path)) {
       case nw_path_status_satisfied:
-#if !BUILDFLAG(IS_IOS)
         // A fully satisfied path means we can derive the connection type from
-        // the active interfaces.
-        new_type = ConnectionTypeFromInterfaces();
-#else
-        // On iOS, it is not possible to get the connection type directly but
-        // the path give access to them.
+        // the active path.
         new_type = ConnectionTypeFromPath(path);
-#endif
         break;
       case nw_path_status_satisfiable:
         // The path could become satisfied if the system performs extra work
