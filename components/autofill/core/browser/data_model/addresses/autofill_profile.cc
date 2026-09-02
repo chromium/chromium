@@ -747,7 +747,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   NameInfo name(
       /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
       AddressCountryCode("JP"));
-  CompanyInfo company;
   Address address(profile.GetAddressCountryCode());
 
   DVLOG(1) << "Merging profiles:\nSource = " << profile << "\nDest = " << *this;
@@ -761,6 +760,12 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   std::optional<EmailInfo> merged_email =
       comparator.MergeEmailAddresses(profile, *this);
   if (!merged_email.has_value()) {
+    return ProfileMergeResult::kMergeFailed;
+  }
+
+  std::optional<CompanyInfo> merged_company =
+      comparator.MergeCompanyNames(profile, *this);
+  if (!merged_company.has_value()) {
     return ProfileMergeResult::kMergeFailed;
   }
 
@@ -779,8 +784,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
           GetAddressCountryCode(),
           usage_history().use_date() < profile.usage_history().use_date(),
           name) ||
-      comparator.MergeCompanyNames(profile, *this, company) ==
-          ProfileMergeResult::kMergeFailed ||
       comparator.MergeAddresses(profile, *this, address) ==
           ProfileMergeResult::kMergeFailed) {
     return ProfileMergeResult::kMergeFailed;
@@ -802,19 +805,19 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     modified = true;
   }
 
-  if (email_ != *merged_email) {
+  if (email_ != merged_email) {
     MergeFormGroupTokenQuality(*merged_email, profile);
     email_ = *std::move(merged_email);
     modified = true;
   }
 
-  if (company_ != company) {
-    MergeFormGroupTokenQuality(company, profile);
-    company_ = company;
+  if (company_ != merged_company) {
+    MergeFormGroupTokenQuality(*merged_company, profile);
+    company_ = *std::move(merged_company);
     modified = true;
   }
 
-  if (phone_number_ != *merged_phone) {
+  if (phone_number_ != merged_phone) {
     MergeFormGroupTokenQuality(*merged_phone, profile);
     phone_number_ = *std::move(merged_phone);
     modified = true;
