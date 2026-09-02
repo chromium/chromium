@@ -15,11 +15,6 @@ NSAttributedString* AttributedStringCopyWithAttributes(
     NSTextAlignment textAlignment,
     BOOL forceLeftToRight);
 
-/// Returns the maximum number of lines used by `attributedString` when drawing
-/// with limited `width`.
-NSInteger NumberOfLinesOfAttributedString(NSAttributedString* attributedString,
-                                          CGFloat limitedWidth);
-
 /// Returns an attributed string matching the label's `text`, `font`,
 /// `textColor`, `shadowColor`, `shadowOffset`, `textAlignment` and
 /// `lineBreakMode` properties i.e. properties ignored when the label's

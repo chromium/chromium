@@ -24,20 +24,6 @@ NSAttributedString* AttributedStringCopyWithAttributes(
   return textCopy;
 }
 
-NSInteger NumberOfLinesOfAttributedString(NSAttributedString* attributedString,
-                                          CGFloat limitedWidth) {
-  NSAttributedString* wrappingString = AttributedStringCopyWithAttributes(
-      attributedString, NSLineBreakByWordWrapping, NSTextAlignmentNatural, NO);
-  const CGSize wrappingStringSize =
-      [wrappingString boundingRectWithSize:CGSizeMake(limitedWidth, FLT_MAX)
-                                   options:NSStringDrawingUsesLineFragmentOrigin
-                                   context:nil]
-          .size;
-  const NSInteger numberOfLines =
-      round(wrappingStringSize.height / wrappingString.size.height);
-  return numberOfLines;
-}
-
 NSAttributedString* NSAttributedStringFromUILabel(UILabel* label) {
   NSShadow* shadow = [[NSShadow alloc] init];
   shadow.shadowColor = label.shadowColor;
