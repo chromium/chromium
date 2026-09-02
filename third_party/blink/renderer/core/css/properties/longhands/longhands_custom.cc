@@ -10002,19 +10002,17 @@ const CSSValue* TextIndent::ParseSingleValue(
         continue;
       }
     }
-    if (RuntimeEnabledFeatures::CssTextIndentEnabled()) {
-      if (!hanging) {
-        hanging = css_parsing_utils::ConsumeIdent<CSSValueID::kHanging>(stream);
-        if (hanging) {
-          continue;
-        }
+    if (!hanging) {
+      hanging = css_parsing_utils::ConsumeIdent<CSSValueID::kHanging>(stream);
+      if (hanging) {
+        continue;
       }
-      if (!each_line) {
-        each_line =
-            css_parsing_utils::ConsumeIdent<CSSValueID::kEachLine>(stream);
-        if (each_line) {
-          continue;
-        }
+    }
+    if (!each_line) {
+      each_line =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kEachLine>(stream);
+      if (each_line) {
+        continue;
       }
     }
     break;
