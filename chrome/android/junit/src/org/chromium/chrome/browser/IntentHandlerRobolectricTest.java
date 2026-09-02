@@ -33,8 +33,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -201,8 +199,6 @@ public class IntentHandlerRobolectricTest {
 
     @Mock IntentHandler.Natives mNativeMock;
     @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
-
-    @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private ShadowPowerManager mShadowPowerManager;
     private ShadowKeyguardManager mShadowKeyguardManager;
