@@ -147,7 +147,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   }
 
   FieldSetAncestorsSetNeedsValidityCheck(&insertion_point,
-                                         StartingNodeType::IS_INSERTION_POINT);
+                                         StartingNodeType::kInsertionPoint);
   DisabledStateMightBeChanged();
 
   if (ClassSupportsStateRestore() && insertion_point.isConnected() &&
@@ -168,7 +168,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
 
 void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
   FieldSetAncestorsSetNeedsValidityCheck(&insertion_point,
-                                         StartingNodeType::IS_INSERTION_POINT);
+                                         StartingNodeType::kInsertionPoint);
   HideVisibleValidationMessage();
   has_validation_message_ = false;
   // Two values that might change as a result of being removed are
@@ -291,7 +291,7 @@ void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(
     return;
   auto* field_set = Traversal<HTMLFieldSetElement>::FirstAncestorOrSelf(*node);
   if (!field_set) {
-    if (starting_type == StartingNodeType::IS_PARENT) {
+    if (starting_type == StartingNodeType::kParent) {
       may_have_fieldset_ancestor_ = false;
     }
     return;
@@ -666,7 +666,7 @@ void ListedElement::SetNeedsValidityCheck() {
     validity_is_dirty_ = true;
     FormOwnerSetNeedsValidityCheck();
     FieldSetAncestorsSetNeedsValidityCheck(element.parentNode(),
-                                           StartingNodeType::IS_PARENT);
+                                           StartingNodeType::kParent);
     element.PseudoStateChanged(CSSSelector::kPseudoValid);
     element.PseudoStateChanged(CSSSelector::kPseudoInvalid);
     element.PseudoStateChanged(CSSSelector::kPseudoUserValid);
