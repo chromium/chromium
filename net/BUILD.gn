@@ -1519,6 +1519,7 @@ component("net") {
       "proxy_resolution/win/proxy_config_service_win.h",
       "proxy_resolution/win/proxy_resolver_winhttp.cc",
       "proxy_resolution/win/proxy_resolver_winhttp.h",
+      "proxy_resolution/win/proxy_resolver_winhttp_test_hooks.h",
       "proxy_resolution/win/windows_system_proxy_resolution_request.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_request.h",
       "proxy_resolution/win/windows_system_proxy_resolution_service.cc",
@@ -2768,6 +2769,7 @@ if (!is_ios) {
       "//url",
     ]
   }
+
   executable("quic_server") {
     testonly = true
     sources = [
@@ -3281,6 +3283,7 @@ target(_test_target_type, "net_unittests") {
       "proxy_resolution/win/dhcp_pac_file_adapter_fetcher_win_unittest.cc",
       "proxy_resolution/win/dhcp_pac_file_fetcher_win_unittest.cc",
       "proxy_resolution/win/proxy_config_service_win_unittest.cc",
+      "proxy_resolution/win/proxy_resolver_winhttp_unittest.cc",
       "proxy_resolution/win/windows_system_proxy_resolution_service_unittest.cc",
       "ssl/client_cert_store_win_unittest.cc",
       "ssl/ssl_platform_key_win_unittest.cc",

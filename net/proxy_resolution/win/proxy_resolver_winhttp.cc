@@ -16,12 +16,18 @@
 #include "net/base/url_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolver.h"
+#include "net/proxy_resolution/win/proxy_resolver_winhttp_test_hooks.h"
 #include "url/gurl.h"
 
 using base::TimeTicks;
 
 namespace net {
 namespace {
+
+// The WinHttpGetProxyForUrl implementation used by ProxyResolverWinHttp. May be
+// overridden by tests via ScopedWinHttpGetProxyForUrlOverride.
+WinHttpGetProxyForUrlFunc g_winhttp_get_proxy_for_url =
+    &::WinHttpGetProxyForUrl;
 
 static void FreeInfo(WINHTTP_PROXY_INFO* info) {
   if (info->lpszProxy)
@@ -117,6 +123,12 @@ int ProxyResolverWinHttp::GetProxyForURL(
   // to avoid WinHTTP's auto-detection code, which while more featureful (it
   // supports DHCP based auto-detection) also appears to have issues.
   //
+  // The fAutoLogonIfChallenged option has been deprecated and should always be
+  // set to FALSE throughout Windows 10+. Even in earlier versions of the OS,
+  // this feature did not work particularly well (see MS16-077:
+  // https://support.microsoft.com/en-us/help/3161949/ms16-077-description-of-the-security-update-for-wpad-june-14-2016).
+  // PAC file fetches must not automatically provide default credentials if
+  // challenged.
   WINHTTP_AUTOPROXY_OPTIONS options = {0};
   options.fAutoLogonIfChallenged = FALSE;
   options.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
@@ -126,33 +138,19 @@ int ProxyResolverWinHttp::GetProxyForURL(
   WINHTTP_PROXY_INFO info = {0};
   DCHECK(session_handle_);
 
-  // Per http://msdn.microsoft.com/en-us/library/aa383153(VS.85).aspx, it is
-  // necessary to first try resolving with fAutoLogonIfChallenged set to false.
-  // Otherwise, we fail over to trying it with a value of true.  This way we
-  // get good performance in the case where WinHTTP uses an out-of-process
-  // resolver.  This is important for Vista and Win2k3.
-  BOOL ok = WinHttpGetProxyForUrl(
+  BOOL ok = g_winhttp_get_proxy_for_url(
       session_handle_,
       base::as_wcstr(base::ASCIIToUTF16(mutable_query_url.spec())), &options,
       &info);
   if (!ok) {
-    if (ERROR_WINHTTP_LOGIN_FAILURE == GetLastError()) {
-      options.fAutoLogonIfChallenged = TRUE;
-      ok = WinHttpGetProxyForUrl(
-          session_handle_,
-          base::as_wcstr(base::ASCIIToUTF16(mutable_query_url.spec())),
-          &options, &info);
+    DWORD error = GetLastError();
+    // If we got here because of RPC timeout during out of process PAC
+    // resolution, no further requests on this session are going to work.
+    if (ERROR_WINHTTP_TIMEOUT == error ||
+        ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR == error) {
+      CloseWinHttpSession();
     }
-    if (!ok) {
-      DWORD error = GetLastError();
-      // If we got here because of RPC timeout during out of process PAC
-      // resolution, no further requests on this session are going to work.
-      if (ERROR_WINHTTP_TIMEOUT == error ||
-          ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR == error) {
-        CloseWinHttpSession();
-      }
-      return WinHttpErrorToNetError(error);
-    }
+    return WinHttpErrorToNetError(error);
   }
 
   int rv = OK;
@@ -224,6 +222,16 @@ int ProxyResolverFactoryWinHttp::CreateProxyResolver(
     std::unique_ptr<Request>* request) {
   *resolver = std::make_unique<ProxyResolverWinHttp>(pac_script);
   return OK;
+}
+
+ScopedWinHttpGetProxyForUrlOverride::ScopedWinHttpGetProxyForUrlOverride(
+    WinHttpGetProxyForUrlFunc func)
+    : previous_func_(g_winhttp_get_proxy_for_url) {
+  g_winhttp_get_proxy_for_url = func ? func : &::WinHttpGetProxyForUrl;
+}
+
+ScopedWinHttpGetProxyForUrlOverride::~ScopedWinHttpGetProxyForUrlOverride() {
+  g_winhttp_get_proxy_for_url = previous_func_;
 }
 
 }  // namespace net
