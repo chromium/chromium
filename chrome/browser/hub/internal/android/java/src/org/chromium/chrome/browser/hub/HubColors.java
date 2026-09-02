@@ -20,6 +20,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -47,6 +48,25 @@ public final class HubColors {
     /** Returns the color scheme from a pane with a fallback for null. */
     public static @HubColorScheme int getColorSchemeSafe(@Nullable Pane pane) {
         return pane == null ? HubColorScheme.DEFAULT : pane.getColorScheme();
+    }
+
+    /** Returns the {@link HubColorScheme} corresponding to the provided tab. */
+    public static @HubColorScheme int getColorSchemeForTab(@Nullable Tab tab) {
+        return tab != null && tab.isIncognito() ? HubColorScheme.INCOGNITO : HubColorScheme.DEFAULT;
+    }
+
+    /**
+     * Returns the {@link BrandedColorScheme} for the provided tab to sync the bottom bar on Hub
+     * exit.
+     *
+     * <p>For non-incognito tabs, {@link BottomBarUtils} resolves {@link
+     * BrandedColorScheme#APP_DEFAULT} using semantic colors (which adapt to light/dark mode), so
+     * only the incognito state needs to be checked.
+     */
+    public static @BrandedColorScheme int getBrandedColorSchemeForTab(@Nullable Tab tab) {
+        return tab != null && tab.isIncognito()
+                ? BrandedColorScheme.INCOGNITO
+                : BrandedColorScheme.APP_DEFAULT;
     }
 
     /** Returns the background color generic surfaces should use per the given color scheme. */
