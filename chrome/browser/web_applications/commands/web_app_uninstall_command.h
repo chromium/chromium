@@ -23,8 +23,8 @@ enum class UninstallResultCode;
 
 namespace web_app {
 
-// This command acquires the AllAppsLock needed by three uninstall related jobs:
-// `RemoveInstallUrlJob`, `RemoveInstallSourceJob`, and `RemoveWebAppJob`.
+// This command acquires the AllAppsLock needed by the 2 uninstall related jobs:
+// `RemoveInstallUrlJob` and `RemoveInstallSourceJob`.
 class WebAppUninstallCommand
     : public WebAppCommand<AllAppsLock, webapps::UninstallResultCode> {
  public:
@@ -42,13 +42,6 @@ class WebAppUninstallCommand
       Profile& profile,
       webapps::AppId app_id,
       WebAppManagementTypes install_sources,
-      UninstallJob::Callback callback);
-
-  static std::unique_ptr<WebAppUninstallCommand>
-  CreateForRemoveUserUninstallableManagement(
-      webapps::WebappUninstallSource uninstall_source,
-      Profile& profile,
-      webapps::AppId app_id,
       UninstallJob::Callback callback);
 
   ~WebAppUninstallCommand() override;
@@ -73,11 +66,6 @@ class WebAppUninstallCommand
                          Profile& profile,
                          webapps::AppId app_id,
                          WebAppManagementTypes install_managements,
-                         UninstallJob::Callback callback);
-  // Constructor for RemoveInstallSourceJob with user uninstallable sources.
-  WebAppUninstallCommand(webapps::WebappUninstallSource uninstall_source,
-                         Profile& profile,
-                         webapps::AppId app_id,
                          UninstallJob::Callback callback);
 
   void OnCompletion(webapps::UninstallResultCode code);
