@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internals") {
+  sources = [ "browser_actuator_internals_ui.cc" ]
+  public = [ "browser_actuator_internals_ui.h" ]
+  public_deps = [
+    "//chrome/browser/resources/browser_actuator_internals:resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+  deps = [
+    "//base",
+    "//components/browser_actuator/public",
+    "//content/public/common",
+  ]
+}

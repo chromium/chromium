@@ -40,6 +40,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
 
       "chrome://bookmarks",
       "chrome://bookmarks-side-panel.top-chrome",
+      "chrome://browser-actuator-internals",
       "chrome://certificate-manager",
       "chrome://chrome-finds-internals",
       "chrome://chrome-urls",

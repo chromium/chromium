@@ -252,6 +252,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2900],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/browser_actuator_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [2910],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/browser_switch/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2920],

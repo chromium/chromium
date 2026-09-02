@@ -408,6 +408,7 @@ group("dev_ui_resources") {
   public_deps = [
     "accessibility:resources",
     "bluetooth_internals:resources",
+    "browser_actuator_internals:resources",
     "chrome_finds_internals:resources",
     "components:resources",
     "content_settings:resources",
@@ -499,6 +500,7 @@ repack("dev_ui_paks") {
   sources = [
     "$root_gen_dir/chrome/accessibility_resources.pak",
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
+    "$root_gen_dir/chrome/browser_actuator_internals_resources.pak",
     "$root_gen_dir/chrome/chrome_finds_internals_resources.pak",
     "$root_gen_dir/chrome/components_resources.pak",
     "$root_gen_dir/chrome/content_settings_resources.pak",

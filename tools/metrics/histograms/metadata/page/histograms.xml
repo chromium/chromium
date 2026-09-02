@@ -428,6 +428,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".borealis-credits"/>
   <variant name=".borealis-installer"/>
   <variant name=".borealis-motd"/>
+  <variant name=".browser-actuator-internals"/>
   <variant name=".browser-switch"/>
   <variant name=".camera-app"/>
   <variant name=".cast-feedback"/>

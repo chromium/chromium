@@ -53,6 +53,7 @@ source_set("configs") {
     ":signin_internals_ui",
     ":webui",
     "//chrome/browser/actor/ui:actor_overlay",
+    "//chrome/browser/browser_actuator/internals",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
