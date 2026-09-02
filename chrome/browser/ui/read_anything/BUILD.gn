@@ -24,6 +24,7 @@ source_set("prefs") {
     "//ui/accessibility",
   ]
 }
+
 source_set("read_anything") {
   sources = [
     "read_anything_contents_wrapper.h",
@@ -197,13 +198,19 @@ source_set("interactive_ui_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "read_anything_hats_survey_controller_unittest.cc" ]
+  sources = [
+    "read_anything_controller_unittest.cc",
+    "read_anything_hats_survey_controller_unittest.cc",
+  ]
   deps = [
     ":read_anything",
     "//base",
+    "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/side_panel:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/user_education:impl",
     "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",

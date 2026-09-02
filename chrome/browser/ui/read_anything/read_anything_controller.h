@@ -160,12 +160,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   void OnDistillationStateChanged(DistillationState new_state);
 
-  // For testing only. Allows the distillation-related reactions to occur.
-  void UnlockDistillationStateForTesting();
-
   // For testing only. Pauses distillation-related reactions from occurring.
-  // Only affects new ReadAnythingController instances created after this flag
-  // is set.
   static void SetFreezeDistillationOnCreationForTesting(bool locked);
 
   // Lazily creates and returns the WebUIContentsWrapper for the
@@ -296,7 +291,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void ReleaseMainContentsCapture();
 
   DistillationState distillation_state_ = DistillationState::kUndefined;
-  bool distillation_state_locked_for_testing_ = false;
 
   // The handle returned by web_contents_->IncrementCapturerCount. This is
   // used to release the capture when the ReadAnythingController is destroyed.
