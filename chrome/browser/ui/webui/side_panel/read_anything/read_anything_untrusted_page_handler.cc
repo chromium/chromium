@@ -611,7 +611,7 @@ void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
   const bool shouldSendGuestStatus =
       statusProfile->IsGuestSession() && profile_->IsGuestSession();
   if (!shouldSendGuestStatus && !profile_->IsIncognitoProfile() &&
-      statusProfile->UniqueId() != profile_->UniqueId()) {
+      statusProfile->UniqueToken() != profile_->UniqueToken()) {
     return;
   }
   auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
