@@ -11,15 +11,27 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/rare_data_update.h"
 
 namespace blink {
+
+template <typename T>
+ALWAYS_INLINE T& RareDataUpdate<T>::RefreshNodeAndUnwrap(Node& node) && {
+  node.SetRareData(base::PassKey<RareDataUpdate<T>>(), rare_data_);
+  return *field_;
+}
+
+template <typename T>
+ALWAYS_INLINE T& Node::UnpackAndRefresh(RareDataUpdate<T> update) {
+  return std::move(update).RefreshNodeAndUnwrap(*this);
+}
 
 DOMNodeId Node::NodeID(base::PassKey<DOMNodeIds>) const {
   return data_ ? const_cast<const NodeRareData*>(data_.Get())->NodeId()
                : kInvalidDOMNodeId;
 }
 DOMNodeId& Node::EnsureNodeID(base::PassKey<DOMNodeIds>) {
-  return UnpackAndRefresh(EnsureRareData().NodeId());
+  return EnsureRareData().NodeId().RefreshNodeAndUnwrap(*this);
 }
 
 bool Node::HasPseudoElements() const {

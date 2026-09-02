@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
+#include "third_party/blink/renderer/core/dom/rare_data_update.h"
 #include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
@@ -150,16 +152,13 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
 
   void ClearNodeLists() { SetFieldToNullIfExists(FieldId::kNodeLists); }
   NodeListsNodeData* NodeLists() const;
-  std::pair<std::reference_wrapper<NodeListsNodeData>, NodeRareData*>
-  EnsureNodeLists();
+  RareDataUpdate<NodeListsNodeData> EnsureNodeLists();
 
   FlatTreeNodeData* GetFlatTreeNodeData() const;
-  std::pair<std::reference_wrapper<FlatTreeNodeData>, NodeRareData*>
-  EnsureFlatTreeNodeData();
+  RareDataUpdate<FlatTreeNodeData> EnsureFlatTreeNodeData();
 
   NodeMutationObserverData* MutationObserverData();
-  std::pair<std::reference_wrapper<NodeMutationObserverData>, NodeRareData*>
-  EnsureMutationObserverData();
+  RareDataUpdate<NodeMutationObserverData> EnsureMutationObserverData();
 
   uint16_t ConnectedSubframeCount() const {
     return flags_.connected_frame_count_;
@@ -187,8 +186,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
     auto* value = GetWrappedField<DOMNodeId>(FieldId::kDOMNodeId);
     return value ? *value : 0;
   }
-  [[nodiscard]] std::pair<std::reference_wrapper<DOMNodeId>, NodeRareData*>
-  NodeId() {
+  [[nodiscard]] RareDataUpdate<DOMNodeId> NodeId() {
     return EnsureWrappedField<DOMNodeId>(FieldId::kDOMNodeId);
   }
 
@@ -208,8 +206,8 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const;
   void ClearColumnPseudoElements(wtf_size_t to_keep);
 
-  std::pair<std::reference_wrapper<CSSStyleDeclaration>, NodeRareData*>
-  EnsureInlineCSSStyleDeclaration(Element* owner_element);
+  RareDataUpdate<CSSStyleDeclaration> EnsureInlineCSSStyleDeclaration(
+      Element* owner_element);
 
   ShadowRoot* GetShadowRoot() const;
   [[nodiscard]] NodeRareData* SetShadowRoot(ShadowRoot& shadow_root);
@@ -236,15 +234,13 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   bool HasPseudoElements() const;
   void ClearPseudoElements();
 
-  std::pair<std::reference_wrapper<AttrNodeList>, NodeRareData*>
-  EnsureAttrNodeList();
+  RareDataUpdate<AttrNodeList> EnsureAttrNodeList();
   AttrNodeList* GetAttrNodeList();
   void RemoveAttrNodeList();
   [[nodiscard]] NodeRareData* AddAttr(Attr* attr);
 
   ElementIntersectionObserverData* IntersectionObserverData() const;
-  std::pair<std::reference_wrapper<ElementIntersectionObserverData>,
-            NodeRareData*>
+  RareDataUpdate<ElementIntersectionObserverData>
   EnsureIntersectionObserverData();
 
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
@@ -266,29 +262,24 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   [[nodiscard]] NodeRareData* SetPartNamesMap(const AtomicString part_names);
   const NamesMap* PartNamesMap() const;
 
-  std::pair<std::reference_wrapper<InlineStylePropertyMap>, NodeRareData*>
-  EnsureInlineStylePropertyMap(Element* owner_element);
+  RareDataUpdate<InlineStylePropertyMap> EnsureInlineStylePropertyMap(
+      Element* owner_element);
   InlineStylePropertyMap* GetInlineStylePropertyMap();
 
   const ElementInternals* GetElementInternals() const;
-  std::pair<std::reference_wrapper<ElementInternals>, NodeRareData*>
-  EnsureElementInternals(HTMLElement& target);
+  RareDataUpdate<ElementInternals> EnsureElementInternals(HTMLElement& target);
 
-  std::pair<std::reference_wrapper<DisplayLockContext>, NodeRareData*>
-  EnsureDisplayLockContext(Element* element);
+  RareDataUpdate<DisplayLockContext> EnsureDisplayLockContext(Element* element);
   DisplayLockContext* GetDisplayLockContext() const;
 
-  std::pair<std::reference_wrapper<ContainerQueryData>, NodeRareData*>
-  EnsureContainerQueryData();
+  RareDataUpdate<ContainerQueryData> EnsureContainerQueryData();
   ContainerQueryData* GetContainerQueryData() const;
   void ClearContainerQueryData();
 
-  std::pair<std::reference_wrapper<StyleScopeData>, NodeRareData*>
-  EnsureStyleScopeData();
+  RareDataUpdate<StyleScopeData> EnsureStyleScopeData();
   StyleScopeData* GetStyleScopeData() const;
 
-  std::pair<std::reference_wrapper<OutOfFlowData>, NodeRareData*>
-  EnsureOutOfFlowData();
+  RareDataUpdate<OutOfFlowData> EnsureOutOfFlowData();
   OutOfFlowData* GetOutOfFlowData() const;
   void ClearOutOfFlowData();
 
@@ -321,8 +312,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   using ResizeObserverDataMap =
       HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>;
   ResizeObserverDataMap* ResizeObserverData() const;
-  std::pair<std::reference_wrapper<ResizeObserverDataMap>, NodeRareData*>
-  EnsureResizeObserverData();
+  RareDataUpdate<ResizeObserverDataMap> EnsureResizeObserverData();
 
   [[nodiscard]] NodeRareData* SetCustomElementDefinition(
       CustomElementDefinition* definition);
@@ -339,21 +329,17 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   [[nodiscard]] NodeRareData* SetLastSentUnboundedBounds(
       const gfx::Rect& bounds);
   UnboundedEventData* GetUnboundedEventData() const;
-  std::pair<std::reference_wrapper<UnboundedEventData>, NodeRareData*>
-  EnsureUnboundedEventData();
+  RareDataUpdate<UnboundedEventData> EnsureUnboundedEventData();
 
   PopoverData* GetPopoverData() const;
-  std::pair<std::reference_wrapper<PopoverData>, NodeRareData*>
-  EnsurePopoverData();
+  RareDataUpdate<PopoverData> EnsurePopoverData();
   void RemovePopoverData();
 
   InvokerData* GetInvokerData() const;
-  std::pair<std::reference_wrapper<InvokerData>, NodeRareData*>
-  EnsureInvokerData();
+  RareDataUpdate<InvokerData> EnsureInvokerData();
 
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
-  std::pair<std::reference_wrapper<InterestInvokerTargetData>, NodeRareData*>
-  EnsureInterestInvokerTargetData();
+  RareDataUpdate<InterestInvokerTargetData> EnsureInterestInvokerTargetData();
   void RemoveInterestInvokerTargetData();
 
   bool HasElementFlag(ElementFlags mask) const {
@@ -377,8 +363,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
 
   ScrollMarkerGroupData* GetScrollMarkerGroupData() const;
   void RemoveScrollMarkerGroupData();
-  std::pair<std::reference_wrapper<ScrollMarkerGroupData>, NodeRareData*>
-  EnsureScrollMarkerGroupData(Element*);
+  RareDataUpdate<ScrollMarkerGroupData> EnsureScrollMarkerGroupData(Element*);
 
   [[nodiscard]] NodeRareData* SetScrollMarkerGroupContainerData(
       ScrollMarkerGroupData*);
@@ -390,13 +375,13 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   CSSPseudoElement* GetCSSPseudoElement(PseudoId, const AtomicString&) const;
 
   ExplicitlySetAttrElementsMap* GetExplicitlySetElementsForAttr() const;
-  std::pair<std::reference_wrapper<ExplicitlySetAttrElementsMap>, NodeRareData*>
+  RareDataUpdate<ExplicitlySetAttrElementsMap>
   EnsureExplicitlySetElementsForAttr();
 
   AnchorPositionScrollData* GetAnchorPositionScrollData() const;
   void RemoveAnchorPositionScrollData();
-  std::pair<std::reference_wrapper<AnchorPositionScrollData>, NodeRareData*>
-  EnsureAnchorPositionScrollData(Element*);
+  RareDataUpdate<AnchorPositionScrollData> EnsureAnchorPositionScrollData(
+      Element*);
 
   bool HasCustomElementRegistrySet() const;
   CustomElementRegistry* GetCustomElementRegistry() const;
@@ -405,12 +390,12 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   void ClearCustomElementRegistry();
 
   ElementAnimationTriggerData* AnimationTriggerData();
-  std::pair<std::reference_wrapper<ElementAnimationTriggerData>, NodeRareData*>
-  EnsureAnimationTriggerData();
+  RareDataUpdate<ElementAnimationTriggerData> EnsureAnimationTriggerData();
 
   DisplayAdElementMonitor* GetDisplayAdElementMonitor() const;
-  std::pair<std::reference_wrapper<DisplayAdElementMonitor>, NodeRareData*>
-  EnsureDisplayAdElementMonitor(Element*, AdProvenance);
+  RareDataUpdate<DisplayAdElementMonitor> EnsureDisplayAdElementMonitor(
+      Element*,
+      AdProvenance);
 
   void SetDidAttachInternals() { flags_.did_attach_internals = true; }
   bool DidAttachInternals() const { return flags_.did_attach_internals; }
@@ -537,8 +522,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
     flags_.was_last_focus_from_user_gesture = value;
   }
 
-  std::pair<std::reference_wrapper<OverscrollAreaTracker>, NodeRareData*>
-  EnsureOverscrollAreaTracker(Element*);
+  RareDataUpdate<OverscrollAreaTracker> EnsureOverscrollAreaTracker(Element*);
   OverscrollAreaTracker* OverscrollAreaTracker() const;
 
   void Trace(Visitor*) const;
@@ -666,30 +650,29 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   };
 
   template <typename T, typename... Args>
-  [[nodiscard]] std::pair<std::reference_wrapper<T>, NodeRareData*> EnsureField(
-      FieldId field_id,
-      Args&&... args) {
+  [[nodiscard]] RareDataUpdate<T> EnsureField(FieldId field_id,
+                                              Args&&... args) {
     T* field = static_cast<T*>(GetField(field_id));
     NodeRareData* vec = this;
     if (!field) {
       field = MakeGarbageCollected<T>(std::forward<Args>(args)...);
       vec = SetField(field_id, field);
     }
-    return {*field, vec};
+    return RareDataUpdate<T>(base::PassKey<NodeRareData>(), *field, vec);
   }
 
   template <typename T>
-  [[nodiscard]] std::pair<std::reference_wrapper<T>, NodeRareData*>
-  EnsureWrappedField(FieldId field_id) {
-    auto [field, vec] = EnsureField<DataFieldWrapper<T>>(field_id);
-    return {field.get().Get(), vec};
+  [[nodiscard]] RareDataUpdate<T> EnsureWrappedField(FieldId field_id) {
+    auto update = EnsureField<DataFieldWrapper<T>>(field_id);
+    return RareDataUpdate<T>(base::PassKey<NodeRareData>(),
+                             update.field_->Get(), update.rare_data_);
   }
 
   template <typename T, typename U>
   [[nodiscard]] NodeRareData* SetWrappedField(FieldId field_id, U data) {
-    auto [field, vec] = EnsureField<DataFieldWrapper<T>>(field_id);
-    field.get().Get() = std::move(data);
-    return vec;
+    auto update = EnsureField<DataFieldWrapper<T>>(field_id);
+    update.field_->Get() = std::move(data);
+    return update.rare_data_;
   }
 
   template <typename T>

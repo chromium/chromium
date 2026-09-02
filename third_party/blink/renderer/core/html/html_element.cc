@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/invoker_data.h"
+#include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -1862,9 +1863,8 @@ UnboundedEventData* HTMLElement::GetUnboundedEventData() const {
 }
 
 UnboundedEventData& HTMLElement::EnsureUnboundedEventData() {
-  auto pair = EnsureRareData().EnsureUnboundedEventData();
-  data_ = pair.second;
-  return pair.first.get();
+  return EnsureRareData().EnsureUnboundedEventData().RefreshNodeAndUnwrap(
+      *this);
 }
 
 gfx::Rect HTMLElement::LastSentUnboundedBounds() const {

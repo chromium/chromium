@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -33,10 +34,18 @@ class NodeRareDataTest : public PageTestBase {
   void SetFieldToNullIfExists(NodeRareData* data, FieldId id) {
     data->SetFieldToNullIfExists(id);
   }
+
+  class TestElement : public HTMLDivElement {
+   public:
+    explicit TestElement(Document& document) : HTMLDivElement(document) {}
+    using Node::EnsureRareData;
+    using Node::RareData;
+  };
 };
 
 TEST_F(NodeRareDataTest, BasicOperations) {
-  NodeRareData* rare_data = NodeRareData::Create();
+  TestElement* node = MakeGarbageCollected<TestElement>(GetDocument());
+  NodeRareData* rare_data = &node->EnsureRareData();
   ASSERT_NE(nullptr, rare_data);
   EXPECT_EQ(0u, GetSize(rare_data));
 
@@ -50,12 +59,12 @@ TEST_F(NodeRareDataTest, BasicOperations) {
 
   // Set NodeId (wrapped int32_t).
   NodeRareData* prev_ptr = rare_data;
-  auto [node_id_ref, new_rare_data] = rare_data->NodeId();
-  rare_data = new_rare_data;
+  int32_t& node_id_ref = rare_data->NodeId().RefreshNodeAndUnwrap(*node);
+  rare_data = node->RareData();
   // Initial capacity is kMinimumVectorSize (2), so setting first field should
   // not reallocate.
   EXPECT_EQ(prev_ptr, rare_data);
-  node_id_ref.get() = 42;
+  node_id_ref = 42;
   EXPECT_EQ(42, get_node_id());
   EXPECT_EQ(1u, GetSize(rare_data));
 
@@ -124,15 +133,18 @@ TEST_F(NodeRareDataTest, OverwriteAndNullify) {
 }
 
 TEST_F(NodeRareDataTest, SetFieldToNullIfExists) {
-  NodeRareData* rare_data = NodeRareData::Create();
+  TestElement* node = MakeGarbageCollected<TestElement>(GetDocument());
+  NodeRareData* rare_data = &node->EnsureRareData();
 
   // Initially HasField is false.
   EXPECT_FALSE(HasField(rare_data, FieldId::kNodeLists));
   EXPECT_EQ(nullptr, GetField(rare_data, FieldId::kNodeLists));
 
   // Ensure it (creates it).
-  auto [node_lists_ref, new_rare_data] = rare_data->EnsureNodeLists();
-  rare_data = new_rare_data;
+  NodeListsNodeData& node_lists =
+      rare_data->EnsureNodeLists().RefreshNodeAndUnwrap(*node);
+  rare_data = node->RareData();
+  EXPECT_EQ(&node_lists, rare_data->NodeLists());
   EXPECT_NE(nullptr, rare_data->NodeLists());
   EXPECT_TRUE(HasField(rare_data, FieldId::kNodeLists));
   EXPECT_NE(nullptr, GetField(rare_data, FieldId::kNodeLists));

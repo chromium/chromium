@@ -244,6 +244,7 @@ blink_core_sources_dom = [
   "range.cc",
   "range.h",
   "range_boundary_point.h",
+  "rare_data_update.h",
   "raw_data_document_parser.h",
   "scoped_abort_state.h",
   "trigger_scoped_name.cc",

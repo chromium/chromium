@@ -87,6 +87,8 @@ class NodeCloningData;
 class NodeList;
 class NodeListsNodeData;
 class QualifiedName;
+template <typename T>
+class RareDataUpdate;
 class RegisteredEventListener;
 class ScrollTimeline;
 class SetHTMLOptions;
@@ -1222,6 +1224,11 @@ class CORE_EXPORT Node : public EventTarget {
   // Defined in node-inl.h.
   ALWAYS_INLINE bool HasPseudoElements() const;
 
+  template <typename T>
+  void SetRareData(base::PassKey<RareDataUpdate<T>>, NodeRareData* new_data) {
+    data_ = new_data;
+  }
+
  private:
   enum NodeFlags : uint32_t {
     // getNodeType() is called extensively. As it's called quite a bit its
@@ -1379,6 +1386,9 @@ class CORE_EXPORT Node : public EventTarget {
     data_ = raredata_and_new_vec.second;
     return raredata_and_new_vec.first;
   }
+
+  template <typename T>
+  ALWAYS_INLINE T& UnpackAndRefresh(RareDataUpdate<T> update);
 
  private:
   static constexpr struct ParentNodeTag {
