@@ -756,6 +756,7 @@ TEST_F(UnexportableKeyMacTest, CertifySlowlyStatementAndSignature) {
   ASSERT_OK_AND_ASSIGN(AttestationStatement cert,
                        attestation_key->CertifySlowly(*signing_key, challenge));
   EXPECT_EQ(cert.format, AttestationStatement::kSecureEnclave);
+  EXPECT_TRUE(cert.subject_key.empty());
 
   std::vector<uint8_t> expected_statement = challenge;
   // TODO(crbug.com/406190025): Make the hash algorithm generic once we use

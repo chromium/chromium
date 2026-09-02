@@ -120,6 +120,8 @@ struct CRYPTO_EXPORT AttestationStatement {
     // TPM 2.0 platform attestation format.
     // `statement` is a binary TPMS_ATTEST structure.
     // `signature` is a binary TPMT_SIGNATURE structure.
+    // `subject_key` is the TPM 2.0 `TPMT_PUBLIC` binary structure of the
+    // certified key.
     kTpm,
     // Custom Secure Enclave format used on macOS/iOS.
     // `statement` is the concatenation of the server's challenge and the
@@ -134,6 +136,7 @@ struct CRYPTO_EXPORT AttestationStatement {
   Format format = kTpm;
   std::vector<uint8_t> statement;
   std::vector<uint8_t> signature;
+  std::vector<uint8_t> subject_key;
 };
 
 class CRYPTO_EXPORT UnexportableAttestationKey : public UnexportableSigningKey {

@@ -37,6 +37,7 @@ TEST(UnexportableKeysTraitsTest, AttestationStatement) {
   input.format = crypto::AttestationStatement::Format::kSecureEnclave;
   input.statement = {1, 2, 3};
   input.signature = {4, 5, 6};
+  input.subject_key = {7, 8, 9};
 
   crypto::AttestationStatement output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::AttestationStatement>(
@@ -44,6 +45,7 @@ TEST(UnexportableKeysTraitsTest, AttestationStatement) {
   EXPECT_EQ(input.format, output.format);
   EXPECT_EQ(input.statement, output.statement);
   EXPECT_EQ(input.signature, output.signature);
+  EXPECT_EQ(input.subject_key, output.subject_key);
 }
 
 }  // namespace unexportable_keys

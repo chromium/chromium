@@ -667,6 +667,7 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
       attestation_key->CertifySlowly(*signing_key, kChallenge));
   EXPECT_EQ(statement.format, crypto::AttestationStatement::kTpm);
   EXPECT_EQ(statement.statement.size(), 105u);
+  EXPECT_TRUE(statement.subject_key.empty());
 
   std::vector<uint8_t> fake_resp =
       ConstructFakeTpmResponse(statement.statement, statement.signature);

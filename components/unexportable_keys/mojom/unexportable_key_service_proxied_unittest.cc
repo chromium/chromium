@@ -60,6 +60,7 @@ const crypto::AttestationStatement& GetTestAttestationStatement() {
       .format = crypto::AttestationStatement::Format::kTpm,
       .statement = {0x01, 0x02},
       .signature = {0x03, 0x04},
+      .subject_key = {0x05, 0x06},
   });
   return *statement;
 }
@@ -834,6 +835,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, CertifySuccess) {
   EXPECT_EQ(statement.format, expected_statement.format);
   EXPECT_EQ(statement.statement, expected_statement.statement);
   EXPECT_EQ(statement.signature, expected_statement.signature);
+  EXPECT_EQ(statement.subject_key, expected_statement.subject_key);
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest, CertifyError) {

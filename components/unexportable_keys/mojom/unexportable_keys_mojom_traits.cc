@@ -196,6 +196,9 @@ bool StructTraits<unexportable_keys::mojom::AttestationStatementDataView,
   if (!data.ReadSignature(&output->signature)) {
     return false;
   }
+  if (!data.ReadSubjectKey(&output->subject_key)) {
+    return false;
+  }
   return true;
 }
 }  // namespace mojo

@@ -102,6 +102,11 @@ struct StructTraits<unexportable_keys::mojom::AttestationStatementDataView,
     return input.signature;
   }
 
+  static const std::vector<uint8_t>& subject_key(
+      const crypto::AttestationStatement& input) {
+    return input.subject_key;
+  }
+
   static bool Read(unexportable_keys::mojom::AttestationStatementDataView data,
                    crypto::AttestationStatement* output);
 };

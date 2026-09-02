@@ -92,6 +92,7 @@ struct AttestationStatement {
   AttestationFormat format;
   array<uint8> statement;
   array<uint8> signature;
+  array<uint8> subject_key;
 };
 
 // Interface for proxying calls to UnexportableKeyService from less privileged
