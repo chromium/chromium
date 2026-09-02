@@ -227,7 +227,6 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(ContextualSheetCommands));
     mock_entrypoint_iph_handler_ =
         OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
-    mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     mediator_.contextualSheetHandler = mock_contextual_sheet_handler_;
     mediator_.entrypointHelpHandler = mock_entrypoint_iph_handler_;
     [browser_->GetCommandDispatcher()
@@ -237,9 +236,6 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_entrypoint_iph_handler_
                      forProtocol:@protocol(
                                      ContextualPanelEntrypointIPHCommands)];
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_gemini_handler_
-                     forProtocol:@protocol(GeminiCommands)];
   }
 
   ~LocationBarBadgeMediatorTest() override { [mediator_ disconnect]; }

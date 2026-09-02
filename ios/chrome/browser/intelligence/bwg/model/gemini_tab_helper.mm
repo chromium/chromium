@@ -412,6 +412,33 @@ IOSGeminiInvocationPageType GeminiTabHelper::GetCurrentPageType() {
 
 #pragma mark - WebStateObserver
 
+void GeminiTabHelper::WasShown(web::WebState* web_state) {
+  // In NextIA or Live mode, the floaty remains persistently visible across tab
+  // switches, but the page context needs to be updated to match the newly
+  // visible tab.
+  if (IsNextIaOrLiveMode()) {
+    NotifyPageContextUpdated(web_state);
+  } else if (IsPageActionMenuEnabled()) {
+    [gemini_handler_
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     WebNavigation];
+  }
+}
+
+void GeminiTabHelper::WasHidden(web::WebState* web_state) {
+  // In NextIA or Live mode, the floaty remains persistently visible when a tab
+  // is hidden (e.g., during a tab switch), but we must update the page context
+  // immediately to ensure the hidden tab's content is detached and blocked.
+  if (IsNextIaOrLiveMode()) {
+    NotifyPageContextUpdated(web_state);
+  } else if (IsPageActionMenuEnabled()) {
+    [gemini_handler_
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::WebNavigation];
+  }
+}
+
 void GeminiTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {

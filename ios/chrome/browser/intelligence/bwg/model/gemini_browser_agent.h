@@ -41,10 +41,6 @@ class AppBarMediatorTest;
 class ToolbarMediatorTest;
 class LocationBarBadgeMediatorTest;
 
-namespace web {
-class WebState;
-}  // namespace web
-
 namespace gemini {
 enum class FloatyUpdateSource;
 }  // namespace gemini
@@ -256,18 +252,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Returns the ID of the active web state, or an invalid ID if none exists.
   web::WebStateID GetActiveWebStateID() const;
-
-  // Handles tab switching between `old_active` and `new_active` by updating
-  // observers, attached tab contexts, and UI state.
-  void SwitchTabs(web::WebState* old_active, web::WebState* new_active);
-
-  // Cleans up observation and updates attached tab context when leaving
-  // `web_state`.
-  void LeaveTab(web::WebState* web_state);
-
-  // Sets up observation, attached tabs, and page context when entering
-  // `web_state`.
-  void EnterTab(web::WebState* web_state);
 
   // Callback for scroll events.
   void OnScrollEvent();
