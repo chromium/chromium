@@ -28,9 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 /** JUnit tests for the {@link ThrottlingNotificationScheduler} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class ThrottlingNotificationSchedulerTest {
     private static final long CURRENT_TIME_MS = 90000000L;
 

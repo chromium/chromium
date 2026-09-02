@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 
 /** Robolectric tests for {@link NotificationPermissionChangeReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 30, manifest = Config.NONE)
+@Config(sdk = 30)
 public class NotificationPermissionChangeReceiverTest {
 
     private void verifyPermissionChangeHistogramWasRecorded(boolean expectedPermissionState) {

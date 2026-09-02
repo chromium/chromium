@@ -44,7 +44,7 @@ import java.lang.ref.WeakReference;
 
 /** Robolectric unit tests for {@link NotificationPermissionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = VERSION_CODES.TIRAMISU, manifest = Config.NONE)
+@Config(sdk = VERSION_CODES.TIRAMISU)
 public class NotificationPermissionControllerTest {
     @Rule public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
 

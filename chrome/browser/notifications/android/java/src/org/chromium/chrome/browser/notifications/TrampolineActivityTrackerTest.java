@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +26,6 @@ import org.chromium.base.test.RobolectricUtil;
 
 /** Robolectric unit tests for TrampolineActivityTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TrampolineActivityTrackerTest {
     private static final String TEST_JOB_ID = "foo";
     private static final String TEST_JOB_ID_2 = "foo2";

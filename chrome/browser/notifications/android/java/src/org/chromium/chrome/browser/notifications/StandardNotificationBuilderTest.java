@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -33,7 +32,6 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /** Robolectric unit tests for StandardNotificationBuilder. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class StandardNotificationBuilderTest {
     private static final String NOTIFICATION_TAG = "TestNotificationTag";
     private static final int NOTIFICATION_ID = 99;

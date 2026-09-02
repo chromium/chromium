@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
@@ -19,7 +18,6 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
  * manipulate what NotificationManagerCompat.getNotificationsEnabled returns.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NotificationSystemStatusUtilUnitTest {
     @Test
     public void testAppNotificationStatusEnabled() {

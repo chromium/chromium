@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -22,7 +21,6 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Unit tests for NotificationBuilderBase. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NotificationBuilderBaseTest {
     /**
      * Tests the three paths for ensuring that a notification will be shown with a normalized icon:
