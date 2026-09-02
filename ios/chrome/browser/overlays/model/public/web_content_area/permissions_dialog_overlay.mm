@@ -105,9 +105,10 @@ void PermissionsDialogRequest::CreateAuxiliaryData(
             IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW))},
         {ButtonConfig(l10n_util::GetNSString(
             IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME))},
-        {ButtonConfig(l10n_util::GetNSString(
-                          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY),
-                      UIAlertActionStyleCancel)},
+        {ButtonConfig(
+            l10n_util::GetNSString(
+                IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW),
+            UIAlertActionStyleCancel)},
     };
   } else {
     button_configs = {

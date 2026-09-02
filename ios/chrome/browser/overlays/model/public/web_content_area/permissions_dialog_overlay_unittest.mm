@@ -185,9 +185,9 @@ TEST_F(PermissionsDialogOverlayTest, DomainLevelSitePermissionsChoices) {
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME),
               button_configs[1][0].title);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY),
-      button_configs[2][0].title);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW),
+              button_configs[2][0].title);
 
   // Test tapping "Always Allow" (row 0).
   std::unique_ptr<OverlayResponse> always_allow_alert_response =
