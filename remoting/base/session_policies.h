@@ -98,6 +98,10 @@ struct SessionPolicies {
   // A nullopt value means to use the default value, which is true (allowed).
   // Corresponding Chrome policy: RemoteAccessHostAllowGnubbyAuth
   std::optional<bool> allow_gnubby_forwarding;
+
+  // Allow the client to establish terminal sessions on supported platforms.
+  // A nullopt value means to use the default value, which is true (allowed).
+  std::optional<bool> allow_terminal_mode;
 };
 // LINT.ThenChange(//remoting/host/mojom/common.mojom:SessionPolicies)
 

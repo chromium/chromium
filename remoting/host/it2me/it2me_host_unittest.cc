@@ -942,6 +942,12 @@ TEST_F(It2MeHostTest, UriForwardingDisallowedByDefault) {
   EXPECT_FALSE(*get_local_session_policies().allow_uri_forwarding);
 }
 
+TEST_F(It2MeHostTest, TerminalModeDisallowedByDefault) {
+  StartHost();
+
+  EXPECT_FALSE(*get_local_session_policies().allow_terminal_mode);
+}
+
 TEST_F(It2MeHostTest, StartHost_CorpUser_UseCorpSessionAuthz) {
   is_corp_user_ = true;
   StartHost();

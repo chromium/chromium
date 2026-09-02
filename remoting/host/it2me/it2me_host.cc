@@ -653,6 +653,7 @@ void It2MeHost::UpdateLocalSessionPolicies(
   // policies.
   local_session_policies->allow_file_transfer = false;
   local_session_policies->allow_uri_forwarding = false;
+  local_session_policies->allow_terminal_mode = false;
 
   local_session_policies->allow_remote_input = true;
 

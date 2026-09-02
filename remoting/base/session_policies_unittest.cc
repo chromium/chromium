@@ -33,6 +33,10 @@ TEST(SessionPolicies, Equality) {
   SessionPolicies test_policies_5 = test_policies_1;
   test_policies_5.host_udp_port_range = *PortRange::Create(123, 789);
   EXPECT_NE(test_policies_1, test_policies_5);
+
+  SessionPolicies test_policies_6 = test_policies_1;
+  test_policies_6.allow_terminal_mode = false;
+  EXPECT_NE(test_policies_1, test_policies_6);
 }
 
 }  // namespace remoting

@@ -381,7 +381,8 @@ void PeerSessionImpl::SetCapabilities(
             base::Unretained(this)));
   }
 
-  if (HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
+  if (effective_policies_.allow_terminal_mode.value_or(true) &&
+      HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
     terminal_session_manager_ = std::make_unique<TerminalSessionManager>();
     terminal_session_manager_->Start(
         base::BindRepeating(&PeerSessionImpl::SendTerminalOutput,
@@ -611,7 +612,7 @@ void PeerSessionImpl::SetVideoLayout(
 void PeerSessionImpl::ControlTerminal(
     const protocol::TerminalControl& terminal_control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
+  if (!terminal_session_manager_) {
     return;
   }
 
@@ -1125,8 +1126,10 @@ void PeerSessionImpl::OnDesktopEnvironmentCreated(
     host_capabilities_.append(protocol::kSecurityKeyV2Capability);
   }
 
-  host_capabilities_.append(" ");
-  host_capabilities_.append(protocol::kTerminalModeCapability);
+  if (effective_policies_.allow_terminal_mode.value_or(true)) {
+    host_capabilities_.append(" ");
+    host_capabilities_.append(protocol::kTerminalModeCapability);
+  }
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
