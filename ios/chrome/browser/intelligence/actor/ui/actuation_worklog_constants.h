@@ -6,7 +6,21 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_CONSTANTS_H_
 
 #import <CoreGraphics/CoreGraphics.h>
+#import <Foundation/Foundation.h>
 
+// Accessibility identifier for the actuation header view.
+inline constexpr NSString* const kActuationHeaderAccessibilityIdentifier =
+    @"ActuationHeaderAccessibilityIdentifier";
+
+// Accessibility identifier for the compact worklog view.
+inline constexpr NSString* const kCompactWorklogAccessibilityIdentifier =
+    @"CompactWorklogAccessibilityIdentifier";
+
+// Accessibility identifier for the full worklog scroll view.
+inline constexpr NSString* const kFullWorklogScrollViewAccessibilityIdentifier =
+    @"FullWorklogScrollViewAccessibilityIdentifier";
+
+// TODO(crbug.com/553535673): Remove C++ namespace for UI constants.
 namespace intelligence::actor {
 
 // Standard spacing constants for worklog UI elements.
