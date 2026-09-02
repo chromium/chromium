@@ -146,7 +146,7 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
     return;
   }
 
-  ParseAndPersistAcceptCHForNavigation(response_origin, response_head.ssl_info,
+  ParseAndPersistAcceptCHForNavigation(response_origin,
                                        response_head.parsed_headers,
                                        response_head.headers.get(), context_,
                                        client_hint_delegate_, frame_tree_node);

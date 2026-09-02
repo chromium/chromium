@@ -980,15 +980,9 @@ void AddNavigationRequestClientHintsHeaders(
       container_policy, /*ftn_for_devtools_override=*/frame_tree_node);
 }
 
-// Allow Android WebView tests to disable checking the cert status, which fails
-// when tests remap origins to localhost.
-BASE_FEATURE(kBypassClientHintsSSLCertStatusForTest,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 std::optional<std::vector<WebClientHintsType>>
 ParseAndPersistAcceptCHForNavigation(
     const url::Origin& origin,
-    const std::optional<net::SSLInfo> ssl_info,
     const network::mojom::ParsedHeadersPtr& parsed_headers,
     const net::HttpResponseHeaders* response_headers,
     BrowserContext* context,
@@ -1003,11 +997,6 @@ ParseAndPersistAcceptCHForNavigation(
 
   if (!IsValidURLForClientHints(origin))
     return std::nullopt;
-
-  if (ssl_info && net::IsCertStatusError(ssl_info->cert_status) &&
-      !base::FeatureList::IsEnabled(kBypassClientHintsSSLCertStatusForTest)) {
-    return std::nullopt;
-  }
 
   // Client hints should only be enabled when JavaScript is enabled. Platforms
   // which enable/disable JavaScript on a per-origin basis should implement

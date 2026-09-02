@@ -149,6 +149,14 @@ functional bugs (unless a broader boundary is broken):
 * **Safe Browsing:** Safe Browsing is not designed to be protected against a
   compromised renderer process; we can assume that Safe Browsing already failed
   to do its job if a renderer process is compromised.
+* **TLS Certificate Error:** If the user encounters a TLS certificate error
+  interstitial and allows the page load to move forward, it is generally
+  permissable for the HTTP Headers or JavaScript of that page to cause writes
+  (i.e., Set-Cookie, document.cookie, Clear-Site-Data, Accept-CH, localStorage).
+  Data not directly manageable by the origin va HTTP Headers or JavaScript may
+  be withheld due to sensitivity (i.e., passwords or autofill) or to prevent
+  caching of insecure resources (i.e., HTTP Cache), and is still in-scope.
+
 
 ## Mitigating Factors
 
