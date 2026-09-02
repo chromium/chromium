@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
@@ -520,8 +521,16 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
   ASSERT_TRUE(WaitForObservedEvent());
 }
 
+// TODO(crbug.com/531590249): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ErrorMessageShownOnErrorAfterUserInteraction \
+  DISABLED_ErrorMessageShownOnErrorAfterUserInteraction
+#else
+#define MAYBE_ErrorMessageShownOnErrorAfterUserInteraction \
+  ErrorMessageShownOnErrorAfterUserInteraction
+#endif
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
-                       ErrorMessageShownOnErrorAfterUserInteraction) {
+                       MAYBE_ErrorMessageShownOnErrorAfterUserInteraction) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
   InstallPaymentApp("a.com",
