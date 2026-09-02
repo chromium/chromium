@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
@@ -16,7 +15,6 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /** Unit tests for {@link SecurityStatusIcon}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SecurityStatusIconUnitTest {
 
     @Test
