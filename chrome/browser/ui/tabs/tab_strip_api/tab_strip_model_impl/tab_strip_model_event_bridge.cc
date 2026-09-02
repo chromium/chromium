@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_event_bridge.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/event_transformation.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 namespace tabs_api::tab_strip_model {
 

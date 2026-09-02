@@ -18,6 +18,7 @@
 #include "components/tabs/public/tab_network_state.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/color/color_provider.h"
 #include "url/gurl.h"
 

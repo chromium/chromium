@@ -128,6 +128,7 @@
 #include "components/multistep_filter/core/features.h"
 #include "components/payments/core/features.h"
 #include "components/skills/features.h"
+#include "content/public/browser/navigation_controller.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"

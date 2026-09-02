@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_close_types_data.h"
 
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "content/public/browser/web_contents.h"
 
 TabCloseTypesData::TabCloseTypesData(content::WebContents* web_contents,

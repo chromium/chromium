@@ -6,10 +6,12 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_events.mojom.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_collection_observer.h"
 
 namespace tabs_api::events {

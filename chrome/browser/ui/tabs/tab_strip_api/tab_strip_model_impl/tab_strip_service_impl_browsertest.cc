@@ -30,6 +30,7 @@
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

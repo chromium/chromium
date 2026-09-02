@@ -7,6 +7,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/interaction/element_identifier.h"

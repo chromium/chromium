@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "content/public/browser/web_contents.h"
 
 TabMutedReason GetTabAudioMutedReason(content::WebContents* contents) {

@@ -32,6 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"

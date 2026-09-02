@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 TabStripModelDelegate::NewStripContents::NewStripContents() = default;
 TabStripModelDelegate::NewStripContents::~NewStripContents() = default;

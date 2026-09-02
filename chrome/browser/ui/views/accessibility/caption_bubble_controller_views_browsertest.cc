@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_context_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -30,6 +31,7 @@
 #include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
+#include "content/public/browser/navigation_controller.h"
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "components/on_device_translation/public/language_pack.h"

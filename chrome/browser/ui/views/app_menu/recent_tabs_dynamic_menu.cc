@@ -26,11 +26,13 @@
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sessions/core/live_tab_context.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 
 RecentTabsDynamicMenu::RecentTabsDynamicMenu(BrowserWindowInterface* browser)

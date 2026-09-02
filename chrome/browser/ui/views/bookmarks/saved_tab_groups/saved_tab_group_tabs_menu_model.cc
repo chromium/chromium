@@ -22,8 +22,10 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
 namespace tab_groups {

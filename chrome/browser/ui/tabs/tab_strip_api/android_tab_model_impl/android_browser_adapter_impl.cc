@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/notreached.h"
+#include "components/tab_groups/tab_group_id.h"
 
 namespace tabs_api {
 

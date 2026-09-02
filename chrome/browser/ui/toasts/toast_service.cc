@@ -55,6 +55,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/base_window.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 

@@ -22,7 +22,9 @@
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "ui/base/window_open_disposition.h"
 
 using collaboration::messaging::MessagingBackendServiceFactory;
 using collaboration::messaging::PersistentNotificationType;

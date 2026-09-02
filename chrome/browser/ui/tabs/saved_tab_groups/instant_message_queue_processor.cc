@@ -27,6 +27,7 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 
 namespace tab_groups {

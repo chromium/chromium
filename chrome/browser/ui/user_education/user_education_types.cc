@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/user_education/user_education_types.h"
 
+#include "ui/base/window_open_disposition.h"
+
 namespace user_education {
 WindowOpenDisposition GetWindowOpenDisposition(
     PageOpenMode page_open_mode) {

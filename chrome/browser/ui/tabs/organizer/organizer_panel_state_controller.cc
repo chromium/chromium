@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 
