@@ -134,11 +134,7 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   text_top = -text_metrics.ascent;
   text_height = text_metrics.LineHeight();
 
-  FontHeight emphasis_marks_outsets =
-      RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()
-          ? FontHeight::Empty()
-          : ComputeEmphasisMarkOutsets(styleref,
-                                       UsedFont(base_font, paint_scale));
+  FontHeight emphasis_marks_outsets = FontHeight::Empty();
   LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(base_font);
   if (!styleref.LineHeight().IsFixed() && paint_scale != 1.0f) {
     line_height *= paint_scale;

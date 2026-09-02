@@ -523,21 +523,12 @@ void TextPainter::SetEmphasisMark(const AtomicString& emphasis_mark,
   LayoutUnit under = font_data->GetFontMetrics().FixedDescent();
 
   if (text_item) {
-    if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-      UsedFont used_font = text_item->GetUsedFont();
-      const auto metrics = text_item->AnnotationMetrics();
-      over = LayoutUnit((-used_font.FixedAscent() - metrics.ascent) /
-                        used_font.ScalingFactor());
-      under = LayoutUnit((used_font.FixedDescent() + metrics.descent) /
-                         used_font.ScalingFactor());
-    } else if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-      if (text_item->HasOverAnnotation()) {
-        over -= text_item->AnnotationMetrics().ascent;
-      }
-      if (text_item->HasUnderAnnotation()) {
-        under += text_item->AnnotationMetrics().descent;
-      }
-    }
+    UsedFont used_font = text_item->GetUsedFont();
+    const auto metrics = text_item->AnnotationMetrics();
+    over = LayoutUnit((-used_font.FixedAscent() - metrics.ascent) /
+                      used_font.ScalingFactor());
+    under = LayoutUnit((used_font.FixedDescent() + metrics.descent) /
+                       used_font.ScalingFactor());
   }
 
   if (emphasis_line_side == LineLogicalSide::kOver) {

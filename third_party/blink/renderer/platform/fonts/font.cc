@@ -272,11 +272,7 @@ LayoutUnit Font::EmphasisMarkAscent(const AtomicString& mark) const {
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
     return LayoutUnit();
-
-  if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-    return mark_font_data->NormalizedTypoAscent();
-  }
-  return mark_font_data->GetFontMetrics().FixedAscent();
+  return mark_font_data->NormalizedTypoAscent();
 }
 
 LayoutUnit Font::EmphasisMarkDescent(const AtomicString& mark) const {
@@ -284,11 +280,7 @@ LayoutUnit Font::EmphasisMarkDescent(const AtomicString& mark) const {
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
     return LayoutUnit();
-
-  if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-    return mark_font_data->NormalizedTypoDescent();
-  }
-  return mark_font_data->GetFontMetrics().FixedDescent();
+  return mark_font_data->NormalizedTypoDescent();
 }
 
 LayoutUnit Font::EmphasisMarkHeight(const AtomicString& mark) const {
@@ -296,12 +288,7 @@ LayoutUnit Font::EmphasisMarkHeight(const AtomicString& mark) const {
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
     return LayoutUnit();
-
-  if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-    return mark_font_data->NormalizedTypoAscentAndDescent().LineHeight();
-  }
-  return LayoutUnit::FromFloatRound(
-      mark_font_data->GetFontMetrics().FloatHeight());
+  return mark_font_data->NormalizedTypoAscentAndDescent().LineHeight();
 }
 
 float Font::TextAutoSpaceInlineSize() const {

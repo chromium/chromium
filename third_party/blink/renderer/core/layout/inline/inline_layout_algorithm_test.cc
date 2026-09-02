@@ -1188,43 +1188,24 @@ TEST_F(InlineLayoutAlgorithmTest, TextEmphasisAsRuby) {
   LayoutBlockFlow* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
 
-  {
-    ScopedTextEmphasisAsRubyForTest enable_text_emphasis_as_ruby(false);
-    container->SetNeedsLayout("test");
-    UpdateAllLifecyclePhasesForTest();
+  container->SetNeedsLayout("test");
+  UpdateAllLifecyclePhasesForTest();
 
-    InlineCursor cursor(*container);
-    cursor.MoveToFirstLine();
-    ASSERT_TRUE(cursor);
+  InlineCursor cursor(*container);
+  cursor.MoveToFirstLine();
+  ASSERT_TRUE(cursor);
 
-    // Default: text-emphasis increases the line box height.
-    EXPECT_GT(cursor.Current().Size().height, LayoutUnit(20));
-    // The container height is equal to the line box height.
-    EXPECT_EQ(container->LogicalHeight(), cursor.Current().Size().height);
-  }
+  // With TextEmphasisAsRuby: line box height remains same as line-height.
+  EXPECT_EQ(cursor.Current().Size().height, LayoutUnit(20));
 
-  {
-    ScopedTextEmphasisAsRubyForTest enable_text_emphasis_as_ruby(true);
-    container->SetNeedsLayout("test");
-    UpdateAllLifecyclePhasesForTest();
-
-    InlineCursor cursor(*container);
-    cursor.MoveToFirstLine();
-    ASSERT_TRUE(cursor);
-
-    // With TextEmphasisAsRuby: line box height remains same as line-height.
-    EXPECT_EQ(cursor.Current().Size().height, LayoutUnit(20));
-
-    // The container height should be greater than the line box height (20px)
-    // because the annotation overflow (emphasis marks) should be accommodated
-    // by the block layout.
-    EXPECT_GT(container->LogicalHeight(), LayoutUnit(20));
-  }
+  // The container height should be greater than the line box height (20px)
+  // because the annotation overflow (emphasis marks) should be accommodated
+  // by the block layout.
+  EXPECT_GT(container->LogicalHeight(), LayoutUnit(20));
 }
 
 void InlineLayoutAlgorithmTest::TestRubyTextEmphasisAnnotationMetricsVertical(
     WritingMode writing_mode) {
-  ScopedTextEmphasisAsRubyForTest enable_text_emphasis_as_ruby(true);
   ScopedTextEmphasisWithRubyForTest enable_text_emphasis_with_ruby(true);
 
   LoadAhem();
@@ -1299,7 +1280,6 @@ TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisAnnotationMetricsVerticalRl) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisAnnotationMetricsHorizontal) {
-  ScopedTextEmphasisAsRubyForTest enable_text_emphasis_as_ruby(true);
   ScopedTextEmphasisWithRubyForTest enable_text_emphasis_with_ruby(true);
 
   LoadAhem();
@@ -1395,7 +1375,6 @@ TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisAnnotationMetricsHorizontal) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisHeight) {
-  ScopedTextEmphasisAsRubyForTest enable_text_emphasis_as_ruby(true);
   LoadAhem();
 
   SetBodyInnerHTML(R"HTML(

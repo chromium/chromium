@@ -401,9 +401,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
-  const bool has_text_emphasis =
-      RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled() &&
-      Node().HasTextEmphasis();
+  const bool has_text_emphasis = Node().HasTextEmphasis();
   if ((Node().HasRuby() || has_text_emphasis) && !line_info->IsEmptyLine())
       [[unlikely]] {
     std::optional<FontHeight> annotation_metrics;
@@ -416,21 +414,10 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
           .PlaceLines(*line_box, line_box_metrics)
           .AddLinesTo(*line_container);
       annotation_metrics = calculator.AnnotationMetrics();
-      if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-        calculator.UpdateColumnLayoutAnnotationMetrics(column_list);
-      } else if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-        for (const auto& column : column_list) {
-          for (wtf_size_t i = 0; i < column->size; ++i) {
-            (*line_box)[column->start_index + i].annotation_metrics =
-                column->annotation_metrics;
-          }
-        }
-      }
+      calculator.UpdateColumnLayoutAnnotationMetrics(column_list);
     }
 
-    if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-      SetTextEmphasisAnnotationMetrics(column_list, *line_box);
-    }
+    SetTextEmphasisAnnotationMetrics(column_list, *line_box);
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, annotation_metrics));
   } else if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&

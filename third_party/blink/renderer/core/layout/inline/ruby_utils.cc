@@ -765,37 +765,17 @@ AnnotationMetrics ComputeAnnotationOverflow(
 
     if (const auto* style = item.Style()) {
       if (style->GetTextEmphasisMark() != TextEmphasisMark::kNone) {
-        if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-          const auto emphasis_mark_height =
-              InlineBoxState::ComputeEmphasisMarkOutsets(*style, used_font)
-                  .LineHeight();
-          if (style->GetTextEmphasisLineLogicalSide() ==
-              LineLogicalSide::kOver) {
-            item_over = text_box_over -
-                        (emphasis_mark_height + item.annotation_metrics.ascent);
-            has_over_emphasis = true;
-          } else {
-            item_under = text_box_under + emphasis_mark_height +
-                         item.annotation_metrics.descent;
-            has_under_emphasis = true;
-          }
-        } else if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-          const auto emphasis_mark_height =
-              InlineBoxState::ComputeEmphasisMarkOutsets(*style, used_font)
-                  .LineHeight();
-          if (style->GetTextEmphasisLineLogicalSide() ==
-              LineLogicalSide::kOver) {
-            over_emphasis = std::max(emphasis_mark_height, over_emphasis);
-          } else {
-            under_emphasis = std::max(emphasis_mark_height, under_emphasis);
-          }
+        const auto emphasis_mark_height =
+            InlineBoxState::ComputeEmphasisMarkOutsets(*style, used_font)
+                .LineHeight();
+        if (style->GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
+          item_over = text_box_over -
+                      (emphasis_mark_height + item.annotation_metrics.ascent);
+          has_over_emphasis = true;
         } else {
-          if (style->GetTextEmphasisLineLogicalSide() ==
-              LineLogicalSide::kOver) {
-            over_emphasis = LayoutUnit(1);
-          } else {
-            under_emphasis = LayoutUnit(1);
-          }
+          item_under = text_box_under + emphasis_mark_height +
+                       item.annotation_metrics.descent;
+          has_under_emphasis = true;
         }
       }
     }
@@ -831,18 +811,6 @@ AnnotationMetrics ComputeAnnotationOverflow(
     half_leading = half_leading.ClampNegativeToZero();
     content_over = line_over + half_leading;
     content_under = line_under - half_leading;
-  }
-
-  if (!RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
-    // Don't provide annotation space if text-emphasis exists.
-    // TODO(layout-dev): If the text-emphasis is in [line_over, line_under],
-    // this line can provide annotation space.
-    if (over_emphasis > LayoutUnit()) {
-      content_over = std::min(content_over, line_over);
-    }
-    if (under_emphasis > LayoutUnit()) {
-      content_under = std::max(content_under, line_under);
-    }
   }
 
   // With some fonts, text fragment sizes can exceed line-height.
