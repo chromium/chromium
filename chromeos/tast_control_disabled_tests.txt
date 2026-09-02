@@ -19,9 +19,6 @@
 # https://crbug.com/1307940
 tast.policy.URLCheck.blocklist
 
-# https://crbug.com/1312121
-tast.policy.CookiesBlockedForUrls
-
 # http://crbug.com/1335213
 tast.arc.WindowState.clamshell
 
