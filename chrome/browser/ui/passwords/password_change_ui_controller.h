@@ -15,9 +15,9 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-namespace ui {
-class DialogModel;
-}  // namespace ui
+namespace views {
+class BubbleDialogModelHost;
+}  // namespace views
 
 // Possible actions that the user can take in dialogs displayed by this
 // controller. These values are persisted to logs. Entries should not be
@@ -64,11 +64,11 @@ class PasswordChangeUIController {
 
  private:
   std::variant<PasswordChangeToast::ToastOptions,
-               std::unique_ptr<ui::DialogModel>>
+               std::unique_ptr<views::BubbleDialogModelHost>>
   GetDialogOrToastConfiguration(PasswordChangeDelegate::State state);
 
   void ShowToast(PasswordChangeToast::ToastOptions options);
-  void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
+  void ShowDialog(std::unique_ptr<views::BubbleDialogModelHost> model_host);
 
   void OnToastCanceled();
   void OnDialogCanceled();

@@ -38,6 +38,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -46,6 +47,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/theme_tracking_animated_image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/vector_icons.h"
@@ -279,7 +281,7 @@ std::unique_ptr<views::View> CreatePrivateInferenceNoticeBox(
 // label, and agreement learn-more link) or regular offering state (without
 // privacy notice box, with "Change it for me" button label, and regular
 // learn-more link).
-std::unique_ptr<ui::DialogModel>
+std::unique_ptr<views::BubbleDialogModelHost>
 CreateOfferChangePasswordDialogWithPrivateInference(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
@@ -288,9 +290,6 @@ CreateOfferChangePasswordDialogWithPrivateInference(
     std::u16string email,
     std::u16string display_origin) {
   ui::DialogModel::Builder dialog_builder;
-  dialog_builder.SetBannerImage(
-      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_LOTTIE));
   dialog_builder.SetTitle(l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OFFER_DIALOG_TITLE_WITH_PI));
   if (!display_origin.empty()) {
@@ -329,7 +328,27 @@ CreateOfferChangePasswordDialogWithPrivateInference(
             views::BubbleDialogModelHost::FieldType::kControl));
   }
 
-  return dialog_builder.Build();
+  auto model_host = views::BubbleDialogModelHost::CreateModal(
+      dialog_builder.Build(), ui::mojom::ModalType::kChild);
+  model_host->RegisterWidgetInitializedCallback(base::BindOnce(
+      [](views::BubbleDialogModelHost* host) {
+        views::BubbleFrameView* frame_view = host->GetBubbleFrameView();
+        if (!frame_view) {
+          return;
+        }
+        auto animation_view =
+            std::make_unique<views::ThemeTrackingAnimatedImageView>(
+                IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_LOTTIE,
+                IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_DARK_LOTTIE,
+                base::BindRepeating(
+                    &views::BubbleDialogDelegate::background_color,
+                    base::Unretained(host)));
+        animation_view->GetViewAccessibility().SetIsIgnored(true);
+        frame_view->SetHeaderView(std::move(animation_view));
+      },
+      base::Unretained(model_host.get())));
+
+  return model_host;
 }
 
 // Creates dialog for failed states of password change flow.
@@ -401,6 +420,12 @@ std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
       .Build();
 }
 
+std::unique_ptr<views::BubbleDialogModelHost> CreateDialogModelHost(
+    std::unique_ptr<ui::DialogModel> dialog_model) {
+  return views::BubbleDialogModelHost::CreateModal(
+      std::move(dialog_model), ui::mojom::ModalType::kChild);
+}
+
 }  // namespace
 
 PasswordChangeUIController::PasswordChangeUIController(
@@ -421,8 +446,8 @@ void PasswordChangeUIController::UpdateState(
   }
 
   state_ = state;
-  std::variant<ToastOptions, std::unique_ptr<ui::DialogModel>> configuration =
-      GetDialogOrToastConfiguration(state);
+  std::variant<ToastOptions, std::unique_ptr<views::BubbleDialogModelHost>>
+      configuration = GetDialogOrToastConfiguration(state);
 
   if (std::holds_alternative<ToastOptions>(configuration)) {
     // Close the existing dialog before showing toast. This is needed in
@@ -446,11 +471,11 @@ void PasswordChangeUIController::UpdateState(
 
   // Close the toast before attempting to open any dialog.
   CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
-  ShowDialog(
-      std::move(std::get<std::unique_ptr<ui::DialogModel>>(configuration)));
+  ShowDialog(std::move(
+      std::get<std::unique_ptr<views::BubbleDialogModelHost>>(configuration)));
 }
 
-std::variant<ToastOptions, std::unique_ptr<ui::DialogModel>>
+std::variant<ToastOptions, std::unique_ptr<views::BubbleDialogModelHost>>
 PasswordChangeUIController::GetDialogOrToastConfiguration(
     PasswordChangeDelegate::State state) {
   auto open_password_change_tab_from_dialog_callback = base::BindOnce(
@@ -490,12 +515,12 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
                 ? password_change_delegate_->GetDisplayOrigin()
                 : std::u16string());
       }
-      return CreateOfferChangePasswordDialog(
+      return CreateDialogModelHost(CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::OnPrivacyNoticeAccepted,
                          weak_ptr_factory_.GetWeakPtr()),
           std::move(cancel_dialog_callback),
           std::move(navigate_to_settings_callback),
-          /*with_privacy_notice=*/true, std::move(email));
+          /*with_privacy_notice=*/true, std::move(email)));
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
       if (base::FeatureList::IsEnabled(
               password_change::features::
@@ -510,26 +535,26 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
                 ? password_change_delegate_->GetDisplayOrigin()
                 : std::u16string());
       }
-      return CreateOfferChangePasswordDialog(
+      return CreateDialogModelHost(CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
                          weak_ptr_factory_.GetWeakPtr()),
           std::move(cancel_dialog_callback),
           std::move(navigate_to_settings_callback),
-          /*with_privacy_notice=*/false, std::move(email));
+          /*with_privacy_notice=*/false, std::move(email)));
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-      return CreatePasswordChangeFailedDialog(
+      return CreateDialogModelHost(CreatePasswordChangeFailedDialog(
           std::move(open_password_change_tab_from_dialog_callback),
           std::move(cancel_dialog_callback),
-          /*use_error_image=*/false);
+          /*use_error_image=*/false));
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
-      return CreatePasswordChangeFailedDialog(
+      return CreateDialogModelHost(CreatePasswordChangeFailedDialog(
           std::move(open_password_change_tab_from_dialog_callback),
           std::move(cancel_dialog_callback),
-          /*use_error_image=*/true);
+          /*use_error_image=*/true));
     case PasswordChangeDelegate::State::kOtpDetected:
-      return CreateOtpDetectedDialog(
+      return CreateDialogModelHost(CreateOtpDetectedDialog(
           std::move(open_password_change_tab_from_dialog_callback),
-          std::move(cancel_dialog_callback));
+          std::move(cancel_dialog_callback)));
 
     /* Toasts */
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
@@ -628,31 +653,28 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
 }
 
 void PasswordChangeUIController::ShowDialog(
-    std::unique_ptr<ui::DialogModel> dialog_model) {
+    std::unique_ptr<views::BubbleDialogModelHost> model_host) {
   CHECK(tab_interface_);
   if (!tab_interface_->CanShowModalUI()) {
     return;
   }
 
-  views::BubbleDialogModelHost* model_host =
-      views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                ui::mojom::ModalType::kChild)
-          .release();
   // TODO(crbug.com/338254375): Remove once it is a default state.
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_params->close_on_navigate = false;
-  dialog_widget_ =
-      tab_interface_->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->CreateAndShowDialog(model_host, std::move(tab_dialog_params));
+  views::BubbleDialogModelHost* model_host_ptr = model_host.get();
+  dialog_widget_ = tab_interface_->GetTabFeatures()
+                       ->tab_dialog_manager()
+                       ->CreateAndShowDialog(model_host.release(),
+                                             std::move(tab_dialog_params));
   dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  views::View* focused_view = model_host->GetInitiallyFocusedView();
+  views::View* focused_view = model_host_ptr->GetInitiallyFocusedView();
   if (focused_view) {
     focused_view->RequestFocus();
   }

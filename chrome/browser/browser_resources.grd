@@ -60,6 +60,7 @@
         <structure type="lottie" name="IDR_PASSWORD_CHANGE_NEUTRAL_LOTTIE" file="resources/automated_password_change/password_change_neutral.json" compress="brotli"/>
         <structure type="lottie" name="IDR_PASSWORD_CHANGE_WARNING_LOTTIE" file="resources/automated_password_change/password_change_warning.json" compress="brotli"/>
         <structure type="lottie" name="IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_LOTTIE" file="resources/automated_password_change/password_change_private_inference.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_DARK_LOTTIE" file="resources/automated_password_change/password_change_private_inference_dark.json" compress="brotli"/>
 
         <!-- Wallet Pass Save Bubble resources -->
         <structure type="lottie" name="IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE" file="resources/wallet/wallet_save_loyalty_card.json" compress="brotli"/>

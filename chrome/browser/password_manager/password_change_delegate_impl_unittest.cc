@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -166,6 +167,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
     mock_optimization_guide_keyed_service_ =
         static_cast<MockOptimizationGuideKeyedService*>(
             OptimizationGuideKeyedServiceFactory::GetInstance()
@@ -200,6 +202,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
     actuator_.reset();
     delegate_.reset();
     mock_optimization_guide_keyed_service_ = nullptr;
+    layout_provider_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -262,6 +265,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<PasswordChangeDelegateImpl> delegate_;
   base::WeakPtr<MockPasswordChangeActuator> actuator_;
   tabs::TabInterface::WillDetach tab_will_detach_callback_;
+  std::unique_ptr<views::LayoutProvider> layout_provider_;
 
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
