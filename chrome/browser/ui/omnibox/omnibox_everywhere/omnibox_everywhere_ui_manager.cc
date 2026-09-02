@@ -146,11 +146,24 @@ class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
 SkRegion ComputeDraggableRegion(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   SkRegion draggable_region;
+  // First, union all draggable background areas.
   for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    draggable_region.op(
-        SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
-                          region->bounds.width(), region->bounds.height()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+    if (region->draggable) {
+      draggable_region.op(
+          SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
+                            region->bounds.width(), region->bounds.height()),
+          SkRegion::kUnion_Op);
+    }
+  }
+  // Next, subtract non-draggable regions so they take precedence over DOM
+  // order.
+  for (const blink::mojom::DraggableRegionPtr& region : regions) {
+    if (!region->draggable) {
+      draggable_region.op(
+          SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
+                            region->bounds.width(), region->bounds.height()),
+          SkRegion::kDifference_Op);
+    }
   }
   return draggable_region;
 }
