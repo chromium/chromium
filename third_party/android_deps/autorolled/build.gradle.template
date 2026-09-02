@@ -32,6 +32,7 @@ dependencies {
     compileLatest 'com.google.protobuf:protobuf-javalite:+'
     compileLatest 'com.google.android.libraries.identity.googleid:googleid:+'
     compileLatest 'com.google.android.material:material:+'
+    compileLatest 'com.google.android.play:app-update:+'
     compileLatest 'com.google.android.play:feature-delivery:+'
     compileLatest 'com.google.android.play:review:+'
     compileLatest 'com.google.mlkit:common:+'
