@@ -530,6 +530,157 @@ TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverAndReply) {
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
 }
 
+// Tests delivering a message to an `onMessage` listener that returns a rejected
+// promise. The message channel should be closed with an expected error message.
+TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverAndPromiseRejects) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  // Register an `onMessage` listener once that delegates to
+  // `globalThis.testListener`. This allows multiple test cases in the loop to
+  // execute sequentially in the same context without registering multiple
+  // listeners or needing to remove them.
+  constexpr char kRegisterDelegatingListener[] =
+      "(function() {\n"
+      "  chrome.runtime.onMessage.addListener(\n"
+      "      function(message, sender, reply) {\n"
+      "    return globalThis.testListener(message, sender, reply);\n"
+      "  });\n"
+      "})";
+  v8::Local<v8::Function> add_listener =
+      FunctionFromString(context, kRegisterDelegatingListener);
+  RunFunctionOnGlobal(add_listener, context, /*argc=*/0, /*argv=*/nullptr);
+
+  struct PromiseRejectionTestCase {
+    const char* test_name;
+    const char* listener_script;
+    const char* expected_error_message;
+  };
+  const PromiseRejectionTestCase kTestCases[] = {
+      {
+          /*test_name=*/"Error",
+          /*listener_script=*/
+          "(function() {\n"
+          "  globalThis.testListener = function(message, sender, reply) {\n"
+          "    return Promise.reject(new Error('test reject'));\n"
+          "  };\n"
+          "})",
+          /*expected_error_message=*/"test reject",
+      },
+      {
+          /*test_name=*/"SubclassError",
+          /*listener_script=*/
+          "(function() {\n"
+          "  globalThis.testListener = function(message, sender, reply) {\n"
+          "    return Promise.reject(new TypeError('type error reject'));\n"
+          "  };\n"
+          "})",
+          /*expected_error_message=*/"type error reject",
+      },
+      {
+          /*test_name=*/"EmptyError",
+          /*listener_script=*/
+          "(function() {\n"
+          "  globalThis.testListener = function(message, sender, reply) {\n"
+          "    return Promise.reject(new Error(''));\n"
+          "  };\n"
+          "})",
+          /*expected_error_message=*/"",
+      },
+      {
+          /*test_name=*/"ErrorWithoutMessageArgument",
+          /*listener_script=*/
+          "(function() {\n"
+          "  globalThis.testListener = function(message, sender, reply) {\n"
+          "    return Promise.reject(new Error());\n"
+          "  };\n"
+          "})",
+          /*expected_error_message=*/"",
+      },
+      {
+          /*test_name=*/"ErrorThrowingGetter",
+          /*listener_script=*/
+          "(function() {\n"
+          "  globalThis.testListener = function(message, sender, reply) {\n"
+          "    const err = new Error();\n"
+          "    Object.defineProperty(err, 'message', {\n"
+          "      get() { throw new Error('getter throw'); }\n"
+          "    });\n"
+          "    return Promise.reject(err);\n"
+          "  };\n"
+          "})",
+          /*expected_error_message=*/
+          "A runtime.onMessage listener's promise rejected without an Error",
+      },
+      {
+          /*test_name=*/"NonError",
+          /*listener_script=*/
+          "(function() {\n"
+          "  globalThis.testListener = function(message, sender, reply) {\n"
+          "    return Promise.reject('non-error reject');\n"
+          "  };\n"
+          "})",
+          /*expected_error_message=*/
+          "A runtime.onMessage listener's promise rejected without an Error",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.test_name);
+
+    // Update `globalThis.testListener` with the test case implementation.
+    v8::Local<v8::Function> set_test_listener =
+        FunctionFromString(context, test_case.listener_script);
+    RunFunctionOnGlobal(set_test_listener, context, /*argc=*/0,
+                        /*argv=*/nullptr);
+
+    // Set up the receiver message port and bind `mock_message_port_host`.
+    base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+    const PortId port_id(other_context_id, /*port_number=*/0,
+                         /*is_opener=*/false,
+                         mojom::SerializationFormat::kJson);
+    mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+        message_port_host_receiver;
+    MockMessagePortHost mock_message_port_host;
+
+    EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
+    v8::Local<v8::Object> sender = v8::Object::New(isolate());
+    message_handler()->AddReceiverForTesting(
+        script_context(), port_id, sender, messaging_util::kOnMessageEvent,
+        message_port_remote, message_port_host_receiver);
+    message_port_remote.EnableUnassociatedUsage();
+    message_port_host_receiver.EnableUnassociatedUsage();
+    mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
+    EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
+
+    Message message("\"Hi\"", /*user_gesture=*/false);
+
+    // Expect `OneTimeMessageHandler` to close the port with the expected error
+    // message without an `Uncaught Error` prefix.
+    base::RunLoop port_close_wait_loop;
+    EXPECT_CALL(mock_message_port_host,
+                ClosePort(/*close_channel=*/true,
+                          /*error_message=*/testing::Optional(
+                              std::string(test_case.expected_error_message))))
+        .WillOnce(base::test::RunClosure(port_close_wait_loop.QuitClosure()));
+
+    // Deliver the message to the listener, which triggers the promise
+    // rejection.
+    message_handler()->DeliverMessage(script_context(), std::move(message),
+                                      port_id);
+    {
+      SCOPED_TRACE("waiting for message port to close");
+      port_close_wait_loop.Run();
+    }
+
+    // Verify that all expectations are met and the port is no longer tracked.
+    testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+    testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
+    EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
+  }
+}
+
 // Tests that nothing breaks when trying to call the reply callback multiple
 // times.
 TEST_F(OneTimeMessageHandlerTest, TryReplyingMultipleTimes) {

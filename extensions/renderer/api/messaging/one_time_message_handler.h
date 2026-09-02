@@ -207,10 +207,11 @@ class OneTimeMessageHandler {
                                 gin::Arguments* arguments);
 
   // Returns the JS `.message` property from `possible_error_value`.
-  // If `possible_error_value->IsNativeError` is not true, the message cannot be
-  // found, or the message is empty then `std::nullopt` is returned.
+  // If `possible_error_value->IsNativeError()` is not true or the message
+  // cannot be found then `std::nullopt` is returned.
   std::optional<std::string> GetErrorMessageFromValue(
       v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
       v8::Local<v8::Value> possible_error_value);
 
   // Returns the promise reject response from v8 back to the message sender.

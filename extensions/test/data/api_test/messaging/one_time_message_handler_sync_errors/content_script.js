@@ -9,8 +9,7 @@ chrome.test.runTests([
   // similar to github.com/mozilla/webextension-polyfill.
   async function oneTimeMessageHandlerSyncError() {
     await chrome.test.assertPromiseRejects(
-        chrome.runtime.sendMessage('test'),
-        'Error: Uncaught Error: sync error #1');
+        chrome.runtime.sendMessage('test'), 'Error: sync error #1');
     chrome.test.succeed();
   },
 ]);

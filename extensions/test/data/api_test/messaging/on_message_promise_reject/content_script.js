@@ -14,9 +14,30 @@ chrome.test.runTests([
   async function onMessagePromiseRejectWithErrorObject() {
     await chrome.test.assertPromiseRejects(
         chrome.runtime.sendMessage('return promise reject with error object'),
-        'Error: Uncaught Error: promise rejected error message');
+        'Error: promise rejected error message');
     chrome.test.succeed();
   },
+
+  // Tests if the rejection value is an Error object with custom message "test
+  // reject", the returned error message will only be "test reject" without any
+  // "Uncaught Error" prefix.
+  async function onMessagePromiseRejectWithTestRejectError() {
+    await chrome.test.assertPromiseRejects(
+        chrome.runtime.sendMessage(
+            'return promise reject with test reject error'),
+        'Error: test reject');
+    chrome.test.succeed();
+  },
+
+  // Tests if the rejection value is a subclass of Error (e.g. TypeError), the
+  // returned error message will contain only the Error's .message property.
+  async function onMessagePromiseRejectWithTypeError() {
+    await chrome.test.assertPromiseRejects(
+        chrome.runtime.sendMessage('return promise reject with type error'),
+        'Error: type error reject');
+    chrome.test.succeed();
+  },
+
 
   // Tests if the rejection value is a non-Error object with a string .message
   // property, a new Error object will be returned with a generic error message.

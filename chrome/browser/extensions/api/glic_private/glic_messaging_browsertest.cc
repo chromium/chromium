@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, InvokeAPI) {
       ExecuteInvoke(GetActiveWebContents(), "1", "universal-cart");
 
   std::string result_string = result.ExtractString();
-  EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
+  EXPECT_EQ("local-glic-not-enabled", result_string);
 }
 
 
@@ -687,8 +687,7 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
   {
     content::EvalJsResult result = ExecuteActivateTabWithConversation(
         GetActiveWebContents(), "test-conv-id");
-    EXPECT_EQ("error: Uncaught Error: local-conversation-not-found",
-              result.ExtractString());
+    EXPECT_EQ("error: local-conversation-not-found", result.ExtractString());
   }
 
   // Test missing arguments for activateTabWithConversation.
@@ -765,8 +764,7 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
 
   content::EvalJsResult result = ExecuteActivateTabWithConversation(
       GetActiveWebContents(), "test-conv-no-bound");
-  EXPECT_EQ("error: Uncaught Error: local-no-bound-tabs",
-            result.ExtractString());
+  EXPECT_EQ("error: local-no-bound-tabs", result.ExtractString());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
@@ -798,8 +796,7 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
 
   content::EvalJsResult result = ExecuteActivateTabWithConversation(
       second_tab->GetContents(), "test-conv-tab-not-in-window");
-  EXPECT_EQ("error: Uncaught Error: local-tab-not-in-window",
-            result.ExtractString());
+  EXPECT_EQ("error: local-tab-not-in-window", result.ExtractString());
 
   // Re-insert the detached tab back to the browser's tab strip model so that
   // it is properly destroyed during teardown, notifying observers and
@@ -941,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(GlicSubframeInvokeBrowserTest,
 
   // The browser rejects the request because the calling document is not the
   // tab's primary main frame.
-  EXPECT_EQ("error: Uncaught Error: local-invalid-document-id", result);
+  EXPECT_EQ("error: local-invalid-document-id", result);
 
   // Verify that the top-level frame remains example.com.
   EXPECT_EQ("example.com",

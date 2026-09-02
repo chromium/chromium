@@ -1090,24 +1090,24 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
 
 std::optional<std::string> OneTimeMessageHandler::GetErrorMessageFromValue(
     v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
     v8::Local<v8::Value> possible_error_value) {
   if (!possible_error_value->IsNativeError()) {
     return std::nullopt;
   }
 
-  v8::Local<v8::Message> error_message =
-      v8::Exception::CreateMessage(isolate, possible_error_value);
-  std::string error_message_from_v8;
-  bool error_message_string_convert_success =
-      gin::Converter<std::string>::FromV8(isolate,
-                                          error_message->Get().As<v8::Value>(),
-                                          &error_message_from_v8);
-
-  if (!error_message_string_convert_success || error_message_from_v8.empty()) {
-    return std::nullopt;
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Object> error_object = possible_error_value.As<v8::Object>();
+  v8::Local<v8::Value> message_value;
+  std::string error_message_string;
+  if (error_object->Get(context, gin::StringToSymbol(isolate, "message"))
+          .ToLocal(&message_value) &&
+      gin::Converter<std::string>::FromV8(isolate, message_value,
+                                          &error_message_string)) {
+    return error_message_string;
   }
 
-  return error_message_from_v8;
+  return std::nullopt;
 }
 
 void OneTimeMessageHandler::OnPromiseRejectedResponse(
@@ -1156,15 +1156,23 @@ void OneTimeMessageHandler::OnPromiseRejectedResponse(
 
   callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 
-  // If promise rejection reason is a JS Error type then close the message port
-  // with the Error's .message property. Otherwise return a generic error
-  // message.
+  // If promise rejection reason is a JS `Error` type then close the message
+  // port with the `Error`'s `.message` property. Otherwise return a generic
+  // error message.
   // TODO(crbug.com/439644930): Support sending the listener's stack trace along
   // with the rejection error. mozilla/webextension-polyfill doesn't support it
   // currently, but plans to (see
   // https://github.com/mozilla/webextension-polyfill/issues/210).
+  base::WeakPtr<OneTimeMessageHandler> weak_this = weak_factory_.GetWeakPtr();
   std::optional<std::string> error_message_from_value =
-      GetErrorMessageFromValue(isolate, promise_reject_value);
+      GetErrorMessageFromValue(isolate, context, promise_reject_value);
+
+  // Property lookup on `promise_reject_value` can execute arbitrary JavaScript
+  // (e.g. via a getter), which could invalidate `script_context` or destroy
+  // `this`. Fail gracefully if the context is no longer valid.
+  if (!weak_this || !script_context->is_valid()) {
+    return;
+  }
 
   std::string error_message =
       error_message_from_value
@@ -1217,8 +1225,17 @@ void OneTimeMessageHandler::OnListenerThrowsError(const PortId& port_id,
   CHECK(arguments->Length() > 0);
   CHECK(arguments->GetNext(&listener_thrown_value));
 
+  base::WeakPtr<OneTimeMessageHandler> weak_this = weak_factory_.GetWeakPtr();
   std::optional<std::string> error_message_from_value =
-      GetErrorMessageFromValue(isolate, listener_thrown_value);
+      GetErrorMessageFromValue(isolate, context, listener_thrown_value);
+
+  // Property lookup on `listener_thrown_value` can execute arbitrary JavaScript
+  // (e.g. via a getter), which could invalidate `script_context` or destroy
+  // `this`. Fail gracefully if the context is no longer valid.
+  if (!weak_this || !script_context->is_valid()) {
+    return;
+  }
+
   std::string error_message =
       error_message_from_value
           ? *error_message_from_value

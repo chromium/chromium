@@ -12,35 +12,35 @@ chrome.test.runTests([
     const test_cases = [
       {
         message: 'Error',
-        error: 'Error: Uncaught Error: plain error message',
+        error: 'Error: plain error message',
       },
       {
         message: 'EvalError',
-        error: 'Error: Uncaught EvalError: eval error message',
+        error: 'Error: eval error message',
       },
       {
         message: 'ReferenceError',
-        error: 'Error: Uncaught ReferenceError: reference error message',
+        error: 'Error: reference error message',
       },
       {
         message: 'SyntaxError',
-        error: 'Error: Uncaught SyntaxError: syntax error message',
+        error: 'Error: syntax error message',
       },
       {
         message: 'TypeError',
-        error: 'Error: Uncaught TypeError: type error message',
+        error: 'Error: type error message',
       },
       {
         message: 'URIError',
-        error: 'Error: Uncaught URIError: uri error message',
+        error: 'Error: uri error message',
       },
       {
         message: 'AggregateError',
-        error: 'Error: Uncaught AggregateError: aggregate error message',
+        error: 'Error: aggregate error message',
       },
       {
         message: 'CustomError',
-        error: 'Error: Uncaught Error: custom error message',
+        error: 'Error: custom error message',
       },
     ];
 

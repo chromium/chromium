@@ -8,6 +8,14 @@ function onMessageListener(message) {
       return new Promise((unusedResolve, reject) => {
         reject(new Error('promise rejected error message'));
       });
+    case 'return promise reject with test reject error':
+      return new Promise((unusedResolve, reject) => {
+        reject(new Error('test reject'));
+      });
+    case 'return promise reject with type error':
+      return new Promise((unusedResolve, reject) => {
+        reject(new TypeError('type error reject'));
+      });
     case 'return promise reject with custom object that has message key':
       return new Promise((unusedResolve, reject) => {
         reject({
