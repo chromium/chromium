@@ -18,11 +18,11 @@
 namespace {
 
 // The duration after which the tab card label expires and is no longer shown.
-const base::TimeDelta kLabelExpirationDelay = base::Days(5);
+constexpr base::TimeDelta kLabelExpirationDelay = base::Days(5);
 
 // The maximum acceptable delay between a sync entry being marked as opened
 // and the corresponding WebState being created.
-const base::TimeDelta kCreationTolerance = base::Seconds(2);
+constexpr base::TimeDelta kCreationTolerance = base::Seconds(2);
 
 // Returns true if `timestamp` is older than `kLabelExpirationDelay`.
 bool IsTimestampExpired(base::Time timestamp) {

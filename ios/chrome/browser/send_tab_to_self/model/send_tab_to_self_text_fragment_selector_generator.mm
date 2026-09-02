@@ -19,9 +19,9 @@
 #import "ios/web/public/web_state.h"
 
 namespace {
-const char kScriptName[] = "send_tab_to_self_fragments";
-const char kGetLinkToTextFunction[] = "stts.getLinkToText";
-const char kScrollToTextFragmentFunction[] = "stts.scrollToTextFragment";
+constexpr char kScriptName[] = "send_tab_to_self_fragments";
+constexpr char kGetLinkToTextFunction[] = "stts.getLinkToText";
+constexpr char kScrollToTextFragmentFunction[] = "stts.scrollToTextFragment";
 
 // Translates the JS-layer result into a SendTabToSelfTextFragment struct.
 void OnGetTextFragmentResult(

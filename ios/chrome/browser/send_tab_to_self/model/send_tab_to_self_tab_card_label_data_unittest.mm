@@ -30,8 +30,8 @@ using send_tab_to_self::SendTabToSelfEntry;
 
 namespace {
 
-const char kExampleURL[] = "https://www.example.com/";
-const char kLocalDeviceCacheGuid[] = "guid";
+constexpr char kExampleURL[] = "https://www.example.com/";
+constexpr char kLocalDeviceCacheGuid[] = "guid";
 
 class SendTabToSelfTabCardLabelDataTest : public PlatformTest {
  public:

@@ -18,7 +18,7 @@
 
 namespace {
 
-const CGFloat kAvatarSize = 24;
+constexpr CGFloat kAvatarSize = 24;
 
 }  // namespace
 

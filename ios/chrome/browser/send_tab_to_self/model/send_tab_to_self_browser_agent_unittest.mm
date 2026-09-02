@@ -56,9 +56,9 @@ using send_tab_to_self::ShareEntryPoint;
 
 namespace {
 
-const char kBlankURL[] = "about:blank";
-const char kExampleURL[] = "https://www.example.com/";
-const char kDeviceID[] = "device_id";
+constexpr char kBlankURL[] = "about:blank";
+constexpr char kExampleURL[] = "https://www.example.com/";
+constexpr char kDeviceID[] = "device_id";
 
 class SendTabToSelfBrowserAgentTest : public PlatformTest {
  public:
