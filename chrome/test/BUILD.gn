@@ -194,6 +194,7 @@ static_library("test_support") {
     "//chrome/test/base:browser_feature_test_waiters",
     "//chrome/test/base:browser_window_waiters",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:chrome_render_view_test",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:chrome_test_suite",
     "//chrome/test/base:chrome_test_utils",
@@ -217,8 +218,6 @@ static_library("test_support") {
 
   sources = [
     "../app/startup_timestamps.h",
-    "base/chrome_render_view_test.cc",
-    "base/chrome_render_view_test.h",
     "base/chrome_test_utils.cc",
   ]
 

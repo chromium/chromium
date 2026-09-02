@@ -590,6 +590,53 @@ source_set("chrome_unit_test_suite") {
   }
 }
 
+source_set("chrome_render_view_test") {
+  testonly = true
+  sources = [
+    "chrome_render_view_test.cc",
+    "chrome_render_view_test.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/test:test_support",
+    "//services/service_manager/public/cpp",
+    "//third_party/blink/public/common:headers",
+  ]
+  deps = [
+    ":chrome_unit_test_suite",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/common",
+    "//chrome/renderer",
+    "//components/autofill/content/renderer:test_support",
+    "//components/input",
+    "//components/record_replay/core/common",
+    "//components/spellcheck:buildflags",
+    "//components/spellcheck/renderer",
+    "//extensions/buildflags",
+    "//testing/gmock",
+    "//third_party/blink/public:blink_headers",
+  ]
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/renderer/extensions",
+      "//extensions/browser",
+      "//extensions/renderer",
+    ]
+  }
+  if (enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+  if (!is_android) {
+    deps += [
+      "//chrome/renderer:process_state",
+      "//components/record_replay/content/renderer",
+    ]
+  }
+}
+
 source_set("chrome_test_suite") {
   testonly = true
   sources = [
