@@ -7136,6 +7136,21 @@
             ]
         }
     ],
+    "DisableGridTabSwitcher": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableGridTabSwitcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableNonYUVOverlaysFromExo": [
         {
             "platforms": [
