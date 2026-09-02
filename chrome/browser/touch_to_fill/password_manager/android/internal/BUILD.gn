@@ -72,11 +72,11 @@ android_resources("java_resources") {
   ]
   sources = [
     "java/res/drawable/touch_to_fill_more_passkeys_icon.xml",
-    "java/res/layout/touch_to_fill_footer_item.xml",
-    "java/res/layout/touch_to_fill_header_item.xml",
-    "java/res/layout/touch_to_fill_list_item.xml",
-    "java/res/layout/touch_to_fill_more_passkeys_item.xml",
-    "java/res/layout/touch_to_fill_sheet.xml",
+    "java/res/layout/touch_to_fill_password_manager_footer_item.xml",
+    "java/res/layout/touch_to_fill_password_manager_header_item.xml",
+    "java/res/layout/touch_to_fill_password_manager_list_item.xml",
+    "java/res/layout/touch_to_fill_password_manager_more_passkeys_item.xml",
+    "java/res/layout/touch_to_fill_password_manager_sheet.xml",
     "java/res/values/dimens.xml",
   ]
 }

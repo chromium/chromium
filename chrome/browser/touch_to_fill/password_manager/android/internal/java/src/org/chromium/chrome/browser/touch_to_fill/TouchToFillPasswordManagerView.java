@@ -61,7 +61,8 @@ class TouchToFillPasswordManagerView extends BottomSheetListViewBase {
         super(
                 bottomSheetController,
                 (RelativeLayout)
-                        LayoutInflater.from(context).inflate(R.layout.touch_to_fill_sheet, null),
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.touch_to_fill_password_manager_sheet, null),
                 true);
 
         setSheetItemListView(getContentView().findViewById(R.id.sheet_item_list));
