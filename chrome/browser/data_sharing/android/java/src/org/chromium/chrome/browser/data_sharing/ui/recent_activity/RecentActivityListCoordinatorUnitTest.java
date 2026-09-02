@@ -166,4 +166,14 @@ public class RecentActivityListCoordinatorUnitTest {
         Assert.assertEquals(View.GONE, emptyView.getVisibility());
         Assert.assertEquals(View.VISIBLE, recyclerView.getVisibility());
     }
+
+    @Test
+    public void testMenuButtonClick_DoesNotCrash() {
+        mCoordinator.requestShowUI();
+        View contentView = mBottomSheetContentCaptor.getValue().getContentView();
+        mActivity.setContentView(contentView);
+        View menuButton = contentView.findViewById(R.id.recent_activity_menu_button);
+        Assert.assertNotNull(menuButton);
+        menuButton.performClick();
+    }
 }

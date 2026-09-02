@@ -34,8 +34,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.widget.RectProvider;
-import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 /**
@@ -174,25 +172,7 @@ public class RecentActivityListCoordinator {
             BasicListMenu listMenu =
                     BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, delegate);
 
-            ListMenuDelegate listMenuDelegate =
-                    new ListMenuDelegate() {
-                        @Override
-                        public ListMenu getListMenu() {
-                            return listMenu;
-                        }
-
-                        @Override
-                        public RectProvider getRectProvider(View listMenuButton) {
-                            ViewRectProvider rectProvider = new ViewRectProvider(listMenuButton);
-                            rectProvider.setIncludePadding(true);
-
-                            int handleBarHeight =
-                                    mContentContainer.findViewById(R.id.handlebar).getHeight();
-                            int buttonHeight = listMenuButton.getHeight();
-                            rectProvider.setInsetPx(0, handleBarHeight + buttonHeight, 0, 0);
-                            return rectProvider;
-                        }
-                    };
+            ListMenuDelegate listMenuDelegate = () -> listMenu;
 
             menuView.setMenuMaxWidth(
                     view.getResources().getDimensionPixelSize(R.dimen.recent_activity_menu_width));
