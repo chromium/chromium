@@ -89,7 +89,6 @@
 #include "chrome/browser/ui/sessions/session_service_browser_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
@@ -1268,12 +1267,6 @@ glic::GlicNudgeController* BrowserWindowFeatures::glic_nudge_controller() {
   return glic_split_button_controller_
              ? glic_split_button_controller_->nudge_controller()
              : nullptr;
-}
-
-SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
-  // TODO(crbug.com/428946261): Remove this and replace all clients with
-  // `SidePanelUI::From()`.
-  return browser_ ? SidePanelUI::From(browser_) : nullptr;
 }
 
 actions::ActionItem* BrowserWindowFeatures::GetRootActionItem() {

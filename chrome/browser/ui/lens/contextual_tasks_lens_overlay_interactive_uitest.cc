@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   const DeepQuery kPathToToolbarTitle{"contextual-tasks-app", "top-toolbar",
                                       ".top-toolbar-title"};
 
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   contextual_tasks::ContextualTasksPanelController* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser());
 
