@@ -3617,6 +3617,35 @@ ExtensionFunction::ResponseAction TabsCreateSplitFunction::Run() {
   return RespondNow(WithArguments(ExtensionTabUtil::GetSplitId(*split_id)));
 }
 
+TabsUnsplitFunction::~TabsUnsplitFunction() = default;
+
+ExtensionFunction::ResponseAction TabsUnsplitFunction::Run() {
+  std::optional<tabs::Unsplit::Params> params =
+      tabs::Unsplit::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int split_view_id = params->split_view_id;
+  std::string error;
+  WindowController* window = nullptr;
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::CreateEmpty();
+  if (!ExtensionTabUtil::GetSplitById(split_view_id, browser_context(),
+                                      include_incognito_information(), &window,
+                                      &split_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+  BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
+  CHECK(browser);
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  CHECK(tab_list);
+  tab_list->Unsplit(split_id);
+
+  return RespondNow(NoArguments());
+}
+
 ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   std::optional<tabs::DetectLanguage::Params> params =
       tabs::DetectLanguage::Params::Create(args());

@@ -1,0 +1,12 @@
+{
+  "name": "Unsplit Split View Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "tabs",
+    "tabGroups"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

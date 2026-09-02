@@ -2914,6 +2914,7 @@ Called by update_extension_histograms.py.-->
   <int value="1982" label="DEVELOPERPRIVATE_OPENREVIEWPAGE"/>
   <int value="1983" label="TABS_CREATESPLIT"/>
   <int value="1984" label="RUNTIME_MARKLISTENERREGISTRATIONCOMPLETE"/>
+  <int value="1985" label="TABS_UNSPLIT"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

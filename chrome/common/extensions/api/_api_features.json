@@ -965,6 +965,9 @@
   "tabs.createSplit": {
     "feature_flag": "ApiTabsSplitView"
   },
+  "tabs.unsplit": {
+    "feature_flag": "ApiTabsSplitView"
+  },
   "tabs.executeScript": {
     "max_manifest_version": 2
   },

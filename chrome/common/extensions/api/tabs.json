@@ -861,6 +861,25 @@
         "returns_async": {"name": "callback", "optional": true, "parameters": []}
       },
       {
+        "name": "unsplit",
+        "type": "function",
+        "nodoc": true,
+        "description": "Separates the tabs in a Split View into independent tabs.",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "splitViewId",
+            "minimum": 0,
+            "description": "The ID of the Split View to separate."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
+      },
+      {
         "name": "detectLanguage",
         "type": "function",
         "description": "Detects the primary language of the content in a tab.",
