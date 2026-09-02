@@ -27,13 +27,17 @@ source_set("lens") {
     "//chrome/browser/signin",
     "//chrome/common",
     "//components/lens",
+    "//components/lens:buildflags",
     "//content/public/browser",
     "//third_party/jni_zero",
     "//ui/gfx",
   ]
 
   if (enable_lens_overlay_backend) {
-    deps += [ "//chrome/browser/ui/lens:backend_logic_impl" ]
+    deps += [
+      "//chrome/browser/lens/core/mojom:mojo_bindings",
+      "//chrome/browser/ui/lens:backend_logic_impl",
+    ]
   }
 }
 

@@ -115,7 +115,8 @@ public class LensOverlayCoordinatorUnitTest {
 
         // Verify that it returns false and does not call into C++.
         assertFalse(started);
-        verify(mLensOverlayCoordinatorJniMock, never()).showUI(any(Long.class), any(Integer.class));
+        verify(mLensOverlayCoordinatorJniMock, never())
+                .showUI(any(Long.class), any(Integer.class), any(Boolean.class));
     }
 
     @Test
@@ -123,7 +124,8 @@ public class LensOverlayCoordinatorUnitTest {
         LensOverlayCoordinator coordinator = LensOverlayCoordinator.getOrCreateForTab(mTab);
 
         // Mock JNI to return true.
-        when(mLensOverlayCoordinatorJniMock.showUI(any(Long.class), any(Integer.class)))
+        when(mLensOverlayCoordinatorJniMock.showUI(
+                        any(Long.class), any(Integer.class), any(Boolean.class)))
                 .thenReturn(true);
 
         // Attempt to start the overlay.
@@ -135,7 +137,7 @@ public class LensOverlayCoordinatorUnitTest {
         assertTrue(LensOverlayTabHelper.isOverlayShowing(mTab));
         // Verify JNI call.
         verify(mLensOverlayCoordinatorJniMock, times(1))
-                .showUI(any(Long.class), eq(LensOverlayInvocationSource.APP_MENU));
+                .showUI(any(Long.class), eq(LensOverlayInvocationSource.APP_MENU), eq(false));
     }
 
     @Test
@@ -143,7 +145,8 @@ public class LensOverlayCoordinatorUnitTest {
         LensOverlayCoordinator coordinator = LensOverlayCoordinator.getOrCreateForTab(mTab);
 
         // Mock JNI to return false (e.g., RenderWidgetHostView was null).
-        when(mLensOverlayCoordinatorJniMock.showUI(any(Long.class), any(Integer.class)))
+        when(mLensOverlayCoordinatorJniMock.showUI(
+                        any(Long.class), any(Integer.class), any(Boolean.class)))
                 .thenReturn(false);
 
         // Attempt to start the overlay.

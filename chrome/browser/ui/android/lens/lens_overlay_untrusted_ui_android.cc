@@ -20,29 +20,42 @@ namespace {
 constexpr char kLensOverlayCss[] = R"CSS(html, body {
   align-items: center;
   display: flex;
+  flex-direction: column;
   font-family: sans-serif;
   height: 100vh;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 0;
   padding: 0;
   width: 100vw;
-})CSS";
+}
+
+#div-debug {
+  font-family: courier;
+  margin-left: 10%;
+  margin-right: 10%;
+  width: 80%;
+}
+
+)CSS";
 
 constexpr char kLensOverlayJs[] =
-    R"JS(document.body.addEventListener('click', () => {
-  if (window.lensOverlay) {
-    window.lensOverlay.close();
-  }
+    R"JS(document.addEventListener('DOMContentLoaded', () => {
+  document.body.addEventListener('click', () => {
+    if (window.lensOverlay) {
+      window.lensOverlay.close();
+    }
+  });
 });)JS";
 
 constexpr char kLensOverlayHtml[] = R"HTML(<!DOCTYPE html>
 <html>
 <head>
   <link rel="stylesheet" href="lens_overlay.css">
+  <script type="module" src="lens_overlay.js"></script>
 </head>
 <body role="dialog" aria-label="Lens Overlay Placeholder">
   <h1>Lens Overlay Placeholder: Click to dismiss.</h1>
-  <script type="module" src="lens_overlay.js"></script>
+  <div id="div-debug"></div>
 </body>
 </html>)HTML";
 

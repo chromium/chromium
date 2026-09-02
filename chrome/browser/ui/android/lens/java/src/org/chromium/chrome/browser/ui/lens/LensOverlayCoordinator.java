@@ -132,7 +132,10 @@ public class LensOverlayCoordinator implements UserData {
         // - If capture fails to start, start() returns failure immediately.
         // - If capture fails asynchronously (e.g., GPU crash), onCaptureError() is called.
         if (!LensOverlayCoordinatorJni.get()
-                .showUI(mNativeLensOverlayControllerAndroid, invocationSource)) {
+                .showUI(
+                        mNativeLensOverlayControllerAndroid,
+                        invocationSource,
+                        isWebUiImplementationEnabled())) {
             Log.e(TAG, "Failed to show Lens Overlay UI");
             setShowing(false);
             return false;
@@ -379,6 +382,33 @@ public class LensOverlayCoordinator implements UserData {
         return window.getIntentRequestTracker();
     }
 
+    void addWebUiDebugString(String s) {
+        if (mOverlayWebContents != null) {
+            String jsFormat =
+                    """
+                    const el = document.getElementById('div-debug');
+                    const div = document.createElement('div');
+                    div.textContent = '%s';
+                    el.appendChild(div);
+                    """;
+            // TODO(crbug.com/538670163): Move this to a proper file. Note that the text replacement
+            // below is for convenience, but not robust (e.g., it does not escape "</script>"
+            // literal, which on a browser would premature end a "<script>" block.
+            String js = String.format(jsFormat, s.replace("\\", "\\\\").replace("'", "\\'"));
+            mOverlayWebContents.evaluateJavaScript(js, null);
+        }
+    }
+
+    /**
+     * Called by the C++ controller when the backend responds with the processed objects. This is a
+     * temporary tracer bullet to verify the data pipeline.
+     */
+    @CalledByNative
+    void onObjectsReceived(int objectCount) {
+        ThreadUtils.assertOnUiThread();
+        addWebUiDebugString("Received Backend Objects: " + objectCount);
+    }
+
     @NativeMethods
     interface Natives {
         long init(
@@ -387,7 +417,8 @@ public class LensOverlayCoordinator implements UserData {
 
         boolean showUI(
                 long nativeLensOverlayControllerAndroid,
-                @LensOverlayInvocationSource int invocationSource);
+                @LensOverlayInvocationSource int invocationSource,
+                boolean useWebUi);
 
         void destroy(long nativeLensOverlayControllerAndroid);
     }
