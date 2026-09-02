@@ -3196,7 +3196,7 @@
       "katie@chromium.org",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 170
   },
   {
     "name": "enable-accessibility-manifest-v3-espeakng",
