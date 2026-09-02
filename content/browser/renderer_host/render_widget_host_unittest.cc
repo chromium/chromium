@@ -44,6 +44,7 @@
 #include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/common/content_features.h"
@@ -1969,6 +1970,106 @@ TEST_F(RenderWidgetHostTest, KeyboardListenerSuppressFollowingEvents) {
   SimulateKeyboardEvent(WebInputEvent::Type::kChar);
   EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(RenderWidgetHostTest, KeyboardListenerKeyDownFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAllowKeyDownInKeyPressListeners);
+
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  handle_key_press_event_ = true;
+  input::NativeWebKeyboardEvent key_down_event =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyDown);
+  key_down_event.is_confirmed_physical_keyboard_input = true;
+  host_->ForwardKeyboardEvent(key_down_event);
+
+  // KeyDown events should not be processed by key press listeners when the
+  // feature is disabled.
+  EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
+}
+
+TEST_F(RenderWidgetHostTest, KeyboardListenerKeyDownFeatureEnabledNonPhysical) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAllowKeyDownInKeyPressListeners};
+
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  handle_key_press_event_ = true;
+
+  // Non-physical KeyDown event should not be processed by listeners.
+  input::NativeWebKeyboardEvent non_physical_key_down =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyDown);
+  non_physical_key_down.is_confirmed_physical_keyboard_input = false;
+  host_->ForwardKeyboardEvent(non_physical_key_down);
+  EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
+}
+
+TEST_F(RenderWidgetHostTest,
+       KeyboardListenerKeyDownFeatureEnabledSkipIfUnhandled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAllowKeyDownInKeyPressListeners};
+
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  handle_key_press_event_ = true;
+
+  // Physical KeyDown event with skip_if_unhandled should not be processed.
+  input::NativeWebKeyboardEvent skip_key_down =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyDown);
+  skip_key_down.is_confirmed_physical_keyboard_input = true;
+  skip_key_down.skip_if_unhandled = true;
+  host_->ForwardKeyboardEvent(skip_key_down);
+  EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
+}
+
+TEST_F(RenderWidgetHostTest, KeyboardListenerKeyDownFeatureEnabledPhysical) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAllowKeyDownInKeyPressListeners};
+
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  handle_key_press_event_ = true;
+
+  // Physical KeyDown event.
+  input::NativeWebKeyboardEvent physical_key_down =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyDown);
+  physical_key_down.is_confirmed_physical_keyboard_input = true;
+  host_->ForwardKeyboardEvent(physical_key_down);
+
+  // On Android, the physical KeyDown event is handled.
+  EXPECT_FALSE(host_->mock_input_router()->sent_keyboard_event_);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(RenderWidgetHostTest, KeyboardListenerKeyDownIgnoredOnNonAndroid) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAllowKeyDownInKeyPressListeners};
+
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  handle_key_press_event_ = true;
+
+  input::NativeWebKeyboardEvent key_down_event =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyDown);
+  host_->ForwardKeyboardEvent(key_down_event);
+
+  // On other platforms, KeyDown is never processed by key press listeners.
+  EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(RenderWidgetHostTest, MouseEventCallbackCanHandleEvent) {
   host_->SetupForInputRouterTest();

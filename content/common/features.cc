@@ -38,6 +38,14 @@ BASE_FEATURE(kAccessibilityExposeNonAtomicTextFieldChildren,
 BASE_FEATURE(kAllowContentInitiatedDataUrlNavigations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables forwarding WebKeyboardEvent of type kKeyDown from confirmed physical
+// keyboards to KeyPressEventCallback listeners in RenderWidgetHostImpl on
+// Android.
+// Owner: lkuba@google.com, piotrkotynia@google.com
+// Removal: Check after 2026-11-01
+BASE_FEATURE(kAllowKeyDownInKeyPressListeners,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, AncestorThrottle evaluates redirect responses using the source
 // URL of the redirect rather than the target URL.
 BASE_FEATURE(kAncestorThrottleEvaluateRedirectSource,

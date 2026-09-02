@@ -88,6 +88,7 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
@@ -354,6 +355,28 @@ std::unique_ptr<RenderWidgetHostIteratorImpl> GetEmbeddedRenderWidgetHosts(
   }
 
   return hosts;
+}
+
+bool ShouldProcessKeyEventForListeners(
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.skip_if_unhandled) {
+    return false;
+  }
+
+  if (event.GetType() == WebKeyboardEvent::Type::kRawKeyDown) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (event.GetType() == WebKeyboardEvent::Type::kKeyDown &&
+      event.is_confirmed_physical_keyboard_input &&
+      base::FeatureList::IsEnabled(
+          features::kAllowKeyDownInKeyPressListeners)) {
+    return true;
+  }
+#endif
+
+  return false;
 }
 
 }  // namespace
@@ -1794,9 +1817,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
   if (KeyPressListenersHandleEvent(key_event)) {
     // Some keypresses that are accepted by the listener may be followed by Char
     // and KeyUp events, which should be ignored.
-    if (key_event.GetType() == WebKeyboardEvent::Type::kRawKeyDown) {
-      suppress_events_until_keydown_ = true;
-    }
+    suppress_events_until_keydown_ = true;
     return;
   }
 
@@ -3678,8 +3699,7 @@ void RenderWidgetHostImpl::RequestForceRedraw(int snapshot_id) {
 
 bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
     const input::NativeWebKeyboardEvent& event) {
-  if (event.skip_if_unhandled ||
-      event.GetType() != WebKeyboardEvent::Type::kRawKeyDown) {
+  if (!ShouldProcessKeyEventForListeners(event)) {
     return false;
   }
 
