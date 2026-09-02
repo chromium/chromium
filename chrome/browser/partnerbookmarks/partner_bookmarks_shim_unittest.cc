@@ -50,6 +50,7 @@ class PartnerBookmarksShimTest : public testing::Test {
  protected:
   // testing::Test
   void SetUp() override {
+    PartnerBookmarksShim::EnablePartnerBookmarksEditing();
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
