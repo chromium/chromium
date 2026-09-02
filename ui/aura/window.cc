@@ -141,6 +141,16 @@ const ui::Layer* GetRootLayer(const ui::Layer* layer) {
   return root;
 }
 
+// When the layer is not managed by the parent (e.g. hosted in
+// NativeViewHost), the window may be reparented across root windows before
+// its layer is reparented into the new root layer tree. In that transient
+// state, the layer root does not match the root window's layer.
+bool IsLayerDivergedFromRoot(const Window* window, const Window* root_window) {
+  CHECK(root_window);
+  return !window->layer_managed_by_parent() &&
+         GetRootLayer(window->layer()) != root_window->layer();
+}
+
 gfx::Vector2d GetLayerTargetOffsetToRoot(const ui::Layer* layer) {
   gfx::Vector2d offset;
   while (layer) {
@@ -487,12 +497,7 @@ gfx::Rect Window::GetBoundsInRootWindow() const {
   if (!root_window) {
     return bounds();
   }
-  // When the layer is not managed by the parent (e.g. hosted in
-  // NativeViewHost), the window may be reparented across root windows before
-  // its layer is reparented into the new root layer tree. In that transient
-  // state, return `bounds()`.
-  if (!layer_managed_by_parent() &&
-      GetRootLayer(layer()) != root_window->layer()) {
+  if (IsLayerDivergedFromRoot(this, root_window)) {
     return bounds();
   }
   gfx::Rect bounds_in_root(bounds().size());
@@ -501,20 +506,16 @@ gfx::Rect Window::GetBoundsInRootWindow() const {
 }
 
 gfx::Rect Window::GetActualBoundsInRootWindow() const {
-  if (!GetRootWindow()) {
+  const Window* root_window = GetRootWindow();
+  if (!root_window) {
     return bounds();
   }
-  // When the layer is not managed by the parent (e.g. hosted in
-  // NativeViewHost), the window may be reparented across root windows before
-  // its layer is reparented into the new root layer tree. In that transient
-  // state, return `bounds()`.
-  if (!layer_managed_by_parent() &&
-      GetRootLayer(layer()) != GetRootWindow()->layer()) {
+  if (IsLayerDivergedFromRoot(this, root_window)) {
     return bounds();
   }
   gfx::Rect bounds_in_root(bounds().size());
   gfx::PointF origin_f = gfx::PointF(bounds_in_root.origin());
-  ui::Layer::ConvertPointToLayer(layer(), GetRootWindow()->layer(),
+  ui::Layer::ConvertPointToLayer(layer(), root_window->layer(),
                                  /*use_target_transform=*/false, &origin_f);
   bounds_in_root.set_origin(gfx::ToFlooredPoint(origin_f));
   return bounds_in_root;
@@ -915,12 +916,7 @@ bool Window::ContainsPointInRoot(const gfx::Point& point_in_root) const {
   if (!root_window) {
     return false;
   }
-  // When the layer is not managed by the parent (e.g. hosted in
-  // NativeViewHost), the window may be reparented across root windows before
-  // its layer is reparented into the new root layer tree. In that transient
-  // state, return false.
-  if (!layer_managed_by_parent() &&
-      GetRootLayer(layer()) != root_window->layer()) {
+  if (IsLayerDivergedFromRoot(this, root_window)) {
     return false;
   }
   gfx::Point local_point(point_in_root);
