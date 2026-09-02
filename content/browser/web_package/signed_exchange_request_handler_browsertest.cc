@@ -29,12 +29,12 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/signed_exchange_handler.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
-#include "content/common/content_constants_internal.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1226,10 +1226,13 @@ class SignedExchangeAcceptHeaderBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(accept_header);
     EXPECT_EQ(*accept_header,
               !is_fallback
-                  ? base::StrCat({kFrameAcceptHeaderValue,
-                                  kAcceptHeaderSignedExchangeSuffix})
+                  ? FrameAcceptHeaderValue(
+                        /*allow_sxg_responses=*/true,
+                        shell()->web_contents()->GetBrowserContext())
                   : (is_navigation
-                         ? std::string(kFrameAcceptHeaderValue)
+                         ? FrameAcceptHeaderValue(
+                               /*allow_sxg_responses=*/false,
+                               shell()->web_contents()->GetBrowserContext())
                          : std::string(network::kDefaultAcceptHeaderValue)));
   }
 
@@ -1409,9 +1412,12 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeAcceptHeaderBrowserTest, ServiceWorker) {
   NavigateAndWaitForTitle(https_server_.GetURL("/sxg/service-worker.html"),
                           "Done");
 
-  const std::string frame_accept = kFrameAcceptHeaderValue;
-  const std::string frame_accept_with_sxg =
-      frame_accept + std::string(kAcceptHeaderSignedExchangeSuffix);
+  const std::string frame_accept = FrameAcceptHeaderValue(
+      /*allow_sxg_responses=*/false,
+      shell()->web_contents()->GetBrowserContext());
+  const std::string frame_accept_with_sxg = FrameAcceptHeaderValue(
+      /*allow_sxg_responses=*/true,
+      shell()->web_contents()->GetBrowserContext());
   const std::vector<std::string> scopes = {"/sxg/sw-scope-generated/",
                                            "/sxg/sw-scope-navigation-preload/",
                                            "/sxg/sw-scope-no-respond-with/"};

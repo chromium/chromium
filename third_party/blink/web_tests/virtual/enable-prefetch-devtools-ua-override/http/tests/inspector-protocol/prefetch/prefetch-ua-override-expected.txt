@@ -5,7 +5,7 @@ Connection: keep-alive
 Upgrade-Insecure-Requests: 1
 Sec-Purpose: prefetch
 Sec-Speculation-Tags: null
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8
 sec-ch-ua: "content_shell";v="999"
 sec-ch-ua-mobile: ?1
 sec-ch-ua-platform: "Lynx"

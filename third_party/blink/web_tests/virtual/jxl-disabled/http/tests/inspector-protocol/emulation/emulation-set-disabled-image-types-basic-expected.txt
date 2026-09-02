@@ -1,4 +1,4 @@
 Tests that Emulation.setDisabledImageTypes method does not crash the renderer.
-JXL result: Success
+JXL result: Invalid image type
 Reloading
 Success

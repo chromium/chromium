@@ -62,8 +62,6 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/web_package/signed_exchange_consts.h"
-#include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -71,6 +69,7 @@
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/preload_pipeline_info.h"
@@ -3898,8 +3897,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
 
   // Default headers are present.
   EXPECT_TRUE(CheckHeader(*dict, "accept",
-                          std::string(kFrameAcceptHeaderValue) +
-                              std::string(kAcceptHeaderSignedExchangeSuffix)));
+                          FrameAcceptHeaderValue(
+                              /*allow_sxg_responses=*/true,
+                              shell()->web_contents()->GetBrowserContext())));
 
   // Injected headers are present.
   EXPECT_TRUE(CheckHeader(*dict, "x-injected", "injected value"));
