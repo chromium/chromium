@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -117,16 +118,10 @@ class AutofillProfileComparatorTest : public testing::Test {
   void MergeEmailAddressesAndExpect(const AutofillProfile& a,
                                     const AutofillProfile& b,
                                     const EmailInfo& expected) {
-    EmailInfo actual;
-    const AutofillProfile::ProfileMergeResult expected_result =
-        b.GetRawInfo(EMAIL_ADDRESS) == expected.GetRawInfo(EMAIL_ADDRESS)
-            ? AutofillProfile::ProfileMergeResult::
-                  kMergeSucceededWithoutModification
-            : AutofillProfile::ProfileMergeResult::
-                  kMergeSucceededWithModification;
-    EXPECT_EQ(comparator_.MergeEmailAddresses(a, b, actual), expected_result);
+    std::optional<EmailInfo> actual = comparator_.MergeEmailAddresses(a, b);
+    ASSERT_TRUE(actual.has_value());
     EXPECT_EQ(expected.GetRawInfo(EMAIL_ADDRESS),
-              actual.GetRawInfo(EMAIL_ADDRESS));
+              actual->GetRawInfo(EMAIL_ADDRESS));
   }
 
   void MergeCompanyNamesAndExpect(const AutofillProfile& a,
@@ -502,13 +497,11 @@ TEST_F(AutofillProfileComparatorTest, MergeComponents) {
   // Note, all other profiles are already finalized.
   p.FinalizeAfterImport();
 
-  EmailInfo email;
   CompanyInfo company;
   PhoneNumber phone(&p);
   Address address(p.GetAddressCountryCode());
 
-  EXPECT_NE(comparator_.MergeEmailAddresses(p, p, email),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergeEmailAddresses(p, p).has_value());
   EXPECT_NE(comparator_.MergeCompanyNames(p, p, company),
             AutofillProfile::ProfileMergeResult::kMergeFailed);
   EXPECT_NE(comparator_.MergePhoneNumbers(p, p, phone),
@@ -520,8 +513,7 @@ TEST_F(AutofillProfileComparatorTest, MergeComponents) {
       NameInfo::AreNamesMergeable(p.GetNameInfo(), p.GetAddressCountryCode(),
                                   p.GetNameInfo(), p.GetAddressCountryCode()));
 
-  EXPECT_NE(comparator_.MergeEmailAddresses(p, mergeable, email),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergeEmailAddresses(p, mergeable).has_value());
   EXPECT_NE(comparator_.MergeCompanyNames(p, mergeable, company),
             AutofillProfile::ProfileMergeResult::kMergeFailed);
   EXPECT_NE(comparator_.MergePhoneNumbers(p, mergeable, phone),
@@ -537,9 +529,9 @@ TEST_F(AutofillProfileComparatorTest, MergeComponents) {
       p.GetNameInfo(), p.GetAddressCountryCode(),
       not_mergeable_by_name.GetNameInfo(),
       not_mergeable_by_name.GetAddressCountryCode()));
-  EXPECT_EQ(
-      comparator_.MergeEmailAddresses(p, not_mergeable_by_email_address, email),
-      AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_FALSE(
+      comparator_.MergeEmailAddresses(p, not_mergeable_by_email_address)
+          .has_value());
   EXPECT_EQ(
       comparator_.MergeCompanyNames(p, not_mergeable_by_company_name, company),
       AutofillProfile::ProfileMergeResult::kMergeFailed);
@@ -618,11 +610,10 @@ TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
   MergeEmailAddressesAndExpect(empty, profile_a, email_a);
 
   AutofillProfile different = CreateProfileWithEmail("not@the-same.com");
-  EmailInfo email;
-  EXPECT_EQ(comparator_.MergeEmailAddresses(profile_a, different, email),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_EQ(comparator_.MergeEmailAddresses(different, profile_a, email),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_FALSE(
+      comparator_.MergeEmailAddresses(profile_a, different).has_value());
+  EXPECT_FALSE(
+      comparator_.MergeEmailAddresses(different, profile_a).has_value());
 }
 
 // Tests that company names are merged correctly.

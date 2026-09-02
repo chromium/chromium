@@ -15,13 +15,13 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/email_info.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
 class Address;
 class CompanyInfo;
-class EmailInfo;
 class PhoneNumber;
 
 struct ProfileValueDifference {
@@ -92,17 +92,14 @@ class AutofillProfileComparator {
                                       const AutofillProfile& second_profile,
                                       const std::string& app_locale);
 
-  // Populates `email_info` with the result of merging the email addresses in
-  // `new_profile` and `old_profile`. Returns the merge result.
+  // Merges the email addresses in `new_profile` and `old_profile`. Returns an
+  // `EmailInfo` on success or std::nullopt if the merge fails.
   //
   // Heuristic: If one email address is empty, use the other; otherwise, prefer
   // the most recently used version of the email address.
-  // TODO(crbug.com/453945181): Return a newly created `EmailInfo` instead of
-  // modifying `email_info`.
-  AutofillProfile::ProfileMergeResult MergeEmailAddresses(
+  std::optional<EmailInfo> MergeEmailAddresses(
       const AutofillProfile& new_profile,
-      const AutofillProfile& old_profile,
-      EmailInfo& email_info) const;
+      const AutofillProfile& old_profile) const;
 
   // Populates `company_info` with the result of merging the company names in
   // `new_profile` and `old_profile` if the merge succeeds. Returns the merge

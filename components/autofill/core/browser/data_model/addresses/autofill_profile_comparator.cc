@@ -133,40 +133,33 @@ bool AutofillProfileComparator::Compare(
   return false;
 }
 
-AutofillProfile::ProfileMergeResult
-AutofillProfileComparator::MergeEmailAddresses(
+std::optional<EmailInfo> AutofillProfileComparator::MergeEmailAddresses(
     const AutofillProfile& new_profile,
-    const AutofillProfile& old_profile,
-    EmailInfo& email_info) const {
+    const AutofillProfile& old_profile) const {
   const std::u16string& e1 = new_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
   const std::u16string& e2 = old_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
 
   if (!e1.empty() && !e2.empty() &&
       !l10n::CaseInsensitiveCompare().StringsEqual(e1, e2)) {
-    return AutofillProfile::ProfileMergeResult::kMergeFailed;
+    return std::nullopt;
   }
 
-  const std::u16string* best = nullptr;
+  std::u16string_view best;
 
   if (e1.empty()) {
-    best = &e2;
+    best = e2;
   } else if (e2.empty()) {
-    best = &e1;
+    best = e1;
   } else {
     best = old_profile.usage_history().use_date() >
                    new_profile.usage_history().use_date()
-               ? &e2
-               : &e1;
+               ? e2
+               : e1;
   }
 
-  // TODO(crbug.com/453945181): Return a newly created `EmailInfo` instead of
-  // modifying `email_info`.
-  email_info.SetInfo(EMAIL_ADDRESS, *best, app_locale_);
-  return *best == e2
-             ? AutofillProfile::ProfileMergeResult::
-                   kMergeSucceededWithoutModification
-             : AutofillProfile::ProfileMergeResult::
-                   kMergeSucceededWithModification;
+  EmailInfo merged_value;
+  merged_value.SetInfo(EMAIL_ADDRESS, best, app_locale_);
+  return merged_value;
 }
 
 AutofillProfile::ProfileMergeResult
@@ -434,10 +427,8 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   maybe_add_type(PHONE_HOME_WHOLE_NUMBER,
                  MergePhoneNumbers(a, b, phone) !=
                      AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EmailInfo email;
-  maybe_add_type(EMAIL_ADDRESS, MergeEmailAddresses(a, b, email) !=
-                                    AutofillProfile::ProfileMergeResult::
-                                        kMergeFailed);
+
+  maybe_add_type(EMAIL_ADDRESS, MergeEmailAddresses(a, b).has_value());
   // Now, only address-related types remain in `setting_visible_types`. Using
   // `MergeAddresses()` is not fine-grained enough, since multiple
   // address types are setting-visible (e.g. city, zip, etc). Verify differences

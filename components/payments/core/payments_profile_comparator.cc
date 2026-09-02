@@ -125,9 +125,8 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
         !super.HasInfo(autofill::EMAIL_ADDRESS)) {
       return false;
     }
-    autofill::EmailInfo email;
-    if (MergeEmailAddresses(super, sub, email) ==
-        autofill::AutofillProfile::ProfileMergeResult::kMergeFailed) {
+
+    if (!MergeEmailAddresses(super, sub).has_value()) {
       return false;
     }
   }

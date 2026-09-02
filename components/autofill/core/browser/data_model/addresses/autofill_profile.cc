@@ -747,7 +747,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   NameInfo name(
       /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
       AddressCountryCode("JP"));
-  EmailInfo email;
   CompanyInfo company;
   PhoneNumber phone_number(this);
   Address address(profile.GetAddressCountryCode());
@@ -760,6 +759,13 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   // accepting updates instead of preserving the original data. I.e., passing
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
+  std::optional<EmailInfo> merged_email =
+      comparator.MergeEmailAddresses(profile, *this);
+
+  if (!merged_email.has_value()) {
+    return ProfileMergeResult::kMergeFailed;
+  }
+
   // TODO(crbug.com/453945181): Simplify this logic by returning merged
   // objects instead of passing them by reference.
   // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
@@ -770,8 +776,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
           GetAddressCountryCode(),
           usage_history().use_date() < profile.usage_history().use_date(),
           name) ||
-      comparator.MergeEmailAddresses(profile, *this, email) ==
-          ProfileMergeResult::kMergeFailed ||
       comparator.MergeCompanyNames(profile, *this, company) ==
           ProfileMergeResult::kMergeFailed ||
       comparator.MergePhoneNumbers(profile, *this, phone_number) ==
@@ -797,9 +801,9 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     modified = true;
   }
 
-  if (email_ != email) {
-    MergeFormGroupTokenQuality(email, profile);
-    email_ = email;
+  if (email_ != *merged_email) {
+    MergeFormGroupTokenQuality(*merged_email, profile);
+    email_ = *std::move(merged_email);
     modified = true;
   }
 
