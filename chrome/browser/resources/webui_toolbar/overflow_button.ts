@@ -5,8 +5,10 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
+import type {OverflowButtonControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getHtml} from './overflow_button.html.js';
@@ -30,11 +32,24 @@ export class OverflowButtonElement extends OverflowButtonElementBase {
 
   static override get properties() {
     return {
+      state: {type: Object},
       getOverflowedMenuItems: {type: Object},
     };
   }
 
+  accessor state: OverflowButtonControlState = {
+    isContextMenuVisible: false,
+  };
+
   accessor getOverflowedMenuItems: () => OverflowMenuItem[] = () => [];
+
+  protected getLabel_(): string {
+    return loadTimeData.getString('overflowButtonTooltip');
+  }
+  protected getTooltip_(): string {
+    return this.adjustTooltipForHelpBubble(
+        loadTimeData.getString('overflowButtonTooltip'));
+  }
 
   protected onPointerdown_(e: PointerEvent) {
     // To match Views' MenuButtonController behavior:

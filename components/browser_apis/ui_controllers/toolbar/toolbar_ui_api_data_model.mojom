@@ -305,6 +305,12 @@ struct AvatarControlState {
   bool has_linear_gradient_ring = false;
 };
 
+// Current state related to and managed by the overflow button.
+struct OverflowButtonControlState {
+  // True if the overflow menu is currently open.
+  bool is_context_menu_visible;
+};
+
 // The type of the content setting image model.
 //
 // Unlike ContentSettingsType, which defines the underlying settings, this enum
@@ -766,6 +772,7 @@ struct NavigationControlsState {
   PerformanceInterventionControlState performance_intervention_control_state;
   AppMenuControlState app_menu_control_state;
   AvatarControlState avatar_control_state;
+  OverflowButtonControlState overflow_button_control_state;
   bool battery_saver_button_visible;
   LocationBarState location_bar_state;
   // State of extensions.

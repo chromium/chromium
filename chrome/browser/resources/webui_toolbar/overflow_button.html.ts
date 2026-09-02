@@ -7,9 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 
 export function getHtml(this: OverflowButtonElement) {
-  // TODO(crbug.com/491791965): Add accessibility fields and localize, adding
-  // tooltip, ariaLabel, is-menu-open, ariaHasPopup, and ariaExpanded.
-
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-icon-button
@@ -17,7 +14,12 @@ export function getHtml(this: OverflowButtonElement) {
     iron-icon="webui-toolbar:keyboard_double_arrow_right"
     noink
     @pointerdown="${this.onPointerdown_}"
-    @click="${this.onClick_}">
+    @click="${this.onClick_}"
+    title="${this.getTooltip_()}"
+    aria-label="${this.getLabel_()}"
+    aria-haspopup="menu"
+    aria-expanded="${this.state.isContextMenuVisible}"
+    ?is-menu-open="${this.state.isContextMenuVisible}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
   // clang-format on

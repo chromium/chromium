@@ -464,6 +464,9 @@ export class ToolbarAppElement extends AppElementBase {
       enabled: true,
       hasLinearGradientRing: false,
     },
+    overflowButtonControlState: {
+      isContextMenuVisible: false,
+    },
     layoutConstantsVersion:
         getTypedInteger(ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),
     touchUi: getTypedBoolean(ToolbarStateKey.TOUCH_UI),

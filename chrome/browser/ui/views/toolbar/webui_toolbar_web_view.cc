@@ -402,6 +402,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   last_queued_state_.app_menu_control_state = app_menu_control_.GetState();
   last_queued_state_.avatar_control_state =
       toolbar_ui_api::mojom::AvatarControlState::New();
+  last_queued_state_.overflow_button_control_state =
+      toolbar_ui_api::mojom::OverflowButtonControlState::New();
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
@@ -1440,6 +1442,14 @@ void WebUIToolbarWebView::OnAppMenuControlStateChanged(
     toolbar_ui_api::mojom::AppMenuControlStatePtr state) {
   if (*state != *last_queued_state_.app_menu_control_state) {
     last_queued_state_.app_menu_control_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnOverflowButtonControlStateChanged(
+    toolbar_ui_api::mojom::OverflowButtonControlStatePtr state) {
+  if (*state != *last_queued_state_.overflow_button_control_state) {
+    last_queued_state_.overflow_button_control_state = std::move(state);
     PostPushNavigationState();
   }
 }

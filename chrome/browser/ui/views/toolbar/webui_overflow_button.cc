@@ -88,7 +88,17 @@ bool WebUIOverflowButton::IsEnabled(
   return it->second.is_enabled;
 }
 
-void WebUIOverflowButton::OnMenuClosed() {}
+void WebUIOverflowButton::OnMenuClosed() {
+  overflow_menu_.reset();
+  overflowed_elements_.clear();
+  UpdateState();
+}
+
+void WebUIOverflowButton::UpdateState() {
+  auto state = toolbar_ui_api::mojom::OverflowButtonControlState::New();
+  state->is_context_menu_visible = overflow_menu_ != nullptr;
+  delegate_->OnOverflowButtonControlStateChanged(std::move(state));
+}
 
 void WebUIOverflowButton::ShowOverflowMenu(
     const std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr>& controls,
@@ -115,7 +125,9 @@ void WebUIOverflowButton::ShowOverflowMenu(
   }
 
   // Destroy old overflow menu, if there is one.
-  overflow_menu_.reset();
+  if (overflow_menu_) {
+    OnMenuClosed();
+  }
   overflowed_elements_ = std::move(new_overflowed_elements);
 
   // If there are no overflowed elements, do nothing. It's unclear if this can
@@ -134,6 +146,7 @@ void WebUIOverflowButton::ShowOverflowMenu(
 
   overflow_menu_->ShowMenu(delegate_->GetView()->GetWidget(), nullptr,
                            screen_rect);
+  UpdateState();
   std::move(callback).Run(std::monostate());
 }
 

@@ -204,6 +204,7 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       {"homeButtonAccName", IDS_ACCNAME_HOME},
       {"homeButtonTooltip", IDS_TOOLTIP_HOME},
       {"locationAccName", IDS_ACCNAME_LOCATION},
+      {"overflowButtonTooltip", IDS_TOOLTIP_OVERFLOW_BUTTON},
       {"performanceInterventionButtonAccName",
        IDS_PERFORMANCE_INTERVENTION_BUTTON_ACCNAME},
       {"performanceInterventionButtonTooltip",

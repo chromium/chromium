@@ -78,7 +78,8 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.webUIToolbarFullyEnabled_ ? html`
     <overflow-button id="overflow" hidden
-        .getOverflowedMenuItems="${() => this.getOverflowedMenuItems()}">
+        .getOverflowedMenuItems="${() => this.getOverflowedMenuItems()}"
+        .state="${this.navigationControlsState_.overflowButtonControlState}">
     </overflow-button>
   ` : ''}
   ${this.isAppMenuButtonEnabled_ ? html`

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/overflow_menu.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -53,6 +54,8 @@ class WebUIOverflowButton : public OverflowMenu::Delegate {
   void OnMenuClosed() override;
 
  private:
+  void UpdateState();
+
   // Represents information about an element that has overflowed.
   struct OverflowedElementInfo {
     // True if the control is enabled / not greyed out.

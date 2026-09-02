@@ -78,11 +78,15 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/env.h"
@@ -2869,4 +2873,119 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // Close the menu. Not strictly needed, as it should be closed during
   // teardown, anyways, but can't hurt.
   overflow_menu->root_menu_item()->Cancel();
+}
+
+// Test the overflow button correctly affects the accessibility tree. Start with
+// the overflow button hidden, then cause some controls to overflow, then show
+// the overflow menu, and finally hide the menu, and check the accessibility
+// tree for the overflow button each time its state changes.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowButtonAccessibility) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+
+  std::string overflow_name =
+      l10n_util::GetStringUTF8(IDS_TOOLTIP_OVERFLOW_BUTTON);
+  // Helper to retrieve the current AXNodeData for the overflow button.
+  auto get_overflow_node_data = [&]() -> std::optional<ui::AXNodeData> {
+    content::FindAccessibilityNodeCriteria find_criteria;
+    find_criteria.name = overflow_name;
+    ui::AXPlatformNodeDelegate* overflow_node =
+        content::FindAccessibilityNode(GetWebUIWebContents(), find_criteria);
+    if (!overflow_node) {
+      return std::nullopt;
+    }
+    return overflow_node->GetData();
+  };
+
+  // Enable the home and split-tabs buttons.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                  true);
+
+  // Wait until all three overflowable buttons are visible.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
+       kToolbarSplitTabsToolbarButtonElementId}));
+
+  // Wait until the split tabs button is part of the accessibility tree.
+  std::string split_tabs_name =
+      l10n_util::GetStringUTF8(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED);
+  content::WaitForAccessibilityTreeToContainNodeWithName(GetWebUIWebContents(),
+                                                         split_tabs_name);
+
+  // Check that the overflow button is not part of the accessibility tree before
+  // anything overflows.
+  EXPECT_FALSE(get_overflow_node_data().has_value());
+
+  // Force all overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for forward, home, and split-tabs buttons to be hidden and the
+  // overflow button to be visible. Not strictly needed.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
+       kToolbarSplitTabsToolbarButtonElementId}));
+  // Wait for the accessibility tree to be updated.
+  content::WaitForAccessibilityTreeToContainNodeWithName(GetWebUIWebContents(),
+                                                         overflow_name);
+
+  // Verify initial accessibility properties, with the button visible before
+  // showing the menu.
+  std::optional<ui::AXNodeData> data = get_overflow_node_data();
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(ax::mojom::Role::kPopUpButton, data->role);
+  EXPECT_EQ(overflow_name,
+            data->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(overflow_name,
+            data->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+  EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kMenu),
+            data->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_FALSE(data->HasState(ax::mojom::State::kExpanded));
+
+  // Open the overflow menu with a click.
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Wait until the accessibility node is updated to expanded.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto node_data = get_overflow_node_data();
+    return node_data.has_value() &&
+           node_data->HasState(ax::mojom::State::kExpanded);
+  }));
+
+  // Verify properties with the menu visible.
+  data = get_overflow_node_data();
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(ax::mojom::Role::kPopUpButton, data->role);
+  EXPECT_EQ(overflow_name,
+            data->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(overflow_name,
+            data->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+  EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kMenu),
+            data->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_TRUE(data->HasState(ax::mojom::State::kExpanded));
+
+  // Close the menu.
+  overflow_menu->root_menu_item()->Cancel();
+
+  // Wait for the node to be updated.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto node_data = get_overflow_node_data();
+    return node_data.has_value() &&
+           !node_data->HasState(ax::mojom::State::kExpanded);
+  }));
+
+  // Verify properties after closing the menu.
+  data = get_overflow_node_data();
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(ax::mojom::Role::kPopUpButton, data->role);
+  EXPECT_EQ(overflow_name,
+            data->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(overflow_name,
+            data->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+  EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kMenu),
+            data->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+  EXPECT_FALSE(data->HasState(ax::mojom::State::kExpanded));
 }
