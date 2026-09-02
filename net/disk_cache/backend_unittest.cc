@@ -66,8 +66,10 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_test_util.h"
 #include "net/disk_cache/simple/simple_util.h"
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 #include "net/disk_cache/sql/shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 #include "net/http/http_response_info.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
