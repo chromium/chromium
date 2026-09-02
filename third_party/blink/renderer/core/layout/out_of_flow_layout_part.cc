@@ -613,6 +613,16 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
 }
 
 void OutOfFlowLayoutPart::Run() {
+  if (DisableLayoutSideEffectsScope::IsDisabled() &&
+      RuntimeEnabledFeatures::OofLayoutRequiresSideEffectsEnabled()) {
+    // OOF fragmentation depends on LayoutBox data being up-to-date, which isn't
+    // the case if side-effects are disabled. Given that layout with
+    // side-effects disabled is only used for size measurements, and not actual
+    // layout, out-of-flow positioned elements shouldn't affect the result. So
+    // don't waste time on something that cannot affect the result.
+    return;
+  }
+
   if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     if (container_builder_->IsPaginatedRoot()) {
       PropagateOOFsFromPageAreas();

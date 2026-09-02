@@ -4427,6 +4427,12 @@
       status: "stable",
     },
     {
+      // Skip layout of all out-of-flow positioned elements if side-effects are
+      // disabled. See DisableLayoutSideEffectsScope.
+      name: "OofLayoutRequiresSideEffects",
+      status: "stable",
+    },
+    {
       // The OpaqueRange interface provides a live AbstractRange subtype
       // for encapsulated content within <textarea> and <input> elements.
       // "This can be removed in M155. crbug.com/421421332
