@@ -227,6 +227,20 @@ public class NtpThemeCollectionBridge {
     }
 
     /**
+     * Updates the theme collection background with the primary theme color.
+     *
+     * @param backgroundUrl The URL of the background image.
+     * @param primaryColor The primary color extracted from the theme collection image.
+     */
+    public void updateThemeCollectionBackgroundColor(GURL backgroundUrl, int primaryColor) {
+        if (mNativeNtpThemeCollectionBridge == 0) return;
+
+        NtpThemeCollectionBridgeJni.get()
+                .updateThemeCollectionBackgroundColor(
+                        mNativeNtpThemeCollectionBridge, backgroundUrl, primaryColor);
+    }
+
+    /**
      * Factory method called by native code to construct a {@link CustomBackgroundInfo} object.
      *
      * @param backgroundUrl The URL of the currently set background image.
@@ -278,5 +292,8 @@ public class NtpThemeCollectionBridge {
         void selectLocalBackgroundImage(long nativeNtpThemeCollectionBridge);
 
         void resetCustomBackground(long nativeNtpThemeCollectionBridge);
+
+        void updateThemeCollectionBackgroundColor(
+                long nativeNtpThemeCollectionBridge, GURL backgroundUrl, int primaryColor);
     }
 }

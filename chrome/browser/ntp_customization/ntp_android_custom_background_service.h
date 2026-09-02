@@ -70,6 +70,8 @@ class NtpAndroidCustomBackgroundService
   void ResetCustomBackgroundInfo() override;
   void OnNextCollectionImageAvailable() override;
   std::optional<int> GetNextRefreshTimestamp() const override;
+  bool UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
+                                            SkColor color) override;
 
   // Callback invoked when incoming theme changes are received from Chrome Sync.
   void OnThemeChangedFromSync(const sync_pb::ThemeAndroidSpecifics& specifics);
@@ -106,6 +108,11 @@ class NtpAndroidCustomBackgroundService
   // True while processing an incoming sync update. Used to route UI updates
   // and prevent bouncing events back to sync.
   bool processing_sync_update_ = false;
+
+  // True while updating the primary color in the background preference
+  // dictionary. Used to suppress re-entrant NotifyAboutBackgrounds() calls
+  // from PrefChangeRegistrar.
+  bool updating_color_pref_ = false;
 
   base::WeakPtrFactory<NtpAndroidCustomBackgroundService> weak_ptr_factory_{
       this};

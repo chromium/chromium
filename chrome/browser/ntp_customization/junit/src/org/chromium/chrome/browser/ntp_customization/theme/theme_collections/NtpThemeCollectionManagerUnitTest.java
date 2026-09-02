@@ -131,6 +131,11 @@ public class NtpThemeCollectionManagerUnitTest {
         assertEquals(
                 primaryColor.intValue(),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        verify(mNatives)
+                .updateThemeCollectionBackgroundColor(
+                        eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE),
+                        eq(info.backgroundUrl),
+                        eq(primaryColor.intValue()));
     }
 
     @Test

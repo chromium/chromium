@@ -10,6 +10,19 @@
 #include "components/themes/ntp_background_service.h"
 #include "components/themes/ntp_custom_background_service_constants.h"
 
+namespace {
+
+base::DictValue GetBackgroundInfoWithColor(
+    const base::DictValue& background_info,
+    SkColor color) {
+  base::DictValue new_background_info = background_info.Clone();
+  new_background_info.Set(kNtpCustomBackgroundMainColor,
+                          static_cast<int>(color));
+  return new_background_info;
+}
+
+}  // namespace
+
 // static
 base::DictValue NtpCustomBackgroundServiceBase::NtpCustomBackgroundDefaults() {
   base::DictValue defaults;
@@ -283,4 +296,21 @@ bool NtpCustomBackgroundServiceBase::IsCustomBackgroundPrefValid() {
   }
 
   return GURL(background_url->GetString()).is_valid();
+}
+
+bool NtpCustomBackgroundServiceBase::UpdateCustomBackgroundPrefsWithColor(
+    const GURL& image_url,
+    SkColor color) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Update background color only if the selected background is still the same.
+  const base::DictValue& background_info =
+      pref_service_->GetDict(custom_background_dict_pref_name_);
+  const std::string* current_bg_url =
+      background_info.FindString(kNtpCustomBackgroundURL);
+  if (!current_bg_url || GURL(*current_bg_url) != image_url) {
+    return false;
+  }
+  pref_service_->SetDict(custom_background_dict_pref_name_,
+                         GetBackgroundInfoWithColor(background_info, color));
+  return true;
 }

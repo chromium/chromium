@@ -102,9 +102,9 @@ class NtpCustomBackgroundService : public NtpCustomBackgroundServiceBase {
 
   void ForceRefreshBackground();
 
-  // Updates custom background prefs with color for the given |image_url|.
-  void UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
-                                            SkColor color);
+  // NtpCustomBackgroundServiceBase:
+  bool UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
+                                            SkColor color) override;
 
   // Updates prefs with custom background color for local background image.
   void UpdateLocalCustomBackgroundPrefsWithColor(SkColor color);

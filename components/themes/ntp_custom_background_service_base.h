@@ -18,6 +18,7 @@
 #include "components/themes/ntp_background_data.h"
 #include "components/themes/ntp_background_service_observer.h"
 #include "components/themes/ntp_custom_background_service_observer.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -77,6 +78,13 @@ class NtpCustomBackgroundServiceBase : public KeyedService,
 
   // Virtual for testing.
   virtual std::optional<CustomBackground> GetCustomBackground();
+
+  // Updates the current custom background preference with the extracted color
+  // if the current background URL matches |image_url|. Returns true if the
+  // preference was updated, false otherwise.
+  // Virtual for testing and platform-specific notifications.
+  virtual bool UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
+                                                    SkColor color);
 
  protected:
   // Returns the timestamp for the next daily refresh. Returns std::nullopt if

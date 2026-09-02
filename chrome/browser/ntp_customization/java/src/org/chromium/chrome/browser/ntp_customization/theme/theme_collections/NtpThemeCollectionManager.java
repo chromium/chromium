@@ -180,6 +180,10 @@ public class NtpThemeCollectionManager {
 
                     @ColorInt
                     Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
+                    if (primaryColor != null) {
+                        mNtpThemeCollectionBridge.updateThemeCollectionBackgroundColor(
+                                info.backgroundUrl, primaryColor);
+                    }
 
                     String fileId = null;
                     if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {

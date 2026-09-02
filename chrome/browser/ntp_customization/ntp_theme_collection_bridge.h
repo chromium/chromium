@@ -90,6 +90,17 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
   // Resets the New Tab Page background to the default theme.
   void ResetCustomBackground(JNIEnv* env);
 
+  // Updates the theme collection background's primary color and notifies the
+  // sync bridge.
+  // @param env The JNI environment.
+  // @param j_url The URL of the theme collection background image.
+  // @param primary_color The primary color extracted from the theme collection
+  // image.
+  void UpdateThemeCollectionBackgroundColor(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_url,
+      int32_t primary_color);
+
   // Disconnects from the custom background service when the service is
   // destroyed.
   void DisconnectCustomBackgroundService();

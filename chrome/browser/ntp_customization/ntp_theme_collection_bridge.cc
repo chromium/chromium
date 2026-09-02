@@ -253,4 +253,17 @@ void NtpThemeCollectionBridge::ResetCustomBackground(JNIEnv* env) {
   ntp_custom_background_service_->ResetCustomBackgroundInfo();
 }
 
+void NtpThemeCollectionBridge::UpdateThemeCollectionBackgroundColor(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_url,
+    int32_t primary_color) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+
+  ntp_custom_background_service_->UpdateCustomBackgroundPrefsWithColor(
+      url::GURLAndroid::ToNativeGURL(env, j_url),
+      static_cast<SkColor>(primary_color));
+}
+
 DEFINE_JNI(NtpThemeCollectionBridge)

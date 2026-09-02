@@ -19,6 +19,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace {
 const char kTestDictPref[] = "dict_pref";
@@ -32,6 +33,7 @@ const char kAttributionLine1[] = "line1";
 const char kAttributionLine2[] = "line2";
 const char kCollectionId[] = "collection";
 const char kResumeToken[] = "resume_token";
+const char kOtherBackgroundUrl[] = "https://other.com/image.png";
 }  // namespace
 
 class MockNtpCustomBackgroundServiceObserver
@@ -234,4 +236,50 @@ TEST_F(NtpCustomBackgroundServiceBaseTest, OnNtpBackgroundServiceShuttingDown) {
   service_->OnNtpBackgroundServiceShuttingDown();
   // We just ensure it doesn't crash. State changes internally resetting
   // observation.
+}
+
+TEST_F(NtpCustomBackgroundServiceBaseTest,
+       UpdateCustomBackgroundPrefsWithColor_UpdatesColor) {
+  const GURL kUrl(kValidBackgroundUrl);
+  background_service_->AddValidBackdropUrlForTesting(kUrl);
+
+  service_->SetCustomBackgroundInfo(kUrl, GURL(), kAttributionLine1,
+                                    kAttributionLine2, GURL(kValidActionUrl),
+                                    kCollectionId);
+
+  constexpr SkColor kTestColor = SK_ColorRED;
+  EXPECT_TRUE(service_->UpdateCustomBackgroundPrefsWithColor(kUrl, kTestColor));
+
+  const base::DictValue& dict = pref_service_->GetDict(kTestDictPref);
+  EXPECT_FALSE(dict.empty());
+  std::optional<int> main_color = dict.FindInt(kNtpCustomBackgroundMainColor);
+  ASSERT_TRUE(main_color.has_value());
+  EXPECT_EQ(static_cast<int>(kTestColor), *main_color);
+}
+
+TEST_F(NtpCustomBackgroundServiceBaseTest,
+       UpdateCustomBackgroundPrefsWithColor_MismatchedUrl_ReturnsFalse) {
+  const GURL kUrl(kValidBackgroundUrl);
+  background_service_->AddValidBackdropUrlForTesting(kUrl);
+
+  service_->SetCustomBackgroundInfo(kUrl, GURL(), kAttributionLine1,
+                                    kAttributionLine2, GURL(kValidActionUrl),
+                                    kCollectionId);
+
+  constexpr SkColor kTestColor = SK_ColorRED;
+  EXPECT_FALSE(service_->UpdateCustomBackgroundPrefsWithColor(
+      GURL(kOtherBackgroundUrl), kTestColor));
+
+  const base::DictValue& dict = pref_service_->GetDict(kTestDictPref);
+  EXPECT_FALSE(dict.FindInt(kNtpCustomBackgroundMainColor).has_value());
+}
+
+TEST_F(NtpCustomBackgroundServiceBaseTest,
+       UpdateCustomBackgroundPrefsWithColor_NoBackgroundSet_ReturnsFalse) {
+  constexpr SkColor kTestColor = SK_ColorBLUE;
+  EXPECT_FALSE(service_->UpdateCustomBackgroundPrefsWithColor(
+      GURL(kValidBackgroundUrl), kTestColor));
+
+  const base::DictValue& dict = pref_service_->GetDict(kTestDictPref);
+  EXPECT_TRUE(dict.empty());
 }
