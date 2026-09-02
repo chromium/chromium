@@ -3538,6 +3538,11 @@ int AXObjectCacheImpl::GetLocationSerializationDelay() {
     return kDelayForLocationUpdatesFocused;
   }
 
+  if (accessibility_focus_ != ui::AXNodeData::kInvalidAXID &&
+      changed_bounds_ids_.Contains(accessibility_focus_)) {
+    return kDelayForLocationUpdatesFocused;
+  }
+
   return kDelayForLocationUpdatesNonFocused;
 }
 

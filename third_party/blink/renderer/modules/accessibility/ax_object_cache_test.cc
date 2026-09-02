@@ -589,6 +589,44 @@ TEST_F(AccessibilityTest, AccessibilityFocus) {
   EXPECT_EQ(ul, cache.GetAccessibilityFocus());
 }
 
+TEST_F(AccessibilityTest, LocationSerializationDelayForAccessibilityFocus) {
+  SetBodyInnerHTML(R"HTML(
+      <button id="button">Click</button>
+  )HTML");
+
+  Element* button = GetElementById("button");
+  ASSERT_NE(nullptr, button);
+
+  auto& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeBasic);
+
+  auto* ax_button = cache.FirstObjectWithRole(ax::mojom::Role::kButton);
+  ASSERT_NE(nullptr, ax_button);
+
+  // Without any changes, delay defaults to non-focused delay (500ms).
+  EXPECT_EQ(500, cache.GetLocationSerializationDelay());
+
+  // Invalidate bounds on button when it does not have focus.
+  cache.InvalidateBoundingBox(ax_button->AXObjectID());
+  EXPECT_EQ(500, cache.GetLocationSerializationDelay());
+
+  // Set accessibility focus on the button.
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kSetAccessibilityFocus;
+  ax_button->PerformAction(action);
+  EXPECT_EQ(button, cache.GetAccessibilityFocus());
+
+  // With accessibility focus set, location updates are scheduled with
+  // the focused delay (75ms) instead of the non-focused delay (500ms).
+  EXPECT_EQ(75, cache.GetLocationSerializationDelay());
+
+  // Clear accessibility focus and verify it reverts to 500ms.
+  action.action = ax::mojom::Action::kClearAccessibilityFocus;
+  ax_button->PerformAction(action);
+  EXPECT_EQ(nullptr, cache.GetAccessibilityFocus());
+  EXPECT_EQ(500, cache.GetLocationSerializationDelay());
+}
+
 TEST_F(AccessibilityTest, SetMenuListOptionsBoundsBasePickerClearsState) {
   SetBodyInnerHTML(R"HTML(
       <style>
