@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -16,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
@@ -24,10 +28,13 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.MediumTest;
 
@@ -57,6 +64,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /**
  * Integration tests for {@link SettingsPage} inside a native tab. Most tests use a mix of onView()
@@ -74,6 +82,16 @@ public class SettingsPageTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+
+        // Skip the tests on Android 14 landscape devices. See below.
+        var activity = mActivityTestRule.getActivity();
+        boolean isLandscape =
+                activity.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+        Assume.assumeFalse(
+                "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
+                        + " causing Android 14's letterbox education dialog to intercept clicks.",
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && isLandscape);
     }
 
     @After
@@ -418,7 +436,11 @@ public class SettingsPageTest {
     /** Regression test for https://crbug.com/551620206. */
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
     public void testSearchBoxFocusAfterExitingSearch() {
         // Ensure starting in portrait (single-column mode on tablet).
         ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
@@ -471,7 +493,11 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
     public void testSearchInSingleColumnThenRotateToLandscapeAndExitSearch() {
         // Ensure starting in portrait (usually single-column mode on tablet).
         ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
@@ -514,6 +540,136 @@ public class SettingsPageTest {
         onViewWaiting(allOf(withText(R.string.search_engine_settings), isDisplayed()))
                 .check(matches(isDisplayed()));
         onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testSearchQueryInMultiColumnThenExitSearchDoesNotShowSearchResultsBehindDetail() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        // Wait for settings page to load.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Ensure landscape (two-column mode).
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        ensureTwoColumnMode();
+
+        // Wait for settings page in landscape (two-column mode with detail pane).
+        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+
+        // Click search box to enter search state in multi-column mode.
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        // Type search query "Theme".
+        onViewWaiting(withId(R.id.search_query)).perform(replaceText("Theme"), closeSoftKeyboard());
+
+        // Wait for search results to appear.
+        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .check(matches(isDisplayed()));
+
+        // Tap on back arrow in search query box to exit search.
+        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+
+        // Verify that the search box is visible and Google Services detail pane is displayed.
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+
+        // Verify that the search result is not visible/shown behind the detail pane.
+        onView(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .check(doesNotExist());
+    }
+
+    /** Regression test for https://crbug.com/549509308. */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testSearchBoxAlignmentInPortrait() {
+        // Ensure portrait.
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        // Load settings.
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Capture search_box screen bounds.
+        Rect searchBoxBounds = getViewScreenBounds(R.id.search_box);
+
+        // Tap on search box to enter search state.
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        // Verify search_query_container matches search_box horizontal screen bounds.
+        Rect queryBounds = getViewScreenBounds(R.id.search_query_container);
+        assertEquals(
+                "Search query container should align horizontally with search box",
+                searchBoxBounds.left,
+                queryBounds.left);
+        assertEquals(
+                "Search query container should match search box width",
+                searchBoxBounds.width(),
+                queryBounds.width());
+
+        // Type "Theme" in search query.
+        onViewWaiting(withId(R.id.search_query)).perform(replaceText("Theme"), closeSoftKeyboard());
+
+        // Wait for search results to appear and click "Theme".
+        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .perform(click());
+
+        // Simulate theme switch / activity recreation.
+        mActivityTestRule.recreateActivity();
+
+        // Navigate back from ThemeSettings to search results.
+        Espresso.pressBack();
+
+        // Exit search state back to MainSettings.
+        Espresso.pressBack();
+
+        // Tap on search box again.
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        // Verify search_query_container still matches search_box horizontal screen bounds.
+        Rect queryBoundsAfterBack = getViewScreenBounds(R.id.search_query_container);
+        assertEquals(
+                "Search query container should align horizontally with search box after navigating"
+                        + " back",
+                searchBoxBounds.left,
+                queryBoundsAfterBack.left);
+        assertEquals(
+                "Search query container should match search box width after navigating back",
+                searchBoxBounds.width(),
+                queryBoundsAfterBack.width());
+    }
+
+    /** Returns the on-screen bounds of the view with the given id. */
+    private Rect getViewScreenBounds(int viewId) {
+        Rect bounds = new Rect();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var activity = mActivityTestRule.getActivity();
+                    View view = activity.findViewById(viewId);
+                    int[] location = new int[2];
+                    view.getLocationOnScreen(location);
+                    bounds.set(
+                            location[0],
+                            location[1],
+                            location[0] + view.getWidth(),
+                            location[1] + view.getHeight());
+                });
+        return bounds;
     }
 
     private void ensureActivityOrientation(int orientation) {
