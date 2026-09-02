@@ -290,9 +290,10 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
     return StripLeadingAndTrailingHtmlSpaces(no_line_break_value).ToString();
   Vector<StringView> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
-  stripped_value.AppendRange(addresses, ",", [](const auto& address) {
-    return StripLeadingAndTrailingHtmlSpaces(address);
-  });
+  stripped_value.AppendRange(
+      addresses, ",", [](const auto& address, StringBuilder& b) {
+        b.Append(StripLeadingAndTrailingHtmlSpaces(address));
+      });
   return stripped_value.ReleaseString();
 }
 
@@ -306,10 +307,11 @@ String EmailInputType::ConvertFromVisibleValue(
   Vector<StringView> addresses = ParseMultipleValues(sanitized_value);
   StringBuilder builder;
   builder.ReserveCapacity(sanitized_value.length());
-  builder.AppendRange(addresses, ",", [&](const auto& address) {
-    return ConvertEmailAddressToAscii(
-        GetElement().GetDocument().EnsureEmailRegexp(), address);
-  });
+  builder.AppendRange(
+      addresses, ",", [&](const auto& address, StringBuilder& b) {
+        b.Append(ConvertEmailAddressToAscii(
+            GetElement().GetDocument().EnsureEmailRegexp(), address));
+      });
   return builder.ReleaseString();
 }
 
@@ -321,9 +323,10 @@ String EmailInputType::VisibleValue() const {
   Vector<StringView> addresses = ParseMultipleValues(value);
   StringBuilder builder;
   builder.ReserveCapacity(value.length());
-  builder.AppendRange(addresses, ",", [&](const auto& address) {
-    return ConvertEmailAddressToUnicode(address.ToString());
-  });
+  builder.AppendRange(
+      addresses, ",", [&](const auto& address, StringBuilder& b) {
+        b.Append(ConvertEmailAddressToUnicode(address.ToString()));
+      });
   return builder.ReleaseString();
 }
 

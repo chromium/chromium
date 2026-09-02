@@ -170,7 +170,9 @@ String GridTrackList::ToString() const {
   StringBuilder builder;
   builder.Append("TrackList: { ");
   builder.AppendRange(repeaters_, ",  ",
-                      [](const auto& repeater) { return repeater.ToString(); });
+                      [](const auto& repeater, StringBuilder& b) {
+                        b.Append(repeater.ToString());
+                      });
   builder.Append(" } ");
   return builder.ToString();
 }

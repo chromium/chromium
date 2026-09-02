@@ -134,7 +134,9 @@ class DateTimeFormatTest : public testing::Test {
       StringBuilder builder;
       builder.Append("Tokens(");
       builder.AppendRange(tokens_, ",",
-                          [](const auto& token) { return token.ToString(); });
+                          [](const auto& token, StringBuilder& b) {
+                            b.Append(token.ToString());
+                          });
       builder.Append(')');
       return builder.ReleaseString();
     }

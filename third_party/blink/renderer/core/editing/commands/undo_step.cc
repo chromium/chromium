@@ -162,7 +162,9 @@ String UndoStep::ToString() const {
   StringBuilder builder;
   builder.Append("UndoStep {commands:[\n    ");
   builder.AppendRange(commands_, ",\n    ",
-                      [](const auto& command) { return command->ToString(); });
+                      [](const auto& command, StringBuilder& b) {
+                        b.Append(command->ToString());
+                      });
   builder.Append("]}");
   return builder.ReleaseString();
 }

@@ -662,9 +662,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       StringBuilder builder;
       builder.Append(
           "The following keys were duplicated on one or more objects: ");
-      builder.AppendRange(
-          parse_error.duplicate_keys, ", ",
-          [](const auto& key) { return key.EncodeForDebugging(); });
+      builder.AppendRange(parse_error.duplicate_keys, ", ",
+                          [](const auto& key, StringBuilder& b) {
+                            b.Append(key.EncodeForDebugging());
+                          });
       builder.Append(". All but the last value for each key are ignored.");
       duplicate_key_warning = builder.ReleaseString();
     }

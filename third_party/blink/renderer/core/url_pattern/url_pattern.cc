@@ -741,9 +741,10 @@ String URLPattern::ToString() const {
   builder.Append("(");
   Vector<String> components = {protocol(), username(), password(), hostname(),
                                port(),     pathname(), search(),   hash()};
-  builder.AppendRange(components, ",", [](const auto& component) {
-    return component == g_empty_string ? " " : component;
-  });
+  builder.AppendRange(components, ",",
+                      [](const auto& component, StringBuilder& b) {
+                        b.Append(component == g_empty_string ? " " : component);
+                      });
   builder.Append(")");
   return builder.ReleaseString();
 }

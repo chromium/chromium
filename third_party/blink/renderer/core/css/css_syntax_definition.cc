@@ -351,9 +351,10 @@ String CSSSyntaxDefinition::ToString() const {
     return String("*");
   }
   StringBuilder builder;
-  builder.AppendRange(syntax_components_, " | ", [](const auto& component) {
-    return component.ToString();
-  });
+  builder.AppendRange(syntax_components_, " | ",
+                      [](const auto& component, StringBuilder& b) {
+                        b.Append(component.ToString());
+                      });
   return builder.ReleaseString();
 }
 

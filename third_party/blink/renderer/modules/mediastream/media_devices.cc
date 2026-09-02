@@ -126,10 +126,11 @@ void LogDevicesEnumerated(
   StringBuilder audio_caps_builder;
   audio_caps_builder.Append("[");
   audio_caps_builder.AppendRange(
-      audio_input_capabilities, ", ", [](const auto& cap) {
-        return Format("{{channels={}, sample_rate={}, latency={}ms}}",
-                      cap->channels, cap->sample_rate,
-                      cap->latency.InMilliseconds());
+      audio_input_capabilities, ", ",
+      [](const auto& cap, StringBuilder& builder) {
+        FormatTo(builder, "{{channels={}, sample_rate={}, latency={}ms}}",
+                 cap->channels, cap->sample_rate,
+                 cap->latency.InMilliseconds());
       });
   audio_caps_builder.Append("]");
 
@@ -137,11 +138,12 @@ void LogDevicesEnumerated(
   StringBuilder video_caps_builder;
   video_caps_builder.Append("[");
   video_caps_builder.AppendRange(
-      video_input_capabilities, ", ", [](const auto& cap) {
-        return Format("{{formats={}, facing_mode={}, pan_tilt_zoom={:d}}}",
-                      cap->formats.size(), static_cast<int>(cap->facing_mode),
-                      (cap->control_support.pan || cap->control_support.tilt ||
-                       cap->control_support.zoom));
+      video_input_capabilities, ", ",
+      [](const auto& cap, StringBuilder& builder) {
+        FormatTo(builder, "{{formats={}, facing_mode={}, pan_tilt_zoom={:d}}}",
+                 cap->formats.size(), static_cast<int>(cap->facing_mode),
+                 (cap->control_support.pan || cap->control_support.tilt ||
+                  cap->control_support.zoom));
       });
   video_caps_builder.Append("]");
 
