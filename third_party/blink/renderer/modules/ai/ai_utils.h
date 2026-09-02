@@ -183,6 +183,11 @@ base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
   CHECK(resolver);
   RunOnDestruction run_on_destruction(BindOnce(
       [](ScriptPromiseResolver<T>* resolver, AbortSignal* signal) {
+        // Heap termination can clear persistent handles before their owning
+        // callbacks are destroyed.
+        if (!resolver) {
+          return;
+        }
         if (signal && signal->aborted()) {
           resolver->Reject(signal->reason(resolver->GetScriptState()));
         } else {
