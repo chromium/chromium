@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/540811203): Move to components/ once test dependencies (like
-// MockDeviceTrustKeyManager) are extracted from chrome/.
-
 #include "components/enterprise/device_trust/core/attestation/device_attester.h"
 
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_device_trust_key_manager.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/device_trust/core/mock_device_trust_key_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,9 +35,6 @@ class DeviceAttesterTest : public testing::Test {
                          &mock_browser_cloud_policy_store_) {
     fake_dm_token_storage_.SetDMToken(kDmToken);
     fake_dm_token_storage_.SetClientId(kFakeDeviceId);
-    test_key_pair_ =
-        persistence_delegate_factory_.CreateKeyPersistenceDelegate()
-            ->LoadKeyPair(KeyStorageType::kPermanent, nullptr);
     levels_.insert(DTCPolicyLevel::kBrowser);
   }
 
@@ -59,12 +51,8 @@ class DeviceAttesterTest : public testing::Test {
             [&, can_export_pubkey](
                 base::OnceCallback<void(std::optional<std::string>)> callback) {
               if (can_export_pubkey) {
-                auto public_key_info =
-                    test_key_pair_->key()->GetSubjectPublicKeyInfo();
-                std::string public_key(public_key_info.begin(),
-                                       public_key_info.end());
-                public_key_ = public_key;
-                std::move(callback).Run(public_key);
+                public_key_ = "fake_public_key";
+                std::move(callback).Run(public_key_);
               } else {
                 std::move(callback).Run(std::nullopt);
               }
@@ -75,12 +63,11 @@ class DeviceAttesterTest : public testing::Test {
     EXPECT_CALL(mock_key_manager_, SignStringAsync(_, _))
         .WillOnce(
             [&, can_sign](
-                const std::string& str,
+                const std::string&,
                 base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                     callback) {
               if (can_sign) {
-                signature =
-                    test_key_pair_->key()->SignSlowly(base::as_byte_span(str));
+                signature = std::vector<uint8_t>{1, 2, 3, 4};
                 std::move(callback).Run(signature);
               } else {
                 std::move(callback).Run(std::nullopt);
@@ -89,8 +76,6 @@ class DeviceAttesterTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
-  scoped_refptr<SigningKeyPair> test_key_pair_;
   std::optional<std::vector<uint8_t>> signature;
   std::string public_key_;
   testing::StrictMock<test::MockDeviceTrustKeyManager> mock_key_manager_;
@@ -197,8 +182,8 @@ TEST_F(DeviceAttesterTest, DecorateKeyInfo_FailedPublicKeyExport) {
   EXPECT_EQ(key_info_.customer_id(), kFakeCustomerId);
 }
 
-// Tests that the correct device details are added when a failure occurred
-// exporting the public key.
+// Tests that no browser-level details are added when the browser policy
+// level is missing.
 TEST_F(DeviceAttesterTest, DecorateKeyInfo_MissingBrowserPolicyLevel) {
   SetFakeBrowserPolicyData();
   EXPECT_CALL(mock_key_manager_, ExportPublicKeyAsync(_)).Times(0);

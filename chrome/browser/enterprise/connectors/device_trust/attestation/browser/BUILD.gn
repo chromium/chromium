@@ -13,18 +13,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_linux || is_mac || is_win) {
-    sources += [
-      "device_attester_unittest.cc",
-      "profile_attester_unittest.cc",
-    ]
-    deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/browser:test_support",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
-      "//components/enterprise:test_support",
-    ]
-  }
-
   if (is_chromeos) {
     sources += [ "browser_attestation_service_chromeos_unittest.cc" ]
   }

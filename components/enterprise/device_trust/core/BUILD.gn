@@ -84,11 +84,13 @@ source_set("test_support") {
 
   public = [
     "fake_device_trust_connector_service.h",
+    "mock_device_trust_key_manager.h",
     "mock_device_trust_service.h",
   ]
 
   sources = [
     "fake_device_trust_connector_service.cc",
+    "mock_device_trust_key_manager.cc",
     "mock_device_trust_service.cc",
   ]
 
@@ -127,7 +129,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/enterprise/device_trust",
     "//components/enterprise/device_trust/core/attestation:test_support",
-    "//components/enterprise/device_trust/core/attestation:unit_tests",
     "//components/enterprise/device_trust/core/signals:test_support",
     "//components/prefs:test_support",
     "//testing/gmock",

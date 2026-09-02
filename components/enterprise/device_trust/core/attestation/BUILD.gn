@@ -97,11 +97,23 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise:test_support",
+    "//components/enterprise/browser/identifiers",
+    "//components/enterprise/device_trust/core:test_support",
+    "//components/policy/core/common:test_support",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
   if (is_linux || is_win || is_mac || is_chromeos || is_ios) {
-    sources += [ "browser_attestation_service_unittest.cc" ]
+    sources += [
+      "browser_attestation_service_unittest.cc",
+      "profile_attester_unittest.cc",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac || is_ios) {
+    sources += [ "device_attester_unittest.cc" ]
   }
 }

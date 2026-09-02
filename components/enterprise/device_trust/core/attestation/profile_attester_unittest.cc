@@ -2,20 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/540811203): Move to components/ once Profile test dependencies (like
-// TestingProfile) are decoupled from chrome/.
-
 #include "components/enterprise/device_trust/core/attestation/profile_attester.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "base/test/task_environment.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -27,29 +21,16 @@ constexpr char kFakeChallengeResponse[] = "fake_challenge_response";
 constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
 constexpr GaiaId::Literal kFakeGaiaId("fake_obfuscated_gaia_id");
 
-std::unique_ptr<KeyedService> CreateProfileIDService(
-    content::BrowserContext* context) {
-  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
-}
-
 }  // namespace
 
 class ProfileAttesterTest
     : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
-  ProfileAttesterTest() : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    EXPECT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("test-user");
-  }
-
-  void SetUp() override {
-    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
-        profile_, base::BindRepeating(&CreateProfileIDService));
-
-    profile_attester_ = std::make_unique<ProfileAttester>(
-        enterprise::ProfileIdServiceFactory::GetForProfile(profile_),
-        &mock_profile_cloud_policy_store_);
-
+  ProfileAttesterTest()
+      : profile_id_service_(kFakeProfileId),
+        profile_attester_(std::make_unique<ProfileAttester>(
+            &profile_id_service_,
+            &mock_profile_cloud_policy_store_)) {
     levels_.insert(DTCPolicyLevel::kUser);
   }
 
@@ -69,12 +50,11 @@ class ProfileAttesterTest
         std::move(policy_data));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   KeyInfo key_info_;
   SignedData signed_data_;
-  TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  enterprise::ProfileIdService profile_id_service_;
   policy::MockCloudPolicyStore mock_profile_cloud_policy_store_{
       policy::dm_protocol::GetChromeUserPolicyType()};
   std::unique_ptr<ProfileAttester> profile_attester_;

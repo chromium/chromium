@@ -60,13 +60,11 @@ source_set("test_support") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   public = [
-    "mock_device_trust_key_manager.h",
     "mock_key_loader.h",
     "mock_key_rotation_launcher.h",
   ]
 
   sources = [
-    "mock_device_trust_key_manager.cc",
     "mock_key_loader.cc",
     "mock_key_rotation_launcher.cc",
   ]
@@ -74,6 +72,7 @@ source_set("test_support") {
   public_deps = [
     ":browser",
     "//components/enterprise",
+    "//components/enterprise/device_trust/core:test_support",
     "//components/policy/proto",
     "//testing/gmock",
   ]
