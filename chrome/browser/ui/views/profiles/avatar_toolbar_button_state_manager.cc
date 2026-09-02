@@ -374,14 +374,6 @@ class EnterpriseIsolatedStateProvider : public PrivateBaseStateProvider {
 
   ~EnterpriseIsolatedStateProvider() override = default;
 
-  // StateProvider:
-  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
-      override {
-    // TODO(b/548967433): Implement once IsolatedModeMenuView lands in follow-up
-    // CL.
-    return base::DoNothing();
-  }
-
   std::u16string GetText() const override {
     return l10n_util::GetPluralStringFUTF16(
         IDS_AVATAR_BUTTON_ISOLATED_MODE,

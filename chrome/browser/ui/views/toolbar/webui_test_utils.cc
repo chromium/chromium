@@ -260,15 +260,16 @@ void AvatarToolbarButtonTestAccessor::WaitForAvatarButton() {
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
   // the browser window.
-  show_avatar_toolbar_button = profile->IsIncognitoProfile() ||
-                               profile->IsGuestSession() ||
-                               (profile->IsOffTheRecord() &&
-                                profile->GetOTRProfileID().IsCaptivePortal());
+  show_avatar_toolbar_button =
+      profile->IsPrimaryOTRProfileWithRegularParent() ||
+      profile->IsGuestSession() ||
+      (profile->IsOffTheRecord() &&
+       profile->GetOTRProfileID().IsCaptivePortal());
 #else
   // DevTools profiles are OffTheRecord, so hide it there.
-  show_avatar_toolbar_button = profile->IsIncognitoProfile() ||
-                               profile->IsGuestSession() ||
-                               profile->IsRegularProfile();
+  show_avatar_toolbar_button =
+      profile->IsPrimaryOTRProfileWithRegularParent() ||
+      profile->IsGuestSession() || profile->IsRegularProfile();
 #endif
 
   if (!show_avatar_toolbar_button) {
@@ -295,7 +296,6 @@ bool AvatarToolbarButtonTestAccessor::WaitForTextNotEqual(
     const std::u16string& text) {
   return base::test::RunUntil([this, text]() { return GetText() != text; });
 }
-
 
 bool AvatarToolbarButtonTestAccessor::WaitForState(
     AvatarToolbarButtonState state) {
@@ -353,7 +353,6 @@ AvatarToolbarButtonState AvatarToolbarButtonTestAccessor::GetState() {
       },
       GetButton());
 }
-
 
 bool AvatarToolbarButtonTestAccessor::WaitForRenderedTooltipText(
     const std::u16string& text) {

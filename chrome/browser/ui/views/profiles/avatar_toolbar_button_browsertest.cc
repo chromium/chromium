@@ -73,6 +73,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -82,6 +84,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -959,6 +962,39 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
   EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
 }
 
+class AvatarToolbarButtonEnterpriseIsolatedBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AvatarToolbarButtonBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseIsolatedBrowserTest,
+                       EnterpriseIsolatedWindowCount) {
+  Profile* profile = browser()->GetProfile();
+  BrowserWindowInterface* browser1 = CreateIncognitoBrowser(profile);
+  ASSERT_TRUE(browser1->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  AvatarToolbarButtonTestAccessor avatar_accessor1(browser1);
+  EXPECT_TRUE(avatar_accessor1.GetEnabled());
+  EXPECT_TRUE(avatar_accessor1.GetVisible());
+  EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
+
+  BrowserWindowInterface* browser2 = CreateIncognitoBrowser(profile);
+  EXPECT_EQ(std::optional<int>(2),
+            GetWindowCountInAvatarButtonText(browser1,
+                                             /*wait_for_number=*/true));
+  EXPECT_EQ(std::optional<int>(2),
+            GetWindowCountInAvatarButtonText(browser2,
+                                             /*wait_for_number=*/true));
+
+  CloseBrowserSynchronously(browser2);
+  EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, GuestWindowCount) {
   BrowserWindowInterface* browser1 = CreateGuestBrowser();
@@ -1035,6 +1071,17 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoBrowser) {
       CreateIncognitoBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor avatar_accessor1(browser1);
   // Incognito browsers always show an enabled avatar button.
+  EXPECT_TRUE(avatar_accessor1.GetVisible());
+  EXPECT_TRUE(avatar_accessor1.GetEnabled());
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseIsolatedBrowserTest,
+                       EnterpriseIsolatedBrowser) {
+  BrowserWindowInterface* browser1 =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(browser1->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  AvatarToolbarButtonTestAccessor avatar_accessor1(browser1);
+  // Enterprise isolated browsers always show an enabled avatar button.
   EXPECT_TRUE(avatar_accessor1.GetVisible());
   EXPECT_TRUE(avatar_accessor1.GetEnabled());
 }
@@ -4493,6 +4540,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(All, AvatarToolbarButtonBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         AvatarToolbarButtonEnterpriseIsolatedBrowserTest,
+                         testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          AvatarToolbarButtonWithSyncBrowserTest,
                          testing::Bool());

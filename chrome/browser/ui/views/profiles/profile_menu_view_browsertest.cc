@@ -102,6 +102,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -2494,6 +2495,43 @@ constexpr std::array kActionableItems_IncognitoProfile = {
 PROFILE_MENU_CLICK_TEST(kActionableItems_IncognitoProfile,
                         ProfileMenuClickTest_IncognitoProfile) {
   SetTargetBrowser(CreateIncognitoBrowser(browser()->GetProfile()));
+
+  RunTest();
+}
+
+class ProfileMenuClickTestEnterpriseIsolated : public ProfileMenuClickTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ProfileMenuClickTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+constexpr std::array kActionableItems_EnterpriseIsolatedProfile = {
+    ProfileMenuViewBase::ActionableItem::kProfileManagementLabel,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kProfileManagementLabel};
+
+PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestEnterpriseIsolated,
+                          kActionableItems_EnterpriseIsolatedProfile,
+                          ProfileMenuClickTest_EnterpriseIsolatedProfile) {
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
+                                                    true);
+  policy::ScopedManagementServiceOverrideForTesting scoped_browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->GetProfile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  SetTargetBrowser(isolated_browser);
 
   RunTest();
 }

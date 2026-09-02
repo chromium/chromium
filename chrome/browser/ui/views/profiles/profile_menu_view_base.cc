@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -372,6 +374,19 @@ BEGIN_METADATA(ProfileMenuNewBadge)
 END_METADATA
 
 }  // namespace
+
+std::u16string ProfileMenuViewBase::GetProfileIdentifier(
+    const ProfileAttributesEntry& entry) {
+  switch (entry.GetNameForm()) {
+    case NameForm::kGaiaName:
+    case NameForm::kLocalName:
+      return entry.GetName();
+    case NameForm::kGaiaAndLocalName:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR,
+          entry.GetGAIANameToDisplay(), entry.GetLocalProfileName());
+  }
+}
 
 ui::ImageModel ProfileMenuViewBase::GetCircularSizedImage(
     const ui::ImageModel& image_model,

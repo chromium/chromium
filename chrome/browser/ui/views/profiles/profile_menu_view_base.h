@@ -32,6 +32,7 @@
 #include "ui/views/view_tracker.h"
 
 class BrowserWindowInterface;
+class ProfileAttributesEntry;
 
 namespace views {
 class Button;
@@ -162,6 +163,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
   ProfileMenuViewBase& operator=(const ProfileMenuViewBase&) = delete;
+
+  // Returns a formatted profile display name based on the name form in `entry`.
+  static std::u16string GetProfileIdentifier(
+      const ProfileAttributesEntry& entry);
 
   // Resizes and crops `image_model` to a circular shape.
   // Note: if the image is backed by a vector icon, it is actually not cropped.
