@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,7 +100,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
-        verify(mDropdownScrollListener, times(1)).run();
+        verify(mDropdownScrollListener).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Subsequent scroll events should pass through.
@@ -114,7 +115,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
-        verify(mDropdownScrollListener, times(1)).run();
+        verify(mDropdownScrollListener).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Subsequent scroll events should pass through.
@@ -130,7 +131,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
-        verify(mDropdownScrollListener, times(1)).run();
+        verify(mDropdownScrollListener).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Pretend we scroll up, while keyboard is hidden.
@@ -145,7 +146,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         // Overscroll to top again, but this time as a new gesture.
         mListener.onNewGesture();
         assertEquals(-5, mListener.updateKeyboardVisibilityAndScroll(-5, -10));
-        verify(mDropdownScrollToTopListener, times(1)).run();
+        verify(mDropdownScrollToTopListener).run();
         verifyNoMoreInteractions(mDropdownScrollToTopListener);
 
         // Overscroll again. Make sure we don't call the keyboard up again.
@@ -208,7 +209,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         // This time the scroll happens, even if just by one pixel.
         assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
-        verify(mDropdownScrollListener, times(1)).run();
+        verify(mDropdownScrollListener).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Simulate lists being shown again.
@@ -277,7 +278,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         clearInvocations(mListener);
 
         mListener.updateVisualScrollState();
-        verify(mListener, times(0)).postOnAnimation(any());
+        verify(mListener, never()).postOnAnimation(any());
     }
 
     @Test
@@ -364,7 +365,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @DisableFeatures(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL)
     public void testOnLayoutChildren_flagDisabled_noScroll() {
         mListener.onLayoutChildren(null, new RecyclerView.State());
-        verify(mListener, times(0)).scrollToPositionWithOffset(anyInt(), anyInt());
+        verify(mListener, never()).scrollToPositionWithOffset(anyInt(), anyInt());
     }
 
     @Test

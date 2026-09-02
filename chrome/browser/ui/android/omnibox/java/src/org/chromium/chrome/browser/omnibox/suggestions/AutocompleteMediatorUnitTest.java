@@ -578,14 +578,14 @@ public class AutocompleteMediatorUnitTest {
         // With fully concealed elements, scroll should trigger keyboard hide.
         clearInvocations(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownScroll();
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(false), anyBoolean());
+        verify(mAutocompleteDelegate).setKeyboardVisibility(eq(false), anyBoolean());
         verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
 
         // Pretend that the user scrolled back to top with an overscroll.
         // This should bring back the soft keyboard.
         clearInvocations(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownOverscrolledToTop();
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true), anyBoolean());
+        verify(mAutocompleteDelegate).setKeyboardVisibility(eq(true), anyBoolean());
         verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false), anyBoolean());
     }
 
@@ -700,7 +700,7 @@ public class AutocompleteMediatorUnitTest {
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
         verify(mAutocompleteController)
                 .start(any(), captor.capture(), eq(cursorPos), eq(preventAutocomplete));
-        verify(mAutocompleteController, times(1)).start(any(), any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController).start(any(), any(), anyInt(), anyBoolean());
 
         AutocompleteInput input = captor.getValue();
         assertEquals(pageClass, input.getPageClassification());
@@ -714,7 +714,7 @@ public class AutocompleteMediatorUnitTest {
             String userText, GURL url, @PageClassification int pageClass, String pageTitle) {
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
         verify(mAutocompleteController).startZeroSuggest(any(), captor.capture());
-        verify(mAutocompleteController, times(1)).startZeroSuggest(any(), any());
+        verify(mAutocompleteController).startZeroSuggest(any(), any());
 
         AutocompleteInput input = captor.getValue();
         assertEquals(pageClass, input.getPageClassification());
@@ -1695,8 +1695,7 @@ public class AutocompleteMediatorUnitTest {
                 mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController, times(1))
-                .onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController).onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
 
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -1734,8 +1733,7 @@ public class AutocompleteMediatorUnitTest {
                 mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController, times(1))
-                .onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController).onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
 
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -1777,8 +1775,7 @@ public class AutocompleteMediatorUnitTest {
                 mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController, times(1))
-                .onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController).onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
 
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
@@ -2599,7 +2596,7 @@ public class AutocompleteMediatorUnitTest {
         animator.start();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true), anyBoolean());
+        verify(mAutocompleteDelegate).setKeyboardVisibility(eq(true), anyBoolean());
     }
 
     @Test

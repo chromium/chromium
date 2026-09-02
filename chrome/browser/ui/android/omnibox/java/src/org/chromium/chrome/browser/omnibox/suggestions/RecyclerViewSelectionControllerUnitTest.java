@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -212,15 +213,15 @@ public class RecyclerViewSelectionControllerUnitTest {
         assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
 
         verify(mChildView2, atLeastOnce()).isFocusable();
-        verify(mChildView2, times(1)).setSelected(true);
-        verify(mChildView2, times(1)).setSelected(anyBoolean());
+        verify(mChildView2).setSelected(true);
+        verify(mChildView2).setSelected(anyBoolean());
         verifyNoMoreInteractions(mChildView1, mChildView2, mChildView3);
 
         // Reset selection back to none.
 
         mSelectionControllerWithSentinel.reset();
         verify(mChildView2, atLeastOnce()).isFocusable();
-        verify(mChildView2, times(1)).setSelected(false);
+        verify(mChildView2).setSelected(false);
         verify(mChildView2, times(2)).setSelected(anyBoolean());
         verifyNoMoreInteractions(mChildView1, mChildView2, mChildView3);
 
@@ -236,11 +237,11 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionControllerWithSentinel.setPosition(2);
         assertEquals(Integer.valueOf(2), mSelectionControllerWithSentinel.getPosition());
 
-        verify(mChildView1, times(0)).setSelected(anyBoolean());
-        verify(mChildView2, times(0)).setSelected(true);
-        verify(mChildView2, times(1)).setSelected(false);
-        verify(mChildView3, times(1)).setSelected(true);
-        verify(mChildView3, times(0)).setSelected(false);
+        verify(mChildView1, never()).setSelected(anyBoolean());
+        verify(mChildView2, never()).setSelected(true);
+        verify(mChildView2).setSelected(false);
+        verify(mChildView3).setSelected(true);
+        verify(mChildView3, never()).setSelected(false);
     }
 
     @Test
@@ -252,10 +253,10 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionControllerWithSentinel.reset();
         assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
 
-        verify(mChildView1, times(0)).setSelected(anyBoolean());
-        verify(mChildView3, times(0)).setSelected(anyBoolean());
-        verify(mChildView2, times(0)).setSelected(true);
-        verify(mChildView2, times(1)).setSelected(false);
+        verify(mChildView1, never()).setSelected(anyBoolean());
+        verify(mChildView3, never()).setSelected(anyBoolean());
+        verify(mChildView2, never()).setSelected(true);
+        verify(mChildView2).setSelected(false);
     }
 
     @Test
@@ -355,14 +356,14 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.selectNextItem();
 
         assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        verify(mVirtualCallback, times(1)).onResult(true);
+        verify(mVirtualCallback).onResult(true);
         verify(mChildView1).setSelected(false);
-        verify(mChildView2, times(0)).setSelected(anyBoolean());
+        verify(mChildView2, never()).setSelected(anyBoolean());
 
         mSelectionController.selectNextItem();
 
         assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        verify(mVirtualCallback, times(1)).onResult(false);
+        verify(mVirtualCallback).onResult(false);
         verify(mChildView2).setSelected(true);
 
         clearInvocations(mChildView2);

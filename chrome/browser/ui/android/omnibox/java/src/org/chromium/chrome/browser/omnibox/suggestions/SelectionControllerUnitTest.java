@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -160,8 +161,8 @@ public class SelectionControllerUnitTest {
 
         assertTrue(c.selectNextItem());
 
-        verify(c, times(1)).setItemState(0, false);
-        verify(c, times(1)).setItemState(2, true);
+        verify(c).setItemState(0, false);
+        verify(c).setItemState(2, true);
         assertEquals(Integer.valueOf(2), c.getPosition());
     }
 
@@ -178,8 +179,8 @@ public class SelectionControllerUnitTest {
         // This will try to move away from position 0 twice
         // - to advance to position 1, which will fail
         // - then, to advance to position 0, which should work.
-        verify(c, times(1)).setItemState(2, false);
-        verify(c, times(1)).setItemState(0, true);
+        verify(c).setItemState(2, false);
+        verify(c).setItemState(0, true);
         verify(c, times(2)).setItemState(anyInt(), anyBoolean());
         assertEquals(Integer.valueOf(0), c.getPosition());
     }
@@ -196,7 +197,7 @@ public class SelectionControllerUnitTest {
         assertFalse(c.selectNextItem());
 
         // Selection never moved.
-        verify(c, times(0)).setItemState(anyInt(), anyBoolean());
+        verify(c, never()).setItemState(anyInt(), anyBoolean());
 
         // We shouldn't move the selection.
         assertEquals(Integer.valueOf(0), c.getPosition());
@@ -213,7 +214,7 @@ public class SelectionControllerUnitTest {
         assertFalse(c.selectPreviousItem());
 
         // Selection never moved.
-        verify(c, times(0)).setItemState(anyInt(), anyBoolean());
+        verify(c, never()).setItemState(anyInt(), anyBoolean());
 
         // We shouldn't move the selection.
         assertEquals(Integer.valueOf(2), c.getPosition());

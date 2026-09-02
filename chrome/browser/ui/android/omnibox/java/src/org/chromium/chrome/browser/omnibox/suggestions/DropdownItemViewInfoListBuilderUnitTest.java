@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -319,10 +320,10 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @Test
     public void builder_propagatesOmniboxSessionStateChangeEvents() {
         mBuilder.onOmniboxSessionStateChange(true);
-        verify(mMockSuggestionProcessor, times(1)).onOmniboxSessionStateChange(eq(true));
+        verify(mMockSuggestionProcessor).onOmniboxSessionStateChange(eq(true));
 
         mBuilder.onOmniboxSessionStateChange(false);
-        verify(mMockSuggestionProcessor, times(1)).onOmniboxSessionStateChange(eq(false));
+        verify(mMockSuggestionProcessor).onOmniboxSessionStateChange(eq(false));
 
         verifyNoMoreInteractions(mMockSuggestionProcessor);
     }
@@ -330,7 +331,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @Test
     public void builder_propagatesNativeInitializedEvent() {
         mBuilder.onNativeInitialized();
-        verify(mMockSuggestionProcessor, times(1)).onNativeInitialized();
+        verify(mMockSuggestionProcessor).onNativeInitialized();
 
         verifyNoMoreInteractions(mMockSuggestionProcessor);
     }
@@ -360,9 +361,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         assertEquals(1, model.size());
 
         verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(regular), any(), anyInt());
-        verify(mMockSuggestionProcessor, times(0))
+        verify(mMockSuggestionProcessor, never())
                 .populateModel(eq(mInput), eq(verbatim1), any(), anyInt());
-        verify(mMockSuggestionProcessor, times(0))
+        verify(mMockSuggestionProcessor, never())
                 .populateModel(eq(mInput), eq(verbatim2), any(), anyInt());
     }
 

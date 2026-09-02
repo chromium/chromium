@@ -12,7 +12,6 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -316,8 +315,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
         verify(mSuggestionHost).finishInteraction();
-        verify(mShareDelegate, times(1))
-                .share(mTab, /* shareDirectly= */ false, ShareOrigin.EDIT_URL);
+        verify(mShareDelegate).share(mTab, /* shareDirectly= */ false, ShareOrigin.EDIT_URL);
         // Note: UkmRecorder requires WebContents to report metrics.
         // In the even WebContents is not available, we should not interact with UkmRecorder.
         verifyNoMoreInteractions(mUkmRecorderJniMock);
@@ -367,7 +365,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
 
-        verify(mClipboardManager, times(1)).setPrimaryClip(mClipDataCaptor.capture());
+        verify(mClipboardManager).setPrimaryClip(mClipDataCaptor.capture());
 
         // ClipData doesn't implement equals, but their string representations matching should be
         // good enough.
@@ -393,7 +391,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
 
-        verify(mClipboardManager, times(1)).setPrimaryClip(mClipDataCaptor.capture());
+        verify(mClipboardManager).setPrimaryClip(mClipDataCaptor.capture());
 
         // ClipData doesn't implement equals, but their string representations matching should be
         // good enough.
