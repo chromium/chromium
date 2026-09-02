@@ -40,8 +40,6 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for ChildProcessLauncher. */
 @RunWith(ContentJUnit4ClassRunner.class)
 public class ChildProcessLauncherTest {
-    private static final long CONDITION_WAIT_TIMEOUT_MS = 5000;
-
     private static final String SERVICE_PACKAGE_NAME = "org.chromium.content_shell_apk.tests";
     private static final String SERVICE_NAME =
             "org.chromium.content_shell_apk.TestChildProcessService";
@@ -127,7 +125,6 @@ public class ChildProcessLauncherTest {
         private final CallbackHelper mOnLoadNativeHelper = new CallbackHelper();
         private final CallbackHelper mOnBeforeMainHelper = new CallbackHelper();
         private final CallbackHelper mOnRunMainHelper = new CallbackHelper();
-        private final CallbackHelper mOnDestroyHelper = new CallbackHelper();
 
         // Can be accessed after mOnConnectionSetupCalled is signaled.
         private boolean mServiceCreated;

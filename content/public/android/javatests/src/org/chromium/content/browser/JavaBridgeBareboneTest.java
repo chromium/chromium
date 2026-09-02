@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 
 /** Common functionality for testing the Java Bridge. */
@@ -22,8 +21,6 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeBareboneTest {
     @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
-
-    private TestCallbackHelperContainer mTestCallbackHelperContainer;
 
     private void injectDummyObject(final String name) throws Throwable {
         mActivityTestRule.runOnUiThread(

@@ -47,7 +47,6 @@ public class GestureListenerManagerTest {
                             + " => { document.title = 'loaded'; });</script>");
 
     private static final class GestureStateListenerImpl extends GestureStateListener {
-        private int mNumOnScrollOffsetOrExtentChangedCalls;
         public final CallbackHelper mCallbackHelper = new CallbackHelper();
         private boolean mGotStarted;
         private boolean mDidScrollOffsetChangeWhileScrolling;

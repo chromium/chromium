@@ -86,7 +86,6 @@ public class WebContentsAccessibilityE2ETest {
     // Extended selection offset types, defined in:
     // androidx.view.accessibility.AccessibilityNodeInfoCompat
     private static final int OFFSET_TYPE_TEXT = 0;
-    private static final int OFFSET_TYPE_CHILD = 1;
 
     private final AtomicReference<CompletableFuture<IAccessibilityTestHelperService>>
             mServiceFuture = new AtomicReference<>(new CompletableFuture<>());
