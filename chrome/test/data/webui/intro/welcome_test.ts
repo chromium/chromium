@@ -9,7 +9,6 @@ import type {WelcomeAppElement} from 'chrome://intro/welcome/app.js';
 import type {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -46,24 +45,24 @@ suite('WelcomeTest', function() {
     await createTestElement();
   });
 
-  function getToast(): CrToastElement {
-    const toast =
-        testElement.shadowRoot.querySelector<CrToastElement>('#toast');
-    assertTrue(!!toast);
-    return toast;
+  function getDialog(): HTMLDialogElement {
+    const dialog =
+        testElement.shadowRoot.querySelector<HTMLDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    return dialog;
   }
 
-  function getToastActionButton(): CrButtonElement {
+  function getDialogActionButton(): CrButtonElement {
     const actionButton = testElement.shadowRoot.querySelector<CrButtonElement>(
-        '#toastActionButton');
+        '#dialogActionButton');
     assertTrue(!!actionButton);
     return actionButton;
   }
 
-  function getToastCloseButton(): CrIconButtonElement {
+  function getDialogCloseButton(): CrIconButtonElement {
     const closeButton =
         testElement.shadowRoot.querySelector<CrIconButtonElement>(
-            '#toastCloseButton');
+            '#dialogCloseButton');
     assertTrue(!!closeButton);
     return closeButton;
   }
@@ -100,9 +99,6 @@ suite('WelcomeTest', function() {
     assertTrue(acceptButton.classList.contains('action-button'));
     assertFalse(acceptButton.disabled);
 
-    assertTrue(!!testElement.shadowRoot.querySelector('#toast'));
-    assertFalse(getToast().open);
-
     const toggle =
         testElement.shadowRoot.querySelector<CrToggleElement>(
             '#default-browser-toggle')!;
@@ -114,8 +110,16 @@ suite('WelcomeTest', function() {
 
     assertTrue(isVisible(
         testElement.shadowRoot.querySelector('#default-browser-label')));
+
+    assertFalse(getDialog().open);
     assertTrue(
         isVisible(testElement.shadowRoot.querySelector('localized-link')));
+    getManageMetricsLink().click();
+    assertTrue(getDialog().open);
+    assertTrue(isVisible(
+        testElement.shadowRoot.querySelector('#dialogCloseButton')));
+    assertTrue(isVisible(
+        testElement.shadowRoot.querySelector('#dialogActionButton')));
   });
 
   test('AcceptButtonClicked', async function() {
@@ -128,11 +132,6 @@ suite('WelcomeTest', function() {
     assertFalse(acceptButton.disabled);
     assertFalse(toggle.disabled);
     assertFalse(localizedLink.linkDisabled);
-
-    getManageMetricsLink().click();
-    await microtasksFinished();
-    assertTrue(getToast().open);
-
     acceptButton.click();
     await microtasksFinished();
 
@@ -141,42 +140,41 @@ suite('WelcomeTest', function() {
     assertTrue(acceptButton.disabled);
     assertTrue(toggle.disabled);
     assertTrue(localizedLink.linkDisabled);
-    assertFalse(getToast().open);
 
-    // Clicking the link after accept should be a no-op and not open the toast.
+    // Clicking the link after accept should be a no-op and not open the dialog.
     getManageMetricsLink().click();
     await microtasksFinished();
-    assertFalse(getToast().open);
+    assertFalse(getDialog().open);
   });
 
   test('FooterManageClicked', async function() {
-    const toast = getToast();
-    assertFalse(toast.open);
+    const dialog = getDialog();
+    assertFalse(dialog.open);
 
     getManageMetricsLink().click();
     await microtasksFinished();
 
-    assertTrue(toast.open);
+    assertTrue(dialog.open);
   });
 
-  test('ToastCloseButtonClicked', async function() {
-    const toast = getToast();
-    toast.show();
-    getToastCloseButton().click();
-    await microtasksFinished();
-
-    assertFalse(toast.open);
-  });
-
-  test('ToastActionButtonClosesToast', async function() {
-    const toast = getToast();
+  test('DialogCloseButtonClicked', async function() {
     getManageMetricsLink().click();
     await microtasksFinished();
-    assertTrue(toast.open);
-
-    getToastActionButton().click();
+    getDialogCloseButton().click();
     await microtasksFinished();
-    assertFalse(toast.open);
+
+    assertFalse(getDialog().open);
+  });
+
+  test('DialogActionButtonClosesDialog', async function() {
+    const dialog = getDialog();
+    getManageMetricsLink().click();
+    await microtasksFinished();
+    assertTrue(dialog.open);
+
+    getDialogActionButton().click();
+    await microtasksFinished();
+    assertFalse(dialog.open);
   });
 
   test('LabelsUpdateWhenMetricsToggled', async function() {
@@ -187,7 +185,7 @@ suite('WelcomeTest', function() {
     getManageMetricsLink().click();
     await microtasksFinished();
 
-    const actionButton = getToastActionButton();
+    const actionButton = getDialogActionButton();
     assertEquals(
         testElement.i18n('welcomeMetricsPopupTurnOffButtonLabel'),
         actionButton.textContent.trim());
@@ -222,7 +220,7 @@ suite('WelcomeTest', function() {
   test('AcceptButtonClickedWithMetricsDisabled', async function() {
     getManageMetricsLink().click();
     await microtasksFinished();
-    getToastActionButton().click();
+    getDialogActionButton().click();
     await microtasksFinished();
 
     const acceptButton = testElement.$.acceptButton;
@@ -272,7 +270,7 @@ suite('WelcomeTest', function() {
     await createTestElement();
 
     assertFalse(isVisible(testElement.shadowRoot.querySelector('#footer')));
-    assertFalse(isVisible(testElement.shadowRoot.querySelector('#toast')));
+    assertFalse(isVisible(testElement.shadowRoot.querySelector('#dialog')));
 
     const acceptButton = testElement.$.acceptButton;
     assertTrue(isVisible(acceptButton));
