@@ -16,6 +16,7 @@
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "base/threading/thread_restrictions.h"
 #import "components/optimization_guide/core/delivery/model_info.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/prefs/pref_service.h"
@@ -784,6 +785,20 @@ TEST_F(ClientSideDetectionServiceTest,
   // Flush to process any async callbacks if they were triggered (they shouldn't
   // be).
   FlushCurrentSequence();
+}
+
+// Tests that when `ClientSideDetectionService` is destroyed while blocking is
+// disallowed on the UI thread, the active `Scorer` (holding file handles) is
+// destroyed on a background thread without triggering assertion failures.
+TEST_F(ClientSideDetectionServiceTest,
+       ScorerDestroyedOnBackgroundThreadOnShutdown) {
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  UpdateModel(model_observer_tracker_.get());
+  ASSERT_THAT(csd_service_->GetScorer(), testing::NotNull());
+
+  // Disallow blocking on the UI thread during shutdown.
+  base::ScopedDisallowBlocking disallow_blocking;
+  csd_service_.reset();
 }
 
 }  // namespace safe_browsing

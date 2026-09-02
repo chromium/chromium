@@ -84,6 +84,11 @@ class ClientSideDetectionService : public ClientSideDetectionServiceBase {
   // created on a background thread.
   void OnScorerCreated(int generation_id, std::unique_ptr<Scorer> scorer);
 
+  // Sets the active `Scorer` and notifies observers. Posts destruction of the
+  // previous `Scorer` to a background thread because closing file handles
+  // performs file I/O operations, which are forbidden on the main thread.
+  void SetScorer(std::unique_ptr<Scorer> scorer);
+
   // Called when Safe Browsing is disabled or the model becomes unavailable.
   void ClearScorerAndNotifyObservers();
 
