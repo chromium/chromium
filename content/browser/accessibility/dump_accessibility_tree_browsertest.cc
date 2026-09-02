@@ -5119,9 +5119,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunApgPatternThirdPartyTest(FILE_PATH_LITERAL("alert/examples/alert.html"));
 }
 
-// TODO(crbug.com/545647752): disabled due to flakiness
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityApgPatternThirdPartyAlertdialog) {
+                       AccessibilityApgPatternThirdPartyAlertdialog) {
   RunApgPatternThirdPartyTest(
       FILE_PATH_LITERAL("alertdialog/examples/alertdialog.html"));
 }

@@ -1,8 +1,11 @@
 ROLE_SYSTEM_DOCUMENT name='Alert Dialog Example' READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
-++++IA2_ROLE_LABEL
-++++++ROLE_SYSTEM_STATICTEXT name='Notes'
-++++ROLE_SYSTEM_TEXT name='Notes' value='This is an example text box, which unsurprisingly contains text. The user is given the option to save this text - which triggers a basic alert - or to discard the text - which triggers an alert dialog that prompts the user for confirmation.' FOCUSABLE IA2_STATE_MULTI_LINE
-++++ROLE_SYSTEM_ALERT
-++++ROLE_SYSTEM_PUSHBUTTON name='Save' FOCUSABLE
-++++ROLE_SYSTEM_PUSHBUTTON name='Discard' FOCUSABLE
+++++ROLE_SYSTEM_DIALOG name='Confirmation' IA2_STATE_MODAL description-from:aria-describedby description='Are you sure you want to discard all of your notes?'
+++++++IA2_ROLE_HEADING name='Confirmation'
+++++++++ROLE_SYSTEM_STATICTEXT name='Confirmation'
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='Are you sure you want to discard all of your notes?'
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_PUSHBUTTON name='No' FOCUSABLE
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Yes' FOCUSABLE

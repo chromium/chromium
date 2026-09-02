@@ -2,34 +2,18 @@ rootWebArea name='Alert Dialog Example'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer
-++++++++labelText
-++++++++++staticText name='Notes'
-++++++++++++inlineTextBox name='Notes'
-++++++++textField multiline name='Notes' value='This is an example text box, which unsurprisingly contains text. The user is given the option to save this text - which triggers a basic alert - or to discard the text - which triggers an alert dialog that prompts the user for confirmation.'
+++++++++alertDialog description='Are you sure you want to discard all of your notes?' name='Confirmation' descriptionFrom=relatedElement
+++++++++++heading name='Confirmation'
+++++++++++++staticText name='Confirmation'
+++++++++++++++inlineTextBox name='Confirmation'
 ++++++++++genericContainer
-++++++++++++staticText name='This is an example text box, which unsurprisingly contains text. The user is given the option to save this text - which triggers a basic alert - or to discard the text - which triggers an alert dialog that prompts the user for confirmation.'
-++++++++++++++inlineTextBox name='This is an example text box, which'
-++++++++++++++inlineTextBox name=' '
-++++++++++++++inlineTextBox name='unsurprisingly contains text. The user is'
-++++++++++++++inlineTextBox name=' '
-++++++++++++++inlineTextBox name='given the option to save this text -'
-++++++++++++++inlineTextBox name=' '
-++++++++++++++inlineTextBox name='which triggers a basic alert - or to'
-++++++++++++++inlineTextBox name=' '
-++++++++++++++inlineTextBox name='discard the text - which triggers an'
-++++++++++++++inlineTextBox name=' '
-++++++++++++++inlineTextBox name='alert dialog that prompts the user for'
-++++++++++++++inlineTextBox name=' '
-++++++++++++++inlineTextBox name='confirmation.'
-++++++++alert
-++++++++button name='Save'
-++++++++++staticText name='Save'
-++++++++++++inlineTextBox name='Save'
-++++++++button name='Discard'
-++++++++++staticText name='Discard'
-++++++++++++inlineTextBox name='Discard'
-++++++++heading ignored invisible
-++++++++++staticText ignored invisible
-++++++++genericContainer ignored invisible
-++++++++++paragraph ignored invisible
-++++++++++++staticText ignored invisible
+++++++++++++paragraph
+++++++++++++++staticText name='Are you sure you want to discard all of your notes?'
+++++++++++++++++inlineTextBox name='Are you sure you want to discard all of your notes?'
+++++++++++genericContainer
+++++++++++++button name='No'
+++++++++++++++staticText name='No'
+++++++++++++++++inlineTextBox name='No'
+++++++++++++button name='Yes'
+++++++++++++++staticText name='Yes'
+++++++++++++++++inlineTextBox name='Yes'

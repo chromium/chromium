@@ -1,8 +1,11 @@
 AXWebArea AXTitle='Alert Dialog Example'
 ++AXGroup
-++++AXGroup
-++++++AXStaticText AXValue='Notes'
-++++AXTextArea AXTitle='Notes' AXValue='This is an example text box, which unsurprisingly contains text. The user is given the option to save this text - which triggers a basic alert - or to discard the text - which triggers an alert dialog that prompts the user for confirmation.'
-++++AXGroup AXSubrole=AXApplicationAlert
-++++AXButton AXTitle='Save'
-++++AXButton AXTitle='Discard'
+++++AXGroup AXSubrole=AXApplicationAlertDialog AXDescription='Confirmation' AXTitle='Confirmation'
+++++++AXHeading AXTitle='Confirmation' AXValue=2
+++++++++AXStaticText AXValue='Confirmation'
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Are you sure you want to discard all of your notes?'
+++++++AXGroup
+++++++++AXButton AXTitle='No'
+++++++++AXButton AXTitle='Yes'
