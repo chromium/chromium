@@ -470,16 +470,37 @@ public class UrlBarUnitTest {
     @Test
     public void onTouchEvent_touchDownIsIgnored() {
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         verify(mUrlBarDelegate, never()).onTouchAfterFocus();
     }
 
     @Test
     public void onTouchEvent_touchUpEmitsTouchEvents() {
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         verify(mUrlBarDelegate).onFocusByTouch();
         // No subsequent events.
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         verifyNoMoreInteractions(mUrlBarDelegate);
 
         // Simulate focus lost, then applied programmatically.
@@ -487,10 +508,24 @@ public class UrlBarUnitTest {
         mUrlBar.onFocusChanged(false, 0, null);
         mUrlBar.onFocusChanged(true, 0, null);
 
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         verify(mUrlBarDelegate).onTouchAfterFocus();
         // No subsequent events.
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         verifyNoMoreInteractions(mUrlBarDelegate);
     }
 
@@ -499,13 +534,27 @@ public class UrlBarUnitTest {
         mUrlBar.setOnLongClickListener(v -> true);
 
         // Start gesture
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
 
         // Trigger long click
         mUrlBar.performLongClick();
 
         // End gesture
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
 
         // Verify click event was suppressed (delegate not notified)
         verify(mUrlBarDelegate, never()).onFocusByTouch();
@@ -516,14 +565,42 @@ public class UrlBarUnitTest {
         mUrlBar.setOnLongClickListener(v -> true);
 
         // 1. Perform long-press gesture
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         mUrlBar.performLongClick();
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
         verify(mUrlBarDelegate, never()).onFocusByTouch();
 
         // 2. Perform subsequent normal click gesture
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
 
         // Verify subsequent click is processed normally
         verify(mUrlBarDelegate).onFocusByTouch();
@@ -545,7 +622,14 @@ public class UrlBarUnitTest {
 
         for (var source : sources) {
             // 1. Fire a touchpad event
-            MotionEvent evt = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+            MotionEvent evt =
+                    MotionEvent.obtain(
+                            /* downTime= */ 0,
+                            /* eventTime= */ 0,
+                            MotionEvent.ACTION_UP,
+                            /* x= */ 0,
+                            /* y= */ 0,
+                            /* metaState= */ 0);
             evt.setSource(source);
             mUrlBar.onTouchEvent(evt);
             mUrlBar.onTouchEvent(evt);
@@ -569,7 +653,14 @@ public class UrlBarUnitTest {
         doReturn(true).when(mUrlBar).isFocused();
 
         // 1. Fire a touchpad event
-        MotionEvent evt = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        MotionEvent evt =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0);
         evt.setSource(InputDevice.SOURCE_TOUCHPAD);
         mUrlBar.onTouchEvent(evt);
 
@@ -587,7 +678,14 @@ public class UrlBarUnitTest {
 
     @Test
     public void onTouchEvent_rightClickFocusesAndSelectsAll() {
-        MotionEvent evt = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        MotionEvent evt =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0);
         evt.setButtonState(MotionEvent.BUTTON_SECONDARY);
 
         mUrlBar.onTouchEvent(evt);
@@ -1803,7 +1901,14 @@ public class UrlBarUnitTest {
         assertEquals(NUMBER_OF_VISIBLE_CHARACTERS, text.getSpanStart(spansBefore[0]));
         assertEquals(url.length(), text.getSpanEnd(spansBefore[0]));
 
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
 
         BoundsEllipsisSpan[] spansAfter = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
         assertEquals(0, spansAfter.length);
@@ -1821,7 +1926,14 @@ public class UrlBarUnitTest {
         BoundsEllipsisSpan[] spansBefore =
                 text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
 
-        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.onTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0));
 
         EllipsisSpan[] spansAfter = text.getSpans(0, text.length(), EllipsisSpan.class);
         assertEquals(1, spansAfter.length);
