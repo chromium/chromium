@@ -114,8 +114,19 @@ void IssueManager::UnregisterObserver(IssuesObserver* observer) {
 
 void IssueManager::MaybeUpdateTopIssue() {
   if (issues_map_.empty()) {
+    // If there was no top issue, observers have already been notified that
+    // issues are cleared (or there were none). Avoid redundant notifications.
+    if (!top_issue_id_.has_value()) {
+      return;
+    }
     top_issue_id_ = std::nullopt;
     for (auto& observer : issues_observers_) {
+      // If an observer reentrantly adds an issue, `top_issue_id_` will be
+      // updated by the nested call. Stop notifying remaining observers with
+      // cleared state.
+      if (top_issue_id_.has_value()) {
+        break;
+      }
       observer.OnIssuesCleared();
     }
     return;
@@ -129,8 +140,15 @@ void IssueManager::MaybeUpdateTopIssue() {
 
   // If we've found a new top issue, then report it via the observer.
   top_issue_id_ = new_top_issue_id;
+  const Issue new_top_issue = issues_map_.begin()->second;
   for (auto& observer : issues_observers_) {
-    observer.OnIssue(issues_map_.at(new_top_issue_id));
+    // If an observer reentrantly modifies issues (e.g. clears or adds one),
+    // `top_issue_id_` will change via the nested call. Stop notifying remaining
+    // observers with the now-stale top issue.
+    if (top_issue_id_ != new_top_issue_id) {
+      break;
+    }
+    observer.OnIssue(new_top_issue);
   }
 }
 

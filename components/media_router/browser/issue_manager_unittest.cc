@@ -224,4 +224,56 @@ TEST_F(IssueManagerTest, ClearTopIssueForSink) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
+TEST_F(IssueManagerTest, ReentrantClearIssue) {
+  MockIssuesObserver observer1(&manager_);
+  MockIssuesObserver observer2(&manager_);
+
+  IssueInfo issue_info = CreateTestIssue(IssueInfo::Severity::WARNING);
+
+  // When observer1 receives the issue, it clears it immediately.
+  EXPECT_CALL(observer1, OnIssue(_)).WillOnce([this](const Issue& issue) {
+    manager_.ClearIssue(issue.id());
+  });
+  EXPECT_CALL(observer1, OnIssuesCleared());
+  EXPECT_CALL(observer2, OnIssuesCleared());
+
+  observer1.Init();
+  observer2.Init();
+
+  manager_.AddIssue(issue_info);
+}
+
+TEST_F(IssueManagerTest, ReentrantAddIssue) {
+  MockIssuesObserver observer1(&manager_);
+  MockIssuesObserver observer2(&manager_);
+
+  IssueInfo issue_info1 = CreateTestIssue(IssueInfo::Severity::WARNING);
+  IssueInfo issue_info2("title2", IssueInfo::Severity::NOTIFICATION, "sinkId2");
+
+  observer1.Init();
+  observer2.Init();
+
+  // Initial issue.
+  EXPECT_CALL(observer1, OnIssue(_));
+  EXPECT_CALL(observer2, OnIssue(_));
+  manager_.AddIssue(issue_info1);
+  testing::Mock::VerifyAndClearExpectations(&observer1);
+  testing::Mock::VerifyAndClearExpectations(&observer2);
+
+  // When observer1 receives OnIssuesCleared, it adds issue_info2.
+  EXPECT_CALL(observer1, OnIssuesCleared()).WillOnce([this, &issue_info2]() {
+    manager_.AddIssue(issue_info2);
+  });
+  EXPECT_CALL(observer1, OnIssue(_))
+      .WillOnce([&issue_info2](const Issue& issue) {
+        EXPECT_EQ(issue_info2, issue.info());
+      });
+  EXPECT_CALL(observer2, OnIssue(_))
+      .WillOnce([&issue_info2](const Issue& issue) {
+        EXPECT_EQ(issue_info2, issue.info());
+      });
+
+  manager_.ClearAllIssues();
+}
+
 }  // namespace media_router

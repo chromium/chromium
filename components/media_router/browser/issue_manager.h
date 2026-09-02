@@ -67,7 +67,7 @@ class IssueManager {
   base::flat_map<Issue::Id, Issue> issues_map_;
 
   // IssueObserver instances are not owned by the manager.
-  base::ObserverList<IssuesObserver>::Unchecked issues_observers_;
+  base::ReentrantObserverList<IssuesObserver>::Unchecked issues_observers_;
 
   // Pointer to the top Issue in `|issues_map_|, or |nullopt| if there are no
   // issues.
