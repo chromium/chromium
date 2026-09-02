@@ -4,14 +4,12 @@
 
 #include "services/metrics/public/cpp/ukm_entry_builder_base.h"
 
-#include <memory>
+#include <utility>
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
-namespace ukm {
-
-namespace internal {
+namespace ukm::internal {
 
 UkmEntryBuilderBase::UkmEntryBuilderBase(UkmEntryBuilderBase&&) = default;
 
@@ -40,16 +38,19 @@ void UkmEntryBuilderBase::SetMetricInternal(uint64_t metric_hash,
 }
 
 void UkmEntryBuilderBase::Record(UkmRecorder* recorder) {
-  if (recorder)
+  if (recorder) {
     recorder->AddEntry(std::move(entry_));
-  else
+  } else {
     entry_.reset();
+  }
 }
 
 mojom::UkmEntryPtr UkmEntryBuilderBase::GetEntryForTesting() {
   return entry_.Clone();
 }
 
-}  // namespace internal
+mojom::UkmEntryPtr UkmEntryBuilderBase::TakeEntry() {
+  return std::move(entry_);
+}
 
-}  // namespace ukm
+}  // namespace ukm::internal

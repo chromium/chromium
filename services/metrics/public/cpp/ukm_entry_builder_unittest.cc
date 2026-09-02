@@ -5,6 +5,7 @@
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
