@@ -28,7 +28,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "smallvec"
   cargo_pkg_description = "'Small vector' optimization: store up to a small number of items on the stack"
   cargo_pkg_repository = "https://github.com/servo/rust-smallvec"
-  cargo_pkg_version = "1.15.2"
+  cargo_pkg_version = "1.16.0"
 
   allow_unsafe = true
 

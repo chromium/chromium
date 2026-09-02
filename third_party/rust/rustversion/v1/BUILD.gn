@@ -82,6 +82,7 @@ cargo_crate("lib") {
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
 }
+
 cargo_crate("buildrs_support") {
   crate_name = "rustversion"
   epoch = "1"
