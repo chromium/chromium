@@ -5943,6 +5943,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-marketing-auto-open",
+    "owners": [ "ssid@chromium.org", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-message-first-fre-for-contextual-cue",
     "owners": [ "iwells@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 160

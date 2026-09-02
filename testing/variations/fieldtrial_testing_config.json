@@ -9679,6 +9679,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "allowlisted_urls": "https://www.google.com/chrome/ai-innovations/gemini-in-chrome/,https://www.google.com/chrome/campaigns/gic-on-android/"
+                    },
                     "enable_features": [
                         "GlicMarketingAutoOpen"
                     ]

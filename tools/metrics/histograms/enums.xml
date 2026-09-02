@@ -9515,6 +9515,7 @@ from previous Chrome versions.
   <int value="-1613863020" label="MlUrlScoreCaching:enabled"/>
   <int value="-1613833640" label="ClipboardHistoryWebContentsPaste:disabled"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
+  <int value="-1613442602" label="GlicMarketingAutoOpen:enabled"/>
   <int value="-1612641543" label="CCTRealTimeEngagementSignals:disabled"/>
   <int value="-1612418793"
       label="ExperimentalAccessibilitySwitchAccessSetupGuide:enabled"/>
@@ -12187,6 +12188,7 @@ from previous Chrome versions.
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
   <int value="-787176861" label="CaptureModeEducationBypassLimits:enabled"/>
   <int value="-785528415" label="FedCm:disabled"/>
+  <int value="-784980201" label="GlicMarketingAutoOpen:disabled"/>
   <int value="-784584916" label="SyncEnableHistoryDataType:enabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
   <int value="-784165332"

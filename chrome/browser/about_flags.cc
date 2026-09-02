@@ -3793,6 +3793,15 @@ const FeatureEntry::FeatureVariation kGlicToolbarButtonLocationVariations[] = {
      kGlicToolbarButtonLocation_LeftOfProfileChipWithBackground, nullptr},
 };
 
+const FeatureEntry::FeatureParam kGlicMarketingAutoOpenAllowlistedUrls[] = {
+    {"allowlisted_urls",
+     "https://www.google.com/chrome/ai-innovations/gemini-in-chrome/,"
+     "https://www.google.com/chrome/campaigns/gic-on-android/"}};
+
+const FeatureEntry::FeatureVariation kGlicMarketingAutoOpenVariations[] = {
+    {"with promotional landing pages allowlist",
+     kGlicMarketingAutoOpenAllowlistedUrls, nullptr}};
+
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
     {"glic-guest-url-preset-type", "0"}};
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeStaging[] = {
@@ -11257,6 +11266,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicContextualCueingV2AutoSubmitDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicContextualCueingV2AutoSubmit)},
+    {"glic-marketing-auto-open", flag_descriptions::kGlicMarketingAutoOpenName,
+     flag_descriptions::kGlicMarketingAutoOpenDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicMarketingAutoOpen,
+                                    kGlicMarketingAutoOpenVariations,
+                                    "GlicMarketingAutoOpen")},
     {"glic-message-first-fre-for-contextual-cue",
      flag_descriptions::kGlicMessageFirstFreForContextualCueName,
      flag_descriptions::kGlicMessageFirstFreForContextualCueDescription,

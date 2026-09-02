@@ -1905,6 +1905,10 @@ inline constexpr char kGlicContextualCueingV2AutoSubmitDescription[] =
     "Enable automatically submitting a suggested prompt when the v2 contextual "
     "cue UI for Glic is clicked.";
 
+inline constexpr char kGlicMarketingAutoOpenName[] = "Glic Marketing Auto Open";
+inline constexpr char kGlicMarketingAutoOpenDescription[] =
+    "Enables Glic to auto-open on promotion pages.";
+
 inline constexpr char kGlicMessageFirstFreForContextualCueName[] =
     "Glic Message First FRE for Contextual Cue";
 inline constexpr char kGlicMessageFirstFreForContextualCueDescription[] =
