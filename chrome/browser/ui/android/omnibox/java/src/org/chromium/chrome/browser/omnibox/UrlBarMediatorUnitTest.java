@@ -99,25 +99,25 @@ public class UrlBarMediatorUnitTest {
     public void setUrlData_SendsUpdates() {
         UrlBarData baseData =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.example.com"),
-                        0,
-                        14,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.example.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 14,
+                        /* editingText= */ "Blah");
         UrlBarData dataWithDifferentDisplay =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.foo.com"),
-                        0,
-                        11,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.foo.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 11,
+                        /* editingText= */ "Blah");
         UrlBarData dataWithDifferentEditing =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.example.com"),
-                        0,
-                        14,
-                        "Bar");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.example.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 14,
+                        /* editingText= */ "Bar");
 
         assertTrue(
                 mMediator.setUrlBarData(
@@ -150,18 +150,18 @@ public class UrlBarMediatorUnitTest {
     public void setUrlData_PreventsDuplicateUpdates() {
         UrlBarData data1 =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.example.com"),
-                        0,
-                        0,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.example.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 0,
+                        /* editingText= */ "Blah");
         UrlBarData data2 =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.example.com"),
-                        0,
-                        0,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.example.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 0,
+                        /* editingText= */ "Blah");
 
         assertTrue(
                 mMediator.setUrlBarData(
@@ -185,11 +185,11 @@ public class UrlBarMediatorUnitTest {
         String displayText = "data:text/html,blah";
         UrlBarData data =
                 UrlBarData.create(
-                        new GURL("data:text/html,blah,blah"),
-                        spannable(displayText),
-                        0,
-                        displayText.length(),
-                        null);
+                        /* url= */ new GURL("data:text/html,blah,blah"),
+                        /* displayText= */ spannable(displayText),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ displayText.length(),
+                        /* editingText= */ null);
         assertTrue(
                 mMediator.setUrlBarData(
                         data, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL));
@@ -205,11 +205,11 @@ public class UrlBarMediatorUnitTest {
         String displayText = "about:blank#verylongurl.totallylegit.notsuspicious.url.com";
         UrlBarData data =
                 UrlBarData.create(
-                        new GURL(displayText),
-                        spannable(displayText),
-                        0,
-                        displayText.length(),
-                        null);
+                        /* url= */ new GURL(displayText),
+                        /* displayText= */ spannable(displayText),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ displayText.length(),
+                        /* editingText= */ null);
         assertTrue(
                 mMediator.setUrlBarData(
                         data, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL));
@@ -227,20 +227,50 @@ public class UrlBarMediatorUnitTest {
         // Empty display text, regardless of spanned state.
         assertTrue(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable(""), 0, 0, null),
-                        UrlBarData.create(null, "", 0, 0, null)));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable(""),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ "",
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null)));
 
         // No editing text, equal display text
         assertTrue(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                        UrlBarData.create(null, spannable("Test"), 0, 0, null)));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null)));
 
         // Equal display and editing text
         assertTrue(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah"),
-                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah")));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah"),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah")));
 
         // Equal plain string display text
         assertTrue(
@@ -250,8 +280,18 @@ public class UrlBarMediatorUnitTest {
         // Spanned (with no emphasis spans) vs plain string display text
         assertTrue(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                        UrlBarData.create(null, "Test", 0, 0, null)));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ "Test",
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null)));
 
         // Equal complex display text and editing text
         SpannableStringBuilder text1 = spannable("Test");
@@ -266,16 +306,36 @@ public class UrlBarMediatorUnitTest {
 
         assertTrue(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, text1, 0, 0, "Blah"),
-                        UrlBarData.create(null, text2, 0, 0, "Blah")));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text1,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah"),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text2,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah")));
 
         // Ensure adding non-emphasis spans does not mess up equality.
         text1.setSpan(new Object(), 0, 3, 0);
         Selection.setSelection(text2, 0, 1);
         assertTrue(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, text1, 0, 0, "Blah"),
-                        UrlBarData.create(null, text2, 0, 0, "Blah")));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text1,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah"),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text2,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah")));
     }
 
     @Test
@@ -286,28 +346,68 @@ public class UrlBarMediatorUnitTest {
         // Different display texts
         assertFalse(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                        UrlBarData.create(null, spannable("Test2"), 0, 0, null)));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test2"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null)));
 
         // Mismatched spannable state of display text
         assertFalse(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                        UrlBarData.create(null, "Test2", 0, 0, null)));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ "Test2",
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null)));
 
         // Spanned with emphasis spans vs plain string display text
         SpannableStringBuilder textWithSpan = spannable("Test");
         textWithSpan.setSpan(new UrlEmphasisColorSpan(3), 0, 3, 0);
         assertFalse(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, textWithSpan, 0, 0, null),
-                        UrlBarData.create(null, "Test", 0, 0, null)));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ textWithSpan,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ "Test",
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ null)));
 
         // Equal display text, different editing text
         assertFalse(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah"),
-                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah2")));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah"),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ spannable("Test"),
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah2")));
 
         // Equal display text content, but different emphasis spans
         SpannableStringBuilder text1 = spannable("Test");
@@ -318,16 +418,36 @@ public class UrlBarMediatorUnitTest {
 
         assertFalse(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, text1, 0, 0, "Blah"),
-                        UrlBarData.create(null, text2, 0, 0, "Blah")));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text1,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah"),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text2,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah")));
 
         // Add a subset of emphasis spans, but not all.
         text1.setSpan(new UrlEmphasisColorSpan(3), 0, 3, 0);
         text1.setSpan(new UrlEmphasisColorSpan(4), 1, 3, 0);
         assertFalse(
                 UrlBarMediator.isNewTextEquivalentToExistingText(
-                        UrlBarData.create(null, text1, 0, 0, "Blah"),
-                        UrlBarData.create(null, text2, 0, 0, "Blah")));
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text1,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah"),
+                        UrlBarData.create(
+                                /* url= */ null,
+                                /* displayText= */ text2,
+                                /* originStartIndex= */ 0,
+                                /* originEndIndex= */ 0,
+                                /* editingText= */ "Blah")));
     }
 
     @Test
@@ -351,7 +471,12 @@ public class UrlBarMediatorUnitTest {
         String displayText = "test.com/blah";
         String editingText = "www.test.com/blah";
         mMediator.setUrlBarData(
-                UrlBarData.create(new GURL(url), displayText, 0, 12, editingText),
+                UrlBarData.create(
+                        /* url= */ new GURL(url),
+                        /* displayText= */ displayText,
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 12,
+                        /* editingText= */ editingText),
                 UrlBar.ScrollType.NO_SCROLL,
                 TextSelection.SELECT_ALL);
 
@@ -383,7 +508,12 @@ public class UrlBarMediatorUnitTest {
         String displayText = "test.com/blah";
         String editingText = "www.test.com/blah";
         mMediator.setUrlBarData(
-                UrlBarData.create(new GURL(url), displayText, 0, 12, editingText),
+                UrlBarData.create(
+                        /* url= */ new GURL(url),
+                        /* displayText= */ displayText,
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 12,
+                        /* editingText= */ editingText),
                 UrlBar.ScrollType.NO_SCROLL,
                 TextSelection.SELECT_ALL);
 
@@ -412,11 +542,11 @@ public class UrlBarMediatorUnitTest {
         var sessionState = new FuseboxSessionState();
         UrlBarData baseData =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.example.com"),
-                        0,
-                        14,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.example.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 14,
+                        /* editingText= */ "Blah");
         mMediator.setUrlBarHintText("Hint 1");
         assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
         doReturn(baseData).when(mDelegate).getUrlBarDataForCurrentInput();
@@ -439,11 +569,11 @@ public class UrlBarMediatorUnitTest {
     public void setShowOriginOnly() {
         UrlBarData baseData =
                 UrlBarData.create(
-                        new GURL("http://www.example.com/a_path_to_ignore"),
-                        spannable("http://www.example.com/a_path_to_ignore"),
-                        0,
-                        22,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com/a_path_to_ignore"),
+                        /* displayText= */ spannable("http://www.example.com/a_path_to_ignore"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 22,
+                        /* editingText= */ "Blah");
         mMediator.setUrlBarData(
                 baseData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END);
 
@@ -475,25 +605,25 @@ public class UrlBarMediatorUnitTest {
     public void crossOriginNavigation() {
         UrlBarData baseData =
                 UrlBarData.create(
-                        new GURL("http://www.example.com"),
-                        spannable("www.example.com"),
-                        0,
-                        14,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com"),
+                        /* displayText= */ spannable("www.example.com"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 14,
+                        /* editingText= */ "Blah");
         UrlBarData dataWithSameDomain =
                 UrlBarData.create(
-                        new GURL("http://www.example.com/bar"),
-                        spannable("www.example.com/bar"),
-                        0,
-                        14,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com/bar"),
+                        /* displayText= */ spannable("www.example.com/bar"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 14,
+                        /* editingText= */ "Blah");
         UrlBarData dataWithDifferentDomain =
                 UrlBarData.create(
-                        new GURL("http://www.example.com.subdomain"),
-                        spannable("www.example.com.subdomain"),
-                        0,
-                        20,
-                        "Blah");
+                        /* url= */ new GURL("http://www.example.com.subdomain"),
+                        /* displayText= */ spannable("www.example.com.subdomain"),
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 20,
+                        /* editingText= */ "Blah");
 
         assertTrue(
                 mMediator.setUrlBarData(
@@ -707,8 +837,20 @@ public class UrlBarMediatorUnitTest {
                 mMediator.setUrlBarData(
                         nonEmpty, UrlBar.ScrollType.NO_SCROLL, TextSelection.SELECT_END));
 
-        UrlBarData empty1 = UrlBarData.create(null, "", 0, 0, null);
-        UrlBarData empty2 = UrlBarData.create(null, "", 0, 0, null);
+        UrlBarData empty1 =
+                UrlBarData.create(
+                        /* url= */ null,
+                        /* displayText= */ "",
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 0,
+                        /* editingText= */ null);
+        UrlBarData empty2 =
+                UrlBarData.create(
+                        /* url= */ null,
+                        /* displayText= */ "",
+                        /* originStartIndex= */ 0,
+                        /* originEndIndex= */ 0,
+                        /* editingText= */ null);
 
         assertTrue(
                 mMediator.setUrlBarData(
