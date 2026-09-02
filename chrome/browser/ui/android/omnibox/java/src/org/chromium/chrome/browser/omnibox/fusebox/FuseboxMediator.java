@@ -125,7 +125,7 @@ import java.util.function.Supplier;
     private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier;
     private final BackPressManager mBackPressManager;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
-            ObservableSuppliers.createNonNull(false);
+            ObservableSuppliers.createNonNull(/* initialValue= */ false);
     private final boolean mIsDesktopPlatform;
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier;
     private final OmniboxResourceProvider mResourceProvider;
@@ -1145,7 +1145,7 @@ import java.util.function.Supplier;
                             .setDataAndType(
                                     MediaStore.Images.Media.INTERNAL_CONTENT_URI,
                                     MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
-                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* value= */ true);
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -1190,7 +1190,7 @@ import java.util.function.Supplier;
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
                         .setType(mimeType)
-                        .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* value= */ true)
                         .addFlags(
                                 Intent.FLAG_GRANT_READ_URI_PERMISSION
                                         | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);

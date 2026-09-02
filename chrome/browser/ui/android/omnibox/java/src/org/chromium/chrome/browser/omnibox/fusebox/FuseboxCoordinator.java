@@ -123,7 +123,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier =
             ObservableSuppliers.createNonNull(PopupState.HIDDEN);
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier =
-            ObservableSuppliers.createNonNull(false);
+            ObservableSuppliers.createNonNull(/* initialValue= */ false);
     private final SnackbarManager mSnackbarManager;
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
@@ -239,15 +239,15 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                                 () -> popupView,
                                 dynamicRectProvider)
                         .addOnDismissListener(this::onContextPopupDismissed)
-                        .setOutsideTouchable(true)
-                        .setFocusable(true)
+                        .setOutsideTouchable(/* touchable= */ true)
+                        .setFocusable(/* focusable= */ true)
                         .setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED)
-                        .setAnimateFromAnchor(true)
+                        .setAnimateFromAnchor(/* animateFromAnchor= */ true)
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
                         .setViewportRectProvider(mViewportRectProvider)
-                        .setHorizontalOverlapAnchor(true)
-                        .setVerticalOverlapAnchor(true)
-                        .setAllowNonTouchableSize(true);
+                        .setHorizontalOverlapAnchor(/* overlap= */ true)
+                        .setVerticalOverlapAnchor(/* overlap= */ true)
+                        .setAllowNonTouchableSize(/* allow= */ true);
 
         FuseboxPopup popup =
                 new FuseboxPopup(
