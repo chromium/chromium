@@ -6,18 +6,15 @@
 
 #include <systemd/sd-login.h>
 
+#include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
-#include <vector>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/free_deleter.h"
 #include "base/posix/safe_strerror.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "remoting/base/logging.h"
@@ -35,30 +32,28 @@ named_mojo_ipc_server::EndpointOptions CreateEndpointOptions() {
   return options;
 }
 
-bool IsRunningInGraphicalSession(base::ProcessId pid) {
-  std::string environ_content;
-  if (!base::ReadFileToString(
-          base::FilePath(base::StringPrintf("/proc/%d/environ", pid)),
-          &environ_content)) {
+bool IsGraphicalSession(const char* session_id) {
+  char* raw_type = nullptr;
+  int ret = sd_session_get_type(session_id, &raw_type);
+  if (ret < 0) {
+    LOG(ERROR) << "Failed to get session type for session " << session_id
+               << ": " << base::safe_strerror(-ret);
     return false;
   }
-
-  std::vector<std::string> env_vars =
-      base::SplitString(environ_content, std::string(1, '\0'),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const std::string& env_var : env_vars) {
-    if (env_var == "XDG_SESSION_TYPE=x11" ||
-        env_var == "XDG_SESSION_TYPE=wayland") {
-      return true;
-    }
+  if (!raw_type) {
+    LOG(ERROR) << "Failed to get session type for session " << session_id
+               << ": null session type returned";
+    return false;
   }
-  return false;
+  std::unique_ptr<char, base::FreeDeleter> type(raw_type);
+  const std::string_view session_type = type.get();
+  return session_type == "x11" || session_type == "wayland";
 }
 
-std::string GetSessionIdForPid(base::ProcessId pid) {
-  char* session_id = nullptr;
-  int ret = sd_pid_get_session(pid, &session_id);
-  if (ret < 0 && IsRunningInGraphicalSession(pid)) {
+std::string GetGraphicalSessionIdForPid(base::ProcessId pid) {
+  char* raw_session_id = nullptr;
+  int ret = sd_pid_get_session(pid, &raw_session_id);
+  if (ret < 0) {
     // If the process is not directly in a session scope (e.g. running under
     // the systemd user manager), sd_pid_get_session() returns -ENODATA.
     // For modern GDM, each user can only have one graphical session, so it
@@ -67,8 +62,9 @@ std::string GetSessionIdForPid(base::ProcessId pid) {
              << base::safe_strerror(-ret)
              << ". Falling back to the user's display session.";
     uid_t uid;
-    if (sd_pid_get_owner_uid(pid, &uid) == 0) {
-      ret = sd_uid_get_display(uid, &session_id);
+    ret = sd_pid_get_owner_uid(pid, &uid);
+    if (ret >= 0) {
+      ret = sd_uid_get_display(uid, &raw_session_id);
     }
   }
   if (ret < 0) {
@@ -76,9 +72,18 @@ std::string GetSessionIdForPid(base::ProcessId pid) {
                << ", error: " << base::safe_strerror(-ret);
     return {};
   }
-  std::string session_id_string = session_id;
-  free(session_id);
-  return session_id_string;
+  if (!raw_session_id) {
+    LOG(ERROR) << "Failed to get session ID for PID " << pid
+               << ": null session ID returned";
+    return {};
+  }
+  std::unique_ptr<char, base::FreeDeleter> session_id(raw_session_id);
+
+  if (!IsGraphicalSession(session_id.get())) {
+    HOST_LOG << "Session " << session_id.get() << " is not graphical.";
+    return {};
+  }
+  return session_id.get();
 }
 
 }  // namespace
@@ -107,7 +112,7 @@ void LoginSessionServer::StopServer() {
 void LoginSessionServer::IsRunningInCrdSession(
     IsRunningInCrdSessionCallback callback) {
   std::string session_id =
-      GetSessionIdForPid(ipc_server_.current_connection_info().pid);
+      GetGraphicalSessionIdForPid(ipc_server_.current_connection_info().pid);
   if (session_id.empty()) {
     std::move(callback).Run(false);
     return;
