@@ -1222,13 +1222,6 @@ inline constexpr char
         "When enabled, ignores the strike database checks for the payments "
         "churned users resurrecting bubble feature. For testing purposes.";
 
-inline constexpr char kAutofillManualTestingDataName[] =
-    "Autofill manual testing data";
-inline constexpr char kAutofillManualTestingDataDescription[] =
-    "When set, imports the addresses and cards specified on startup. WARNING: "
-    "If at least one address/card is specified, all other existing "
-    "addresses/cards are overwritten.";
-
 inline constexpr char kAutofillPaymentsFieldSwappingName[] =
     "Swap credit card suggestions";
 inline constexpr char kAutofillPaymentsFieldSwappingDescription[] =

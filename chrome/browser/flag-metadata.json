@@ -1212,11 +1212,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "autofill-manual-testing-data",
-    "owners": ["fleimgruber@google.com", "chrome-autofill@google.com"],
-    "expiry_milestone": 146
-  },
-  {
     "name": "autofill-payments-field-swapping",
     "owners": ["vidhanj@google.com"],
     "expiry_milestone": 143
