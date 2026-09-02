@@ -351,9 +351,9 @@ bool IsLockedFullscreen(BrowserWindowInterface* browser) {
 }
 
 // Places the window in a special type of fullscreen where the user is locked
-// into one browser window if requested. Returns an error message on failure,
-// or std::nullopt on success.
-std::optional<std::string> MaybeSetLockedFullscreenState(
+// into one browser window if requested. Returns base::ok() on success, or an
+// error message on failure.
+base::expected<void, std::string> MaybeSetLockedFullscreenState(
     const api::windows::Update::Params& params,
     const Extension* extension,
     BrowserWindowInterface* browser) {
@@ -364,7 +364,8 @@ std::optional<std::string> MaybeSetLockedFullscreenState(
   if ((params.update_info.state == windows::WindowState::kLockedFullscreen ||
        is_locked_fullscreen) &&
       !tabs_internal::ExtensionHasLockedFullscreenPermission(extension)) {
-    return tabs_internal::kMissingLockWindowFullscreenPrivatePermission;
+    return base::unexpected(
+        tabs_internal::kMissingLockWindowFullscreenPrivatePermission);
   }
 
   // State will be WINDOW_STATE_NONE if the state parameter wasn't passed from
@@ -381,7 +382,7 @@ std::optional<std::string> MaybeSetLockedFullscreenState(
                    windows::WindowState::kLockedFullscreen) {
       locked_state_controller->Lock(chromeos::LockedState::kExtensionLocked);
     }
-    return std::nullopt;
+    return base::ok();
   }
 
   if (browser) {
@@ -403,7 +404,7 @@ std::optional<std::string> MaybeSetLockedFullscreenState(
       }
     }
   }
-  return std::nullopt;
+  return base::ok();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1605,9 +1606,10 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
   // Parameters are valid. Now to perform the actual updates.
 #if BUILDFLAG(IS_CHROMEOS)
-  if (std::optional<std::string> locked_fullscreen_error =
-          MaybeSetLockedFullscreenState(*params, extension(), browser)) {
-    return RespondNow(Error(std::move(*locked_fullscreen_error)));
+  if (base::expected<void, std::string> result =
+          MaybeSetLockedFullscreenState(*params, extension(), browser);
+      !result.has_value()) {
+    return RespondNow(Error(std::move(result.error())));
   }
 #endif
 
