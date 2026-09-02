@@ -48,7 +48,7 @@ class ShellBrowserMainParts : public BrowserMainParts {
 #if BUILDFLAG(IS_MAC)
   void PreCreateMainMessageLoop() override;
 #endif
-  void PostCreateThreads() override;
+  int PostCreateThreads() override;
   void PostCreateMainMessageLoop() override;
   void ToolkitInitialized() override;
   int PreMainMessageLoopRun() override;

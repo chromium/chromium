@@ -1033,8 +1033,12 @@ int BrowserMainLoop::CreateThreads() {
 int BrowserMainLoop::PostCreateThreads() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
 
-  if (parts_)
-    parts_->PostCreateThreads();
+  if (parts_) {
+    result_code_ = parts_->PostCreateThreads();
+    if (result_code_ != RESULT_CODE_NORMAL_EXIT) {
+      return result_code_;
+    }
+  }
 
   PostCreateThreadsImpl();
 

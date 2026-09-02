@@ -513,7 +513,7 @@ int CastBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void CastBrowserMainParts::PostCreateThreads() {
+int CastBrowserMainParts::PostCreateThreads() {
   if (GetSwitchValueBoolean(switches::kInProcessBroker, true)) {
     auto* service_manager_connector =
         ServiceManagerConnection::GetForProcess()->GetConnector();
@@ -528,6 +528,7 @@ void CastBrowserMainParts::PostCreateThreads() {
   media_connector_ = connector_->Clone();
   browser_service_ =
       std::make_unique<external_service_support::ExternalService>();
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 int CastBrowserMainParts::PreMainMessageLoopRun() {

@@ -91,7 +91,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
   int PreCreateThreads() override;
-  void PostCreateThreads() override;
+  int PostCreateThreads() override;
   int PreMainMessageLoopRun() override;
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldInterceptMainMessageLoopRun() override;

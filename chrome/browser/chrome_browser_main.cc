@@ -1424,7 +1424,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void ChromeBrowserMainParts::PostCreateThreads() {
+int ChromeBrowserMainParts::PostCreateThreads() {
   TRACE_EVENT("startup", "ChromeBrowserMainParts::PostCreateThreads");
   // This task should be posted after the IO thread starts, and prior to the
   // base version of the function being invoked. It is functionally okay to post
@@ -1479,6 +1479,8 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   for (auto& chrome_extra_part : chrome_extra_parts_) {
     chrome_extra_part->PostCreateThreads();
   }
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 int ChromeBrowserMainParts::PreMainMessageLoopRun() {
@@ -1825,14 +1827,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if defined(USE_AURA)
   // Make sure aura::Env has been initialized.
   CHECK(aura::Env::GetInstance());
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  // We must call DoUpgradeTasks now that we own the browser singleton to
-  // finish upgrade tasks (swap) and relaunch if necessary.
-  if (upgrade_util::DoUpgradeTasks(*base::CommandLine::ForCurrentProcess())) {
-    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
-  }
 #endif
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING) && !BUILDFLAG(IS_ANDROID)

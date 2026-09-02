@@ -4,6 +4,7 @@
 
 #import "ios/web/content/init/ios_browser_main_parts.h"
 
+#import "content/public/common/result_codes.h"
 #import "ios/web/public/init/web_main_parts.h"
 #import "ios/web/public/web_client.h"
 
@@ -34,8 +35,9 @@ int IOSBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void IOSBrowserMainParts::PostCreateThreads() {
+int IOSBrowserMainParts::PostCreateThreads() {
   parts_->PostCreateThreads();
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 int IOSBrowserMainParts::PreMainMessageLoopRun() {

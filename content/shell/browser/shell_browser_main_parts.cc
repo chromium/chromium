@@ -174,10 +174,11 @@ int ShellBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void ShellBrowserMainParts::PostCreateThreads() {
+int ShellBrowserMainParts::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
           performance_manager::GraphFeatures::WithMinimal(), base::DoNothing());
+  return RESULT_CODE_NORMAL_EXIT;
 }
 
 int ShellBrowserMainParts::PreMainMessageLoopRun() {

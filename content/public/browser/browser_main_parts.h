@@ -130,7 +130,7 @@ class CONTENT_EXPORT BrowserMainParts {
   virtual void PreCreateMainMessageLoop() {}
   virtual void PostCreateMainMessageLoop() {}
   virtual int PreCreateThreads();
-  virtual void PostCreateThreads() {}
+  virtual int PostCreateThreads();
   virtual int PreMainMessageLoopRun();
 
   // This method returns true by default, telling InterceptMainMessageLoopRun

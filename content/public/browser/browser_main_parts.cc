@@ -16,6 +16,10 @@ int BrowserMainParts::PreCreateThreads() {
   return RESULT_CODE_NORMAL_EXIT;
 }
 
+int BrowserMainParts::PostCreateThreads() {
+  return RESULT_CODE_NORMAL_EXIT;
+}
+
 int BrowserMainParts::PreMainMessageLoopRun() {
   return RESULT_CODE_NORMAL_EXIT;
 }

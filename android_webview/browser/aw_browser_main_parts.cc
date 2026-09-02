@@ -454,7 +454,7 @@ void AwBrowserMainParts::WillRunMainMessageLoop(
   NOTREACHED();
 }
 
-void AwBrowserMainParts::PostCreateThreads() {
+int AwBrowserMainParts::PostCreateThreads() {
   if (base::FeatureList::IsEnabled(features::kWebViewMemoryProfilingClient)) {
     if (auto* snapshot_controller =
             heap_profiling::BrowserProcessSnapshotController::GetInstance()) {
@@ -473,6 +473,7 @@ void AwBrowserMainParts::PostCreateThreads() {
   tracing::SetupPresetTracingFromFieldTrial();
   base::trace_event::EmitNamedTrigger(
       base::trace_event::kStartupTracingTriggerName);
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 }  // namespace android_webview

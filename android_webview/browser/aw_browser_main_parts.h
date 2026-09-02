@@ -51,7 +51,7 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
-  void PostCreateThreads() override;
+  int PostCreateThreads() override;
 
  private:
   void RegisterSyntheticTrials();

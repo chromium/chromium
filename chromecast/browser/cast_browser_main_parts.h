@@ -103,7 +103,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   void PostCreateMainMessageLoop() override;
   void ToolkitInitialized() override;
   int PreCreateThreads() override;
-  void PostCreateThreads() override;
+  int PostCreateThreads() override;
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;

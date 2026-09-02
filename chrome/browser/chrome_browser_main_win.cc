@@ -594,10 +594,25 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   return ChromeBrowserMainParts::PreCreateThreads();
 }
 
-void ChromeBrowserMainPartsWin::PostCreateThreads() {
+int ChromeBrowserMainPartsWin::PostCreateThreads() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
+  // This timing is specific:
+  // - It must occur AFTER the process singleton is acquired in
+  //   ChromeMainDelegate::PostEarlyInitialization.
+  // - The updater's COM task needs to run after the ThreadPool's threads are
+  // released in BrowserMainLoop::CreateThreads()
+  // - It runs BEFORE PostCreateThreadsImpl() can launch child processes, so
+  // that creation of child processes that are doomed to fail don't race with
+  // the rename and shutdown of this browser process.
+  if (upgrade_util::DoUpgradeTasks(command_line)) {
+    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
+  }
+
   performance_manager::InitializeDllPrereadPolicy();
 
-  ChromeBrowserMainParts::PostCreateThreads();
+  return ChromeBrowserMainParts::PostCreateThreads();
 }
 
 void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
