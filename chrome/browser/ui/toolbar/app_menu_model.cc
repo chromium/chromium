@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -269,168 +270,6 @@ std::u16string GetUpgradeDialogTitleText() {
 #else
   return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 #endif
-}
-
-// Returns the appropriate menu label for the IDC_INSTALL_PWA command if
-// available.
-std::u16string GetInstallPWALabel(BrowserWindowInterface* browser) {
-  // There may be no active web contents in tests.
-  auto* const web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    return std::u16string();
-  }
-  if (!web_app::CanCreateWebApp(browser)) {
-    return std::u16string();
-  }
-  // Don't allow apps created from chrome-extension urls.
-  if (web_contents->GetLastCommittedURL().SchemeIs("chrome-extension")) {
-    return std::u16string();
-  }
-
-  // TODO(b/328077967): Support async nature of AppBannerManager pipeline runs
-  // with the menu model instead of needing this workaround to verify if an
-  // non-installable site is installed.
-  const webapps::AppId* app_id =
-      web_app::WebAppTabHelper::GetAppId(web_contents);
-  web_app::WebAppProvider* const provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(browser->GetProfile());
-  if (app_id &&
-      provider->registrar_unsafe().GetInstallState(*app_id) ==
-          web_app::proto::INSTALLED_WITH_OS_INTEGRATION &&
-      provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
-          web_app::mojom::UserDisplayMode::kBrowser) {
-    return std::u16string();
-  }
-
-  std::u16string install_page_as_app_label =
-      l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE);
-  webapps::AppBannerManager* banner =
-      webapps::AppBannerManager::FromWebContents(web_contents);
-  if (!banner) {
-    // Showing `Install Page as App` allows the user to refetch the manifest and
-    // go through the install flow without relying on the AppBannerManager to
-    // finish working.
-    return install_page_as_app_label;
-  }
-
-  std::optional<webapps::InstallBannerConfig> install_config =
-      banner->GetCurrentBannerConfig();
-  if (!install_config) {
-    // In some edge cases where the `AppBannerManager` pipeline hasn't run yet,
-    // the information populated to be used for determining installability and
-    // other parameters is not available. In this case, allow users to try
-    // installability by refetching the manifest.
-    return install_page_as_app_label;
-  }
-  CHECK_EQ(install_config->mode, webapps::AppBannerMode::kWebApp);
-  webapps::InstallableWebAppCheckResult installable =
-      banner->GetInstallableWebAppCheckResult();
-
-  switch (installable) {
-    case webapps::InstallableWebAppCheckResult::kUnknown:
-      // Loading of the menu model is synchronous, so there could be a condition
-      // where the `AppBannerManager` has not yet finished the pipeline while
-      // the menu item has been triggered. In such a case,
-      // `banner->GetInstallableWebAppCheckResult()` returns the default value
-      // of `kUnknown`.
-      // Show `Install Page as App` for that use-case, since that allows the
-      // user to trigger the install flow to verify all the data required for
-      // installability. The correct dialog will be shown to the user depending
-      // on whether the app turns out to be installable or not.
-      return install_page_as_app_label;
-    case webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled:
-      // Returning an empty string here allows the `launch page as app` field to
-      // get populated in place of the `install` strings.
-      return std::u16string();
-    case webapps::InstallableWebAppCheckResult::kNo:
-      return install_page_as_app_label;
-    case webapps::InstallableWebAppCheckResult::kYes_ByUserRequest:
-    case webapps::InstallableWebAppCheckResult::kYes_Promotable:
-      std::u16string app_name = install_config->GetWebOrNativeAppName();
-      if (app_name.empty()) {
-        // Prefer showing `Install Page as App` here, as users can set the name
-        // of the installed app on the DIY app dialog anyway.
-        return install_page_as_app_label;
-      }
-      return l10n_util::GetStringFUTF16(
-          IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
-          ui::EscapeMenuLabelAmpersands(app_name));
-  }
-}
-
-// TODO(b/328077967): Implement async updates of menu for app icon.
-ui::ImageModel GetInstallPWAIcon(BrowserWindowInterface* browser) {
-  ui::ImageModel app_icon_to_use = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kInstallDesktopIcon
-                                        : kInstallDesktopChromeRefreshOldIcon,
-      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
-
-  content::WebContents* const web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    return app_icon_to_use;
-  }
-
-  webapps::AppBannerManager* const banner =
-      webapps::AppBannerManager::FromWebContents(web_contents);
-  if (!banner) {
-    return app_icon_to_use;
-  }
-
-  // For sites that are not installable (DIY apps), do not return any icons,
-  // instead use the default chrome refresh icon for installing.
-  auto installable_check_result = banner->GetInstallableWebAppCheckResult();
-  if (installable_check_result == webapps::InstallableWebAppCheckResult::kNo ||
-      installable_check_result ==
-          webapps::InstallableWebAppCheckResult::kUnknown) {
-    return app_icon_to_use;
-  }
-
-  std::optional<webapps::WebAppBannerData> install_config =
-      banner->GetCurrentWebAppBannerData();
-
-  // If no data or no icons have been obtained by the AppBannerManager, return
-  // the default icon.
-  if (!install_config || install_config->primary_icon.empty()) {
-    return app_icon_to_use;
-  }
-
-  gfx::ImageSkia primary_icon =
-      gfx::ImageSkia::CreateFrom1xBitmap(install_config->primary_icon);
-  gfx::ImageSkia resized_app_icon =
-      gfx::ImageSkiaOperations::CreateResizedImage(
-          primary_icon, skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(ui::SimpleMenuModel::kDefaultIconSize,
-                    ui::SimpleMenuModel::kDefaultIconSize));
-  app_icon_to_use = ui::ImageModel::FromImageSkia(resized_app_icon);
-  return app_icon_to_use;
-}
-
-// Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
-// available.
-std::u16string GetOpenPWALabel(BrowserWindowInterface* browser) {
-  std::optional<webapps::AppId> app_id =
-      web_app::GetWebAppForActiveTab(browser);
-  if (!app_id.has_value()) {
-    return std::u16string();
-  }
-
-  // Only show this menu item for apps that open in an app window.
-  const auto* const provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(browser->GetProfile());
-  if (provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) ==
-      web_app::mojom::UserDisplayMode::kBrowser) {
-    return std::u16string();
-  }
-
-  const std::u16string short_name =
-      base::UTF8ToUTF16(provider->registrar_unsafe().GetAppShortName(*app_id));
-  return l10n_util::GetStringFUTF16(
-      IDS_OPEN_IN_APP_WINDOW,
-      ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-          short_name,
-          GetLayoutConstant(LayoutConstant::kAppMenuMaximumCharacterLength),
-          gfx::CHARACTER_BREAK)));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1019,11 +858,12 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
                                        ? kFileSaveIcon
                                        : kFileSaveChromeRefreshOldIcon);
   AddSeparator(ui::NORMAL_SEPARATOR);
-  if (std::u16string install_item = GetInstallPWALabel(browser);
+  if (std::u16string install_item = web_app::GetInstallPWALabel(browser);
       !install_item.empty()) {
-    AddItemWithIcon(IDC_INSTALL_PWA, install_item, GetInstallPWAIcon(browser));
+    AddItemWithIcon(IDC_INSTALL_PWA, install_item,
+                    web_app::GetInstallPWAIcon(browser));
     SetElementIdentifierAt(GetItemCount() - 1, AppMenuModel::kInstallAppItem);
-  } else if (std::u16string open_item = GetOpenPWALabel(browser);
+  } else if (std::u16string open_item = web_app::GetOpenPWALabel(browser);
              !open_item.empty()) {
     AddItemWithIcon(IDC_OPEN_IN_PWA_WINDOW, open_item,
                     ui::ImageModel::FromVectorIcon(

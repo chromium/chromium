@@ -13,6 +13,11 @@ class WebContents;
 }
 
 class Profile;
+class BrowserWindowInterface;
+
+namespace ui {
+class ImageModel;
+}
 
 namespace web_app {
 
@@ -47,6 +52,17 @@ void OpenAppSettingsForInstalledRelatedApp(const webapps::AppId& app_id,
 // not launched as an app.
 // std::optional<webapps::AppId> GetAppIdForAppManagementLinkInPageInfo(
 //    content::WebContents* web_contents);
+
+// Returns the appropriate menu label for the IDC_INSTALL_PWA command if
+// available.
+std::u16string GetInstallPWALabel(BrowserWindowInterface* browser);
+
+// Returns the appropriate icon for the IDC_INSTALL_PWA command if available.
+ui::ImageModel GetInstallPWAIcon(BrowserWindowInterface* browser);
+
+// Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
+// available.
+std::u16string GetOpenPWALabel(BrowserWindowInterface* browser);
 
 }  // namespace web_app
 

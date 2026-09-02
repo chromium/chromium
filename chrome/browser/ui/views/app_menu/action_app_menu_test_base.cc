@@ -111,12 +111,16 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionSaveAndShareSubmenu, u"Save and share");
   add_action(kActionRouteMedia, u"Cast");
   add_action(kActionSavePage, u"Save page");
+  add_action(kActionInstallPwa, u"Install App");
+  add_action(kActionOpenInPwaWindow, u"Open in App Window");
   add_action(kActionCreateShortcut, u"Create shortcut");
   add_action(kActionCopyUrl, u"Copy link");
   add_action(kActionSendTabToSelf, u"Send to your devices");
   add_action(kActionQrCodeGenerator, u"Create QR Code");
   add_action(kActionSharingHubScreenshot, u"Screenshot");
+  add_action(kActionToggleRequestTabletSite, u"Request mobile site");
   add_action(kActionDeveloperSubmenu, u"More tools");
+  add_action(kActionTakeScreenshot, u"Take screenshot");
   add_action(kActionTabSearch, u"Search tabs");
   add_action(kActionNameWindow, u"Name window");
   add_action(kActionToggleVerticalTabs, u"Toggle vertical tabs");

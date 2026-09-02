@@ -24,6 +24,13 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/display/screen.h"
+#endif
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
@@ -38,6 +45,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,6 +57,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -82,6 +91,25 @@ const ui::ClassProperty<ui::ImageModel*>* const
     ActionAppMenuManager::kIconOverrideKey = kAppMenuIconOverrideInternal;
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsRequestingTabletSite(BrowserWindowInterface* browser) {
+  if (!browser || !browser->GetTabStripModel()) {
+    return false;
+  }
+  content::WebContents* current_tab =
+      browser->GetTabStripModel()->GetActiveWebContents();
+  if (!current_tab) {
+    return false;
+  }
+  content::NavigationEntry* entry =
+      current_tab->GetController().GetLastCommittedEntry();
+  if (!entry) {
+    return false;
+  }
+  return entry->GetIsOverridingUserAgent();
+}
+#endif
 
 // Builder helper to simplify declaring the action item structure for the app
 // menu.
@@ -483,9 +511,31 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
           sub.AddAction(kActionRouteMedia).AddDivider();
         }
 
-        sub.AddAction(kActionSavePage)
-            .AddDivider()
-            .AddAction(kActionCreateShortcut);
+        sub.AddAction(kActionSavePage).AddDivider();
+
+        if (std::u16string install_item =
+                web_app::GetInstallPWALabel(browser_window_interface_.get());
+            !install_item.empty()) {
+          sub.AddAction(
+              kActionInstallPwa, /*type=*/std::nullopt,
+              /*text_override=*/install_item,
+              /*icon_override=*/
+              web_app::GetInstallPWAIcon(browser_window_interface_.get()));
+        } else if (std::u16string open_item = web_app::GetOpenPWALabel(
+                       browser_window_interface_.get());
+                   !open_item.empty()) {
+          sub.AddAction(
+              kActionOpenInPwaWindow, /*type=*/std::nullopt,
+              /*text_override=*/open_item,
+              /*icon_override=*/
+              ui::ImageModel::FromVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? kDesktopWindowsIcon
+                      : kDesktopWindowsChromeRefreshOldIcon,
+                  ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+        }
+
+        sub.AddAction(kActionCreateShortcut);
 
         if (!sharing_hub::SharingIsDisabledByPolicy(profile) ||
             sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
@@ -500,6 +550,25 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
           }
         }
       });
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (display::Screen::Get()->InTabletMode()) {
+    builder.AddAction(
+        kActionToggleRequestTabletSite, /*type=*/std::nullopt,
+        /*text_override=*/
+        l10n_util::GetStringUTF16(IDS_TOGGLE_REQUEST_TABLET_SITE),
+        /*icon_override=*/
+        ui::ImageModel::FromVectorIcon(
+            IsRequestingTabletSite(browser_window_interface_.get())
+                ? (features::IsRoundedIconsEnabled()
+                       ? kMobileCheckIcon
+                       : kRequestMobileSiteCheckedOldIcon)
+                : (features::IsRoundedIconsEnabled()
+                       ? kMobileIcon
+                       : kRequestMobileSiteUncheckedOldIcon),
+            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+  }
+#endif
 
   builder.AddSubmenu(kActionDeveloperSubmenu, [this](AppMenuBuilder& sub) {
     sub.AddAction(kActionTabSearch)
@@ -517,9 +586,13 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         .AddAction(kActionShowReadingModeSidePanel)
         .AddDivider()
         .AddAction(kActionPerformance)
-        .AddAction(kActionTaskManagerAppMenu)
-        .AddDivider()
-        .AddAction(kActionDevTools);
+        .AddAction(kActionTaskManagerAppMenu);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    sub.AddAction(kActionTakeScreenshot);
+#endif
+
+    sub.AddDivider().AddAction(kActionDevTools);
 
     if (base::debug::IsProfilingSupported()) {
       sub.AddDivider().AddAction(kActionProfilingEnabled);
