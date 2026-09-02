@@ -402,45 +402,22 @@ public class StatusMediator
 
         if (mInputSessionState != null) {
             setSiteSearchDataSupplier(null);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getRequestTypeSupplier()
-                    .removeObserver(mOnAutocompleteRequestTypeChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getPreviewMatchUrlSupplier()
-                    .removeObserver(mOnPreviewMatchUrlChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getDisplayStateSupplier()
-                    .removeObserver(mOnDisplayStateChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getAutocompleteStateSupplier()
-                    .removeObserver(mOnAutocompleteStateChanged);
+            AutocompleteInput input = mInputSessionState.getAutocompleteInput();
+            input.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
+            input.getPreviewMatchUrlSupplier().removeObserver(mOnPreviewMatchUrlChanged);
+            input.getDisplayStateSupplier().removeObserver(mOnDisplayStateChanged);
+            input.getAutocompleteStateSupplier().removeObserver(mOnAutocompleteStateChanged);
         }
 
         mInputSessionState = sessionState;
 
         if (mInputSessionState != null) {
-            setSiteSearchDataSupplier(
-                    mInputSessionState.getAutocompleteInput().getSiteSearchDataSupplier());
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getRequestTypeSupplier()
-                    .addSyncObserver(mOnAutocompleteRequestTypeChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getPreviewMatchUrlSupplier()
-                    .addSyncObserverAndCall(mOnPreviewMatchUrlChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getDisplayStateSupplier()
-                    .addSyncObserver(mOnDisplayStateChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getAutocompleteStateSupplier()
-                    .addSyncObserver(mOnAutocompleteStateChanged);
+            AutocompleteInput input = mInputSessionState.getAutocompleteInput();
+            setSiteSearchDataSupplier(input.getSiteSearchDataSupplier());
+            input.getRequestTypeSupplier().addSyncObserver(mOnAutocompleteRequestTypeChanged);
+            input.getPreviewMatchUrlSupplier().addSyncObserverAndCall(mOnPreviewMatchUrlChanged);
+            input.getDisplayStateSupplier().addSyncObserver(mOnDisplayStateChanged);
+            input.getAutocompleteStateSupplier().addSyncObserver(mOnAutocompleteStateChanged);
         }
     }
 
@@ -618,16 +595,13 @@ public class StatusMediator
         Drawable customDrawable = null;
 
         boolean previewMatchFaviconsEnabled = OmniboxFeatures.sPreviewMatchFavicons.isEnabled();
-        @AutocompleteRequestType
-        int requestType =
-                mInputSessionState == null
-                        ? AutocompleteRequestType.SEARCH
-                        : mInputSessionState.getAutocompleteInput().getRequestType();
-        @DisplayState
-        int displayState =
-                mInputSessionState == null
-                        ? DisplayState.WEBSITE
-                        : mInputSessionState.getAutocompleteInput().getDisplayState();
+        @AutocompleteRequestType int requestType = AutocompleteRequestType.SEARCH;
+        @DisplayState int displayState = DisplayState.WEBSITE;
+        if (mInputSessionState != null) {
+            AutocompleteInput autocompleteInput = mInputSessionState.getAutocompleteInput();
+            requestType = autocompleteInput.getRequestType();
+            displayState = autocompleteInput.getDisplayState();
+        }
         boolean shouldShowFavicon =
                 displayState == DisplayState.SUGGESTIONS
                         || displayState == DisplayState.DRAFTING
