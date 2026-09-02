@@ -135,7 +135,8 @@ public class TabGroupMenuActionHandler {
     public boolean handleAddToExistingGroupAction(Tab tab, Token groupId) {
         RecordUserAction.record("MobileMenuAddToExistingGroup");
         GroupWindowInfo destinationGroup =
-                GroupWindowInfo.forLocalGroup(mContext, mTabModel, groupId);
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
         TabGroupUiUtils.addTabsToGroup(
                 mTabModel,
                 List.of(tab),

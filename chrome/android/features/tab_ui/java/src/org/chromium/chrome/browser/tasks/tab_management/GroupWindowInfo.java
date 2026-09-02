@@ -107,27 +107,16 @@ public class GroupWindowInfo {
      * @param context Context for resolving default titles.
      * @param tabModel The {@link TabModel} containing the tab group.
      * @param groupId The local tab group ID {@link Token}.
+     * @param state The {@link GroupWindowState} of the group.
      * @return A new {@link GroupWindowInfo} instance.
      */
-    public static GroupWindowInfo forLocalGroup(Context context, TabModel tabModel, Token groupId) {
+    public static GroupWindowInfo forLocalGroup(
+            Context context, TabModel tabModel, Token groupId, @GroupWindowState int state) {
         int tabCount = tabModel.getTabCountForGroup(groupId);
         String title = TabGroupTitleUtils.getDisplayableTitle(context, tabModel, groupId);
         @TabGroupColorId int color = tabModel.getTabGroupColorWithFallback(groupId);
-        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
         List<GURL> faviconUrls = TabGroupFaviconCluster.buildUrlListFromFilter(groupId, tabModel);
-        boolean isFullyClosing = true;
-        long lastModifiedTimeMs = 0L;
-        if (tabs != null) {
-            for (Tab tab : tabs) {
-                isFullyClosing &= tab.isClosing();
-                lastModifiedTimeMs = Math.max(lastModifiedTimeMs, tab.getTimestampMillis());
-            }
-        }
-        @GroupWindowState
-        int groupWindowState =
-                isFullyClosing && tabs != null && !tabs.isEmpty()
-                        ? GroupWindowState.IN_CURRENT_CLOSING
-                        : GroupWindowState.IN_CURRENT;
+        long lastModifiedTimeMs = getLastModifiedTimeMs(tabModel.getTabsInGroup(groupId));
 
         return new GroupWindowInfo(
                 groupId,
@@ -136,7 +125,15 @@ public class GroupWindowInfo {
                 color,
                 tabCount,
                 faviconUrls,
-                groupWindowState,
+                state,
                 lastModifiedTimeMs);
+    }
+
+    private static long getLastModifiedTimeMs(List<Tab> tabs) {
+        long lastModifiedTimeMs = 0L;
+        for (Tab tab : tabs) {
+            lastModifiedTimeMs = Math.max(lastModifiedTimeMs, tab.getTimestampMillis());
+        }
+        return lastModifiedTimeMs;
     }
 }
