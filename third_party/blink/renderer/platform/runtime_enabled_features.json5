@@ -5782,10 +5782,6 @@
       status: "stable",
     },
     {
-      name: "SkipOofItemForBreakCandidate",
-      status: "stable",
-    },
-    {
       // crbug.com/517761566
       name: "SkipStaleUndoStepsInIdleSpellCheck",
       status: "stable",
