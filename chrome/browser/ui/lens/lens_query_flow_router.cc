@@ -85,6 +85,26 @@ omnibox::ChromeAimEntryPoint AimEntryPointFromInvocationSource(
 
 namespace lens {
 
+bool IsOmniboxInvocationSource(
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
+  if (!invocation_source.has_value()) {
+    return false;
+  }
+  switch (invocation_source.value()) {
+    case lens::LensOverlayInvocationSource::kOmnibox:
+    case lens::LensOverlayInvocationSource::kOmniboxPageAction:
+    case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
+    case lens::LensOverlayInvocationSource::kOmniboxContextualQuery:
+    case lens::LensOverlayInvocationSource::kOmniboxPopupButton:
+      return true;
+    // Note: kOmniboxEverywhereComposebox is intentionally excluded for now
+    // to restrict non-blocking navigation strictly to standard Omnibox entry
+    // points.
+    default:
+      return false;
+  }
+}
+
 LensQueryFlowRouter::LensQueryFlowRouter(
     LensSearchController* lens_search_controller)
     : lens_search_controller_(lens_search_controller) {
@@ -732,9 +752,20 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
         base::BindRepeating(&LensQueryFlowRouter::ShowContextualTasksErrorPage,
                             weak_factory_.GetWeakPtr());
     params.on_processed_callback = base::DoNothing();
-    params.complete_callback =
-        base::BindOnce(&LensQueryFlowRouter::OnContextualizedComplete,
-                       weak_factory_.GetWeakPtr());
+    const bool is_omnibox = IsOmniboxInvocationSource(
+        pending_search_url_request_->invocation_source);
+    if (contextual_tasks::
+            GetIsContextualTasksNonBlockingUrlNavigationEnabled() &&
+        is_omnibox) {
+      params.on_uploads_started_callback =
+          base::BindOnce(&LensQueryFlowRouter::OnContextualizedComplete,
+                         weak_factory_.GetWeakPtr());
+      params.complete_callback = base::DoNothing();
+    } else {
+      params.complete_callback =
+          base::BindOnce(&LensQueryFlowRouter::OnContextualizedComplete,
+                         weak_factory_.GetWeakPtr());
+    }
     params.enable_smart_tab_selection = false;
     query_contextualizer_->Contextualize(std::move(params));
     return;
@@ -872,9 +903,20 @@ void LensQueryFlowRouter::UploadContextualInputData(
           &LensQueryFlowRouter::ShowContextualTasksErrorPage,
           weak_factory_.GetWeakPtr());
       params.on_processed_callback = base::DoNothing();
-      params.complete_callback =
-          base::BindOnce(&LensQueryFlowRouter::OnContextualizedComplete,
-                         weak_factory_.GetWeakPtr());
+      const bool is_omnibox = IsOmniboxInvocationSource(
+          pending_search_url_request_->invocation_source);
+      if (contextual_tasks::
+              GetIsContextualTasksNonBlockingUrlNavigationEnabled() &&
+          is_omnibox) {
+        params.on_uploads_started_callback =
+            base::BindOnce(&LensQueryFlowRouter::OnContextualizedComplete,
+                           weak_factory_.GetWeakPtr());
+        params.complete_callback = base::DoNothing();
+      } else {
+        params.complete_callback =
+            base::BindOnce(&LensQueryFlowRouter::OnContextualizedComplete,
+                           weak_factory_.GetWeakPtr());
+      }
       params.enable_smart_tab_selection = true;
       query_contextualizer_->Contextualize(std::move(params));
       return;

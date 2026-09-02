@@ -192,6 +192,13 @@ BASE_FEATURE(kContextualTasksSidePanelRearchitecture,
 BASE_FEATURE(kContextualTasksEnableStickyConversation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksNonBlockingUrlNavigation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool GetIsContextualTasksNonBlockingUrlNavigationEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksNonBlockingUrlNavigation);
+}
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }

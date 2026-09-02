@@ -159,11 +159,15 @@ class QueryContextualizer {
     // Tabs that are being contextualized for the first turn of a query from
     // the contextual searchbox.
     std::vector<TabId> tabs_for_contextual_searchbox_first_turn;
-    // Must be non-null. Use base::DoNothing() if not needed.
+    // Optional callback when a page context is ineligible.
     PageContextIneligibleCallback on_ineligible_callback;
-    // Must be non-null. Use base::DoNothing() if not needed.
+    // Optional callback when a tab is processed.
     TabProcessedCallback on_processed_callback;
-    // Must be non-null. Called when contextualization is complete.
+    // Optional callback invoked immediately when context uploads have been
+    // initiated. Can be used for early URL navigation while uploads continue in
+    // the background.
+    ContextualizedCallback on_uploads_started_callback;
+    // Called when contextualization is complete.
     ContextualizedCallback complete_callback;
     bool enable_smart_tab_selection = false;
   };
@@ -200,6 +204,10 @@ class QueryContextualizer {
       PageContextIneligibleCallback on_ineligible_callback,
       TabProcessedCallback on_processed_callback,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
+
+  void FinishTabProcessing(const TabProcessedCallback& on_processed_callback,
+                           TabId tab_id,
+                           base::RepeatingClosure barrier_closure);
 
   std::vector<TabUpdate> GetTabsToUpdate(
       const ContextualTaskContext* context,

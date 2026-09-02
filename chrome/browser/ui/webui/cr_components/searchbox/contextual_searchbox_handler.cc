@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_tab_favicon_helper.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -116,6 +115,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
@@ -2015,17 +2015,35 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     params.query_text = query_text;
     params.on_ineligible_callback = base::DoNothing();
     params.on_processed_callback = base::DoNothing();
-    params.complete_callback = base::BindOnce(
-        [](ContextualSearchboxHandler* self, const std::string& query,
-           WindowOpenDisposition disp, omnibox::ChromeAimEntryPoint entry_point,
+    auto on_contextualized_callback = base::BindOnce(
+        [](base::WeakPtr<ContextualSearchboxHandler> self,
+           const std::string& query, WindowOpenDisposition disp,
+           omnibox::ChromeAimEntryPoint entry_point,
            std::map<std::string, std::string> params, bool voice,
            base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
                handle) {
+          if (!self) {
+            return;
+          }
           self->ComputeAndOpenQueryUrl(query, disp, entry_point,
                                        std::move(params), voice);
         },
-        base::Unretained(this), query_text, disposition, aim_entry_point,
-        std::move(additional_params), is_voice_search);
+        weak_ptr_factory_.GetWeakPtr(), query_text, disposition,
+        aim_entry_point, std::move(additional_params), is_voice_search);
+    bool is_omnibox = false;
+#if !BUILDFLAG(IS_ANDROID)
+    is_omnibox = OmniboxPopupWebContentsHelper::FromWebContents(
+                     web_contents_.get()) != nullptr;
+#endif
+    if (contextual_tasks::
+            GetIsContextualTasksNonBlockingUrlNavigationEnabled() &&
+        is_omnibox) {
+      params.on_uploads_started_callback =
+          std::move(on_contextualized_callback);
+      params.complete_callback = base::DoNothing();
+    } else {
+      params.complete_callback = std::move(on_contextualized_callback);
+    }
     params.enable_smart_tab_selection = IsSmartTabSharingActive();
     query_contextualizer_->Contextualize(std::move(params));
     return;

@@ -24,6 +24,10 @@ using CreateSearchUrlRequestInfo = contextual_search::
 using SearchUrlType =
     contextual_search::ContextualSearchContextController::SearchUrlType;
 
+// Returns true if the given invocation source originates from the Omnibox.
+bool IsOmniboxInvocationSource(
+    std::optional<lens::LensOverlayInvocationSource> invocation_source);
+
 // A router for queries that Lens should perform.
 class LensQueryFlowRouter
     : public contextual_search::ContextualSearchContextController::
