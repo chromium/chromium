@@ -139,38 +139,30 @@ class AutofillProfileComparatorTest : public testing::Test {
               actual.GetRawInfo(COMPANY_NAME));
   }
 
-  void MergePhoneNumbersAndExpect(const AutofillProfile& a,
-                                  const AutofillProfile& b,
+  void MergePhoneNumbersAndExpect(const AutofillProfile& new_profile,
+                                  const AutofillProfile& old_profile,
                                   const std::u16string& expected_str) {
-    AutofillProfile profile(kLegacyHierarchyCountryCode);
+    PhoneNumber expected(&old_profile);
+    expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, expected_str);
 
     // Merge the phone numbers.
-    PhoneNumber actual(&profile);
-    const AutofillProfile::ProfileMergeResult expected_result =
-        b.GetRawInfo(PHONE_HOME_WHOLE_NUMBER) == expected_str
-            ? AutofillProfile::ProfileMergeResult::
-                  kMergeSucceededWithoutModification
-            : AutofillProfile::ProfileMergeResult::
-                  kMergeSucceededWithModification;
-    EXPECT_EQ(comparator_.MergePhoneNumbers(a, b, actual), expected_result);
-
-    // Construct the expected value.
-    PhoneNumber expected(&profile);
-    expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, expected_str);
+    std::optional<PhoneNumber> actual =
+        comparator_.MergePhoneNumbers(new_profile, old_profile);
+    ASSERT_TRUE(actual.has_value());
 
     // Validate that we get what we expect.
     EXPECT_EQ(expected.GetRawInfo(PHONE_HOME_WHOLE_NUMBER),
-              actual.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+              actual->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
     EXPECT_EQ(expected.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale),
-              actual.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+              actual->GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
     EXPECT_EQ(expected.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale),
-              actual.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
+              actual->GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
     EXPECT_EQ(expected.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale),
-              actual.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+              actual->GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
     EXPECT_EQ(expected.GetInfo(PHONE_HOME_CITY_CODE, kLocale),
-              actual.GetInfo(PHONE_HOME_CITY_CODE, kLocale));
+              actual->GetInfo(PHONE_HOME_CITY_CODE, kLocale));
     EXPECT_EQ(expected.GetInfo(PHONE_HOME_NUMBER, kLocale),
-              actual.GetInfo(PHONE_HOME_NUMBER, kLocale));
+              actual->GetInfo(PHONE_HOME_NUMBER, kLocale));
   }
 
   void MergeAddressesAndExpect(const AutofillProfile& a,
@@ -337,26 +329,17 @@ TEST_F(AutofillProfileComparatorTest, MergePhoneNumbers_Mergeability) {
   AutofillProfile p2 = CreateProfileWithPhoneNumber("6708700");
   AutofillProfile different = CreateProfileWithPhoneNumber("1-800-321-4567");
 
-  PhoneNumber phone(&p1);
-  EXPECT_NE(comparator_.MergePhoneNumbers(p1, p1, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_NE(comparator_.MergePhoneNumbers(p1, p2, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p1, p1).has_value());
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p1, p2).has_value());
 
-  EXPECT_NE(comparator_.MergePhoneNumbers(p2, p1, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_NE(comparator_.MergePhoneNumbers(p2, p2, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p2, p1).has_value());
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p2, p2).has_value());
 
-  EXPECT_NE(comparator_.MergePhoneNumbers(p1, empty, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_NE(comparator_.MergePhoneNumbers(empty, p2, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p1, empty).has_value());
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(empty, p2).has_value());
 
-  EXPECT_EQ(comparator_.MergePhoneNumbers(p1, different, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_EQ(comparator_.MergePhoneNumbers(different, p1, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_FALSE(comparator_.MergePhoneNumbers(p1, different).has_value());
+  EXPECT_FALSE(comparator_.MergePhoneNumbers(different, p1).has_value());
 }
 
 // Tests that MergeAddresses correctly identifies mergeable and
@@ -498,14 +481,12 @@ TEST_F(AutofillProfileComparatorTest, MergeComponents) {
   p.FinalizeAfterImport();
 
   CompanyInfo company;
-  PhoneNumber phone(&p);
   Address address(p.GetAddressCountryCode());
 
   EXPECT_TRUE(comparator_.MergeEmailAddresses(p, p).has_value());
   EXPECT_NE(comparator_.MergeCompanyNames(p, p, company),
             AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_NE(comparator_.MergePhoneNumbers(p, p, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p, p).has_value());
   EXPECT_EQ(
       comparator_.MergeAddresses(p, p, address),
       AutofillProfile::ProfileMergeResult::kMergeSucceededWithoutModification);
@@ -516,8 +497,7 @@ TEST_F(AutofillProfileComparatorTest, MergeComponents) {
   EXPECT_TRUE(comparator_.MergeEmailAddresses(p, mergeable).has_value());
   EXPECT_NE(comparator_.MergeCompanyNames(p, mergeable, company),
             AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_NE(comparator_.MergePhoneNumbers(p, mergeable, phone),
-            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_TRUE(comparator_.MergePhoneNumbers(p, mergeable).has_value());
   EXPECT_EQ(
       comparator_.MergeAddresses(p, mergeable, address),
       AutofillProfile::ProfileMergeResult::kMergeSucceededWithModification);
@@ -537,9 +517,8 @@ TEST_F(AutofillProfileComparatorTest, MergeComponents) {
       AutofillProfile::ProfileMergeResult::kMergeFailed);
   EXPECT_EQ(comparator_.MergeAddresses(p, not_mergeable_by_address, address),
             AutofillProfile::ProfileMergeResult::kMergeFailed);
-  EXPECT_EQ(
-      comparator_.MergePhoneNumbers(p, not_mergeable_by_phone_number, phone),
-      AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_FALSE(comparator_.MergePhoneNumbers(p, not_mergeable_by_phone_number)
+                   .has_value());
 }
 
 // Tests that addresses containing empty-value placeholders (e.g. "n/a", "NULL")

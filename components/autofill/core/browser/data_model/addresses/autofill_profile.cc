@@ -748,7 +748,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
       /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
       AddressCountryCode("JP"));
   CompanyInfo company;
-  PhoneNumber phone_number(this);
   Address address(profile.GetAddressCountryCode());
 
   DVLOG(1) << "Merging profiles:\nSource = " << profile << "\nDest = " << *this;
@@ -761,11 +760,15 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   // the other ways does not.
   std::optional<EmailInfo> merged_email =
       comparator.MergeEmailAddresses(profile, *this);
-
   if (!merged_email.has_value()) {
     return ProfileMergeResult::kMergeFailed;
   }
 
+  std::optional<PhoneNumber> merged_phone =
+      comparator.MergePhoneNumbers(profile, *this);
+  if (!merged_phone.has_value()) {
+    return ProfileMergeResult::kMergeFailed;
+  }
   // TODO(crbug.com/453945181): Simplify this logic by returning merged
   // objects instead of passing them by reference.
   // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
@@ -777,8 +780,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
           usage_history().use_date() < profile.usage_history().use_date(),
           name) ||
       comparator.MergeCompanyNames(profile, *this, company) ==
-          ProfileMergeResult::kMergeFailed ||
-      comparator.MergePhoneNumbers(profile, *this, phone_number) ==
           ProfileMergeResult::kMergeFailed ||
       comparator.MergeAddresses(profile, *this, address) ==
           ProfileMergeResult::kMergeFailed) {
@@ -813,9 +814,9 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     modified = true;
   }
 
-  if (phone_number_ != phone_number) {
-    MergeFormGroupTokenQuality(phone_number, profile);
-    phone_number_ = phone_number;
+  if (phone_number_ != *merged_phone) {
+    MergeFormGroupTokenQuality(*merged_phone, profile);
+    phone_number_ = *std::move(merged_phone);
     modified = true;
   }
 

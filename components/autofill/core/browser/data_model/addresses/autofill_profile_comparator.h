@@ -16,13 +16,13 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/email_info.h"
+#include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
 class Address;
 class CompanyInfo;
-class PhoneNumber;
 
 struct ProfileValueDifference {
   // The type of the field that is different.
@@ -115,17 +115,13 @@ class AutofillProfileComparator {
       const AutofillProfile& old_profile,
       CompanyInfo& company_info) const;
 
-  // Populates `phone_number` with the result of merging the phone numbers in
-  // `new_profile` and `old_profile` if the merge succeeds. Returns the merge
-  // result.
+  // Merges the phone numbers in `new_profile` and `old_profile`. Returns a
+  // `PhoneNumber` on success or std::nullopt if the merge fails.
   //
   // Heuristic: Populate the missing parts of each number from the other.
-  // TODO(crbug.com/453945181): Return a newly created `PhoneNumber` instead of
-  // modifying `phone_number`.
-  AutofillProfile::ProfileMergeResult MergePhoneNumbers(
+  std::optional<PhoneNumber> MergePhoneNumbers(
       const AutofillProfile& new_profile,
-      const AutofillProfile& old_profile,
-      PhoneNumber& phone_number) const;
+      const AutofillProfile& old_profile) const;
 
   // Populates `address` with the result of merging the addresses in
   // `new_profile` and `old_profile`. Returns the merge result.

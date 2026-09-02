@@ -52,6 +52,8 @@ PhoneNumber::PhoneNumber(const PhoneNumber& number) : profile_(nullptr) {
   *this = number;
 }
 
+PhoneNumber::PhoneNumber(PhoneNumber&& number) noexcept = default;
+
 PhoneNumber::~PhoneNumber() = default;
 
 PhoneNumber& PhoneNumber::operator=(const PhoneNumber& number) {
@@ -63,6 +65,8 @@ PhoneNumber& PhoneNumber::operator=(const PhoneNumber& number) {
   cached_parsed_phone_ = number.cached_parsed_phone_;
   return *this;
 }
+
+PhoneNumber& PhoneNumber::operator=(PhoneNumber&& number) noexcept = default;
 
 bool PhoneNumber::operator==(const PhoneNumber& other) const {
   if (this == &other)

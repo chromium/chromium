@@ -207,38 +207,36 @@ AutofillProfileComparator::MergeCompanyNames(const AutofillProfile& new_profile,
                                         kMergeSucceededWithModification;
 }
 
-AutofillProfile::ProfileMergeResult
-AutofillProfileComparator::MergePhoneNumbers(const AutofillProfile& new_profile,
-                                             const AutofillProfile& old_profile,
-                                             PhoneNumber& phone_number) const {
-  // We work with the raw phone numbers to avoid losing any helpful information
-  // as we parse.
-  using enum AutofillProfile::ProfileMergeResult;
-  const FieldType kWholePhoneNumber = PHONE_HOME_WHOLE_NUMBER;
-  const std::u16string& new_phone_number =
-      new_profile.GetRawInfo(kWholePhoneNumber);
-  const std::u16string& old_phone_number =
-      old_profile.GetRawInfo(kWholePhoneNumber);
+std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
+    const AutofillProfile& new_profile,
+    const AutofillProfile& old_profile) const {
+  auto create_phone_number = [&old_profile](std::u16string_view phone_number) {
+    PhoneNumber merged_phone_number(&old_profile);
+    merged_phone_number.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, phone_number);
+    return merged_phone_number;
+  };
 
+  // Work with the raw phone numbers to avoid losing any helpful information
+  // during parsing.
+  const std::u16string& new_phone_number =
+      new_profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
+  const std::u16string& old_phone_number =
+      old_profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
   if (new_phone_number == old_phone_number) {
-    phone_number.SetRawInfo(kWholePhoneNumber, new_phone_number);
-    return kMergeSucceededWithoutModification;
+    return create_phone_number(new_phone_number);
   }
 
   if (normalization::HasOnlySkippableCharacters(new_phone_number) &&
       normalization::HasOnlySkippableCharacters(old_phone_number)) {
-    phone_number.SetRawInfo(kWholePhoneNumber, std::u16string());
-    return kMergeSucceededWithoutModification;
+    return create_phone_number(/*phone_number=*/u"");
   }
 
   if (normalization::HasOnlySkippableCharacters(new_phone_number)) {
-    phone_number.SetRawInfo(kWholePhoneNumber, old_phone_number);
-    return kMergeSucceededWithoutModification;
+    return create_phone_number(old_phone_number);
   }
 
   if (normalization::HasOnlySkippableCharacters(old_phone_number)) {
-    phone_number.SetRawInfo(kWholePhoneNumber, new_phone_number);
-    return kMergeSucceededWithModification;
+    return create_phone_number(new_phone_number);
   }
 
   // TODO(crbug.com/550246835): Modify ::autofill::i18n::PhoneNumbersMatch to
@@ -253,7 +251,7 @@ AutofillProfileComparator::MergePhoneNumbers(const AutofillProfile& new_profile,
       base::UTF16ToUTF8(old_phone_number))) {
     case PhoneNumberUtil::INVALID_NUMBER:
     case PhoneNumberUtil::NO_MATCH:
-      return kMergeFailed;
+      return std::nullopt;
     case PhoneNumberUtil::SHORT_NSN_MATCH:
     case PhoneNumberUtil::NSN_MATCH:
     case PhoneNumberUtil::EXACT_MATCH:
@@ -278,14 +276,14 @@ AutofillProfileComparator::MergePhoneNumbers(const AutofillProfile& new_profile,
   if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(new_phone_number),
                                        region, &n1) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
-    return kMergeFailed;
+    return std::nullopt;
   }
 
   ::i18n::phonenumbers::PhoneNumber n2;
   if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(old_phone_number),
                                        region, &n2) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
-    return kMergeFailed;
+    return std::nullopt;
   }
 
   // `country_code()` defaults to the provided `region`. But if one of the
@@ -345,11 +343,7 @@ AutofillProfileComparator::MergePhoneNumbers(const AutofillProfile& new_profile,
     new_number = new_number.substr(offset);
   }
 
-  std::u16string merged_number_u16 = base::UTF8ToUTF16(new_number);
-  phone_number.SetRawInfo(kWholePhoneNumber, merged_number_u16);
-  return merged_number_u16 == old_phone_number
-             ? kMergeSucceededWithoutModification
-             : kMergeSucceededWithModification;
+  return create_phone_number(base::UTF8ToUTF16(new_number));
 }
 
 AutofillProfile::ProfileMergeResult AutofillProfileComparator::MergeAddresses(
@@ -423,10 +417,7 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   maybe_add_type(COMPANY_NAME,
                  MergeCompanyNames(a, b, company) !=
                      AutofillProfile::ProfileMergeResult::kMergeFailed);
-  PhoneNumber phone(&a);
-  maybe_add_type(PHONE_HOME_WHOLE_NUMBER,
-                 MergePhoneNumbers(a, b, phone) !=
-                     AutofillProfile::ProfileMergeResult::kMergeFailed);
+  maybe_add_type(PHONE_HOME_WHOLE_NUMBER, MergePhoneNumbers(a, b).has_value());
 
   maybe_add_type(EMAIL_ADDRESS, MergeEmailAddresses(a, b).has_value());
   // Now, only address-related types remain in `setting_visible_types`. Using

@@ -53,9 +53,11 @@ class PhoneNumber : public FormGroup {
 
   explicit PhoneNumber(const AutofillProfile* profile);
   PhoneNumber(const PhoneNumber& number);
+  PhoneNumber(PhoneNumber&& number) noexcept;
   ~PhoneNumber() override;
 
   PhoneNumber& operator=(const PhoneNumber& number);
+  PhoneNumber& operator=(PhoneNumber&& number) noexcept;
   bool operator==(const PhoneNumber& other) const;
 
   void set_profile(const AutofillProfile* profile) { profile_ = profile; }

@@ -114,9 +114,7 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
         !super.HasInfo(autofill::PHONE_HOME_WHOLE_NUMBER)) {
       return false;
     }
-    autofill::PhoneNumber phone(&super);
-    if (MergePhoneNumbers(super, sub, phone) ==
-        autofill::AutofillProfile::ProfileMergeResult::kMergeFailed) {
+    if (!MergePhoneNumbers(super, sub).has_value()) {
       return false;
     }
   }
