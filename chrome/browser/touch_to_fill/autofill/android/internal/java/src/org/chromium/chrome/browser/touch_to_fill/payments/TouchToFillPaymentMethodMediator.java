@@ -128,6 +128,7 @@ import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.touch_to_fill.R;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;

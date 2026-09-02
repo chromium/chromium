@@ -27,8 +27,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.touch_to_fill.R;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
-import org.chromium.chrome.browser.touch_to_fill.payments.R;
 import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;

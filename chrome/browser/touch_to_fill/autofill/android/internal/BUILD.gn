@@ -55,7 +55,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBinder.java",
   ]
 
-  resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
+  resources_package = "org.chromium.chrome.browser.touch_to_fill"
 }
 
 android_resources("java_resources") {
@@ -95,7 +95,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   testonly = true
-  resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
+  resources_package = "org.chromium.chrome.browser.touch_to_fill"
 
   sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillControllerRobolectricTest.java",
@@ -141,7 +141,7 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
+  resources_package = "org.chromium.chrome.browser.touch_to_fill"
 
   sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillRenderTest.java",
