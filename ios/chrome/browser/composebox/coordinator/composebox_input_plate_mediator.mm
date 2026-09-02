@@ -1024,6 +1024,110 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
+- (void)attachCurrentTabContent {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (![_stateManager canAddMoreAttachments]) {
+    [self.delegate showAttachmentLimitError];
+    return;
+  }
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!webState) {
+    return;
+  }
+
+  [self.metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
+
+  std::set<web::WebStateID> webStateIDs =
+      [self attachedWebStateIDsInCurrentContext];
+  webStateIDs.insert(webState->GetUniqueIdentifier());
+  [self
+      attachSelectedTabsWithWebStateIDs:webStateIDs
+                      cachedWebStateIDs:{}
+                   fromExternalWebState:nullptr
+                                 source:ComposeboxInputItemSource::kCurrentTab];
+}
+
+- (void)recordPlusMenuOpenedWithVisibleInternalButtons:
+            (const std::vector<FuseboxAttachmentButtonType>&)
+                visibleInternalButtons
+                                          uiInputState:
+                                              (ComposeboxUIInputState*)state {
+  [self.metricsRecorder
+      recordAttachmentsMenuOpenedWithVisibleButtons:visibleInternalButtons];
+
+  for (const auto& tool : state.allowedTools) {
+    [self.metricsRecorder recordToolModeShown:tool];
+  }
+
+  for (const auto& model : state.allowedModels) {
+    [self.metricsRecorder recordModelModeShown:model];
+  }
+}
+
+- (void)requestUIRefresh {
+  [self commitUIUpdates];
+}
+
+#pragma mark - ComposeboxContextUploadObserver
+
+- (void)onContextUploadStatusChanged:(const base::UnguessableToken&)contextToken
+                            mimeType:(lens::MimeType)mimeType
+                 contextUploadStatus:
+                     (contextual_search::ContextUploadStatus)contextUploadStatus
+                           errorType:
+                               (const std::optional<
+                                   contextual_search::ContextUploadErrorType>&)
+                                   errorType {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  ComposeboxInputItem* item = [_items itemForServerToken:contextToken];
+
+  if (!item) {
+    return;
+  }
+
+  switch (contextUploadStatus) {
+    case contextual_search::ContextUploadStatus::kUploadSuccessful:
+      [self setState:ComposeboxInputItemState::kLoaded onItem:item];
+      break;
+    case contextual_search::ContextUploadStatus::kUploadFailed:
+    case contextual_search::ContextUploadStatus::kValidationFailed:
+    case contextual_search::ContextUploadStatus::kUploadExpired:
+      [self handleFailedAttachment:item.identifier];
+      break;
+    case contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady:
+      // Signals are ready, we are no longer waiting.
+      _awaitingAttachmentSignals = NO;
+      [self reloadSuggestions];
+      break;
+    case contextual_search::ContextUploadStatus::kNotUploaded:
+    case contextual_search::ContextUploadStatus::kProcessing:
+    case contextual_search::ContextUploadStatus::kUploadStarted:
+    case contextual_search::ContextUploadStatus::kUploadReplaced:
+      // No-op, as the state is already `Uploading`.
+      return;
+  }
+
+  [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
+}
+
+#pragma mark - NSNotification
+
+- (void)appDidEnterBackground:(NSNotification*)notification {
+  if (_contextualSearchSession) {
+    _contextualSearchSession->SetIsBackgrounded(true);
+  }
+}
+
+- (void)appWillEnterForeground:(NSNotification*)notification {
+  if (_contextualSearchSession) {
+    _contextualSearchSession->SetIsBackgrounded(false);
+  }
+}
+
+#pragma mark - Private
+
+// Removes input items matching the deselected WebState IDs.
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
   NSArray<ComposeboxInputItem*>* items = [_items.containedItems copy];
   for (ComposeboxInputItem* item in items) {
@@ -1196,6 +1300,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
+// Fetches and caches the favicon for the currently active tab.
 - (void)extractFaviconForCurrentTab {
   if (!_faviconLoader) {
     return;
@@ -1218,113 +1323,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       /*fallback_to_google_server=*/true, faviconLoadedBlock);
 }
 
+// Updates the cached favicon image and commits UI updates.
 - (void)setCachedCurrentTabFavicon:(UIImage*)image {
   _currentTabFavicon = image;
   [self commitUIUpdates];
 }
-
-- (void)attachCurrentTabContent {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (![_stateManager canAddMoreAttachments]) {
-    [self.delegate showAttachmentLimitError];
-    return;
-  }
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (!webState) {
-    return;
-  }
-
-  [self.metricsRecorder
-      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
-
-  std::set<web::WebStateID> webStateIDs =
-      [self attachedWebStateIDsInCurrentContext];
-  webStateIDs.insert(webState->GetUniqueIdentifier());
-  [self
-      attachSelectedTabsWithWebStateIDs:webStateIDs
-                      cachedWebStateIDs:{}
-                   fromExternalWebState:nullptr
-                                 source:ComposeboxInputItemSource::kCurrentTab];
-}
-
-- (void)recordPlusMenuOpenedWithVisibleInternalButtons:
-            (const std::vector<FuseboxAttachmentButtonType>&)
-                visibleInternalButtons
-                                          uiInputState:
-                                              (ComposeboxUIInputState*)state {
-  [self.metricsRecorder
-      recordAttachmentsMenuOpenedWithVisibleButtons:visibleInternalButtons];
-
-  for (const auto& tool : state.allowedTools) {
-    [self.metricsRecorder recordToolModeShown:tool];
-  }
-
-  for (const auto& model : state.allowedModels) {
-    [self.metricsRecorder recordModelModeShown:model];
-  }
-}
-
-- (void)requestUIRefresh {
-  [self commitUIUpdates];
-}
-
-#pragma mark - ComposeboxContextUploadObserver
-
-- (void)onContextUploadStatusChanged:(const base::UnguessableToken&)contextToken
-                            mimeType:(lens::MimeType)mimeType
-                 contextUploadStatus:
-                     (contextual_search::ContextUploadStatus)contextUploadStatus
-                           errorType:
-                               (const std::optional<
-                                   contextual_search::ContextUploadErrorType>&)
-                                   errorType {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [_items itemForServerToken:contextToken];
-
-  if (!item) {
-    return;
-  }
-
-  switch (contextUploadStatus) {
-    case contextual_search::ContextUploadStatus::kUploadSuccessful:
-      [self setState:ComposeboxInputItemState::kLoaded onItem:item];
-      break;
-    case contextual_search::ContextUploadStatus::kUploadFailed:
-    case contextual_search::ContextUploadStatus::kValidationFailed:
-    case contextual_search::ContextUploadStatus::kUploadExpired:
-      [self handleFailedAttachment:item.identifier];
-      break;
-    case contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady:
-      // Signals are ready, we are no longer waiting.
-      _awaitingAttachmentSignals = NO;
-      [self reloadSuggestions];
-      break;
-    case contextual_search::ContextUploadStatus::kNotUploaded:
-    case contextual_search::ContextUploadStatus::kProcessing:
-    case contextual_search::ContextUploadStatus::kUploadStarted:
-    case contextual_search::ContextUploadStatus::kUploadReplaced:
-      // No-op, as the state is already `Uploading`.
-      return;
-  }
-
-  [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
-}
-
-#pragma mark - NSNotification
-
-- (void)appDidEnterBackground:(NSNotification*)notification {
-  if (_contextualSearchSession) {
-    _contextualSearchSession->SetIsBackgrounded(true);
-  }
-}
-
-- (void)appWillEnterForeground:(NSNotification*)notification {
-  if (_contextualSearchSession) {
-    _contextualSearchSession->SetIsBackgrounded(false);
-  }
-}
-
-#pragma mark - Private
 
 // Whether the current instance is associated with cobrowse.
 - (BOOL)isCobrowse {
