@@ -1,5 +1,6 @@
 AriaProperties changed on role=option, name=Apple
 AutomationFocusChanged on role=option, name=Apple
 ControllerFor changed on role=combobox
+LayoutInvalidated on role=document
 SelectionItemIsSelected changed on role=option, name=Apple
 SelectionItem_ElementSelected on role=option, name=Apple
