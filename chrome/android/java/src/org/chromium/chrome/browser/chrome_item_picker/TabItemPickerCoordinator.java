@@ -30,12 +30,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProvider;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadIfNeededCallback;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadResult;
@@ -276,7 +276,7 @@ public class TabItemPickerCoordinator {
         // We cannot load background tabs in headless mode since the tabs are not attached to an
         // activity and thus cannot be loaded.
         boolean allowBackgroundTabContextCapture =
-                ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled()
+                OnDemandBackgroundTabCaptureConfig.isOnDemandBackgroundTabContextCaptureEnabled()
                         && tabModel.getTabModelType() == TabModelType.STANDARD;
         for (Tab tab : tabModel) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
@@ -386,6 +386,7 @@ public class TabItemPickerCoordinator {
         private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds;
         private final Runnable mCancelRunnable;
         private final Map<Tab, Long> mLoadingTabsToStartTimes = new HashMap<>();
+        private final TabItemPickerOffscreenRenderer mOffscreenRenderer;
         private final LoadIfNeededCallback mLoadIfNeededCallback = this::onTabLoadFinished;
 
         private boolean mIsDestroyed;
@@ -407,6 +408,7 @@ public class TabItemPickerCoordinator {
             mInitialSelectedTabIds = initialSelectedTabIds;
             mCancelRunnable = cancelRunnable;
             mSelectedItemsCount = initialSelectedTabIds.size();
+            mOffscreenRenderer = new TabItemPickerOffscreenRenderer(activity);
         }
 
         /** Returns the number of currently selected items in the picker. */
@@ -420,7 +422,10 @@ public class TabItemPickerCoordinator {
             boolean hasSelectionChanged = !Objects.equals(mInitialSelectedTabIds, selectedItems);
             mEnableDoneButtonSupplier.set(hasSelectionChanged);
 
-            if (!ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled()) return;
+            if (!OnDemandBackgroundTabCaptureConfig
+                    .isOnDemandBackgroundTabContextCaptureEnabled()) {
+                return;
+            }
 
             // The maximum number of tabs that can be selected is determined by
             // mAllowedSelectionCount, which should always be sufficiently small that there is
@@ -439,7 +444,9 @@ public class TabItemPickerCoordinator {
          */
         private void maybeTriggerTabReloadAndThumbnailFetch(int tabId) {
             // If the tab is already cached, we don't need to do anything.
-            if (mCachedTabIds.contains(tabId)) return;
+            if (mCachedTabIds.contains(tabId)) {
+                return;
+            }
 
             Tab tab = mTabModelSelector.getTabById(tabId);
             if (tab == null
@@ -449,10 +456,16 @@ public class TabItemPickerCoordinator {
             }
 
             // Avoid double-observing the same tab if it's already being loaded.
-            if (mLoadingTabsToStartTimes.containsKey(tab)) return;
+            if (mLoadingTabsToStartTimes.containsKey(tab)) {
+                return;
+            }
 
             TabLoadingService tabLoadingService = TabLoadingService.getInstance();
-            if (!tabLoadingService.queueLoadIfNeeded(tab)) return;
+            if (!tabLoadingService.queueLoadIfNeeded(tab)) {
+                return;
+            }
+
+            mOffscreenRenderer.startOffscreenRenderingIfNeeded(tab);
 
             // Clear the thumbnail to avoid showing a stale thumbnail immediately after selection.
             mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
@@ -482,17 +495,30 @@ public class TabItemPickerCoordinator {
             }
         }
 
+        /**
+         * Handles completion of a tab load request from {@link TabLoadingService}.
+         *
+         * <p>On success, proceeds to capture and cache the tab thumbnail via {@link
+         * TabContentManager}. Offscreen rendering is kept active during thumbnail capture and torn
+         * down upon thumbnail callback completion. On failure or if destroyed, offscreen rendering
+         * is immediately stopped and the loading spinner is hidden.
+         */
         private void onTabLoadFinished(Tab tab, @LoadResult int result) {
-            if (mIsDestroyed) return;
+            if (mIsDestroyed) {
+                mOffscreenRenderer.stopOffscreenRenderingIfNeeded(tab);
+                return;
+            }
 
-            long startTime = assumeNonNull(mLoadingTabsToStartTimes.remove(tab));
-
-            long duration = SystemClock.elapsedRealtime() - startTime;
-            String resultStr = getLoadResultString(result);
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Android.TabItemPicker.OnDemandLoadDuration." + resultStr, duration);
+            Long startTime = mLoadingTabsToStartTimes.remove(tab);
+            if (startTime != null) {
+                long duration = SystemClock.elapsedRealtime() - startTime;
+                String resultStr = getLoadResultString(result);
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.TabItemPicker.OnDemandLoadDuration." + resultStr, duration);
+            }
 
             if (result != LoadResult.SUCCESS) {
+                mOffscreenRenderer.stopOffscreenRenderingIfNeeded(tab);
                 var controller = mControllerSupplier.get();
                 if (controller != null) {
                     controller.setThumbnailSpinnerVisibility(tab, /* isVisible= */ false);
@@ -505,7 +531,10 @@ public class TabItemPickerCoordinator {
                     tab,
                     /* returnBitmap= */ false,
                     _ -> {
-                        if (mIsDestroyed) return;
+                        mOffscreenRenderer.stopOffscreenRenderingIfNeeded(tab);
+                        if (mIsDestroyed) {
+                            return;
+                        }
 
                         long thumbnailDuration = SystemClock.elapsedRealtime() - thumbnailStartTime;
                         RecordHistogram.recordMediumTimesHistogram(
@@ -534,6 +563,8 @@ public class TabItemPickerCoordinator {
                         "Android.TabItemPicker.OnDemandLoadDuration.Abandoned", duration);
             }
             mLoadingTabsToStartTimes.clear();
+            mOffscreenRenderer.destroy();
+
             if (mTabContentManager != null) {
                 mTabContentManager.destroy();
             }
@@ -590,6 +621,11 @@ public class TabItemPickerCoordinator {
             } else {
                 mActivity.finish();
             }
+        }
+
+        @VisibleForTesting
+        public TabItemPickerOffscreenRenderer getOffscreenRendererForTesting() {
+            return mOffscreenRenderer;
         }
     }
 

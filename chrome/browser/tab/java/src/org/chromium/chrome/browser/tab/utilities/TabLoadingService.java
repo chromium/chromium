@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.tab.utilities;
 
+import android.util.SparseIntArray;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,6 +58,45 @@ public class TabLoadingService {
 
     private static final TabObserver sObserver =
             new TabObserver() {
+                /**
+                 * Handles early load completion on the first visually non-empty paint.
+                 *
+                 * <p>When {@link OnDemandBackgroundTabCaptureConfig#isEarlyFirstPaintEnabled()} is
+                 * true, this triggers load completion as soon as the initial frame is rendered
+                 * rather than waiting for full network and resource load completion.
+                 *
+                 * <p>If a non-zero delay buffer is configured via Finch ({@code
+                 * first_paint_delay_ms}), completion is scheduled asynchronously. A monotonic
+                 * generation token is captured to ensure stale tasks from previous attempts are
+                 * discarded if the tab fails, crashes, or is reloaded during the delay window.
+                 */
+                @Override
+                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                    if (!OnDemandBackgroundTabCaptureConfig.isEarlyFirstPaintEnabled()) {
+                        return;
+                    }
+                    TabLoadingService service = getInstance();
+                    if (!OnDemandBackgroundTabCaptureConfig.hasFirstPaintDelay()) {
+                        service.onTabLoadFinished(tab, LoadResult.SUCCESS);
+                    } else {
+                        int tabId = tab.getId();
+                        int generation = service.getLoadGeneration(tabId);
+                        if (generation == -1) {
+                            return;
+                        }
+                        int delayMs = OnDemandBackgroundTabCaptureConfig.getFirstPaintDelayMs();
+                        PostTask.postDelayedTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    if (!tab.isDestroyed()
+                                            && service.isLoadGenerationActive(tabId, generation)) {
+                                        service.onTabLoadFinished(tab, LoadResult.SUCCESS);
+                                    }
+                                },
+                                delayMs);
+                    }
+                }
+
                 @Override
                 public void onPageLoadFinished(Tab tab, GURL url) {
                     getInstance().onTabLoadFinished(tab, LoadResult.SUCCESS);
@@ -83,6 +126,15 @@ public class TabLoadingService {
 
     private final Map<Integer, ObserverList<LoadIfNeededCallback>> mQueuedTabs = new HashMap<>();
 
+    /**
+     * Maps active tab IDs to strictly increasing generation tokens. Used to invalidate stale
+     * delayed runnables scheduled during post-first-paint delay windows.
+     */
+    private final SparseIntArray mTabLoadGenerations = new SparseIntArray();
+
+    /** Monotonic generation counter incremented with each new load request. */
+    private int mNextGeneration;
+
     private TabLoadingService() {}
 
     /** Returns the singleton instance of {@link TabLoadingService}. */
@@ -111,6 +163,7 @@ public class TabLoadingService {
 
         tab.addObserver(sObserver);
         mQueuedTabs.put(tab.getId(), new ObserverList<>());
+        mTabLoadGenerations.put(tab.getId(), ++mNextGeneration);
         return true;
     }
 
@@ -158,9 +211,23 @@ public class TabLoadingService {
         return mQueuedTabs.containsKey(tabId);
     }
 
+    /** Returns the active load generation token for the tab, or -1 if not queued. */
+    private int getLoadGeneration(int tabId) {
+        return mTabLoadGenerations.get(tabId, -1);
+    }
+
+    /** Returns whether the given load generation token is currently active for the tab. */
+    private boolean isLoadGenerationActive(int tabId, int generation) {
+        int activeGen = getLoadGeneration(tabId);
+        return activeGen != -1 && activeGen == generation;
+    }
+
     private void onTabLoadFinished(Tab tab, @LoadResult int result) {
+        mTabLoadGenerations.delete(tab.getId());
         ObserverList<LoadIfNeededCallback> callbacks = mQueuedTabs.remove(tab.getId());
-        if (callbacks == null) return;
+        if (callbacks == null) {
+            return;
+        }
 
         tab.removeObserver(sObserver);
         for (LoadIfNeededCallback callback : callbacks) {
@@ -170,6 +237,8 @@ public class TabLoadingService {
 
     public void clearForTesting() {
         mQueuedTabs.clear();
+        mTabLoadGenerations.clear();
+        mNextGeneration = 0;
     }
 
     static void setInstanceForTesting(@Nullable TabLoadingService service) {

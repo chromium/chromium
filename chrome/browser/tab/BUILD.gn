@@ -72,6 +72,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/Serializer.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataService.java",
+    "java/src/org/chromium/chrome/browser/tab/utilities/OnDemandBackgroundTabCaptureConfig.java",
     "java/src/org/chromium/chrome/browser/tab/utilities/TabLoadingService.java",
   ]
 
