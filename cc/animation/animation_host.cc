@@ -1091,9 +1091,7 @@ void AnimationHost::UpdateTriggers(const ScrollTree& scroll_tree,
   for (const auto& kv : id_to_trigger_map_.Read(*this)) {
     AnimationTrigger* trigger = kv.second.get();
     // NOTE(crbug.com/451238244): Only timeline triggers are supported for now.
-    DCHECK(trigger->IsTimelineTrigger());
-    static_cast<TimelineTrigger*>(trigger)->Update(scroll_tree, events,
-                                                   monotonic_time);
+    ToTimelineTrigger(trigger)->Update(scroll_tree, events, monotonic_time);
   }
 }
 
