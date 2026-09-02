@@ -228,6 +228,7 @@ chromium_luci.configure_targets(
             # The following mixins are referenced via
             # //testing/buildbot/waterfalls.pyl
             "11-x86-emulator": True,
+            "android_extra_verbosity": True,
             "amd_radeon_rx_5500_xt": True,
             "android": True,
             "blink_tests_write_run_histories": True,
@@ -272,6 +273,7 @@ chromium_luci.configure_targets(
             "mac_toolchain": True,
             "x64_ai_wpt_shards": True,
             "non-gce": True,
+            "no_xvfb": True,
             "nvidia_geforce_gtx_1660": True,
             "out_dir_arg": True,
             "skia_gold_test": True,
@@ -283,6 +285,7 @@ chromium_luci.configure_targets(
             "skylab-rdb-native": True,
             "skylab-rdb-tast": True,
             "tfc-cq-tast": True,
+            "use_isolated_scripts_api": True,
             "vaapi_unittest_args": True,
             "vaapi_unittest_libfake_args": True,
             "win-arm64": True,

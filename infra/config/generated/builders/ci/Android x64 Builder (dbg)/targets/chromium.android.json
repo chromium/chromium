@@ -317,6 +317,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "description": "Run with android_32_google_apis_x64_foldable",
@@ -3721,6 +3722,7 @@
       },
       {
         "args": [
+          "-v",
           "-v",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],

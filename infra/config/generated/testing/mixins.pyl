@@ -47,6 +47,11 @@
       },
     },
   },
+  'android_extra_verbosity': {
+    'android_args': [
+      '-v',
+    ],
+  },
   'blink_tests_write_run_histories': {
     'args': [
       '--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json',
@@ -812,6 +817,11 @@
       '--do-not-store-tombstones',
     ],
   },
+  'no_xvfb': {
+    'linux_args': [
+      '--no-xvfb',
+    ],
+  },
   'non-gce': {
     'swarming': {
       'dimensions': {
@@ -910,6 +920,9 @@
     'args': [
       '--use-simulator-cache',
     ],
+  },
+  'use_isolated_scripts_api': {
+    'use_isolated_scripts_api': True,
   },
   'vaapi_unittest_args': {
     'args': [

@@ -127,6 +127,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "android_extra_verbosity",
+    android_args = [
+        "-v",
+    ],
+)
+
+targets.mixin(
     name = "arm64",
     swarming = targets.swarming(
         dimensions = {
@@ -1767,6 +1774,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "no_xvfb",
+    linux_args = [
+        "--no-xvfb",
+    ],
+)
+
+targets.mixin(
     name = "nougat",
     swarming = targets.swarming(
         dimensions = {
@@ -1939,6 +1953,11 @@ targets.mixin(
     args = [
         "--use-simulator-cache",
     ],
+)
+
+targets.mixin(
+    name = "use_isolated_scripts_api",
+    use_isolated_scripts_api = True,
 )
 
 targets.mixin(

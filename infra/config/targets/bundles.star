@@ -3385,24 +3385,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_angle_unit_gtests",
-    targets = [
-        "angle_unittests",
-    ],
-    per_test_modifications = {
-        "angle_unittests": targets.mixin(
-            android_args = [
-                "-v",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-    },
-)
-
-targets.bundle(
     name = "gpu_angle_win_intel_nvidia_telemetry_tests",
     targets = [
         "gpu_info_collection_telemetry_tests",
@@ -4234,8 +4216,12 @@ targets.bundle(
 targets.bundle(
     name = "gpu_desktop_passthrough_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "angle_unittests",
     ],
 )
 
@@ -4288,10 +4274,14 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_android_arm_release_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_common_gtests_validating",
         "gpu_fyi_and_optional_non_linux_gtests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "angle_unittests",
     ],
 )
 
@@ -4323,20 +4313,28 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_android_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_common_gtests_validating",
         "gpu_fyi_and_optional_non_linux_gtests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "angle_unittests",
     ],
 )
 
 targets.bundle(
     name = "gpu_fyi_android_release_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_common_gtests_validating",
         "gpu_fyi_and_optional_non_linux_gtests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "angle_unittests",
     ],
 )
 
@@ -4794,9 +4792,13 @@ targets.bundle(
 targets.bundle(
     name = "gpu_win_release_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_default_and_optional_win_specific_gtests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "angle_unittests",
     ],
 )
 

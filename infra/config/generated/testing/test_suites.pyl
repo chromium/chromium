@@ -1284,7 +1284,10 @@
       'angle_unittests': {
         'test_common': {
           'mixins': [
+            'android_extra_verbosity',
             'gpu_gtest_common_args',
+            'no_xvfb',
+            'use_isolated_scripts_api',
           ],
         },
         'android_args': [

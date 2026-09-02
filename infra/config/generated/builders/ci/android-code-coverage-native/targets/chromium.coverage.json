@@ -150,6 +150,7 @@
       },
       {
         "args": [
+          "-v",
           "-v"
         ],
         "isolate_profile_data": true,

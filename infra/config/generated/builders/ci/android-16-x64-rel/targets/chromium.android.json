@@ -251,6 +251,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],
         "description": "Run with android_36_google_apis_x64",

@@ -211,6 +211,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb"
         ],
         "description": "Run with android_30_google_apis_x86",

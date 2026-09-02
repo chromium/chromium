@@ -149,6 +149,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb"
         ],
         "description": "Run with android_35_google_apis_x64_tablet",

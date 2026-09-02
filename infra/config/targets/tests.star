@@ -199,7 +199,10 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "angle_unittests",
     mixins = [
+        "android_extra_verbosity",
         "gpu_gtest_common_args",
+        "no_xvfb",
+        "use_isolated_scripts_api",
     ],
 )
 
