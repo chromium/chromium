@@ -12,6 +12,8 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 
@@ -44,6 +46,10 @@ static constexpr size_t kChunkSizePrefixSize = 4u;
 // Obfuscation result and error type histogram name.
 static constexpr char kObfuscationResultHistogram[] =
     "Enterprise.FileDownloadObfuscation.Result";
+
+// Histogram to track the number of retries required when replacing a file.
+static constexpr char kReplaceRetryCountHistogram[] =
+    "Enterprise.FileDownloadObfuscation.ReplaceRetryCount";
 
 // Feature to enable insecure obfuscation and deobfuscation of files sent to
 // WebProtect deep scanning service for enterprise users.
@@ -137,9 +143,21 @@ base::expected<std::vector<uint8_t>, Error> DeobfuscateDataChunk(
 
 // Insecurely deobfuscate a file by replacing the original file with the
 // deobfuscated data. Master key is stored in memory and can be leaked.
+//
+// NOTE: This performs synchronous file I/O and may block the thread for up
+// to 500ms on Windows. It must only be called from a sequence that allows
+// blocking (e.g., via base::MayBlock()).
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 base::expected<void, Error> DeobfuscateFileInPlace(
     const base::FilePath& file_path);
+
+// Executes the same logic as `DeobfuscateFileInPlace()`, but invokes
+// `test_callback` immediately prior to the file replacement step for testing.
+COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
+base::expected<void, Error> DeobfuscateFileInPlaceForTesting(
+    const base::FilePath& file_path,
+    base::TimeDelta pause_interval,
+    base::RepeatingClosure test_callback);
 
 // Records result of obfuscation/deobfuscation operations to UMA metrics.
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)

@@ -3116,6 +3116,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.FileDownloadObfuscation.ReplaceRetryCount"
+    units="retries" expires_after="2027-02-19">
+  <owner>mingyil@google.com</owner>
+  <owner>haihan@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Recorded when an obfuscated downloaded file is deobfuscated and the browser
+    attempts to safely replace the original file on disk.
+
+    Records the number of retries (0 to 4) required to successfully replace a
+    deobfuscated file over the original file. Because Windows Antivirus scanners
+    can briefly lock closed files while scanning, this retries up to 4 times. If
+    all attempts fail, or if it aborts early due to a non-AV error (such as Disk
+    Full), a value of 5 is explicitly recorded to denote failure.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.FileOpeningJob.CancelDuration" units="ms"
     expires_after="2027-01-03">
   <owner>valadkevich@google.com</owner>

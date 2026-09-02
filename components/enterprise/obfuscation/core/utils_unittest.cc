@@ -16,6 +16,10 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/bind.h"
+#endif
+
 namespace enterprise_obfuscation {
 namespace {
 
@@ -254,6 +258,129 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateVariableChunks) {
   // Compare deobfuscated content with original test data
   EXPECT_EQ(deobfuscated_content, test_data);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace_RetryOnSharingViolation) {
+  if (!file_obfuscation_feature_enabled()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
+  std::vector<uint8_t> obfuscated_content;
+  ObfuscateTestDataInChunks(test_data, obfuscated_content);
+  ASSERT_TRUE(base::WriteFile(test_file_path(), obfuscated_content));
+
+  // Mimic a virus scan lock by opening and reading the file.
+  auto locked_file = std::make_unique<base::File>(
+      test_file_path(), base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(locked_file->IsValid());
+
+  int attempts = 0;
+  auto unlock_callback = base::BindLambdaForTesting([&]() {
+    // Drop the antivirus lock precisely on the final retry.
+    if (attempts == 2) {
+      locked_file.reset();
+    }
+    attempts++;
+  });
+
+  ASSERT_TRUE(DeobfuscateFileInPlaceForTesting(test_file_path(),
+                                               base::TimeDelta(),
+                                               std::move(unlock_callback))
+                  .has_value());
+
+  EXPECT_EQ(attempts, 3);
+
+  auto deobfuscated_content = base::ReadFileToBytes(test_file_path());
+  ASSERT_TRUE(deobfuscated_content.has_value());
+  EXPECT_EQ(deobfuscated_content.value(), test_data);
+
+  histogram_tester.ExpectUniqueSample(
+      kReplaceRetryCountHistogram,
+      2 /* The exact retry attempt that succeeded */,
+      1 /* One event occurred */);
+}
+
+TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace_MaxRetriesExceeded) {
+  if (!file_obfuscation_feature_enabled()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Create a dummy obfuscated file on disk.
+  std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
+  std::vector<uint8_t> obfuscated_content;
+  ObfuscateTestDataInChunks(test_data, obfuscated_content);
+  ASSERT_TRUE(base::WriteFile(test_file_path(), obfuscated_content));
+
+  // Mimic an aggressive virus scan lock that never releases the file.
+  auto locked_file = std::make_unique<base::File>(
+      test_file_path(), base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(locked_file->IsValid());
+
+  int attempts = 0;
+  auto unlock_callback = base::BindLambdaForTesting([&]() {
+    // Avoid calling locked_file.reset() to simulate a permanent file lock.
+    attempts++;
+  });
+
+  auto result = DeobfuscateFileInPlaceForTesting(
+      test_file_path(), base::TimeDelta(), std::move(unlock_callback));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Error::kFileOperationError);
+
+  EXPECT_EQ(attempts, 5);
+
+  histogram_tester.ExpectUniqueSample(kReplaceRetryCountHistogram,
+                                      5 /* The kMaxReplaceAttempts bucket */,
+                                      1 /* One event occurred */);
+}
+
+TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace_EarlyBailout) {
+  if (!file_obfuscation_feature_enabled()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Create a dummy obfuscated file on disk.
+  std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
+  std::vector<uint8_t> obfuscated_content;
+  ObfuscateTestDataInChunks(test_data, obfuscated_content);
+  ASSERT_TRUE(base::WriteFile(test_file_path(), obfuscated_content));
+
+  int attempts = 0;
+  auto fail_callback = base::BindLambdaForTesting([&]() {
+    attempts++;
+
+    // To trigger a non-retriable error, we delete the temporary file
+    // before the parent function can process it.
+    // This forces a missing file error, triggering the early bailout logic.
+    base::FileEnumerator enumerator(test_file_path().DirName(), false,
+                                    base::FileEnumerator::FILES);
+    for (base::FilePath name = enumerator.Next(); !name.empty();
+         name = enumerator.Next()) {
+      if (name != test_file_path()) {
+        base::DeletePathRecursively(name);
+      }
+    }
+  });
+
+  auto result = DeobfuscateFileInPlaceForTesting(
+      test_file_path(), base::TimeDelta(), std::move(fail_callback));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Error::kFileOperationError);
+
+  EXPECT_EQ(attempts, 1);
+
+  histogram_tester.ExpectUniqueSample(kReplaceRetryCountHistogram,
+                                      5 /* The kMaxReplaceAttempts bucket */,
+                                      1 /* One event occurred */);
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     ObfuscationUtilsFeatureTest,
