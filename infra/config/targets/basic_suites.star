@@ -1076,22 +1076,11 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_webgl_conformance_gles_passthrough_tests",
     tests = {
-        "webgl_conformance_gles_passthrough_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-            android_swarming = targets.swarming(
-                shards = 6,
-            ),
-            chromeos_swarming = targets.swarming(
-                shards = 6,
-            ),
-            skylab = targets.skylab(
-                shards = 6,
-            ),
-        ),
+        "webgl_conformance_gles_passthrough_tests": targets.legacy_test_config(),
     },
 )
 

@@ -139,7 +139,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+            "webgl_conformance_gles_passthrough_tests",
         ],
         mixins = [
             "chromium_pixel_2_q",

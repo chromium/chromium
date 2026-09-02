@@ -453,6 +453,17 @@
       ],
     },
   },
+  'legacy_gpu_webgl_conformance_shards': {
+    'swarming': {
+      'shards': 2,
+    },
+    'android_swarming': {
+      'shards': 6,
+    },
+    'chromeos_swarming': {
+      'shards': 6,
+    },
+  },
   'limited_capacity_bot': {
     'fail_if_unused': False,
     'swarming': {

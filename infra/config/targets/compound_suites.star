@@ -95,8 +95,8 @@ targets.legacy_compound_suite(
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
+        "legacy_webgl_conformance_gles_passthrough_tests",
     ],
 )
 
