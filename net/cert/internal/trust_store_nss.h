@@ -23,22 +23,10 @@ namespace net {
 // trust anchors for path building. This bssl::TrustStore is thread-safe.
 class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
  public:
-  struct UseTrustFromAllUserSlots : std::monostate {};
-  using UserSlotTrustSetting =
-      std::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
-
   // Creates a TrustStoreNSS which will find anchors that are trusted for
   // SSL server auth. (Trust settings from the builtin roots slot with the
   // Mozilla CA Policy attribute will not be used.)
-  //
-  // |user_slot_trust_setting| configures the use of trust from user slots:
-  //  * UseTrustFromAllUserSlots: all user slots will be allowed.
-  //  * PK11Slot: the specified slot will be allowed. Must not be nullptr.
-  //
-  // TODO(crbug.com/390333881): The PK11Slot variant is no longer used except
-  // by ServerCertificateDatabaseNSSMigrator. Once the migration code is
-  // removed, remove the |user_slot_trust_setting| option.
-  explicit TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting);
+  TrustStoreNSS();
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
   TrustStoreNSS& operator=(const TrustStoreNSS&) = delete;
@@ -75,16 +63,6 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
 
   bssl::CertificateTrust GetTrustIgnoringSystemTrust(
       CERTCertificate* nss_cert) const;
-
-  // |user_slot_trust_setting_| specifies which slots certificates must be
-  // stored on to be allowed to be trusted. The possible values are:
-  //
-  // |user_slot_trust_setting_| is UseTrustFromAllUserSlots: Allow trust
-  // settings from any user slots.
-  //
-  // |user_slot_trust_setting_| is a ScopedPK11Slot: Allow
-  // certificates from the specified slot to be trusted. Must not be nullptr.
-  const UserSlotTrustSetting user_slot_trust_setting_;
 };
 
 }  // namespace net

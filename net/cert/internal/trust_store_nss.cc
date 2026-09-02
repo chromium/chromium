@@ -148,13 +148,7 @@ TrustStoreNSS::ListCertsResult::ListCertsResult(ListCertsResult&& other) =
 TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
     ListCertsResult&& other) = default;
 
-TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
-    : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {
-  if (std::holds_alternative<crypto::ScopedPK11Slot>(
-          user_slot_trust_setting_)) {
-    CHECK(std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) !=
-          nullptr);
-  }
+TrustStoreNSS::TrustStoreNSS() {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
   if (!CERT_CreateSubjectCertListForChromium) {
     LOG(WARNING) << "CERT_CreateSubjectCertListForChromium is not available";
@@ -229,22 +223,12 @@ TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
-  if (std::holds_alternative<crypto::ScopedPK11Slot>(
-          user_slot_trust_setting_)) {
-    cert_list.reset(PK11_ListCertsInSlot(
-        std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()));
-  } else {
-    cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
-  }
-  // PK11_ListCerts[InSlot] can return nullptr, e.g. because the PKCS#11 token
+  cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
+  // PK11_ListCerts can return nullptr, e.g. because the PKCS#11 token
   // that was backing the specified slot is not available anymore.
   // Treat it as no certificates being present on the slot.
   if (!cert_list) {
-    LOG(WARNING) << (std::holds_alternative<crypto::ScopedPK11Slot>(
-                         user_slot_trust_setting_)
-                         ? "PK11_ListCertsInSlot"
-                         : "PK11_ListCerts")
-                 << " returned null";
+    LOG(WARNING) << "PK11_ListCerts returned null";
     return results;
   }
 
@@ -361,14 +345,6 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     DVLOG(1) << "found cert in slot:" << PK11_GetSlotName(slot)
              << " token:" << PK11_GetTokenName(slot)
              << " module trustOrder: " << PK11_GetModule(slot)->trustOrder;
-    if (std::holds_alternative<crypto::ScopedPK11Slot>(
-            user_slot_trust_setting_) &&
-        slot !=
-            std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()) {
-      DVLOG(1) << "skipping slot " << PK11_GetSlotName(slot)
-               << ", it's not user_slot_trust_setting_";
-      continue;
-    }
     if (IsMozillaCaPolicyProvided(slot, handle)) {
       DVLOG(1) << "skipping slot " << PK11_GetSlotName(slot)
                << ", this is mozilla ca policy provided";

@@ -253,8 +253,7 @@ std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
   return std::make_unique<SystemTrustStoreChrome>(
-      std::move(chrome_root), std::make_unique<TrustStoreNSS>(
-                                  TrustStoreNSS::UseTrustFromAllUserSlots()));
+      std::move(chrome_root), std::make_unique<TrustStoreNSS>());
 }
 
 #elif BUILDFLAG(IS_MAC)
