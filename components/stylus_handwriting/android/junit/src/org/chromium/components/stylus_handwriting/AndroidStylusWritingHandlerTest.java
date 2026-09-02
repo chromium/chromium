@@ -47,7 +47,6 @@ import java.util.List;
 /** Unit tests for {@link AndroidStylusWritingHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         sdk = Build.VERSION_CODES.TIRAMISU,
         shadows = {ShadowGlobalSettings.class, ShadowSecureSettings.class})
 public class AndroidStylusWritingHandlerTest {

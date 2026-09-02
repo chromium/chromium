@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,7 +39,6 @@ import org.chromium.base.test.util.Feature;
 
 /** Robolectric tests for {@link ExternalAuthUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ExternalAuthUtilsTest {
     private static final int ERR = 999;
     private static final String SEARCH_APP_PACKAGE = "com.google.android.googlequicksearchbox";
