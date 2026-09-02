@@ -197,6 +197,7 @@ static_library("test_support") {
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:chrome_test_suite",
     "//chrome/test/base:chrome_test_utils",
+    "//chrome/test/base:chrome_unit_test_suite",
     "//chrome/test/base:menu_model_test",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:scoped_metrics_service_for_synthetic_trials",
@@ -219,8 +220,6 @@ static_library("test_support") {
     "base/chrome_render_view_test.cc",
     "base/chrome_render_view_test.h",
     "base/chrome_test_utils.cc",
-    "base/chrome_unit_test_suite.cc",
-    "base/chrome_unit_test_suite.h",
   ]
 
   if (enable_guest_view) {

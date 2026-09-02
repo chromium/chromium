@@ -535,6 +535,61 @@ source_set("profile_lifecycle_test_utils") {
   deps = [ "//chrome/browser:browser_process" ]
 }
 
+source_set("chrome_unit_test_suite") {
+  testonly = true
+  sources = [
+    "chrome_unit_test_suite.cc",
+    "chrome_unit_test_suite.h",
+  ]
+  public_deps = [
+    ":chrome_test_suite",
+    "//base/test:test_support",
+  ]
+  deps = [
+    ":testing_browser_process",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
+    "//chrome/browser/ui/webui:configs",
+    "//chrome/browser/update_client",
+    "//chrome/common",
+    "//components/component_updater",
+    "//components/startup_metric_utils",
+    "//components/update_client",
+    "//components/web_package",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//gpu/ipc/service",
+    "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gl:test_support",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/arc:arc_util",
+      "//chromeos/dbus/constants",
+      "//crypto",
+    ]
+  }
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service/publishers",
+      "//chrome/browser/web_applications",
+    ]
+  }
+  if (enable_extensions) {
+    deps += [ "//extensions/common" ]
+  }
+}
+
 source_set("chrome_test_suite") {
   testonly = true
   sources = [
