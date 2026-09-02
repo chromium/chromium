@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/enterprise/data_protection/ui/watermark_consumer.h"
 #import "ios/chrome/browser/enterprise/data_protection/ui/watermark_view_utils.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -72,6 +73,25 @@ TEST_F(WatermarkViewTest, TestExpandedSizeForSizeAngle) {
   CGSize sizeNeg45 = GetWatermarkExpandedSizeForRotation(originalSize, -M_PI_4);
   EXPECT_NEAR(sizeNeg45.width, 212.13, 0.1);
   EXPECT_NEAR(sizeNeg45.height, 212.13, 0.1);
+}
+
+// Tests that updating the view through the WatermarkConsumer protocol
+// correctly sets its text and style parameters.
+TEST_F(WatermarkViewTest, TestWatermarkConsumerProtocol) {
+  WatermarkView* view = [[WatermarkView alloc] initWithFrame:CGRectZero];
+
+  WatermarkStyle style;
+  style.fill_opacity = 0.45;
+  style.outline_opacity = 0.75;
+  style.font_size = 32;
+
+  id<WatermarkConsumer> consumer = (id<WatermarkConsumer>)view;
+  [consumer updateWatermarkWithText:@"ProtocolText" style:style];
+
+  EXPECT_NSEQ(view.text, @"ProtocolText");
+  EXPECT_NEAR(view.fillOpacity, 0.45, 0.01);
+  EXPECT_NEAR(view.outlineOpacity, 0.75, 0.01);
+  EXPECT_NEAR(view.fontSize, 32.0, 0.01);
 }
 
 }  // namespace

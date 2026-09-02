@@ -318,4 +318,19 @@ UILabel* CreateWatermarkLabel() {
                                               angle:angle];
 }
 
+#pragma mark - WatermarkConsumer
+
+- (void)updateWatermarkWithText:(NSString*)text style:(WatermarkStyle)style {
+  self.text = text;
+  if (style.fill_opacity.has_value()) {
+    self.fillOpacity = style.fill_opacity.value();
+  }
+  if (style.outline_opacity.has_value()) {
+    self.outlineOpacity = style.outline_opacity.value();
+  }
+  if (style.font_size.has_value()) {
+    self.fontSize = style.font_size.value();
+  }
+}
+
 @end

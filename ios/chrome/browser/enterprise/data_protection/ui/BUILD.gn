@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 source_set("ui") {
   sources = [
+    "watermark_consumer.h",
     "watermark_view.h",
     "watermark_view.mm",
     "watermark_view_utils.h",
