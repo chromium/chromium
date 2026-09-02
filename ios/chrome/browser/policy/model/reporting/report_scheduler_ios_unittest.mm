@@ -14,12 +14,20 @@
 #import "base/time/time.h"
 #import "components/device_signals/core/common/signals_features.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#import "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/browser/reporting/report_generation_config.h"
 #import "components/enterprise/browser/reporting/report_request.h"
+#import "components/enterprise/browser/reporting/report_type.h"
 #import "components/enterprise/browser/reporting/reporting_features.h"
+#import "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#import "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/schema_registry.h"
+#import "components/policy/proto/device_management_backend.pb.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
@@ -27,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -58,6 +67,14 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
 
+ACTION(ScheduleProfileRequestGeneratorCallback) {
+  ReportRequestQueue requests;
+  requests.push(std::make_unique<ReportRequest>(ReportType::kProfileReport));
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
+}
+
 class MockReportGenerator : public ReportGenerator {
  public:
   explicit MockReportGenerator(ReportingDelegateFactoryIOS* delegate_factory)
@@ -71,6 +88,19 @@ class MockReportGenerator : public ReportGenerator {
   MOCK_METHOD2(OnGenerate,
                void(ReportType report_type, ReportCallback& callback));
   MOCK_METHOD0(GenerateBasic, ReportRequestQueue());
+};
+
+class MockChromeProfileRequestGenerator : public ChromeProfileRequestGenerator {
+ public:
+  explicit MockChromeProfileRequestGenerator(
+      ReportingDelegateFactoryIOS* delegate_factory)
+      : ChromeProfileRequestGenerator(/*profile_path=*/base::FilePath(),
+                                      delegate_factory) {}
+  void Generate(ReportGenerationConfig generation_config,
+                ReportCallback callback) override {
+    OnGenerate(callback);
+  }
+  MOCK_METHOD1(OnGenerate, void(ReportCallback& callback));
 };
 
 class MockReportUploader : public ReportUploader {
@@ -177,7 +207,7 @@ class BrowserReportSchedulerIOSTest : public ReportSchedulerIOSTest {
     }
   }
 
-  void SetLastUploadInHour(base::TimeDelta gap) {
+  void SetLastUploadTimeAgo(base::TimeDelta gap) {
     previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
     local_state()->SetTime(kLastUploadTimestamp,
                            previous_set_last_upload_timestamp_);
@@ -318,7 +348,7 @@ TEST_F(BrowserReportSchedulerIOSTest, NoReportGenerate) {
 
 TEST_F(BrowserReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   const base::TimeDelta gap = base::Hours(10);
-  SetLastUploadInHour(gap);
+  SetLastUploadTimeAgo(gap);
   SetReportFrequency(kUploadFrequency);
 
   EXPECT_CALL_SetupRegistration();
@@ -363,7 +393,7 @@ TEST_F(BrowserReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
 
 TEST_F(BrowserReportSchedulerIOSTest, TimerDelayUpdate) {
   const base::TimeDelta gap = base::Hours(5);
-  SetLastUploadInHour(gap);
+  SetLastUploadTimeAgo(gap);
   SetReportFrequency(kUploadFrequency);
 
   EXPECT_CALL_SetupRegistration();
@@ -465,14 +495,40 @@ TEST_F(BrowserReportSchedulerIOSTest,
 class ProfileReportSchedulerIOSTest : public ReportSchedulerIOSTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_reporting::kCloudProfileReporting);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{enterprise_reporting::kCloudProfileReporting,
+                              enterprise_reporting::kUploadReportOnProfileOpen},
+        /*disabled_features=*/{});
     ReportSchedulerIOSTest::SetUp();
+
+    enterprise_management::PolicyData profile_policy_data;
+    profile_policy_data.set_request_token(kDMToken);
+    profile_policy_data.set_device_id(kClientId);
+
+    auto store = std::make_unique<policy::MockUserCloudPolicyStore>(
+        policy::dm_protocol::GetChromeUserPolicyType());
+    store->set_policy_data_for_testing(
+        std::make_unique<enterprise_management::PolicyData>(
+            std::move(profile_policy_data)));
+
+    auto cloud_policy_manager =
+        std::make_unique<policy::UserCloudPolicyManager>(
+            std::move(store), /*extension_install_store=*/nullptr,
+            base::FilePath(),
+            /*cloud_external_data_manager=*/nullptr,
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            network::TestNetworkConnectionTracker::CreateGetter());
 
     TestProfileIOS::Builder builder;
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
         std::make_unique<policy::MockPolicyService>(), &schema_registry_));
+    builder.SetUserCloudPolicyManager(std::move(cloud_policy_manager));
     profile_ = std::move(builder).Build();
+
+    profile_request_generator_ptr_ =
+        std::make_unique<MockChromeProfileRequestGenerator>(
+            &report_delegate_factory_);
+    profile_request_generator_ = profile_request_generator_ptr_.get();
 
     Init(true, kDMToken, kClientId);
   }
@@ -488,9 +544,36 @@ class ProfileReportSchedulerIOSTest : public ReportSchedulerIOSTest {
     scheduler_->QueueReportUploaderForTesting(std::move(uploader_));
   }
 
+  void CreateSchedulerForProfileReporting(
+      bool require_policy_fetch_with_profile_id = false) {
+    ReportScheduler::CreateParams params;
+    params.client = client_.get();
+    params.delegate =
+        report_delegate_factory_.GetReportSchedulerDelegate(profile_.get());
+    params.require_policy_fetch_with_profile_id =
+        require_policy_fetch_with_profile_id;
+    if (profile_->GetPrefs()->GetTime(kLastUploadTimestamp).is_null()) {
+      SetLastUploadTimeAgo(base::Seconds(0));
+    }
+    params.profile_request_generator =
+        std::move(profile_request_generator_ptr_);
+    scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
+    scheduler_->QueueReportUploaderForTesting(std::move(uploader_));
+  }
+
+  void SetLastUploadTimeAgo(base::TimeDelta gap) {
+    previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
+    profile_->GetPrefs()->SetTime(kLastUploadTimestamp,
+                                  previous_set_last_upload_timestamp_);
+  }
+
   void ToggleCloudReport(bool enabled) override {
     profile_->GetPrefs()->SetBoolean(kCloudProfileReportingEnabled, enabled);
   }
+
+  std::unique_ptr<MockChromeProfileRequestGenerator>
+      profile_request_generator_ptr_;
+  raw_ptr<MockChromeProfileRequestGenerator> profile_request_generator_;
 
   policy::SchemaRegistry schema_registry_;
 };
@@ -558,6 +641,197 @@ TEST_F(ProfileReportSchedulerIOSTest,
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+// Verifies that `GetProfileDMToken` and `GetProfileClientId` return an empty
+// token and string when the profile does not have a `UserCloudPolicyManager`.
+TEST_F(ProfileReportSchedulerIOSTest,
+       GetProfileDMTokenAndClientId_NullPolicyManager) {
+  TestProfileIOS::Builder builder;
+  std::unique_ptr<TestProfileIOS> profile_without_mgr =
+      std::move(builder).Build();
+  ReportSchedulerIOS scheduler(profile_without_mgr.get());
+  EXPECT_TRUE(scheduler.GetProfileDMToken().is_empty());
+  EXPECT_TRUE(scheduler.GetProfileClientId().empty());
+}
+
+// Profile reporting is enabled and policy has been fetched. A report should be
+// uploaded on profile open.
+TEST_F(ProfileReportSchedulerIOSTest,
+       UploadReportOnProfileOpen_ProfileReportingEnabled) {
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerProfileOpened,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kNoSignals,
+                                         /*use_cookies=*/false),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  SetLastUploadTimeAgo(base::Hours(1));
+  CreateSchedulerForProfileReporting(
+      /*require_policy_fetch_with_profile_id=*/true);
+
+  // Fast forward to let the profile open report complete.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+  base::Time current_last_upload_timestamp =
+      profile_->GetPrefs()->GetTime(kLastUploadTimestamp);
+  EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+}
+
+// Profile reporting and security signals reporting are enabled with cookies.
+TEST_F(ProfileReportSchedulerIOSTest,
+       UploadReportOnProfileOpen_WithSecuritySignalsAndCookies) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                            enterprise_signals::features::
+                                kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerProfileOpened,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kSignalsAttached,
+                                         /*use_cookies=*/true),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+  profile_->GetPrefs()->SetBoolean(kUserSecurityAuthenticatedReporting, true);
+  SetLastUploadTimeAgo(base::Hours(1));
+  CreateSchedulerForProfileReporting(
+      /*require_policy_fetch_with_profile_id=*/true);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+  base::Time current_last_upload_timestamp =
+      profile_->GetPrefs()->GetTime(kLastUploadTimestamp);
+  EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+}
+
+// Profile reporting is disabled, but security signals reporting is enabled.
+TEST_F(ProfileReportSchedulerIOSTest,
+       UploadReportOnProfileOpen_OnlySecuritySignals) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                            enterprise_signals::features::
+                                kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerProfileOpened,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kSignalsOnly,
+                                         /*use_cookies=*/false),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  ToggleCloudReport(false);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+  SetLastUploadTimeAgo(base::Hours(1));
+  CreateSchedulerForProfileReporting(
+      /*require_policy_fetch_with_profile_id=*/false);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+  base::Time current_last_upload_timestamp =
+      profile_->GetPrefs()->GetTime(kLastUploadTimestamp);
+  EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+}
+
+// When `kUploadReportOnProfileOpen` is disabled, no report is uploaded on
+// profile open and the periodic timer is used instead.
+TEST_F(ProfileReportSchedulerIOSTest,
+       UploadReportOnProfileOpenDisabled_PeriodicTimerTriggered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kCloudProfileReporting},
+      /*disabled_features=*/{enterprise_reporting::kUploadReportOnProfileOpen});
+
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kNoSignals,
+                                         /*use_cookies=*/false),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  SetLastUploadTimeAgo(base::Hours(25));
+  CreateSchedulerForProfileReporting(
+      /*require_policy_fetch_with_profile_id=*/true);
+
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+  EXPECT_EQ(base::Time::Now(),
+            profile_->GetPrefs()->GetTime(kLastUploadTimestamp));
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+}
+
+// When `kPoliciesEverFetchedWithProfileId` is false, no report is uploaded on
+// profile open. Scheduling only starts when the pref flips to true.
+TEST_F(ProfileReportSchedulerIOSTest,
+       RequirePolicyFetchWithProfileId_NotFetchedYet_NoProfileOpenReport) {
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_)).Times(0);
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, false);
+  CreateSchedulerForProfileReporting(
+      /*require_policy_fetch_with_profile_id=*/true);
+
+  // Fast forward - no report should be triggered on profile open because
+  // `IsReportingEnabled()` is false.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // When `kPoliciesEverFetchedWithProfileId` flips to true, the periodic timer
+  // should start.
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
 }
 
 // Security reports are enabled when the UserSecuritySignalsReporting policy is
