@@ -879,6 +879,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   if (diff.added.size() > 0) {
     [_metricsRecorder recordTabPickerTabsAttached:diff.added.size()];
+    [_metricsRecorder
+        recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
   }
 
   [_mediator attachSelectedTabsWithWebStateIDs:selectedWebStateIDs

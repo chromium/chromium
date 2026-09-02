@@ -196,6 +196,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".Drive" summary="Google Drive file picker"/>
   <variant name=".File" summary="Local file / Document picker"/>
   <variant name=".Gallery" summary="Photo library / Gallery picker"/>
+  <variant name=".Tabs" summary="Tabs"/>
 </variants>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:MobileFuseboxPickerAttachmentType) -->
