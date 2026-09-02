@@ -11,6 +11,7 @@
 
 namespace payments::facilitated {
 
+BASE_DECLARE_FEATURE(kEnableDesktopQrCodeDetection);
 BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
 BASE_DECLARE_FEATURE(kUseRustPixCodeValidator);
 #if BUILDFLAG(IS_ANDROID)

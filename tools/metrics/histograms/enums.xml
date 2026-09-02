@@ -9337,6 +9337,7 @@ from previous Chrome versions.
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
   <int value="-1664497967" label="SendPasswords:enabled"/>
   <int value="-1664290318" label="ComputePressure:enabled"/>
+  <int value="-1663793707" label="EnableDesktopQrCodeDetection:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
   <int value="-1663262870" label="ReadAnythingImprovedUi:disabled"/>
   <int value="-1663125441" label="OptInImeMenu:enabled"/>
@@ -20248,6 +20249,7 @@ from previous Chrome versions.
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
   <int value="1709348169" label="AutoPictureInPictureAndroid:enabled"/>
   <int value="1710067851" label="AndroidDesktopWebPrefsLargeDisplays:disabled"/>
+  <int value="1710440846" label="EnableDesktopQrCodeDetection:disabled"/>
   <int value="1710590340" label="NavigationCaptureRefactorAndroid:disabled"/>
   <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>
   <int value="1711037950"

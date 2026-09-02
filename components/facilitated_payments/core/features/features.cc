@@ -8,6 +8,10 @@
 
 namespace payments::facilitated {
 
+// When enabled, QR code detection for facilitated payments will be supported on
+// Desktop.
+BASE_FEATURE(kEnableDesktopQrCodeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will offer to pay with accounts supporting Pix to users
 // using their devices in landscape mode. Chrome always offers to pay with Pix
 // accounts for users using their devices in portrait mode.

@@ -2034,6 +2034,12 @@ inline constexpr char kEnableDelegatedCompositingDescription[] =
     "When enabled and applicable, the act of compositing is delegated to the "
     "system compositor.";
 
+inline constexpr char kEnableDesktopQrCodeDetectionName[] =
+    "Enable Desktop QR code detection";
+inline constexpr char kEnableDesktopQrCodeDetectionDescription[] =
+    "When enabled, QR code detection for facilitated payments will be "
+    "supported on Desktop.";
+
 inline constexpr char kEnablePixAccountLinkingName[] =
     "Enable Pix account linking";
 inline constexpr char kEnablePixAccountLinkingDescription[] =
