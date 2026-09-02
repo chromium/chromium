@@ -185,11 +185,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
         FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
-            // Sliding panel layout can be null in tests.
-            if (getSlidingPaneLayout() != null
+            SlidingPaneLayout slidingPane = getSlidingPaneLayoutOrNull();
+            if (slidingPane != null
                     && processed.fragment != null
                     && !(processed.fragment instanceof MainSettings)) {
-                getSlidingPaneLayout().openPane();
+                slidingPane.openPane();
             }
             return processed.fragment;
         }
@@ -208,8 +208,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 Fragment initialDetailFragment =
                         Fragment.instantiate(requireContext(), fragmentClass.getName(), args);
 
-                if (getSlidingPaneLayout() != null) {
-                    getSlidingPaneLayout().openPane();
+                SlidingPaneLayout slidingPane = getSlidingPaneLayoutOrNull();
+                if (slidingPane != null) {
+                    slidingPane.openPane();
                 }
                 return initialDetailFragment;
             }
@@ -281,8 +282,21 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         mPendingFragmentIntent = intent;
     }
 
-    void setOnCreateViewRunnable(Runnable runnable) {
+    void setOnCreateViewRunnable(@Nullable Runnable runnable) {
         mOnCreateViewRunnable = runnable;
+    }
+
+    /**
+     * Returns {@link SlidingPaneLayout} if the fragment's view is created, or null.
+     *
+     * <p>{@link PreferenceHeaderFragmentCompat#getSlidingPaneLayout()} internally calls {@link
+     * Fragment#requireView()}, which throws {@link IllegalStateException} if called before {@code
+     * onCreateView()} returns or after {@code onDestroyView()} (e.g. during tab closure or view
+     * teardown). Callers should use this method when accessing the sliding pane layout
+     * asynchronously or during lifecycle transitions to safely handle the null view case.
+     */
+    public @Nullable SlidingPaneLayout getSlidingPaneLayoutOrNull() {
+        return getView() != null ? getSlidingPaneLayout() : null;
     }
 
     View getDetailView() {
@@ -582,7 +596,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 () -> {
                     updateHeaderPaneFocusability();
                     for (Observer o : mObservers) o.onHeaderLayoutUpdated();
-                    if (mOnCreateViewRunnable != null) mOnCreateViewRunnable.run();
+                    if (mOnCreateViewRunnable != null) {
+                        mOnCreateViewRunnable.run();
+                        mOnCreateViewRunnable = null;
+                    }
                 });
         mDetailView = detailView;
         return view;
@@ -660,8 +677,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     /** Returns whether the current layout is in two-column mode. */
     boolean isTwoColumn() {
-        // getView() may be null in tests before the fragment's view is created.
-        SlidingPaneLayout slidingPane = getView() != null ? getSlidingPaneLayout() : null;
+        SlidingPaneLayout slidingPane = getSlidingPaneLayoutOrNull();
         // If SlidingPaneLayout has already completed layout, use its computed slideable state.
         if (slidingPane != null
                 && ViewCompat.isLaidOut(slidingPane)
@@ -1227,14 +1243,20 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     @Override
     public void onDestroyView() {
-        if (mSlideStateTracker != null) {
-            getSlidingPaneLayout().removeOnLayoutChangeListener(mSlideStateTracker);
-            getSlidingPaneLayout().removePanelSlideListener(mSlideStateTracker);
+        SlidingPaneLayout slidingPane = getSlidingPaneLayoutOrNull();
+        if (slidingPane != null) {
+            if (mSlideStateTracker != null) {
+                slidingPane.removeOnLayoutChangeListener(mSlideStateTracker);
+                slidingPane.removePanelSlideListener(mSlideStateTracker);
+            }
+            if (mOnBackPressedCallback != null) {
+                slidingPane.removePanelSlideListener(mOnBackPressedCallback);
+            }
         }
         if (mOnBackPressedCallback != null) {
-            getSlidingPaneLayout().removePanelSlideListener(mOnBackPressedCallback);
             mOnBackPressedCallback.remove();
         }
+        mOnCreateViewRunnable = null;
         super.onDestroyView();
     }
 

@@ -440,8 +440,9 @@ public class SettingsHostFragment extends Fragment
         Fragment activeFragment = getActiveFragment();
         if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
             if (fragment == null || fragment instanceof MainSettings) {
-                if (multiColumnSettings.getSlidingPaneLayout().isSlideable()) {
-                    multiColumnSettings.getSlidingPaneLayout().closePane();
+                var slidingPane = multiColumnSettings.getSlidingPaneLayoutOrNull();
+                if (slidingPane != null && slidingPane.isSlideable()) {
+                    slidingPane.closePane();
                 }
                 // Show the default detail fragment.
                 Fragment initialFragment = multiColumnSettings.onCreateInitialDetailFragment();

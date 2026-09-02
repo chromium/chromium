@@ -422,6 +422,7 @@ public class SettingsPageFragmentDelegateImpl
 
         MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
         if (multiColumnSettings != null) {
+            multiColumnSettings.setOnCreateViewRunnable(null);
             if (mMultiColumnTitleUpdater != null) {
                 multiColumnSettings.removeObserver(mMultiColumnTitleUpdater);
             }
@@ -727,9 +728,8 @@ public class SettingsPageFragmentDelegateImpl
             // pane, instead the back press should route to the Chrome navigation stack.
             // This keeps the UI in-sync with the Url, while keep compatibility with the
             // old navigation stack (e.g., still used for search results)
-            if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
-                    && multiColumnSettings.getView() != null) {
-                var slidingPane = multiColumnSettings.getSlidingPaneLayout();
+            if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+                var slidingPane = multiColumnSettings.getSlidingPaneLayoutOrNull();
                 if (slidingPane != null && slidingPane.isSlideable() && slidingPane.isOpen()) {
                     slidingPane.closePane();
                     return BackPressResult.SUCCESS;
@@ -751,11 +751,10 @@ public class SettingsPageFragmentDelegateImpl
         if (multiColumnSettings != null) {
             if (multiColumnSettings.getBackStackEntryCount() > 0) {
                 canHandle = true;
-            } else if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
-                    && multiColumnSettings.getView() != null) {
+            } else if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
                 // A back press should route through the Chrome navigation stack instead of
                 // handling the slidingPaneLayout to keep the contents in-sync with the Url.
-                var slidingPane = multiColumnSettings.getSlidingPaneLayout();
+                var slidingPane = multiColumnSettings.getSlidingPaneLayoutOrNull();
                 if (slidingPane != null && slidingPane.isSlideable() && slidingPane.isOpen()) {
                     canHandle = true;
                 }

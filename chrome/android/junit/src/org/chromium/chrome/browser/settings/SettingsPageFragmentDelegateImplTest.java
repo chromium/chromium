@@ -554,8 +554,9 @@ public class SettingsPageFragmentDelegateImplTest {
         // Destroy settings.
         mDelegate.destroySettings();
 
-        // Verify that the observer was removed.
+        // Verify that the observer was removed and onCreateView runnable was cleared.
         verify(mMultiColumnSettings).removeObserver(searchCoordinator);
+        verify(mMultiColumnSettings).setOnCreateViewRunnable(null);
     }
 
     @Test

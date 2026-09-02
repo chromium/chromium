@@ -544,8 +544,13 @@ public class SettingsSearchCoordinator
     }
 
     private void initializeMultiColumnSearchUi() {
-        assert mMultiColumnSettings != null;
-        if (mMultiColumnSettings == null) return;
+        // This task runs asynchronously, so ensure the coordinator is still alive and the
+        // fragment's view is attached before accessing it.
+        if (mIsDestroyed
+                || mMultiColumnSettings == null
+                || mMultiColumnSettings.getView() == null) {
+            return;
+        }
 
         View detailPane = findViewById(R.id.preferences_detail);
         if (detailPane != null) {
@@ -561,7 +566,7 @@ public class SettingsSearchCoordinator
         View searchBox = requireViewById(R.id.search_box);
         mHandler.post(
                 () -> {
-                    if (mFragmentState != FS_SETTINGS) return;
+                    if (mIsDestroyed || mFragmentState != FS_SETTINGS) return;
                     boolean showingMain = isShowingMainSettings();
                     searchBox.setVisibility(showingMain ? View.VISIBLE : View.GONE);
                     if (showingMain && shouldAutoFocusSearchBox()) {
@@ -569,42 +574,46 @@ public class SettingsSearchCoordinator
                     }
                 });
 
+        // MultiColumnSettings' view may be destroyed (e.g. when closing tabs on a tablet)
+        // before this posted task executes, in which case getSlidingPaneLayoutOrNull() returns
+        // null. See https://crbug.com/555576133.
+        SlidingPaneLayout slidingPaneLayout = mMultiColumnSettings.getSlidingPaneLayoutOrNull();
+        if (slidingPaneLayout == null) return;
+
         // Controls search UI visibility in single-column mode.
-        mMultiColumnSettings
-                .getSlidingPaneLayout()
-                .addPanelSlideListener(
-                        new SlidingPaneLayout.SimplePanelSlideListener() {
-                            @Override
-                            public void onPanelOpened(View panel) {
-                                if (mUseMultiColumn) return;
+        slidingPaneLayout.addPanelSlideListener(
+                new SlidingPaneLayout.SimplePanelSlideListener() {
+                    @Override
+                    public void onPanelOpened(View panel) {
+                        if (mUseMultiColumn) return;
 
-                                var mainSettings = mMultiColumnSettings.getMainSettings();
-                                if (mainSettings != null) mainSettings.saveListState();
-                                showUiInSingleColumn(searchBox, /* show= */ false);
-                                disableBackgroundTalkbackNavigation();
-                            }
+                        var mainSettings = mMultiColumnSettings.getMainSettings();
+                        if (mainSettings != null) mainSettings.saveListState();
+                        showUiInSingleColumn(searchBox, /* show= */ false);
+                        disableBackgroundTalkbackNavigation();
+                    }
 
-                            @Override
-                            public void onPanelClosed(View panel) {
-                                if (mUseMultiColumn) return;
+                    @Override
+                    public void onPanelClosed(View panel) {
+                        if (mUseMultiColumn) return;
 
-                                var mainSettings = mMultiColumnSettings.getMainSettings();
-                                if (mainSettings != null) mainSettings.restoreListState();
+                        var mainSettings = mMultiColumnSettings.getMainSettings();
+                        if (mainSettings != null) mainSettings.restoreListState();
 
-                                // The detail panel can be force-closed immediately after we enter
-                                // the search state + open the detail pane. Because
-                                // SlidingPaneLayout uses smooth animations, a rapid-fire tap on
-                                // the header can re-trigger the selection logic before the first
-                                // transition finishes, effectively "stuttering" the pane back to
-                                // a closed state. We cancel the operation, and revert the state
-                                // back to FS_SETTINGS. See https://crbug.com/482946558.
-                                if (mFragmentState == FS_SEARCH) {
-                                    exitSearchState();
-                                }
-                                showUiInSingleColumn(searchBox, /* show= */ true);
-                                disableBackgroundTalkbackNavigation();
-                            }
-                        });
+                        // The detail panel can be force-closed immediately after we enter
+                        // the search state + open the detail pane. Because
+                        // SlidingPaneLayout uses smooth animations, a rapid-fire tap on
+                        // the header can re-trigger the selection logic before the first
+                        // transition finishes, effectively "stuttering" the pane back to
+                        // a closed state. We cancel the operation, and revert the state
+                        // back to FS_SETTINGS. See https://crbug.com/482946558.
+                        if (mFragmentState == FS_SEARCH) {
+                            exitSearchState();
+                        }
+                        showUiInSingleColumn(searchBox, /* show= */ true);
+                        disableBackgroundTalkbackNavigation();
+                    }
+                });
         var fm = assumeNonNull(getSettingsFragmentManager());
 
         // Help menu/icon layout may change from Fragment to Fragment. Monitor the Fragment resume
@@ -763,7 +772,11 @@ public class SettingsSearchCoordinator
     }
 
     private boolean isShowingMainSettings() {
-        assert mMultiColumnSettings != null : "Should be used with multi-column-settings#enabled";
+        // The fragment's view may be destroyed (e.g. during tab closure or teardown) before posted
+        // UI updates run. In that state main settings is not visible.
+        if (mMultiColumnSettings == null || mMultiColumnSettings.getView() == null) {
+            return false;
+        }
         return mUseMultiColumn ? true : !mMultiColumnSettings.isLayoutOpen();
     }
 
@@ -990,7 +1003,10 @@ public class SettingsSearchCoordinator
                 && !mUseMultiColumn
                 && mMultiColumnSettings.isLayoutOpen()
                 && mPaneOpenedBySearch) {
-            mMultiColumnSettings.getSlidingPaneLayout().closePane();
+            SlidingPaneLayout slidingPane = mMultiColumnSettings.getSlidingPaneLayoutOrNull();
+            if (slidingPane != null) {
+                slidingPane.closePane();
+            }
             mPaneOpenedBySearch = false;
         }
 
@@ -1504,8 +1520,12 @@ public class SettingsSearchCoordinator
                 if (showingMain) {
                     // Results in the detail pane should be slided in to be visible if the pane
                     // is showing main settings.
-                    mMultiColumnSettings.getSlidingPaneLayout().openPane();
-                    mPaneOpenedBySearch = true;
+                    SlidingPaneLayout slidingPane =
+                            mMultiColumnSettings.getSlidingPaneLayoutOrNull();
+                    if (slidingPane != null) {
+                        slidingPane.openPane();
+                        mPaneOpenedBySearch = true;
+                    }
                 }
             }
         }

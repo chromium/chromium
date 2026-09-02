@@ -140,6 +140,7 @@ public class SettingsSearchCoordinatorUnitTest {
         when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.requireView()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.getSlidingPaneLayout()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
 
         View rootView = mActivity.findViewById(R.id.settings_activity);
@@ -199,6 +200,7 @@ public class SettingsSearchCoordinatorUnitTest {
         when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.requireView()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.getSlidingPaneLayout()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
 
         // Start in multi-column mode.
@@ -239,6 +241,7 @@ public class SettingsSearchCoordinatorUnitTest {
         when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.requireView()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.getSlidingPaneLayout()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPaneLayout);
         when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
 
         // Start in single-column mode.
@@ -538,5 +541,33 @@ public class SettingsSearchCoordinatorUnitTest {
         Fragment currentDetail = fragmentManager.findFragmentById(R.id.preferences_detail);
         assertNotNull(currentDetail);
         assertEquals(initialDetailFragment, currentDetail);
+    }
+
+    @Test
+    public void testInitializeMultiColumnSearchUi_whenFragmentViewNull_doesNotCrash() {
+        when(mMultiColumnSettings.getView()).thenReturn(null);
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(null);
+
+        // Call initializeSearchUi which posts initializeMultiColumnSearchUi to the handler.
+        mCoordinator.initializeSearchUi(null);
+
+        // Execute posted runnables on main looper. Should not throw IllegalStateException.
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        assertEquals(View.GONE, searchBox.getVisibility());
+    }
+
+    @Test
+    public void testInitializeMultiColumnSearchUi_whenCoordinatorDestroyed_doesNotCrash() {
+        when(mMultiColumnSettings.getView()).thenReturn(null);
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(null);
+
+        mCoordinator.initializeSearchUi(null);
+        mCoordinator.destroy();
+
+        // Flush any remaining tasks; should be a no-op or handled gracefully without crashing.
+        ShadowLooper.idleMainLooper();
     }
 }
