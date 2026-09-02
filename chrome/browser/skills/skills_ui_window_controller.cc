@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -39,6 +40,10 @@ SkillsUiWindowController::SkillsUiWindowController(
         base::BindRepeating(
             &SkillsUiWindowController::CloseDialogsAndReloadSkillsPages,
             weak_factory_.GetWeakPtr()));
+    if (signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile)) {
+      identity_manager_observation_.Observe(identity_manager);
+    }
   }
 }
 
@@ -58,6 +63,18 @@ SkillsUiWindowController::~SkillsUiWindowController() {
 SkillsUiWindowController* SkillsUiWindowController::From(
     BrowserWindowInterface* browser_window_interface) {
   return Get(browser_window_interface->GetUnownedUserDataHost());
+}
+
+void SkillsUiWindowController::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  CloseDialogsAndReloadSkillsPages();
+}
+
+void SkillsUiWindowController::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  CloseDialogsAndReloadSkillsPages();
 }
 
 void SkillsUiWindowController::CloseDialogsAndReloadSkillsPages() {

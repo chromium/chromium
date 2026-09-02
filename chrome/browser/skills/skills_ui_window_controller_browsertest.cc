@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -24,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
@@ -448,6 +450,70 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   content::TestNavigationObserver reload_observer(web_contents);
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       skills::prefs::kChromeSkillsEnabled, false);
+  reload_observer.Wait();
+  EXPECT_FALSE(tab_controller()->IsShowing());
+  EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       PrimaryAccountChanged_ClosesDialogAndReloadsPage) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(identity_manager);
+
+  // 1. Open chrome://skills page in the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISkillsURL)));
+  content::WebContents* web_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(web_contents);
+
+  // 2. Open a skills dialog on the active tab.
+  skills::Skill initial_skill(/*id=*/"", /*name=*/"", /*icon=*/"",
+                              /*prompt=*/"Test Prompt");
+  tab_controller()->ShowDialog(std::move(initial_skill),
+                               SkillsDialogEntryPoint::kWebClientPrefilled,
+                               mojom::SkillsDialogType::kAdd, nullptr);
+  EXPECT_TRUE(tab_controller()->IsShowing());
+
+  // 3. User signs in, which fires OnPrimaryAccountChanged.
+  content::TestNavigationObserver reload_observer(web_contents);
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                      signin::ConsentLevel::kSignin);
+  reload_observer.Wait();
+  EXPECT_FALSE(tab_controller()->IsShowing());
+  EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       AccountPaused_ClosesDialogAndReloadsPage) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(identity_manager);
+
+  CoreAccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+
+  // 1. Open chrome://skills page in the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISkillsURL)));
+  content::WebContents* web_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(web_contents);
+
+  // 2. Open a skills dialog on the active tab.
+  skills::Skill initial_skill(/*id=*/"", /*name=*/"", /*icon=*/"",
+                              /*prompt=*/"Test Prompt");
+  tab_controller()->ShowDialog(std::move(initial_skill),
+                               SkillsDialogEntryPoint::kWebClientPrefilled,
+                               mojom::SkillsDialogType::kAdd, nullptr);
+  EXPECT_TRUE(tab_controller()->IsShowing());
+
+  // 3. Invalidate refresh token for the account (account paused), which fires
+  // OnErrorStateOfRefreshTokenUpdatedForAccount.
+  content::TestNavigationObserver reload_observer(web_contents);
+  signin::SetInvalidRefreshTokenForAccount(identity_manager,
+                                           account_info.account_id);
   reload_observer.Wait();
   EXPECT_FALSE(tab_controller()->IsShowing());
   EXPECT_TRUE(reload_observer.last_navigation_succeeded());

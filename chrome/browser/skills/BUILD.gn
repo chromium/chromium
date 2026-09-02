@@ -50,6 +50,7 @@ source_set("public") {
   ]
   if (!is_android) {
     sources += [ "skills_ui_window_controller.h" ]
+    public_deps = [ "//components/signin/public/identity_manager" ]
     deps += [
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
@@ -95,6 +96,7 @@ source_set("ui") {
   ]
   if (!is_android) {
     deps += [
+      "//chrome/browser/signin",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
@@ -139,10 +141,12 @@ source_set("browser_tests") {
   ]
   if (!is_android) {
     deps += [
+      "//chrome/browser/signin",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/skills",
+      "//components/signin/public/identity_manager:test_support",
     ]
   }
   if (is_chromeos) {

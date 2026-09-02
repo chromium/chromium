@@ -13,8 +13,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -23,15 +25,24 @@ struct ToastParams;
 namespace skills {
 
 // Manages Chrome UI for Skills.
-class SkillsUiWindowController {
+class SkillsUiWindowController : public signin::IdentityManager::Observer {
  public:
   DECLARE_USER_DATA(SkillsUiWindowController);
   explicit SkillsUiWindowController(
       BrowserWindowInterface* browser_window_interface);
-  ~SkillsUiWindowController();
+  ~SkillsUiWindowController() override;
 
   static SkillsUiWindowController* From(
       BrowserWindowInterface* browser_window_interface);
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
 
   // Closes any open skills dialogs and reloads all open chrome://skills pages
   // across tabs in this window.
@@ -78,6 +89,9 @@ class SkillsUiWindowController {
   std::set<std::string> pending_deletions_;
 
   PrefChangeRegistrar pref_registrar_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Tracks whether the user clicked the action button (e.g., "Undo") on the
   // active toast.
