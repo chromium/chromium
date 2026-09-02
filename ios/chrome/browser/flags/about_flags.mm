@@ -879,6 +879,11 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Force FRE", kForceBWGFirstTimeRun, nullptr},
     {"Skip new user delay", kSkipNewUserDelay, nullptr}};
 
+const FeatureEntry::FeatureParam kGeminiActorBackgroundingDisabled[] = {
+    {kGeminiActorBackgroundingParam, "false"}};
+const FeatureEntry::FeatureVariation kGeminiActorVariations[] = {
+    {"Backgrounding Disabled", kGeminiActorBackgroundingDisabled, nullptr}};
+
 const FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
     {kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}};
 const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightConvenience[] =
@@ -2344,7 +2349,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSDateToCalendarSignedOut)},
     {"gemini-actor", flag_descriptions::kGeminiActorName,
      flag_descriptions::kGeminiActorDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiActor)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiActor,
+                                    kGeminiActorVariations,
+                                    "GeminiActor")},
     {"gemini-multi-tab-context", flag_descriptions::kGeminiMultiTabContextName,
      flag_descriptions::kGeminiMultiTabContextDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiMultiTabContext)},
