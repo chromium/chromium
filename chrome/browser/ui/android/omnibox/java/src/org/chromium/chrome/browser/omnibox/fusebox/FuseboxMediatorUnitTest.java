@@ -198,7 +198,7 @@ public class FuseboxMediatorUnitTest {
 
     @Before
     public void setUp() {
-        OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
+        OmniboxFeatures.sMultiattachmentFusebox.setForTesting(/* overrideValue= */ true);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
@@ -511,7 +511,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_desktopPlatform_conventional_emptyModelList_isCompact() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
@@ -520,7 +520,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_desktopPlatform_nonConventional_emptyModelList_isExpanded() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
@@ -563,7 +563,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_desktopPlatform_nonEmptyModelList_isExpanded() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
@@ -585,11 +585,11 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_notDesktop_textWrapping_isExpanded() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
-        mMediator.setIsTextWrapping(true);
+        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
 
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
@@ -600,14 +600,14 @@ public class FuseboxMediatorUnitTest {
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         recreateMediator();
 
-        mMediator.setIsTextWrapping(true);
+        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
 
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
     public void updateFuseboxState_notDesktop_notSearchRequest_isExpanded() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -657,7 +657,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsRequestTypeButtonVisible_true() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -666,7 +666,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsRequestTypeButtonVisible_false_conventional() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
@@ -675,7 +675,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsRequestTypeButtonVisible_false_desktopAiMode() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -684,7 +684,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsRequestTypeButtonVisible_false_standby() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         mInput.setAutocompleteState(AutocompleteState.STANDBY);
         recreateMediator();
@@ -719,7 +719,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onPlusButtonClicked_bottomSheet_hidesKeyboard() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
@@ -738,7 +738,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onHidePopup_bottomSheet_showsKeyboardIfFocused() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         ConstraintLayout spyParent = spy(mViewHolder.parentView);
         doReturn(mViewHolder.plusButton).when(spyParent).findFocus();
         mViewHolder = new FuseboxViewHolder(spyParent, mPopup);
@@ -755,7 +755,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onPlusButtonClicked_floatingPopup_doesNotHideKeyboard() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
@@ -767,8 +767,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_triggersScrim() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
@@ -784,7 +784,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testDoubleBeginInput_doesNotRecreateScrim() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
 
@@ -816,7 +816,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_floatingMode_doesNotTriggerScrim() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
@@ -828,8 +828,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_desktopPlatform_usesFloatingMode() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
@@ -866,7 +866,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testBackPressHandler() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         recreateMediator();
         verify(mBackPressManager).addHandler(mMediator, BackPressHandler.Type.FUSEBOX_POPUP);
 
@@ -915,12 +915,12 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertNonNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
-        OmniboxFeatures.sAllowCurrentTab.setForTesting(false);
+        OmniboxFeatures.sAllowCurrentTab.setForTesting(/* overrideValue= */ false);
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
 
-        OmniboxFeatures.sAllowCurrentTab.setForTesting(true);
+        OmniboxFeatures.sAllowCurrentTab.setForTesting(/* overrideValue= */ true);
         doReturn(null).when(mTabFaviconFactory).apply(any());
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -1237,7 +1237,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void popupToolCanvasClicked_activatesCanvasMode() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
@@ -1268,7 +1268,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void popupToolDeepSearchClicked_activatesDeepSearchMode() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
@@ -1299,7 +1299,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void popupModelButtonClicked_setsModelMode() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
@@ -1338,7 +1338,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void popupModelButtonClicked_recordsMetric() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig config1 =
@@ -1379,7 +1379,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testModelPickerVisibility_hidesIfFewerThanTwoModels() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         InputState state0 = new InputState.Builder().build();
@@ -1425,9 +1425,9 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testModelPickerVisibility_hidesInBottomSheet() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         recreateMediator();
 
         ModelConfig config1 =
@@ -1457,8 +1457,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testToolVisibility_hidesIfNoTools_inputStateMode() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
 
         InputState state0 = new InputState.Builder().build();
@@ -1489,8 +1489,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testToolVisibility_hidesIfNoTools_clientControlledMode() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(false);
         recreateMediator();
 
@@ -1558,7 +1558,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onToolDeepSearchClicked_fromConventional_recordsAiModeActivationSource() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ToolConfig deepSearchConfig =
@@ -1584,7 +1584,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onToolCanvasClicked_fromConventional_recordsAiModeActivationSource() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -1610,7 +1610,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onModelSelected_fromConventional_recordsAiModeActivationSource() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig config1 =
@@ -1764,7 +1764,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
-        mMediator.setIsTextWrapping(true);
+        mMediator.setIsTextWrapping(/* isTextWrapping= */ true);
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
@@ -1955,7 +1955,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnTabPickerResult_canceled_doesNotUnfocus_afterModelButtonClicked() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
 
@@ -2082,7 +2082,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(OmniboxFeatures.sShowModelPicker.getValue());
         assertFalse(mInputStateSupplier.hasObservers());
 
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
         assertTrue(mInputStateSupplier.hasObservers());
         mMediator.endInput();
@@ -2091,7 +2091,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
@@ -2169,7 +2169,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_ActiveOverridesDisabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig configPro =
@@ -2213,7 +2213,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_ActiveOverridesAllowed() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig configPro =
@@ -2264,7 +2264,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void modelSelectionProperties_conditionalOnRequestType() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig configPro =
@@ -2306,7 +2306,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_updatesEnabledStates() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         InputState state =
@@ -2330,7 +2330,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onInputStateChange_canvasDisablesTabs_whenFlagEnabled() {
         FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         mInput.setRequestType(AutocompleteRequestType.CANVAS);
@@ -2358,7 +2358,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onInputStateChange_canvasDoesNotDisableTabs_whenFlagDisabled() {
         FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, false);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         mInput.setRequestType(AutocompleteRequestType.CANVAS);
@@ -2379,7 +2379,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onInputStateChange_tabsDisableCanvas_whenFlagEnabled() {
         FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         FuseboxAttachment attachment =
@@ -2412,7 +2412,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onInputStateChange_tabsDoNotDisableCanvas_whenFlagDisabled() {
         FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, false);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         addAttachment("Tab Title", "token", FuseboxAttachmentType.ATTACHMENT_TAB);
@@ -2438,8 +2438,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void showPopup_tabsDisableCanvas_whenOptimizationsDisabled() {
         FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -2464,7 +2464,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_updatesHeaders() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         SectionConfig toolsConfig = SectionConfig.newBuilder().setHeader("Tools Header").build();
@@ -2485,7 +2485,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChanged_setsCreateImageVisibilityAndEnablement() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ToolConfig imageGenConfig =
@@ -2546,7 +2546,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onAutocompleteRequestTypeChanged_resetsActiveModel() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig proConfig =
@@ -2622,7 +2622,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testUpdateClientControlledToolButtonList_setsCorrectIcons() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
         recreateMediator();
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -2635,14 +2635,14 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateModelForRecentTabs_nonDesktop_remainsHidden() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE));
     }
 
     @Test
     public void updateModelForRecentTabs_desktopPlatform_populatesRecentTabs() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
         when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
 
@@ -2684,7 +2684,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void cameraButtonVisibility_desktopPlatform() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
 
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE));
@@ -2731,7 +2731,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChanged_setsRequestTypeButtonText_modelPickerEnabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -2769,8 +2769,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testUpdateClientControlledToolButtonList_setsCorrectIcons_desktopPlatform() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -2782,8 +2782,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_desktopPlatform() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
@@ -2853,7 +2853,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_lazyUntilPopupShown() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig configAuto =
@@ -2913,8 +2913,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_eagerWhenOptimizationsDisabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
         recreateMediator();
 
         ModelConfig configAuto =
@@ -2964,7 +2964,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_unknownIconResourceIds() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         int unknownIconId = 9999;
@@ -3010,8 +3010,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testActivateSearchMode_deduplicatesSetActiveModel_whenOptimizationsEnabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig proConfig =
@@ -3049,8 +3049,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void
             testActivateSearchMode_doesNotDeduplicateSetActiveModel_whenOptimizationsDisabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig proConfig =
@@ -3087,7 +3087,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testSetModelMode_recordsHistogram() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ModelConfig proConfig =
@@ -3127,8 +3127,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void
             testOnInputStateChange_deduplicatesRequestTypeButtonText_whenOptimizationsEnabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -3165,8 +3165,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_updatesRequestTypeButtonText_whenOptimizationsDisabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ false);
         recreateMediator();
 
         ToolConfig canvasConfig =
@@ -3204,8 +3204,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void
             testOnAutocompleteRequestTypeChanged_deduplicatesRequestTypeButtonText_whenModelPickerDisabled() {
-        OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(/* overrideValue= */ false);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
         recreateMediator();
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
@@ -3223,7 +3223,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupItemSelected_recentTab_setsPopupItemSelected() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
         when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
 
@@ -3243,7 +3243,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupItemSelected_currentTab_setsPopupItemSelected() {
-        OmniboxFeatures.sAllowCurrentTab.setForTesting(true);
+        OmniboxFeatures.sAllowCurrentTab.setForTesting(/* overrideValue= */ true);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
