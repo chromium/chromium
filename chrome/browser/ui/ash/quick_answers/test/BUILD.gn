@@ -18,3 +18,34 @@ source_set("mock_quick_answers_client") {
     "//testing/gmock",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "chrome_quick_answers_test_base.cc",
+    "chrome_quick_answers_test_base.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/ui/ash/quick_answers",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chrome/test:test_support_unit",
+    "//components/user_manager",
+  ]
+
+  deps = [
+    "//ash:test_support",
+    "//base",
+    "//chrome/browser:global_features",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/components/quick_answers:test_support",
+    "//components/account_id",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry",
+    "//ui/menus",
+    "//ui/views",
+  ]
+}

@@ -3834,7 +3834,6 @@ if (!is_android) {
         "../browser/ui/ash/quick_answers/quick_answers_browsertest_base.cc",
         "../browser/ui/ash/quick_answers/quick_answers_browsertest_base.h",
         "../browser/ui/ash/quick_answers/quick_answers_controller_browsertest.cc",
-        "../browser/ui/ash/quick_answers/ui/quick_answers_pixeltest.cc",
         "../browser/ui/browser_finder_chromeos_browsertest.cc",
         "../browser/ui/browser_tabstrip_browsertest_chromeos.cc",
         "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
@@ -4140,6 +4139,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/network",
         "//chrome/browser/ui/ash/quick_answers",
         "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
+        "//chrome/browser/ui/ash/quick_answers/ui:browser_tests",
         "//chrome/browser/ui/ash/read_write_cards",
         "//chrome/browser/ui/ash/read_write_cards:read_write_cards_manager",
         "//chrome/browser/ui/ash/session",
@@ -6812,9 +6812,6 @@ test("unit_tests") {
       "../browser/ui/ash/quick_answers/quick_answers_controller_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_state_ash_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_ui_controller_unittest.cc",
-      "../browser/ui/ash/quick_answers/ui/magic_boost_user_consent_view_unittest.cc",
-      "../browser/ui/ash/quick_answers/ui/quick_answers_view_unittest.cc",
-      "../browser/ui/ash/quick_answers/ui/user_consent_view_unittest.cc",
       "../browser/ui/views/mahi/mahi_condensed_menu_view_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
@@ -6968,8 +6965,8 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/quick_answers",
       "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
-      "//chrome/browser/ui/ash/quick_answers/ui:result_view",
-      "//chrome/browser/ui/ash/quick_answers/ui:retry_view",
+      "//chrome/browser/ui/ash/quick_answers/test:test_support",
+      "//chrome/browser/ui/ash/quick_answers/ui:unit_tests",
       "//chrome/browser/ui/ash/read_write_cards",
       "//chrome/browser/ui/ash/read_write_cards:unit_tests",
       "//chrome/browser/ui/ash/session:test_support",
@@ -7918,23 +7915,10 @@ static_library("test_support_unit") {
   }
 
   if (is_chromeos) {
-    # TODO(crbug.com/353332589): Move quick_answers test sources to
-    # //chrome/browser/ui/ash/quick_answers.
-    sources += [
-      "../browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.cc",
-      "../browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h",
-    ]
-
     public_deps += [ "//chrome/test/base:chrome_ash_test_base" ]
 
     deps += [
       "//ash:test_support",
-      "//chrome/browser:global_features",
-      "//chrome/browser/ash/login/users:test_support",
-      "//chrome/browser/ui/ash/quick_answers",
-      "//chrome/browser/ui/ash/read_write_cards",
-      "//chromeos/ash/components/browser_context_helper",
-      "//chromeos/components/quick_answers:test_support",
       "//ui/base/mojom:ui_base_types",
     ]
   }

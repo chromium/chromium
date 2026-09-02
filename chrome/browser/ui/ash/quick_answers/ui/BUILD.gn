@@ -4,73 +4,131 @@
 
 assert(is_chromeos)
 
-source_set("quick_answers_stage_button") {
-  sources = [
-    "quick_answers_stage_button.cc",
-    "quick_answers_stage_button.h",
-  ]
-  deps = [
-    "//ui/base/metadata",
-    "//ui/views",
-  ]
-}
-
-source_set("loading_view") {
+source_set("ui") {
   sources = [
     "loading_view.cc",
     "loading_view.h",
-  ]
-  deps = [
-    ":typography",
-    "//chromeos/components/quick_answers/public/cpp:constants",
-    "//chromeos/strings:strings_grit",
-    "//ui/base/metadata",
-    "//ui/views",
-  ]
-}
-
-source_set("result_view") {
-  sources = [
+    "magic_boost_header.cc",
+    "magic_boost_header.h",
+    "magic_boost_user_consent_view.cc",
+    "magic_boost_user_consent_view.h",
+    "quick_answers_stage_button.cc",
+    "quick_answers_stage_button.h",
+    "quick_answers_text_label.cc",
+    "quick_answers_text_label.h",
+    "quick_answers_util.cc",
+    "quick_answers_util.h",
+    "quick_answers_view.cc",
+    "quick_answers_view.h",
     "result_view.cc",
     "result_view.h",
-  ]
-  deps = [
-    ":typography",
-    "//chromeos/components/quick_answers",
-    "//chromeos/components/quick_answers/public/cpp:constants",
-    "//chromeos/strings:strings_grit",
-    "//ui/base/metadata",
-    "//ui/views",
-    "//ui/views/controls/webview",
-  ]
-}
-
-source_set("retry_view") {
-  sources = [
     "retry_view.cc",
     "retry_view.h",
-  ]
-  deps = [
-    ":typography",
-    "//chromeos/components/quick_answers",
-    "//chromeos/components/quick_answers/public/cpp:constants",
-    "//chromeos/strings:strings_grit",
-    "//ui/base/metadata",
-    "//ui/views",
-    "//ui/views/controls/webview",
-  ]
-}
-
-source_set("typography") {
-  sources = [
+    "rich_answers_definition_view.cc",
+    "rich_answers_definition_view.h",
+    "rich_answers_translation_view.cc",
+    "rich_answers_translation_view.h",
+    "rich_answers_unit_conversion_view.cc",
+    "rich_answers_unit_conversion_view.h",
+    "rich_answers_view.cc",
+    "rich_answers_view.h",
     "typography.cc",
     "typography.h",
+    "user_consent_view.cc",
+    "user_consent_view.h",
   ]
 
   deps = [
     "//ash",
     "//base",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/ash/editor_menu:utils",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chromeos/components/magic_boost/public/cpp/views",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/constants",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
+    "//components/omnibox/browser:vector_icons",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/events",
     "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/wm",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "magic_boost_user_consent_view_unittest.cc",
+    "quick_answers_view_unittest.cc",
+    "user_consent_view_unittest.cc",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/quick_answers",
+    "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
+    "//chrome/browser/ui/ash/quick_answers/test:test_support",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chrome/test:test_support",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers:test_support",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/constants",
+    "//chromeos/strings:strings_grit",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "quick_answers_pixeltest.cc" ]
+  deps = [
+    ":ui",
+    "//ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash/quick_answers",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/constants",
+    "//chromeos/strings:strings_grit",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//url",
   ]
 }
