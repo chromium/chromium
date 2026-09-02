@@ -16,8 +16,10 @@
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list::test {
@@ -44,7 +46,13 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
   ~HelpAppZeroStateProviderTest() override = default;
 
   void SetUp() override {
+    // TODO(crbug.com/477191550): Move to the base class.
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        TestingProfile::kDefaultProfileUserName, GaiaId("123456789"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
+                    .AddRegularUser(account_id));
     AppListTestBase::SetUp();
+    ash::AnnotatedAccountId::Set(profile(), account_id);
 
     app_list_notifier_ =
         std::make_unique<AppListNotifierImpl>(&app_list_controller_);

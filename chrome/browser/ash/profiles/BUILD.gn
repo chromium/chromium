@@ -10,12 +10,15 @@ static_library("profiles") {
     "browser_context_helper_delegate_impl.h",
     "profile_helper.cc",
     "profile_helper.h",
+    "user_profile_migration.cc",
+    "user_profile_migration.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash/constants",
+    "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/profiles:profile",
