@@ -14,9 +14,6 @@ namespace top_view_controller {
 UIViewController* TopPresentedViewControllerFrom(
     UIViewController* base_view_controller);
 
-// TODO(crbug.com/40534720): Remove TopPresentedViewController().
-UIViewController* TopPresentedViewController();
-
 }  // namespace top_view_controller
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_TOP_VIEW_CONTROLLER_H_

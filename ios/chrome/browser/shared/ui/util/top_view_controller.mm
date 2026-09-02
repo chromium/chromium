@@ -4,13 +4,8 @@
 
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-
 namespace top_view_controller {
 
-UIViewController* TopPresentedViewController() {
-  return TopPresentedViewControllerFrom(GetAnyKeyWindow().rootViewController);
-}
 UIViewController* TopPresentedViewControllerFrom(
     UIViewController* base_view_controller) {
   UIViewController* topController = base_view_controller;
