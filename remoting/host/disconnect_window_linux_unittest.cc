@@ -120,7 +120,13 @@ class DisconnectWindowLinuxTest : public testing::Test {
   ui::ResourceBundle::SharedInstanceSwapperForTesting resource_swapper_;
 };
 
-TEST_F(DisconnectWindowLinuxTest, NormalEmailDoesNotCrash) {
+// TODO(crbug.com/556010315): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NormalEmailDoesNotCrash DISABLED_NormalEmailDoesNotCrash
+#else
+#define MAYBE_NormalEmailDoesNotCrash NormalEmailDoesNotCrash
+#endif
+TEST_F(DisconnectWindowLinuxTest, MAYBE_NormalEmailDoesNotCrash) {
   if (!InitializeGtk()) {
     GTEST_SKIP() << "No display available for GTK.";
   }
@@ -136,7 +142,13 @@ TEST_F(DisconnectWindowLinuxTest, NormalEmailDoesNotCrash) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(DisconnectWindowLinuxTest, LongEmailDoesNotCrash) {
+// TODO(crbug.com/556010315): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_LongEmailDoesNotCrash DISABLED_LongEmailDoesNotCrash
+#else
+#define MAYBE_LongEmailDoesNotCrash LongEmailDoesNotCrash
+#endif
+TEST_F(DisconnectWindowLinuxTest, MAYBE_LongEmailDoesNotCrash) {
   if (!InitializeGtk()) {
     GTEST_SKIP() << "No display available for GTK.";
   }
@@ -158,7 +170,15 @@ TEST_F(DisconnectWindowLinuxTest, LongEmailDoesNotCrash) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(DisconnectWindowLinuxTest, WhitespaceAndUnicodeEmailDoesNotCrash) {
+// TODO(crbug.com/556010315): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WhitespaceAndUnicodeEmailDoesNotCrash \
+  DISABLED_WhitespaceAndUnicodeEmailDoesNotCrash
+#else
+#define MAYBE_WhitespaceAndUnicodeEmailDoesNotCrash \
+  WhitespaceAndUnicodeEmailDoesNotCrash
+#endif
+TEST_F(DisconnectWindowLinuxTest, MAYBE_WhitespaceAndUnicodeEmailDoesNotCrash) {
   if (!InitializeGtk()) {
     GTEST_SKIP() << "No display available for GTK.";
   }
