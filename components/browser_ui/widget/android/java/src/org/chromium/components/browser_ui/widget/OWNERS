@@ -1,2 +1,4 @@
+per-file BrowserUiListMenu*=jhimawan@google.com
 per-file ContextMenu*=file://chrome/android/java/src/org/chromium/chrome/browser/contextmenu/OWNERS
+per-file ListItemBuilder*=jhimawan@google.com
 per-file SpinnerButtonWrapper.java=bjfong@google.com
