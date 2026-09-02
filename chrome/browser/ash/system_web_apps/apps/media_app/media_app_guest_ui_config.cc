@@ -20,10 +20,10 @@
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/search_engines/template_url_service_provider.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -164,9 +164,14 @@ std::unique_ptr<specialized_features::FeatureAccessChecker>
 ChromeMediaAppGuestUIDelegate::GetFeatureAccessChecker(
     specialized_features::FeatureAccessConfig config,
     content::WebUI* web_ui) const {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  // See the comment on the account_id lookup in PopulateLoadTimeData() above:
+  // guest sessions substitute their off-the-record profile here too, but the
+  // AccountId is only annotated on the original profile.
   return std::make_unique<specialized_features::FeatureAccessChecker>(
-      std::move(config), Profile::FromWebUI(web_ui)->GetPrefs(),
-      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui)),
+      std::move(config), profile->GetPrefs(),
+      ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()))),
       base::BindRepeating(
           []() { return g_browser_process->variations_service(); }));
 }
