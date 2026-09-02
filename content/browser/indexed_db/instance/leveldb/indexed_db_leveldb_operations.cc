@@ -279,7 +279,9 @@ Status GetMaxObjectStoreId(DBOrTransaction* db,
     *max_object_store_id = 0;
   }
 
-  CHECK_GE(*max_object_store_id, 0, base::NotFatalUntil::M159);
+  if (*max_object_store_id < 0) {
+    return InternalInconsistencyStatus();
+  }
   return s;
 }
 
@@ -308,7 +310,9 @@ Status SetMaxObjectStoreId(TransactionalLevelDBTransaction* transaction,
     max_object_store_id = 0;
   }
 
-  CHECK_GE(max_object_store_id, 0, base::NotFatalUntil::M159);
+  if (max_object_store_id < 0) {
+    return InternalInconsistencyStatus();
+  }
   if (!s.ok()) {
     INTERNAL_READ_ERROR(SET_MAX_OBJECT_STORE_ID);
     return s;
