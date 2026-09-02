@@ -32,26 +32,38 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
         </div>
       `}
       <div class="card-footer">
-        <div class="favicon"
-            style="background-image: ${getFaviconForPageURL(entry.url, true)}">
+        <div class="footer-main">
+          <div class="favicon"
+              style="background-image: ${
+                  getFaviconForPageURL(entry.url, true)}">
+          </div>
+          <div class="meta-text">
+            <span class="card-title" title="${entry.tabTitle}">${
+        entry.tabTitle}</span>
+            <span class="card-date">
+              ${
+        this.convertMojoTimeToDate(entry.timestamp)
+            .toLocaleDateString(undefined, {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+            </span>
+          </div>
+          <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
+              title="More actions"
+              @click="${(e: MouseEvent) => this.onMoreActionsClick_(entry, e)}">
+          </cr-icon-button>
         </div>
-        <div class="meta-text">
-          <span class="card-title" title="${entry.tabTitle}">${
-      entry.tabTitle}</span>
-          <span class="card-date">
-            ${
-      this.convertMojoTimeToDate(entry.timestamp)
-          .toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })}
-          </span>
-        </div>
-        <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
-            title="More actions"
-            @click="${(e: MouseEvent) => this.onMoreActionsClick_(entry, e)}">
-        </cr-icon-button>
+        ${
+        entry.tags && entry.tags.length > 0 ? html`
+          <div class="card-tags">
+            ${entry.tags.map(tag => html`
+              <span class="tag-pill" title="${tag}">${tag}</span>
+            `)}
+          </div>
+        ` :
+                                              ''}
       </div>
     </a>
   `;

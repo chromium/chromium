@@ -112,16 +112,54 @@ cr-tabs {
   overflow: hidden;
 }
 
-.card-footer {
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 20px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.tag-pill {
   align-items: center;
+  background-color: var(
+      --color-sys-primary-container, var(--cr-fallback-color-surface2));
+  border-radius: 100px;
+  box-sizing: border-box;
+  color: var(--color-sys-on-primary-container, var(--cr-primary-text-color));
+  display: inline-flex;
+  font-family: 'Google Sans Text', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+  max-width: 100%;
+  overflow: hidden;
+  padding-block: 1px;
+  padding-inline: 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-footer {
   background: var(--cr-card-background-color);
   border-top: var(--cr-separator-line);
   box-sizing: border-box;
   display: flex;
-  gap: 10px;
-  height: 67px;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  min-height: 67px;
   padding-block: 8px;
   padding-inline: 16px;
+}
+
+.footer-main {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  position: relative;
+  width: 100%;
 }
 
 .favicon {
@@ -139,7 +177,7 @@ cr-tabs {
   flex: 1;
   flex-direction: column;
   min-width: 0; /* allows text truncation */
-  padding-inline-end: 20px;
+  padding-inline-end: 24px;
 }
 
 .card-title {
@@ -166,12 +204,13 @@ cr-tabs {
   --cr-icon-button-color: var(--cr-secondary-text-color);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
-  bottom: 8px;
-  inset-inline-end: 8px;
+  inset-inline-end: 0;
   margin: 0;
   opacity: 0;
   padding: 0;
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   transition: opacity 150ms ease-in-out;
   z-index: 2;
 }
@@ -200,7 +239,6 @@ cr-tabs {
   position: absolute;
   top: 10px;
   inset-inline-end: 10px;
-  right: 10px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;
