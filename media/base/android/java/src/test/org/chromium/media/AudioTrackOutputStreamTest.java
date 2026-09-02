@@ -16,7 +16,6 @@ import android.media.AudioTrack;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAudioTrack;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for AudioTrackOutputStream. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AudioTrackOutputStreamTest {
     static class ObservableAudioTrack extends AudioTrack {
         private final List<Byte> mReceivedData = new ArrayList<Byte>();

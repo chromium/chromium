@@ -14,7 +14,6 @@ import android.media.MediaFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -22,7 +21,6 @@ import java.nio.ByteBuffer;
 
 /** Tests for MediaFormatBuilder. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MediaFormatBuilderTest {
     private static final String VIDEO_DECODER_MIME = MediaFormat.MIMETYPE_VIDEO_AVC;
     private static final int VIDEO_WIDTH = 640;
