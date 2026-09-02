@@ -42,7 +42,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -148,15 +147,18 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                                 withId(R.id.disclaimer_scroll_view), VIEW_GONE | VIEW_NULL));
     }
 
-    private @Nullable EnterpriseSignalsDisclaimerController createController() {
+    private EnterpriseSignalsDisclaimerController createController() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
-                            ProfileManager.getLastUsedRegularProfile(),
+                    final var profile = ProfileManager.getLastUsedRegularProfile();
+                    return new EnterpriseSignalsDisclaimerController(
+                            IdentityServicesProvider.get().getSigninManager(profile),
                             bottomSheetController(),
                             modalDialogManager(),
                             activity(),
-                            url -> {});
+                            profile,
+                            url -> {},
+                            EnterpriseSignalsDisclaimerCoordinator::new);
                 });
     }
 
@@ -446,5 +448,43 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         waitForDisclaimerNotShowing();
         waitForSignout();
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
+    public void disclaimerShownOnSignin() {
+        mSigninTestRule.forceSignOut();
+        waitForSignout();
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+
+        waitForDisclaimerVisible();
+    }
+
+    @Test
+    @LargeTest
+    public void signoutHidesDisclaimer() {
+        waitForDisclaimerVisible();
+
+        mSigninTestRule.signOut();
+        waitForSignout();
+
+        waitForDisclaimerNotShowing();
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
+    public void anotherDialogShownOnSignin() {
+        mSigninTestRule.forceSignOut();
+        waitForSignout();
+
+        final FakeDialog fakeDialog = showFakeDialog();
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(fakeDialog::close);
+
+        waitForDisclaimerVisible();
     }
 }

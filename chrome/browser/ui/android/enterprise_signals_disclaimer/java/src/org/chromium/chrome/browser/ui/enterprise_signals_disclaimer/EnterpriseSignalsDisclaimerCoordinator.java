@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -35,6 +36,7 @@ public class EnterpriseSignalsDisclaimerCoordinator {
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final EnterpriseSignalsDisclaimerHost mDisclaimerHost;
     private boolean mIsDestroyed;
+    private @Nullable Runnable mOnDestroyCallback;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
@@ -53,8 +55,10 @@ public class EnterpriseSignalsDisclaimerCoordinator {
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             SigninManager signinManager,
-            Delegate delegate) {
+            Delegate delegate,
+            Runnable onDestroyCallback) {
         mIsDestroyed = false;
+        mOnDestroyCallback = onDestroyCallback;
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
 
@@ -107,6 +111,10 @@ public class EnterpriseSignalsDisclaimerCoordinator {
         mDisclaimerHost.destroy();
         mModelChangeProcessor.destroy();
         mMediator.destroy();
+        if (mOnDestroyCallback != null) {
+            mOnDestroyCallback.run();
+            mOnDestroyCallback = null;
+        }
     }
 
     private void onDialogDismissed(boolean reasonWasUserAction) {

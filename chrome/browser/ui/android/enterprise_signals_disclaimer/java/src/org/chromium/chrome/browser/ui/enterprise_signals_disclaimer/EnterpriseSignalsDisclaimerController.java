@@ -29,7 +29,7 @@ import java.util.Objects;
  * change.
  */
 @NullMarked
-public class EnterpriseSignalsDisclaimerController {
+public class EnterpriseSignalsDisclaimerController implements SigninManager.SignInStateObserver {
     private final AppCompatActivity mActivity;
     private final BottomSheetController mBottomSheetController;
     private final ModalDialogManager mModalDialogManager;
@@ -48,7 +48,8 @@ public class EnterpriseSignalsDisclaimerController {
                 BottomSheetController bottomSheetController,
                 ModalDialogManager modalDialogManager,
                 SigninManager signinManager,
-                EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate);
+                EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
+                Runnable onDestroyCallback);
     }
 
     /**
@@ -88,14 +89,12 @@ public class EnterpriseSignalsDisclaimerController {
             return null;
         }
 
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_FIRST_RUN)) {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)) {
             return null;
         }
 
         final SigninManager signinManager =
                 Objects.requireNonNull(IdentityServicesProvider.get().getSigninManager(profile));
-
-        // TODO(b/512836948): Observe the IdentityManager for primary account change.
 
         return new EnterpriseSignalsDisclaimerController(
                 signinManager,
@@ -107,7 +106,8 @@ public class EnterpriseSignalsDisclaimerController {
                 coordinatorFactory);
     }
 
-    private EnterpriseSignalsDisclaimerController(
+    @VisibleForTesting
+    EnterpriseSignalsDisclaimerController(
             SigninManager signinManager,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
@@ -123,6 +123,7 @@ public class EnterpriseSignalsDisclaimerController {
         mDelegate = delegate;
         mCoordinatorFactory = coordinatorFactory;
         mIsDestroyed = false;
+        mSigninManager.addSignInStateObserver(this);
     }
 
     /**
@@ -161,7 +162,8 @@ public class EnterpriseSignalsDisclaimerController {
                         mBottomSheetController,
                         mModalDialogManager,
                         mSigninManager,
-                        mDelegate);
+                        mDelegate,
+                        this::onCoordinatorDestroyed);
         // If the dialog is not shown immediately it will be queued by the controller and shown
         // whenever possible.
         mCoordinator.show();
@@ -170,9 +172,30 @@ public class EnterpriseSignalsDisclaimerController {
 
     public void destroy() {
         mIsDestroyed = true;
+        mSigninManager.removeSignInStateObserver(this);
         if (mCoordinator != null) {
             mCoordinator.destroy();
             mCoordinator = null;
         }
+    }
+
+    // SignInStateObserver implementation.
+    @Override
+    public void onSignedIn() {
+        // TODO(b/553341908): Once the existing management disclaimer is replaced with the
+        // enterprise signals disclaimer, this function should be removed.
+        maybeShow();
+    }
+
+    @Override
+    public void onSignedOut() {
+        if (mCoordinator != null) {
+            mCoordinator.destroy();
+            mCoordinator = null;
+        }
+    }
+
+    private void onCoordinatorDestroyed() {
+        mCoordinator = null;
     }
 }

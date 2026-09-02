@@ -191,7 +191,8 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                             controller,
                                             activity.getModalDialogManager(),
                                             mSigninManager,
-                                            (url) -> {});
+                                            (url) -> {},
+                                            () -> {});
                             mCoordinator.show();
                             return controller;
                         });
@@ -218,7 +219,8 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                     createBottomSheetController(activity, mContainer),
                                     activity.getModalDialogManager(),
                                     mSigninManager,
-                                    (url) -> {});
+                                    (url) -> {},
+                                    () -> {});
                     mCoordinator.show();
                 });
         CriteriaHelper.pollUiThread(() -> activity.getModalDialogManager().isShowing());
