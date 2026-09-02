@@ -570,7 +570,14 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TelemetryTest) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TwoBrowserTest) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/540040315): Flaky on Windows.
+#define MAYBE_TwoBrowserTest DISABLED_TwoBrowserTest
+#else
+#define MAYBE_TwoBrowserTest TwoBrowserTest
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
+                       MAYBE_TwoBrowserTest) {
   // Navigate two shells to the page.
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
