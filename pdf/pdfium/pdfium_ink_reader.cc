@@ -165,7 +165,8 @@ std::optional<ink::PartitionedMesh> ReadV2InkModeledShapeFromPath(
 std::vector<FPDF_PAGEOBJECTMARK> FindInkTextAnnotationMarks(
     FPDF_PAGEOBJECT page_object) {
   std::vector<FPDF_PAGEOBJECTMARK> marks;
-  if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_TEXT) {
+  const int type = FPDFPageObj_GetType(page_object);
+  if (type != FPDF_PAGEOBJ_TEXT && type != FPDF_PAGEOBJ_PATH) {
     return marks;
   }
 
@@ -202,9 +203,14 @@ bool IsValidOrientation(std::optional<int> orientation) {
 std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
     FPDF_PAGEOBJECT page_object,
     FPDF_PAGEOBJECTMARK mark) {
+  if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_TEXT) {
+    return std::nullopt;
+  }
+
   // Read the metadata in `mark`.
   std::optional<int> version = GetPageObjectMarkIntParam(mark, "Version");
-  if (!version.has_value() || version.value() != kInkTextAnnotationVersion) {
+  if (!version.has_value() || version.value() <= 0 ||
+      version.value() > kInkTextAnnotationVersion) {
     return std::nullopt;
   }
 
@@ -228,6 +234,12 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
   std::optional<int> bold = GetPageObjectMarkIntParam(mark, "IsBold");
   std::optional<int> italic = GetPageObjectMarkIntParam(mark, "IsItalic");
   if (!bold.has_value() || !italic.has_value()) {
+    return std::nullopt;
+  }
+
+  std::optional<int> strikethrough =
+      GetPageObjectMarkIntParam(mark, "IsStrikethrough");
+  if (version.value() >= 2 && !strikethrough.has_value()) {
     return std::nullopt;
   }
 
@@ -264,6 +276,7 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
 
   const bool is_bold = bold.value() != 0;
   const bool is_italic = italic.value() != 0;
+  const bool is_strikethrough = strikethrough.value_or(0) != 0;
   return InkTextBoxAttributes{
       .rect = bounds,
       .color = SkColorSetRGB(r, g, b),
@@ -274,6 +287,7 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
       .viewport_orientation = PageOrientation::kOriginal,
       .is_bold = is_bold,
       .is_italic = is_italic,
+      .is_strikethrough = is_strikethrough,
       .text = base::UTF16ToUTF8(text.value()),
   };
 }

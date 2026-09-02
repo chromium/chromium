@@ -21,6 +21,7 @@
 #include "third_party/ink/src/ink/geometry/intersects.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/point.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -111,6 +112,51 @@ TEST_P(PDFiumInkReaderTest, BasicTextAnnotation) {
   EXPECT_TRUE(text_objects[0]);
   EXPECT_TRUE(text_objects[1]);
   EXPECT_NE(text_objects[0], text_objects[1]);
+}
+
+TEST_P(PDFiumInkReaderTest, StrikethroughTextAnnotation) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("ink_text_strikethrough.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& pdfium_page = GetPDFiumPage(*engine, kPageIndex);
+  FPDF_PAGE page = pdfium_page.GetPage();
+  ASSERT_TRUE(page);
+
+  std::vector<ReadInkTextResult> results = ReadInkTextAnnotationsFromPage(page);
+  ASSERT_EQ(1u, results.size());
+
+  const InkTextBox& textbox = results[0].textbox;
+  EXPECT_EQ(0, textbox.id);
+  EXPECT_EQ("Hello\n!", textbox.attributes.text);
+
+  EXPECT_EQ(
+      textbox.attributes,
+      (InkTextBoxAttributes{
+          .rect = gfx::RectF(25.333334f, 125.333336f, 133.33334f, 66.66667f),
+          .color = SK_ColorBLACK,
+          .css_font_size = 10.0f,
+          .typeface = TextTypeface::kSansSerif,
+          .alignment = TextAlignment::kLeft,
+          .orientation = 0,
+          .viewport_orientation = PageOrientation::kOriginal,
+          .is_bold = true,
+          .is_italic = false,
+          .is_strikethrough = true,
+          .text = "Hello\n!",
+      }));
+
+  // "Hello\n!" with strikethrough has 2 text page objects and 2 path page
+  // objects.
+  const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
+      page_objects = results[0].text_objects;
+  ASSERT_EQ(4u, page_objects.size());
+  EXPECT_EQ(FPDF_PAGEOBJ_TEXT, FPDFPageObj_GetType(page_objects[0]));
+  EXPECT_EQ(FPDF_PAGEOBJ_TEXT, FPDFPageObj_GetType(page_objects[1]));
+  EXPECT_EQ(FPDF_PAGEOBJ_PATH, FPDFPageObj_GetType(page_objects[2]));
+  EXPECT_EQ(FPDF_PAGEOBJ_PATH, FPDFPageObj_GetType(page_objects[3]));
 }
 
 TEST_P(PDFiumInkReaderTest, InvalidTextAnnotation) {

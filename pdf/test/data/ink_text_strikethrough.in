@@ -1,0 +1,79 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /MediaBox [0 0 200 200]
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+/GOOG:CrText <<
+  /Version 2
+  /TextboxId 0
+  /Text (Hello\n!)
+  /BoundsX 19.0
+  /BoundsY 94.0
+  /BoundsWidth 100.0
+  /BoundsHeight 50.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+  /IsStrikethrough 1
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 100 Td
+(Hello) Tj
+ET
+
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 88 Td
+(!) Tj
+ET
+
+0 0 0 RG
+0.75 w
+20 102.32 m
+38 102.32 l
+S
+
+20 90.32 m
+22.1 90.32 l
+S
+EMC
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
