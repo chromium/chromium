@@ -6,8 +6,6 @@ source_set("ui") {
   sources = [
     "download_manager_consumer.h",
     "download_manager_state.h",
-    "download_manager_state_view.h",
-    "download_manager_state_view.mm",
     "download_manager_view_controller+Testing.h",
     "download_manager_view_controller.h",
     "download_manager_view_controller.mm",
