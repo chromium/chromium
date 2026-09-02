@@ -32,6 +32,7 @@ found in the LICENSE file.
         android:layout_gravity="start"
         android:layout_marginVertical="@dimen/vertical_tabs_header_margin_vertical"
         app:layout_constraintTop_toBottomOf="@id/desktop_window_spacer"
+        app:layout_goneMarginTop="@dimen/vertical_tabs_header_margin_top"
         android:paddingTop="@dimen/vertical_tabs_header_padding_vertical">
         <ImageButton
             android:id="@+id/collapse_button"
