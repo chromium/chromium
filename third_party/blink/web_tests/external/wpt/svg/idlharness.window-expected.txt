@@ -1,21 +1,7 @@
 This is a testharness.js-based test.
-Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] SVGAnimatedRect interface: objects.svg.viewBox must inherit property "baseVal" with the proper type
-  assert_true: wrong type: not a DOMRect expected true got false
-[FAIL] SVGAnimatedRect interface: objects.svg.viewBox must inherit property "animVal" with the proper type
-  assert_true: wrong type: not a DOMRectReadOnly expected true got false
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGSVGElement interface: operation createSVGTransformFromMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGSVGElement interface: objects.svg must inherit property "currentTranslate" with the proper type
-  assert_true: wrong type: not a DOMPointReadOnly expected true got false
-[FAIL] SVGUseElement interface: attribute instanceRoot
-  assert_true: The prototype object must have a property "instanceRoot" expected true got false
-[FAIL] SVGUseElement interface: attribute animatedInstanceRoot
-  assert_true: The prototype object must have a property "animatedInstanceRoot" expected true got false
-[FAIL] SVGUseElement interface: objects.use must inherit property "instanceRoot" with the proper type
-  assert_inherits: property "instanceRoot" not found in prototype chain
-[FAIL] SVGUseElement interface: objects.use must inherit property "animatedInstanceRoot" with the proper type
-  assert_inherits: property "animatedInstanceRoot" not found in prototype chain
 [FAIL] SVGUseElementShadowRoot interface: existence and properties of interface object
   assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
 [FAIL] SVGUseElementShadowRoot interface object length
@@ -44,8 +30,6 @@ Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "ShadowAnimation" expected property "ShadowAnimation" missing
 [FAIL] SVGTransform interface: operation setMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGTransform interface: objects.svg.createSVGTransform() must inherit property "matrix" with the proper type
-  assert_true: wrong type: not a DOMMatrix expected true got false
 [FAIL] SVGTransformList interface: operation createSVGTransformFromMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] SVGMarkerElement interface: constant SVG_MARKER_ORIENT_AUTO_START_REVERSE on interface object

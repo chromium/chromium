@@ -1,7 +1,26 @@
 This is a testharness.js-based test.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Partial interface XRGPUBinding: original interface defined
+  assert_true: Original interface should be defined expected true got false
 [FAIL] XRWebGLDepthInformation interface: attribute textureType
   assert_true: The prototype object must have a property "textureType" expected true got false
 [FAIL] XRWebGLDepthInformation interface: attribute imageIndex
   assert_true: The prototype object must have a property "imageIndex" expected true got false
+[FAIL] XRGPUDepthInformation interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface object length
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface object name
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface: attribute texture
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
+[FAIL] XRGPUDepthInformation interface: operation getViewDescriptor()
+  assert_own_property: self does not have own property "XRGPUDepthInformation" expected property "XRGPUDepthInformation" missing
 Harness: the test ran to completion.
 

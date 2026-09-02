@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] URL's constructor's base argument: https://x x:12 should throw
   assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
 [FAIL] URL's href: https://x x:12 should throw
@@ -44,5 +44,17 @@ Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
 [FAIL] URL's href: \\\\\\.\\y: should throw
   assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] URL's constructor's base argument: https://[0:1:2:3:4:5:192.0.02.1]/ should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: https://[0:1:2:3:4:5:192.0.02.1]/ should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: https://[0:1:2:3:4:5:192.0.02.1]/ should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): https://[0:1:2:3:4:5:192.0.02.1]/ should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: https://[0:1:2:3:4:5:192.0.02.1]/ should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): https://[0:1:2:3:4:5:192.0.02.1]/ should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
 Harness: the test ran to completion.
 

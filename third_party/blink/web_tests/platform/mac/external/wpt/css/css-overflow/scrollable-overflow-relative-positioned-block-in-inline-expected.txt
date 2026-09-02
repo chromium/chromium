@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A relatively positioned block level box nested in an inline box contributes the same scrollable overflow as a block sibling
+  assert_equals: expected 404 but got 704
+Harness: the test ran to completion.
+

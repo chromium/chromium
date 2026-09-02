@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <a:	 foo.com> against <http://example.org/foo/bar>
@@ -47,6 +47,8 @@ Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <\\\\\\.\\Y:> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <\\\\\\.\\y:> against <about:blank>
+  assert_unreached: Expected URL to fail parsing Reached unreachable code
+[FAIL] Parsing: <https://[0:1:2:3:4:5:192.0.02.1]/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <test-a-colon.html> against <a:>
   assert_unreached: Expected URL to fail parsing Reached unreachable code

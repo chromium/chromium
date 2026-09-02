@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ProcessingInstruction interface object length
+  assert_equals: wrong value for ProcessingInstruction.length expected 1 but got 0
 [FAIL] AbstractRange interface: attribute startContainer
   assert_true: The prototype object must have a property "startContainer" expected true got false
 [FAIL] AbstractRange interface: attribute endContainer

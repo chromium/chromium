@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Partial interface AudioTrack: valid exposure set
-  Partial AudioTrack interface is exposed to 'DedicatedWorker', the original interface is not.
-[FAIL] Partial interface VideoTrack: valid exposure set
-  Partial VideoTrack interface is exposed to 'DedicatedWorker', the original interface is not.
-[FAIL] Partial interface TextTrack: valid exposure set
-  Partial TextTrack interface is exposed to 'DedicatedWorker', the original interface is not.
+Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SourceBuffer interface: attribute textTracks
   assert_true: The prototype object must have a property "textTracks" expected true got false
 [FAIL] SourceBuffer interface: sourceBuffer must inherit property "textTracks" with the proper type

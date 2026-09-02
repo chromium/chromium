@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Default referencing a later parameter is guaranteed-invalid
+  assert_equals: expected "-1px" but got "3px"
+[FAIL] Default referencing a later parameter does not see the calling element
+  assert_equals: expected "-1px" but got "3px"
+Harness: the test ran to completion.
+

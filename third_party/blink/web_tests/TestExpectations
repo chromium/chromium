@@ -924,7 +924,7 @@ crbug.com/694374 external/wpt/css/css-tables/whitespace-001.html [ Failure ]
 # The `input-security` property not implemented yet.
 crbug.com/1253732 external/wpt/css/css-ui/input-security-none-sensitive-text-input.html [ Failure ]
 # Layout team disagrees with the spec for this particular test.
-crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure Pass ]
+crbug.com/591099 external/wpt/css/css-overflow/text-overflow-015.html [ Failure Pass ]
 # outline-color:auto and accent-color
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-002.html [ Failure ]
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-003.html [ Failure ]
@@ -1113,8 +1113,8 @@ crbug.com/591099 [ Mac ] external/wpt/css/css-text/text-transform/text-transform
 crbug.com/591099 [ Mac ] external/wpt/css/css-text/text-transform/text-transform-shaping-003.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-text/white-space/control-chars-00C.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-text/word-break/word-break-break-all-004.html [ Failure ]
-crbug.com/591099 [ Mac ] external/wpt/css/css-ui/text-overflow-027.html [ Failure ]
-crbug.com/591099 [ Mac ] external/wpt/css/css-ui/text-overflow-028.html [ Failure ]
+crbug.com/591099 [ Mac ] external/wpt/css/css-overflow/text-overflow-027.html [ Failure ]
+crbug.com/591099 [ Mac ] external/wpt/css/css-overflow/text-overflow-028.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-writing-modes/bidi-embed-011.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-writing-modes/bidi-isolate-011.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-writing-modes/bidi-normal-011.html [ Failure ]
@@ -1261,7 +1261,7 @@ crbug.com/492790879 external/wpt/css/css-overflow/scroll-markers/scroll-marker-n
 crbug.com/495458814 [ Linux ] external/wpt/css/css-pseudo/text-selection.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-values/rlh-on-root-lengths.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/cssom/font-family-serialization-001.html [ Failure Pass ]
-crbug.com/495458814 [ Linux ] external/wpt/css/css-ui/text-overflow-005.html [ Failure Pass ]
+crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/text-overflow-005.html [ Failure Pass ]
 
 # Table color must quirk-inherit
 crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-003.html [ Failure ]
@@ -1444,9 +1444,9 @@ crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-lr-
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-lr-rtl-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-rl-001.html [ Failure ]
 crbug.com/745905 external/wpt/css/css-overflow/text-overflow-scroll-vertical-rl-rtl-001.html [ Failure ]
-crbug.com/487634228 external/wpt/css/css-ui/text-overflow-string-024.tentative.html [ Failure ]
-crbug.com/487634228 external/wpt/css/css-ui/text-overflow-string-025.tentative.html [ Failure ]
-crbug.com/487634228 external/wpt/css/css-ui/text-overflow-string-026.tentative.html [ Failure ]
+crbug.com/487634228 external/wpt/css/css-overflow/text-overflow-string-024.tentative.html [ Failure ]
+crbug.com/487634228 external/wpt/css/css-overflow/text-overflow-string-025.tentative.html [ Failure ]
+crbug.com/487634228 external/wpt/css/css-overflow/text-overflow-string-026.tentative.html [ Failure ]
 
 
 
@@ -1517,7 +1517,7 @@ crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass T
 
 # Sheriff 2020-02-06
 
-crbug.com/909597 external/wpt/css/css-ui/text-overflow-ruby.html [ Failure ]
+crbug.com/909597 external/wpt/css/css-overflow/text-overflow-ruby.html [ Failure ]
 
 crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-001.html [ Failure ]
 crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-002.html [ Failure ]
@@ -2633,14 +2633,36 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 # Floating point output likely flaky
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
+external/wpt/svg/animations/animateMotion-path-moveto-only.html [ Failure Pass ]
+external/wpt/svg/animations/animateMotion-path-zero-length-subpaths.html [ Failure Pass ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-anchor-position/position-anchor-match-parent-dynamic.html [ Failure ]
+external/wpt/css/css-anchor-position/position-anchor-match-parent-rendering.html [ Failure ]
+external/wpt/css/css-anchor-position/position-anchor-match-parent-shadow.html [ Failure ]
+external/wpt/css/css-borders/corner-shape/corner-shape-notch-squircle-outset.html [ Failure ]
+external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-concave-outset.html [ Failure ]
+external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-convex-outset.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-background-image.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-basic.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-duplicate-name.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-dynamic.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-fallback.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-geometry.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-per-container.html [ Failure ]
+external/wpt/webdriver/tests/bidi/input/release_actions/sequence.py [ Failure ]
+external/wpt/webdriver/tests/classic/release_actions/sequence.py [ Failure ]
+virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-with-block-in-inline-001.html [ Failure ]
+virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/position-anchor-match-parent-dynamic.html [ Failure ]
+virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/position-anchor-match-parent-rendering.html [ Failure ]
+virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/position-anchor-match-parent-shadow.html [ Failure ]
 crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/phrasing-elements.html [ Pass Timeout ]
 crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/section-and-grouping-elements.html [ Pass Timeout ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-bevel.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-elliptical.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-bevel.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-elliptical.html [ Failure ]
-crbug.com/552713154 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Pass Failure ]
+crbug.com/552713154 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure Pass ]
 crbug.com/552713154 external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Failure ]
 crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-and-xywh.html [ Failure ]
 crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-spaces-around-semicolon.html [ Failure ]
@@ -2663,7 +2685,7 @@ crbug.com/543877472 external/wpt/html/semantics/scripting-1/the-script-element/t
 crbug.com/540322301 [ Win ] external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/audiobuffersource-output-channel-count.html [ Pass Timeout ]
 crbug.com/538228192 external/wpt/fetch/compression-dictionary/compressed-large-resources-002.tentative.https.html [ Skip Timeout ]
 crbug.com/538228192 virtual/produce-compile-hints/external/wpt/fetch/compression-dictionary/compressed-large-resources-002.tentative.https.html [ Skip Timeout ]
-crbug.com/536952793 [ Mac ] external/wpt/css/css-ui/text-overflow-with-selection.html [ Failure ]
+crbug.com/536952793 [ Mac ] external/wpt/css/css-overflow/text-overflow-with-selection.html [ Failure ]
 crbug.com/536952791 external/wpt/digital-credentials/get-opaque-origin-combinations.https.html [ Failure Pass ]
 crbug.com/536952619 [ Win ] external/wpt/dom/nodes/node-creation-realm.html [ Pass Timeout ]
 crbug.com/536937898 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Failure Timeout ]
@@ -4289,7 +4311,7 @@ crbug.com/1380987 external/wpt/html/user-activation/detached-iframe.html [ Failu
 
 crbug.com/626703 external/wpt/fetch/security/redirect-to-url-with-credentials.https.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/http-cache/basic-auth-cache-test.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-ui/text-overflow-026.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-overflow/text-overflow-026.html [ Failure ]
 crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/compat/webkit-text-fill-color-property-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-001.xht [ Failure ]

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example example.com> against <http://other.com/>
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>
@@ -34,6 +34,8 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> without base
   assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
+[FAIL] Parsing: <https://[0:1:2:3:4:5:192.0.02.1]/> without base
+  assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> without base
   assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> without base

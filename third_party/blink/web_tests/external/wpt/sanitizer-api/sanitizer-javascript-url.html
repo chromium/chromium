@@ -140,6 +140,49 @@
 |     attributeName=" href "
 </script>
 
+<script id="url-normalization" type="html5lib-testcases">
+#data
+<a href="JaVaScRiPt:alert(1)"></a>
+#document
+| <a>
+
+#data
+<a href=" javascript:alert(1)"></a>
+#document
+| <a>
+
+#data
+<a href="&#10;javascript:alert(1)"></a>
+#document
+| <a>
+
+#data
+<a href="java&#9;script:alert(1)"></a>
+#document
+| <a>
+
+#data
+<a href="java&#10;script:alert(1)"></a>
+#document
+| <a>
+
+#data
+<a href="java&#13;script:alert(1)"></a>
+#document
+| <a>
+
+#data
+<a href="javascript&#58;alert(1)"></a>
+#document
+| <a>
+
+#data
+<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>
+#document
+| <svg svg>
+|   <svg a>
+</script>
+
 <script>
 for (const group of document.querySelectorAll("script[type='html5lib-testcases']")) {
   parse_html5lib_testcases(group.textContent).forEach((testcase, index) => {

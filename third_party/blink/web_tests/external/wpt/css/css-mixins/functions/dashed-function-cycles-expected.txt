@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Argument calling the same function is not a cycle
+  assert_equals: expected "3" but got ""
+[FAIL] Argument calling the same function is not a cycle, dependency declared last
+  assert_equals: expected "3" but got ""
+[FAIL] Argument calling the same function is not a cycle, chained three deep
+  assert_equals: expected "4" but got ""
+Harness: the test ran to completion.
+

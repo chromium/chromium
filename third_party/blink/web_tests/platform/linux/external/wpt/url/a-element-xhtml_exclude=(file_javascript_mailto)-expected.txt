@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example example.com> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>
@@ -34,6 +34,8 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
+[FAIL] Parsing: <https://[0:1:2:3:4:5:192.0.02.1]/> against <about:blank>
+  assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> against <about:blank>
   assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
