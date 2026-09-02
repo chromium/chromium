@@ -1276,6 +1276,7 @@ public final class ProductionSupportedFlagList {
                 ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT,
                 "Enable timeout for TextClassifier calls. The timeout is configurable with a"
                         + " default of 200ms."),
+        Flag.baseFeature(BlinkFeatures.HARF_RUST_SHAPING, "Use HarfRust for text shaping."),
         Flag.baseFeature(
                 BlinkFeatures.XML_RUST_FOR_NON_XSLT,
                 "Enables the Rust based XML parser in situations where the XML document is"
