@@ -18,7 +18,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     SyncBrowserProxy {
   private resolveGetSyncStatus_: Function|null = null;
   private syncStatus_: SyncStatus|null = {
-    signedInState: SignedInState.SYNCING,
+    signedInState: SignedInState.SIGNED_IN,
     signedInUsername: 'fakeUsername',
     statusAction: StatusAction.NO_ACTION,
   };

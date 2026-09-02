@@ -89,6 +89,11 @@ suite('Chrome OS', function() {
     await prefService.whenInitialized();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
+    // The profile row is only available when the account page link row is not.
+    syncBrowserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
@@ -121,13 +126,7 @@ suite('Chrome OS', function() {
                                  '#profile-name')!.textContent.trim());
   });
 
-  test('profile row is actionable', async () => {
-    // Simulate a signed-in user.
-    await simulateSyncStatus({
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.NO_ACTION,
-    });
-
+  test('profile row is actionable', () => {
     // Profile row opens account manager, so the row is actionable.
     const profileRow = peoplePage.shadowRoot.querySelector('#profile-row');
     assertTrue(!!profileRow);
@@ -169,6 +168,11 @@ suite('Chrome OS with account manager disabled', function() {
     await prefService.whenInitialized();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
+    // The profile row is only available when the account page link row is not.
+    syncBrowserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
@@ -186,13 +190,7 @@ suite('Chrome OS with account manager disabled', function() {
     peoplePage.remove();
   });
 
-  test('profile row is not actionable', async () => {
-    // Simulate a signed-in user.
-    await simulateSyncStatus({
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.NO_ACTION,
-    });
-
+  test('profile row is not actionable', () => {
     // Account manager isn't available, so the row isn't actionable.
     const profileIcon =
         peoplePage.shadowRoot.querySelector<HTMLElement>('#profile-icon');

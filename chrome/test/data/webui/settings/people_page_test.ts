@@ -148,6 +148,11 @@ suite('ProfileInfoTests', function() {
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
     syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = {
+      syncSystemEnabled: false,
+      signedInState: SignedInState.SIGNED_OUT,
+      statusAction: StatusAction.NO_ACTION,
+    };
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -196,6 +201,10 @@ suite('SigninDisallowedTests', function() {
     loadTimeData.overrideValues({signinAllowed: false});
 
     syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = {
+      signedInState: SignedInState.SIGNED_OUT,
+      statusAction: StatusAction.NO_ACTION,
+    };
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
@@ -219,18 +228,23 @@ suite('SigninDisallowedTests', function() {
     assertTrue(!!peoplePage.shadowRoot.querySelector('#profile-row'));
 
     // Control element doesn't exist when policy forbids signin.
-    await simulateSyncStatus({
-      signedInState: SignedInState.SIGNED_OUT,
-      statusAction: StatusAction.NO_ACTION,
-    });
     assertFalse(
         !!peoplePage.shadowRoot.querySelector('settings-sync-account-control'));
   });
 });
 
-suite('SyncStatusTests', function() {
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
+suite('SignoutDialogTests', function() {
   setup(async function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
+    // The WebUI signout dialog is only reachable for syncing users.
+    syncBrowserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      signedInUsername: 'fakeUsername',
+      statusAction: StatusAction.NO_ACTION,
+    };
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
@@ -244,13 +258,6 @@ suite('SyncStatusTests', function() {
 
   teardown(function() {
     reset();
-  });
-
-  test('Toast', async function() {
-    assertFalse(peoplePage.$.toast.open);
-    webUIListenerCallback('sync-settings-saved');
-    await microtasksFinished();
-    assertTrue(peoplePage.$.toast.open);
   });
 
   test('SignOutNavigationNormalProfile', async function() {
@@ -435,6 +442,11 @@ suite('SyncStatusTests', function() {
 suite('SyncSettings', function() {
   setup(async function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
+    // The sync settings only exist for syncing users.
+    syncBrowserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
@@ -454,6 +466,15 @@ suite('SyncSettings', function() {
   teardown(function() {
     reset();
   });
+
+  // <if expr="not is_chromeos">
+  test('Toast', async function() {
+    assertFalse(peoplePage.$.toast.open);
+    webUIListenerCallback('sync-settings-saved');
+    await microtasksFinished();
+    assertTrue(peoplePage.$.toast.open);
+  });
+  // </if>
 
   test('ShowCorrectSyncRow', async function() {
     assertTrue(isChildVisible(peoplePage, '#sync-setup'));

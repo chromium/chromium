@@ -20,7 +20,12 @@ suite('sync-page-test', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    SyncBrowserProxyImpl.setInstance(new TestSyncBrowserProxy());
+    const browserProxy = new TestSyncBrowserProxy();
+    browserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    SyncBrowserProxyImpl.setInstance(browserProxy);
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SYNC);
     syncPage = document.createElement('settings-sync-page');

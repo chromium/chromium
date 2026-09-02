@@ -103,6 +103,8 @@ suite('HistorySyncFragment', function() {
     // Overwrite datatypes needed in tests.
     event.syncAllDataTypes = syncAllDataTypes;
     event.typedUrlsSynced = typedUrlsSynced;
+    event.savedTabGroupsSynced = typedUrlsSynced;
+    event.tabsSynced = typedUrlsSynced;
     event.passwordsSynced = passwordsSynced;
     webUIListenerCallback('sync-prefs-changed', event);
   }
@@ -179,6 +181,11 @@ suite('HistorySyncFragment', function() {
   });
 
   test('syncAllOnDisableReenableHistorySync', async function() {
+    // `syncAllDataTypes` is only relevant when the user is syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+
     setSyncPrefs({
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -204,6 +211,11 @@ suite('HistorySyncFragment', function() {
   });
 
   test('syncAllOnDisableReenableHistorySyncOtherDatatypeOff', async function() {
+    // `syncAllDataTypes` is only relevant when the user is syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+
     setSyncPrefs({
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -230,12 +242,17 @@ suite('HistorySyncFragment', function() {
     return assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
-      tabsSyncedExpected: true,
-      savedTabGroupsSyncedExpected: true,
+      tabsSyncedExpected: false,
+      savedTabGroupsSyncedExpected: false,
     });
   });
 
   test('syncAllOnDisableReenableHistorySyncWithNavigation', async function() {
+    // `syncAllDataTypes` is only relevant when the user is syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+
     setSyncPrefs({
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -278,8 +295,8 @@ suite('HistorySyncFragment', function() {
     await assertSyncBrowserProxyCall({
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: false,
-      tabsSyncedExpected: true,
-      savedTabGroupsSyncedExpected: true,
+      tabsSyncedExpected: false,
+      savedTabGroupsSyncedExpected: false,
     });
 
     // Re-enabling history sync doesn't re-enable sync all if sync all wasn't on
