@@ -213,9 +213,6 @@ AX_BASE_EXPORT bool IsAccessibilityAcceleratorEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimations);
 AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();
 
-// Adds reduced animations toggle to kiosk quick settings.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimationsInKiosk);
-AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsInKioskEnabled();
 
 // Allow context checking with the accessibility Dictation
 // feature.

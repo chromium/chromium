@@ -161,10 +161,8 @@ class AccessibilityDetailedViewTest : public AshTestBase,
                                       public AccessibilityObserver {
  public:
   AccessibilityDetailedViewTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition,
-         ::features::kAccessibilityReducedAnimationsInKiosk},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOnDeviceSpeechRecognition);
   }
   AccessibilityDetailedViewTest(const AccessibilityDetailedViewTest&) = delete;
   AccessibilityDetailedViewTest& operator=(

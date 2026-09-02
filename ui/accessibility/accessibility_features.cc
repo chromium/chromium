@@ -248,12 +248,6 @@ bool IsAccessibilityReducedAnimationsEnabled() {
       ::features::kAccessibilityReducedAnimations);
 }
 
-BASE_FEATURE(kAccessibilityReducedAnimationsInKiosk,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityReducedAnimationsInKioskEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityReducedAnimationsInKiosk);
-}
 
 BASE_FEATURE(kExperimentalAccessibilityDictationContextChecking,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -2217,11 +2217,6 @@ inline constexpr char kAccessibilityReducedAnimationsName[] =
 inline constexpr char kAccessibilityReducedAnimationsDescription[] =
     "This option enables the setting to limit movement on the screen.";
 
-inline constexpr char kAccessibilityReducedAnimationsInKioskName[] =
-    "Reduced Animations feature toggle available in Kiosk quick settings";
-inline constexpr char kAccessibilityReducedAnimationsInKioskDescription[] =
-    "This option enables the quick settings option to toggle reduced "
-    "animations.";
 
 inline constexpr char kAccessibilityMagnifierFollowsChromeVoxName[] =
     "Magnifier follows ChromeVox focus";

@@ -2099,10 +2099,6 @@ bool AccessibilityController::IsEnterpriseIconVisibleForStickyKeys() {
 }
 
 bool AccessibilityController::IsReducedAnimationsSettingVisibleInTray() {
-  if (!::features::IsAccessibilityReducedAnimationsInKioskEnabled()) {
-    return false;
-  }
-
   // Only visible in kiosk mode.
   if (!Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return false;
