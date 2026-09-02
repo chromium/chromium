@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
  */
 @NullMarked
 public class ColdBackgroundTab implements BackgroundPoolTab {
+    private final BackgroundTabPool mPool;
     private final @TabId int mTabId;
     private final @TabId int mPlaceholderTabId;
     private @Nullable TabState mTabState;
@@ -28,11 +29,17 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
     /**
      * Constructs a {@link ColdBackgroundTab}.
      *
+     * @param pool The {@link BackgroundTabPool} that owns this tab.
      * @param tabId The unique tab ID.
      * @param tabState The serialized tab state to restore from.
      * @param placeholderTabId The placeholder tab ID associated with this background tab.
      */
-    public ColdBackgroundTab(@TabId int tabId, TabState tabState, @TabId int placeholderTabId) {
+    public ColdBackgroundTab(
+            BackgroundTabPool pool,
+            @TabId int tabId,
+            TabState tabState,
+            @TabId int placeholderTabId) {
+        mPool = pool;
         mTabId = tabId;
         mTabState = tabState;
         mPlaceholderTabId = placeholderTabId;
@@ -46,6 +53,7 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
     @Override
     public Tab attachTabImpl(TabModel tabModel, int index) {
         assert mTabState != null : "ColdBackgroundTab has already been attached or destroyed.";
+        mPool.removeTab(mTabId);
         TabState state = mTabState;
         mTabState = null;
         TabCreator tabCreator = tabModel.getTabCreator();

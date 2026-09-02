@@ -147,24 +147,22 @@ public class BackgroundTabPool
      */
     public @Nullable BackgroundPoolTab loadTab(@TabId int tabId, @TabId int placeholderTabId) {
         checkNotDestroyed();
-        LiveBackgroundTab liveTab = mLiveEntries.remove(tabId);
+        LiveBackgroundTab liveTab = mLiveEntries.get(tabId);
         if (liveTab != null) {
-            removeTabObserver(liveTab.getTab());
-            notifyIfEmptied();
             return liveTab;
         }
 
         TabCacheKey key = getCacheKey(tabId);
         LoadedTabState loaded = mTabCache.getPreLoadedTabOrLoad(key);
         if (loaded != null && loaded.tabState != null) {
-            return new ColdBackgroundTab(tabId, loaded.tabState, placeholderTabId);
+            return new ColdBackgroundTab(this, tabId, loaded.tabState, placeholderTabId);
         }
         Log.w(TAG, "Failed to load background tab %d from TabCache. Loaded: %s", tabId, loaded);
         return null;
     }
 
     /**
-     * Removes a tab from live in-memory entries and unregisters observers.
+     * Removes a tab from live in-memory entries, unregisters observers, and clears cached state.
      *
      * @param tabId The ID of the tab to remove.
      */
@@ -191,17 +189,6 @@ public class BackgroundTabPool
                 mTabCache.preloadTab(getCacheKey(tabId));
             }
         }
-    }
-
-    /**
-     * Clears cached state and removes any live in-memory representation for the given tab ID.
-     *
-     * @param tabId The ID of the tab to clear.
-     */
-    public void clearTab(@TabId int tabId) {
-        checkNotDestroyed();
-        removeTab(tabId);
-        mTabCache.clear(getCacheKey(tabId));
     }
 
     /** Clears all live and cached tabs in the pool. */
