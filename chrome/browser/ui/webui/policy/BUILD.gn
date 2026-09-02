@@ -81,3 +81,27 @@ if (!is_android) {
     ]
   }
 }
+
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "policy_test_ui_browsertest.cc",
+      "policy_ui_browsertest.cc",
+    ]
+    deps = [
+      ":policy",
+      "//chrome/browser/enterprise:browser_launch_reporting",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/test:test_support",
+      "//components/policy/core/common",
+      "//components/policy/test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

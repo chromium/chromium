@@ -1163,8 +1163,6 @@ if (is_android) {
       "../browser/password_manager/android/password_manager_android_browsertest.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/safe_browsing/android/suspicious_site_browsertest.cc",
-      "../browser/ui/webui/policy/policy_test_ui_browsertest.cc",
-      "../browser/ui/webui/policy/policy_ui_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
@@ -1273,6 +1271,7 @@ if (is_android) {
       "//chrome/browser/ui/side_panel/test/android:browser_test_support_java",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/webui/policy",
+      "//chrome/browser/ui/webui/policy:android_browsertests",
       "//chrome/browser/unified_consent",
       "//chrome/browser/user_agent:browser_tests",
       "//chrome/browser/visited_url_ranking:browser_tests",
@@ -3835,7 +3834,6 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
-        "../browser/ui/ash/input_method/candidate_window_view_pixeltest.cc",
         "../browser/ui/browser_finder_chromeos_browsertest.cc",
         "../browser/ui/browser_tabstrip_browsertest_chromeos.cc",
         "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
@@ -4132,6 +4130,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/editor_menu:views",
         "//chrome/browser/ui/ash/holding_space:test_support",
         "//chrome/browser/ui/ash/input_method",
+        "//chrome/browser/ui/ash/input_method:browser_tests",
         "//chrome/browser/ui/ash/keyboard",
         "//chrome/browser/ui/ash/keyboard:ash_test_support",
         "//chrome/browser/ui/ash/login",
