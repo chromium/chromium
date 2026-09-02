@@ -18,8 +18,6 @@ namespace regional_capabilities {
 
 inline constexpr const char kCrOSMissingVariationData[] =
     "ChromeOS.CountryCode.MissingVariationData";
-inline constexpr const char kVpdRegionSplittingOutcome[] =
-    "ChromeOS.CountryCode.VPDRegionSplittingOutcome";
 
 // LINT.IfChange(ChromeOSFallbackCountry)
 enum class ChromeOSFallbackCountry {

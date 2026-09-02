@@ -57,21 +57,15 @@ std::optional<CountryId> GetVpdCountry() {
     return {};
   }
 
-  bool has_stripped_subkey_info = false;
   if (vpd_region.size() > 2) {
     if (vpd_region[2] != '.') {
       base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooLong);
       return {};
     }
     vpd_region = vpd_region.substr(0, 2);
-    has_stripped_subkey_info = true;
   }
 
   const CountryId country_code(vpd_region);
-  if (has_stripped_subkey_info) {
-    base::UmaHistogramBoolean(kVpdRegionSplittingOutcome,
-                              country_code.IsValid());
-  }
   if (!country_code.IsValid()) {
     base::UmaHistogramEnumeration(kCrOSMissingVariationData,
                                   kInvalidCountryCode);

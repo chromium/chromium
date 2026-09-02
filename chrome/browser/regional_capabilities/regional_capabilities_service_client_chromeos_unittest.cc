@@ -190,7 +190,6 @@ TEST_F(RegionalCapabilitiesServiceClientChromeOSTest,
   EXPECT_EQ(fallback_id, country_codes::CountryId(country_code));
   histogram_tester().ExpectUniqueSample(
       kCrOSMissingVariationData, ChromeOSFallbackCountry::kValidCountryCode, 1);
-  histogram_tester().ExpectUniqueSample(kVpdRegionSplittingOutcome, true, 1);
 }
 
 TEST_F(RegionalCapabilitiesServiceClientChromeOSTest,
@@ -207,7 +206,6 @@ TEST_F(RegionalCapabilitiesServiceClientChromeOSTest,
   histogram_tester().ExpectUniqueSample(
       kCrOSMissingVariationData, ChromeOSFallbackCountry::kInvalidCountryCode,
       1);
-  histogram_tester().ExpectUniqueSample(kVpdRegionSplittingOutcome, false, 1);
 }
 
 TEST_F(RegionalCapabilitiesServiceClientChromeOSTest, FetchCountryId) {
