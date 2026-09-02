@@ -750,6 +750,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_pixel_11_experimental",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os_type": "userdebug",
+            "device_os": "CD1A.260714.001.A9",
+            "device_type": "kodiak",
+            "os": "Android",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu_samsung_a13_stable",
     swarming = targets.swarming(
         dimensions = {

@@ -9,6 +9,44 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Android FYI Experimental Release (Pixel 11)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "base_config"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "download_xr_test_apks"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Android arm64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Android FYI Experimental Release (Pixel 6)",
               "project": "chromium"
             },
@@ -200,6 +238,11 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
+          "builder": "Android FYI Experimental Release (Pixel 11)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Android FYI Experimental Release (Pixel 6)",
           "project": "chromium"
         },
@@ -222,6 +265,10 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "gpu-fyi-cq-android-arm64",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "gpu-fyi-try-android-arm64-pixel-11-exp",
           "group": "tryserver.chromium.android"
         },
         {

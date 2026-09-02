@@ -524,6 +524,7 @@ try/fuchsia-x64-perf-cast-receiver-rel
 try/gn-args-verifier
 try/gpu-fyi-try-android-a13-32
 try/gpu-fyi-try-android-a23-32
+try/gpu-fyi-try-android-arm64-pixel-11-exp
 try/gpu-fyi-try-android-pixel-10-64
 try/gpu-fyi-try-android-pixel-6-64
 try/gpu-fyi-try-android-pixel-6-64-exp

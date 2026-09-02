@@ -89,6 +89,17 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
+    name = "gpu-fyi-try-android-arm64-pixel-11-exp",
+    description_html = "Runs standard GPU tests on experimental Pixel 11 configs",
+    mirrors = [
+        "ci/GPU FYI Android arm64 Builder",
+        "ci/Android FYI Experimental Release (Pixel 11)",
+    ],
+    gn_args = "ci/GPU FYI Android arm64 Builder",
+    execution_timeout = 12 * time.hour,
+)
+
+gpu_android_builder(
     name = "gpu-fyi-try-android-a13-32",
     description_html = "Runs GPU tests on Samsung A13 phones",
     mirrors = [
