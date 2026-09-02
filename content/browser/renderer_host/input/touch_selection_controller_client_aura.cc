@@ -248,7 +248,9 @@ void TouchSelectionControllerClientAura::InvalidateClient(
     ui::TouchSelectionControllerClient* client) {
   CHECK(client != &internal_client_, base::NotFatalUntil::M152);
   if (client == active_client_) {
-    GetTouchSelectionController()->HideAndDisallowShowingAutomatically();
+    if (GetTouchSelectionController()) {
+      GetTouchSelectionController()->HideAndDisallowShowingAutomatically();
+    }
     active_client_ = &internal_client_;
     active_menu_client_ = this;
   }
