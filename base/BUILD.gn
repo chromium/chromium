@@ -35,6 +35,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
+import("//build/rust/rust_macro.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
@@ -2647,6 +2648,7 @@ group("base_rust") {
     ":command_line",
     ":feature",
     ":file_path",
+    ":histogram",
     ":run_loop",
     ":sequenced_task_runner",
     ":unguessable_token",
@@ -2778,6 +2780,40 @@ rust_static_library("unguessable_token") {
   ]
 }
 
+rust_static_library("histogram") {
+  sources = [ "metrics/histogram.rs" ]
+  crate_root = "metrics/histogram.rs"
+  cxx_bindings = [ "metrics/histogram.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":histogram_enum_macro",
+    ":histogram_shim",
+    "//base",
+  ]
+  public_deps = [ ":histogram_enum_macro" ]
+}
+
+rust_macro("histogram_enum_macro") {
+  sources = [ "metrics/histogram_enum_macro.rs" ]
+  crate_root = "metrics/histogram_enum_macro.rs"
+  deps = [
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/syn/v2:lib",
+  ]
+}
+
+source_set("histogram_shim") {
+  sources = [
+    "metrics/histogram_rust_shim.cc",
+    "metrics/histogram_rust_shim.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+}
+
 rust_static_library("sequenced_task_runner") {
   sources = [ "task/sequenced_task_runner.rs" ]
   crate_root = "task/sequenced_task_runner.rs"
@@ -2847,15 +2883,18 @@ rust_static_library("base_rust_unittests") {
     "base_rust_unittests.rs",
     "command_line_unittest.rs",
     "files/file_path_unittest.rs",
+    "metrics/histogram_unittest.rs",
     "task/sequenced_task_runner_unittest.rs",
   ]
   crate_root = "base_rust_unittests.rs"
   deps = [
     ":command_line",
     ":file_path",
+    ":histogram",
     ":scoped_refptr",
     ":sequenced_task_runner",
     ":sequenced_task_runner_test_bridge",
+    "//base/test:histogram_tester",
     "//base/test:task_environment",
     "//testing/rust_gtest_interop",
   ]

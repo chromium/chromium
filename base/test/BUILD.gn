@@ -62,6 +62,20 @@ rust_static_library("scoped_feature_list") {
   ]
 }
 
+rust_static_library("histogram_tester") {
+  testonly = true
+  sources = [ "metrics/histogram_tester.rs" ]
+  crate_root = "metrics/histogram_tester.rs"
+  cxx_bindings = [ "metrics/histogram_tester.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":histogram_tester_shim",
+    ":test_support",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 source_set("task_environment_shim") {
   testonly = true
   sources = [
@@ -87,9 +101,22 @@ source_set("scoped_feature_list_shim") {
   ]
 }
 
+source_set("histogram_tester_shim") {
+  testonly = true
+  sources = [
+    "metrics/histogram_tester_rust_shim.cc",
+    "metrics/histogram_tester_rust_shim.h",
+  ]
+  deps = [
+    ":test_support",
+    "//base",
+  ]
+}
+
 group("test_support_rust") {
   testonly = true
   public_deps = [
+    ":histogram_tester",
     ":scoped_feature_list",
     ":task_environment",
   ]
