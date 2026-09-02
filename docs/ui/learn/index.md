@@ -18,6 +18,7 @@
 * [Animation Builder](/docs/ui/animation_builder/animation_builder.md)
 * [Glossary](glossary.md)
 * [Input Event Routing](/docs/ui/input_event/index.md)
+* [Keyboard Shortcuts](keyboard_shortcuts.md)
 * [Metadata and Properties](/docs/ui/views/metadata_properties.md)
 * [Product Excellence](/docs/ui/product_excellence/index.md)
 * [UI Debugging](ui_debugging.md)

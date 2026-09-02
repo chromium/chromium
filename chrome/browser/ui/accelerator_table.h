@@ -14,6 +14,9 @@ class Accelerator;
 }
 
 // This contains the list of accelerators for the Aura implementation.
+//
+// For guidelines on proposing, adding, retiring, or swapping keyboard
+// shortcuts in Chrome, please see //docs/ui/learn/keyboard_shortcuts.md.
 struct AcceleratorMapping {
   ui::KeyboardCode keycode;
   int modifiers;

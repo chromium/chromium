@@ -35,6 +35,10 @@ static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace {
 
+// IMPORTANT: Before adding, modifying, or retiring any keyboard shortcut in
+// Chrome, please review the Chrome Keyboard Shortcut Guidelines:
+// //docs/ui/learn/keyboard_shortcuts.md
+//
 // For ChromeOS only: If you plan on adding a new accelerator and want it
 // displayed in the Shortcuts app, please follow the instructions at:
 // `ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h`.
