@@ -4173,14 +4173,6 @@ inline constexpr char kPaymentHandlerCameraAccessUxDescription[] =
     "Enables camera access with integrated permission prompt and "
     "capture indicator in web-based Payment Handlers on desktop.";
 
-inline constexpr char kDeduplicateNativePaymentAppsName[] =
-    "Enables de-duplication of Payment Request native payment apps";
-inline constexpr char kDeduplicateNativePaymentAppsDescription[] =
-    "When enabled, Payment Request will de-duplicate native payment apps "
-    "that are known to have 'internal' apps, such as Google Pay. This avoids "
-    "multiple factories (internal and external) processing the same underlying "
-    "app.";
-
 inline constexpr char kSPCLocaleValidationName[] =
     "Secure Payment Confirmation Locale Validation";
 inline constexpr char kSPCLocaleValidationDescription[] =

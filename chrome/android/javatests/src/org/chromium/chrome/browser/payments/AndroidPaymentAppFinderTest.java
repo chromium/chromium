@@ -1840,34 +1840,10 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test that with the deduplication feature disabled, a mock Google Pay app is still found even
-     * if an internal factory is present.
+     * Test that with deduplication, a mock Google Pay app is not found if an internal factory is
+     * present.
      */
     @Test
-    @Feature({"Payments"})
-    @DisableFeatures({PaymentFeatureList.DEDUPLICATE_NATIVE_PAYMENT_APPS})
-    public void testFindsGooglePayWithInternalFactory() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add(MethodStrings.GOOGLE_PAY);
-        mPackageManager.installPaymentApp(
-                "GooglePay",
-                "com.google.pay",
-                MethodStrings.GOOGLE_PAY,
-                /* signature= */ "01020304050607080900");
-        // An internal factory is present, but should not matter since the feature is disabled.
-        mInternalPaymentAppFactoryPresent = true;
-
-        findApps(methods);
-
-        assertPaymentAppsCreated("com.google.pay");
-    }
-
-    /**
-     * Test that with the deduplication feature enabled, a mock Google Pay app is not found if an
-     * internal factory is present.
-     */
-    @Test
-    @EnableFeatures({PaymentFeatureList.DEDUPLICATE_NATIVE_PAYMENT_APPS})
     @DisableFeatures({PaymentFeatureList.GOOGLE_PAY_VIA_ANDROID_INTENTS})
     @Feature({"Payments"})
     public void testSkipsGooglePayWithInternalFactory() throws Throwable {

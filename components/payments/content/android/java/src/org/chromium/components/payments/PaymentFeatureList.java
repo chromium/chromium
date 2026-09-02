@@ -22,7 +22,6 @@ public abstract class PaymentFeatureList {
     public static final String ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS =
             "AndroidPaymentIntentsOmitDeprecatedParameters";
 
-    public static final String DEDUPLICATE_NATIVE_PAYMENT_APPS = "DeduplicateNativePaymentApps";
     public static final String DELAY_NATIVE_PAYMENT_APP_SCRIM_SHOW =
             "DelayNativePaymentAppScrimShow";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";

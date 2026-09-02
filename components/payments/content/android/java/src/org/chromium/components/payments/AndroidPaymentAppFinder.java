@@ -990,10 +990,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * <p>TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
      */
     private boolean methodHandledByInternalFactory(String method) {
-        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.DEDUPLICATE_NATIVE_PAYMENT_APPS)) {
-            return false;
-        }
-
         if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                 PaymentFeatureList.GOOGLE_PAY_VIA_ANDROID_INTENTS)) {
             return false;
