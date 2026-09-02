@@ -76,6 +76,10 @@
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_CLOSE_BUTTON_MASK" file="common/close_button_mask.png" />
       </if>
+      <if expr="toolkit_views">
+        <structure type="chrome_scaled_image" name="IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LIGHT" file="common/composebox_drive_signin_promo_light.png" />
+        <structure type="chrome_scaled_image" name="IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_DARK" file="common/composebox_drive_signin_promo_dark.png" />
+      </if>
       <if expr="is_win">
         <structure type="chrome_scaled_image" name="IDR_CONFLICT_FAVICON" file="common/favicon_conflicts.png" />
       </if>

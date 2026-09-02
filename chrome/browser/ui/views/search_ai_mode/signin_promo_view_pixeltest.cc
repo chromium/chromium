@@ -142,6 +142,10 @@ class ComposeboxDriveSignInPromoViewPixelTest
   }
 
   void ShowUi(const std::string& name) override {
+    if (name == "SignInPending") {
+      SignInWithAccount();
+      identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+    }
     ShowPromoView(std::make_unique<ComposeboxDriveSignInPromoView>(
         GetAvatarBubbleAnchor(),
         browser()->GetActiveTabInterface()->GetContents(),
@@ -154,6 +158,11 @@ class ComposeboxDriveSignInPromoViewPixelTest
 
 IN_PROC_BROWSER_TEST_P(ComposeboxDriveSignInPromoViewPixelTest,
                        InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(ComposeboxDriveSignInPromoViewPixelTest,
+                       InvokeUi_SignInPending) {
   ShowAndVerifyUi();
 }
 

@@ -186,12 +186,17 @@
   </message>
 
   <!-- Signin Composebox Drive context menu option promo. -->
-  <!-- TODO(crbug.com/545561312): Make translatable. -->
-  <message name="IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_TITLE" translateable="false" desc="The title in the sign-in promo bubble shown to users when interacting with the Google Drive context menu option in the composebox while not signed in.">
-    Search with files from Drive
+  <message name="IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_TITLE" desc="The title in the sign-in promo bubble shown to users when interacting with the Google Drive context menu option in the composebox while not signed in.">
+    Sign in to Chrome
   </message>
-  <message name="IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_SUBTITLE" translateable="false" desc="The message shown in a sign-in promo bubble shown to users when interacting with the Google Drive context menu option in the composebox while not signed in.">
+  <message name="IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_VERIFY_PROMO_TITLE" desc="The title in the sign-in promo bubble shown to users when interacting with the Google Drive context menu option in the composebox while sign-in credentials have expired.">
+    Verify it's you
+  </message>
+  <message name="IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_SUBTITLE" desc="The message shown in a sign-in promo bubble shown to users when interacting with the Google Drive context menu option in the composebox while not signed in.">
     Sign in to easily add files from Drive to your AI Mode threads. You'll also get your passwords and more on all your devices.
+  </message>
+  <message name="IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_VERIFY_PROMO_SUBTITLE" desc="The message shown in a sign-in promo bubble shown to users when interacting with the Google Drive context menu option in the composebox while sign-in credentials have expired.">
+    To easily add files from Drive to your AI Mode threads, verify it's you. You'll also get your passwords and more on all your devices.
   </message>
 
   <if expr="use_titlecase">

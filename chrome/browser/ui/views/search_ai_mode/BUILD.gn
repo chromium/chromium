@@ -28,9 +28,11 @@ source_set("impl") {
   ]
   deps = [
     ":search_ai_mode",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/signin",
     "//chrome/browser/ui/signin",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/accessibility",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
     "//components/omnibox/common",

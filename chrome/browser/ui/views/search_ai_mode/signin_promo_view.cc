@@ -9,11 +9,16 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -155,7 +160,18 @@ ComposeboxDriveSignInPromoView::ComposeboxDriveSignInPromoView(
   CHECK(base::FeatureList::IsEnabled(
       omnibox::kComposeboxDriveContextMenuOptionSigninPromo));
   SetProperty(views::kElementIdentifierKey, kComposeboxDriveSignInPromoViewId);
-  SetTitle(IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_TITLE);
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetOriginalProfile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  signin_util::SignedInState signed_in_state =
+      signin_util::GetSignedInState(identity_manager);
+
+  SetTitle(signed_in_state == signin_util::SignedInState::kSignInPending
+               ? IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_VERIFY_PROMO_TITLE
+               : IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_TITLE);
 }
 
 ComposeboxDriveSignInPromoView::~ComposeboxDriveSignInPromoView() = default;
@@ -163,9 +179,12 @@ ComposeboxDriveSignInPromoView::~ComposeboxDriveSignInPromoView() = default;
 void ComposeboxDriveSignInPromoView::AddedToWidget() {
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kComposeboxDriveSignInPromoFrameViewId);
-  // TODO(crbug.com/545561312): Update the header image.
-  GetBubbleFrameView()->SetHeaderView(
-      CreateHeaderImageView(IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE));
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      ui::ImageModel::FromResourceId(IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LIGHT),
+      ui::ImageModel::FromResourceId(IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_DARK),
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
+                          base::Unretained(this)));
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 BEGIN_METADATA(ComposeboxDriveSignInPromoView)
