@@ -42,7 +42,7 @@ public final class BackgroundTabRestorationHelper {
 
     /**
      * Acquires a leased {@link BackgroundTabPool} instance for the regular profile of the given
-     * selector.
+     * selector, falling back to restoring from persisted token if profile is null.
      *
      * @param selector The {@link TabModelSelector} to query for profile.
      * @return The leased {@link BackgroundTabPool}, or null if unavailable or incognito.
@@ -55,13 +55,15 @@ public final class BackgroundTabRestorationHelper {
         if (model == null) return null;
 
         Profile profile = model.getProfile();
-        if (profile == null || profile.isOffTheRecord()) return null;
-
-        if (!BackgroundTabPoolManager.hasPoolForTesting() && !profile.isNativeInitialized()) {
-            return null;
+        if (profile != null) {
+            if (profile.isOffTheRecord()) return null;
+            if (!BackgroundTabPoolManager.hasPoolForTesting() && !profile.isNativeInitialized()) {
+                return null;
+            }
+            return BackgroundTabPoolManager.acquire(profile);
         }
 
-        return BackgroundTabPoolManager.acquire(profile);
+        return BackgroundTabPoolManager.restorePoolIfTokenExists();
     }
 
     /**

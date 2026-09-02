@@ -6,14 +6,18 @@ package org.chromium.chrome.browser.actor;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
+import android.util.ArrayMap;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
 
 /**
- * Manages transient, leased {@link BackgroundTabPool} instances per {@link Profile}.
+ * Manages transient, leased {@link BackgroundTabPool} instances per profile token.
  *
  * <p>Enforces dual-invariant teardown: a pool is only destroyed when both:
  *
@@ -24,24 +28,24 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
  */
 @NullMarked
 public final class BackgroundTabPoolManager {
-    private static final ProfileKeyedMap<PoolHolder> sHolders =
-            ProfileKeyedMap.createMapOfDestroyables(ProfileKeyedMap.ProfileSelection.OWN_INSTANCE);
+    private static final ArrayMap<String, PoolHolder> sHolders = new ArrayMap<>();
 
     private static @Nullable BackgroundTabPool sPoolForTesting;
 
     private static class PoolHolder implements Destroyable {
-        private final Profile mProfile;
+        private final String mProfileToken;
         private @Nullable BackgroundTabPool mPool;
         private int mLeaseCount;
 
-        PoolHolder(Profile profile) {
-            mProfile = profile;
+        PoolHolder(String profileToken) {
+            mProfileToken = profileToken;
         }
 
         BackgroundTabPool acquire() {
             assertOnUiThread();
-            if (mPool == null) {
-                mPool = new BackgroundTabPool(mProfile, this::checkIdleAndDestroy);
+            if (mPool == null || mPool.isDestroyed()) {
+                mPool = new BackgroundTabPool(mProfileToken, this::checkIdleAndDestroy);
+                mLeaseCount = 0;
             }
             mLeaseCount++;
             return mPool;
@@ -62,10 +66,17 @@ public final class BackgroundTabPoolManager {
             if (mPool != null && mLeaseCount == 0 && mPool.isEmpty()) {
                 mPool.destroy();
                 mPool = null;
+                sHolders.remove(mProfileToken);
+                if (sHolders.isEmpty()) {
+                    clearLastUsedProfileToken();
+                }
             }
         }
 
         @Nullable BackgroundTabPool getPoolForTesting() {
+            if (mPool != null && mPool.isDestroyed()) {
+                return null;
+            }
             return mPool;
         }
 
@@ -77,7 +88,9 @@ public final class BackgroundTabPoolManager {
         public void destroy() {
             assertOnUiThread();
             if (mPool != null) {
-                mPool.destroy();
+                if (!mPool.isDestroyed()) {
+                    mPool.destroy();
+                }
                 mPool = null;
             }
             mLeaseCount = 0;
@@ -99,7 +112,65 @@ public final class BackgroundTabPoolManager {
             return sPoolForTesting;
         }
         assert !profile.isOffTheRecord() : "BackgroundTabPool does not support OTR profiles.";
-        return sHolders.getForProfile(profile, PoolHolder::new).acquire();
+        String profileToken = new ProfileResolver().tokenize(profile);
+        persistLastUsedProfileToken(profileToken);
+        return acquire(profileToken);
+    }
+
+    private static void persistLastUsedProfileToken(String profileToken) {
+        // TODO(crbug.com/491791326): Support tracking and persisting tokens for multiple profiles.
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, profileToken);
+    }
+
+    /**
+     * Acquires a leased {@link BackgroundTabPool} instance for the given profile token. Callers
+     * must balance each call with {@link #release(BackgroundTabPool)}.
+     *
+     * @param profileToken The profile token string to acquire a pool for.
+     * @return The leased {@link BackgroundTabPool} instance.
+     */
+    public static BackgroundTabPool acquire(String profileToken) {
+        assertOnUiThread();
+        if (sPoolForTesting != null) {
+            return sPoolForTesting;
+        }
+        PoolHolder holder = sHolders.get(profileToken);
+        if (holder == null) {
+            holder = new PoolHolder(profileToken);
+            sHolders.put(profileToken, holder);
+        }
+        return holder.acquire();
+    }
+
+    /**
+     * Attempts to restore a {@link BackgroundTabPool} if a profile token was previously persisted.
+     *
+     * @return The restored {@link BackgroundTabPool} instance, or null if no token exists.
+     */
+    public static @Nullable BackgroundTabPool restorePoolIfTokenExists() {
+        assertOnUiThread();
+        if (sPoolForTesting != null) {
+            return sPoolForTesting;
+        }
+        // TODO(crbug.com/491791326): Support synchronous restoration across multiple profiles
+        // during startup.
+        String token =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, null);
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+        return acquire(token);
+    }
+
+    /** Clears the persisted last-used profile token in {@link ChromeSharedPreferences}. */
+    public static void clearLastUsedProfileToken() {
+        // TODO(crbug.com/491791326): Support multi-profile token management and selective clearing.
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN);
     }
 
     /**
@@ -113,8 +184,10 @@ public final class BackgroundTabPoolManager {
         if (sPoolForTesting != null) {
             return;
         }
-        PoolHolder holder = sHolders.getForProfile(pool.getProfile(), PoolHolder::new);
-        holder.release(pool);
+        PoolHolder holder = sHolders.get(pool.getProfileToken());
+        if (holder != null) {
+            holder.release(pool);
+        }
     }
 
     /**
@@ -138,8 +211,9 @@ public final class BackgroundTabPoolManager {
      * @return The active {@link BackgroundTabPool}, or null if none.
      */
     public static @Nullable BackgroundTabPool getPoolForTesting(Profile profile) {
-        PoolHolder holder = sHolders.getForProfile(profile, PoolHolder::new);
-        return holder.getPoolForTesting();
+        String profileToken = new ProfileResolver().tokenize(profile);
+        PoolHolder holder = sHolders.get(profileToken);
+        return holder != null ? holder.getPoolForTesting() : null;
     }
 
     /**
@@ -149,14 +223,19 @@ public final class BackgroundTabPoolManager {
      * @return The integer lease count.
      */
     public static int getLeaseCountForTesting(Profile profile) {
-        PoolHolder holder = sHolders.getForProfile(profile, PoolHolder::new);
-        return holder.getLeaseCountForTesting();
+        String profileToken = new ProfileResolver().tokenize(profile);
+        PoolHolder holder = sHolders.get(profileToken);
+        return holder != null ? holder.getLeaseCountForTesting() : 0;
     }
 
     /** Resets all static state and destroys all pool holders for testing. */
     public static void resetForTesting() {
         assertOnUiThread();
         sPoolForTesting = null;
-        sHolders.destroy();
+        for (int i = 0; i < sHolders.size(); i++) {
+            sHolders.valueAt(i).destroy();
+        }
+        sHolders.clear();
+        clearLastUsedProfileToken();
     }
 }

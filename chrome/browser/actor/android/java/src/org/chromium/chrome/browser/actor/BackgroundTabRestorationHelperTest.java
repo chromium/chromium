@@ -27,9 +27,15 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -42,30 +48,38 @@ import java.util.Set;
 /** Unit tests for {@link BackgroundTabRestorationHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BackgroundTabRestorationHelperTest {
-    private static final int TAB_ID = 101;
+    private static final @TabId int TAB_ID = 101;
     private static final int DESTINATION_INDEX = 2;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mNormalTabModel;
-    @Mock private Profile mProfile;
-    @Mock private BackgroundTabPool mBackgroundTabPool;
-    @Mock private BackgroundPoolTab mBackgroundPoolTab;
-    @Mock private Tab mTab;
-    @Mock private WebContentsState mWebContentsState;
+    private @Mock ProfileResolver.Natives mProfileResolverNatives;
+    private @Mock TabModelSelector mTabModelSelector;
+    private @Mock TabModel mNormalTabModel;
+    private @Mock Profile mProfile;
+    private @Mock BackgroundTabPool mBackgroundTabPool;
+    private @Mock BackgroundPoolTab mBackgroundPoolTab;
+    private @Mock Tab mTab;
+    private @Mock WebContentsState mWebContentsState;
 
     @Before
     public void setUp() {
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mNormalTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mProfile.isNativeInitialized()).thenReturn(true);
+        when(mProfileResolverNatives.tokenizeProfile(mProfile)).thenReturn("mock_token");
+        BackgroundTabPoolManager.resetForTesting();
+        TabCacheManager.resetForTesting();
     }
 
     @After
     public void tearDown() {
         BackgroundTabPoolManager.resetForTesting();
+        TabCacheManager.resetForTesting();
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     @Test
@@ -130,7 +144,22 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testAcquirePool_nullProfile() {
+    public void testAcquirePool_nullProfile_restoresFromToken() {
+        when(mNormalTabModel.getProfile()).thenReturn(null);
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN,
+                        "persisted_token");
+
+        BackgroundTabPool pool = BackgroundTabRestorationHelper.acquirePool(mTabModelSelector);
+        assertNotNull(pool);
+        assertEquals("persisted_token", pool.getProfileToken());
+        BackgroundTabPoolManager.release(pool);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testAcquirePool_nullProfile_noToken() {
         when(mNormalTabModel.getProfile()).thenReturn(null);
         assertNull(BackgroundTabRestorationHelper.acquirePool(mTabModelSelector));
     }
