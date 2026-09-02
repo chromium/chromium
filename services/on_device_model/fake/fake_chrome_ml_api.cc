@@ -419,7 +419,9 @@ void SessionSizeInTokensInputPiece(ChromeMLSession session,
     const ml::InputPiece& piece = UNSAFE_BUFFERS(input[i]);
     if (!std::holds_alternative<std::string>(piece) &&
         !std::holds_alternative<ml::Token>(piece) &&
-        !std::holds_alternative<ml::ToolCall>(piece)) {
+        !std::holds_alternative<ml::ToolDeclaration>(piece) &&
+        !std::holds_alternative<ml::ToolCall>(piece) &&
+        !std::holds_alternative<ml::ToolResponse>(piece)) {
       continue;
     }
 

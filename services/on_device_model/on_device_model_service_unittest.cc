@@ -1335,6 +1335,43 @@ TEST_F(OnDeviceModelServiceTest, ToolCallInputSizeInTokens) {
                 .size());
 }
 
+TEST_F(OnDeviceModelServiceTest, ToolDeclarationInputSizeInTokens) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  base::test::TestFuture<uint32_t> future;
+  session->GetSizeInTokens(
+      MakeMojomInput(std::vector<ml::InputPiece>{MakeToolDeclaration()}),
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get(), base::StrCat({fake_ml::kToolDeclPrefix,
+                                        fake_ml::kFakeToolName, "]"})
+                              .size());
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolResponseInputSizeInTokens) {
+  auto model = LoadModel();
+
+  constexpr std::string_view kResultJson = R"({"output":"42"})";
+  ml::ToolResponse tool_response;
+  tool_response.call_id = fake_ml::kFakeToolCallId;
+  tool_response.name = fake_ml::kFakeToolName;
+  tool_response.result_json = kResultJson;
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  base::test::TestFuture<uint32_t> future;
+  session->GetSizeInTokens(
+      MakeMojomInput(std::vector<ml::InputPiece>{std::move(tool_response)}),
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            base::StrCat({fake_ml::kToolRespPrefix, fake_ml::kFakeToolName, "=",
+                          kResultJson, "]"})
+                .size());
+}
+
 TEST_F(OnDeviceModelServiceTest, ToolCallInputPreservedInClone) {
   auto model = LoadModel();
 
