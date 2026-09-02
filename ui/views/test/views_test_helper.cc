@@ -25,6 +25,8 @@ void ViewsTestHelper::TearDownTestViewsDelegate(TestViewsDelegate* delegate) {}
 
 void ViewsTestHelper::SetUp() {}
 
+void ViewsTestHelper::TearDown() {}
+
 gfx::NativeWindow ViewsTestHelper::GetContext() {
   return gfx::NativeWindow();
 }

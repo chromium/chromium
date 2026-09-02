@@ -40,6 +40,9 @@ class ViewsTestHelper {
   // Does any additional necessary setup of this object or its members.
   virtual void SetUp();
 
+  // Tears down anything that are set up in SetUp().
+  virtual void TearDown();
+
   // Returns a context window, e.g. the Aura root window.
   virtual gfx::NativeWindow GetContext();
 

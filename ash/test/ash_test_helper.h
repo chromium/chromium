@@ -267,6 +267,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   bool create_quick_pair_mediator_ = true;
   // True if a screen instance should be destroyed.
   bool destroy_screen_ = true;
+
+  bool is_set_up_ = false;
 };
 
 }  // namespace ash

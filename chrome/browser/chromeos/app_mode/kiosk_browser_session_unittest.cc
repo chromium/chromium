@@ -257,6 +257,13 @@ class KioskBrowserSessionBaseTest
     profile_ = testing_profile_manager_.CreateTestingProfile("test@user");
   }
 
+  void TearDown() override {
+    kiosk_browser_session_.reset();
+    web_kiosk_main_browser_.reset();
+    ash_test_helper_.TearDown();
+    profile_ = nullptr;
+  }
+
   static void TearDownTestSuite() { chromeos::PowerManagerClient::Shutdown(); }
 
   PrefService* local_state() {

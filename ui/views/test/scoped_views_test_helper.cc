@@ -38,6 +38,7 @@ ScopedViewsTestHelper::ScopedViewsTestHelper(
 ScopedViewsTestHelper::~ScopedViewsTestHelper() {
   ui::Clipboard::DestroyClipboardForCurrentThread();
 
+  test_helper_->TearDown();
   test_helper_->TearDownTestViewsDelegate(test_views_delegate_.get());
 }
 

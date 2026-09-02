@@ -24,9 +24,10 @@ class AshTestHelperTest : public testing::Test {
   ~AshTestHelperTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
     ash_test_helper_.SetUp();
   }
+
+  void TearDown() override { ash_test_helper_.TearDown(); }
 
   AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
 

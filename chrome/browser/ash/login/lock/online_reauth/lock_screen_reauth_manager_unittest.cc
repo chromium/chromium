@@ -138,6 +138,7 @@ void LockScreenReauthManagerTest::SetUp() {
 }
 
 void LockScreenReauthManagerTest::TearDown() {
+  DestroyLockScreenReauthManager();
   ash_test_helper_.TearDown();
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
 }

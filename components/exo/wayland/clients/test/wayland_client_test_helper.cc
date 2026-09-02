@@ -109,6 +109,7 @@ void WaylandClientTestHelper::TearDownOnUIThread(base::WaitableEvent* event) {
   wm_helper_.reset();
 
   ash::Shell::Get()->session_controller()->NotifyChromeTerminating();
+  ash_test_helper_->TearDown();
   ash_test_helper_.reset();
   xdg_temp_dir_ = nullptr;
   event->Signal();

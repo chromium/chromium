@@ -129,14 +129,14 @@ class AppAccessNotifierTest : public testing::Test,
     // Setting ash prefs for testing multi-display.
     ash::RegisterLocalStatePrefs(local_state_.registry(), /*for_test=*/true);
 
-    ash::AshTestHelper::InitParams params;
-    params.local_state = &local_state_;
-    ash_test_helper_.SetUp(std::move(params));
-
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     fake_user_manager_ = fake_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
+
+    ash::AshTestHelper::InitParams params;
+    params.local_state = &local_state_;
+    ash_test_helper_.SetUp(std::move(params));
 
     app_access_notifier_ = std::make_unique<TestAppAccessNotifier>();
 
@@ -146,6 +146,7 @@ class AppAccessNotifierTest : public testing::Test,
   void TearDown() override {
     app_access_notifier_.reset();
     ash_test_helper_.TearDown();
+    scoped_user_manager_.reset();
   }
 
   void SetupPrimaryUser() {

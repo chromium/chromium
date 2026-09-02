@@ -76,6 +76,7 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
 
   void TearDown() override {
     chromeos::sensors::SensorHalDispatcher::Shutdown();
+    ash_test_helper_.TearDown();
   }
 
   void AddDevice(int32_t iio_device_id,

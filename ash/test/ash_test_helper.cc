@@ -183,9 +183,7 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
 }
 
 AshTestHelper::~AshTestHelper() {
-  if (app_list_test_helper_) {
-    TearDown();
-  }
+  CHECK(!is_set_up_);
 
   SystemLocationProvider::DestroyForTesting();
 
@@ -209,6 +207,9 @@ void AshTestHelper::SetUp() {
 }
 
 void AshTestHelper::TearDown() {
+  CHECK(is_set_up_);
+  is_set_up_ = false;
+
   fwupd_download_client_.reset();
   saved_desk_test_helper_->Shutdown();
 
@@ -313,6 +314,9 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 }
 
 void AshTestHelper::SetUp(InitParams init_params) {
+  CHECK(!is_set_up_);
+  is_set_up_ = true;
+
   create_global_cras_audio_handler_ =
       init_params.create_global_cras_audio_handler;
   create_quick_pair_mediator_ = init_params.create_quick_pair_mediator;

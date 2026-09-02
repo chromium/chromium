@@ -29,8 +29,8 @@ ViewsTestHelperAura::ViewsTestHelperAura() {
                           : std::make_unique<aura::test::AuraTestHelper>();
 }
 
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
 ViewsTestHelperAura::~ViewsTestHelperAura() {
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
   // Ensure all Widgets (and Windows) are closed in unit tests.
   //
   // Most tests do not try to create desktop Aura Widgets, and on most platforms
@@ -58,10 +58,9 @@ ViewsTestHelperAura::~ViewsTestHelperAura() {
         << "Not all windows were closed:\n"
         << root_window->GetWindowHierarchy(0);
   }
-}
-#else
-ViewsTestHelperAura::~ViewsTestHelperAura() = default;
 #endif
+  CHECK(!is_set_up_);
+}
 
 std::unique_ptr<TestViewsDelegate>
 ViewsTestHelperAura::GetFallbackTestViewsDelegate() {
@@ -71,7 +70,15 @@ ViewsTestHelperAura::GetFallbackTestViewsDelegate() {
 }
 
 void ViewsTestHelperAura::SetUp() {
+  CHECK(!is_set_up_);
+  is_set_up_ = true;
   aura_test_helper_->SetUp();
+}
+
+void ViewsTestHelperAura::TearDown() {
+  CHECK(is_set_up_);
+  is_set_up_ = false;
+  aura_test_helper_->TearDown();
 }
 
 gfx::NativeWindow ViewsTestHelperAura::GetContext() {
