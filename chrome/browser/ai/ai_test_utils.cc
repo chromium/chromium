@@ -214,6 +214,15 @@ void AITestUtils::AITestBase::TearDown() {
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
+void AITestUtils::AITestBase::SetModelInputContextLimit(
+    uint32_t max_input_tokens) {
+  auto solution_config = CreateSolution();
+  solution_config.mutable_feature()
+      ->mutable_input_config()
+      ->set_max_execute_tokens(max_input_tokens);
+  SetSolutionConfig(std::move(solution_config));
+}
+
 void AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService() {
   mock_optimization_guide_keyed_service_ =
       static_cast<MockOptimizationGuideKeyedService*>(

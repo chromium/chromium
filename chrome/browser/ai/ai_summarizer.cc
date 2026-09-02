@@ -140,7 +140,6 @@ AISummarizer::ToProtoOptions(
 // static
 uint32_t AISummarizer::GetInputContextLimit(
     const blink::mojom::AISummarizerCreateOptionsPtr& options) {
-  // TODO(crbug.com/513357094): Get the resolved model config's context window.
   return (options->preference == blink::mojom::PerformancePreference::kSpeed)
              ? blink::mojom::kTinyModelMaxInputTokenSize
              : blink::mojom::kWritingAssistanceMaxInputTokenSize;
@@ -244,7 +243,8 @@ void AISummarizer::DidGetExecutionInputSizeForSummarize(
     return;
   }
 
-  uint32_t context_window_size = AISummarizer::GetInputContextLimit(options_);
+  uint32_t context_window_size = session_wrapper_.GetInputContextLimit(
+      AISummarizer::GetInputContextLimit(options_));
   if (result.value() > context_window_size) {
     on_device_ai::SendStreamingStatus(
         responder,

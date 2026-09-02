@@ -672,7 +672,12 @@ void CheckAndLogEligibility(
 }
 
 template <typename OptionsPtr>
-uint32_t GetInputContextLimit(const OptionsPtr& options) {
+uint32_t GetInputContextLimit(
+    const OptionsPtr& options,
+    const optimization_guide::OnDeviceSession* session = nullptr) {
+  if (session && session->GetTokenLimits().max_execute_tokens > 0) {
+    return session->GetTokenLimits().max_execute_tokens;
+  }
   if constexpr (std::is_same_v<OptionsPtr,
                                blink::mojom::AISummarizerCreateOptionsPtr>) {
     return AISummarizer::GetInputContextLimit(options);
@@ -1701,7 +1706,7 @@ void AIManager::OnSessionCreated(
   }
 
   mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
-  const uint32_t context_window = GetInputContextLimit(options);
+  const uint32_t context_window = GetInputContextLimit(options, session.get());
   context_bound_object_set_.AddContextBoundObject(
       std::make_unique<ContextBoundObjectType>(
           context_bound_object_set_, std::move(session), std::move(options),
@@ -1724,7 +1729,7 @@ void AIManager::OnGotExecutionInputSizeInTokens(
         blink::mojom::AIManagerCreateClientError::kUnableToCalculateTokenSize);
     return;
   }
-  const uint32_t context_window = GetInputContextLimit(options);
+  const uint32_t context_window = GetInputContextLimit(options, session.get());
   if (result.value() > context_window) {
     on_device_ai::SendClientRemoteError(
         client_remote,

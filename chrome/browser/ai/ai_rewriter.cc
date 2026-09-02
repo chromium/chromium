@@ -172,12 +172,13 @@ void AIRewriter::DidGetExecutionInputSizeForRewrite(
     return;
   }
 
-  uint32_t quota = blink::mojom::kWritingAssistanceMaxInputTokenSize;
-  if (result.value() > quota) {
+  uint32_t context_window_size = session_wrapper_.GetInputContextLimit(
+      blink::mojom::kWritingAssistanceMaxInputTokenSize);
+  if (result.value() > context_window_size) {
     on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
-        blink::mojom::QuotaErrorInfo::New(result.value(), quota));
+        blink::mojom::QuotaErrorInfo::New(result.value(), context_window_size));
     return;
   }
 

@@ -146,6 +146,8 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
 
     auto& input_config = *config.mutable_input_config();
     input_config.set_request_base_name(ProofreaderApiRequest().GetTypeName());
+    input_config.set_max_execute_tokens(
+        blink::mojom::kTinyModelMaxInputTokenSize);
 
     *input_config.add_execute_substitutions() = FieldSubstitution(
         "%s", ProtoField({ProofreaderApiRequest::kTextFieldNumber}));
@@ -275,6 +277,31 @@ TEST_F(AIProofreaderTest, ContextWindowUsesContextLimit) {
   CreateProofreaderResult result = client.result().Take();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(client.context_window(), blink::mojom::kTinyModelMaxInputTokenSize);
+}
+
+TEST_F(AIProofreaderTest, CustomInputContextLimit) {
+  constexpr uint32_t kCustomMaxTokens = 2000;
+  SetModelInputContextLimit(kCustomMaxTokens);
+
+  TestCreateProofreaderClient client;
+  GetAIManagerRemote()->CreateProofreader(client.BindNewPipeAndPassRemote(),
+                                          GetDefaultOptions(),
+                                          /*monitor=*/mojo::NullRemote());
+  CreateProofreaderResult result = client.result().Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(client.context_window(), kCustomMaxTokens);
+
+  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote(
+      std::move(result.value()));
+  SetSizeInTokens(kCustomMaxTokens + 1);
+
+  AITestUtils::TestStreamingResponder responder;
+  proofreader_remote->Proofread(kInputString, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  ASSERT_EQ(responder.quota_error_info().requested, kCustomMaxTokens + 1);
+  ASSERT_EQ(responder.quota_error_info().quota, kCustomMaxTokens);
 }
 
 TEST_F(AIProofreaderTest, CanCreateIsLanguagesSupported) {

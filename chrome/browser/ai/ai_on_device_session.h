@@ -37,6 +37,13 @@ class AIOnDeviceSession {
 
   optimization_guide::OnDeviceSession* session() { return session_.get(); }
 
+  uint32_t GetInputContextLimit(uint32_t default_limit) const {
+    if (session_ && session_->GetTokenLimits().max_execute_tokens > 0) {
+      return session_->GetTokenLimits().max_execute_tokens;
+    }
+    return default_limit;
+  }
+
  private:
   // Takes the next pending request, if there is no execution in flight.
   void MaybeRunNextExecutionRequest();

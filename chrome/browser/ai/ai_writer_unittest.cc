@@ -150,6 +150,8 @@ CreateWriterConfig() {
   auto& input_config = *config.mutable_input_config();
   input_config.set_request_base_name(
       WritingAssistanceApiRequest().GetTypeName());
+  input_config.set_max_execute_tokens(
+      blink::mojom::kWritingAssistanceMaxInputTokenSize);
 
   *input_config.add_execute_substitutions() = FieldSubstitution(
       "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
@@ -423,6 +425,43 @@ TEST_F(AIWriterTest, ContextWindowUsesContextLimit) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(client.context_window(),
             blink::mojom::kWritingAssistanceMaxInputTokenSize);
+}
+
+TEST_F(AIWriterTest, CustomInputContextLimit) {
+  constexpr uint32_t kCustomMaxTokens = 5000;
+  SetModelInputContextLimit(kCustomMaxTokens);
+
+  TestCreateWriterClient client;
+  GetAIManagerRemote()->CreateWriter(client.BindNewPipeAndPassRemote(),
+                                     GetDefaultOptions(),
+                                     /*monitor=*/mojo::NullRemote());
+  CreateWriterResult result = client.result().Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(client.context_window(), kCustomMaxTokens);
+
+  SetSizeInTokens(kCustomMaxTokens + 1);
+
+  TestCreateWriterClient create_client;
+  GetAIManagerRemote()->CreateWriter(
+      create_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
+  CreateWriterResult create_result = create_client.result().Take();
+  EXPECT_FALSE(create_result.has_value());
+  EXPECT_EQ(create_result.error().error,
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  EXPECT_EQ(create_result.error().quota_error_info->requested,
+            kCustomMaxTokens + 1);
+  EXPECT_EQ(create_result.error().quota_error_info->quota, kCustomMaxTokens);
+
+  mojo::Remote<blink::mojom::AIWriter> writer_remote(
+      std::move(result.value()));
+  AITestUtils::TestStreamingResponder responder;
+  writer_remote->Write(kInputString, kContextString, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  ASSERT_EQ(responder.quota_error_info().requested, kCustomMaxTokens + 1);
+  ASSERT_EQ(responder.quota_error_info().quota, kCustomMaxTokens);
 }
 
 TEST_F(AIWriterTest, WriteDefault) {

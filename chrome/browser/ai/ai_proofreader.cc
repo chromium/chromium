@@ -171,7 +171,8 @@ void AIProofreader::DidGetExecutionInputSizeForProofread(
     return;
   }
 
-  uint32_t context_window_size = AIProofreader::GetInputContextLimit(options_);
+  uint32_t context_window_size = session_wrapper_.GetInputContextLimit(
+      AIProofreader::GetInputContextLimit(options_));
   if (result.value() > context_window_size) {
     on_device_ai::SendStreamingStatus(
         responder,

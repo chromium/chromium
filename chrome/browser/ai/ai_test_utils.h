@@ -114,6 +114,7 @@ class AITestUtils {
 
     void SetSolutionConfig(
         optimization_guide::proto::SolutionConfig solution_config);
+    void SetModelInputContextLimit(uint32_t max_input_tokens);
 
     blink::mojom::AIManager* GetAIManagerInterface();
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
