@@ -556,6 +556,7 @@ final class TouchToFillPaymentMethodViewBinder {
         if (propertyKey == TEXT_ID) {
             button.setText(model.get(TEXT_ID));
         } else if (propertyKey == ON_CLICK_ACTION) {
+            assert model.get(ON_CLICK_ACTION) != null : "A button must have an action";
             button.setOnClickListener(_ -> model.get(ON_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
