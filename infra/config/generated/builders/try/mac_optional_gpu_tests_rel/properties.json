@@ -8,12 +8,12 @@
         "entries": [
           {
             "builder_id": {
-              "bucket": "try",
-              "builder": "mac_optional_gpu_tests_rel",
+              "bucket": "ci",
+              "builder": "GPU FYI Mac Builder",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "tryserver.chromium.mac",
+              "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -21,7 +21,6 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "mac"
               },
@@ -29,13 +28,85 @@
                 "config": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Mac FYI Release (Intel)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Mac Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Mac FYI Retina Release (AMD)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Mac Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
+            }
           }
         ]
       },
       "builder_ids": [
         {
-          "bucket": "try",
-          "builder": "mac_optional_gpu_tests_rel",
+          "bucket": "ci",
+          "builder": "GPU FYI Mac Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Mac FYI Release (Intel)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Mac FYI Retina Release (AMD)",
           "project": "chromium"
         }
       ],

@@ -235,6 +235,10 @@
         {
           "builder": "gpu-fyi-try-mac-intel-rel",
           "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "mac_optional_gpu_tests_rel",
+          "group": "tryserver.chromium.mac"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Mac Builder/targets"

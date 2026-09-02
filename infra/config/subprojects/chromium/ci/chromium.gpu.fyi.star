@@ -1282,6 +1282,7 @@ shared_gpu.ci.linux_builder(
 
 shared_gpu.ci.mac_builder(
     name = "GPU FYI Mac Builder",
+    branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds release Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -2496,6 +2497,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac FYI Release (Intel)",
+    branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs release GPU tests on stable Mac/Intel UHD 630 Mac Mini configs",
     parent = "GPU FYI Mac Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(
@@ -2570,6 +2572,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac FYI Retina Release (AMD)",
+    branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs release GPU tests on stable Mac/AMD Macbook Pro configs",
     parent = "GPU FYI Mac Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(

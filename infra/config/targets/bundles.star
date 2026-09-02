@@ -5946,67 +5946,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "mac_optional_gpu_tests_rel_gpu_telemetry_tests",
-    targets = [
-        targets.bundle(
-            targets = "gpu_common_and_optional_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "mac_optional_gpu_tests_rel_gtests",
-    targets = [
-        targets.bundle(
-            targets = "gpu_fyi_and_optional_non_linux_gtests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_fyi_mac_specific_gtests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "mac_specific_chromium_gtests",
     targets = [
         "power_sampler_unittests",
