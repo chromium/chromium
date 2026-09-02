@@ -98,8 +98,7 @@ bool ShouldAddSixPackKeyProperties(const mojom::Keyboard& keyboard) {
 }
 
 bool ShouldAddExtendedFkeyProperties(const mojom::Keyboard& keyboard) {
-  return ::features::AreF11AndF12ShortcutsEnabled() &&
-         IsChromeOSKeyboard(keyboard) &&
+  return IsChromeOSKeyboard(keyboard) &&
          !std::ranges::contains(keyboard.modifier_keys,
                                 ui::mojom::ModifierKey::kFunction);
 }

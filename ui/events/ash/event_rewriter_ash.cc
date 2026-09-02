@@ -1686,8 +1686,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   if (!is_sticky_key_extension_command && !(key_event.flags() & EF_FINAL)) {
     RewriteExtendedKeys(key_event, &state);
     RewriteFunctionKeys(key_event, device_id, &state);
-    if (features::AreF11AndF12ShortcutsEnabled() &&
-        keyboard_capability_->IsChromeOSKeyboard(last_keyboard_device_id_)) {
+    if (keyboard_capability_->IsChromeOSKeyboard(last_keyboard_device_id_)) {
       RewriteExtendedFunctionKeys(delegate_, key_event,
                                   last_keyboard_device_id_, &state);
     }

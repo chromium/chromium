@@ -284,8 +284,7 @@ void RecordKeyboardNumberOfKeysRemapped(const mojom::Keyboard& keyboard) {
 }
 
 bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
-  return ::features::AreF11AndF12ShortcutsEnabled() &&
-         Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(keyboard.id) &&
+  return Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(keyboard.id) &&
          (keyboard.settings->f11.has_value() &&
           keyboard.settings->f12.has_value()) &&
          !std::ranges::contains(keyboard.modifier_keys,

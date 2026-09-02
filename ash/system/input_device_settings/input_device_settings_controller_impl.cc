@@ -258,9 +258,7 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
       Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
   mojom_keyboard->meta_key =
       Shell::Get()->keyboard_capability()->GetMetaKey(keyboard);
-  if (::features::AreF11AndF12ShortcutsEnabled()) {
-    mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
-  }
+  mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
   RecordKeyboardMetadataTierMetrics(keyboard);
 
   return mojom_keyboard;
@@ -411,7 +409,7 @@ bool KeyboardSettingsAreValid(
   const bool is_non_chromeos_keyboard =
       (keyboard.meta_key != ui::mojom::MetaKey::kLauncher &&
        keyboard.meta_key != ui::mojom::MetaKey::kSearch);
-  if (is_non_chromeos_keyboard && ::features::AreF11AndF12ShortcutsEnabled() &&
+  if (is_non_chromeos_keyboard &&
       (settings.f11.has_value() || settings.f12.has_value())) {
     return false;
   }
