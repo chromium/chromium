@@ -2317,14 +2317,6 @@ inline constexpr char kEnableIsolatedWebAppUnmanagedInstallDescription[] =
     "Enables the installation of Isolated Web Apps on devices that are not "
     "managed by an enterprise.";
 
-inline constexpr char kEnableIsolatedWebAppManagedGuestSessionInstallName[] =
-    "Enable Isolated Web App installation in managed guest sessions";
-inline constexpr char
-    kEnableIsolatedWebAppManagedGuestSessionInstallDescription[] =
-        "Enables the installation of Isolated Web Apps for users that are "
-        "logged "
-        "into a managed guest session.";
-
 inline constexpr char kEnableIsolatedWebAppDevModeName[] =
     "Enable Isolated Web App Developer Mode";
 inline constexpr char kEnableIsolatedWebAppDevModeDescription[] =

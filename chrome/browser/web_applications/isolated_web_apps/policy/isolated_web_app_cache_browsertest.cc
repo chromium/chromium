@@ -272,8 +272,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
         iwa_test_update_server_(/*reuse_port_across_restarts=*/true),
         session_mixin_(CreateSessionMixin(session_type_)) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebAppBundleCache,
-         features::kIsolatedWebAppManagedGuestSessionInstall},
+        {features::kIsolatedWebAppBundleCache},
         /*disabled_features=*/{});
   }
 

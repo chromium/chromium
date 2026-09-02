@@ -5749,12 +5749,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-set-shape", flag_descriptions::kEnableSetShapeName,
      flag_descriptions::kEnableSetShapeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kSetShape)},
-    {"enable-isolated-web-app-managed-guest-session-install",
-     flag_descriptions::kEnableIsolatedWebAppManagedGuestSessionInstallName,
-     flag_descriptions::
-         kEnableIsolatedWebAppManagedGuestSessionInstallDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kIsolatedWebAppManagedGuestSessionInstall)},
     {"enable-isolated-web-app-unmanaged-install",
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallName,
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallDescription,

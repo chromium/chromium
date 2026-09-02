@@ -45,7 +45,6 @@ enum class IwaInstallerResultType {
   kErrorWebBundleUrlCantBeDetermined,
   kErrorCantDownloadWebBundle,
   kErrorCantInstallFromWebBundle,
-  kErrorManagedGuestSessionInstallDisabled,
   kErrorAppNotInAllowlist
 };
 

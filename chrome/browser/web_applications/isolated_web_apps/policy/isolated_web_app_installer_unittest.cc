@@ -194,8 +194,6 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
  private:
   SessionType session_type_;
 #if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebAppManagedGuestSessionInstall};
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
 #endif  // BUILDFLAG(IS_CHROMEOS)

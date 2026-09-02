@@ -56,7 +56,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -239,20 +238,11 @@ class IwaComponentWrapper {
 class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
  public:
   explicit IsolatedWebAppPolicyManagerTestBase(
-      bool is_mgs_session_install_enabled,
       bool is_user_session,
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : IsolatedWebAppTest(time_source, WithDevMode{}),
-        is_mgs_session_install_enabled_(is_mgs_session_install_enabled),
-        is_user_session_(is_user_session) {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (!is_mgs_session_install_enabled_) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kIsolatedWebAppManagedGuestSessionInstall);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
+        is_user_session_(is_user_session) {}
 
   void SetUpServedIwas() {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app1 =
@@ -319,10 +309,6 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
     ASSERT_THAT(web_app, testing::NotNull()) << "The app in not installed :(";
   }
 
-  bool IsManagedGuestSessionInstallEnabled() {
-    return is_mgs_session_install_enabled_;
-  }
-
   const web_package::SignedWebBundleId& web_bundle_id_1() {
     return *lazy_app1_id_;
   }
@@ -331,9 +317,7 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
   }
 
  private:
-  const bool is_mgs_session_install_enabled_;
   const bool is_user_session_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
@@ -347,9 +331,7 @@ class IsolatedWebAppPolicyManagerTest
     : public IsolatedWebAppPolicyManagerTestBase {
  public:
   IsolatedWebAppPolicyManagerTest()
-      : IsolatedWebAppPolicyManagerTestBase(
-            /*is_mgs_session_install_enabled=*/false,
-            /*is_user_session=*/true) {}
+      : IsolatedWebAppPolicyManagerTestBase(/*is_user_session=*/true) {}
 
   // `IsolatedWebAppPolicyManagerTestBase`:
   void SetCommandScheduler() override {
@@ -574,14 +556,11 @@ TEST_F(IsolatedWebAppPolicyManagerTest, DevModeAppRemovedWhenForceInstalled) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-class ManagedGuestSessionInstallFlagTest
-    : public IsolatedWebAppPolicyManagerTestBase,
-      public testing::WithParamInterface<bool> {
+class ManagedGuestSessionInstallTest
+    : public IsolatedWebAppPolicyManagerTestBase {
  public:
-  ManagedGuestSessionInstallFlagTest()
-      : IsolatedWebAppPolicyManagerTestBase(
-            /*is_mgs_session_install_enabled=*/GetParam(),
-            /*is_user_session=*/false) {}
+  ManagedGuestSessionInstallTest()
+      : IsolatedWebAppPolicyManagerTestBase(/*is_user_session=*/false) {}
 
   // `IsolatedWebAppPolicyManagerTestBase`:
   void SetCommandScheduler() override {
@@ -589,7 +568,7 @@ class ManagedGuestSessionInstallFlagTest
   }
 };
 
-TEST_P(ManagedGuestSessionInstallFlagTest, AppInstalledIfFlagEnabled) {
+TEST_F(ManagedGuestSessionInstallTest, AppInstalled) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
 
@@ -603,21 +582,10 @@ TEST_P(ManagedGuestSessionInstallFlagTest, AppInstalledIfFlagEnabled) {
 
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(url_info.app_id());
-  if (IsManagedGuestSessionInstallEnabled()) {
-    ASSERT_THAT(web_app, NotNull());
-    EXPECT_THAT(
-        web_app->GetSources(),
-        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
-  } else {
-    ASSERT_THAT(web_app, IsNull());
-  }
+  ASSERT_THAT(web_app, NotNull());
+  EXPECT_THAT(web_app->GetSources(),
+              Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    ManagedGuestSessionInstallFlagTest,
-    // Determines whether managed guest session install is enabled.
-    testing::Bool());
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -625,9 +593,7 @@ class IsolatedWebAppManagedAllowlistTest
     : public IsolatedWebAppPolicyManagerTestBase {
  public:
   IsolatedWebAppManagedAllowlistTest()
-      : IsolatedWebAppPolicyManagerTestBase(
-            /*is_mgs_session_install_enabled=*/false,
-            /*is_user_session=*/true) {}
+      : IsolatedWebAppPolicyManagerTestBase(/*is_user_session=*/true) {}
 
   // `IsolatedWebAppPolicyManagerTestBase`:
   void SetCommandScheduler() override {
@@ -761,9 +727,7 @@ class IsolatedWebAppPolicyManagerCustomSchedulerTest
     : public IsolatedWebAppPolicyManagerTestBase {
  public:
   IsolatedWebAppPolicyManagerCustomSchedulerTest()
-      : IsolatedWebAppPolicyManagerTestBase(
-            /*is_mgs_session_install_enabled=*/false,
-            /*is_user_session=*/true) {}
+      : IsolatedWebAppPolicyManagerTestBase(/*is_user_session=*/true) {}
 
   T* get_command_scheduler() { return scheduler_; }
   // `IsolatedWebAppPolicyManagerTestBase`:
@@ -1163,7 +1127,6 @@ class IsolatedWebAppRetryTest : public IsolatedWebAppPolicyManagerTestBase {
  public:
   IsolatedWebAppRetryTest()
       : IsolatedWebAppPolicyManagerTestBase(
-            /*is_mgs_session_install_enabled=*/false,
             /*is_user_session=*/true,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     features_.InitAndDisableFeature(kIwaPolicyManagerOnDemandComponentUpdate);
@@ -1464,9 +1427,7 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
 class CleanupOrphanedBundlesTest : public IsolatedWebAppPolicyManagerTestBase {
  public:
   CleanupOrphanedBundlesTest()
-      : IsolatedWebAppPolicyManagerTestBase(
-            /*is_mgs_session_install_enabled=*/false,
-            /*is_user_session=*/true) {}
+      : IsolatedWebAppPolicyManagerTestBase(/*is_user_session=*/true) {}
 
   void TearDown() override {
     command_scheduler_ = nullptr;

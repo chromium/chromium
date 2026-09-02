@@ -42,7 +42,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -56,7 +55,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
@@ -220,15 +218,6 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
     std::move(on_started_callback).Run();
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(
-          features::kIsolatedWebAppManagedGuestSessionInstall)) {
-    std::move(on_started_callback).Run();
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto debug_log =
       base::DictValue()

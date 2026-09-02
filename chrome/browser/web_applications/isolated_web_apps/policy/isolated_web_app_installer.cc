@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/isolated_web_app_external_install_options.h"
@@ -182,14 +181,6 @@ void IwaInstaller::Start() {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(
-          features::kIsolatedWebAppManagedGuestSessionInstall)) {
-    LOG(ERROR) << "IWA installation in managed guest sessions is disabled.";
-    Finish(Result(Result::Type::kErrorManagedGuestSessionInstallDisabled));
-    return;
-  }
-
   if (IsIwaBundleCacheEnabledInCurrentSession()) {
     // Install IWA from cache if possible, otherwise install it from the
     // Internet.
@@ -465,8 +456,6 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kErrorCantDownloadWebBundle";
     case Type::kErrorCantInstallFromWebBundle:
       return os << "kErrorCantInstallFromWebBundle";
-    case Type::kErrorManagedGuestSessionInstallDisabled:
-      return os << "kErrorManagedGuestSessionInstallDisabled";
     case Type::kErrorAppNotInAllowlist:
       return os << "kErrorAppNotInAllowlist";
   }
