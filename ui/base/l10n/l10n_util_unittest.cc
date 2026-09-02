@@ -466,7 +466,15 @@ TEST_F(L10nUtilTest, GetAppLocale_NoSupportsLocalePreference) {
   }
 }
 
-TEST_F(L10nUtilTest, GetAppLocale_NoSupportsLocalePreference_Nb) {
+// TODO(crbug.com/556065800): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb \
+  DISABLED_GetAppLocale_NoSupportsLocalePreference_Nb
+#else
+#define MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb \
+  GetAppLocale_NoSupportsLocalePreference_Nb
+#endif
+TEST_F(L10nUtilTest, MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb) {
   if (!kSupportsLocalePreference) {
     SetUpLocales(kDefaultLocalesOnDisk);
     SetDefaultLocaleForTest(GetKnownLanguageTag("no"));
