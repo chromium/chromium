@@ -6946,6 +6946,13 @@
       name: "WebGLOnWebGPU",
     },
     {
+      // WebGL tone mapping support
+      // https://issues.chromium.org/issues/555806830
+      // https://chromestatus.com/feature/5424242161221632
+      name: "WebGLToneMapping",
+      status: "experimental",
+    },
+    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",

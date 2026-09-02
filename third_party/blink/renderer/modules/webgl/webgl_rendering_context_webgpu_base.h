@@ -27,6 +27,7 @@ namespace blink {
 
 class ExceptionState;
 class HTMLCanvasElement;
+class CanvasToneMapping;
 class HTMLImageElement;
 class HTMLVideoElement;
 class ImageBitmap;
@@ -88,6 +89,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void setDrawingBufferColorSpace(ScriptState*,
                                   const V8PredefinedColorSpace& color_space,
                                   ExceptionState&);
+  CanvasToneMapping* drawingBufferToneMapping(
+      const CanvasToneMapping* tone_mapping = nullptr);
   V8PredefinedColorSpace unpackColorSpace(ScriptState*) const;
   void setUnpackColorSpace(ScriptState*,
                            const V8PredefinedColorSpace& color_space,

@@ -177,6 +177,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     PreserveDrawingBuffer preserve,
     Platform::WebGLContextType webgl_version,
     PredefinedColorSpace color_space,
+    gfx::HDRMetadata hdr_metadata,
     gl::GpuPreference gpu_preference) {
   if (g_should_fail_drawing_buffer_creation_for_testing) {
     g_should_fail_drawing_buffer_creation_for_testing = false;
@@ -233,7 +234,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
           std::move(extensions_util), client, discard_framebuffer_supported,
           texture_storage_enabled, want_alpha_channel, premultiplied_alpha,
           preserve, webgl_version, want_depth_buffer, want_stencil_buffer,
-          color_space, gpu_preference));
+          color_space, hdr_metadata, gpu_preference));
   if (!drawing_buffer->Initialize(size, multisample_supported)) {
     drawing_buffer->BeginDestruction();
     return scoped_refptr<DrawingBuffer>();
@@ -256,6 +257,7 @@ DrawingBuffer::DrawingBuffer(
     bool want_depth,
     bool want_stencil,
     PredefinedColorSpace color_space,
+    gfx::HDRMetadata hdr_metadata,
     gl::GpuPreference gpu_preference)
     : client_(client),
       preserve_drawing_buffer_(preserve),
@@ -278,6 +280,7 @@ DrawingBuffer::DrawingBuffer(
       want_depth_(want_depth),
       want_stencil_(want_stencil),
       color_space_(PredefinedColorSpaceToGfxColorSpace(color_space)),
+      hdr_metadata_(hdr_metadata),
       opengl_flip_y_extension_(
           ContextProvider()->GetCapabilities().mesa_framebuffer_flip_y),
       initial_gpu_(gpu_preference),
@@ -394,10 +397,6 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
 
   gl_->ContextVisibilityHintCHROMIUM(is_hidden_ ? GL_FALSE : GL_TRUE);
   gl_->Flush();
-}
-
-void DrawingBuffer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
-  hdr_metadata_ = hdr_metadata;
 }
 
 bool DrawingBuffer::RequiresAlphaChannelToBePreserved() {
@@ -1729,15 +1728,26 @@ void DrawingBuffer::SetColorSpace(PredefinedColorSpace predefined_color_space) {
   color_space_ = color_space;
 
   ScopedStateRestorer scoped_state_restorer(this);
-
   recycled_software_resources_.clear();
-
   if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
     // TODO(https://crbug.com/1208480): What is the correct behavior is we fail
     // to re-allocate the buffer.
     DLOG(ERROR) << "Failed to allocate color buffer with new color space.";
   }
+  ClearNewlyAllocatedFramebuffers(kClearAllFBOs);
+}
 
+void DrawingBuffer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
+  if (hdr_metadata_ == hdr_metadata) {
+    return;
+  }
+  hdr_metadata_ = hdr_metadata;
+
+  ScopedStateRestorer scoped_state_restorer(this);
+  recycled_software_resources_.clear();
+  if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
+    DLOG(ERROR) << "Failed to allocate color buffer with new HDR metadata.";
+  }
   ClearNewlyAllocatedFramebuffers(kClearAllFBOs);
 }
 

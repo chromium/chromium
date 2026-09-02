@@ -12,6 +12,7 @@
 #include "base/notimplemented.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_tone_mapping.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_copy_element_image_config.h"
@@ -622,6 +623,12 @@ void WebGLRenderingContextWebGPUBase::setDrawingBufferColorSpace(
     const V8PredefinedColorSpace& color_space,
     ExceptionState&) {
   NOTIMPLEMENTED();
+}
+
+CanvasToneMapping* WebGLRenderingContextWebGPUBase::drawingBufferToneMapping(
+    const CanvasToneMapping* tone_mapping) {
+  NOTIMPLEMENTED();
+  return CanvasToneMapping::Create();
 }
 
 V8PredefinedColorSpace WebGLRenderingContextWebGPUBase::unpackColorSpace(

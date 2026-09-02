@@ -2846,6 +2846,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawElementsInstanced
 [Worker]     method drawRangeElements
 [Worker]     method drawingBufferStorage
+[Worker]     method drawingBufferToneMapping
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method endQuery
@@ -3381,6 +3382,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawArrays
 [Worker]     method drawElements
 [Worker]     method drawingBufferStorage
+[Worker]     method drawingBufferToneMapping
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method finish

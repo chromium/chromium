@@ -143,6 +143,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       PreserveDrawingBuffer,
       Platform::WebGLContextType,
       PredefinedColorSpace,
+      gfx::HDRMetadata,
       gl::GpuPreference);
 
   DrawingBuffer(const DrawingBuffer&) = delete;
@@ -191,6 +192,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Set the color space of the default draw buffer. This will destroy the
   // contents of the drawing buffer.
   void SetColorSpace(PredefinedColorSpace color_space);
+  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
 
   // Bind the default framebuffer to |target|. |target| must be
   // GL_FRAMEBUFFER, GL_READ_FRAMEBUFFER, or GL_DRAW_FRAMEBUFFER.
@@ -222,8 +224,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool BufferClearNeeded() const;
 
   void SetIsInHiddenPage(bool);
-  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
-  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
 
   // Whether the target for draw operations has format GL_RGBA, but is
   // emulating format GL_RGB. When the target's storage is first
@@ -343,6 +343,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 bool wants_depth,
                 bool wants_stencil,
                 PredefinedColorSpace,
+                gfx::HDRMetadata,
                 gl::GpuPreference);
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
@@ -686,6 +687,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // The color space of this buffer.
   gfx::ColorSpace color_space_;
+  gfx::HDRMetadata hdr_metadata_;
 
   AntialiasingMode anti_aliasing_mode_ = kAntialiasingModeNone;
 
@@ -695,8 +697,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool destruction_in_progress_ = false;
   bool is_hidden_ = false;
   bool has_eqaa_support = false;
-
-  gfx::HDRMetadata hdr_metadata_;
 
   GLenum draw_buffer_ = GL_COLOR_ATTACHMENT0;
 

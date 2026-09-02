@@ -460,6 +460,7 @@ class DrawingBufferForTests : public DrawingBuffer {
                       false /* wantDepth */,
                       false /* wantStencil */,
                       PredefinedColorSpace::kSRGB,
+                      gfx::HDRMetadata(),
                       gl::GpuPreference::kHighPerformance),
         live_(nullptr) {}
 

@@ -469,6 +469,7 @@ interface mixin WebGLRenderingContextBase {
     readonly attribute GLsizei drawingBufferHeight;
     [RuntimeEnabled=WebGLDrawingBufferStorage] readonly attribute GLenum drawingBufferFormat;
     [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace drawingBufferColorSpace;
+    [RuntimeEnabled=WebGLToneMapping] CanvasToneMapping drawingBufferToneMapping(optional CanvasToneMapping toneMapping);
     [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace unpackColorSpace;
 
     void activeTexture(GLenum texture);

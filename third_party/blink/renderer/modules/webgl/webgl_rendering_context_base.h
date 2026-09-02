@@ -79,6 +79,7 @@ namespace blink {
 class AcceleratedStaticBitmapImage;
 class CanvasNon2DResourceProvider;
 struct CanvasSnapshotInfo;
+class CanvasToneMapping;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
 class V8UnionElementOrElementImage;
@@ -171,6 +172,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void setDrawingBufferColorSpace(ScriptState*,
                                   const V8PredefinedColorSpace& color_space,
                                   ExceptionState&);
+  CanvasToneMapping* drawingBufferToneMapping(
+      const CanvasToneMapping* tone_mapping = nullptr);
 
   V8PredefinedColorSpace unpackColorSpace(ScriptState*) const;
   void setUnpackColorSpace(ScriptState*,
@@ -2064,6 +2067,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   PredefinedColorSpace drawing_buffer_color_space_ =
       PredefinedColorSpace::kSRGB;
+  gfx::HDRMetadata drawing_buffer_tone_mapping_hdr_metadata_;
   PredefinedColorSpace unpack_color_space_ = PredefinedColorSpace::kSRGB;
 };
 
