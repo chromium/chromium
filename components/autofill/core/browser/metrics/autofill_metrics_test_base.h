@@ -257,7 +257,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
       SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
     Suggestion suggestion(suggestion_type);
     autofill_manager().DidShowSuggestions(
-        {suggestion}, /*metadata=*/{}, form.global_id(),
+        {suggestion}, std::nullopt, form.global_id(),
         form.fields()[field_index].global_id(), {});
   }
 

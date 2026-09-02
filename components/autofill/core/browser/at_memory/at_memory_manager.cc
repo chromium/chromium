@@ -421,13 +421,14 @@ void AtMemoryManager::OnPopupShown(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source,
-    const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata,
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        parent_suggestion_metadata,
     UpdateSuggestionsCallback update_callback,
     ukm::SourceId ukm_source_id) {
   if (!IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
-  if (!metadata.is_subpopup() && !popup_state_) {
+  if (!parent_suggestion_metadata && !popup_state_) {
     const auto [form, field] = bam.FindFormAndField(form_id, field_id);
     const FormSignature form_signature =
         form ? form->form_signature() : FormSignature(0);
@@ -449,7 +450,8 @@ void AtMemoryManager::OnPopupShown(
   }
 
   if (popup_state_ && popup_state_->metrics_recorder) {
-    popup_state_->metrics_recorder->OnPopupShown(trigger_source, metadata);
+    popup_state_->metrics_recorder->OnPopupShown(trigger_source,
+                                                 parent_suggestion_metadata);
   }
 }
 

@@ -195,8 +195,8 @@ PasswordManualFallbackFlow::GetDriver_DoNotUse() {
 
 void PasswordManualFallbackFlow::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
-    const SuggestionUiMetadata& metadata) {
-  if (metadata.is_subpopup()) {
+    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
+  if (parent_suggestion_metadata.has_value()) {
     // This event corresponds to a sub-popup - we can ignore it.
     return;
   }

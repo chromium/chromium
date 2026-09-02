@@ -73,7 +73,8 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
   GetDriver_DoNotUse() override;
   void OnSuggestionsShown(base::span<const autofill::Suggestion> suggestions,
-                          const SuggestionUiMetadata& metadata) override;
+                          base::optional_ref<const SuggestionMetadata>
+                              parent_suggestion_metadata) override;
   void OnSuggestionsHidden(autofill::SuggestionHidingReason reason) override;
   bool OnFilterChanged(const std::u16string& filter) override;
   bool OnSearchSubmitted(const std::u16string& filter) override;

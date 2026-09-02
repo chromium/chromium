@@ -269,7 +269,8 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
   MOCK_METHOD(void,
               OnSuggestionsShown,
               (base::span<const Suggestion>,
-               const AutofillSuggestionDelegate::SuggestionUiMetadata&),
+               base::optional_ref<
+                   const AutofillSuggestionDelegate::SuggestionMetadata>),
               (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
   MOCK_METHOD(void, DidSelectSuggestion, (const Suggestion&), (override));

@@ -109,7 +109,8 @@ class AtMemoryMetricsRecorder {
   // typically result in the popup being hidden and a new session starting.
   void OnPopupShown(
       AutofillSuggestionTriggerSource trigger_source,
-      const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata);
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          parent_suggestion_metadata);
 
   // Records that a search query was submitted during this session.
   void OnQuerySubmitted(std::u16string_view query);

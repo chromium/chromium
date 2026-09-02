@@ -407,7 +407,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
 
   base::HistogramTester histogram_tester;
 
-  autofill_manager().DidShowSuggestions(generated_suggestions, /*metadata=*/{},
+  autofill_manager().DidShowSuggestions(generated_suggestions, std::nullopt,
                                         form.global_id(),
                                         form.fields()[0].global_id(), {});
 
@@ -450,7 +450,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
 
   base::HistogramTester histogram_tester;
 
-  autofill_manager().DidShowSuggestions(generated_suggestions, /*metadata=*/{},
+  autofill_manager().DidShowSuggestions(generated_suggestions, std::nullopt,
                                         form.global_id(),
                                         form.fields()[0].global_id(), {});
 

@@ -46,13 +46,11 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
-using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::Ne;
 using ::testing::NiceMock;
-using ::testing::Not;
 using ::testing::Return;
 
 using SingleEntryRemovalMethod = AutofillMetrics::SingleEntryRemovalMethod;
@@ -90,12 +88,13 @@ class AutofillPopupControllerImplTest
     // logic.
     EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown)
         .WillOnce([&](base::span<const Suggestion> suggestions,
-                      const AutofillSuggestionDelegate::SuggestionUiMetadata&
-                          metadata) {
+                      base::optional_ref<
+                          const AutofillSuggestionDelegate::SuggestionMetadata>
+                          parent_suggestion_metadata) {
           manager()
               .external_delegate()
-              .AutofillExternalDelegate::OnSuggestionsShown(suggestions,
-                                                            metadata);
+              .AutofillExternalDelegate::OnSuggestionsShown(
+                  suggestions, parent_suggestion_metadata);
         });
 
     // 3. Actually show the suggestions, which triggers the search session
@@ -406,13 +405,9 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        OnSuggestionsHiddenIsCalledOnlyByRootPopup) {
   // `OnSuggestionsShown` is also called by sub-popups, but they pass non-empty
-  // multi_index.
-  EXPECT_CALL(
-      manager().external_delegate(),
-      OnSuggestionsShown(
-          _,
-          Field(&AutofillSuggestionDelegate::SuggestionUiMetadata::multi_index,
-                Not(IsEmpty()))));
+  // metadata.
+  EXPECT_CALL(manager().external_delegate(),
+              OnSuggestionsShown(_, Ne(std::nullopt)));
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().suggestion_controller(manager()).OpenSubPopup(
@@ -437,7 +432,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(
       manager().external_delegate(),
-      OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionUiMetadata(
+      OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionMetadata(
                                 {.multi_index = {2}}))));
 
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
@@ -467,14 +462,14 @@ TEST_F(AutofillPopupControllerImplTest,
 
   {
     InSequence s;
-    EXPECT_CALL(manager().external_delegate(),
-                OnSuggestionsShown(
-                    _, Eq(AutofillSuggestionDelegate::SuggestionUiMetadata(
-                           {.multi_index = {2}}))));
-    EXPECT_CALL(manager().external_delegate(),
-                OnSuggestionsShown(
-                    _, Eq(AutofillSuggestionDelegate::SuggestionUiMetadata(
-                           {.multi_index = {2, 1}}))));
+    EXPECT_CALL(
+        manager().external_delegate(),
+        OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionMetadata(
+                                  {.multi_index = {2}}))));
+    EXPECT_CALL(
+        manager().external_delegate(),
+        OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionMetadata(
+                                  {.multi_index = {2, 1}}))));
   }
 
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));

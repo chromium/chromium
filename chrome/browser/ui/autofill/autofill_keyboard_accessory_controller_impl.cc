@@ -678,7 +678,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
         kIgnoreEarlyClicksOnSuggestionsDuration);
   }
   // TODO(crbug.com/364165357): Use actually shown suggestions.
-  delegate_->OnSuggestionsShown(suggestions_, /*metadata=*/{});
+  delegate_->OnSuggestionsShown(suggestions_, std::nullopt);
 }
 
 std::optional<AutofillSuggestionController::UiSessionId>

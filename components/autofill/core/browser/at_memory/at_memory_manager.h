@@ -76,7 +76,8 @@ class AtMemoryManager {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
-      const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          parent_suggestion_metadata,
       UpdateSuggestionsCallback update_callback,
       ukm::SourceId ukm_source_id);
 

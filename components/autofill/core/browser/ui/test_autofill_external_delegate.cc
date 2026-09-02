@@ -22,10 +22,11 @@ TestAutofillExternalDelegate::~TestAutofillExternalDelegate() = default;
 
 void TestAutofillExternalDelegate::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
-    const SuggestionUiMetadata& metadata) {
+    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
   popup_hidden_ = false;
 
-  AutofillExternalDelegate::OnSuggestionsShown(suggestions, metadata);
+  AutofillExternalDelegate::OnSuggestionsShown(suggestions,
+                                               parent_suggestion_metadata);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsHidden(

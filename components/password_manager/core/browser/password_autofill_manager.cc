@@ -261,7 +261,7 @@ PasswordAutofillManager::GetDriver_DoNotUse() {
 
 void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
-    const SuggestionUiMetadata& metadata) {}
+    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {}
 
 void PasswordAutofillManager::OnSuggestionsHidden(
     autofill::SuggestionHidingReason reason) {
