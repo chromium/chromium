@@ -107,7 +107,24 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
         zip_ref.extractall(temp_dir)
 
     super_img = os.path.join(temp_dir, 'super.img')
-    simg2img.unsparse_super_image(super_img)
+    assert os.path.exists(super_img), f"super.img not found in {temp_dir}"
+    simg2img.unsparse_in_place(super_img)
+    # The extracted super.img contains the Fuchsia Fxfs system blobs and has
+    # almost 0 bytes free. When Fuchsia boots, fshost allocates mutable storage
+    # volumes (e.g., 'unencrypted' and 'data') inside Fxfs. Expanding super.img
+    # with spare space as a sparse file provides the needed space for volume
+    # creation.
+    with open(super_img, 'r+b') as f:
+        f.truncate(f.seek(0, os.SEEK_END) + 8 * 1024 * 1024 * 1024)
+
+    userdata_img = os.path.join(temp_dir, 'userdata.img')
+    assert os.path.exists(userdata_img), f"userdata.img not found in {temp_dir}"
+    simg2img.unsparse_in_place(userdata_img)
+    # Ensure sufficient capacity on /data for installing large APKs (such as
+    # Chrome) and writing runtime dex caches.
+    with open(userdata_img, 'r+b') as f:
+        f.truncate(f.seek(0, os.SEEK_END) + 16 * 1024 * 1024 * 1024)
+
     partition_creator.create_zero_image(
         os.path.join(temp_dir, 'metadata.img'), 16
     )
@@ -124,7 +141,17 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
             'bootcmd': 'virtio scan && verified_boot_android virtio 1 _a',
             'bootcmd_android': 'verified_boot_android virtio 1 _a',
             'bootdelay': '0',
-            'bootargs': 'earlyprintk=ttyS0 console=ttyS0 androidboot.console=ttyS0 androidboot.boot_devices=pci0000:00/0000:00:04.0 androidboot.fstab_suffix=cf.ext4.hctr2',
+            'bootargs': ' '.join(
+                [
+                    'earlyprintk=ttyS0',
+                    'console=ttyS0',
+                    'androidboot.console=ttyS0',
+                    'androidboot.boot_devices=pci0000:00/0000:00:04.0',
+                    'androidboot.fstab_suffix=cf.ext4.hctr2',
+                    'androidboot.force_normal_boot=1',
+                    'androidboot.apex_updatable=0',
+                ]
+            ),
         },
         os.path.join(temp_dir, 'uboot_env.img'),
     )
@@ -132,12 +159,6 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
 
     create_persistent_vbmeta_image(
         os.path.join(temp_dir, 'persistent_vbmeta.img')
-    )
-
-    # Always create a fresh empty userdata.img of 16GB to avoid leaking states
-    logging.info("Creating a fresh empty 16GB userdata.img...")
-    partition_creator.create_zero_image(
-        os.path.join(temp_dir, 'userdata.img'), 16384
     )
 
     partition_creator.create_gpt_and_vmdk(
@@ -184,7 +205,7 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
         '-m',
         '28672',
         '-smp',
-        '8',
+        '6',
         '-machine',
         'pc',
         '-cpu',
@@ -233,36 +254,21 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
     return qemu_proc, hvc_stop_event
 
 
-def _check_adb_health(adb_path, adb_port, is_root=False):
-    """Checks if guest ADB is connected and responsive via shell echo ready."""
-    role = " (root)" if is_root else ""
-    logging.info(f"Attempting to connect to ADB on port {adb_port}{role}...")
-    for _ in range(240):
-        subprocess.run(
-            [adb_path, 'connect', f'127.0.0.1:{adb_port}'],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+def _wait_adb_shell(adb_path, adb_port, cmd, pattern):
+    """Waits for an ADB shell command output to match regex pattern or times out."""
+    target = f'127.0.0.1:{adb_port}'
+    start_time = time.time()
+    while time.time() - start_time < 300:
         res = subprocess.run(
-            [adb_path, 'devices'], capture_output=True, text=True
+            [adb_path, '-s', target, 'shell'] + cmd,
+            capture_output=True,
+            text=True,
         )
-        if f"127.0.0.1:{adb_port}\tdevice" in res.stdout:
-            echo_res = subprocess.run(
-                [
-                    adb_path,
-                    '-s',
-                    f'127.0.0.1:{adb_port}',
-                    'shell',
-                    'echo',
-                    'ready',
-                ],
-                capture_output=True,
-                text=True,
-            )
-            if echo_res.returncode == 0 and 'ready' in echo_res.stdout:
-                return True
-        time.sleep(2)
-    logging.error(f"Error: Timed out waiting for guest ADB connection{role}.")
+        if res.returncode == 0 and re.fullmatch(
+            pattern, res.stdout.strip(), re.DOTALL
+        ):
+            return True
+        time.sleep(10)
     return False
 
 
@@ -332,20 +338,18 @@ def main():
         f"Running in {'headless' if args.headless else 'headfull'} mode."
     )
 
-    if not os.path.exists(args.qemu_path) and not shutil.which(args.qemu_path):
-        logging.error(f"Error: QEMU not found at {args.qemu_path}")
-        return 1
+    assert os.path.exists(args.qemu_path) or shutil.which(args.qemu_path), (
+        f"QEMU not found at {args.qemu_path}"
+    )
 
-    if not os.path.exists(args.adb_path) and not shutil.which(args.adb_path):
-        logging.error(f"Error: ADB not found at {args.adb_path}")
-        return 1
+    assert os.path.exists(args.adb_path) or shutil.which(args.adb_path), (
+        f"ADB not found at {args.adb_path}"
+    )
 
     cuttlefish_dir = args.packages / 'cuttlefish'
-    if not cuttlefish_dir.exists():
-        logging.error(
-            f"Error: Cuttlefish directory does not exist: {cuttlefish_dir}"
-        )
-        return 1
+    assert cuttlefish_dir.exists(), (
+        f"Cuttlefish directory does not exist: {cuttlefish_dir}"
+    )
 
     cuttlefish_zip = None
     for f in os.listdir(cuttlefish_dir):
@@ -353,19 +357,24 @@ def main():
             cuttlefish_zip = os.path.join(cuttlefish_dir, f)
             break
 
-    if not cuttlefish_zip:
-        logging.error(
-            f"Error: No Cuttlefish guest image ZIP found in {cuttlefish_dir}"
-        )
-        return 1
+    assert cuttlefish_zip, (
+        f"No Cuttlefish guest image ZIP found in {cuttlefish_dir}"
+    )
 
     bootloader = args.packages / 'uboot' / 'u-boot.rom'
-    if not bootloader.exists():
-        logging.error(f"Error: Bootloader not found at {bootloader}")
-        return 1
+    assert bootloader.exists(), f"Bootloader not found at {bootloader}"
 
     hvc_stop_event = None
     qemu_proc = None
+
+    subprocess.run(['killall', '-9', 'qemu-system-x86_64'])
+    subprocess.run([args.adb_path, 'kill-server'])
+    subprocess.run(['killall', '-9', 'adb'])
+
+    tmp_dir = tempfile.gettempdir()
+    for item in os.listdir(tmp_dir):
+        if item.startswith('cf_qemu_'):
+            shutil.rmtree(os.path.join(tmp_dir, item), ignore_errors=True)
 
     with tempfile.TemporaryDirectory(prefix='cf_qemu_') as temp_dir:
         try:
@@ -373,65 +382,53 @@ def main():
                 args, cuttlefish_zip, bootloader, temp_dir
             )
 
-            logging.info("Waiting 15 seconds for guest to boot...")
-            time.sleep(15)
+            target = f'127.0.0.1:{args.adb_port}'
+            subprocess.run([args.adb_path, 'connect', target])
 
-            if not _check_adb_health(
-                args.adb_path, args.adb_port, is_root=False
+            logging.info(
+                f"Waiting for guest ADB to respond on port {args.adb_port}..."
+            )
+            if not _wait_adb_shell(
+                args.adb_path, args.adb_port, ['echo', 'ready'], 'ready'
             ):
+                logging.error("Timed out waiting for guest ADB to respond.")
                 return 1
+            logging.info("Guest ADB is ready.")
 
             logging.info("Restarting ADB daemon as root...")
-            subprocess.run(
-                [args.adb_path, '-s', f'127.0.0.1:{args.adb_port}', 'root'],
-                capture_output=True,
-                text=True,
-            )
+            subprocess.run([args.adb_path, '-s', target, 'root'])
 
-            if not _check_adb_health(
-                args.adb_path, args.adb_port, is_root=True
+            # Wait for ADB to reconnect as root after daemon restart.
+            if not _wait_adb_shell(
+                args.adb_path, args.adb_port, ['echo', 'ready'], 'ready'
             ):
-                return 1
-            # Known Starnix / Android guest boot workarounds (b/539219514, b/540947081):
-            # 1. Pre-create missing dalvik-cache, tmp, and storage directories.
-            # 2. Ensure /data/local/tmp permissions allow ADB transfers.
-            # 3. Clear sys.init.updatable_crashing flag and restart zygote to
-            #    recover from cold-boot crash loops.
-            for setup_cmd in [
-                'mkdir -p /data/local/tmp',
-                'mkdir -p /data/misc/credstore',
-                'mkdir -p /data/dalvik-cache/x86_64',
-                'mkdir -p /data/dalvik-cache/x86',
-                'mkdir -p /data/dalvik-cache/arm64',
-                'mkdir -p "${EXTERNAL_STORAGE:-/sdcard}"',
-                'mkdir -p /sdcard',
-                'mkdir -p /storage/emulated/0',
-                'mkdir -p /mnt/sdcard',
-                'chmod 777 /data/local/tmp',
-                'setprop sys.init.updatable_crashing 0',
-                'setprop ctl.start zygote',
-                'setprop ctl.restart zygote',
-            ]:
-                res = subprocess.run(
-                    [
-                        args.adb_path,
-                        '-s',
-                        f'127.0.0.1:{args.adb_port}',
-                        'shell',
-                        setup_cmd,
-                    ],
-                    capture_output=True,
-                    text=True,
+                logging.error(
+                    "Timed out waiting for guest ADB after root restart."
                 )
-                if res.returncode != 0:
-                    logging.warning(
-                        'ADB setup command %r failed (exit code %d): %s',
-                        setup_cmd,
-                        res.returncode,
-                        res.stderr.strip(),
-                    )
-                else:
-                    logging.info('Executed ADB setup command: %s', setup_cmd)
+                return 1
+
+            # Wait for Android to complete boot.
+            logging.info("Waiting for Android to complete boot...")
+            if not _wait_adb_shell(
+                args.adb_path,
+                args.adb_port,
+                ['getprop', 'sys.boot_completed'],
+                '1',
+            ):
+                logging.warning("Timed out waiting for sys.boot_completed=1.")
+
+            # Wait for package manager to become responsive.
+            logging.info(
+                "Waiting for Android package manager to become ready..."
+            )
+            if not _wait_adb_shell(
+                args.adb_path,
+                args.adb_port,
+                ['pm', 'list', 'packages'],
+                'package:.*',
+            ):
+                logging.error("Timed out waiting for package manager.")
+                return 1
 
             logging.info("Successfully connected to guest ADB!")
 

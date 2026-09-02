@@ -83,6 +83,29 @@ def main():
                 print("Failed to get expected output from adb shell.")
                 success = False
 
+            if success:
+                pm_cmd = [
+                    adb_path,
+                    '-s',
+                    f'127.0.0.1:{adb_port}',
+                    'shell',
+                    'pm',
+                    'list',
+                    'packages',
+                ]
+                print(
+                    f"Running package manager verification: {' '.join(pm_cmd)}"
+                )
+                for attempt in range(5):
+                    res = subprocess.run(pm_cmd, capture_output=True, text=True)
+                    if 'package:' in res.stdout:
+                        print("Android package manager successfully verified!")
+                        break
+                    time.sleep(2)
+                else:
+                    print("Failed to get package list from package manager.")
+                    success = False
+
     except Exception as e:
         print(f"Test encountered error: {e}")
         success = False

@@ -80,13 +80,15 @@ def unsparse_image(sparse_path, raw_path):
                 )
 
 
-def unsparse_super_image(super_img):
-    """Converts super_img in-place if it is an Android sparse image."""
-    if not is_sparse_image(super_img):
-        logging.info(f"{super_img} is already raw/unsparse. Skipping simg2img.")
+def unsparse_in_place(image_path):
+    """Converts image_path in-place if it is an Android sparse image."""
+    if not is_sparse_image(image_path):
+        logging.info(
+            f"{image_path} is already raw/unsparse. Skipping simg2img."
+        )
         return
 
-    logging.info(f"Unsparsing {super_img}...")
-    raw_path = super_img + '.raw'
-    unsparse_image(super_img, raw_path)
-    os.replace(raw_path, super_img)
+    logging.info(f"Unsparsing {image_path}...")
+    raw_path = image_path + '.raw'
+    unsparse_image(image_path, raw_path)
+    os.replace(raw_path, image_path)
