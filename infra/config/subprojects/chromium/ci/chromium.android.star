@@ -4141,16 +4141,6 @@ ci.builder(
                 ],
                 ci_only = True,
                 swarming = targets.swarming(
-                    optional_dimensions = {
-                        30: {
-                            # TODO(crrev.com/541675870): Remove when experiment is done.
-                            "cpu": "x86-64-n4",
-                            "caches": "android_36_google_apis_x64",
-                        },
-                        60: {
-                            "caches": "android_36_google_apis_x64",
-                        },
-                    },
                     shards = 40,
                 ),
             ),
