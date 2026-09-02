@@ -1849,6 +1849,47 @@ TEST_F(SmartTabSharingTest, FallbackToPrefChanges) {
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }
 
+TEST_F(SmartTabSharingTest, SetSmartTabSharingActive_ClearsFiles) {
+  auto file_info = searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.png";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/image";
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
+  EXPECT_CALL(callback, Run).WillOnce([](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+  });
+
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           callback.Get());
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 1u);
+
+  // Toggling STS ON should clear uploaded files.
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
+
+  // Add file again.
+  auto file_info2 = searchbox::mojom::SelectedFileInfo::New();
+  file_info2->file_name = "test2.png";
+  file_info2->selection_time = base::Time::Now();
+  file_info2->mime_type = "application/image";
+  mojo_base::BigBuffer file_data2(test_data_span);
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback2;
+  EXPECT_CALL(callback2, Run).WillOnce([](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+  });
+  handler().AddFileContext(std::move(file_info2), std::move(file_data2),
+                           callback2.Get());
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 1u);
+
+  // Toggling STS OFF should also clear uploaded files.
+  handler().SetSmartTabSharingActive(false);
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
+}
+
 TEST_F(SmartTabSharingTest, SubmitQuery_PersistsSmartTabSharingActive) {
   handler().SetSmartTabSharingActive(true);
   EXPECT_TRUE(handler().IsSmartTabSharingActive());

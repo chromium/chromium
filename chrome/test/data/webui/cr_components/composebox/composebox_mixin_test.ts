@@ -2462,8 +2462,9 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
-      'observeSmartTabSharingActive clears addedTabsIds and resets restored' +
-          ' tabs when smartTabSharingVisible is true and active becomes false',
+      'observeSmartTabSharingActive clears files, addedTabsIds and resets' +
+          ' restored tabs when smartTabSharingVisible is true and active' +
+          ' becomes false',
       async () => {
         const dummyToken = {
           high: 1n,
@@ -2477,9 +2478,12 @@ suite('ComposeboxMixinTest', () => {
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
         };
+        const tabFile = ComposeboxFile.createFromTab(
+            dummyToken, 10, 'Restored Tab', 'about:blank?10');
 
         element.smartTabSharingVisible = true;
         element.smartTabSharingActive = true;
+        element.files = new Map([[dummyToken, tabFile]]);
         element.addedTabsIds = new Map([[10, dummyToken]]);
         element.aimThreadRestoredTabs = [tab];
 
@@ -2488,8 +2492,45 @@ suite('ComposeboxMixinTest', () => {
         await microtasksFinished();
 
         assertFalse(element.smartTabSharingActive);
+        assertEquals(0, element.files.size);
         assertEquals(0, element.addedTabsIds.size);
         assertEquals(0, element.aimThreadRestoredTabs.length);
+      });
+
+  test(
+      'observeSmartTabSharingActive clears files, addedTabsIds and preserves' +
+          ' restored tabs when smartTabSharingVisible is true and active' +
+          ' becomes true',
+      async () => {
+        const dummyToken = {
+          high: 1n,
+          low: 1n,
+        } as unknown as UnguessableToken;
+        const tab = {
+          tabId: 10,
+          title: 'Restored Tab',
+          url: 'about:blank?10',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tabFile = ComposeboxFile.createFromTab(
+            dummyToken, 10, 'Restored Tab', 'about:blank?10');
+
+        element.smartTabSharingVisible = true;
+        element.smartTabSharingActive = false;
+        element.files = new Map([[dummyToken, tabFile]]);
+        element.addedTabsIds = new Map([[10, dummyToken]]);
+        element.aimThreadRestoredTabs = [tab];
+
+        searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(element.smartTabSharingActive);
+        assertEquals(0, element.files.size);
+        assertEquals(0, element.addedTabsIds.size);
+        assertEquals(1, element.aimThreadRestoredTabs.length);
       });
 
   test(
