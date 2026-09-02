@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
@@ -451,7 +450,7 @@ public class VerticalTabListRenderTest {
                     view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
                     PropertyModel model =
                             createTabListItemModelBuilder("Media Tab", /* groupId= */ null)
-                                    .with(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE)
+                                    .with(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(
