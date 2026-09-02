@@ -15,6 +15,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
@@ -170,15 +171,16 @@ void SetICUDefaultLocale(std::string_view locale_string) {
   const char* lang = locale.getLanguage();
   if (lang != nullptr && *lang != '\0') {
     icu::Locale::setDefault(locale, error_code);
+    SetDefaultIcuLocale(
+        DefaultIcuLocaleSetterKey(),
+        IcuLocaleConverter::GetInstance().ToLanguageTag(locale));
   } else {
     LOG(ERROR) << "Failed to set the ICU default locale to " << locale_string
                << ". Falling back to en-US.";
     icu::Locale::setDefault(icu::Locale::getUS(), error_code);
+    SetDefaultIcuLocale(DefaultIcuLocaleSetterKey(),
+                        GetKnownLanguageTag("en-US"));
   }
-  // This is being called here while we do not migrate every caller to it.
-  SetDefaultIcuLocale(DefaultIcuLocaleSetterKey(),
-                      LanguageTagConverter::GetInstance().FromIcuLocale(
-                          icu::Locale::getDefault()));
 }
 
 bool IsRTL() {

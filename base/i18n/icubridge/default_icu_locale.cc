@@ -4,9 +4,9 @@
 
 #include "base/i18n/icubridge/default_icu_locale.h"
 
+#include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/language_tag.h"
 #include "base/i18n/locale_holder.h"
-#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"

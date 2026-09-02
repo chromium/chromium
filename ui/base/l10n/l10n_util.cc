@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
@@ -140,7 +141,7 @@ std::vector<LanguageTag> GetCandidates() {
   const std::vector<std::string>& languages = l10n_util::GetLocaleOverrides();
   if (languages.empty()) {
     // If no override was set, defer to ICU
-    return {base::i18n::LanguageTagConverter::GetInstance().FromIcuLocale(
+    return {base::i18n::IcuLocaleConverter::GetInstance().ToLanguageTag(
         icu::Locale::getDefault())};
   }
 

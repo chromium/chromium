@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/language_tag_value_converters.h"
 #include "base/i18n/tag_converters.h"
 #include "base/test/gmock_expected_support.h"
@@ -975,14 +976,14 @@ TEST(IcuLocaleConverterTest, FromLanguageTag) {
   EXPECT_STREQ("en_US@calendar=gregorian", locale_dynamic.getName());
 }
 
-TEST(LanguageTagConverterTest, FromIcuLocale) {
-  const LanguageTagConverter& converter = LanguageTagConverter::GetInstance();
+TEST(IcuLocaleConverterTest, ToLanguageTag) {
+  const IcuLocaleConverter& converter = IcuLocaleConverter::GetInstance();
 
   // Test simple locale conversion
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale locale_en_us = icu::Locale::forLanguageTag("en-US", status);
   ASSERT_TRUE(U_SUCCESS(status));
-  LanguageTag en_us = converter.FromIcuLocale(locale_en_us);
+  LanguageTag en_us = converter.ToLanguageTag(locale_en_us);
   EXPECT_EQ("en-US", en_us.tag_string());
 
   // Test custom/dynamic locale conversion
@@ -990,12 +991,12 @@ TEST(LanguageTagConverterTest, FromIcuLocale) {
   icu::Locale locale_dynamic =
       icu::Locale::forLanguageTag("en-US-u-ca-gregory", status);
   ASSERT_TRUE(U_SUCCESS(status));
-  LanguageTag dynamic_tag = converter.FromIcuLocale(locale_dynamic);
+  LanguageTag dynamic_tag = converter.ToLanguageTag(locale_dynamic);
   EXPECT_EQ("en-US-u-ca-gregory", dynamic_tag.tag_string());
 
   // Test fallback/failure or undefined
   icu::Locale locale_und = icu::Locale::getRoot();
-  LanguageTag und = converter.FromIcuLocale(locale_und);
+  LanguageTag und = converter.ToLanguageTag(locale_und);
   EXPECT_EQ("und", und.tag_string());
 }
 

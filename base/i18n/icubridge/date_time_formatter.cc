@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/bcp47_extensions.h"
+#include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/icubridge/icu_bridge_helpers.h"
 #include "base/i18n/language_tag.h"
@@ -580,7 +581,7 @@ std::u16string FormatWithLocale(base::Time time,
 std::u16string IcuBridge::DateTimeFormatter::Format(
     base::Time time,
     const DateTimeFormatterOptions& options) const {
-  LanguageTag default_tag = LanguageTagConverter::GetInstance().FromIcuLocale(
+  LanguageTag default_tag = IcuLocaleConverter::GetInstance().ToLanguageTag(
       icu::Locale::getDefault());
   return FormatWithLocale(time, options, default_tag);
 }

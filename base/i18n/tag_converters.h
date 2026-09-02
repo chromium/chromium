@@ -11,14 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/containers/flat_map.h"
 #include "base/i18n/language_tag.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace icu4x {
 class Locale;
@@ -61,7 +54,6 @@ class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagConverter {
   std::optional<LanguageTag> FromString(std::string_view tag) const;
   // Internal usage.
   LanguageTag FromIcu4xCapiLocale(const icu4x::Locale& locale) const;
-  LanguageTag FromIcuLocale(const icu::Locale& icu_locale) const;
 
  private:
   class Impl;
@@ -73,34 +65,6 @@ class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagConverter {
 // singleton as it is quite verbose to do it.
 COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU)
 std::optional<LanguageTag> GetLanguageTagFromString(std::string_view tag);
-
-// Helper class for converting type-safe BCP 47 `LanguageTag`s to legacy
-// C++ ICU `icu::Locale` objects.
-//
-// Example usage:
-//   const IcuLocaleConverter& converter = IcuLocaleConverter::GetInstance();
-//   icu::Locale locale = converter.FromLanguageTag(language_tag);
-class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) IcuLocaleConverter {
- public:
-  IcuLocaleConverter(const IcuLocaleConverter&) = delete;
-  IcuLocaleConverter& operator=(const IcuLocaleConverter&) = delete;
-
-  static const IcuLocaleConverter& GetInstance();
-
-  // Converts a type-safe `LanguageTag` into a corresponding `icu::Locale`.
-  //
-  // Returns: An `icu::Locale` instance constructed from the BCP 47 string
-  //            represented by `language_tag`.
-  icu::Locale FromLanguageTag(const LanguageTag& language_tag) const;
-
- private:
-  IcuLocaleConverter();
-  ~IcuLocaleConverter();
-
-  friend class base::NoDestructor<IcuLocaleConverter>;
-
-  base::flat_map<std::string, icu::Locale> cached_locales_;
-};
 
 }  // namespace base::i18n
 

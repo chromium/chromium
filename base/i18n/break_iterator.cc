@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -164,7 +165,7 @@ void UBreakIteratorDeleter::operator()(UBreakIterator* ptr) {
 BreakIterator::BreakIterator(std::u16string_view str, BreakType break_type)
     : string_(str),
       break_type_(break_type),
-      locale_tag_(LanguageTagConverter::GetInstance().FromIcuLocale(
+      locale_tag_(IcuLocaleConverter::GetInstance().ToLanguageTag(
           icu::Locale::getDefault())) {}
 
 BreakIterator::BreakIterator(std::u16string_view str,
@@ -180,7 +181,7 @@ BreakIterator::BreakIterator(std::u16string_view str,
     : string_(str),
       rules_(rules),
       break_type_(RULE_BASED),
-      locale_tag_(LanguageTagConverter::GetInstance().FromIcuLocale(
+      locale_tag_(IcuLocaleConverter::GetInstance().ToLanguageTag(
           icu::Locale::getDefault())) {}
 
 BreakIterator::~BreakIterator() {

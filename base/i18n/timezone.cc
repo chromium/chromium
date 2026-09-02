@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/i18n/tag_converters.h"
+#include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"

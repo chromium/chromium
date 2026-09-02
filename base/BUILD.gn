@@ -3181,6 +3181,8 @@ component("i18n") {
     "i18n/file_util_icu.h",
     "i18n/i18n_constants.cc",
     "i18n/i18n_constants.h",
+    "i18n/icu4c_tag_converter.cc",
+    "i18n/icu4c_tag_converter.h",
     "i18n/icu_string_conversions.cc",
     "i18n/icu_string_conversions.h",
     "i18n/icu_util.cc",
@@ -3219,6 +3221,7 @@ component("i18n") {
   ]
   deps = [
     ":i18n_transliterator",
+    "//base/i18n/internal:canonical_language_tags",
     "//build:chromecast_buildflags",
   ]
 
@@ -4914,6 +4917,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/JniCallbackImpl.java",
     ]
   }
+
   android_library("jni_callback_java") {
     public_deps = [ ":jni_callback_jni_java" ]
     sources = [
@@ -4937,6 +4941,7 @@ if (is_android) {
     sources =
         [ "android/java/src/org/chromium/base/JavaExceptionReporter.java" ]
   }
+
   android_library("java_exception_reporter_java") {
     public_deps = [ ":java_exception_reporter_jni_java" ]
     sources =
@@ -4957,6 +4962,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/UnguessableToken.java",
     ]
   }
+
   android_library("token_java") {
     public_deps = [ ":token_jni_java" ]
     sources = [
@@ -5247,9 +5253,11 @@ if (is_android) {
       ":tasks_java",
     ]
   }
+
   android_library("file_provider_utils_java") {
     sources = [ "android/java/src/org/chromium/base/FileProviderUtils.java" ]
   }
+
   generate_jni("features_jni") {
     sources = [
       "android/java/src/org/chromium/base/FeatureList.java",
@@ -5257,6 +5265,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/Features.java",
     ]
   }
+
   android_library("features_java") {
     srcjar_deps = [ ":features_jni" ]
     sources = [
@@ -5287,6 +5296,7 @@ if (is_android) {
   generate_jni("bundle_utils_jni") {
     sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
   }
+
   android_library("bundle_utils_java") {
     srcjar_deps = [ ":bundle_utils_jni" ]
     sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
@@ -5312,6 +5322,7 @@ if (is_android) {
   generate_jni("jni_utils_jni") {
     sources = [ "android/java/src/org/chromium/base/JNIUtils.java" ]
   }
+
   android_library("jni_utils_java") {
     srcjar_deps = [ ":jni_utils_jni" ]
     sources = [ "android/java/src/org/chromium/base/JNIUtils.java" ]
@@ -5607,6 +5618,7 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
     ]
   }
+
   android_library("log_java") {
     sources = [
       "android/java/src/org/chromium/base/JavaUtils.java",
@@ -5618,6 +5630,7 @@ if (is_android) {
   generate_jni("command_line_jni") {
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
   }
+
   android_library("command_line_java") {
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
     deps = [
@@ -5633,6 +5646,7 @@ if (is_android) {
   generate_jni("content_uri_utils_jni") {
     sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
   }
+
   android_library("content_uri_utils_java") {
     srcjar_deps = [ ":content_uri_utils_jni" ]
     deps = [
@@ -5650,6 +5664,7 @@ if (is_android) {
   generate_jni("virtual_document_path_jni") {
     sources = [ "android/java/src/org/chromium/base/VirtualDocumentPath.java" ]
   }
+
   android_library("virtual_document_path_java") {
     srcjar_deps = [ ":virtual_document_path_jni" ]
     deps = [
@@ -6444,6 +6459,7 @@ if (is_mac) {
       rebase_path(inputs[0], root_build_dir),
     ]
   }
+
   fuzzer_test("base_mach_port_rendezvous_fuzzer") {
     sources = [ "apple/mach_port_rendezvous_fuzzer.cc" ]
     deps = [
