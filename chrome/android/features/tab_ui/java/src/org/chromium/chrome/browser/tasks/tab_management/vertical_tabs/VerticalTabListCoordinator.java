@@ -117,6 +117,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
@@ -202,6 +203,7 @@ public class VerticalTabListCoordinator {
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
     private boolean mIsActive;
+    private boolean mIsInTransition;
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
@@ -672,7 +674,18 @@ public class VerticalTabListCoordinator {
         pinnedTabsRecyclerView.setAdapter(pinnedTabsAdapter);
         mPinnedTabsAdapter = pinnedTabsAdapter;
         pinnedTabsRecyclerView.setupCustomItemAnimator(/* useClipAnimations= */ true);
-        mPinnedLayoutManager = new GridLayoutManager(activity, getSpanCount());
+        // TODO(crbug.com/509226293): Move pinned tab RecyclerView and LayoutManager into a
+        // dedicated class (mirroring VerticalTabListRecyclerView) to encapsulate layout and extra
+        // space logic.
+        mPinnedLayoutManager =
+                new GridLayoutManager(activity, getSpanCount()) {
+                    @Override
+                    protected void calculateExtraLayoutSpace(
+                            RecyclerView.State state, int[] extraLayoutSpace) {
+                        super.calculateExtraLayoutSpace(state, extraLayoutSpace);
+                        calculatePinnedExtraLayoutSpace(activity, state, extraLayoutSpace);
+                    }
+                };
         pinnedTabsRecyclerView.setLayoutManager(mPinnedLayoutManager);
         pinnedTabsRecyclerView.addItemDecoration(createPinnedTabItemDecoration());
 
@@ -1017,6 +1030,22 @@ public class VerticalTabListCoordinator {
     }
 
     /**
+     * Sets whether an animated rail collapse/expand transition is in progress.
+     *
+     * @param inTransition True if the rail is actively transitioning.
+     */
+    void setInTransition(boolean inTransition) {
+        if (mIsInTransition == inTransition) return;
+        mIsInTransition = inTransition;
+        // Request layout after transition ends to immediately recycle extra items back
+        // to viewport bounds (transition start is already laid out by the container width change).
+        if (!mIsInTransition) {
+            ViewUtils.requestLayout(
+                    mPinnedTabsRecyclerView, "VerticalTabListCoordinator.setInTransition");
+        }
+    }
+
+    /**
      * Opens the context menu for the currently keyboard-focused tab item or group header, if any.
      *
      * @return Whether the context menu was successfully opened.
@@ -1029,6 +1058,49 @@ public class VerticalTabListCoordinator {
             return openContextMenuForFocusedItem(mPinnedTabsRecyclerView);
         }
         return false;
+    }
+
+    /**
+     * Toggles the expanded/collapsed visual and layout state of a tab group.
+     *
+     * @param tabId the ID of the representative tab representing the tab group.
+     */
+    @VisibleForTesting
+    void toggleTabGroupExpansion(int tabId) {
+        mMediator.toggleTabGroupExpansion(tabId);
+    }
+
+    /**
+     * Calculates and applies extra layout space for pinned tabs during transitions so that
+     * boundary/trailing pinned tabs remain attached for ChangeBounds transitions.
+     */
+    @VisibleForTesting
+    void calculatePinnedExtraLayoutSpace(
+            Activity activity, RecyclerView.State state, int[] extraLayoutSpace) {
+        if (!mIsInTransition) return;
+        int height =
+                Math.max(
+                        mContainerView.getHeight(),
+                        mContainerView.getResources().getDisplayMetrics().heightPixels);
+        int itemCount = state.getItemCount();
+        if (itemCount > 0) {
+            int itemHeight =
+                    TabVerticalViewBinder.getPinnedItemHeight(activity)
+                            + activity.getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.vertical_tab_pinned_item_margin_bottom);
+            int padding =
+                    mPinnedTabsRecyclerView.getPaddingTop()
+                            + mPinnedTabsRecyclerView.getPaddingBottom();
+            int totalContentHeight = itemCount * itemHeight + padding;
+            // Cap to the maximum items that can physically fit in the expanded
+            // viewport across all columns (at most MAX_SINGLE_ROW_SPAN_COUNT = 5),
+            // avoiding layout overhead for items that remain offscreen.
+            int maxExpandedHeight = height * MAX_SINGLE_ROW_SPAN_COUNT + padding;
+            height = Math.clamp(totalContentHeight, height, maxExpandedHeight);
+        }
+        extraLayoutSpace[0] = Math.max(extraLayoutSpace[0], height);
+        extraLayoutSpace[1] = Math.max(extraLayoutSpace[1], height);
     }
 
     private void setActive(boolean isActive) {
@@ -1105,16 +1177,6 @@ public class VerticalTabListCoordinator {
                         KeyboardFocusUtil.setFocusOnFirstFocusableDescendant(mContainerView);
                     }
                 });
-    }
-
-    /**
-     * Toggles the expanded/collapsed visual and layout state of a tab group.
-     *
-     * @param tabId the ID of the representative tab representing the tab group.
-     */
-    @VisibleForTesting
-    void toggleTabGroupExpansion(int tabId) {
-        mMediator.toggleTabGroupExpansion(tabId);
     }
 
     private void onCurrentTabModelChanged(TabModel tabModel) {

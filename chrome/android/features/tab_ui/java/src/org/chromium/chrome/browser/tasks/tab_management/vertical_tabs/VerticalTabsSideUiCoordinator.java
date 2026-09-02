@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
-import static java.util.Collections.emptySet;
-
 import android.app.Activity;
 import android.content.Context;
 import android.transition.ChangeBounds;
@@ -23,6 +21,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
@@ -37,9 +36,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 import org.chromium.ui.base.ViewUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Coordinator that acts as a container for the Vertical Tab List within the Side UI framework. This
@@ -239,20 +235,22 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getWidth(side);
 
         if (oldWidth > 0 && newWidth > 0 && oldWidth != newWidth) {
+            mTabListCoordinator.setInTransition(true);
             TransitionSet transitionSet =
                     new TransitionSet()
                             .setOrdering(TransitionSet.ORDERING_TOGETHER)
                             .addTransition(new ChangeBounds())
                             .addTransition(new Fade());
-            List<View> views = new ArrayList<>();
-            views.add(mRootView);
-            ViewUtils.getAllDescendants(mRootView, views, emptySet());
-            for (View view : views) {
-                transitionSet.addTarget(view);
-            }
+            transitionSet.excludeTarget(R.id.compositor_view_holder, /* exclude= */ true);
+            transitionSet.excludeChildren(R.id.compositor_view_holder, /* exclude= */ true);
             return transitionSet;
         }
         return null;
+    }
+
+    @Override
+    public void onTransitionEnded(SideUiSpecs sideUiSpecs) {
+        mTabListCoordinator.setInTransition(false);
     }
 
     @Override
