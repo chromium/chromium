@@ -142,9 +142,7 @@ luci.project(
 )
 
 luci.cq(
-    # TODO(crbug.com/555875021): Drop submit_max_burst back down to 2 if/when
-    # CV has caught up.
-    submit_max_burst = 10,
+    submit_max_burst = 2,
     submit_burst_delay = time.minute,
     status_host = "chromium-cq-status.appspot.com",
     honor_gerrit_linked_accounts = True,
