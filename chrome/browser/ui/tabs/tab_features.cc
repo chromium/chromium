@@ -403,7 +403,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());
 
-      if (glic::GlicEnabling::IsSelectionPromptEnabledForProfile(profile)) {
+      if (glic::GlicEnabling::IsSelectionPromptEnabledForProfile(profile) ||
+          (base::FeatureList::IsEnabled(
+               features::kGlicTextSelectionContextMenu) &&
+           glic::GlicEnabling::IsEnabledForProfile(profile))) {
         glic_selection_observer_ =
             std::make_unique<glic::GlicSelectionObserver>(tab.GetContents());
       }
@@ -895,6 +898,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
 
   if (glic_selection_observer_) {
+    glic_selection_observer_.reset();
     glic_selection_observer_ =
         std::make_unique<glic::GlicSelectionObserver>(new_contents);
   }

@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -36,6 +37,10 @@ namespace content {
 class Page;
 class RenderFrameHost;
 }  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 class BrowserWindowInterface;
 enum class ToastId;
@@ -58,6 +63,8 @@ class GlicSelectionObserver
       public content::RenderWidgetHost::InputEventObserver,
       public content_settings::Observer {
  public:
+  DECLARE_USER_DATA(GlicSelectionObserver);
+
   enum class DismissReason {
     kActionTaken,  // User clicked Ask Gemini, Copy, Copy Link, or Open in Side
                    // Panel.
@@ -66,17 +73,33 @@ class GlicSelectionObserver
                 // ESC key.
   };
 
+  enum class SelectionSource {
+    kAutomatic,    // Triggered by WebContents text selection or input events.
+    kContextMenu,  // Triggered by context menu invocation.
+  };
+
+  static GlicSelectionObserver* From(tabs::TabInterface* tab);
+
   explicit GlicSelectionObserver(content::WebContents* web_contents);
   ~GlicSelectionObserver() override;
 
   void OnTextSelectionChanged(content::RenderFrameHost* render_frame_host,
                               std::u16string_view selected_text) override;
 
+  // Notifies the observer that text selection context was sent to the Glic
+  // panel from the context menu entry point.
+  void UpdateSelectionStateFromContextMenu(const std::u16string& selected_text);
+
+  bool has_sent_selection_context() const {
+    return has_sent_selection_context_;
+  }
+
  protected:
   // Updates the Glic UI (nudge or panel) with the selected text.
   // Virtual for testing.
   virtual void UpdateSelectionState(const std::u16string& text,
-                                    bool is_pending_selection);
+                                    bool is_pending_selection,
+                                    SelectionSource source);
 
   // Dismisses the selection UI (widget and/or nudge).
   // Virtual for testing.
@@ -268,6 +291,8 @@ class GlicSelectionObserver
   base::CallbackListSubscription page_context_eligibility_subscription_;
   std::unique_ptr<::optimization_guide::PageContextEligibilityObserver>
       page_context_tracker_;
+  std::unique_ptr<ui::ScopedUnownedUserData<GlicSelectionObserver>>
+      scoped_unowned_user_data_;
   base::WeakPtrFactory<GlicSelectionObserver> weak_ptr_factory_{this};
 };
 

@@ -48,23 +48,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-namespace tabs {
-class TestMockTabInterface : public MockTabInterface {
- public:
-  TestMockTabInterface() {
-    ON_CALL(*this, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
-    ON_CALL(testing::Const(*this), GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
-  }
- private:
-  ::ui::UnownedUserDataHost unowned_user_data_host_;
-};
-}  // namespace tabs
-#define MockTabInterface TestMockTabInterface
 
 namespace glic {
 
@@ -78,11 +62,13 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   using GlicSelectionObserver::PrimaryMainFrameWasResized;
 
   void UpdateSelectionState(const std::u16string& text,
-                            bool is_pending_selection) override {
+                            bool is_pending_selection,
+                            SelectionSource source) override {
     last_processed_text_ = text;
     update_count_++;
     if (call_base_update_selection_state_) {
-      GlicSelectionObserver::UpdateSelectionState(text, is_pending_selection);
+      GlicSelectionObserver::UpdateSelectionState(text, is_pending_selection,
+                                                  source);
     }
   }
 
@@ -991,8 +977,10 @@ TEST_F(GlicSelectionObserverTest,
 
   // Call UpdateSelectionState directly with is_pending_selection = false,
   // simulating OnGlobalPanelShowHide when the panel is not opened.
-  observer->UpdateSelectionState(u"Selected Text",
-                                 /*is_pending_selection=*/false);
+  observer->UpdateSelectionState(
+      u"Selected Text",
+      /*is_pending_selection=*/false,
+      GlicSelectionObserver::SelectionSource::kAutomatic);
 
   EXPECT_FALSE(observer->show_selection_affordance_called());
   EXPECT_FALSE(observer->send_context_called());
@@ -1219,6 +1207,7 @@ TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {
   task_environment()->FastForwardBy(base::Milliseconds(300));
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"Test text signed in", *observer->last_sent_context());
+  observer_.reset();
 }
 
 TEST_F(GlicSelectionObserverTest, OnHideHidesSelectionWidget) {
@@ -1576,6 +1565,131 @@ TEST_F(GlicSelectionObserverTest, ShouldShowSelectionWidgetSiteBlocked) {
                                       CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(observer_->ShouldShowSelectionWidget());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       SetHasSentSelectionContextClearedOnClickAway) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Set selection context sent (e.g. from context menu invocation in editable
+  // or non-editable field).
+  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  EXPECT_TRUE(observer->has_sent_selection_context());
+
+  // Simulate left click down on the page (clicking away).
+  blink::WebMouseEvent mouse_down(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_down.click_count = 1;
+  observer->OnInputEvent(*rwh, mouse_down,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !observer->has_sent_selection_context(); }));
+
+  // Verify that the selection context has been cleared and empty context sent.
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       SetHasSentSelectionContextClearedOnTextSelectionChanged) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  EXPECT_TRUE(observer->has_sent_selection_context());
+
+  // Simulate keyboard/programmatic deselection.
+  observer->OnTextSelectionChanged(nullptr, u"");
+
+  // Verify that the selection context has been cleared and empty context sent.
+  EXPECT_FALSE(observer->has_sent_selection_context());
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       SetHasSentSelectionContextClearedOnUnshareablePageDeselection) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  // Navigate to an unshareable chrome:// URL.
+  NavigateAndCommit(GURL("chrome://version"));
+
+  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  EXPECT_TRUE(observer->has_sent_selection_context());
+
+  // Simulate deselection on unshareable page.
+  observer->OnTextSelectionChanged(nullptr, u"");
+
+  EXPECT_FALSE(observer->has_sent_selection_context());
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       SetHasSentSelectionContextClearedOnPrimaryPageChanged) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  EXPECT_TRUE(observer->has_sent_selection_context());
+
+  // Navigate to a new primary page.
+  NavigateAndCommit(GURL("https://example.com/page2"));
+
+  // Verify that navigating cleared the selection context and notified the
+  // panel.
+  EXPECT_FALSE(observer->has_sent_selection_context());
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"", *observer->last_sent_context());
 }
 
 }  // namespace glic
