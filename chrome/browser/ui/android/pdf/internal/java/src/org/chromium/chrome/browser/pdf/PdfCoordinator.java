@@ -575,8 +575,10 @@ public class PdfCoordinator
                 mRestorePositionPending = state.getBoolean(KEY_RESTORE_POSITION_PENDING, false);
             }
             super.onViewCreated(view, savedInstanceState);
+            if (getView() != null && mViewTag != null) {
+                getView().setTag(mViewTag);
+            }
             if (savedInstanceState != null) {
-                if (getView() != null) getView().setTag(mViewTag);
                 mFilePath = savedInstanceState.getString(KEY_FILE_PATH, null);
                 mFileName = savedInstanceState.getString(KEY_FILE_NAME, null);
             }
