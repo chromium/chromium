@@ -856,6 +856,7 @@
   /* Settings page colors. */ \
   E_CPONLY(kColorSettingsWebuiPageBackground) \
   E_CPONLY(kColorSettingsTitleText) \
+  E_CPONLY(kColorSettingsSectionBackground) \
   /* Share-this-tab dialog colors. */ \
   E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \

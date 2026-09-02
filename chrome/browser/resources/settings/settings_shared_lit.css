@@ -13,6 +13,9 @@
 
 /* Style overrides for Settings Refresh 2026 experiment */
 :host-context([settings-refresh-2026]) {
+  --cr-card-border-radius: 16px;
+  --cr-card-background-color: var(--color-settings-section-background);
+  --cr-card-shadow: none;
   --cr-title-text-color: var(--color-settings-title-text);
 
   .cr-title-text {
