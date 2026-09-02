@@ -80,10 +80,6 @@ ProcessId Process::Pid() const {
   return process_;
 }
 
-Time Process::CreationTime() const {
-  return Time();
-}
-
 bool Process::is_current() const {
   return Handle() == kCurrentProcessHandle;
 }

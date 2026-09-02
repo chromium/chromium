@@ -15,8 +15,4 @@ bool Process::SetPriority(Priority priority) {
   return false;
 }
 
-Time Process::CreationTime() const {
-  return Time();
-}
-
 }  // namespace base

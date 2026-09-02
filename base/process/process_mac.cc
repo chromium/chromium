@@ -7,18 +7,10 @@
 #include <mach/mach.h>
 #include <stddef.h>
 #include <sys/resource.h>
-#include <sys/sysctl.h>
-#include <sys/time.h>
-#include <unistd.h>
 
-#include <iterator>
-#include <memory>
 #include <optional>
-#include <utility>
 
 #include "base/apple/mach_logging.h"
-#include "base/feature_list.h"
-#include "base/memory/free_deleter.h"
 
 namespace base {
 
@@ -136,21 +128,6 @@ bool SetPriorityImpl(mach_port_t task_port,
 }
 
 }  // namespace
-
-Time Process::CreationTime() const {
-  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
-  size_t len = 0;
-  if (sysctl(mib, std::size(mib), NULL, &len, NULL, 0) < 0) {
-    return Time();
-  }
-
-  std::unique_ptr<struct kinfo_proc, base::FreeDeleter> proc(
-      static_cast<struct kinfo_proc*>(malloc(len)));
-  if (sysctl(mib, std::size(mib), proc.get(), &len, NULL, 0) < 0) {
-    return Time();
-  }
-  return Time::FromTimeVal(proc->kp_proc.p_un.__p_starttime);
-}
 
 bool Process::CanSetPriority() {
   return true;

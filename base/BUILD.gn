@@ -2148,6 +2148,7 @@ component("base") {
       "message_loop/message_pump_apple.h",
       "message_loop/message_pump_apple.mm",
       "native_library_apple.mm",
+      "process/process_apple.cc",
       "process/process_metrics_apple.mm",
       "profiler/module_cache_apple.cc",
       "strings/sys_string_conversions_apple.mm",
@@ -4459,6 +4460,7 @@ test("base_unittests") {
       "apple/bind_objc_block_unittest.mm",
       "apple/dispatch_source_unittest.cc",
       "apple/foundation_util_unittest.mm",
+      "process/process_apple_unittest.cc",
       "strings/sys_string_conversions_apple_unittest.mm",
       "types/is_arc_pointer_unittest.mm",
     ]
