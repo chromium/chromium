@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for {@link NativeMessagingManager} and {@link NativeMessagingConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NativeMessagingManagerTest {
     private static final String TARGET_PACKAGE = "com.example.extensionreceiver";
     private static final String EXTENSION_ID = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";

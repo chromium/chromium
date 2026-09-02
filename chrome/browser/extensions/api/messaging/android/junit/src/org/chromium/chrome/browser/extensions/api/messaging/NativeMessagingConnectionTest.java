@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -39,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link NativeMessagingConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NativeMessagingConnectionTest {
     private static final String TARGET_PACKAGE = "com.example.extensionreceiver";
     private static final String EXT_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
