@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -125,6 +127,12 @@ void ZoomBubbleCoordinator::Show(
     return;
   }
 
+  // Close any existing bubble, whether it is currently visible or not. A bubble
+  // can be hidden without being closed (e.g. when its parent window is hidden
+  // by the OS during a sleep/wake cycle on macOS), and a zoom change from an
+  // extension may then request a new bubble before the old one has been
+  // closed. Hide() must therefore close every widget we still observe, not just
+  // visible ones, so that the state below is consistent.
   Hide();
 
   if (widget_observation_.IsObserving()) {
@@ -176,11 +184,21 @@ void ZoomBubbleCoordinator::OnImmersiveModeControllerDestroyed() {
 }
 
 void ZoomBubbleCoordinator::Hide() {
-  if (!IsShowing()) {
+  // Do not gate this on IsShowing(): that also requires the widget to be
+  // visible, but a bubble widget may be hidden without being closed (for
+  // example when the OS hides the parent window). Such a widget is still being
+  // observed and must be closed here, otherwise Show() would later find an
+  // observed widget that was never closed.
+  if (!widget_observation_.IsObserving()) {
     return;
   }
 
-  widget_observation_.GetSource()->Close();
+  views::Widget* widget = widget_observation_.GetSource();
+  if (widget->IsClosed()) {
+    return;
+  }
+
+  widget->Close();
 }
 
 bool ZoomBubbleCoordinator::RefreshIfShowing(content::WebContents* contents) {

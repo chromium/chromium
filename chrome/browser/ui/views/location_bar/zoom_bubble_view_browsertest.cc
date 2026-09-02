@@ -293,6 +293,65 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, DestroyedWebContents) {
   EXPECT_TRUE(observer.widget_closed());
 }
 
+// Ensure that a bubble whose widget was hidden without being closed (for
+// example when the OS hides the parent window during a sleep/wake cycle) is
+// closed and replaced by Show() instead of tripping a CHECK in
+// ZoomBubbleCoordinator::Show(). Regression test for
+// https://crbug.com/555518369.
+IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ShowAfterWidgetHiddenIsSafe) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView* bubble = zoom_bubble_coordinator_->bubble();
+  ASSERT_TRUE(bubble);
+  views::Widget* old_widget = bubble->GetWidget();
+  ASSERT_TRUE(old_widget);
+
+  // Hide the widget without closing it. The coordinator still observes it, but
+  // no longer reports it as showing.
+  old_widget->Hide();
+  EXPECT_FALSE(old_widget->IsClosed());
+  EXPECT_FALSE(zoom_bubble_coordinator_->IsShowing());
+  EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
+
+  views::test::WidgetDestroyedWaiter waiter(old_widget);
+
+  // Showing again (as an extension-initiated zoom change would) must close the
+  // hidden widget and create a fresh bubble rather than crash.
+  zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView* new_bubble = zoom_bubble_coordinator_->bubble();
+  ASSERT_TRUE(new_bubble);
+  EXPECT_NE(bubble, new_bubble);
+  EXPECT_NE(old_widget, new_bubble->GetWidget());
+
+  // The old widget is closed asynchronously.
+  waiter.Wait();
+  EXPECT_TRUE(zoom_bubble_coordinator_->IsShowing());
+  EXPECT_EQ(new_bubble, zoom_bubble_coordinator_->bubble());
+}
+
+// Regression test for https://crbug.com/555518369.
+IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, HideClosesHiddenWidget) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView* bubble = zoom_bubble_coordinator_->bubble();
+  ASSERT_TRUE(bubble);
+  views::Widget* widget = bubble->GetWidget();
+  ASSERT_TRUE(widget);
+
+  widget->Hide();
+  EXPECT_FALSE(zoom_bubble_coordinator_->IsShowing());
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  zoom_bubble_coordinator_->Hide();
+  EXPECT_TRUE(widget->IsClosed());
+  waiter.Wait();
+  EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
+}
+
 namespace {
 
 class TestZoomRequestClient : public extensions::ExtensionZoomRequestClient {

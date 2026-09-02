@@ -49,7 +49,10 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
   void Show(content::WebContents* contents,
             LocationBarBubbleDelegateView::DisplayReason reason);
 
-  // Hides the currently showing zoom bubble, if one exists.
+  // Closes the current zoom bubble, if one exists. This also closes a bubble
+  // whose widget is hidden but not yet closed (e.g. because its parent window
+  // was hidden by the OS), so that a subsequent Show() never finds a stale,
+  // unclosed widget.
   // NOTE: This is async so the hide is not immediate. Callers should ensure to
   // wait for widget destruction.
   void Hide();
