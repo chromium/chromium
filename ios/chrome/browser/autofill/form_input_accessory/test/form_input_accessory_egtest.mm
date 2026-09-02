@@ -142,13 +142,22 @@ NSString* PassportSuggestionAccessibilityLabel() {
 
 // Matcher for the autofill password suggestion chip in the keyboard accessory.
 id<GREYMatcher> KeyboardAccessoryPasswordSuggestion(NSString* realm) {
-  NSString* chip_text = kExampleUsername;
+  id<GREYMatcher> text_matcher;
   if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
-    // signon realm on the 2nd line.
-    chip_text = [NSString stringWithFormat:@"%@\n%@", chip_text, realm];
+    // signon realm or "Password" on the 2nd line, depending on whether passkey
+    // conditional login is enabled.
+    NSString* realm_text =
+        [NSString stringWithFormat:@"%@\n%@", kExampleUsername, realm];
+    NSString* password_subtext = [NSString
+        stringWithFormat:@"%@\n%@", kExampleUsername,
+                         l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT)];
+    text_matcher =
+        grey_anyOf(grey_text(realm_text), grey_text(password_subtext), nil);
+  } else {
+    text_matcher = grey_text(kExampleUsername);
   }
-  return grey_allOf(grey_text(chip_text),
+  return grey_allOf(text_matcher,
                     grey_ancestor(grey_accessibilityID(
                         kFormInputAccessoryViewAccessibilityID)),
                     grey_interactable(), nil);
@@ -160,9 +169,15 @@ id<GREYMatcher> KeyboardAccessoryBackupPasswordSuggestion(NSString* realm) {
   NSString* label = l10n_util::GetNSString(
       IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL);
 
+  NSString* realm_label =
+      [NSString stringWithFormat:@"%@, %@, %@", kExampleUsername, realm, label];
+  NSString* password_subtext = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
+  NSString* passkey_label =
+      [NSString stringWithFormat:@"%@, %@, %@", kExampleUsername,
+                                 password_subtext, label];
   id<GREYMatcher> accessibility_label_matcher =
-      grey_accessibilityLabel([NSString
-          stringWithFormat:@"%@, %@, %@", kExampleUsername, realm, label]);
+      grey_anyOf(grey_accessibilityLabel(realm_label),
+                 grey_accessibilityLabel(passkey_label), nil);
   id<GREYMatcher> backup_icon = grey_accessibilityID(
       kRecoveryPasswordSuggestionIconAccessibilityIdentifier);
   return grey_allOf(accessibility_label_matcher,
@@ -387,10 +402,7 @@ void SlowlyTypeText(NSString* text) {
             (testPasswordSuggestionsSubtext_ConditionalPasskeyLoginEnabled)]) {
     config.features_enabled.push_back(kIOSPasskeyShim);
     config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
-  } else {
-    config.features_disabled.push_back(kIOSPasskeyConditionalLoginWithShim);
   }
-  config.features_disabled.push_back(kIOSPasskeyModalLoginWithShim);
 
   return config;
 }
