@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
@@ -74,6 +75,21 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   void CheckConsistency() const;
 #endif
 
+  void LogCapacity() {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    items_capacity_after_shrink_ = items.capacity();
+#endif
+  }
+  void ValidateCapacity() const {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    DCHECK(!items_capacity_after_shrink_ ||
+           items.capacity() <= *items_capacity_after_shrink_)
+        << "items grew from " << *items_capacity_after_shrink_ << " to "
+        << items.capacity()
+        << " after InlineNode::PrepareLayout() shrank it to fit";
+#endif
+  }
+
   InlineItemsData() = default;
 
   void Trace(Visitor* visitor) const;
@@ -97,6 +113,10 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
 
  private:
   DataType data_type_ = DataType::kBase;
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  std::optional<wtf_size_t> items_capacity_after_shrink_;
+#endif
 };
 
 // Represents inline items data with a text offset map.

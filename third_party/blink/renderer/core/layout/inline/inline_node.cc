@@ -673,6 +673,10 @@ void InlineNode::PrepareLayout(InlineNodeData* previous_data) const {
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());
 
+  // `EstimateInlineItemsCount` may have over-reserved. It's now safe to shrink.
+  data->items.shrink_to_fit();
+  data->LogCapacity();
+
   LayoutBlockFlow* block_flow = GetLayoutBlockFlow();
   block_flow->ClearNeedsCollectInlines();
 

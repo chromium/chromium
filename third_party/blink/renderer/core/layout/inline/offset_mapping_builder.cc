@@ -252,6 +252,10 @@ bool OffsetMappingBuilder::SetDestinationString(const String& string) {
 }
 
 OffsetMapping* OffsetMappingBuilder::Build() {
+  // `ReserveCapacity` deliberately over-reserves. Now that it's built, we can
+  // shrink to reclaim the memory.
+  mapping_units_.shrink_to_fit();
+
   // All mapping units are already built. Scan them to build mapping ranges.
   for (unsigned range_start = 0; range_start < mapping_units_.size();) {
     const LayoutObject& layout_object =
