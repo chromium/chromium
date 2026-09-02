@@ -5,6 +5,13 @@
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 
 namespace ios::provider {
+ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
+    web::WebState* web_state,
+    web::ContextMenuParams params,
+    UIViewController* presenting_view_controller,
+    ContextMenuHandlers* context_menu_handlers) {
+  return nil;
+}
 
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     web::WebState* web_state,

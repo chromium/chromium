@@ -6,3 +6,6 @@
 
 @implementation ElementsToAddToContextMenu
 @end
+
+@implementation ContextMenuHandlers
+@end
