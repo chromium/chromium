@@ -28,8 +28,7 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
       (override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
-              (base::span<const Suggestion>,
-               base::optional_ref<const SuggestionMetadata>),
+              (base::span<const Suggestion>, const SuggestionUiMetadata&),
               (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
   MOCK_METHOD(bool,

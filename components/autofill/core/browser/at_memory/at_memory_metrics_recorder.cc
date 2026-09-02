@@ -268,16 +268,14 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
 
 void AtMemoryMetricsRecorder::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
-    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
-        parent_suggestion_metadata) {
-  if (parent_suggestion_metadata.has_value()) {
-    if (pending_log_entry_ &&
-        !parent_suggestion_metadata->multi_index.empty()) {
+    const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata) {
+  if (metadata.is_subpopup()) {
+    if (pending_log_entry_) {
       optimization_guide::proto::AtMemoryQuality* quality =
           pending_log_entry_->log_ai_data_request()
               ->mutable_at_memory()
               ->mutable_quality();
-      size_t root_index = parent_suggestion_metadata->multi_index[0];
+      size_t root_index = metadata.multi_index[0];
       if (root_index < static_cast<size_t>(quality->suggestions_size())) {
         auto* root_suggestion = quality->mutable_suggestions(root_index);
         root_suggestion->set_action(

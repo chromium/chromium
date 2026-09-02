@@ -665,7 +665,7 @@ AutofillExternalDelegate::GetDriver_DoNotUse() {
 
 void AutofillExternalDelegate::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
-    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
+    const SuggestionUiMetadata& metadata) {
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK(suggestions.empty() ||
          GetFillingProductFromSuggestionType(suggestions[0].type) !=
@@ -673,7 +673,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
-  const bool is_subpopup = parent_suggestion_metadata.has_value();
+  const bool is_subpopup = metadata.is_subpopup();
 
   if (!is_subpopup) {
     if (std::ranges::any_of(shown_suggestion_types,
@@ -709,8 +709,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   }
 
   manager_->DidShowSuggestions(
-      suggestions, parent_suggestion_metadata, last_query_.form_id,
-      last_query_.field_id, CreateUpdateSuggestionsCallback(), trigger_source_);
+      suggestions, metadata, last_query_.form_id, last_query_.field_id,
+      CreateUpdateSuggestionsCallback(), trigger_source_);
 }
 
 void AutofillExternalDelegate::OnSuggestionsHidden(

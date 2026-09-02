@@ -28,13 +28,38 @@ class AutofillDriver;
 // of suggestion-related events by the controller.
 class AutofillSuggestionDelegate {
  public:
-  // Contains some additional information associated with a suggestion.
+  // Contains additional information associated with a popup container being
+  // shown.
+  struct SuggestionUiMetadata {
+    // Path of anchor suggestion indices from the root popup down to this popup.
+    // - Root popup: `{}` (empty, 0 parent anchors).
+    // - Sub-popup Level 1 (anchored on index `n` of root popup): `{n}`.
+    // - Sub-popup Level 2 (anchored on index `p` of sub-popup 1): `{n, p}`.
+    std::vector<size_t> multi_index;
+
+    // Returns whether this popup is a sub-popup (i.e. has at least one parent
+    // anchor).
+    bool is_subpopup() const { return !multi_index.empty(); }
+
+    // Returns the 0-based popup depth level (0 for root popup, 1 for level-1
+    // sub-popup, etc.).
+    size_t sub_popup_level() const { return multi_index.size(); }
+
+    friend bool operator==(const SuggestionUiMetadata& lhs,
+                           const SuggestionUiMetadata& rhs) = default;
+  };
+
+  // Contains additional information associated with a specific suggestion
+  // (e.g. when selected or accepted).
   struct SuggestionMetadata {
+    // The suggestion's own 0-based row index in its popup.
     int row() const {
       CHECK(!multi_index.empty());
       return multi_index.back();
     }
 
+    // The 0-based popup depth level where this suggestion lives (0 for root
+    // popup, 1 for level-1 sub-popup, etc.).
     size_t sub_popup_level() const {
       CHECK(!multi_index.empty());
       return multi_index.size() - 1;
@@ -78,12 +103,10 @@ class AutofillSuggestionDelegate {
   GetDriver_DoNotUse() = 0;
 
   // Called when Autofill `suggestions` are shown.
-  // `parent_suggestion_metadata` contains metadata about the parent suggestion
-  // serving as the anchor for the sub-popup (or its equivalent on mobile).
-  // It is `std::nullopt` if `suggestions` are showing at the root level.
+  // `metadata` contains metadata about the popup container context (e.g.
+  // parent anchor indices if shown in a sub-popup).
   virtual void OnSuggestionsShown(base::span<const Suggestion> suggestions,
-                                  base::optional_ref<const SuggestionMetadata>
-                                      parent_suggestion_metadata) = 0;
+                                  const SuggestionUiMetadata& metadata) = 0;
 
   // Called when Autofill suggestions are hidden. This may also get called if
   // the suggestions were never shown at all, e.g. because of insufficient

@@ -152,7 +152,7 @@ void AtMemorySuggestionController::Show(
   bridge_->RequestShowContent(suggestions_);
 
   if (delegate_) {
-    delegate_->OnSuggestionsShown(suggestions_, std::nullopt);
+    delegate_->OnSuggestionsShown(suggestions_, /*metadata=*/{});
   }
 }
 
@@ -263,7 +263,7 @@ void AtMemorySuggestionController::OnChildSuggestionsShown(
   if (delegate_) {
     delegate_->OnSuggestionsShown(
         parent_suggestion.children,
-        AutofillSuggestionDelegate::SuggestionMetadata{
+        AutofillSuggestionDelegate::SuggestionUiMetadata{
             .multi_index = {static_cast<size_t>(parent_position)}});
   }
 }
