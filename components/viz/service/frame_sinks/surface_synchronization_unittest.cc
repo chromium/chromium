@@ -3300,10 +3300,10 @@ TEST_F(SurfaceSynchronizationTest,
   // This shouldn't crash.
   parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
                                          std::move(parent_frame));
-  // When multiple dependencies have the same embed token, only the first one
-  // should be taken into account.
-  EXPECT_EQ(1u, parent_surface()->activation_dependencies().size());
-  EXPECT_EQ(child1_id1, *parent_surface()->activation_dependencies().begin());
+  // When multiple dependencies have the same embed token, the latest should
+  // be taken into account.
+  EXPECT_THAT(parent_surface()->activation_dependencies(),
+              testing::ElementsAre(child1_id2));
 }
 
 class SurfaceSynchronizationTestMayAlwaysAckOnActivation
