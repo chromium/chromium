@@ -14,7 +14,7 @@
 #include "base/strings/string_view_util.h"
 #include "components/certificate_model/x509_certificate_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/qwac.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
@@ -377,8 +377,8 @@ OptionalStringOrError X509CertificateModelBase::GetSubjectOrgUnitName() const {
 }
 
 std::string X509CertificateModelBase::HashCertSHA256() const {
-  auto hash =
-      crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
+  auto hash = crypto::hash::Sha256(
+      net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
   return base::HexEncodeLower(hash);
 }
 
@@ -418,7 +418,7 @@ std::string X509CertificateModelBase::GetTitle() const {
 
 std::string X509CertificateModelBase::HashSpkiSHA256() const {
   CHECK(is_valid());
-  auto hash = crypto::SHA256Hash(tbs_.spki_tlv);
+  auto hash = crypto::hash::Sha256(tbs_.spki_tlv);
   return base::HexEncodeLower(hash);
 }
 
