@@ -3719,6 +3719,7 @@ if (!is_android) {
         "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
         "//chrome/browser/ui/views:media_picker_utils",
         "//chrome/browser/ui/views:upgrade_notification_controller",
+        "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl",
         "//chrome/browser/ui/views/autofill/autofill_ai",
         "//chrome/browser/ui/views/autofill/payments:autofill_error_dialog_view_native_views",
         "//chrome/browser/ui/views/autofill/payments:bnpl_tos_view_desktop",
@@ -3743,6 +3744,9 @@ if (!is_android) {
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/search_engines",
         "//chrome/browser/ui/views/web_apps",
+        "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
+        "//chrome/browser/ui/views/web_apps:image_carousel_view",
+        "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
         "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
         "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_content_settings_container",
         "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
@@ -3814,7 +3818,10 @@ if (!is_android) {
         "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
         "//chrome/browser/ui/views/frame:multi_contents_background_view",
         "//chrome/browser/ui/views/frame:multi_contents_resize_area",
+        "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
+        "//chrome/browser/ui/views/web_apps:image_carousel_view",
         "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
+        "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
       ]
       if (is_win) {
         deps +=
@@ -7940,7 +7947,10 @@ test("unit_tests") {
       "//chrome/browser/ui/views/autofill/popup:popup_title_view",
       "//chrome/browser/ui/views/autofill/popup:popup_warning_view",
       "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
+      "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
+      "//chrome/browser/ui/views/web_apps:image_carousel_view",
       "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
+      "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
     ]
 
     deps += [

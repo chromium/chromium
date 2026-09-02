@@ -491,3 +491,31 @@ if (is_win) {
     ]
   }
 }
+
+source_set("contents_capture_border_view") {
+  public = [ "contents_capture_border_view.h" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("contents_capture_border_view_impl") {
+  sources = [ "contents_capture_border_view.cc" ]
+  public_deps = [
+    ":contents_capture_border_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":contents_container_outline",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

@@ -167,6 +167,7 @@ source_set("file_system_access_test_support") {
     "//url",
   ]
 }
+
 source_set("confirm_bubble") {
   sources = [
     "confirm_bubble_views.cc",
@@ -817,6 +818,7 @@ source_set("simple_web_view_dialog") {
     "//ui/display",
   ]
 }
+
 source_set("screen_capture_notification_ui_views") {
   sources = [ "screen_capture_notification_ui_views.cc" ]
   deps = [
@@ -1237,6 +1239,7 @@ source_set("global_error_bubble_view") {
     "//chrome/browser/ui:bubble_anchor_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/global_error",
+    "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/toolbar",
     "//ui/base",
     "//ui/gfx",

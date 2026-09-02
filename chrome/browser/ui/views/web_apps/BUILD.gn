@@ -100,6 +100,7 @@ source_set("browser_tests") {
     "web_app_update_review_dialog_browsertest.cc",
   ]
   deps = [
+    ":create_shortcut_confirmation_view",
     ":progress_delay",
     ":web_app_blocked_migration_infobar_delegate",
     ":web_app_install_progress_view",
@@ -300,5 +301,92 @@ source_set("view_visible_in_active_widget_notifier") {
   deps = [
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/web_applications",
+  ]
+}
+
+source_set("image_carousel_view_impl") {
+  sources = [ "image_carousel_view.cc" ]
+  public_deps = [
+    ":image_carousel_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/webapps/common",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("create_shortcut_confirmation_view") {
+  public = [ "create_shortcut_confirmation_view.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
+
+source_set("create_shortcut_confirmation_view_impl") {
+  sources = [ "create_shortcut_confirmation_view.cc" ]
+  public_deps = [
+    ":create_shortcut_confirmation_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//third_party/blink/public/common:headers",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
+}
+
+source_set("web_app_uninstall_dialog_view_impl") {
+  sources = [ "web_app_uninstall_dialog_view.cc" ]
+  public_deps = [
+    ":web_app_uninstall_dialog_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
+    "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/url_formatter",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//extensions/browser",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
   ]
 }

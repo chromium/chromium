@@ -171,3 +171,29 @@ if (enable_dice_support) {
     ]
   }
 }
+
+source_set("autofill_field_promo_view_impl") {
+  public = [ "autofill_field_promo_view_impl.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("autofill_field_promo_view_impl_impl") {
+  sources = [ "autofill_field_promo_view_impl.cc" ]
+  public_deps = [
+    ":autofill_field_promo_view_impl",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/autofill/popup",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

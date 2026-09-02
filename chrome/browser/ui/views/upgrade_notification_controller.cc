@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 
 #include "base/check_deref.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 
