@@ -22,7 +22,7 @@ import {getHtml} from './tab_groups.html.js';
 const CANVAS_FEEDBACK_FORM_URL =
     'https://docs.google.com/forms/d/e/1FAIpQLSfseE-j9tXWU7oSbcUAY37K2pGlkkCPGzjxe9V9ZigGasSB3Q/viewform';
 const ENTRY_USER_PROMPT = 'entry.372998523';
-const ENTRY_EXPORTED_JSON = 'entry.1489365180';
+const ENTRY_EXPORTED_DATA = 'entry.1489365180';
 const ENTRY_LIKED_DISLIKED = 'entry.1865051344';
 const ENTRY_GROUPING_DESCRIPTION = 'entry.532400426';
 const ENTRY_OVERALL_RATING = 'entry.647161720';
@@ -369,16 +369,70 @@ export class TabGroupsElement extends CrLitElement {
                                                'cr:thumb-down';
   }
 
-  protected exportGroupDataJson_(): string {
-    const result: Record<string, Array<{tab_title: string, tab_url: string}>> =
-        {};
-    for (const group of this.groups_) {
-      result[group.label] = group.tabs.map(tab => ({
-                                             tab_title: tab.title,
-                                             tab_url: tab.url,
-                                           }));
+  private sanitizeText_(str: string): string {
+    if (!str) {
+      return '';
     }
-    return JSON.stringify(result);
+    return str.toWellFormed()
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+        .trim();
+  }
+
+  private cleanUrl_(rawUrl: string|{url: string}|null|undefined): string {
+    const urlStr = typeof rawUrl === 'string' ? rawUrl : (rawUrl?.url || '');
+    if (!urlStr) {
+      return '';
+    }
+    try {
+      const u = new URL(urlStr);
+      return `${u.origin}${u.pathname}`;
+    } catch {
+      return urlStr.substring(0, 80);
+    }
+  }
+
+  protected exportGroupDataMarkdown_(): string {
+    const lines: string[] = [];
+
+    if (this.chatHistory_.length > 0) {
+      lines.push('## Chat History');
+      for (const msg of this.chatHistory_) {
+        const role = msg.role === ChatRole.kUser ? 'User' : 'Assistant';
+        lines.push(`- ${role}: ${this.sanitizeText_(msg.content)}`);
+      }
+      lines.push('');
+    }
+
+    const activeGroups = this.groups_.length > 0 ?
+        this.groups_ :
+        this.confirmedGroupSummaries_.map(
+            g => ({label: g.label, tabs: g.tabs, expanded: false}));
+
+    if (activeGroups.length > 0) {
+      lines.push('## Tab Groups');
+      for (const group of activeGroups) {
+        lines.push(`### ${this.sanitizeText_(group.label)} (${
+            group.tabs.length} tabs)`);
+        for (const tab of group.tabs) {
+          const title = this.sanitizeText_(tab.title);
+          const url = this.cleanUrl_(tab.url);
+          lines.push(`* ${title} | ${url}`);
+        }
+        lines.push('');
+      }
+    }
+
+    if (this.ungroupedTabs_.length > 0) {
+      lines.push(`## Ungrouped Tabs (${this.ungroupedTabs_.length} tabs)`);
+      for (const tab of this.ungroupedTabs_) {
+        const title = this.sanitizeText_(tab.title);
+        const url = this.cleanUrl_(tab.url);
+        lines.push(`* ${title} | ${url}`);
+      }
+      lines.push('');
+    }
+
+    return lines.join('\n');
   }
 
   protected onCanvasThumbsUpClick_() {
@@ -419,25 +473,12 @@ export class TabGroupsElement extends CrLitElement {
         `[${sourceLabel} - Turn ${totalTurns}/${totalTurns}] ${userPrompt}` :
         `[${sourceLabel}] ${userPrompt}`;
 
-    const lastMsg = this.chatHistory_[this.chatHistory_.length - 1];
-    const latestAssistantResponse =
-        lastMsg && lastMsg.role === ChatRole.kAssistant ? lastMsg.content : '';
-
-    const payload = {
-      source,
-      user_prompt: userPrompt,
-      latest_assistant_response: latestAssistantResponse,
-      chat_history: this.chatHistory_.map(msg => ({
-        role: msg.role === ChatRole.kUser ? 'user' : 'assistant',
-        content: msg.content,
-      })),
-      groups_snapshot: JSON.parse(this.exportGroupDataJson_()),
-    };
+    const exportedData = this.exportGroupDataMarkdown_();
 
     const params = new URLSearchParams({
       'usp': 'pp_url',
       [ENTRY_USER_PROMPT]: promptHeader,
-      [ENTRY_EXPORTED_JSON]: JSON.stringify(payload),
+      [ENTRY_EXPORTED_DATA]: exportedData,
       [ENTRY_LIKED_DISLIKED]: liked ? 'Liked 👍' : 'Disliked 👎',
     });
 
