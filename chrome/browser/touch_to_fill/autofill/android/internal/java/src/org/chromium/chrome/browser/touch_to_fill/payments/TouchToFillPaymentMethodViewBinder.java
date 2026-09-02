@@ -382,7 +382,7 @@ final class TouchToFillPaymentMethodViewBinder {
      */
     static View createHeaderItemView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_payment_method_header_item, parent, false);
+                .inflate(R.layout.touch_to_fill_header_item, parent, false);
     }
 
     /**

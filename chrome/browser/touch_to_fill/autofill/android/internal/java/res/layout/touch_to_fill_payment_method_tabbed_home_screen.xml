@@ -24,7 +24,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/ttf_tab_layout_margin_vertical"
-            layout="@layout/touch_to_fill_payment_method_header_item" />
+            layout="@layout/touch_to_fill_header_item" />
 
         <com.google.android.material.tabs.TabLayout
             style="@style/TabLayoutStyle"
