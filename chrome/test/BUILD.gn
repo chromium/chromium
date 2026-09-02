@@ -2199,12 +2199,14 @@ if (!is_android) {
       "//chrome/browser/ui/views/webid:browser_tests",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/waap",
+      "//chrome/browser/ui/waap:browser_tests",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/ui/webauthn:browser_tests",
+      "//chrome/browser/ui/webid:browser_tests",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:browser_tests",
       "//chrome/browser/ui/webui:chrome_web_contents_handler",
@@ -2836,7 +2838,6 @@ if (!is_android) {
       "../browser/ui/browser_tab_strip_model_delegate_browsertest.cc",
       "../browser/ui/browser_tabrestore_browsertest.cc",
       "../browser/ui/collected_cookies_browsertest.cc",
-      "../browser/ui/desktop_to_mobile_promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
@@ -2885,8 +2886,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/web_apps/web_ui_web_app_browsertest.cc",
       "../browser/ui/views/webview_accessibility_browsertest.cc",
-      "../browser/ui/waap/initial_webui_browsertest.cc",
-      "../browser/ui/webid/identity_dialog_controller_browsertest.cc",
       "../common/chrome_paths_browsertest.cc",
       "../common/time_format_browsertest.cc",
       "../renderer/accessibility/ax_tree_distiller_browsertest.cc",
@@ -3624,8 +3623,6 @@ if (!is_android) {
         "../browser/ui/views/ui_devtools_browsertest.cc",
         "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
-        "../browser/ui/wallet/walletable_pass_bubble_controller_browsertest.cc",
-        "../browser/ui/wallet/walletable_pass_save_bubble_view_browsertest.cc",
       ]
 
       deps += [
@@ -3643,6 +3640,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/web_apps:image_carousel_view",
         "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
         "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
+        "//chrome/browser/ui/wallet:browser_tests",
       ]
       if (is_win) {
         deps +=
@@ -4487,16 +4485,11 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
       ]
 
-      # Extension approvals tests for Windows/Linux/Mac platforms only.
-      # ChromeOS has a different platform-specific approval flow.
-      # TODOO(crbug.com/437238062): Move this test to c/b/ui/extensions once
-      # tests are enabled on Android.
-      sources += [ "../browser/ui/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc" ]
-
       deps += [
         "../browser/enterprise/connectors/test:test_support",
         "//chrome/browser:main_extra_parts",
         "//chrome/browser/ui/supervised_user",
+        "//chrome/browser/ui/supervised_user:browser_tests",
         "//chrome/browser/ui/views/profiles:profile_management_types",
         "//chrome/browser/ui/views/profiles:profile_picker_utils",
         "//chrome/browser/ui/views/supervised_user",
@@ -5998,11 +5991,7 @@ test("unit_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [
-      "../browser/ui/signin/signin_qrcode_infobar_delegate_unittest.cc",
-      "../browser/ui/signin/signin_qrcode_model_unittest.cc",
-      "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
-    ]
+    sources += [ "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc" ]
     deps += [
       "//chrome/browser/ui/signin:unit_tests",
       "//chrome/browser/ui/views/profiles/feature_showcase:unit_tests",

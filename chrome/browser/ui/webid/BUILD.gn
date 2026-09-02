@@ -43,6 +43,27 @@ source_set("webid") {
 }
 
 if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "identity_dialog_controller_browsertest.cc" ]
+    deps = [
+      ":webid",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/actor",
+      "//chrome/browser/actor:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [

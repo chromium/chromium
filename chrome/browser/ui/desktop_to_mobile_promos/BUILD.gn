@@ -131,17 +131,23 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "ios_promo_controller_browsertest.cc" ]
+    sources = [
+      "ios_promo_controller_browsertest.cc",
+      "ios_promos_utils_browsertest.cc",
+    ]
     deps = [
       ":controller",
       ":service",
+      ":utils",
       "//base",
       "//base/test:test_support",
       "//chrome/browser:browser_process",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
       "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views",
@@ -153,6 +159,9 @@ if (!is_android) {
       "//components/feature_engagement/public",
       "//components/keyed_service/content",
       "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
       "//components/sync:test_support",
       "//components/sync_device_info",
       "//components/sync_device_info:test_support",

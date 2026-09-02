@@ -29,3 +29,20 @@ source_set("supervised_user") {
     sources += [ "parent_permission_dialog.h" ]
   }
 }
+
+if (is_win || is_mac || is_linux) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "extension_install_blocked_by_parent_dialog_browsertest.cc" ]
+    deps = [
+      ":supervised_user",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//extensions/common",
+      "//testing/gtest",
+    ]
+  }
+}

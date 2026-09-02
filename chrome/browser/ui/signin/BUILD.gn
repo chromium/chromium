@@ -286,18 +286,24 @@ if (enable_dice_support) {
     sources = [
       "account_preview_utils_unittest.cc",
       "promos/signin_promo_tab_helper_unittest.cc",
+      "signin_qrcode_infobar_delegate_unittest.cc",
+      "signin_qrcode_model_unittest.cc",
     ]
 
     deps = [
       ":signin",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/signin",
       "//chrome/test:test_support",
+      "//components/infobars/content",
+      "//components/infobars/core",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//content/test:test_support",
       "//google_apis",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }
