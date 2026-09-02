@@ -20,8 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
-
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Promise;
@@ -37,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for the {@link AccountReauthenticationUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AccountReauthenticationUtilsTest {
     private static final long MOCK_RECENT_TIME_WINDOW_MILLIS = 10 * 60 * 1000; // 10 minutes
 

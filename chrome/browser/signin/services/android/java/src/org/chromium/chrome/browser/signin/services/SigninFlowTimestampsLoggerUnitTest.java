@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -24,7 +23,6 @@ import java.util.Collection;
 
 /** Unit tests for {@link SigninFlowTimestampsLogger}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SigninFlowTimestampsLoggerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -21,7 +20,6 @@ import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link DisplayableProfileData}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DisplayableProfileDataUnitTest {
     private static final String EMAIL = "test@gmail.com";
     private static final CoreAccountId ACCOUNT_ID = new CoreAccountId(new GaiaId("gaia-id-123"));

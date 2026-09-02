@@ -6,13 +6,10 @@ package org.chromium.components.signin;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Test class for {@link PatternMatcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PatternMatcherTest {
     @Test
     public void testPatternMatcher() throws PatternMatcher.IllegalPatternException {
