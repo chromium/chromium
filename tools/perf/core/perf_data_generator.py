@@ -490,7 +490,7 @@ BUILDERS = {
           },
       }],
       'dimension': {
-          'cpu': 'arm64',
+          'cpu': 'x86-64',
           'os': 'Ubuntu-22.04',
           'pool': 'chrome.tests',
       },

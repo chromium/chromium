@@ -1,5 +1,9 @@
 [
     {
+        "duration": "200.0",
+        "name": "base_perftests/_gtest_"
+    },
+    {
         "duration": "3.0",
         "name": "load_library_perf_tests/_gtest_"
     },
@@ -10,9 +14,5 @@
     {
         "duration": "180.0",
         "name": "tint_benchmark/_gtest_"
-    },
-    {
-        "duration": "200.0",
-        "name": "base_perftests/_gtest_"
     }
 ]

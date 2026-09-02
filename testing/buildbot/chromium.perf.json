@@ -1149,7 +1149,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
