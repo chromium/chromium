@@ -221,7 +221,8 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
       if (!auth_header_value.empty() || !ua_header_value.empty() ||
           !cookie_header_value.empty() ||
           request.relative_url.find("onegoogle") != std::string::npos ||
-          request.relative_url.find("denylist") != std::string::npos) {
+          request.relative_url.find("denylist") != std::string::npos ||
+          request.relative_url.find("untrusted") != std::string::npos) {
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -342,6 +343,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // Script to find the webview and perform a cross-origin fetch.
   // We navigate the webview to about:blank (no interception), then
   // fetch from kTestHost (interception enabled).
+  GURL target_url = https_server_.GetURL(kTestHost, "/blank.html");
   GURL fetch_url = https_server_.GetURL(kTestHost, "/echoheader?Authorization");
 
   std::string script = content::JsReplace(
@@ -372,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       const webview = await waitFor('#threadFrame', app.shadowRoot);
 
       // Navigate webview first
-      const targetUrl = 'data:text/html,<html><body></body></html>';
+      const targetUrl = $1;
       webview.src = targetUrl;
 
       // Wait for load
@@ -394,10 +396,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       });
 
       // Execute fetch inside webview
-      webview.executeScript({code: `fetch($1, {headers: {'Authorization': 'Custom foo'}});`});
+      webview.executeScript({code: `fetch($2, {headers: {'Authorization': 'Custom foo'}});`});
     })();
   )",
-      fetch_url.spec());
+      target_url.spec(), fetch_url.spec());
 
   EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
 
@@ -500,6 +502,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // Script to find the webview and perform a cross-origin fetch.
   // We navigate the webview to about:blank (no interception), then
   // fetch from "sub.google.com" (interception enabled).
+  GURL target_url = https_server_.GetURL(kTestHost, "/blank.html");
   GURL fetch_url = https_server_.GetURL(kTestSubHost, "/preflight-retry");
 
   std::string script = content::JsReplace(
@@ -530,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       const webview = await waitFor('#threadFrame', app.shadowRoot);
 
       // Navigate webview first
-      const targetUrl = 'data:text/html,<html><body></body></html>';
+      const targetUrl = $1;
       webview.src = targetUrl;
 
       // Wait for load
@@ -552,10 +555,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       });
 
       // Execute fetch inside webview
-      webview.executeScript({code: `fetch($1, {mode: 'cors'});`});
+      webview.executeScript({code: `fetch($2, {mode: 'cors'});`});
     })();
   )",
-      fetch_url.spec());
+      target_url.spec(), fetch_url.spec());
 
   EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
 
@@ -612,6 +615,85 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
 
   run_loop.Run();
 
+  EXPECT_TRUE(captured_auth_header_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
+                       UntrustedInitiatorOriginDoesNotHaveAuthToken) {
+  base::RunLoop run_loop;
+  header_capture_quit_closure_ = run_loop.QuitClosure();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  content::WebContents* web_ui_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  // Destination is a trusted Google host, but initiator will be an untrusted
+  // data: origin.
+  GURL fetch_url =
+      https_server_.GetURL(kTestHost, "/untrusted/echoheader?Authorization");
+
+  std::string script = content::JsReplace(
+      R"(
+    (async () => {
+      const waitFor = (selector, scope = document) => {
+        return new Promise(resolve => {
+          if (scope.querySelector(selector)) {
+            return resolve(scope.querySelector(selector));
+          }
+          const observer = new MutationObserver(() => {
+            if (scope.querySelector(selector)) {
+              observer.disconnect();
+              resolve(scope.querySelector(selector));
+            }
+          });
+          observer.observe(scope, {childList: true, subtree: true});
+        });
+      };
+
+      const app = await waitFor('contextual-tasks-app');
+      await new Promise(resolve => {
+        app.setOnLoadStartFinishedCallbackForTesting(resolve);
+      });
+      if (!app.shadowRoot) {
+        await customElements.whenDefined('contextual-tasks-app');
+      }
+      const webview = await waitFor('#threadFrame', app.shadowRoot);
+
+      // Navigate webview to an untrusted origin (data: URL).
+      const targetUrl = 'data:text/html,<html><body></body></html>';
+      webview.src = targetUrl;
+
+      // Wait for load
+      await new Promise((resolve, reject) => {
+        const stop = () => {
+            webview.removeEventListener('loadstop', stop);
+            webview.removeEventListener('loadabort', abort);
+            resolve();
+        };
+        const abort = (e) => {
+            if (e.url === targetUrl) {
+                webview.removeEventListener('loadstop', stop);
+                webview.removeEventListener('loadabort', abort);
+                reject('Load aborted for ' + e.url + ': ' + e.reason);
+            }
+        };
+        webview.addEventListener('loadstop', stop);
+        webview.addEventListener('loadabort', abort);
+      });
+
+      // Execute fetch inside webview to trusted Google destination.
+      webview.executeScript({code: `fetch($1, {mode: 'cors'});`});
+    })();
+  )",
+      fetch_url.spec());
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
+
+  run_loop.Run();
+
+  // Verify that the Authorization header was NOT injected.
   EXPECT_TRUE(captured_auth_header_.empty());
 }
 
