@@ -11070,13 +11070,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicExperimentalTriggeringScreenshotDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicExperimentalTriggeringScreenshot)},
-    {"glic-experimental-triggering-suppress-done-notification",
-     flag_descriptions::kGlicExperimentalTriggeringSuppressDoneNotificationName,
-     flag_descriptions::
-         kGlicExperimentalTriggeringSuppressDoneNotificationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         features::kGlicExperimentalTriggeringSuppressDoneNotification)},
     {"glic-spark-settings-accessible-labels",
      flag_descriptions::kGlicSparkSettingsAccessibleLabelsName,
      flag_descriptions::kGlicSparkSettingsAccessibleLabelsDescription,

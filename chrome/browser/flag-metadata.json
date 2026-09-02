@@ -5872,15 +5872,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "glic-experimental-triggering-suppress-done-notification",
-    "owners": [
-      "sauski@google.com",
-      "rosiey@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 154
-  },
-  {
     "name": "glic-gemini-enterprise-consent-enabled",
     "owners": [
       "esalma@google.com",

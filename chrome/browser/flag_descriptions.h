@@ -1710,13 +1710,6 @@ inline constexpr char kGlicExperimentalTriggeringScreenshotName[] =
 inline constexpr char kGlicExperimentalTriggeringScreenshotDescription[] =
     "Enables secure client-side screenshot capture and encryption on yield "
     "for Glic experimental triggering tasks.";
-inline constexpr char
-    kGlicExperimentalTriggeringSuppressDoneNotificationName[] =
-        "Glic experimental triggering suppress done notification";
-inline constexpr char
-    kGlicExperimentalTriggeringSuppressDoneNotificationDescription[] =
-        "Suppresses the done notification for GLIC experimental triggering "
-        "tasks";
 inline constexpr char kGlicBackgroundActuationName[] =
     "Glic background actuation";
 inline constexpr char kGlicBackgroundActuationDescription[] =
