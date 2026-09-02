@@ -29,9 +29,6 @@ struct TargetDeviceInfo;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// The text used for the cancel button.
-@property(nonatomic, copy) NSString* cancelButtonText;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_UI_SEND_TAB_TO_SELF_TABLE_VIEW_CONTROLLER_H_
