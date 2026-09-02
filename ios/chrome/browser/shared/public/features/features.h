@@ -505,10 +505,6 @@ extern const char kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName[];
 extern const base::FeatureParam<double>
     kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam;
 
-// Feature flag for counterfactual logging for the universal link native map
-// experiment.
-BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual);
-
 // Returns true if Maps Universal links are enabled (i.e. the current country
 // is not in the excluded list).
 bool IsMiniMapUniversalLinkEnabled();

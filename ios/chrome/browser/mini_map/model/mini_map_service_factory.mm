@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -34,8 +33,7 @@ MiniMapServiceFactory::~MiniMapServiceFactory() = default;
 
 std::unique_ptr<KeyedService> MiniMapServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  CHECK(IsMiniMapUniversalLinkEnabled() ||
-        base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual));
+  CHECK(IsMiniMapUniversalLinkEnabled());
 
   return std::make_unique<MiniMapService>(
       profile->GetPrefs(),

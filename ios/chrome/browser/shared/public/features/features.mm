@@ -551,9 +551,6 @@ constexpr base::FeatureParam<double>
         /*name=*/kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName,
         /*default_value=*/0.8};
 
-BASE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 // Country codes where Mini Map Universal Links are excluded.

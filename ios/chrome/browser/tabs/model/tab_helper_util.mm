@@ -376,10 +376,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher.Create<EditMenuTabHelper>();
 
-  attacher.CreateWhen<MiniMapTabHelper>(
-      (IsMiniMapUniversalLinkEnabled() ||
-       base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)) &&
-      attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<MiniMapTabHelper>(IsMiniMapUniversalLinkEnabled() &&
+                                        attacher.IsNotInTabHelperFilter());
 
   if (IsAimCobrowseEnabled()) {
     attacher.CreateWhen<CobrowseTabHelper>(

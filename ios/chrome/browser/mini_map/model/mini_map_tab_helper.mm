@@ -65,18 +65,13 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
 
   const GURL request_url = net::GURLWithNSURL(request.URL);
 
-  // User Disabled in Settings (Opt-out) OR Counterfactual Arm:
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual) ||
-      !mini_map_service_->IsMiniMapEnabled()) {
+  // User Disabled in Settings (Opt-out):
+  if (!mini_map_service_->IsMiniMapEnabled()) {
     GURL modified_url =
         ios::provider::URLByAppendingCampaignTokenIfNeeded(request_url);
     if (modified_url == request_url) {
-      std::string utm_campaign =
-          base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)
-              ? "as-npc-bling"
-              : "as-npt-bling";
-      modified_url =
-          net::AppendQueryParameter(request_url, "utm_campaign", utm_campaign);
+      modified_url = net::AppendQueryParameter(request_url, "utm_campaign",
+                                               "as-npt-bling");
     }
 
     std::move(callback).Run(PolicyDecision::Cancel());
@@ -135,8 +130,7 @@ void MiniMapTabHelper::WebStateDestroyed() {
 bool MiniMapTabHelper::ShouldInterceptRequest(
     NSURL* url,
     ui::PageTransition page_transition) {
-  if (!IsMiniMapUniversalLinkEnabled() &&
-      !base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)) {
+  if (!IsMiniMapUniversalLinkEnabled()) {
     return false;
   }
 
@@ -181,15 +175,14 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
 
   std::string value;
   if (net::GetValueForKeyInQuery(target_url, "utm_campaign", &value) &&
-      (value == "as-npc-bling" || value == "as-npt-bling")) {
+      value == "as-npt-bling") {
     return false;
   }
   if (ios::provider::URLHasCampaignToken(target_url)) {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual) ||
-      !mini_map_service_->IsMiniMapEnabled()) {
+  if (!mini_map_service_->IsMiniMapEnabled()) {
     // Intercept the request to add the UTM campaign parameter.
     // Early return to prevent mini map from opening.
     return true;

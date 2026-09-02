@@ -1110,14 +1110,6 @@ inline constexpr char kIOSMiniMapLinkifiedAddressDescription[] =
     "When enabled, linkified addresses open Maps Native Preview instead of "
     "mini map";
 
-inline constexpr char kIOSMiniMapUniversalLinkCounterfactualName[] =
-    "Counterfactual for opening Maps Universal links in native view";
-inline constexpr char kIOSMiniMapUniversalLinkCounterfactualDescription[] =
-    "Enables counterfactual logging for the maps universal link native preview "
-    "experiment. It adds a `utm_campaign` parameter before opening the "
-    "universal link in Maps Lite so that subsequent iGMM installs would be "
-    "logged.";
-
 inline constexpr char kIOSOmniboxAimServerEligibilityEnName[] =
     "AIM Server Eligibility EN locales";
 inline constexpr char kIOSOmniboxAimServerEligibilityEnDescription[] =
