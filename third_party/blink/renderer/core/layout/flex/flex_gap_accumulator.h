@@ -134,7 +134,7 @@ class CORE_EXPORT FlexGapAccumulator {
       bool is_column,
       LayoutUnit border_scrollbar_padding_block_start,
       LayoutUnit border_scrollbar_padding_inline_start,
-      std::optional<GapGeometry::FlexGapPlacementReversal> placement_reversal);
+      std::optional<GapGeometry::PlacementReversal> placement_reversal);
 
   const GapGeometry* BuildGapGeometry(
       const BoxFragmentBuilder& container_builder);

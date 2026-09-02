@@ -20,7 +20,7 @@ FlexGapAccumulator::FlexGapAccumulator(
     bool is_column,
     LayoutUnit border_scrollbar_padding_block_start,
     LayoutUnit border_scrollbar_padding_inline_start,
-    std::optional<GapGeometry::FlexGapPlacementReversal> placement_reversal)
+    std::optional<GapGeometry::PlacementReversal> placement_reversal)
     : gap_between_items_(gap_between_items),
       effective_gap_between_lines_(effective_gap_between_lines),
       is_column_(is_column),
@@ -47,7 +47,7 @@ FlexGapAccumulator::FlexGapAccumulator(
   // accumulator is constructed. Record the reversal so paint can assign gap
   // decoration values in placement order.
   if (placement_reversal) {
-    gap_geometry_->SetFlexGapPlacementReversal(*placement_reversal);
+    gap_geometry_->SetGapPlacementReversal(*placement_reversal);
   }
 }
 
@@ -225,7 +225,7 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   const GridTrackSizingDirection cross_direction =
       is_column_ ? kForRows : kForColumns;
   if (in_fragmentation &&
-      !gap_geometry_->IsDefaultDecorationOrder(cross_direction)) {
+      gap_geometry_->NeedsDecorationValueAssignmentMapping(cross_direction)) {
     RecordFragmentedFlexCrossGapDecorationIndex(flex_lines, global_line_index,
                                                 item_index_in_line);
   }

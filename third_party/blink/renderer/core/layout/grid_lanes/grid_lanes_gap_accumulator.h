@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class ComputedStyle;
 class GapGeometry;
 class GridLayoutTrackCollection;
 
@@ -40,7 +41,7 @@ class CORE_EXPORT GridLanesGapAccumulator {
   STACK_ALLOCATED();
 
  public:
-  GridLanesGapAccumulator();
+  explicit GridLanesGapAccumulator(const ComputedStyle& style);
 
   // Builds `MainGap` geometry for gutters between grid-axis tracks, parallel to
   // the stacking axis. See

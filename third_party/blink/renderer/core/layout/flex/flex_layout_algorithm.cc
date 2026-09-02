@@ -1294,7 +1294,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 
   std::optional<FlexGapAccumulator> gap_accumulator = std::nullopt;
   if (Style().HasGapRule() && !flex_lines.empty()) {
-    std::optional<GapGeometry::FlexGapPlacementReversal> gap_placement_reversal;
+    std::optional<GapGeometry::PlacementReversal> gap_placement_reversal;
     if (is_wrap_reverse_ || is_reverse_direction_) {
       gap_placement_reversal.emplace(is_wrap_reverse_, is_reverse_direction_);
     }

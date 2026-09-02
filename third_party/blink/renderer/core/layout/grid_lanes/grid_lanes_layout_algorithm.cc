@@ -268,7 +268,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
     // TODO(javiercon): Handle gap decorations in fragmented grid lanes.
     if (!has_block_fragmentation && style.HasGapRule()) {
-      gap_accumulator.emplace();
+      gap_accumulator.emplace(style);
       gap_accumulator->BuildMainGaps(track_collection);
     }
 

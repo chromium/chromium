@@ -143,18 +143,28 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     kMultiColumn,
   };
 
-  // Describes how flex placement order differs from geometric paint order.
-  struct FlexGapPlacementReversal {
-    FlexGapPlacementReversal(bool reverse_lines, bool reverse_items_in_line)
-        : reverse_lines(reverse_lines),
-          reverse_items_in_line(reverse_items_in_line) {
-      CHECK(reverse_lines || reverse_items_in_line);
+  // Describes how gap-decoration placement order differs from geometric
+  // paint order. Used by both flex (`flex-wrap: wrap-reverse` /
+  // reversed `flex-direction`) and grid-lanes (`track-reverse` /
+  // `fill-reverse`).
+  struct PlacementReversal {
+    PlacementReversal(bool reverse_main_assignment_order,
+                      bool reverse_within_owner)
+        : reverse_main_assignment_order(reverse_main_assignment_order),
+          reverse_within_owner(reverse_within_owner) {
+      CHECK(reverse_main_assignment_order || reverse_within_owner);
     }
 
-    bool operator==(const FlexGapPlacementReversal&) const = default;
+    bool operator==(const PlacementReversal&) const = default;
 
-    const bool reverse_lines;
-    const bool reverse_items_in_line;
+    // Reverses `MainGap` assignment. For flex, this also reverses the order
+    // of the owner groups (flex lines) that make up the axis-wide stitched
+    // `CrossGap` pattern. For grid-lanes, `CrossGap` patterns are always
+    // independent per lane, so this reverses only the `MainGap` sequence.
+    const bool reverse_main_assignment_order;
+    // Reverses `CrossGap` assignment within each owner (flex line / grid
+    // lane).
+    const bool reverse_within_owner;
   };
 
   // Describes a range of gap indices starting at index `start` and continuing
@@ -185,7 +195,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
             other.fragmented_flex_cross_gap_decoration_indices_),
         fragmented_flex_cross_gap_count_(
             other.fragmented_flex_cross_gap_count_),
-        flex_gap_placement_reversal_(other.flex_gap_placement_reversal_),
+        gap_placement_reversal_(other.gap_placement_reversal_),
         content_inline_start_(other.content_inline_start_),
         content_inline_end_(other.content_inline_end_),
         content_block_start_(new_content_block_start),
@@ -204,7 +214,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                other.fragmented_flex_cross_gap_decoration_indices_ &&
            fragmented_flex_cross_gap_count_ ==
                other.fragmented_flex_cross_gap_count_ &&
-           flex_gap_placement_reversal_ == other.flex_gap_placement_reversal_ &&
+           gap_placement_reversal_ == other.gap_placement_reversal_ &&
            content_inline_start_ == other.content_inline_start_ &&
            content_inline_end_ == other.content_inline_end_ &&
            content_block_start_ == other.content_block_start_ &&
@@ -369,31 +379,45 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // boundaries are content edges.
   LayoutUnit GridAxisOffsetForLaneBoundary(wtf_size_t lane_boundary) const;
 
-  // Records that this flex container's gap-decoration values are assigned in
-  // placement order rather than geometric (paint) order. `reverse_lines` is
-  // `flex-wrap: wrap-reverse` (reverses `MainGap` assignment, and the order of
-  // the line groups that make up the axis-wide `CrossGap` pattern).
-  // `reverse_items_in_line` is a reversed `flex-direction` (reverses `CrossGap`
-  // assignment within each line).
-  void SetFlexGapPlacementReversal(FlexGapPlacementReversal reversal) {
-    flex_gap_placement_reversal_.emplace(reversal);
+  // Records how this container's placement order differs from geometric paint
+  // order.
+  void SetGapPlacementReversal(PlacementReversal reversal) {
+    gap_placement_reversal_.emplace(reversal);
   }
 
-  // Returns true if gap-decoration values are processed in the default order,
-  // meaning no reversals are applied.
-  bool IsDefaultDecorationOrder(GridTrackSizingDirection track_direction) const;
+  // Returns whether geometric (paint order) gap indices need to be mapped to
+  // decoration value assignments. This is always true for grid-lanes
+  // `CrossGap`s because each lane has an independent sequence. For flex, it is
+  // true for `CrossGap`s when `flex-direction` is reversed or `flex-wrap` is
+  // `wrap-reverse`, and for `MainGap`s only with `wrap-reverse`.
+  bool NeedsDecorationValueAssignmentMapping(
+      GridTrackSizingDirection track_direction) const;
+
+  // Describes this gap's position in the sequence used to assign decoration
+  // values. Main gaps and flex cross gaps use a container-wide sequence.
+  // Grid-lanes cross gaps use a separate sequence for each lane.
+  struct DecorationValueAssignment {
+    // Index of this gap in the resolved decoration value sequence.
+    wtf_size_t value_index;
+
+    // Number of gaps in that sequence. Used to resolve repeaters.
+    wtf_size_t gap_count;
+  };
 
   // Gap decoration colors, styles, and widths can each contain a list of
-  // values. Returns the current gap's index in the resolved value sequences.
+  // values. Returns the current gap's index in the resolved value sequences and
+  // the number of gap slots used to resolve each list. A gap slot represents
+  // one gap in an assignment sequence.
   // * `fragment_relative_gap_index` is its index in this fragment's `MainGap`
   // or `CrossGap` vector.
   // * `stitched_gap_index` is its index in the complete container, in the order
   // gaps are stored and painted.
   // * `gap_slot_count` is the total number of gap slots used to resolve each
-  // decoration value list, including slots in other fragments.
+  // decoration value list, including slots in other fragments. Grid-lanes
+  // cross gaps return the owning lane's local slot count instead.
   // * `cross_gap_owner_index` identifies the flex line or grid lane that owns a
   // cross gap.
-  wtf_size_t DecorationValueIndexForGap(
+  DecorationValueAssignment DecorationValueAssignmentForGap(
       GridTrackSizingDirection track_direction,
       wtf_size_t fragment_relative_gap_index,
       wtf_size_t stitched_gap_index,
@@ -608,17 +632,15 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   }
 
   // Maps a `MainGap`'s index in geometric paint order to its decoration value
-  // index when `flex-wrap: wrap-reverse` reverses flex-line placement.
-  // TODO(javiercon): Add grid-lanes main-gap assignment handling to
-  // `DecorationValueIndexForGap()`.
+  // index when placement reverses the main assignment sequence.
   wtf_size_t DecorationValueIndexForReversedMainGap(
       wtf_size_t stitched_gap_index,
       wtf_size_t gap_slot_count) const;
 
-  // Returns one flex line's range in this geometry's flattened `CrossGap` list.
-  // `owning_main_gap_index` identifies the main gap after the line, or
-  // `main_gaps_.size()` for the last flex line.
-  GapIndexRange FlexLineCrossGapRange(wtf_size_t owning_main_gap_index) const;
+  // Returns one flex line's or grid lane's range in this geometry's flattened
+  // `CrossGap` list. `owner_index` identifies the main gap after the owner, or
+  // `main_gaps_.size()` for the trailing owner.
+  GapIndexRange CrossGapRangeForOwner(wtf_size_t owner_index) const;
 
   // Fills `intersections` for a main gap at `gap_index`. The list includes:
   // - container content start
@@ -748,9 +770,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   Vector<wtf_size_t> fragmented_flex_cross_gap_decoration_indices_;
   wtf_size_t fragmented_flex_cross_gap_count_ = 0;
 
-  // Describes how flex placement order differs from geometric paint order.
-  // See `SetFlexGapPlacementReversal`.
-  std::optional<FlexGapPlacementReversal> flex_gap_placement_reversal_;
+  // Describes how gap placement order differs from geometric paint order.
+  // See `SetGapPlacementReversal`.
+  std::optional<PlacementReversal> gap_placement_reversal_;
 
   // These represent the offsets of the content where the gaps begin and end.
   // We use separate LayoutUnits instead of LogicalOffsets, since these are more

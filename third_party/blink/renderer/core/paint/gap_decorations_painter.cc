@@ -259,7 +259,8 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   const bool has_fragmented_flex_cross_gap_indices =
       !is_main && gap_geometry.HasFragmentedFlexCrossGapDecorationIndices();
   // Total gap slot count used to resolve the current color, style, and width
-  // lists.
+  // lists. Grid-lanes may replace it with a lane-local count, since decoration
+  // assignments reset across lanes.
   wtf_size_t gap_slot_count = fragment_relative_gap_count;
   if (has_fragmented_flex_cross_gap_indices) {
     gap_slot_count = gap_geometry.FragmentedFlexCrossGapCount();
@@ -340,15 +341,19 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       stitched_gap_index = box_fragment_.GetLayoutObject()->StitchedRowGapIndex(
           box_fragment_, gap_index, cross_gap_owner_index);
     }
-    const wtf_size_t decoration_value_index =
-        gap_geometry.DecorationValueIndexForGap(
+    const GapGeometry::DecorationValueAssignment decoration_value_assignment =
+        gap_geometry.DecorationValueAssignmentForGap(
             track_direction, gap_index, stitched_gap_index, gap_slot_count,
             cross_gap_owner_index);
+    width_accessor.SetGapSlotCount(decoration_value_assignment.gap_count);
+    style_accessor.SetGapSlotCount(decoration_value_assignment.gap_count);
+    color_accessor.SetGapSlotCount(decoration_value_assignment.gap_count);
     const StyleColor rule_color =
-        color_accessor.ValueAt(decoration_value_index);
+        color_accessor.ValueAt(decoration_value_assignment.value_index);
     const EBorderStyle rule_style_value =
-        style_accessor.ValueAt(decoration_value_index);
-    const int rule_width_value = width_accessor.ValueAt(decoration_value_index);
+        style_accessor.ValueAt(decoration_value_assignment.value_index);
+    const int rule_width_value =
+        width_accessor.ValueAt(decoration_value_assignment.value_index);
     const Color resolved_rule_color =
         style.VisitedDependentGapColor(rule_color, is_column_gap);
     const EBorderStyle rule_style =

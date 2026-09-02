@@ -138,16 +138,22 @@ bool GapGeometry::HasRowGapFragmentation(
   return false;
 }
 
-bool GapGeometry::IsDefaultDecorationOrder(
+bool GapGeometry::NeedsDecorationValueAssignmentMapping(
     GridTrackSizingDirection track_direction) const {
-  if (!flex_gap_placement_reversal_) {
+  // Grid-lanes `CrossGap`s use lane-local assignment slots, so each lane must
+  // map its first geometric gap back to slot zero, even without reversal.
+  if (GetContainerType() == kGridLanes && !IsMainDirection(track_direction)) {
     return true;
   }
-  return IsMainDirection(track_direction) &&
-         !flex_gap_placement_reversal_->reverse_lines;
+  if (!gap_placement_reversal_) {
+    return false;
+  }
+  return !IsMainDirection(track_direction) ||
+         gap_placement_reversal_->reverse_main_assignment_order;
 }
 
-wtf_size_t GapGeometry::DecorationValueIndexForGap(
+GapGeometry::DecorationValueAssignment
+GapGeometry::DecorationValueAssignmentForGap(
     GridTrackSizingDirection track_direction,
     wtf_size_t fragment_relative_gap_index,
     wtf_size_t stitched_gap_index,
@@ -164,47 +170,74 @@ wtf_size_t GapGeometry::DecorationValueIndexForGap(
   if (!IsMainDirection(track_direction) &&
       HasFragmentedFlexCrossGapDecorationIndices()) {
     CHECK_EQ(gap_slot_count, FragmentedFlexCrossGapCount());
-    return FragmentedFlexCrossGapDecorationValueIndexAt(
-        fragment_relative_gap_index);
+    return {FragmentedFlexCrossGapDecorationValueIndexAt(
+                fragment_relative_gap_index),
+            gap_slot_count};
   }
 
-  // Geometric order is already the decoration assignment order when no
-  // container-specific reordering applies.
-  if (IsDefaultDecorationOrder(track_direction)) {
-    return stitched_gap_index;
-  }
   if (IsMainDirection(track_direction)) {
-    return DecorationValueIndexForReversedMainGap(stitched_gap_index,
-                                                  gap_slot_count);
+    // Main gaps use one container-wide assignment sequence for their color,
+    // style, and width lists. If placement reverses their order, mirror the
+    // stitched gap index before selecting values from those lists.
+    const wtf_size_t decoration_value_index =
+        NeedsDecorationValueAssignmentMapping(track_direction)
+            ? DecorationValueIndexForReversedMainGap(stitched_gap_index,
+                                                     gap_slot_count)
+            : stitched_gap_index;
+    return {decoration_value_index, gap_slot_count};
   }
 
-  // Grid and multicol cross gaps have no owner and return above. Flex and
-  // grid-lanes cross gaps are owned by lines and lanes, respectively. This
-  // non-default path currently applies to flex, so its line owner is required.
+  // Grid-lanes assigns gap-decoration values to `CrossGap`s independently per
+  // lane. Rules never continue across lanes, so the owning lane's `CrossGap`
+  // count replaces the container-wide `gap_slot_count`.
+  if (GetContainerType() == kGridLanes) {
+    CHECK(cross_gap_owner_index.has_value());
+    const GapIndexRange owner_range =
+        CrossGapRangeForOwner(*cross_gap_owner_index);
+
+    CHECK_GE(stitched_gap_index, owner_range.start);
+    wtf_size_t local_decoration_value_index =
+        stitched_gap_index - owner_range.start;
+    CHECK_LT(local_decoration_value_index, owner_range.count);
+
+    if (gap_placement_reversal_ &&
+        gap_placement_reversal_->reverse_within_owner) {
+      // `fill-reverse` starts assignment at the opposite end of each lane, so
+      // mirror the lane-local index within that lane's slot sequence.
+      local_decoration_value_index =
+          owner_range.count - 1 - local_decoration_value_index;
+    }
+    return {local_decoration_value_index, owner_range.count};
+  }
+
+  // Flex `CrossGap`s are assigned from one sequence spanning the whole
+  // container.
+  if (!NeedsDecorationValueAssignmentMapping(track_direction)) {
+    return {stitched_gap_index, gap_slot_count};
+  }
   CHECK(cross_gap_owner_index.has_value());
-  return DecorationValueIndexForCrossGap(
-      stitched_gap_index, FlexLineCrossGapRange(*cross_gap_owner_index),
-      gap_slot_count);
+  return {DecorationValueIndexForCrossGap(
+              stitched_gap_index, CrossGapRangeForOwner(*cross_gap_owner_index),
+              gap_slot_count),
+          gap_slot_count};
 }
 
-GapGeometry::GapIndexRange GapGeometry::FlexLineCrossGapRange(
-    wtf_size_t owning_main_gap_index) const {
-  CHECK(flex_gap_placement_reversal_.has_value());
-
+GapGeometry::GapIndexRange GapGeometry::CrossGapRangeForOwner(
+    wtf_size_t owner_index) const {
   if (main_gaps_.empty()) {
-    CHECK_EQ(owning_main_gap_index, 0u);
+    CHECK_EQ(owner_index, 0u);
     CHECK(!cross_gaps_.empty());
     return {0, cross_gaps_.size()};
   }
 
-  if (owning_main_gap_index < main_gaps_.size()) {
-    const MainGap& main_gap = main_gaps_[owning_main_gap_index];
+  if (owner_index < main_gaps_.size()) {
+    const MainGap& main_gap = main_gaps_[owner_index];
     CHECK(main_gap.HasCrossGapsBefore());
     return {main_gap.GetCrossGapBeforeStart(),
             main_gap.GetCrossGapBeforeCount()};
   }
 
-  CHECK_EQ(owning_main_gap_index, main_gaps_.size());
+  CHECK_EQ(owner_index, main_gaps_.size());
   const MainGap& last_main_gap = main_gaps_.back();
   CHECK(last_main_gap.HasCrossGapsAfter());
   return {last_main_gap.GetCrossGapAfterStart(),
@@ -214,9 +247,11 @@ GapGeometry::GapIndexRange GapGeometry::FlexLineCrossGapRange(
 wtf_size_t GapGeometry::DecorationValueIndexForReversedMainGap(
     wtf_size_t stitched_gap_index,
     wtf_size_t gap_slot_count) const {
-  CHECK(flex_gap_placement_reversal_);
-  CHECK(flex_gap_placement_reversal_->reverse_lines);
+  CHECK(gap_placement_reversal_);
+  CHECK(gap_placement_reversal_->reverse_main_assignment_order);
   CHECK_LT(stitched_gap_index, gap_slot_count);
+  // Mirror the zero-based geometric index within the assignment sequence, so
+  // the first geometric gap uses the last slot and vice versa.
   return gap_slot_count - 1 - stitched_gap_index;
 }
 
@@ -224,7 +259,7 @@ wtf_size_t GapGeometry::DecorationValueIndexForCrossGap(
     wtf_size_t stitched_gap_index,
     GapIndexRange line_range,
     wtf_size_t gap_slot_count) const {
-  CHECK(flex_gap_placement_reversal_);
+  CHECK(gap_placement_reversal_);
   CHECK_LT(stitched_gap_index, gap_slot_count);
   CHECK_GE(stitched_gap_index, line_range.start);
   CHECK_LE(line_range.count, gap_slot_count - line_range.start);
@@ -238,14 +273,14 @@ wtf_size_t GapGeometry::DecorationValueIndexForCrossGap(
   // Next, reverse the gap's index within its line for a reversed
   // `flex-direction`.
   wtf_size_t placement_index_in_line = geometric_index_in_line;
-  if (flex_gap_placement_reversal_->reverse_items_in_line) {
+  if (gap_placement_reversal_->reverse_within_owner) {
     placement_index_in_line = line_range.count - 1 - placement_index_in_line;
   }
 
   // Finally, move the complete line group to its placement-order position for
   // `wrap-reverse`.
   const wtf_size_t line_start_in_placement_order =
-      flex_gap_placement_reversal_->reverse_lines
+      gap_placement_reversal_->reverse_main_assignment_order
           ? gap_slot_count - line_range.start - line_range.count
           : line_range.start;
   const wtf_size_t decoration_value_index =

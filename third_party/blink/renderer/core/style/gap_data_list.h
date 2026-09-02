@@ -124,8 +124,8 @@ class CORE_EXPORT GapDataListValueAccessor {
   using GapData = GapData<T>;
 
   GapDataListValueAccessor(const GapDataVector& gap_data_list,
-                           wtf_size_t gap_count)
-      : gap_data_list_(gap_data_list), gap_count_(gap_count) {
+                           wtf_size_t gap_slot_count)
+      : gap_data_list_(gap_data_list), gap_slot_count_(gap_slot_count) {
     CHECK(!gap_data_list_.empty());
     const auto counts = ComputeRegionSlotCounts();
     auto_repeat_slot_count_ = counts.auto_repeat;
@@ -144,10 +144,29 @@ class CORE_EXPORT GapDataListValueAccessor {
     }
   }
 
-  // Returns the value assigned to gap slot `index`, out of `gap_count` total
-  // slots.
+  // Retargets this accessor to a different number of gap slots, e.g. when a
+  // grid-lanes `CrossGap`'s decoration values are assigned independently
+  // within its own lane, rather than across the whole container.
+  void SetGapSlotCount(wtf_size_t gap_slot_count) {
+    if (gap_slot_count == gap_slot_count_) {
+      return;
+    }
+    gap_slot_count_ = gap_slot_count;
+    if (HasAutoRepeater()) {
+      // Fixed regions do not depend on the gap count, so only the auto-repeat
+      // region needs to be recomputed.
+      const wtf_size_t combined_slot_count =
+          leading_region_.total_slots + trailing_region_.total_slots;
+      auto_repeat_slot_count_ = combined_slot_count < gap_slot_count_
+                                    ? gap_slot_count_ - combined_slot_count
+                                    : 0;
+    }
+  }
+
+  // Returns the value assigned to gap slot `index`, out of the configured
+  // number of gap slots.
   T ValueAt(wtf_size_t index) const {
-    CHECK_LT(index, gap_count_);
+    CHECK_LT(index, gap_slot_count_);
 
     if (!HasAutoRepeater()) {
       // No auto-repeater: the whole list is one region that cycles to fill
@@ -224,8 +243,8 @@ class CORE_EXPORT GapDataListValueAccessor {
       // combined slots from leading and trailing regions is greater than the
       // total gap count, the auto region slot count remains zero.
       wtf_size_t combined_slot_count = counts.leading + counts.trailing;
-      if (combined_slot_count < gap_count_) {
-        counts.auto_repeat = gap_count_ - combined_slot_count;
+      if (combined_slot_count < gap_slot_count_) {
+        counts.auto_repeat = gap_slot_count_ - combined_slot_count;
       }
     }
     return counts;
@@ -283,7 +302,9 @@ class CORE_EXPORT GapDataListValueAccessor {
   }
 
   const GapDataVector& gap_data_list_;
-  const wtf_size_t gap_count_;
+  // Usually the container's total gap count. For grid-lanes, this may instead
+  // be the number of gaps in one lane.
+  wtf_size_t gap_slot_count_;
 
   // The auto-repeat region's slot count, and its index in `gap_data_list_`
   // (`kNotFound` if there is no auto-repeater). The leading/trailing fixed

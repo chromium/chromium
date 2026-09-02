@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -49,9 +50,18 @@ bool LaneEntryIdsMatch(const Vector<wtf_size_t>& before_ids,
 
 }  // namespace
 
-GridLanesGapAccumulator::GridLanesGapAccumulator()
+GridLanesGapAccumulator::GridLanesGapAccumulator(const ComputedStyle& style)
     : gap_geometry_(MakeGarbageCollected<GapGeometry>(
-          GapGeometry::ContainerType::kGridLanes)) {}
+          GapGeometry::ContainerType::kGridLanes)) {
+  const bool is_reverse_track_direction =
+      style.IsReverseGridLanesTrackDirection();
+  const bool is_reverse_fill_direction =
+      style.IsReverseGridLanesFillDirection();
+  if (is_reverse_track_direction || is_reverse_fill_direction) {
+    gap_geometry_->SetGapPlacementReversal(
+        {is_reverse_track_direction, is_reverse_fill_direction});
+  }
+}
 
 void GridLanesGapAccumulator::BuildMainGaps(
     const GridLayoutTrackCollection& grid_axis_tracks) {
