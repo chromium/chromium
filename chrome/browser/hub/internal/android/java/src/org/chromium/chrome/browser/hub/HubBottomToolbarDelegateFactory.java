@@ -7,8 +7,12 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 
 /**
@@ -34,22 +38,39 @@ public class HubBottomToolbarDelegateFactory {
      * own delegate implementations.
      *
      * @param context The context.
+     * @param currentTabSupplier The supplier of the current tab.
+     * @param isHidingSupplier Supplies whether the Hub is currently hiding / exiting.
      * @return A HubBottomToolbarDelegate instance, or null if no bottom toolbar functionality
      *     should be provided.
      */
-    public static @Nullable HubBottomToolbarDelegate createDelegate(Context context) {
+    public static @Nullable HubBottomToolbarDelegate createDelegate(
+            Context context,
+            NullableObservableSupplier<Tab> currentTabSupplier,
+            NonNullObservableSupplier<Boolean> isHidingSupplier) {
         if (sDelegateForTesting != null) {
             return sDelegateForTesting;
         }
 
-        // Upstream default: bottom bar support support depends on feature state.
+        // Upstream default: bottom bar support depends on feature state.
         if (BottomBarConfigUtils.isBottomBarEnabled(context)
                 && BottomBarConfigUtils.shouldShowOnGts()) {
-            return new HubBottomBarBottomToolbarDelegateImpl(context);
+            return new HubBottomBarBottomToolbarDelegateImpl(currentTabSupplier, isHidingSupplier);
         }
 
         // Downstream implementations can override this method to return their delegate
         return null;
+    }
+
+    /**
+     * Creates a HubBottomToolbarDelegate instance with default suppliers.
+     *
+     * @param context The context.
+     * @return A HubBottomToolbarDelegate instance, or null if no bottom toolbar functionality
+     *     should be provided.
+     */
+    public static @Nullable HubBottomToolbarDelegate createDelegate(Context context) {
+        return createDelegate(
+                context, ObservableSuppliers.alwaysNull(), ObservableSuppliers.alwaysFalse());
     }
 
     /**

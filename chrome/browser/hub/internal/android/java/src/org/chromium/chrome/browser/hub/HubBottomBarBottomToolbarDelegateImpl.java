@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 
 /**
@@ -25,7 +27,8 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
     private final NonNullObservableSupplier<Boolean> mVisibilitySupplier =
             ObservableSuppliers.alwaysTrue();
 
-    private final Context mContext;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsHidingSupplier;
 
     // Non-null after {@link #initializeBottomToolbarView} is called.
     private HubBottomToolbarView mHubBottomToolbarView;
@@ -33,11 +36,19 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
     private @Nullable BottomBarHubColorMixerAdapter mColorMixerAdapter;
 
     /**
-     * @param context The context.
+     * @param currentTabSupplier The supplier of the current tab.
+     * @param isHidingSupplier Supplies whether the Hub is currently hiding / exiting.
      */
-    public HubBottomBarBottomToolbarDelegateImpl(Context context) {
-        mContext = context;
+    public HubBottomBarBottomToolbarDelegateImpl(
+            NullableObservableSupplier<Tab> currentTabSupplier,
+            NonNullObservableSupplier<Boolean> isHidingSupplier) {
+        mCurrentTabSupplier = currentTabSupplier;
+        mIsHidingSupplier = isHidingSupplier;
         // TODO(crbug.com/491509787): Dynamically attach/detach a child view to the container.
+    }
+
+    public HubBottomBarBottomToolbarDelegateImpl() {
+        this(ObservableSuppliers.alwaysNull(), ObservableSuppliers.alwaysFalse());
     }
 
     @Initializer
@@ -52,7 +63,7 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
         // provided view to the container as the prompt dictates.
         mHubBottomToolbarView =
                 (HubBottomToolbarView)
-                        LayoutInflater.from(mContext)
+                        LayoutInflater.from(context)
                                 .inflate(
                                         R.layout.hub_bottom_toolbar_layout,
                                         container,
@@ -69,12 +80,16 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
     /** Attaches the provided bottom bar view to the container. */
     @Override
     public void attachBottomBarView(View view) {
+        assert mHubBottomToolbarView != null
+                : "attachBottomBarView called before initializeBottomToolbarView";
         mHubBottomToolbarView.addView(view);
         if (view instanceof BottomBarView bottomBarView) {
             if (mColorMixerAdapter != null) {
                 mColorMixerAdapter.destroy();
             }
-            mColorMixerAdapter = new BottomBarHubColorMixerAdapter(bottomBarView, mHubColorMixer);
+            mColorMixerAdapter =
+                    new BottomBarHubColorMixerAdapter(
+                            bottomBarView, mHubColorMixer, mCurrentTabSupplier, mIsHidingSupplier);
         }
     }
 

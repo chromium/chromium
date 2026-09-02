@@ -227,6 +227,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/bottombar:java",
+    "//chrome/browser/ui/android/bottombar:java_resources",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/searchactivityutils:java",

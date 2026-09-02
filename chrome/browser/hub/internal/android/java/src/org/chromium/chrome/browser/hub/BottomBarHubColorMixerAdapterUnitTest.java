@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -30,7 +32,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -46,13 +53,24 @@ public class BottomBarHubColorMixerAdapterUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HubColorMixer mHubColorMixer;
+    @Mock private Tab mRegularTab;
+    @Mock private Tab mIncognitoTab;
 
     private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private BottomBarView mBottomBarView;
+    private SettableNonNullObservableSupplier<Boolean> mIsHidingSupplier;
+    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private BottomBarHubColorMixerAdapter mAdapter;
 
     @Before
     public void setUp() {
+        when(mRegularTab.isIncognito()).thenReturn(false);
+        when(mIncognitoTab.isIncognito()).thenReturn(true);
+
+        mIsHidingSupplier = ObservableSuppliers.createNonNull(false);
+        mCurrentTabSupplier = ObservableSuppliers.createNullable();
+
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -70,35 +88,45 @@ public class BottomBarHubColorMixerAdapterUnitTest {
 
     @After
     public void tearDown() {
+        if (mAdapter != null) {
+            mAdapter.destroy();
+        }
         mActivityController.close();
+    }
+
+    private BottomBarHubColorMixerAdapter createAdapter() {
+        return new BottomBarHubColorMixerAdapter(
+                mBottomBarView, mHubColorMixer, mCurrentTabSupplier, mIsHidingSupplier);
     }
 
     @Test
     public void testRegisteredBlendsCount() {
-        BottomBarHubColorMixerAdapter adapter =
-                new BottomBarHubColorMixerAdapter(mBottomBarView, mHubColorMixer);
+        mAdapter = createAdapter();
         ArgumentCaptor<HubViewColorBlend> captor = ArgumentCaptor.forClass(HubViewColorBlend.class);
         verify(mHubColorMixer, times(5)).registerBlend(captor.capture());
         assertEquals(5, captor.getAllValues().size());
-        adapter.destroy();
     }
 
     @Test
     public void testInjectedRegistrationHelper() {
         HubColorMixerRegistrationHelper helper = mock(HubColorMixerRegistrationHelper.class);
-        BottomBarHubColorMixerAdapter adapter =
-                new BottomBarHubColorMixerAdapter(mBottomBarView, mHubColorMixer, helper);
+        mAdapter =
+                new BottomBarHubColorMixerAdapter(
+                        mBottomBarView,
+                        mHubColorMixer,
+                        helper,
+                        mCurrentTabSupplier,
+                        mIsHidingSupplier);
         verify(helper, times(5)).registerBlend(any());
         verify(helper).setColorMixer(mHubColorMixer);
 
-        adapter.destroy();
+        mAdapter.destroy();
         verify(helper).destroy();
     }
 
     @Test
     public void testColorMixer_registeredBlendsUpdateColors() {
-        BottomBarHubColorMixerAdapter adapter =
-                new BottomBarHubColorMixerAdapter(mBottomBarView, mHubColorMixer);
+        mAdapter = createAdapter();
         ArgumentCaptor<HubViewColorBlend> captor = ArgumentCaptor.forClass(HubViewColorBlend.class);
         verify(mHubColorMixer, times(5)).registerBlend(captor.capture());
         List<HubViewColorBlend> blends = captor.getAllValues();
@@ -171,14 +199,11 @@ public class BottomBarHubColorMixerAdapterUnitTest {
                             HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO);
             assertNotNull(anim);
         }
-
-        adapter.destroy();
     }
 
     @Test
-    public void testDestroy_resetsToBaselineColorScheme() {
-        BottomBarHubColorMixerAdapter adapter =
-                new BottomBarHubColorMixerAdapter(mBottomBarView, mHubColorMixer);
+    public void testDestroy_resetsToBaselineColorSchemeAndRemovesObservers() {
+        mAdapter = createAdapter();
         ArgumentCaptor<HubViewColorBlend> captor = ArgumentCaptor.forClass(HubViewColorBlend.class);
         verify(mHubColorMixer, times(5)).registerBlend(captor.capture());
         List<HubViewColorBlend> blends = captor.getAllValues();
@@ -191,13 +216,98 @@ public class BottomBarHubColorMixerAdapterUnitTest {
                 BottomBarUtils.getBottomBarBackgroundColor(mActivity, BrandedColorScheme.INCOGNITO);
         assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
 
-        // Calling destroy should unregister blends and reset to baseline APP_DEFAULT
-        adapter.destroy();
+        // Calling destroy should unregister blends, remove observers, and reset to baseline
+        // APP_DEFAULT
+        mAdapter.destroy();
 
         verify(mHubColorMixer, times(5)).unregisterBlend(any());
         int defaultBg =
                 BottomBarUtils.getBottomBarBackgroundColor(
                         mActivity, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+        assertFalse(mIsHidingSupplier.hasObservers());
+        assertFalse(mCurrentTabSupplier.hasObservers());
+    }
+
+    @Test
+    public void testIsHiding_SyncsBottomBarViewColorScheme() {
+        mCurrentTabSupplier.set(mIncognitoTab);
+        mAdapter = createAdapter();
+
+        int defaultBg =
+                BottomBarUtils.getBottomBarBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        int incognitoBg =
+                BottomBarUtils.getBottomBarBackgroundColor(mActivity, BrandedColorScheme.INCOGNITO);
+
+        // Initially not hiding -> APP_DEFAULT
+        assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // When hiding starts, incognito tab color scheme is synced immediately to BottomBarView
+        mIsHidingSupplier.set(true);
+        assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // Switch to regular tab while hiding
+        mCurrentTabSupplier.set(mRegularTab);
+        assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // Switch back to incognito tab while hiding
+        mCurrentTabSupplier.set(mIncognitoTab);
+        assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // When hiding completes (isHiding returns to false), the tab color scheme is retained
+        mIsHidingSupplier.set(false);
+        assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // When isHiding is false, setting currentTab does not update background color
+        mCurrentTabSupplier.set(mRegularTab);
+        assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+    }
+
+    @Test
+    public void testCurrentTabSupplier_WhenNotHiding_DoesNotUpdateColorScheme() {
+        mCurrentTabSupplier.set(mIncognitoTab);
+        mAdapter = createAdapter();
+
+        int defaultBg =
+                BottomBarUtils.getBottomBarBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        int incognitoBg =
+                BottomBarUtils.getBottomBarBackgroundColor(mActivity, BrandedColorScheme.INCOGNITO);
+
+        // Initially not hiding -> APP_DEFAULT
+        assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // When not hiding, currentTab changes do not update BottomBarView color scheme
+        mCurrentTabSupplier.set(mRegularTab);
+        assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // When hiding starts, regular tab color scheme is synced (APP_DEFAULT)
+        mIsHidingSupplier.set(true);
+        assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // When currentTab changes to incognito while hiding, color scheme updates to INCOGNITO
+        mCurrentTabSupplier.set(mIncognitoTab);
+        assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+    }
+
+    @Test
+    public void testCurrentTabSupplier_WhenHidingWithNullTab_DefaultsToDefaultColorScheme() {
+        mIsHidingSupplier.set(true);
+        mCurrentTabSupplier.set(mIncognitoTab);
+        mAdapter = createAdapter();
+
+        int defaultBg =
+                BottomBarUtils.getBottomBarBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        int incognitoBg =
+                BottomBarUtils.getBottomBarBackgroundColor(mActivity, BrandedColorScheme.INCOGNITO);
+
+        // Since hiding is true with incognito tab, scheme is INCOGNITO
+        assertEquals(incognitoBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
+
+        // Setting tab to null while hiding defaults to APP_DEFAULT
+        mCurrentTabSupplier.set(null);
         assertEquals(defaultBg, ((ColorDrawable) mBottomBarView.getBackground()).getColor());
     }
 }
