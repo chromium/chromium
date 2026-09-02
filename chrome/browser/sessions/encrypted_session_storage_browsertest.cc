@@ -928,7 +928,13 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreAcrossStagesTest, PRE_Restore) {
   AssertCommandStorageBackendFilesExist(SessionType::kSessionRestore);
 }
 
-IN_PROC_BROWSER_TEST_P(SessionRestoreAcrossStagesTest, Restore) {
+// TODO(crbug.com/553933982): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Restore DISABLED_Restore
+#else
+#define MAYBE_Restore Restore
+#endif
+IN_PROC_BROWSER_TEST_P(SessionRestoreAcrossStagesTest, MAYBE_Restore) {
   AssertSessionState();
   browser()->GetProfile()->SaveSessionState();
   AssertCommandStorageBackendFilesExist(SessionType::kSessionRestore);
