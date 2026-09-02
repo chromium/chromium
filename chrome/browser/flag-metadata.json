@@ -264,7 +264,7 @@
   {
     "name": "always-draw-composited-toolbar-hairline",
     "owners": ["peilinwang@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 180
   },
   {
     "name": "always-enable-hdcp",
