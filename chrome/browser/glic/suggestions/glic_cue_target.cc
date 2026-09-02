@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -46,6 +47,21 @@
 #endif
 
 namespace glic {
+namespace {
+
+base::TimeDelta GetTimeSinceLastInvocation(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return base::TimeDelta::Max();
+  }
+  base::Time last_invoke_time =
+      profile->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime);
+  if (last_invoke_time.is_null()) {
+    return base::TimeDelta::Max();
+  }
+  return std::max(base::TimeDelta(), base::Time::Now() - last_invoke_time);
+}
+
+}  // namespace
 
 // static
 void GlicCueTarget::Register(tabs::TabInterface& tab) {
@@ -154,6 +170,13 @@ bool GlicCueTarget::IsEligible() const {
   if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
                            syncer::UserSelectableType::kHistory)) {
     return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kGlicContextualCueV2ActiveUserBackoff)) {
+    if (GetTimeSinceLastInvocation(tab_->GetProfile()) <
+        base::Days(features::kMinDaysSinceLastInvocation.Get())) {
+      return false;
+    }
   }
   return GlicEnabling::IsEnabledForProfile(tab_->GetProfile()) &&
          tab_->GetProfile()->GetPrefs()->GetBoolean(

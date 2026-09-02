@@ -191,6 +191,11 @@ const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
 BASE_FEATURE(kGlicContextualCueingV2AutoSubmit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicContextualCueV2ActiveUserBackoff,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kMinDaysSinceLastInvocation{
+    &kGlicContextualCueV2ActiveUserBackoff, "MinDaysSinceLastInvocation", 2};
+
 BASE_FEATURE(kGlicMessageFirstFreForContextualCue,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
