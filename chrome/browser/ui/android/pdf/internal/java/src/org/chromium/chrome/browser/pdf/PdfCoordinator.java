@@ -2481,7 +2481,7 @@ public class PdfCoordinator
                         .build();
 
         mModalDialogModel = model;
-        manager.showDialog(model, ModalDialogType.APP);
+        manager.showDialog(model, ModalDialogType.TAB);
     }
 
     private void showUnsavedChangesAlertDialog(

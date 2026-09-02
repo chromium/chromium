@@ -1619,7 +1619,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(TEST_CONTENT_URI));
@@ -1679,7 +1679,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             PdfCoordinator pdfCoordinator =
@@ -1739,7 +1739,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(TEST_CONTENT_URI));
@@ -1798,7 +1798,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             PdfCoordinator pdfCoordinator =
@@ -1864,7 +1864,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             PdfCoordinator pdfCoordinator =
@@ -1916,7 +1916,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             PdfCoordinator pdfCoordinator =
@@ -2222,7 +2222,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             File tempFile = File.createTempFile("test_pdf", ".pdf");
@@ -2540,7 +2540,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(TEST_CONTENT_URI));
@@ -2598,7 +2598,7 @@ public class PdfCoordinatorUnitTest {
             customActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
             controller.setup();
             FakeModalDialogManager fakeModalDialogManager =
-                    new FakeModalDialogManager(ModalDialogType.APP);
+                    new FakeModalDialogManager(ModalDialogType.TAB);
             customActivity.setModalDialogManager(fakeModalDialogManager);
 
             ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(TEST_CONTENT_URI));
