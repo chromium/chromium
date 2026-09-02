@@ -306,6 +306,8 @@ source_set("browser_tests") {
       "security_dialog_tracker_browsertest.cc",
     ]
     deps += [
+      ":extension_install_dialog_view",
+      ":extension_popup",
       ":extension_post_install_dialog_view_utils",
       ":extension_view_utils",
       ":extensions_menu_button",
@@ -314,7 +316,9 @@ source_set("browser_tests") {
       ":extensions_menu_item_view",
       ":extensions_menu_main_page_view",
       ":extensions_menu_site_permissions_page_view",
+      ":extensions_request_access_button",
       ":extensions_request_access_hover_card_coordinator",
+      ":extensions_toolbar_button",
       ":extensions_views_utils",
       ":security_dialog_tracker",
       ":test_support",
@@ -390,12 +394,15 @@ source_set("interactive_ui_tests") {
     "extensions_toolbar_desktop_interactive_uitest.cc",
   ]
   deps = [
+    ":extension_popup",
     ":extensions_menu_button",
     ":extensions_menu_delegate_desktop",
     ":extensions_menu_entry_view",
     ":extensions_menu_item_view",
     ":extensions_menu_main_page_view",
     ":extensions_menu_site_permissions_page_view",
+    ":extensions_request_access_button",
+    ":extensions_toolbar_button",
     ":security_dialog_tracker",
     ":test_support",
     "//base",
@@ -518,6 +525,7 @@ if (is_chromeos) {
     ]
   }
 }
+
 source_set("extension_view_utils") {
   public = [ "extension_view_utils.h" ]
   public_deps = [ "//ui/gfx" ]
@@ -569,4 +577,194 @@ source_set("extension_action_delegate_desktop") {
     "//extensions/browser",
     "//ui/base",
   ]
+}
+
+source_set("extension_install_dialog_view") {
+  public = [ "extension_install_dialog_view.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("extension_install_dialog_view_impl") {
+  sources = [ "extension_install_dialog_view.cc" ]
+  public_deps = [
+    ":extension_install_dialog_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":extensions_views_utils",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_web_contents_delegate",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//content/public/browser",
+    "//extensions/common",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("extensions_request_access_button") {
+  public = [ "extensions_request_access_button.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views/toolbar",
+    "//extensions/common",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+source_set("extensions_request_access_button_impl") {
+  sources = [ "extensions_request_access_button.cc" ]
+  public_deps = [
+    ":extensions_request_access_button",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":extensions_container_views",
+    ":extensions_request_access_hover_card_coordinator",
+    ":extensions_toolbar_button",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/extensions",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/permissions/chip",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/feature_engagement/public:feature_constants",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("extensions_toolbar_button") {
+  public = [ "extensions_toolbar_button.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views/toolbar",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("extensions_toolbar_button_impl") {
+  sources = [ "extensions_toolbar_button.cc" ]
+  public_deps = [
+    ":extensions_toolbar_button",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":extensions_request_access_button",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/web_applications",
+    "//extensions/common",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("extension_view_views") {
+  public = [ "extension_view_views.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//components/input",
+    "//ui/base/metadata",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("extension_view_views_impl") {
+  sources = [ "extension_view_views.cc" ]
+  public_deps = [
+    ":extension_popup",
+    ":extension_view_views",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+    "//extensions/common:mojom",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
+  ]
+}
+
+source_set("extension_popup") {
+  public = [ "extension_popup.h" ]
+  public_deps = [
+    ":extension_view_views",
+    "//base",
+    "//chrome/browser/ui/extensions:extension_popup_types",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("extension_popup_impl") {
+  sources = [ "extension_popup.cc" ]
+  public_deps = [
+    ":extension_popup",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":security_dialog_tracker",
+    "//base",
+    "//chrome/browser/devtools",
+    "//chrome/browser/extensions",
+    "//components/javascript_dialogs",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm",
+    ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

@@ -49,8 +49,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // The min/max height of popups.
   // The minimum is just a little larger than the size of the button itself.
   // The maximum is an arbitrary number and should be smaller than most screens.
-  static constexpr gfx::Size kMinSize = {25, 25};
-  static constexpr gfx::Size kMaxSize = {800, 600};
+  static constexpr gfx::Size kMinSize = extensions::kExtensionPopupMinSize;
+  static constexpr gfx::Size kMaxSize = extensions::kExtensionPopupMaxSize;
 
   // Creates and shows a popup with the given |host| positioned adjacent to
   // |anchor|.

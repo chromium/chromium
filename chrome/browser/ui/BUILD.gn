@@ -2489,18 +2489,12 @@ static_library("ui") {
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
       "views/constrained_web_dialog_delegate_views.cc",
-      "views/extensions/extension_install_dialog_view.cc",
-      "views/extensions/extension_install_dialog_view.h",
       "views/extensions/extension_view_utils.cc",
       "views/extensions/extensions_menu_coordinator.cc",
       "views/extensions/extensions_menu_coordinator.h",
       "views/extensions/extensions_menu_delegate_desktop.cc",
       "views/extensions/extensions_menu_view.cc",
       "views/extensions/extensions_menu_view.h",
-      "views/extensions/extensions_request_access_button.cc",
-      "views/extensions/extensions_request_access_button.h",
-      "views/extensions/extensions_toolbar_button.cc",
-      "views/extensions/extensions_toolbar_button.h",
       "views/extensions/extensions_toolbar_coordinator.cc",
       "views/extensions/extensions_toolbar_desktop.cc",
       "views/extensions/extensions_toolbar_desktop.h",
@@ -2759,6 +2753,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/exclusive_access",
       "//chrome/browser/ui/views/exclusive_access:impl",
+      "//chrome/browser/ui/views/extensions:extension_install_dialog_view",
+      "//chrome/browser/ui/views/extensions:extension_install_dialog_view_impl",
       "//chrome/browser/ui/views/extensions:extension_view_utils",
       "//chrome/browser/ui/views/extensions:extensions_container_views",
       "//chrome/browser/ui/views/extensions:extensions_menu_delegate_desktop",
@@ -2766,7 +2762,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_main_page_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_site_permissions_page_view",
+      "//chrome/browser/ui/views/extensions:extensions_request_access_button",
+      "//chrome/browser/ui/views/extensions:extensions_request_access_button_impl",
       "//chrome/browser/ui/views/extensions:extensions_request_access_hover_card_coordinator",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_button_impl",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/extensions:windows_utils_views",
@@ -2990,6 +2990,21 @@ static_library("ui") {
       # following header gets componentized:
       # c/b/ui/views/extensions/extension_keybinding_registry_views.h
       "//chrome/browser/ui/views/apps:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/scoped_tabbed_browser_displayer.h
+      "//chrome/browser/ui/views/extensions:extension_install_dialog_view_impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/extensions/extensions_toolbar_desktop.h
+      "//chrome/browser/ui/views/extensions:extensions_request_access_button_impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/extensions/extensions_toolbar_desktop.h
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_button_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
@@ -3410,11 +3425,16 @@ static_library("ui") {
   }
 
   if (enable_extensions) {
+    public_deps +=
+        [ "//chrome/browser/ui/views/extensions:extension_view_views" ]
     deps += [
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",
+      "//chrome/browser/ui/views/extensions:extension_popup",
+      "//chrome/browser/ui/views/extensions:extension_popup_impl",
+      "//chrome/browser/ui/views/extensions:extension_view_views_impl",
       "//chrome/browser/ui/webui/extensions_zero_state_promo",
       "//chrome/browser/web_applications/app_service",
       "//extensions/browser",
@@ -3426,19 +3446,17 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
 
+      # TODO(crbug.com/353332589): extension_popup.cc includes browser_view.h.
+      "//chrome/browser/ui/views/extensions:extension_popup_impl",
+      "//chrome/browser/ui/views/extensions:extension_view_views_impl",
+
       # TODO(crbug.com/353332589): zero_state_promo_ui.h and page_handler.cc
       # include browser.h and custom_webui_help_bubble_controller.h from
       # //chrome/browser/ui:ui.
       "//chrome/browser/ui/webui/extensions_zero_state_promo",
     ]
 
-    sources += [
-      "views/extensions/extension_action_delegate_desktop.cc",
-      "views/extensions/extension_popup.cc",
-      "views/extensions/extension_popup.h",
-      "views/extensions/extension_view_views.cc",
-      "views/extensions/extension_view_views.h",
-    ]
+    sources += [ "views/extensions/extension_action_delegate_desktop.cc" ]
 
     if (use_aura) {
       sources += [ "views/javascript_app_modal_event_blocker_aura.cc" ]
@@ -3853,11 +3871,13 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/views/controls",
+      "//chrome/browser/ui/views/extensions:extension_popup",
       "//chrome/browser/ui/views/extensions:extensions_menu_button",
       "//chrome/browser/ui/views/extensions:extensions_menu_delegate_desktop",
       "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_main_page_view",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
       "//components/constrained_window",

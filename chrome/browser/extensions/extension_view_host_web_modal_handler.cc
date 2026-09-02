@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/views/extensions/extension_popup.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -59,7 +59,7 @@ gfx::Size ExtensionViewHostWebModalHandler::GetMaximumDialogSize() {
   // up to the maximum popup dimensions instead of being constrained to the
   // current popup size. This gives dialogs room to use their preferred size
   // while keeping them appropriately scoped.
-  return ExtensionPopup::kMaxSize;
+  return kExtensionPopupMaxSize;
 }
 
 bool ExtensionViewHostWebModalHandler::ShouldConstrainDialogBoundsByHost() {

@@ -6,9 +6,13 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POPUP_TYPES_H_
 
 #include "base/functional/callback_forward.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace extensions {
 class ExtensionHost;
+
+inline constexpr gfx::Size kExtensionPopupMinSize = {25, 25};
+inline constexpr gfx::Size kExtensionPopupMaxSize = {800, 600};
 }
 
 enum class PopupShowAction {

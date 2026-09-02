@@ -3557,6 +3557,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
         "//chrome/browser/ui/views/autofill/payments:wallet_reminder_notice_bubble_view",
         "//chrome/browser/ui/views/autofill/payments:webauthn_dialog_view",
+        "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
         "//chrome/browser/ui/views/frame:multi_contents_background_view",
         "//chrome/browser/ui/views/frame:multi_contents_resize_area",
