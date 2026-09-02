@@ -106,7 +106,6 @@ tast.crostini.CommandCd.baguette_stable@betty
 tast.crostini.RestartIcon.baguette_stable@betty
 tast.crostini.ShareDownloads.baguette_stable@betty
 tast.crostini.ShareFolders.baguette_stable@betty
-tast.inputs.VirtualKeyboardOverscroll.clamshell@betty
 
 # https://crbug.com/432304431
 tast.featured.FieldTrialEarlyBoot.active_trial
