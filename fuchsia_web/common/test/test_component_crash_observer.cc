@@ -93,16 +93,25 @@ void TestComponentCrashObserver::Connect() {
   auto* const context = base::ComponentContextForProcess();
   CHECK(context);
 
+  // Connect synchronously and block on WaitForReady() to ensure that the
+  // EventStream subscription has been processed by Component Manager before
+  // any dynamic components can be started by tests.
+  fuchsia::component::EventStreamSyncPtr sync_event_stream;
   const zx_status_t status =
-      context->svc()->Connect(event_stream_.NewRequest());
+      context->svc()->Connect(sync_event_stream.NewRequest());
   ZX_CHECK(status == ZX_OK, status)
       << "Failed to connect to fuchsia.component.EventStream";
 
+  const zx_status_t wait_status = sync_event_stream->WaitForReady();
+  ZX_CHECK(wait_status == ZX_OK, wait_status)
+      << "Failed to wait for EventStream to be ready";
+
+  event_stream_.Bind(sync_event_stream.Unbind());
   event_stream_.set_error_handler([](zx_status_t status) {
     ZX_LOG(FATAL, status) << "EventStream channel closed unexpectedly";
   });
 
-  event_stream_->WaitForReady([this]() { ListenNext(); });
+  ListenNext();
 }
 
 void TestComponentCrashObserver::ListenNext() {

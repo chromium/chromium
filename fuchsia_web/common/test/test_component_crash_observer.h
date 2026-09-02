@@ -16,6 +16,12 @@ namespace test {
 
 // Observes component lifecycle events via the `fuchsia.component.EventStream`
 // protocol to detect abnormal component terminations and crashes.
+//
+// An instance of this class must be created before any dynamic components or
+// test realms (e.g. `RealmBuilder` roots) are started. The constructor
+// synchronously waits for the `EventStream` subscription to be registered
+// with Component Manager so that subsequent component start events are not
+// missed.
 class TestComponentCrashObserver {
  public:
   TestComponentCrashObserver();
