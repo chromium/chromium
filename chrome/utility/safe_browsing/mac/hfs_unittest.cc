@@ -468,6 +468,38 @@ TEST(HFSBTreeIteratorTest, InconsistentOffsetTableRejected) {
   EXPECT_FALSE(hfs_reader.Next());
 }
 
+TEST(HFSForkReadStreamTest, ExtentExceedingMaxBufferSizeRejected) {
+  constexpr uint32_t kBlockSize = 512;
+  constexpr uint32_t kTotalBlocks = 200000;  // ~100 MB
+
+  // We only need a backing vector large enough to hold the volume header.
+  std::vector<uint8_t> image(4 * kBlockSize, 0);
+
+  constexpr size_t kVH = 1024;
+  HFSPlusVolumeHeader header = {};
+  header.signature = OSSwapHostToBigInt16(kHFSPlusSigWord);
+  header.version = OSSwapHostToBigInt16(kHFSPlusVersion);
+  header.blockSize = OSSwapHostToBigInt32(kBlockSize);
+  header.totalBlocks = OSSwapHostToBigInt32(kTotalBlocks);
+
+  // Extent blockCount = 150000 blocks (75 MB > 64 MB cap), but within
+  // totalBlocks (200000).
+  constexpr uint32_t kHugeBlockCount = 150000;
+  header.catalogFile.logicalSize =
+      OSSwapHostToBigInt64(static_cast<uint64_t>(kHugeBlockCount) * kBlockSize);
+  header.catalogFile.totalBlocks = OSSwapHostToBigInt32(kHugeBlockCount);
+  header.catalogFile.extents[0].startBlock = OSSwapHostToBigInt32(1);
+  header.catalogFile.extents[0].blockCount =
+      OSSwapHostToBigInt32(kHugeBlockCount);
+  base::span(image)
+      .subspan(kVH, sizeof(header))
+      .copy_from(base::byte_span_from_ref(header));
+
+  MemoryReadStream stream(image);
+  HFSIterator hfs_reader(&stream);
+  EXPECT_FALSE(hfs_reader.Open());
+}
+
 INSTANTIATE_TEST_SUITE_P(HFSIteratorTest,
                          HFSFileReadTest,
                          testing::Values("hfs_plus.img",

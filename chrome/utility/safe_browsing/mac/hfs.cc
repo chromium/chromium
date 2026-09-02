@@ -32,6 +32,11 @@ namespace dmg {
 // UTF-16 character for file path seprator.
 static const char16_t kFilePathSeparator = u'/';
 
+// Maximum buffer size to allocate for a single extent. Safe Browsing limits DMG
+// analysis to 50 MB (see download_file_types.asciipb), so an individual extent
+// buffer should never need to exceed 64 MB.
+constexpr size_t kMaxExtentBufferSize = 64 * 1024 * 1024;
+
 // We cannot pass pointers to members of packed structs directly to
 // ConvertBigEndian, since the alignment of the member may be lower than the
 // normally expected alignment of the type, which means an aligned load through
@@ -442,7 +447,7 @@ bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
         DLOG(ERROR) << "Failed to seek to block " << extent.startBlock;
         return false;
       }
-      if (extent_size.ValueOrDie() > current_extent_data_.max_size()) {
+      if (extent_size.ValueOrDie() > kMaxExtentBufferSize) {
         DLOG(ERROR) << "Extent size too large";
         return false;
       }
