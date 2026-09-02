@@ -1476,6 +1476,7 @@ if (is_android) {
       "//components/embedder_support/android:components_embedder_support_junit_tests",
       "//components/embedder_support/android:virtual_structure_junit_tests",
       "//components/facilitated_payments/android/junit",
+      "//components/fcm/android:components_fcm_junit_tests",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
       "//components/image_fetcher:junit",
       "//components/installedapp/android:junit",
