@@ -35,7 +35,8 @@ public class GracefulShutdownService extends SplitCompatService {
         Status.LAUNCH_FAILED,
         Status.STARTED,
         Status.START_FOREGROUND_FAILED,
-        Status.TIMED_OUT
+        Status.TIMED_OUT,
+        Status.OS_TIMED_OUT
     })
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
@@ -45,7 +46,8 @@ public class GracefulShutdownService extends SplitCompatService {
         int STARTED = 2;
         int START_FOREGROUND_FAILED = 3;
         int TIMED_OUT = 4;
-        int NUM_ENTRIES = 5;
+        int OS_TIMED_OUT = 5;
+        int NUM_ENTRIES = 6;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GracefulShutdownStatus)

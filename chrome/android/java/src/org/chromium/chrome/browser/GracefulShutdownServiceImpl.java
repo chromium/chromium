@@ -97,11 +97,11 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
             GracefulShutdownService.recordStatus(
                     GracefulShutdownService.Status.START_FOREGROUND_FAILED);
             Log.e(TAG, "Failed to startForeground", e);
+            getService().stopSelf();
+            return Service.START_NOT_STICKY;
         }
 
-        if (mStopRunnable != null) {
-            mHandler.removeCallbacks(mStopRunnable);
-        }
+        removeStopRunnable();
 
         mStopRunnable =
                 () -> {
@@ -114,6 +114,7 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
                         Log.e(TAG, "Failed to stopForeground", e);
                     }
                     getService().stopSelf();
+                    mStopRunnable = null;
                 };
         mHandler.postDelayed(mStopRunnable, DEFAULT_SHUTDOWN_TIMEOUT_MS);
 
@@ -121,12 +122,35 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
     }
 
     @Override
+    public void onTimeout(int startId) {
+        Log.i(TAG, "GracefulShutdownServiceImpl onTimeout");
+        removeStopRunnable();
+        GracefulShutdownService.recordStatus(GracefulShutdownService.Status.OS_TIMED_OUT);
+        try {
+            ForegroundServiceUtils.getInstance()
+                    .stopForeground(getService(), Service.STOP_FOREGROUND_REMOVE);
+        } catch (Throwable e) {
+            Log.e(TAG, "Failed to stopForeground", e);
+        }
+        getService().stopSelf();
+    }
+
+    @Override
+    public void onTimeout(int startId, int fgsType) {
+        onTimeout(startId);
+    }
+
+    @Override
     public void onDestroy() {
+        removeStopRunnable();
+        Log.i(TAG, "GracefulShutdownServiceImpl onDestroy");
+    }
+
+    private void removeStopRunnable() {
         if (mStopRunnable != null) {
             mHandler.removeCallbacks(mStopRunnable);
             mStopRunnable = null;
         }
-        Log.i(TAG, "GracefulShutdownServiceImpl onDestroy");
     }
 
     void setServiceForTesting(SplitCompatService service) {

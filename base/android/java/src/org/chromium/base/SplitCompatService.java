@@ -7,6 +7,7 @@ package org.chromium.base;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import org.chromium.build.annotations.Initializer;
@@ -82,6 +83,20 @@ public class SplitCompatService extends Service {
         return mImpl.onBind(intent);
     }
 
+    @Override
+    public void onTimeout(int startId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            mImpl.onTimeout(startId);
+        }
+    }
+
+    @Override
+    public void onTimeout(int startId, int fgsType) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            mImpl.onTimeout(startId, fgsType);
+        }
+    }
+
     private int superOnStartCommand(@Nullable Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
@@ -123,6 +138,12 @@ public class SplitCompatService extends Service {
 
         public boolean onUnbind(Intent intent) {
             return mService.superOnUnbind(intent);
+        }
+
+        public void onTimeout(int startId) {}
+
+        public void onTimeout(int startId, int fgsType) {
+            onTimeout(startId);
         }
 
         public abstract @Nullable IBinder onBind(Intent intent);
