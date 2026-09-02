@@ -296,12 +296,18 @@ void EmailVerificationRequest::CheckIfVerifiable(
   }
 
   if (render_frame_host_->GetLastCommittedOrigin().opaque() ||
-      render_frame_host_->IsNestedWithinFencedFrame() ||
-      !IsSameOriginWithAncestors(render_frame_host_->GetLastCommittedOrigin(),
-                                 render_frame_host_.get())) {
+      render_frame_host_->IsNestedWithinFencedFrame()) {
     CompleteIsVerifiableRequest(
         std::move(callback), std::nullopt,
         EmailVerificationRequestResult::kRpOriginIsOpaque);
+    return;
+  }
+
+  if (!IsSameOriginWithAncestors(render_frame_host_->GetLastCommittedOrigin(),
+                                 render_frame_host_.get())) {
+    CompleteIsVerifiableRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kCrossOriginIframeNotSupported);
     return;
   }
 
@@ -796,6 +802,7 @@ void EmailVerificationRequest::MaybeAddDevToolsIssue(
       return;
 
     case EmailVerificationRequestResult::kRpOriginIsOpaque:
+    case EmailVerificationRequestResult::kCrossOriginIframeNotSupported:
     case EmailVerificationRequestResult::kInvalidEmail:
     case EmailVerificationRequestResult::kDnsInvalidRecord:
     case EmailVerificationRequestResult::kWellKnownHttpNotFound:

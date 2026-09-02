@@ -572,6 +572,9 @@ EmailVerificationRequestResultToProtocol(
     case EmailVerificationRequestResult::kTokenVerificationKbSignatureFailed:
       return EmailVerificationRequestIssueReasonEnum::
           TokenVerificationKbSignatureFailed;
+    case EmailVerificationRequestResult::kCrossOriginIframeNotSupported:
+      return EmailVerificationRequestIssueReasonEnum::
+          CrossOriginIframeNotSupported;
     case EmailVerificationRequestResult::kSuccess:
       NOTREACHED();
   }
