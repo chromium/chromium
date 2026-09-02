@@ -9,6 +9,8 @@
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/process/process_handle.h"
@@ -40,6 +42,8 @@
 namespace content {
 
 namespace {
+
+BASE_FEATURE(kDefaultDisableGpuLaunchTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -301,7 +305,9 @@ void BrowserGpuChannelHostFactory::CloseChannel() {
 BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
     : gpu_client_id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       gpu_client_tracing_id_(
-          memory_instrumentation::mojom::kServiceTracingProcessId) {}
+          memory_instrumentation::mojom::kServiceTracingProcessId),
+      is_visible_(
+          !base::FeatureList::IsEnabled(kDefaultDisableGpuLaunchTimeout)) {}
 
 BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));

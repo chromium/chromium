@@ -68,7 +68,7 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
   const uint64_t gpu_client_tracing_id_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
   scoped_refptr<EstablishRequest> pending_request_;
-  bool is_visible_ = true;
+  bool is_visible_;
 
   base::OneShotTimer timeout_;
 
