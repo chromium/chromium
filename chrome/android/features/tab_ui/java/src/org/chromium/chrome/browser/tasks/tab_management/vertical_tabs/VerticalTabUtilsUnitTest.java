@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
@@ -92,10 +93,27 @@ public class VerticalTabUtilsUnitTest {
     @Test
     @SmallTest
     @Config(qualifiers = "sw600dp")
+    public void testIsVerticalTabsEligible_NullContext() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        assertFalse(VerticalTabUtils.isVerticalTabsEligible(null));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
     public void testIsVerticalTabsEnabled_FalseWhenNotEligible() {
         FeatureOverrides.disable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
         VerticalTabUtils.setVerticalTabsEnabled(true);
         assertFalse(VerticalTabUtils.isVerticalTabsEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testIsVerticalTabsEnabled_NullContext() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        assertFalse(VerticalTabUtils.isVerticalTabsEnabled(null));
     }
 
     @Test
@@ -213,6 +231,16 @@ public class VerticalTabUtilsUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_NullContext() {
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        VerticalTabUtils.recordLayoutToggle(
+                                null, LayoutSwitchEntryPoint.APP_MENU, /* isEnabling= */ true));
+    }
+
     private void assertLayoutToggleHistogram(
             @LayoutSwitchEntryPoint int entryPoint,
             boolean isEnabling,
@@ -310,6 +338,21 @@ public class VerticalTabUtilsUnitTest {
     public void testIsTablet_FalseOnPhone() {
         DeviceInfo.setIsDesktopForTesting(false);
         assertFalse(VerticalTabUtils.isTablet(mContext));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsTablet_NullContext() {
+        assertThrows(AssertionError.class, () -> VerticalTabUtils.isTablet(null));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testShouldShowNewBadgeForVerticalTabs_NullContext() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(null));
     }
 
     @Test
