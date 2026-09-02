@@ -107,6 +107,11 @@ CGFloat const kDividerVerticalPadding = 12.0;
       [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
                     animated:NO];
       [self.stackView addArrangedSubview:newButton];
+      if (displayedBadgeItem.badgeType == BadgeType::kBadgeTypeReaderMode) {
+        [self.layoutGuideCenter
+            referenceView:newButton
+                underName:kReaderModeOptionsEntrypointGuide];
+      }
       _currentlyDisplayedBadges = @[ displayedBadgeItem ];
     } else {
       _currentlyDisplayedBadges = @[];
@@ -230,6 +235,11 @@ CGFloat const kDividerVerticalPadding = 12.0;
                     animated:NO];
     [badgeButton setEnabled:!(badgeItem.badgeState & BadgeStatePresented)];
 
+    if (badgeItem.badgeType == BadgeType::kBadgeTypeReaderMode) {
+      [self.layoutGuideCenter referenceView:badgeButton
+                                  underName:kReaderModeOptionsEntrypointGuide];
+    }
+
     [self.stackView addArrangedSubview:badgeButton];
   }
 
@@ -262,6 +272,11 @@ CGFloat const kDividerVerticalPadding = 12.0;
     return;
   }
 
+  if (self.displayedBadge.badgeType == BadgeType::kBadgeTypeReaderMode) {
+    [self.layoutGuideCenter referenceView:nil
+                                underName:kReaderModeOptionsEntrypointGuide];
+  }
+
   [self.stackView removeArrangedSubview:_displayedBadge];
   [_displayedBadge removeFromSuperview];
   if (!badgeButton) {
@@ -270,6 +285,10 @@ CGFloat const kDividerVerticalPadding = 12.0;
     return;
   }
   _displayedBadge = badgeButton;
+  if (_displayedBadge.badgeType == BadgeType::kBadgeTypeReaderMode) {
+    [self.layoutGuideCenter referenceView:_displayedBadge
+                                underName:kReaderModeOptionsEntrypointGuide];
+  }
 
   [self animateViewAppearance];
   [self.stackView addArrangedSubview:_displayedBadge];
@@ -304,6 +323,8 @@ CGFloat const kDividerVerticalPadding = 12.0;
   [_separatorViews removeAllObjects];
 
   self.unreadIndicatorView = nil;
+  [self.layoutGuideCenter referenceView:nil
+                              underName:kReaderModeOptionsEntrypointGuide];
 }
 
 // Adds separator between badges.

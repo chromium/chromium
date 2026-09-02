@@ -761,6 +761,11 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
   [self updateAccessibilityStatus];
 
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kReaderMode) {
+    [self.layoutGuideCenter referenceView:_buttonContainer
+                                underName:kReaderModeOptionsEntrypointGuide];
+  }
+
   __weak LocationBarBadgeViewController* weakSelf = self;
 
   [UIView animateWithDuration:kBadgeDisplayingAnimationTime
@@ -781,6 +786,10 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [self transitionToContextualPanelOpenedState:NO];
 
   [self setLocationBarBadgeHidden:YES];
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kReaderMode) {
+    [self.layoutGuideCenter referenceView:nil
+                                underName:kReaderModeOptionsEntrypointGuide];
+  }
   if (_badgeConfig.badgeType ==
       LocationBarBadgeType::kGeminiContextualCueChip) {
     if ([self.visibilityDelegate

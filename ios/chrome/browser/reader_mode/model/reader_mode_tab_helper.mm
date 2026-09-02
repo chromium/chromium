@@ -298,12 +298,6 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   }
   metrics_helper_.RecordDataLoadCompleted();
 
-  reader_mode_web_state_content_loaded_ = true;
-  for (auto& observer : observers_) {
-    observer.ReaderModeWebStateDidLoadContent(this,
-                                              reader_mode_web_state_.get());
-  }
-
   // Create the Reader Mode infobar.
   infobars::InfoBarManager* info_bar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
@@ -315,6 +309,12 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
         /* skip_banner= */ true);
     reader_mode_infobar->set_accepted(true);
     info_bar_manager->AddInfoBar(std::move(reader_mode_infobar));
+  }
+
+  reader_mode_web_state_content_loaded_ = true;
+  for (auto& observer : observers_) {
+    observer.ReaderModeWebStateDidLoadContent(this,
+                                              reader_mode_web_state_.get());
   }
 
   // Ensure that any infobars created outside Reading Mode state are removed

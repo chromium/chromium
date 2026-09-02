@@ -909,6 +909,12 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 }
 
 - (void)presentReaderModeOptionsBubble {
+  UIView* referencedView = [_layoutGuideCenter
+      referencedViewUnderName:kReaderModeOptionsEntrypointGuide];
+  if (!referencedView) {
+    return;
+  }
+
   if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
     return;
   }
@@ -929,18 +935,14 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       [self anchorPointToGuide:kReaderModeOptionsEntrypointGuide
                      direction:arrowDirection];
 
-  // An adjusted x offset to ensure that the bubble frame is on-screen.
-  CGFloat anchorXOffset = UseRTLLayout() ? -38 : 38;
-
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::
-                                  kIPHiOSReaderModeOptionsFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentTopOrLeading
-                         text:text
-        voiceOverAnnouncement:text
-                  anchorPoint:CGPoint(readerModeOptionsAnchor.x + anchorXOffset,
-                                      readerModeOptionsAnchor.y)];
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHiOSReaderModeOptionsFeature
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentTopOrLeading
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:readerModeOptionsAnchor];
 
   if (presenter) {
     _readerModeOptionsBubblePresenter = presenter;
@@ -1262,6 +1264,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
   DCHECK(guide);
   [self.rootViewController.view addLayoutGuide:guide];
+  [self.rootViewController.view layoutIfNeeded];
 
   CGPoint anchorPoint =
       bubble_util::AnchorPoint(guide.layoutFrame, arrowDirection);
@@ -1317,6 +1320,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
   CHECK(guide);
   [self.rootViewController.view addLayoutGuide:guide];
+  [self.rootViewController.view layoutIfNeeded];
   CGRect frame = guide.layoutFrame;
   CGRect frameInWindow = [guide.owningView convertRect:frame
                                                 toView:guide.owningView.window];
@@ -1630,9 +1634,66 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 
 #pragma mark - Testing
 
-- (BubbleViewControllerPresenter*)
-    sendTabToSelfOmniboxBubblePresenterForTesting {
-  return _sendTabToSelfOmniboxBubblePresenter;
+- (BubbleViewControllerPresenter*)bubblePresenterForFeatureForTesting:
+    (const base::Feature&)feature {
+  if (feature.name == feature_engagement::kIPHSendTabToSelfOmnibox.name) {
+    return _sendTabToSelfOmniboxBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHiOSReaderModeOptionsFeature.name) {
+    return _readerModeOptionsBubblePresenter;
+  }
+  if (feature.name == feature_engagement::kIPHDiscoverFeedHeaderFeature.name) {
+    return _discoverFeedHeaderMenuTipBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHHomeCustomizationMenuFeature.name) {
+    return _homeCustomizationMenuTipBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature.name) {
+    return _homeBackgroundCustomizationMenuTipBubblePresenter;
+  }
+  if (feature.name == feature_engagement::kIPHDefaultSiteViewFeature.name) {
+    return _defaultPageModeTipBubblePresenter;
+  }
+  if (feature.name == feature_engagement::kIPHWhatsNewFeature.name) {
+    return _whatsNewBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature.name) {
+    return _priceNotificationsWhileBrowsingBubbleTipPresenter;
+  }
+  if (feature.name == feature_engagement::kIPHiOSLensKeyboardFeature.name) {
+    return _lensKeyboardPresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHiOSLensOverlayEntrypointTipFeature.name) {
+    return _lensOverlayEntrypointBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHiOSSettingsInOverflowMenuBubbleFeature.name) {
+    return _settingsInOverflowMenuBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature
+          .name) {
+    return _switchAccountWithNTPIdentityDiscBubblePresenter;
+  }
+  if (feature.name == feature_engagement::kIPHiOSFeedSwipeStaticFeature.name) {
+    return _feedSwipeBubblePresenter;
+  }
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+    return _pageActionMenuBubblePresenter;
+  }
+  if (feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
+    return _geminiImageRemixBubblePresenter;
+  }
+  if (feature.name ==
+      feature_engagement::kIPHiOSPinMostVisitedSiteFeature.name) {
+    return _pinSiteToMostVisitedTilesBubblePresenter;
+  }
+  return nil;
 }
 
 @end

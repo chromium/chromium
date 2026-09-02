@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -47,7 +48,8 @@
 @end
 
 @interface BubblePresenter (Testing)
-- (BubbleViewControllerPresenter*)sendTabToSelfOmniboxBubblePresenterForTesting;
+- (BubbleViewControllerPresenter*)bubblePresenterForFeatureForTesting:
+    (const base::Feature&)feature;
 @end
 
 namespace {
@@ -94,8 +96,9 @@ class BubblePresenterTest : public PlatformTest {
 TEST_F(BubblePresenterTest, PresentSendTabToSelfOmniboxBubblePreconditions) {
   delegate_.rootViewVisible = NO;
   [bubble_presenter_ presentSendTabToSelfOmniboxBubble];
-  EXPECT_EQ(nil,
-            [bubble_presenter_ sendTabToSelfOmniboxBubblePresenterForTesting]);
+  EXPECT_EQ(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHSendTabToSelfOmnibox]);
 }
 
 // Test presentSendTabToSelfOmniboxBubble execution logic when preconditions
@@ -110,8 +113,42 @@ TEST_F(BubblePresenterTest, PresentSendTabToSelfOmniboxBubble) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   [bubble_presenter_ presentSendTabToSelfOmniboxBubble];
-  EXPECT_NE(nil,
-            [bubble_presenter_ sendTabToSelfOmniboxBubblePresenterForTesting]);
+  EXPECT_NE(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHSendTabToSelfOmnibox]);
+}
+
+// Test presentReaderModeOptionsBubble when preconditions are not met.
+TEST_F(BubblePresenterTest, PresentReaderModeOptionsBubblePreconditions) {
+  // When the entry point guide is not referenced, the bubble should not be
+  // presented.
+  [bubble_presenter_ presentReaderModeOptionsBubble];
+  EXPECT_EQ(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHiOSReaderModeOptionsFeature]);
+}
+
+// Test presentReaderModeOptionsBubble execution logic when preconditions pass.
+TEST_F(BubblePresenterTest, PresentReaderModeOptionsBubble) {
+  UIViewController* root_view_controller = [[UIViewController alloc] init];
+  bubble_presenter_.rootViewController = root_view_controller;
+  delegate_.rootViewVisible = YES;
+
+  UIView* anchor_view =
+      [[UIView alloc] initWithFrame:CGRectMake(100.0, 100.0, 44.0, 44.0)];
+  [root_view_controller.view addSubview:anchor_view];
+  [layout_guide_center_ referenceView:anchor_view
+                            underName:kReaderModeOptionsEntrypointGuide];
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state_list_->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  [bubble_presenter_ presentReaderModeOptionsBubble];
+  EXPECT_NE(nil, [bubble_presenter_
+                     bubblePresenterForFeatureForTesting:
+                         feature_engagement::kIPHiOSReaderModeOptionsFeature]);
 }
 
 }  // namespace
