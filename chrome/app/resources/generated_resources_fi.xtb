@@ -622,6 +622,7 @@
 <translation id="1482626744466814421">Lisää tämä välilehti kirjanmerkiksi…</translation>
 <translation id="1482772681918035149">muokkaa salasanoja</translation>
 <translation id="1483137792530497944">Joki</translation>
+<translation id="1483151333977672176">Lähetetty!</translation>
 <translation id="1483431819520123112">Julkisesti näkyvä nimi kopioitu leikepöydälle</translation>
 <translation id="1483493594462132177">Lähetä</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8953,6 +8954,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7943837619101191061">Lisää sijainti…</translation>
 <translation id="79446453817422139">Tiedosto voi olla vaarallinen</translation>
 <translation id="7944772052836377867">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
+<translation id="794567586469801724">MacOS</translation>
 <translation id="7945703887991230167">Ensisijainen ääni</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> voi nähdä kansion <ph name="FOLDERNAME" /> tiedostot ja tehdä niistä omia kopioita, kunnes suljet sivuston kaikki välilehdet</translation>
 <translation id="7946586320617670168">Lähteen on oltava turvallinen</translation>

@@ -622,6 +622,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1482626744466814421">Bokmärk den här fliken …</translation>
 <translation id="1482772681918035149">redigera lösenord</translation>
 <translation id="1483137792530497944">Flod</translation>
+<translation id="1483151333977672176">Skickat!</translation>
 <translation id="1483431819520123112">Visningsnamnet har kopierats till urklipp</translation>
 <translation id="1483493594462132177">Skicka</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8957,6 +8958,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7943837619101191061">Lägg till plats ...</translation>
 <translation id="79446453817422139">Den här filen kan vara farlig</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Önskad röst</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> har läsbehörighet till filer i <ph name="FOLDERNAME" /> och kan skapa egna kopior tills du stänger alla flikar för den här webbplatsen</translation>
 <translation id="7946586320617670168">Ursprunget måste vara säkert</translation>

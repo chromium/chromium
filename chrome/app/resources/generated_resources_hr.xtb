@@ -621,6 +621,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1482626744466814421">Označavanje ove kartice...</translation>
 <translation id="1482772681918035149">urediti zaporke</translation>
 <translation id="1483137792530497944">Rijeka</translation>
+<translation id="1483151333977672176">Poslano!</translation>
 <translation id="1483431819520123112">Naziv za prikaz kopiran je u međuspremnik</translation>
 <translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8943,6 +8944,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="79446453817422139">Ova je datoteka možda opasna</translation>
 <translation id="7944772052836377867">Sinkronizacija treba potvrditi da ste to vi</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Preferirani glas</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> će moći pregledavati datoteke u mapi <ph name="FOLDERNAME" /> i izrađivati vlastite kopije dok ne zatvorite sve kartice za tu web-lokaciju</translation>
 <translation id="7946586320617670168">Podrijetlo mora biti sigurno</translation>

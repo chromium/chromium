@@ -621,6 +621,7 @@
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
 <translation id="1482772681918035149">パスワードを編集</translation>
 <translation id="1483137792530497944">川</translation>
+<translation id="1483151333977672176">送信しました。</translation>
 <translation id="1483431819520123112">表示名をクリップボードにコピーしました</translation>
 <translation id="1483493594462132177">送信</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />（HDMI / DP）</translation>
@@ -8936,6 +8937,7 @@
 <translation id="7943837619101191061">位置情報を追加...</translation>
 <translation id="79446453817422139">このファイルは危険な可能性があります</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">好きな音声</translation>
 <translation id="7946243258100028201">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを表示し、独自のコピーを作成できます</translation>
 <translation id="7946586320617670168">保護されている発行元でなければなりません</translation>

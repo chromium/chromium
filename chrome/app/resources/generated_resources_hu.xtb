@@ -622,6 +622,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1482626744466814421">Lap hozzáadása a könyvjelzőkhöz…</translation>
 <translation id="1482772681918035149">jelszavak szerkesztése</translation>
 <translation id="1483137792530497944">Folyó</translation>
+<translation id="1483151333977672176">Elküldve!</translation>
 <translation id="1483431819520123112">Megjelenített név a vágólapra másolva</translation>
 <translation id="1483493594462132177">Küldés</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8954,6 +8955,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7943837619101191061">Hely hozzáadása...</translation>
 <translation id="79446453817422139">Ez a fájl veszélyes lehet.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Előnyben részesített hang</translation>
 <translation id="7946243258100028201">A(z) <ph name="ORIGIN" /> addig tudja megtekinteni a(z) <ph name="FOLDERNAME" /> mappa fájljait, illetve saját másolatot készíteni róluk, amíg Ön be nem zárja az ehhez a webhelyhez tartozó összes lapot</translation>
 <translation id="7946586320617670168">Az eredetnek biztonságosnak kell lennie</translation>

@@ -621,6 +621,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1482626744466814421">Obeleži ovu karticu...</translation>
 <translation id="1482772681918035149">izmeni lozinke</translation>
 <translation id="1483137792530497944">Reka</translation>
+<translation id="1483151333977672176">Poslato!</translation>
 <translation id="1483431819520123112">Ime za prikaz je kopirano u privremenu memoriju</translation>
 <translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8946,6 +8947,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="79446453817422139">Ovaj fajl može da bude opasan</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Željeni glas</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> će moći da pregleda fajlove u folderu <ph name="FOLDERNAME" /> i da pravi sopstvene kopije tih fajlova dok ne zatvorite sve kartice ovog sajta</translation>
 <translation id="7946586320617670168">Izvor mora da bude bezbedan</translation>

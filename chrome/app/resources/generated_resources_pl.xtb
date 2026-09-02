@@ -621,6 +621,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1482626744466814421">Dodaj tę kartę do zakładek...</translation>
 <translation id="1482772681918035149">edytować hasła</translation>
 <translation id="1483137792530497944">Rzeka</translation>
+<translation id="1483151333977672176">Wysłane</translation>
 <translation id="1483431819520123112">Wyświetlana nazwa została skopiowana do schowka</translation>
 <translation id="1483493594462132177">Wyślij</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8930,6 +8931,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7943837619101191061">Dodaj lokalizację...</translation>
 <translation id="79446453817422139">Ten plik może być niebezpieczny</translation>
 <translation id="7944772052836377867">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Preferowany głos</translation>
 <translation id="7946243258100028201">Witryna <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" /> i tworzyć ich kopie, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="7946586320617670168">Źródło musi być bezpieczne</translation>

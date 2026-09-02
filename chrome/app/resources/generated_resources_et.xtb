@@ -622,6 +622,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1482626744466814421">Lisa vaheleht järjehoidjatesse …</translation>
 <translation id="1482772681918035149">muuta paroole</translation>
 <translation id="1483137792530497944">Jõgi</translation>
+<translation id="1483151333977672176">Saadetud!</translation>
 <translation id="1483431819520123112">Kuvatav nimi kopeeriti lõikelauale</translation>
 <translation id="1483493594462132177">Saada</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8948,6 +8949,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7943837619101191061">Lisa asukoht ...</translation>
 <translation id="79446453817422139">Fail võib olla ohtlik</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Eelistatud hääl</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> saab kaustas <ph name="FOLDERNAME" /> faile vaadata ja neist koopiaid luua, kuni kõik selle saidi vahekaardid sulgete.</translation>
 <translation id="7946586320617670168">Lähtekoht peab olema turvaline</translation>

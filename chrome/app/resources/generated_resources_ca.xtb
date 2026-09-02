@@ -621,6 +621,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1482626744466814421">Afegeix aquesta pestanya a les adreces d'interès...</translation>
 <translation id="1482772681918035149">editar les contrasenyes</translation>
 <translation id="1483137792530497944">Riu</translation>
+<translation id="1483151333977672176">S'ha enviat</translation>
 <translation id="1483431819520123112">El nom visible s'ha copiat al porta-retalls</translation>
 <translation id="1483493594462132177">Envia</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8938,6 +8939,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7943837619101191061">Afegeix una ubicació...</translation>
 <translation id="79446453817422139">Aquest fitxer pot ser perillós</translation>
 <translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Veu preferida</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> podrà visualitzar els fitxers de <ph name="FOLDERNAME" /> i fer-ne còpies fins que tanquis totes les pestanyes d'aquest lloc web</translation>
 <translation id="7946586320617670168">L'origen ha de ser segur</translation>

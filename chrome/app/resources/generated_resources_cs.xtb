@@ -621,6 +621,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1482626744466814421">Přidat tuto kartu do záložek...</translation>
 <translation id="1482772681918035149">upravovat hesla</translation>
 <translation id="1483137792530497944">Řeka</translation>
+<translation id="1483151333977672176">Odesláno.</translation>
 <translation id="1483431819520123112">Zobrazovaný název byl zkopírován do schránky</translation>
 <translation id="1483493594462132177">Odeslat</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8939,6 +8940,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7943837619101191061">Přidat umístění...</translation>
 <translation id="79446453817422139">Tento soubor může být nebezpečný.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Preferovaný hlas</translation>
 <translation id="7946243258100028201">Dokud nezavřete všechny karty webu <ph name="ORIGIN" />, bude si moct prohlížet soubory ve složce <ph name="FOLDERNAME" /> a vytvářet z nich vlastní kopie</translation>
 <translation id="7946586320617670168">Původ musí být zabezpečený</translation>

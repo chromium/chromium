@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1053651653201045802">로그아웃했습니다. 내 계정에서 북마크, 비밀번호 등을 사용하려면 다시 로그인하세요.</translation>
 <translation id="1054745118061919935">계속하면 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />에 동의하는 것으로 간주됩니다.</translation>
+<translation id="1056818261333183659">어떤 걸 사야 할까?</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="1062138828266376352">PIN이 변경되지 않았습니다. 인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"(<ph name="FILE_SIZE" />) 저장 위치 선택</translation>
@@ -1505,6 +1506,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5898848375214731122">질량</translation>
 <translation id="5899314093904173337">근처에 있는 사용자와 공유하려면 상대방에게 카메라나 QR 스캐너 앱으로 QR 코드를 스캔해 달라고 요청하세요.</translation>
 <translation id="5902752768726620872">{count,plural, =1{새 탭 {count}개}other{새 탭 {count}개}}</translation>
+<translation id="5906163261248594192">댄의 생일</translation>
 <translation id="5911030830365207728">Google 번역</translation>
 <translation id="5912796581727968237">Google 월렛 열기</translation>
 <translation id="5922999516621365983">탭을 고정하려면 여기로 드래그하세요</translation>
@@ -1924,6 +1926,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="720399613139435155">번역 실패</translation>
 <translation id="7204922488054642675">맞춤뉴스</translation>
 <translation id="7206979415662233817">서비스 약관</translation>
+<translation id="721218676460477064">이 기사 요약해 줘</translation>
 <translation id="7215621211572884440">팝업 허용</translation>
 <translation id="7218491361283758048">우편번호</translation>
 <translation id="7221173315674413369">'새로운 기능'에서 새로운 기능과 팁을 살펴보세요.</translation>
@@ -2185,6 +2188,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8035133914807600019">새 폴더…</translation>
 <translation id="8035412398498507358">포토</translation>
 <translation id="8037713009824540257">사이트 추가</translation>
+<translation id="8038078082340255234">시장 보고서</translation>
 <translation id="8040407350301524547">경로 옵션을 보려면 '길찾기'를 탭합니다.</translation>
 <translation id="804427445359061970">여기에서 다른 기기의 탭을 확인할 수 있습니다</translation>
 <translation id="8058655154417507695">유효기간 연도</translation>
@@ -2242,6 +2246,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8232956427053453090">데이터 보관</translation>
 <translation id="8233237502828137700">배너 프로모션 닫기</translation>
 <translation id="823339794112333264">마이크 켜기</translation>
+<translation id="8240217649914883113">캘린더에 추가해 줘</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8252980988000695656">Google 렌즈가 완료되었습니다.</translation>
 <translation id="8258734532103758067">데이터를 내보냈습니다</translation>
@@ -2286,6 +2291,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8368198938968349418">자동 완성 사용 설정…</translation>
 <translation id="8370406443343902172">설정으로 이동…</translation>
 <translation id="8370929854657845191">중간 높이로 확장</translation>
+<translation id="8371494817541821097"><ph name="DATE" />에 생성된 패스키</translation>
 <translation id="8372471489238799313">{count,plural, =1{주소 삭제}other{주소 삭제}}</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8385363453480067273">Google 렌즈로 눈앞의 사물을 렌즈로 검색해 보세요</translation>

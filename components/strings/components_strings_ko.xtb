@@ -1457,6 +1457,7 @@
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
 페이지에서 찾기</translation>
 <translation id="3495818359064790343">급여</translation>
+<translation id="3496531230994554300">월렛 알림이 전체 높이로 열렸습니다.</translation>
 <translation id="3497627066518778351">새 창에서 온디바이스 사이트 데이터의 목록 검토</translation>
 <translation id="3498215018399854026">현재 부모님께 연락할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="350069200438440499">파일 이름:</translation>
@@ -2669,6 +2670,7 @@
 <translation id="5499229993630251170">이 대화목록을 계속하시겠습니까?</translation>
 <translation id="5506286895894263601">목록에 유효한 바로가기가 없습니다.</translation>
 <translation id="5507756662695126555">부인 방지</translation>
+<translation id="5508515366054931524">이메일 인증 프롬프트가 전체 높이로 열림</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">관리 북마크</translation>
 <translation id="5510766032865166053">이동되었거나 삭제되었을 수 있습니다.</translation>
@@ -3451,6 +3453,7 @@
 <translation id="6860888819347870819">PIP 모드 입력을 요청할 수 있습니다</translation>
 <translation id="6864189428899665393">267x389mm</translation>
 <translation id="6865412394715372076">지금은 이 카드를 인증할 수 없습니다.</translation>
+<translation id="6871073333584947219">월렛 알림이 닫혔습니다.</translation>
 <translation id="6871813064737840684">이 옵션의 웹 전반 가격 변동 내역</translation>
 <translation id="6873456682041376666">맨위 트레이</translation>
 <translation id="6874604403660855544">추가 다시 실행(&amp;R)</translation>
@@ -3970,6 +3973,7 @@
 <translation id="7705085181312584869">글쓰기 도우미</translation>
 <translation id="7705992072972338699">광디스크(고광택)</translation>
 <translation id="7706689436519265630">복사하거나 이동한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어 파일에 민감한 정보 또는 멀웨어가 있는지 검사하며 회사 정책에 따라 파일을 저장할 수도 있습니다.</translation>
+<translation id="7709934467582922028">이메일 인증 프롬프트가 닫힘</translation>
 <translation id="7714351089363296478">방금 방문한 데코레이터</translation>
 <translation id="7714404809393719981">사진(반광택)</translation>
 <translation id="7714464543167945231">인증서</translation>

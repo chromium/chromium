@@ -622,6 +622,7 @@
 <translation id="1482626744466814421">Запазване на отметка към този раздел...</translation>
 <translation id="1482772681918035149">редактиране на паролите</translation>
 <translation id="1483137792530497944">Река</translation>
+<translation id="1483151333977672176">Изпратено!</translation>
 <translation id="1483431819520123112">Екранното име е копирано в буферната памет</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -8957,6 +8958,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7943837619101191061">Добавяне на местоположение...</translation>
 <translation id="79446453817422139">Този файл може да е опасен</translation>
 <translation id="7944772052836377867">Синхронизирането трябва да потвърди, че това сте вие</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Предпочитан глас</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> ще може да преглежда файловете в(ъв) „<ph name="FOLDERNAME" />“ и да прави свои собствени копия на тях, докато не затворите всички раздели със сайта</translation>
 <translation id="7946586320617670168">Източникът трябва да е сигурен</translation>

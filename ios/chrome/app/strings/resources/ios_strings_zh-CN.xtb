@@ -1507,7 +1507,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} 个新标签页}other{{count} 个新标签页}}</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5912796581727968237">打开 Google 钱包</translation>
-<translation id="5922999516621365983">将标签页拖到此处即可固定。</translation>
+<translation id="5922999516621365983">将标签页拖至此处即可固定。</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{最多可添加 1 个文件、标签页或图片}other{最多可添加 {COUNT} 个文件、标签页或图片}}</translation>
 <translation id="5936006948844852401">管理存储空间</translation>
 <translation id="5936065461722368675">翻译整页内容</translation>
