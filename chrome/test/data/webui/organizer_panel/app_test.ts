@@ -19,6 +19,7 @@ suite('OrganizerPanelAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       clearSearch: 'Clear search',
+      recentlyClosed: 'Recently Closed',
       searchTabs: 'Search Tabs',
       shortcutText: 'Ctrl+Shift+A',
     });
@@ -52,7 +53,7 @@ suite('OrganizerPanelAppTest', () => {
   });
 
   test('renders organizer list with expected sections', () => {
-    assertEquals(1, app.$.list.sectionDelegates.length);
+    assertEquals(2, app.$.list.sectionDelegates.length);
   });
 
   test('updates list searchQuery when search field changes', async () => {

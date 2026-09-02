@@ -13,6 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {OpenTabsDelegate} from './delegates/open_tabs_delegate.js';
+import {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
 import type {OrganizerListElement} from './organizer_list.js';
 import type {OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 
@@ -49,6 +50,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   protected accessor sectionDelegates_:
       Array<OrganizerListSectionDelegate<unknown>> = [
         new OpenTabsDelegate(),
+        new RecentTabsDelegate(),
       ];
 
 

@@ -18,6 +18,7 @@ build_webui("build") {
     "app.html.ts",
     "app.ts",
     "delegates/open_tabs_delegate.ts",
+    "delegates/recent_tabs_delegate.ts",
     "organizer_list.html.ts",
     "organizer_list.ts",
     "organizer_list_section.html.ts",
