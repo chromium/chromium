@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.util.Pair;
 
 import org.chromium.base.Token;
@@ -96,24 +94,7 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-        TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        Tab previousGroupTab = tabModel.getRepresentativeTabAt(prevFilterIndex);
-        assumeNonNull(previousGroupTab);
-
-        int previousGroupTabId = previousGroupTab.getId();
-        int movedTabId = movedTab.getId();
-        int previousTabListModelIndex = mModelList.indexFromTabId(previousGroupTabId);
-        // Invalid means the previous group tab isn't visible. Either:
-        // 1. The moved tab isn't in this model list.
-        // 2. The moved tab is meant to stay in the model list as this is the
-        //    destination group.
-        // In either case no-op.
-        if (previousTabListModelIndex == TabList.INVALID_TAB_INDEX) {
-            return;
-        }
-
-        // The moved tab isn't here, or it is out-of-bounds no-op.
-        int curTabListModelIndex = mModelList.indexFromTabId(movedTabId);
+        int curTabListModelIndex = mModelList.indexFromTabId(movedTab.getId());
         if (!mModelList.isValidIndex(curTabListModelIndex)) return;
 
         mModelList.removeAt(curTabListModelIndex);

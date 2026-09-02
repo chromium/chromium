@@ -465,7 +465,6 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testDidMoveTabOutOfGroup() {
         addTabsToModelList(TAB1_ID, TAB2_ID);
-        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
 
         // Execute moving mTab1 out.
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
@@ -476,7 +475,6 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testDidMoveTabOutOfGroup_LastTab() {
         addTabsToModelList(TAB1_ID);
-        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
 
         // Execute moving mTab1 (last tab) out.
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
@@ -487,7 +485,7 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testDidMoveTabOutOfGroup_NotInModelList() {
         addTabsToModelList(TAB2_ID);
-        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
+
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
 
         // Verify no-op when tab is not in model list.
