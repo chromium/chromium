@@ -195,6 +195,7 @@ source_set("internal") {
         "//chrome/browser/ui/views:incognito_clear_browsing_data_dialog",
         "//chrome/browser/ui/views:upgrade_notification_controller",
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
+        "//chrome/browser/ui/views/frame:scrim_view_controller",
       ]
     }
 

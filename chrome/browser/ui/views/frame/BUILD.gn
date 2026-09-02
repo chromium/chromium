@@ -253,6 +253,150 @@ source_set("browser_view_layout_delegate") {
   ]
 }
 
+source_set("scrim_view_controller") {
+  public = [ "scrim_view_controller.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/tabs:tab_strip",
+  ]
+}
+
+source_set("scrim_view_controller_impl") {
+  sources = [ "scrim_view_controller.cc" ]
+  public_deps = [
+    ":scrim_view_controller",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":contents_web_view",
+    ":scrim_view",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}
+
+source_set("custom_corners") {
+  public = [ "custom_corners.h" ]
+  public_deps = [
+    "//base",
+    "//ui/color:color_headers",
+    "//ui/views",
+  ]
+}
+
+source_set("custom_corners_impl") {
+  sources = [ "custom_corners.cc" ]
+  public_deps = [
+    ":custom_corners",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//skia",
+    "//ui/gfx",
+  ]
+}
+
+source_set("custom_floating_corner") {
+  public = [ "custom_floating_corner.h" ]
+  public_deps = [
+    ":custom_corners",
+    "//base",
+    "//ui/base/metadata",
+    "//ui/color:color_headers",
+    "//ui/views",
+  ]
+}
+
+source_set("custom_floating_corner_impl") {
+  sources = [ "custom_floating_corner.cc" ]
+  public_deps = [
+    ":custom_floating_corner",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/color:mixers",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/color:color_headers",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("custom_corners_background") {
+  public = [ "custom_corners_background.h" ]
+  public_deps = [
+    ":custom_corners",
+    "//base",
+    "//skia",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/views",
+  ]
+}
+
+source_set("custom_corners_background_impl") {
+  sources = [ "custom_corners_background.cc" ]
+  public_deps = [
+    ":custom_corners_background",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":custom_corners",
+    ":custom_floating_corner",
+    "//base",
+    "//base:i18n",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/color:mixers",
+    "//skia",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
+    "//ui/views",
+  ]
+}
+
+source_set("shadow_overlay_view") {
+  public = [ "shadow_overlay_view.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/animation",
+    "//ui/views",
+  ]
+}
+
+source_set("shadow_overlay_view_impl") {
+  sources = [ "shadow_overlay_view.cc" ]
+  public_deps = [
+    ":shadow_overlay_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":shadow",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ui/animation",
+    "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/side_panel",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/compositor",
+    "//ui/views",
+  ]
+}
+
 if (is_win) {
   source_set("minimize_button_metrics_win") {
     public = [ "minimize_button_metrics_win.h" ]

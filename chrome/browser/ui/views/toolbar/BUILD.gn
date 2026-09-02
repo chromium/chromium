@@ -243,6 +243,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
     "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//chrome/browser/ui/views/frame:app_menu_button_observer",
+    "//chrome/browser/ui/views/frame:custom_corners_background",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/glic",
     "//chrome/browser/ui/views/global_media_controls",

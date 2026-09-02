@@ -120,6 +120,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/contextual_tasks",
     "//chrome/browser/ui/views/frame:contents_web_view",
+    "//chrome/browser/ui/views/frame:custom_corners_background",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/global_media_controls",
     "//chrome/browser/ui/views/page_action",
