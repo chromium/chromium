@@ -126,8 +126,7 @@ bool IsExtensionForcePinned(const Extension& extension, Profile* profile) {
 // Returns true if the given |extension| is allowed to be inspected based on
 // the Developer Tools Availability in the policy.
 bool IsExtensionInspectionAllowed(const Extension& extension,
-                                  Profile* profile,
-                                  content::WebContents* web_contents) {
+                                  Profile* profile) {
   policy::DeveloperToolsPolicyChecker* checker =
       policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
   if (checker) {
@@ -453,7 +452,7 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
       return web_contents && extension_action_ &&
              extension_action_->HasPopup(
                  sessions::SessionTabHelper::IdForTab(web_contents).id()) &&
-             IsExtensionInspectionAllowed(*extension, profile_, web_contents);
+             IsExtensionInspectionAllowed(*extension, profile_);
     }
     case UNINSTALL:
       // Uninstall is always enabled since it will only be visible when the
@@ -907,8 +906,7 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   if (delegate_ && !is_component_ && action_info && !action_info->synthesized &&
       profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    if (IsExtensionInspectionAllowed(*extension, profile_,
-                                     GetActiveWebContents())) {
+    if (IsExtensionInspectionAllowed(*extension, profile_)) {
       AddItemWithStringId(INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP);
     } else {
       AddItemWithStringIdAndIcon(
