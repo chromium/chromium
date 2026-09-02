@@ -68,6 +68,36 @@ class [[nodiscard]] RareDataUpdate final {
   NodeRareData* rare_data_ = nullptr;
 };
 
+// Specialization of RareDataUpdate for void, used by reallocating methods
+// that do not return a field reference (such as setters).
+template <>
+class [[nodiscard]] RareDataUpdate<void> final {
+  STACK_ALLOCATED();
+
+ public:
+  RareDataUpdate(const RareDataUpdate&) = delete;
+  RareDataUpdate& operator=(const RareDataUpdate&) = delete;
+  RareDataUpdate(RareDataUpdate&& other) noexcept
+      : rare_data_(std::exchange(other.rare_data_, nullptr)) {}
+  RareDataUpdate& operator=(RareDataUpdate&&) = delete;
+  ~RareDataUpdate() = default;
+
+  template <typename T>
+  ALWAYS_INLINE explicit RareDataUpdate(RareDataUpdate<T>&& other) noexcept
+      : rare_data_(std::exchange(other.rare_data_, nullptr)) {}
+
+  // Consumes the update and refreshes node.data_.
+  ALWAYS_INLINE void RefreshNode(Node& node) &&;
+
+ private:
+  friend class NodeRareData;
+
+  ALWAYS_INLINE explicit RareDataUpdate(NodeRareData* rare_data)
+      : rare_data_(rare_data) {}
+
+  NodeRareData* rare_data_ = nullptr;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RARE_DATA_UPDATE_H_

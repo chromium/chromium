@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
@@ -54,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -147,7 +147,7 @@ void NodeRareData::ClearPseudoElements() {
     SetFieldToNullIfExists(FieldId::kPseudoElementData);
   }
 }
-NodeRareData* NodeRareData::SetPseudoElement(
+RareDataUpdate<void> NodeRareData::SetPseudoElement(
     PseudoId pseudo_id,
     PseudoElement* element,
     const AtomicString& document_transition_tag) {
@@ -156,13 +156,13 @@ NodeRareData* NodeRareData::SetPseudoElement(
   NodeRareData* vec = this;
   if (!data) {
     if (!element) {
-      return this;
+      return RareDataUpdate<void>(this);
     }
     data = MakeGarbageCollected<PseudoElementData>();
     vec = SetField(FieldId::kPseudoElementData, data);
   }
   data->SetPseudoElement(pseudo_id, element, document_transition_tag);
-  return vec;
+  return RareDataUpdate<void>(vec);
 }
 PseudoElement* NodeRareData::GetPseudoElement(
     PseudoId pseudo_id,
@@ -193,11 +193,11 @@ PseudoElementData::PseudoElementVector NodeRareData::GetPseudoElements() const {
   }
   return data->GetPseudoElements();
 }
-NodeRareData* NodeRareData::AddColumnPseudoElement(
+RareDataUpdate<void> NodeRareData::AddColumnPseudoElement(
     ColumnPseudoElement& column_pseudo_element) {
   auto update = EnsureField<PseudoElementData>(FieldId::kPseudoElementData);
   update.field_->AddColumnPseudoElement(column_pseudo_element);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
 
 const ColumnPseudoElementsVector* NodeRareData::GetColumnPseudoElements()
@@ -238,9 +238,9 @@ NodeRareData::EnsureInlineCSSStyleDeclaration(Element* owner_element) {
 ShadowRoot* NodeRareData::GetShadowRoot() const {
   return static_cast<ShadowRoot*>(GetField(FieldId::kShadowRoot));
 }
-NodeRareData* NodeRareData::SetShadowRoot(ShadowRoot& shadow_root) {
+RareDataUpdate<void> NodeRareData::SetShadowRoot(ShadowRoot& shadow_root) {
   DCHECK(!GetField(FieldId::kShadowRoot));
-  return SetField(FieldId::kShadowRoot, &shadow_root);
+  return RareDataUpdate<void>(SetField(FieldId::kShadowRoot, &shadow_root));
 }
 
 bool NodeRareData::HasAttributeMap() const {
@@ -301,7 +301,8 @@ ScrollOffset NodeRareData::SavedLayerScrollOffset() const {
   static ScrollOffset offset;
   return offset;
 }
-NodeRareData* NodeRareData::SetSavedLayerScrollOffset(ScrollOffset offset) {
+RareDataUpdate<void> NodeRareData::SetSavedLayerScrollOffset(
+    ScrollOffset offset) {
   return SetWrappedField<ScrollOffset>(FieldId::kSavedLayerScrollOffset,
                                        offset);
 }
@@ -322,10 +323,10 @@ AttrNodeList* NodeRareData::GetAttrNodeList() {
 void NodeRareData::RemoveAttrNodeList() {
   SetFieldToNullIfExists(FieldId::kAttrNodeList);
 }
-NodeRareData* NodeRareData::AddAttr(Attr* attr) {
+RareDataUpdate<void> NodeRareData::AddAttr(Attr* attr) {
   auto update = EnsureAttrNodeList();
   update.field_->push_back(attr);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
 
 ElementIntersectionObserverData* NodeRareData::IntersectionObserverData()
@@ -346,18 +347,18 @@ ContainerQueryEvaluator* NodeRareData::GetContainerQueryEvaluator() const {
   }
   return container_query_data->GetContainerQueryEvaluator();
 }
-NodeRareData* NodeRareData::SetContainerQueryEvaluator(
+RareDataUpdate<void> NodeRareData::SetContainerQueryEvaluator(
     ContainerQueryEvaluator* evaluator) {
   ContainerQueryData* container_query_data = GetContainerQueryData();
   if (container_query_data) {
     container_query_data->SetContainerQueryEvaluator(evaluator);
-    return this;
+    return RareDataUpdate<void>(this);
   } else if (evaluator) {
     auto update = EnsureContainerQueryData();
     update.field_->SetContainerQueryEvaluator(evaluator);
-    return update.rare_data_;
+    return RareDataUpdate<void>(std::move(update));
   } else {
-    return this;
+    return RareDataUpdate<void>(this);
   }
 }
 
@@ -365,7 +366,7 @@ const AtomicString& NodeRareData::GetNonce() const {
   auto* value = GetWrappedField<AtomicString>(FieldId::kNonce);
   return value ? *value : g_null_atom;
 }
-NodeRareData* NodeRareData::SetNonce(const AtomicString& nonce) {
+RareDataUpdate<void> NodeRareData::SetNonce(const AtomicString& nonce) {
   return SetWrappedField<AtomicString>(FieldId::kNonce, nonce);
 }
 
@@ -373,15 +374,15 @@ const AtomicString& NodeRareData::IsValue() const {
   auto* value = GetWrappedField<AtomicString>(FieldId::kIsValue);
   return value ? *value : g_null_atom;
 }
-NodeRareData* NodeRareData::SetIsValue(const AtomicString& is_value) {
+RareDataUpdate<void> NodeRareData::SetIsValue(const AtomicString& is_value) {
   return SetWrappedField<AtomicString>(FieldId::kIsValue, is_value);
 }
 
 EditContext* NodeRareData::GetEditContext() const {
   return static_cast<EditContext*>(GetField(FieldId::kEditContext));
 }
-NodeRareData* NodeRareData::SetEditContext(EditContext* edit_context) {
-  return SetField(FieldId::kEditContext, edit_context);
+RareDataUpdate<void> NodeRareData::SetEditContext(EditContext* edit_context) {
+  return RareDataUpdate<void>(SetField(FieldId::kEditContext, edit_context));
 }
 
 RareDataUpdate<DOMTokenList> NodeRareData::EnsurePart(Element& element) {
@@ -393,10 +394,11 @@ DOMTokenList* NodeRareData::GetPart() const {
   return static_cast<DOMTokenList*>(GetField(FieldId::kPart));
 }
 
-NodeRareData* NodeRareData::SetPartNamesMap(const AtomicString part_names) {
+RareDataUpdate<void> NodeRareData::SetPartNamesMap(
+    const AtomicString part_names) {
   auto update = EnsureField<NamesMap>(FieldId::kPartNamesMap);
   update.field_->Set(part_names);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
 const NamesMap* NodeRareData::PartNamesMap() const {
   return static_cast<NamesMap*>(GetField(FieldId::kPartNamesMap));
@@ -464,7 +466,7 @@ const RegionCaptureCropId* NodeRareData::GetRegionCaptureCropId() const {
       FieldId::kRegionCaptureCropId);
   return value ? value->get() : nullptr;
 }
-NodeRareData* NodeRareData::SetRegionCaptureCropId(
+RareDataUpdate<void> NodeRareData::SetRegionCaptureCropId(
     std::unique_ptr<RegionCaptureCropId> crop_id) {
   CHECK(!GetRegionCaptureCropId());
   CHECK(crop_id);
@@ -478,7 +480,7 @@ const RestrictionTargetId* NodeRareData::GetRestrictionTargetId() const {
       FieldId::kRestrictionTargetId);
   return value ? value->get() : nullptr;
 }
-NodeRareData* NodeRareData::SetRestrictionTargetId(
+RareDataUpdate<void> NodeRareData::SetRestrictionTargetId(
     std::unique_ptr<RestrictionTargetId> id) {
   CHECK(!GetRestrictionTargetId());
   CHECK(id);
@@ -510,7 +512,7 @@ void NodeRareData::ClearTrackedElementSubRect(
   }
 }
 
-NodeRareData* NodeRareData::SetTrackedElementSubRect(
+RareDataUpdate<void> NodeRareData::SetTrackedElementSubRect(
     viz::TrackedElementFeature feature,
     const TrackedElementSubRect& rect) {
   CHECK(!rect.id.value().is_zero());
@@ -518,7 +520,7 @@ NodeRareData* NodeRareData::SetTrackedElementSubRect(
       EnsureWrappedField<TrackedElementSubRects>(FieldId::kTrackedElementRect);
   auto [_, inserted] = update.field_->try_emplace(feature, rect);
   CHECK(inserted);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
 
 const TrackedElementSubRects* NodeRareData::GetTrackedElementSubRects() const {
@@ -536,20 +538,21 @@ NodeRareData::EnsureResizeObserverData() {
       FieldId::kResizeObserverData);
 }
 
-NodeRareData* NodeRareData::SetCustomElementDefinition(
+RareDataUpdate<void> NodeRareData::SetCustomElementDefinition(
     CustomElementDefinition* definition) {
-  return SetField(FieldId::kCustomElementDefinition, definition);
+  return RareDataUpdate<void>(
+      SetField(FieldId::kCustomElementDefinition, definition));
 }
 CustomElementDefinition* NodeRareData::GetCustomElementDefinition() const {
   return static_cast<CustomElementDefinition*>(
       GetField(FieldId::kCustomElementDefinition));
 }
 
-NodeRareData* NodeRareData::SetLastRememberedBlockSize(
+RareDataUpdate<void> NodeRareData::SetLastRememberedBlockSize(
     std::optional<LayoutUnit> size) {
   return SetOptionalField(FieldId::kLastRememberedBlockSize, size);
 }
-NodeRareData* NodeRareData::SetLastRememberedInlineSize(
+RareDataUpdate<void> NodeRareData::SetLastRememberedInlineSize(
     std::optional<LayoutUnit> size) {
   return SetOptionalField(FieldId::kLastRememberedInlineSize, size);
 }
@@ -568,7 +571,7 @@ gfx::Rect NodeRareData::LastSentUnboundedBounds() const {
   }
   return gfx::Rect();
 }
-NodeRareData* NodeRareData::SetLastSentUnboundedBounds(
+RareDataUpdate<void> NodeRareData::SetLastSentUnboundedBounds(
     const gfx::Rect& bounds) {
   return SetWrappedField<gfx::Rect>(FieldId::kLastSentUnboundedBounds, bounds);
 }
@@ -623,16 +626,17 @@ RareDataUpdate<ScrollMarkerGroupData> NodeRareData::EnsureScrollMarkerGroupData(
                                             element->GetDocument().GetFrame());
 }
 
-NodeRareData* NodeRareData::SetScrollMarkerGroupContainerData(
+RareDataUpdate<void> NodeRareData::SetScrollMarkerGroupContainerData(
     ScrollMarkerGroupData* data) {
-  return SetField(FieldId::kScrollMarkerGroupContainerData, data);
+  return RareDataUpdate<void>(
+      SetField(FieldId::kScrollMarkerGroupContainerData, data));
 }
 ScrollMarkerGroupData* NodeRareData::GetScrollMarkerGroupContainerData() const {
   return static_cast<ScrollMarkerGroupData*>(
       GetField(FieldId::kScrollMarkerGroupContainerData));
 }
 
-NodeRareData* NodeRareData::CacheCSSPseudoElement(
+RareDataUpdate<void> NodeRareData::CacheCSSPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument,
     CSSPseudoElement& pseudo_element) {
@@ -640,7 +644,7 @@ NodeRareData* NodeRareData::CacheCSSPseudoElement(
       EnsureField<CSSPseudoElementsCacheData>(FieldId::kCSSPseudoElementData);
   update.field_->CacheCSSPseudoElement(pseudo_id, pseudo_argument,
                                        pseudo_element);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
 
 CSSPseudoElement* NodeRareData::GetCSSPseudoElement(
@@ -698,7 +702,7 @@ CustomElementRegistry* NodeRareData::GetCustomElementRegistry() const {
       GetField(FieldId::kCustomElementRegistry));
 }
 
-NodeRareData* NodeRareData::SetCustomElementRegistry(
+RareDataUpdate<void> NodeRareData::SetCustomElementRegistry(
     CustomElementRegistry* registry) {
   // An element's custom element registry should only be set once unless the
   // registry is a global registry and can be reset during cross document node
@@ -713,7 +717,8 @@ NodeRareData* NodeRareData::SetCustomElementRegistry(
   // null registry explicitly, we need to track that it was set. Thus, we use
   // the `has_custom_element_registry_` flag.
   flags_.has_custom_element_registry_ = true;
-  return SetField(FieldId::kCustomElementRegistry, registry);
+  return RareDataUpdate<void>(
+      SetField(FieldId::kCustomElementRegistry, registry));
 }
 
 void NodeRareData::ClearCustomElementRegistry() {
@@ -751,7 +756,7 @@ FocusgroupData NodeRareData::GetFocusgroupData() const {
   return FocusgroupData();
 }
 
-NodeRareData* NodeRareData::SetFocusgroupData(FocusgroupData data) {
+RareDataUpdate<void> NodeRareData::SetFocusgroupData(FocusgroupData data) {
   return SetWrappedField<FocusgroupData>(FieldId::kFocusgroupData, data);
 }
 
@@ -760,7 +765,7 @@ void NodeRareData::ClearFocusgroupData() {
   SetFieldToNullIfExists(FieldId::kFocusgroupLastFocused);
 }
 
-NodeRareData* NodeRareData::SetFocusgroupLastFocused(Element* element) {
+RareDataUpdate<void> NodeRareData::SetFocusgroupLastFocused(Element* element) {
   // Store weak reference, this should not keep the element alive.
   return SetWrappedField<WeakMember<Element>>(FieldId::kFocusgroupLastFocused,
                                               element);
@@ -782,17 +787,23 @@ ContentData* NodeRareData::GetAltContentData() const {
   return nullptr;
 }
 
-NodeRareData* NodeRareData::SetAltContentData(ContentData* content_data) {
+RareDataUpdate<void> NodeRareData::SetAltContentData(
+    ContentData* content_data) {
   if (content_data) {
     return SetWrappedField<Member<ContentData>>(FieldId::kAltContentData,
                                                 content_data);
   } else {
     SetFieldToNullIfExists(FieldId::kAltContentData);
-    return this;
+    return RareDataUpdate<void>(this);
   }
 }
 
-NodeRareData* NodeRareData::SetOverscrollContainer(Element* element) {
+RareDataUpdate<void> NodeRareData::SetCanvasTransform(
+    const gfx::Transform& transform) {
+  return SetWrappedField<gfx::Transform>(FieldId::kCanvasTransform, transform);
+}
+
+RareDataUpdate<void> NodeRareData::SetOverscrollContainer(Element* element) {
   return SetWrappedField<WeakMember<Element>>(FieldId::kOverscrollContainer,
                                               element);
 }
@@ -852,15 +863,17 @@ void NodeMutationObserverData::RemoveRegistration(
   registry_.EraseAt(registry_.Find(registration));
 }
 
-NodeRareData* NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {
+RareDataUpdate<void> NodeRareData::RegisterScrollTimeline(
+    ScrollTimeline* timeline) {
   auto update = EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines);
   update.field_->set_.insert(timeline);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
-NodeRareData* NodeRareData::UnregisterScrollTimeline(ScrollTimeline* timeline) {
+RareDataUpdate<void> NodeRareData::UnregisterScrollTimeline(
+    ScrollTimeline* timeline) {
   auto update = EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines);
   update.field_->set_.erase(timeline);
-  return update.rare_data_;
+  return RareDataUpdate<void>(std::move(update));
 }
 
 void NodeRareData::IncrementConnectedSubframeCount() {

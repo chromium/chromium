@@ -1428,8 +1428,6 @@ class CORE_EXPORT Node : public EventTarget {
   Member<Node> previous_;
   Member<Node> next_;
   Member<LayoutObject> layout_object_;
-
- protected:
   Member<NodeRareData> data_;
 };
 

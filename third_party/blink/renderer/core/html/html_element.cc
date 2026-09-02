@@ -1875,7 +1875,7 @@ gfx::Rect HTMLElement::LastSentUnboundedBounds() const {
 }
 
 void HTMLElement::SetLastSentUnboundedBounds(const gfx::Rect& bounds) {
-  data_ = EnsureRareData().SetLastSentUnboundedBounds(bounds);
+  EnsureRareData().SetLastSentUnboundedBounds(bounds).RefreshNode(*this);
 }
 
 bool HTMLElement::togglePopover(ExceptionState& exception_state) {

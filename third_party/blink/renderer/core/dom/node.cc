@@ -3839,10 +3839,10 @@ void Node::RemovedFromFlatTree() {
 }
 
 void Node::RegisterScrollTimeline(ScrollTimeline* timeline) {
-  data_ = EnsureRareData().RegisterScrollTimeline(timeline);
+  EnsureRareData().RegisterScrollTimeline(timeline).RefreshNode(*this);
 }
 void Node::UnregisterScrollTimeline(ScrollTimeline* timeline) {
-  data_ = EnsureRareData().UnregisterScrollTimeline(timeline);
+  EnsureRareData().UnregisterScrollTimeline(timeline).RefreshNode(*this);
 }
 
 void Node::SetManuallyAssignedSlot(HTMLSlotElement* slot) {

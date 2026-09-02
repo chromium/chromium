@@ -70,7 +70,8 @@ TEST_F(NodeRareDataTest, BasicOperations) {
 
   // Set Nonce (wrapped AtomicString).
   prev_ptr = rare_data;
-  rare_data = rare_data->SetNonce(AtomicString("test-nonce"));
+  rare_data->SetNonce(AtomicString("test-nonce")).RefreshNode(*node);
+  rare_data = node->RareData();
   // Size reaches kMinimumVectorSize, still within capacity.
   EXPECT_EQ(prev_ptr, rare_data);
   EXPECT_EQ(AtomicString("test-nonce"), rare_data->GetNonce());
@@ -81,7 +82,8 @@ TEST_F(NodeRareDataTest, BasicOperations) {
   // as the new size (3) will be greater than the capacity (kMinimumVectorSize =
   // 2).
   prev_ptr = rare_data;
-  rare_data = rare_data->SetIsValue(AtomicString("test-is-value"));
+  rare_data->SetIsValue(AtomicString("test-is-value")).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_NE(prev_ptr, rare_data);  // Reallocation expected!
   EXPECT_EQ(AtomicString("test-is-value"), rare_data->IsValue());
   EXPECT_EQ(AtomicString("test-nonce"), rare_data->GetNonce());
@@ -90,7 +92,9 @@ TEST_F(NodeRareDataTest, BasicOperations) {
 
   // Set SavedLayerScrollOffset (wrapped ScrollOffset/gfx::Vector2dF).
   prev_ptr = rare_data;
-  rare_data = rare_data->SetSavedLayerScrollOffset(gfx::Vector2dF(1.0f, 2.0f));
+  rare_data->SetSavedLayerScrollOffset(gfx::Vector2dF(1.0f, 2.0f))
+      .RefreshNode(*node);
+  rare_data = node->RareData();
   // Size reaches kMinimumVectorSize * 2 (4), still within capacity.
   EXPECT_EQ(prev_ptr, rare_data);
   EXPECT_EQ(gfx::Vector2dF(1.0f, 2.0f), rare_data->SavedLayerScrollOffset());
@@ -103,7 +107,9 @@ TEST_F(NodeRareDataTest, BasicOperations) {
   // reallocation as the new size (5) will be greater than the capacity
   // (kMinimumVectorSize * 2 = 4).
   prev_ptr = rare_data;
-  rare_data = rare_data->SetLastSentUnboundedBounds(gfx::Rect(10, 20, 30, 40));
+  rare_data->SetLastSentUnboundedBounds(gfx::Rect(10, 20, 30, 40))
+      .RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_NE(prev_ptr, rare_data);  // Reallocation expected!
   EXPECT_EQ(gfx::Rect(10, 20, 30, 40), rare_data->LastSentUnboundedBounds());
   EXPECT_EQ(gfx::Vector2dF(1.0f, 2.0f), rare_data->SavedLayerScrollOffset());
@@ -114,20 +120,24 @@ TEST_F(NodeRareDataTest, BasicOperations) {
 }
 
 TEST_F(NodeRareDataTest, OverwriteAndNullify) {
-  NodeRareData* rare_data = NodeRareData::Create();
+  TestElement* node = MakeGarbageCollected<TestElement>(GetDocument());
+  NodeRareData* rare_data = &node->EnsureRareData();
 
   // Set and overwrite Nonce.
-  rare_data = rare_data->SetNonce(AtomicString("nonce1"));
+  rare_data->SetNonce(AtomicString("nonce1")).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_EQ(AtomicString("nonce1"), rare_data->GetNonce());
   EXPECT_EQ(1u, GetSize(rare_data));
 
   NodeRareData* prev_ptr = rare_data;
-  rare_data = rare_data->SetNonce(AtomicString("nonce2"));
+  rare_data->SetNonce(AtomicString("nonce2")).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_EQ(prev_ptr, rare_data);
   EXPECT_EQ(AtomicString("nonce2"), rare_data->GetNonce());
   EXPECT_EQ(1u, GetSize(rare_data));
 
-  rare_data = rare_data->SetNonce(g_null_atom);
+  rare_data->SetNonce(g_null_atom).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_TRUE(rare_data->GetNonce().IsNull());
   EXPECT_EQ(1u, GetSize(rare_data));
 }
@@ -163,7 +173,8 @@ TEST_F(NodeRareDataTest, SetFieldToNullIfExists) {
 }
 
 TEST_F(NodeRareDataTest, PseudoElementReallocation) {
-  NodeRareData* rare_data = NodeRareData::Create();
+  TestElement* node = MakeGarbageCollected<TestElement>(GetDocument());
+  NodeRareData* rare_data = &node->EnsureRareData();
   EXPECT_EQ(0u, GetSize(rare_data));
 
   // Create a parent element and a pseudo element.
@@ -172,7 +183,8 @@ TEST_F(NodeRareDataTest, PseudoElementReallocation) {
   ASSERT_NE(nullptr, pseudo);
 
   // Set PseudoElement (size 1).
-  rare_data = rare_data->SetPseudoElement(kPseudoIdBefore, pseudo);
+  rare_data->SetPseudoElement(kPseudoIdBefore, pseudo).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_TRUE(rare_data->HasAnyPseudos());
   EXPECT_EQ(pseudo, rare_data->GetPseudoElement(kPseudoIdBefore));
   EXPECT_EQ(1u, GetSize(rare_data));
@@ -180,13 +192,15 @@ TEST_F(NodeRareDataTest, PseudoElementReallocation) {
   // Trigger reallocation by adding two other fields.
   // Add 1st extra field: Nonce (size reaches kMinimumVectorSize, no realloc).
   NodeRareData* prev_ptr = rare_data;
-  rare_data = rare_data->SetNonce(AtomicString("nonce"));
+  rare_data->SetNonce(AtomicString("nonce")).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_EQ(prev_ptr, rare_data);
   EXPECT_EQ(kMinimumVectorSize, GetSize(rare_data));
 
   // Add 2nd extra field: IsValue (size 3 > kMinimumVectorSize, reallocation
   // expected).
-  rare_data = rare_data->SetIsValue(AtomicString("is-value"));
+  rare_data->SetIsValue(AtomicString("is-value")).RefreshNode(*node);
+  rare_data = node->RareData();
   EXPECT_NE(prev_ptr, rare_data);
   EXPECT_EQ(3u, GetSize(rare_data));
 
