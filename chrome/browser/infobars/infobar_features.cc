@@ -49,11 +49,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kMigratedKeystonePromotion,
-                   &kCentralizedInfoBarFramework,
-                   false);
-
-BASE_FEATURE_PARAM(bool,
                    kMigratedKnownInterceptionDisclosure,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -131,8 +126,6 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedGoogleApiKeys;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:
       return &kMigratedInstallerDownloader;
-    case InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
-      return &kMigratedKeystonePromotion;
     case InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE:
       return &kMigratedKnownInterceptionDisclosure;
     case InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE:
