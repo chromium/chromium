@@ -2402,6 +2402,13 @@
       base_feature: "none",
     },
     {
+      // Kill switch for including non-exposed <object> and <embed> elements in
+      // document named properties. crbug.com/551807991
+      // Lands in M155 and can be removed in M157.
+      name: "DocumentNamedPropertiesIgnoreExposedness",
+      status: "stable",
+    },
+    {
       // Fix iframe unload events not firing during document.open()
       // https://crbug.com/40947017
       // Lands in M144; remove this flag in M146 after the milestone rolls.

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] If an object is nested inside an object with the same name, a collection should be returned. (name)
-  assert_class_string: collection should be an HTMLCollection expected "[object HTMLCollection]" but got "[object HTMLObjectElement]"
-[FAIL] If an object is nested inside an object with the same id, a collection should be returned. (id)
-  assert_class_string: collection should be an HTMLCollection expected "[object HTMLCollection]" but got "[object HTMLObjectElement]"
-[FAIL] If an embed is nested inside an object with the same name, a collection should be returned. (name)
-  assert_class_string: collection should be an HTMLCollection expected "[object HTMLCollection]" but got "[object HTMLEmbedElement]"
-Harness: the test ran to completion.
-

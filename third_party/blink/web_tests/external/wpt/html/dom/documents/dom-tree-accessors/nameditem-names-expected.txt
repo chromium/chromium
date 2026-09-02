@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] An object with object and embed descendants is returned by the named getter (name).
-  assert_equals: expected (object) Element node <object data="/common/blank.html" type="text/html" name="... but got (undefined) undefined
-[FAIL] An object with an object descendant is returned by the named getter (id).
-  assert_equals: expected (object) Element node <object data="/common/blank.html" type="text/html" id="ob... but got (undefined) undefined
 [FAIL] A document's property names appear in tree order.
   assert_greater_than: expected a number greater than 11 but got 0
 Harness: the test ran to completion.

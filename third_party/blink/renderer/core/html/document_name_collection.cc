@@ -30,13 +30,21 @@ bool DocumentNameCollection::ElementMatches(const HTMLElement& element) const {
   // a name attribute (this very strange rule matches IE)
   auto* html_embed_element = DynamicTo<HTMLEmbedElement>(&element);
   if (IsA<HTMLFormElement>(element) || IsA<HTMLIFrameElement>(element) ||
-      (html_embed_element && html_embed_element->IsExposed()))
+      (html_embed_element &&
+       (RuntimeEnabledFeatures::
+            DocumentNamedPropertiesIgnoreExposednessEnabled() ||
+        html_embed_element->IsExposed()))) {
     return element.GetNameAttribute() == name_;
+  }
 
-  auto* html_image_element = DynamicTo<HTMLObjectElement>(&element);
-  if (html_image_element && html_image_element->IsExposed())
+  auto* html_object_element = DynamicTo<HTMLObjectElement>(&element);
+  if (html_object_element &&
+      (RuntimeEnabledFeatures::
+           DocumentNamedPropertiesIgnoreExposednessEnabled() ||
+       html_object_element->IsExposed())) {
     return element.GetNameAttribute() == name_ ||
            element.GetIdAttribute() == name_;
+  }
   if (IsA<HTMLImageElement>(element)) {
     const AtomicString& name_value = element.GetNameAttribute();
     return name_value == name_ ||

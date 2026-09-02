@@ -28,7 +28,7 @@ Object by name (multiple): collection(2) OBJECT(name) OBJECT(name)
 Object by id (unique): single OBJECT(id)
 Object by id (multiple): collection(2) OBJECT(id) OBJECT(id)
 Object by id/name mixed: collection(4) OBJECT(id) OBJECT(name) OBJECT(name) OBJECT(id)
-Object by name nested in object with the same name: single OBJECT(name)
+Object by name nested in object with the same name: collection(2) OBJECT(name) OBJECT(name)
 Object by name nested in object with a different name: single OBJECT(name)
 
 Nonexistent embed name: undefined
@@ -37,7 +37,7 @@ Embed by name (multiple): collection(2) EMBED(name) EMBED(name)
 Embed by id (unique): undefined
 Embed by id (multiple): undefined
 Embed by id/name mixed: collection(2) EMBED(name) EMBED(name)
-Embed by name nested in object with the same name: single EMBED(name)
+Embed by name nested in object with the same name: collection(2) OBJECT(name) EMBED(name)
 Embed by name nested in object with a different name: single EMBED(name)
 Embed by name nested in param of an object with a different name: single EMBED(name)
 
