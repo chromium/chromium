@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRect.h"
 
@@ -56,7 +57,11 @@ void SkFontGetBoundsForGlyphs(const SkFont&,
                               base::span<SkRect>);
 float SkFontGetWidthForGlyph(const SkFont&, Glyph);
 
-hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value);
+ALWAYS_INLINE hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value) {
+  // We treat HarfBuzz hb_position_t as 16.16 fixed-point.
+  constexpr int kHbPosition1 = 1 << 16;
+  return ClampTo<int>(value * kHbPosition1);
+}
 
 }  // namespace blink
 

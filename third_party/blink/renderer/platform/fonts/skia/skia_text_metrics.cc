@@ -54,10 +54,6 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
   strike_ref.getWidthsStrided(count, glyphs, glyph_stride_32, advance,
                               advance_stride_32);
 
-  SkScalar (*round_if_subpixel)(SkScalar) =
-      subpixel ? [](SkScalar f) { return f; }
-               : [](SkScalar f) { return SkScalarRoundToScalar(f); };
-
   // Perform in-place rounding and fixed-point conversion.
   // SAFETY: See HarfBuzzGetGlyphHorizontalAdvances in harfbuzz_face.cc:
   // We are interfacing with HarfBuzz and optimize this hot function in
@@ -65,10 +61,32 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
   // stride information. The incoming count argument is provided by
   // HarfBuzz and ensure that enough output write buffer space is available
   // for the given stride.
-  for (unsigned i = 0; i < count;
-       i++, UNSAFE_BUFFERS(advance += advance_stride_32)) {
-    *reinterpret_cast<hb_position_t*>(advance) =
-        SkiaScalarToHarfBuzzPosition(round_if_subpixel(*advance));
+  if (subpixel) {
+    if (advance_stride_32 == 1) {
+      for (unsigned i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(advances[i] = SkiaScalarToHarfBuzzPosition(advance[i]));
+      }
+    } else {
+      for (unsigned i = 0; i < count;
+           i++, UNSAFE_BUFFERS(advance += advance_stride_32)) {
+        UNSAFE_BUFFERS(*reinterpret_cast<hb_position_t*>(advance) =
+                           SkiaScalarToHarfBuzzPosition(*advance));
+      }
+    }
+  } else {
+    if (advance_stride_32 == 1) {
+      for (unsigned i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(advances[i] = SkiaScalarToHarfBuzzPosition(
+                           SkScalarRoundToScalar(advance[i])));
+      }
+    } else {
+      for (unsigned i = 0; i < count;
+           i++, UNSAFE_BUFFERS(advance += advance_stride_32)) {
+        UNSAFE_BUFFERS(
+            *reinterpret_cast<hb_position_t*>(advance) =
+                SkiaScalarToHarfBuzzPosition(SkScalarRoundToScalar(*advance)));
+      }
+    }
   }
 }
 
@@ -202,12 +220,6 @@ float SkFontGetWidthForGlyph(const SkFont& font, Glyph glyph) {
     sk_width = SkScalarRoundToInt(sk_width);
 
   return sk_width;
-}
-
-hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value) {
-  // We treat HarfBuzz hb_position_t as 16.16 fixed-point.
-  static const int kHbPosition1 = 1 << 16;
-  return ClampTo<int>(value * kHbPosition1);
 }
 
 }  // namespace blink
