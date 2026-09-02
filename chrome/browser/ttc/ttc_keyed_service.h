@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_TTC_KEYED_SERVICE_H_
 #define CHROME_BROWSER_TTC_TTC_KEYED_SERVICE_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -16,6 +18,8 @@ class BrowserContext;
 
 namespace ttc {
 
+class SessionController;
+
 class TtcKeyedService : public KeyedService {
  public:
   static TtcKeyedService* Get(content::BrowserContext* context);
@@ -25,8 +29,20 @@ class TtcKeyedService : public KeyedService {
   TtcKeyedService& operator=(const TtcKeyedService&) = delete;
   ~TtcKeyedService() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
+  void StartSession();
+
+  // Ends the active session. After this call, session_controller() is nullptr.
+  // This is a no-op if no session is currently in progress.
+  void EndSession();
+
+  SessionController* session_controller() { return session_controller_.get(); }
+
  private:
   raw_ptr<Profile> profile_;
+  std::unique_ptr<SessionController> session_controller_;
 };
 
 }  // namespace ttc
