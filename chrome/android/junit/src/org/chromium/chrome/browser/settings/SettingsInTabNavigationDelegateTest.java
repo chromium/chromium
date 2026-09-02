@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.page_info.PageInfoCookiesSettings;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Unit tests for {@link SettingsInTabNavigationDelegate}. */
@@ -85,7 +85,7 @@ public class SettingsInTabNavigationDelegateTest {
         doNothing().when(mockContext).startActivity(any());
 
         mDelegate.startSettings(
-                mockContext, SettingsFragment.FINANCIAL_ACCOUNTS, /* addToBackStack= */ true);
+                mockContext, SettingsFragment.PAGE_INFO_COOKIES, /* addToBackStack= */ true);
 
         // Verify URL load was not performed on the tab.
         verify(mMockTab, never()).loadUrl(any());
@@ -94,7 +94,7 @@ public class SettingsInTabNavigationDelegateTest {
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startActivity(captor.capture());
         assertEquals(
-                FinancialAccountsManagementFragment.class.getName(),
+                PageInfoCookiesSettings.class.getName(),
                 captor.getValue().getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
         assertTrue(
                 captor.getValue()

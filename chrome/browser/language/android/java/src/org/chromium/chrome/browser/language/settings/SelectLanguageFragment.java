@@ -59,7 +59,8 @@ public class SelectLanguageFragment extends Fragment
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String KEY_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
-    static final String KEY_POTENTIAL_LANGUAGES = "SelectLanguageFragment.PotentialLanguages";
+    public static final String KEY_POTENTIAL_LANGUAGES =
+            "SelectLanguageFragment.PotentialLanguages";
 
     static final String FRAGMENT_RESULT_TAG = "SelectLanguageFragment";
 
