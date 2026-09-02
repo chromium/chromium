@@ -530,7 +530,8 @@ bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
     // Past the block-end, and therefore past block-end border+padding.
     return false;
   }
-  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer() ||
+  if (!builder.ShouldBreakInsideForContent() ||
+      builder.IsKnownToFitInFragmentainer() ||
       builder.ShouldCloneBoxEndDecorations()) {
     return true;
   }
@@ -716,7 +717,7 @@ BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
     }
   }
 
-  if (builder->ShouldBreakInside()) {
+  if (builder->ShouldBreakInsideForContent()) {
     // We need to break before or inside one of our children (or have already
     // done so). Even if we fit within the remaining space, and even if the
     // child involved in the break were to be in a parallel flow, we still need
@@ -748,7 +749,7 @@ BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
       // at the end. If block-size is unconstrained (or at least allowed to grow
       // a bit more), we're only at the end if no in-flow content inside broke.
       if (!was_broken_by_child || builder->IsKnownToFitInFragmentainer()) {
-        if (node.HasNonVisibleBlockOverflow() && builder->ShouldBreakInside()) {
+        if (node.HasNonVisibleBlockOverflow()) {
           // We have reached the end of a fragmentable node that clips overflow
           // in the block direction. If something broke inside at this point, we
           // need to relayout without fragmentation, so that we don't generate

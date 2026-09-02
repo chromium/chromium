@@ -706,8 +706,9 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     if (!break_token_) {
       if (last_inline_break_token_)
         child_break_tokens_.push_back(std::move(last_inline_break_token_));
-      if (DidBreakSelf() || ShouldBreakInside())
+      if (ShouldBreak()) {
         break_token_ = BlockBreakToken::Create(this);
+      }
     }
 
     if (break_token_ && !is_at_block_end_ && space.IsInsideBalancedColumns() &&
@@ -846,7 +847,7 @@ void BoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
 #if DCHECK_IS_ON()
 
 void BoxFragmentBuilder::CheckNoBlockFragmentation() const {
-  DCHECK(!ShouldBreakInside());
+  DCHECK(!ShouldBreakInsideForContent());
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);

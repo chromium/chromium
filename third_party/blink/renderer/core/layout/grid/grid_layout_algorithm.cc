@@ -2557,11 +2557,9 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   HeapVector<Member<LayoutBox>> oofs;
   std::swap(oofs, oof_children);
 
-  bool should_process_block_end = true;
-  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    should_process_block_end = !container_builder_.DidBreakSelf() &&
-                               !container_builder_.ShouldBreakInside();
-  }
+  const bool should_process_block_end =
+      !InvolvedInBlockFragmentation(container_builder_) ||
+      !container_builder_.ShouldBreak();
 
   const auto& node = Node();
   const auto& container_style = Style();
