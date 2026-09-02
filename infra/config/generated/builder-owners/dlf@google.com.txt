@@ -1,1 +1,2 @@
 trusted.robots/linux_clang
+trusted.robots/staging.linux_clang
