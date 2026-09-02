@@ -28,7 +28,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {
             ShadowCreateCredentialRequest.class,
             ShadowCreateCredentialRequest.ShadowBuilder.class,

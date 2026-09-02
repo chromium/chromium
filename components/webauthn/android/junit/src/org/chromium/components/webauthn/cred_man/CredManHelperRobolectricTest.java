@@ -75,7 +75,6 @@ import org.chromium.ui.test.util.MockitoHelper;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {
             ShadowCreateCredentialRequest.class,
             ShadowCreateCredentialRequest.ShadowBuilder.class,

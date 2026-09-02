@@ -21,7 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
@@ -34,7 +33,6 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 
 /** Robolectric tests for {@link WebauthnRequestCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebauthnRequestCallbackRobolectricTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

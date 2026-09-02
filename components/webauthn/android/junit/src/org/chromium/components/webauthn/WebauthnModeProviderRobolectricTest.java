@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.webauthn.cred_man.AppCredManRequestDecorator;
@@ -27,9 +26,6 @@ import org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator;
 import org.chromium.content_public.browser.WebContents;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {})
 public class WebauthnModeProviderRobolectricTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final WebauthnModeProvider mProvider = WebauthnModeProvider.getInstance();
