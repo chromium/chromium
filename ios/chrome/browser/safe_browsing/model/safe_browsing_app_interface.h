@@ -39,6 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 // `url`.
 + (NSInteger)cachedRealTimeURLClientSideDetectionTypeForURL:(NSString*)url;
 
+// Sets whether the local resource / localhost pre-classification check should
+// be bypassed for testing.
++ (void)setBypassLocalResourceCheckForTesting:(BOOL)bypass;
+
 @end
 
 NS_ASSUME_NONNULL_END

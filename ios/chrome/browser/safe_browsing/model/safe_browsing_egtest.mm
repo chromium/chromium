@@ -192,9 +192,6 @@ void EnableEnterpriseUrlFilteringPrefs() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  config.additional_args.push_back(
-      "--host-resolver-rules=MAP test.localhost 127.0.0.1");
-
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
   // database.
   config.additional_args.push_back(std::string("--mark_as_phishing=") +
@@ -303,11 +300,10 @@ void EnableEnterpriseUrlFilteringPrefs() {
   _safeContent2 = "also_safe";
 
   // Artificial verdict caching for hash prefix real time causes URLs with the
-  // same host to be seen as unsafe. Replacing the host string with
-  // test.localhost allows for proper testing between safe browsing v5 and
-  // iframe queries.
+  // same host to be seen as unsafe. Replacing the host string with localhost
+  // allows for proper testing between safe browsing v5 and iframe queries.
   GURL::Replacements replacements;
-  replacements.SetHostStr("test.localhost");
+  replacements.SetHostStr("localhost");
   _safeURL1 = _safeURL1.ReplaceComponents(replacements);
   _safeURL2 = _safeURL2.ReplaceComponents(replacements);
   _iframeWithPhishingURL =
@@ -389,6 +385,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
   // Clear mock scorer in ClientSideDetectionService for test isolation.
   [SafeBrowsingAppInterface clearScorer];
+  [SafeBrowsingAppInterface setBypassLocalResourceCheckForTesting:NO];
 
   [super tearDownHelper];
 }
@@ -1253,6 +1250,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
 // scorer is present.
 - (void)testClientSideDetectionRuns {
   [SafeBrowsingAppInterface setMockScorer];
+  // Embedded test server URLs resolve to localhost. Bypass localhost/local
+  // resource pre-classification checks for client-side detection testing.
+  [SafeBrowsingAppInterface setBypassLocalResourceCheckForTesting:YES];
 
   GREYAssertTrue([SafeBrowsingAppInterface isScorerSet],
                  @"Scorer was not set.");
@@ -1294,6 +1294,10 @@ void EnableEnterpriseUrlFilteringPrefs() {
 // Tests that a FORCE_REQUEST real-time verdict triggers client-side detection
 // reporting even if the local model does not detect phishing.
 - (void)testClientSideDetectionForceRequest {
+  // Embedded test server URLs resolve to localhost. Bypass localhost/local
+  // resource pre-classification checks for client-side detection testing.
+  [SafeBrowsingAppInterface setBypassLocalResourceCheckForTesting:YES];
+
   // Enable Enhanced Safe Browsing, which is required for force request caching.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
 

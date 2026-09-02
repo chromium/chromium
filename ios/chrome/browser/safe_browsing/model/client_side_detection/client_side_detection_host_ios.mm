@@ -56,6 +56,9 @@ namespace {
 // Delay before initiating snapshot and classification to allow page to settle.
 constexpr base::TimeDelta kStabilizationDelay = base::Milliseconds(750);
 
+// Whether local resource / localhost checks should be bypassed for testing.
+bool g_bypass_local_resource_check_for_testing = false;
+
 // Matches enum in tools/metrics/histograms/metadata/sb_client/enums.xml.
 enum class ClientSideAllowlistMatchResult {
   kNoMatch = 0,
@@ -529,6 +532,13 @@ void ClientSideDetectionHostIOS::
                        verdict, PhishingClassifier::Result::kSuccess);
 }
 
+// static
+void ClientSideDetectionHostIOS::
+    SetBypassLocalResourceCheckForTesting(  // IN-TEST
+        bool bypass) {
+  g_bypass_local_resource_check_for_testing = bypass;
+}
+
 #pragma mark - WebPerformanceMetricsTabHelper::Observer
 
 void ClientSideDetectionHostIOS::OnFirstContentfulPaint(
@@ -614,26 +624,29 @@ void ClientSideDetectionHostIOS::MaybeStartClassification(const GURL& url) {
 
   // 2. Local Resource / Localhost Guard.
   std::string_view host = url.host();
-  if (base::FeatureList::IsEnabled(kClientSideDetectionLocalResourceCheckFix)) {
-    if (url.SchemeIsFile() || net::IsLocalhost(url)) {
-      RecordPreClassificationCheckResult(
-          url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
-      return;
-    }
-  } else {
-    if (url.HostIsIPAddress()) {
-      net::IPAddress address;
-      if (address.AssignFromIPLiteral(host) && !address.IsValid()) {
+  if (!g_bypass_local_resource_check_for_testing) {
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionLocalResourceCheckFix)) {
+      if (url.SchemeIsFile() || net::IsLocalhost(url)) {
         RecordPreClassificationCheckResult(
             url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
         return;
       }
-    } else if (host == "localhost" ||
-               host.find('.') == std::string_view::npos) {
-      // Intranet hostnames have no dots.
-      RecordPreClassificationCheckResult(
-          url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
-      return;
+    } else {
+      if (url.HostIsIPAddress()) {
+        net::IPAddress address;
+        if (address.AssignFromIPLiteral(host) && !address.IsValid()) {
+          RecordPreClassificationCheckResult(
+              url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
+          return;
+        }
+      } else if (host == "localhost" ||
+                 host.find('.') == std::string_view::npos) {
+        // Intranet hostnames have no dots.
+        RecordPreClassificationCheckResult(
+            url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
+        return;
+      }
     }
   }
 
@@ -661,7 +674,7 @@ void ClientSideDetectionHostIOS::MaybeStartClassification(const GURL& url) {
   }
 
   // 5. Private IP Address.
-  if (url.HostIsIPAddress()) {
+  if (!g_bypass_local_resource_check_for_testing && url.HostIsIPAddress()) {
     net::IPAddress address;
     if (address.AssignFromIPLiteral(host) &&
         service_->IsPrivateIPAddress(address)) {

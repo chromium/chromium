@@ -127,4 +127,9 @@ constexpr int kCacheDurationSec = 60;
       cache_manager->GetCachedRealTimeUrlClientSideDetectionType(gurl));
 }
 
++ (void)setBypassLocalResourceCheckForTesting:(BOOL)bypass {
+  safe_browsing::ClientSideDetectionHostIOS::
+      SetBypassLocalResourceCheckForTesting(bypass);
+}
+
 @end

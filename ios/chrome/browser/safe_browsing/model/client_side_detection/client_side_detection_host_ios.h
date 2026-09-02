@@ -144,6 +144,10 @@ class ClientSideDetectionHostIOS
       const GURL& url,
       const std::vector<double>& visual_scores);
 
+  // Sets whether the local resource / localhost pre-classification check should
+  // be bypassed for testing.
+  static void SetBypassLocalResourceCheckForTesting(bool bypass);
+
  private:
   friend class ClientSideDetectionHostIOSTest;
 
