@@ -98,7 +98,13 @@ public class BaseSuggestionViewUnitTest {
     @Test
     public void performClick_usesLastTouchModifiers() {
         MotionEvent downEvent =
-                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, KeyEvent.META_ALT_ON);
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0f,
+                        /* y= */ 0f,
+                        /* metaState= */ KeyEvent.META_ALT_ON);
         mView.onTouchEvent(downEvent);
 
         assertTrue(mView.performClick());
@@ -212,12 +218,26 @@ public class BaseSuggestionViewUnitTest {
         assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
 
         // Hover over the view. The showOnlyOnFocus button should become invisible.
-        mView.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
+        mView.onHoverEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         assertEquals(View.VISIBLE, actionButtonWithShowOnFocus.getVisibility());
         assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
 
         // Hover away from the view. The showOnlyOnFocus button should become invisible.
-        mView.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 1.f, 1.f, 0));
+        mView.onHoverEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         assertEquals(View.INVISIBLE, actionButtonWithShowOnFocus.getVisibility());
         assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
     }
@@ -232,31 +252,69 @@ public class BaseSuggestionViewUnitTest {
         ActionButtonView actionButton = view.getActionButtons().get(0);
         assertFalse(view.isHovered());
 
-        view.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
+        view.onHoverEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         assertTrue(view.isHovered());
 
-        view.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 1.f, 1.f, 0));
+        view.onHoverEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         assertFalse(view.isHovered());
 
         // The hover change in action button should affect BaseSuggestionView.
         actionButton.dispatchHoverEventForTesting(
-                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         view.setHovered(false);
         assertTrue(view.isHovered());
 
         actionButton.dispatchHoverEventForTesting(
-                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 1.f, 1.f, 0));
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         view.setHovered(false);
         assertFalse(view.isHovered());
 
         // The pressed change in action button should affect BaseSuggestionView.
         actionButton.dispatchTouchEvent(
-                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 1.f, 1.f, 0));
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         view.setHovered(false);
         assertTrue(view.isHovered());
 
         actionButton.dispatchTouchEvent(
-                MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 1.f, 1.f, 0));
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 1.f,
+                        /* y= */ 1.f,
+                        /* metaState= */ 0));
         view.setHovered(false);
         assertFalse(view.isHovered());
     }

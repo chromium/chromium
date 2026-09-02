@@ -313,10 +313,16 @@ public class OmniboxSuggestionsContainerUnitTest {
 
     @Test
     public void testOnTouchEvent_returnsTrue() {
-        var event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        var event =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        /* metaState= */ 0);
         assertTrue(mContainer.onTouchEvent(event));
     }
-
 
     @Test
     public void testPerformClick_returnsFalse() {
