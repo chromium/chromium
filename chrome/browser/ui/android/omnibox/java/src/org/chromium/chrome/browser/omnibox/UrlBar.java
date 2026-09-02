@@ -576,8 +576,14 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     @Override
-    public View focusSearch(int direction) {
-        if (mUrlBarDelegate != null
+    public @Nullable View focusSearch(int direction) {
+        if (isInTouchMode()) {
+            // TextView#onEditorAction will throw an IllegalStateException when focusSearch returns
+            // a View that returns false for #requestFocus. This will happen when in touch mode
+            // because the next view (typically the close button) is not focusable in touch mode.
+            // See https://crbug.com/553939053. This is triggered by IME_ACTION_NEXT from some IMEs.
+            return this;
+        } else if (mUrlBarDelegate != null
                 && direction == View.FOCUS_BACKWARD
                 && mUrlBarDelegate.getViewForUrlBackFocus() != null) {
             return mUrlBarDelegate.getViewForUrlBackFocus();
