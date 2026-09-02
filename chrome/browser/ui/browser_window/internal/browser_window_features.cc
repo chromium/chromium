@@ -916,9 +916,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
         std::make_unique<skills::SkillsUiWindowController>(browser_);
   }
 
-  synced_window_delegate_ = std::make_unique<BrowserSyncedWindowDelegate>(
-      browser, browser->GetTabStripModel(), browser->GetSessionID(),
-      browser->GetType());
+  synced_window_delegate_ =
+      GetUserDataFactory().CreateInstance<BrowserSyncedWindowDelegate>(
+          *browser, browser, browser->GetTabStripModel(),
+          browser->GetSessionID(), browser->GetType());
 
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {

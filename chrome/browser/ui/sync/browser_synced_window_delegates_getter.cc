@@ -26,7 +26,7 @@ BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
         if (browser->GetProfile() != profile_) {
           return true;  // continue iterating
         }
-        auto* const delegate = browser->GetFeatures().synced_window_delegate();
+        auto* const delegate = BrowserSyncedWindowDelegate::From(browser);
         synced_window_delegates[delegate->GetSessionId()] = delegate;
         return true;  // continue iterating
       });
@@ -36,7 +36,7 @@ BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
 const sync_sessions::SyncedWindowDelegate*
 BrowserSyncedWindowDelegatesGetter::FindById(SessionID id) {
   auto* browser = BrowserWindowInterface::FromSessionID(id);
-  return browser ? browser->GetFeatures().synced_window_delegate() : nullptr;
+  return browser ? BrowserSyncedWindowDelegate::From(browser) : nullptr;
 }
 
 }  // namespace browser_sync

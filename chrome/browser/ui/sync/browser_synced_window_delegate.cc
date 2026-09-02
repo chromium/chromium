@@ -30,12 +30,21 @@ void ResetTabCachedLastActiveTimeForContents(content::WebContents* contents) {
 
 }  // namespace
 
+DEFINE_USER_DATA(BrowserSyncedWindowDelegate);
+
+// static
+BrowserSyncedWindowDelegate* BrowserSyncedWindowDelegate::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(
     BrowserWindowInterface* browser,
     TabStripModel* tab_strip_model,
     SessionID session_id,
     BrowserWindowInterface::Type type)
-    : browser_(CHECK_DEREF(browser)),
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(CHECK_DEREF(browser)),
       tab_strip_model_(CHECK_DEREF(tab_strip_model)),
       session_id_(session_id),
       type_(type) {

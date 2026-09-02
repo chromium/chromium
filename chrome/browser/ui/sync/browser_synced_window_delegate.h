@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace sync_sessions {
 class SyncedTabDelegate;
@@ -21,10 +22,15 @@ class SyncedTabDelegate;
 class BrowserSyncedWindowDelegate : public TabStripModelObserver,
                                     public sync_sessions::SyncedWindowDelegate {
  public:
+  DECLARE_USER_DATA(BrowserSyncedWindowDelegate);
+
   BrowserSyncedWindowDelegate(BrowserWindowInterface* browser,
                               TabStripModel* tab_strip_model,
                               SessionID session_id,
                               BrowserWindowInterface::Type type);
+
+  // Returns the delegate for `browser`, or null if it does not have one.
+  static BrowserSyncedWindowDelegate* From(BrowserWindowInterface* browser);
 
   BrowserSyncedWindowDelegate(const BrowserSyncedWindowDelegate&) = delete;
   BrowserSyncedWindowDelegate& operator=(const BrowserSyncedWindowDelegate&) =
@@ -51,6 +57,9 @@ class BrowserSyncedWindowDelegate : public TabStripModelObserver,
   bool ShouldSync() const override;
 
  private:
+  ui::ScopedUnownedUserData<BrowserSyncedWindowDelegate>
+      scoped_unowned_user_data_;
+
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<TabStripModel> tab_strip_model_;
   const SessionID session_id_;

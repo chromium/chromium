@@ -352,7 +352,6 @@ class BrowserWindowFeatures {
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
 
-
   // Returns the LocationBar for this browser window. Currently delegates to
   // BrowserWindow::GetLocationBar() via downcast, but should eventually become
   // an owned member of BrowserWindowFeatures.
@@ -384,10 +383,6 @@ class BrowserWindowFeatures {
 
   SigninViewController* signin_view_controller() {
     return signin_view_controller_.get();
-  }
-
-  BrowserSyncedWindowDelegate* synced_window_delegate() {
-    return synced_window_delegate_.get();
   }
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
