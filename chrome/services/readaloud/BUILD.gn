@@ -15,6 +15,7 @@ source_set("readaloud") {
     "prefetch/prefetch_manager.h",
     "prefetch/prefetch_mode_scheduler.h",
     "read_aloud_playback_controller.h",
+    "synthesis_response_parser.h",
   ]
   sources = [
     "audio_renderer/read_aloud_audio_renderer.cc",
@@ -26,9 +27,13 @@ source_set("readaloud") {
     "prefetch/prefetch_manager.cc",
     "prefetch/prefetch_mode_scheduler.cc",
     "read_aloud_playback_controller.cc",
+    "synthesis_response_parser.cc",
   ]
 
-  deps = [ "//media:media_buildflags" ]
+  deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//media:media_buildflags",
+  ]
 
   public_deps = [
     "//base",
@@ -61,6 +66,7 @@ source_set("unit_tests") {
     "prefetch/prefetch_manager_unittest.cc",
     "prefetch/prefetch_mode_scheduler_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
+    "synthesis_response_parser_unittest.cc",
   ]
 
   data = [ "//media/test/data/sfx-opus.ogg" ]
@@ -71,6 +77,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/common:mojo_bindings",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//media",
     "//media:test_support",
     "//mojo/public/cpp/bindings",
