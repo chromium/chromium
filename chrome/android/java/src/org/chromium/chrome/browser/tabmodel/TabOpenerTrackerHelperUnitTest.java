@@ -298,7 +298,6 @@ public class TabOpenerTrackerHelperUnitTest {
     @Test
     public void testFindHierarchicalNextTab_NoOpenerRelations_ReturnsNull() {
         Tab tab0 = createTab(Tab.INVALID_TAB_ID);
-        Tab tab1 = createTab(Tab.INVALID_TAB_ID);
 
         mHelper.addRelatedTabForTesting(tab0.getId());
 

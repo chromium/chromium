@@ -101,12 +101,6 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     private TabModelSelector createTabModelSelector() {
         TestTabModelSelector selector = new TestTabModelSelector(mTabCreatorManager);
-        TabModelOrderControllerImpl orderController = new TabModelOrderControllerImpl(selector);
-
-        AsyncTabParamsManager realAsyncTabParamsManager =
-                AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-        NextTabPolicy.NextTabPolicySupplier nextTabPolicySupplier =
-                () -> NextTabPolicy.HIERARCHICAL;
 
         MockTabModel normalTabModel = new MockTabModel(mProfile, null);
         normalTabModel.setTabRemoverForTesting(createTabRemover(normalTabModel));
