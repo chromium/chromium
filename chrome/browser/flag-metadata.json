@@ -6398,7 +6398,7 @@
   {
     "name": "ios-actor-tools",
     "owners": [ "ginnyhuang@chromium.org", "kaklilu@chromium.org" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 180
   },
   {
     "name": "ios-backend-promo-custom-ui",
