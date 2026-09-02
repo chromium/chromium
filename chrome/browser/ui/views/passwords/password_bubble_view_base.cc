@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/webauthn/passkey_upgrade_bubble_view.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

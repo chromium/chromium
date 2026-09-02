@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/browser/navigation_controller.h"
 
 ImmersiveModeTester::ImmersiveModeTester(BrowserWindowInterface* browser)
     : browser_(browser) {

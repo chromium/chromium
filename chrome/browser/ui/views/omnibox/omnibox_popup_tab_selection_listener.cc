@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 
 OmniboxPopupTabSelectionListener::OmniboxPopupTabSelectionListener(

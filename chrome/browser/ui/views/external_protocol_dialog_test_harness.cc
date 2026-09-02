@@ -7,6 +7,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/page_transition_types.h"
 
 namespace test {
 

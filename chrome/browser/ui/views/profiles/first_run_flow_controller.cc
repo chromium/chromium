@@ -73,6 +73,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/audio_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_ui.h"
 #include "media/base/audio_codecs.h"
 #include "net/base/url_util.h"

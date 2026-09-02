@@ -45,6 +45,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/win/hwnd_util.h"
 
 typedef extensions::ExtensionBrowserTest BrowserWindowPropertyManagerTest;

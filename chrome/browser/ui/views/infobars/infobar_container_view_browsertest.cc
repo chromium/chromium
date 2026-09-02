@@ -25,6 +25,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view_utils.h"

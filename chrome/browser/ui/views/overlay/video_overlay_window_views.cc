@@ -49,6 +49,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
