@@ -452,6 +452,19 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
+    android_aar_prebuilt("com_google_android_play_app_update_java") {
+      aar_path = "autorolled/cipd/libs/com_google_android_play_app_update/app-update.aar"
+      info_path = "autorolled/committed/libs/com_google_android_play_app_update/com_google_android_play_app_update.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:com_google_android_play_core_common_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (!defined(playcore_target)) {
       android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_play_feature_delivery/feature-delivery.aar"

@@ -1530,6 +1530,11 @@
         "version": "1.14.0"
     },
     {
+        "name": "app-update",
+        "group": "com.google.android.play",
+        "version": "2.1.0"
+    },
+    {
         "name": "core-common",
         "group": "com.google.android.play",
         "version": "2.0.4"

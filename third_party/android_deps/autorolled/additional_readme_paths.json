@@ -31,6 +31,7 @@
     "committed/libs/com_google_android_gms_play_services_vision_common",
     "committed/libs/com_google_android_libraries_identity_googleid_googleid",
     "committed/libs/com_google_android_material_material",
+    "committed/libs/com_google_android_play_app_update",
     "committed/libs/com_google_android_play_core_common",
     "committed/libs/com_google_android_play_feature_delivery",
     "committed/libs/com_google_android_play_review",

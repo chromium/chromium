@@ -1,0 +1,16 @@
+Name: app-update
+Short Name: app-update
+URL: https://dl.google.com/dl/android/maven2/com/google/android/play/app-update/2.1.0/app-update-2.1.0.aar
+Version: 2.1.0
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Play app update pulled in via gradle.
+
+Local Modifications:
+No modifications.
