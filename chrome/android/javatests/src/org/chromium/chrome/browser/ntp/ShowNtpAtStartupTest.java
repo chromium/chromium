@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.START_SURFACE_RETURN_TIME_IMMEDIATE;
@@ -103,6 +104,7 @@ public class ShowNtpAtStartupTest {
 
     private static final String TAB_URL = "https://foo.com/";
     private static final String TAB_URL_1 = "https://bar.com/";
+    private static final int MIN_DISPLAYED_PERCENTAGE = 10;
 
     @Before
     public void setUp() {
@@ -268,7 +270,6 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
-    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void testSingleTabModule() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -285,15 +286,16 @@ public class ShowNtpAtStartupTest {
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
 
         waitForView(
+                View.class,
                 cta,
-                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))));
+                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))),
+                displayingAtLeastOption(MIN_DISPLAYED_PERCENTAGE));
     }
 
     @Test
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
-    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void testSingleTabModule_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -308,8 +310,10 @@ public class ShowNtpAtStartupTest {
 
         waitForView(cta, withId(R.id.home_modules_recycler_view));
         waitForView(
+                View.class,
                 cta,
-                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))));
+                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))),
+                displayingAtLeastOption(MIN_DISPLAYED_PERCENTAGE));
     }
 
     @Test
