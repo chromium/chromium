@@ -121,6 +121,8 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
+  void OnExtensionEnabled(content::BrowserContext* browser_context,
+                          const Extension* extension) override;
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
@@ -218,6 +220,10 @@ class RuntimeEventRouter {
                                        const ExtensionId& extension_id,
                                        const base::Version& old_version,
                                        bool chrome_updated);
+
+  // Dispatches the onEnabled event to the given extension.
+  static void DispatchOnEnabledEvent(MayBeDangling<void> context_id,
+                                     const ExtensionId& extension_id);
 
   // Dispatches the onUpdateAvailable event to the given extension.
   static void DispatchOnUpdateAvailableEvent(content::BrowserContext* context,

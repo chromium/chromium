@@ -486,6 +486,14 @@ chrome.runtime.onStartup;
 chrome.runtime.onInstalled;
 
 /**
+ * Fired when an extension goes from being in a disabled state to an enabled
+ * state.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/runtime#event-onEnabled
+ */
+chrome.runtime.onEnabled;
+
+/**
  * Sent to the event page just before it is unloaded. This gives the extension
  * opportunity to do some clean up. Note that since the page is unloading, any
  * asynchronous operations started while handling this event are not guaranteed

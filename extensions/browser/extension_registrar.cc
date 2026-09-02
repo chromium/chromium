@@ -375,6 +375,7 @@ void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
   registry_->AddEnabled(extension);
   registry_->RemoveDisabled(extension->id());
   ActivateExtension(extension, false);
+  registry_->TriggerOnEnabled(extension);
 }
 
 void ExtensionRegistrar::DisableExtension(

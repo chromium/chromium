@@ -68,6 +68,10 @@ class ExtensionRegistryObserver {
                                    const Extension* extension,
                                    UnloadedExtensionReason reason) {}
 
+  // Called after an extension goes from disabled to enabled state.
+  virtual void OnExtensionEnabled(content::BrowserContext* browser_context,
+                                  const Extension* extension) {}
+
   // Called when `extension` is about to be installed. `is_update` is true if
   // the installation is the result of it updating, in which case `old_name` is
   // the name of the extension's previous version.

@@ -1777,6 +1777,119 @@ INSTANTIATE_TEST_SUITE_P(DockedDevTools,
                          ::testing::Values(true) /* open_docked */);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Tests for `chrome.runtime.onEnabled` event.
+using RuntimeLifecycleEventsApiTest = RuntimeApiTest;
+
+// Test that `chrome.runtime.onEnabled` is fired when enabling a disabled
+// extension, and neither `chrome.runtime.onInstalled` nor unexpected events
+// are fired during the enable transition.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest, OnEnabledOnEnable) {
+  static constexpr char kManifest[] = R"(
+    {
+      "name": "Lifecycle Events Enable Test",
+      "version": "1.0",
+      "manifest_version": 3,
+      "background": {
+        "service_worker": "worker.js"
+      }
+    }
+  )";
+
+  static constexpr char kWorker[] = R"(
+    chrome.runtime.onInstalled.addListener(() => {
+      chrome.test.sendMessage('installed');
+    });
+
+    chrome.runtime.onEnabled.addListener(() => {
+      chrome.test.sendMessage('enabled', () => {
+        chrome.test.succeed();
+      });
+    });
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  // Install the extension and verify initial `onInstalled` event.
+  ExtensionTestMessageListener install_listener("installed");
+  install_listener.set_failure_message("enabled");
+  const Extension* extension = InstallExtension(dir.UnpackedPath(), 1);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(install_listener.WaitUntilSatisfied());
+  const ExtensionId extension_id = extension->id();
+
+  // Disable the extension.
+  DisableExtension(extension_id);
+
+  // Enable the extension and verify that `onEnabled` is dispatched, but
+  // `onInstalled` is not dispatched during the enable transition.
+  ResultCatcher catcher;
+  ExtensionTestMessageListener enabled_listener("enabled",
+                                                ReplyBehavior::kWillReply);
+  enabled_listener.set_failure_message("installed");
+  EnableExtension(extension_id);
+  ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  enabled_listener.Reply("");
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+
+// Test that `chrome.runtime.onEnabled` is not fired when an extension is
+// reloaded.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest, OnEnabledOnReload) {
+  static constexpr char kManifest[] = R"(
+    {
+      "name": "Lifecycle Events Reload Test",
+      "version": "1.0",
+      "manifest_version": 3,
+      "background": {
+        "service_worker": "worker.js"
+      }
+    }
+  )";
+
+  static constexpr char kWorker[] = R"(
+    chrome.runtime.onInstalled.addListener(() => {
+      chrome.test.sendMessage('installed');
+    });
+
+    chrome.runtime.onEnabled.addListener(() => {
+      chrome.test.sendMessage('unexpected onEnabled on reload');
+    });
+
+    chrome.test.sendMessage('ready', (reply) => {
+      if (reply === 'succeed') {
+        chrome.test.succeed();
+      }
+    });
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  // Install the extension and verify initial `onInstalled` event.
+  ExtensionTestMessageListener install_listener("installed");
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
+  const Extension* extension = InstallExtension(dir.UnpackedPath(), 1);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(install_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  ready_listener.Reply("continue");
+  const ExtensionId extension_id = extension->id();
+
+  // Reload the extension and verify that `onEnabled` is not dispatched.
+  ResultCatcher catcher;
+  ExtensionTestMessageListener reload_ready_listener("ready",
+                                                     ReplyBehavior::kWillReply);
+  reload_ready_listener.set_failure_message("unexpected onEnabled on reload");
+  ReloadExtension(extension_id);
+  ASSERT_TRUE(reload_ready_listener.WaitUntilSatisfied());
+  reload_ready_listener.Reply("succeed");
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+
 class RuntimeAsyncListenerRegistrationApiTest : public ExtensionApiTest {
  private:
   base::test::ScopedFeatureList feature_list_{

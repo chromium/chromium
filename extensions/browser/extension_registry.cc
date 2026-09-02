@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extension_registry.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -82,6 +84,14 @@ void ExtensionRegistry::TriggerOnUnloaded(const Extension* extension,
   DCHECK(!enabled_extensions_.Contains(extension->id()));
   for (auto& observer : observers_)
     observer.OnExtensionUnloaded(browser_context_, extension, reason);
+}
+
+void ExtensionRegistry::TriggerOnEnabled(const Extension* extension) {
+  CHECK(extension);
+  DCHECK(enabled_extensions_.Contains(extension->id()));
+  for (auto& observer : observers_) {
+    observer.OnExtensionEnabled(browser_context_, extension);
+  }
 }
 
 void ExtensionRegistry::TriggerOnWillBeInstalled(const Extension* extension,

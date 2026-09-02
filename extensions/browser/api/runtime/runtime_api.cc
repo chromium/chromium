@@ -335,6 +335,15 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
                      extension->id(), base::Version(), true));
 }
 
+void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
+                                    const Extension* extension) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RuntimeEventRouter::DispatchOnEnabledEvent,
+                     base::UnsafeDangling(static_cast<void*>(browser_context_)),
+                     extension->id()));
+}
+
 void RuntimeAPI::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -601,6 +610,28 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
       }
     }
   }
+}
+
+// static
+void RuntimeEventRouter::DispatchOnEnabledEvent(
+    MayBeDangling<void> context_id,
+    const ExtensionId& extension_id) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id.get())) {
+    return;
+  }
+  content::BrowserContext* context =
+      reinterpret_cast<content::BrowserContext*>(context_id.get());
+  ExtensionSystem* system = ExtensionSystem::Get(context);
+  if (!system) {
+    return;
+  }
+
+  EventRouter* event_router = EventRouter::Get(context);
+  DCHECK(event_router);
+  auto event = std::make_unique<Event>(events::RUNTIME_ON_ENABLED,
+                                       runtime::OnEnabled::kEventName,
+                                       runtime::OnEnabled::Create());
+  event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
 // static
