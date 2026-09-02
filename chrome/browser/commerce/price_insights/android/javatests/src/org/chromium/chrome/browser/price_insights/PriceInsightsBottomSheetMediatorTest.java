@@ -76,9 +76,7 @@ import java.util.Arrays;
 /** Tests for {@link PriceInsightsBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class PriceInsightsBottomSheetMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

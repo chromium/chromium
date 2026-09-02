@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -37,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test relating to binding for price change module. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PriceChangeModuleBinderTest {
 
     private static final String MODULE_TITLE = "module title";

@@ -68,9 +68,7 @@ import java.util.Arrays;
 /** Tests for {@link PriceTrackingBottomSheetContentMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class PriceTrackingBottomSheetContentMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

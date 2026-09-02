@@ -35,7 +35,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
@@ -67,7 +66,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link MerchantTrustSignalsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 @Features.EnableFeatures(
         ChromeFeatureList.COMMERCE_MERCHANT_VIEWER

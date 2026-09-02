@@ -74,9 +74,7 @@ import java.util.List;
 
 /** Test relating to {@link PriceChangeModuleMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class})
+@Config(shadows = {ShadowAppCompatResources.class})
 @EnableFeatures(ChromeFeatureList.PRICE_CHANGE_MODULE)
 public class PriceChangeModuleMediatorUnitTest {
 
