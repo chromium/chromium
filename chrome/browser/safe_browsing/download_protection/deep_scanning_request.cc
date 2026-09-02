@@ -23,6 +23,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
@@ -57,7 +58,6 @@
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1076,7 +1076,16 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
               : GetEventResult(result, profile);
     }
 
-    report_callbacks_.Notify(event_result);
+    if (base::FeatureList::IsEnabled(
+            enterprise_data_protection::
+                kEnableForceSaveToCloudDeferredReporting) &&
+        (result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
+         result == DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE)) {
+      // Skip reporting entirely as the force save to cloud reporting is
+      // handled in a separate flow.
+    } else {
+      report_callbacks_.Notify(event_result);
+    }
   }
 
   // If the deep-scanning result is unknown for whatever reason, `callback_`

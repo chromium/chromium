@@ -44,11 +44,20 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+#include "content/public/browser/download_manager.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #include "components/content_settings/core/common/pref_names.h"
@@ -170,6 +179,52 @@ void ReportDataMaskingEvent(
       enterprise_connectors::ToProtoTimestamp(base::Time::Now());
 
   reporting_client->ReportEvent(std::move(event), settings.value());
+}
+
+std::string GetForceSaveToCloudDestinationString(
+    download::DownloadDangerType danger_type) {
+  switch (danger_type) {
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+      return "Google Drive";
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
+      return "OneDrive";
+    default:
+      return "";
+  }
+}
+
+void ReportForceSaveToCloudEvent(
+    content::BrowserContext* browser_context,
+    download::DownloadItem* download_item,
+    const enterprise_connectors::ScanResult& scan_result) {
+  CHECK(browser_context);
+  CHECK(download_item);
+
+  auto* reporting_event_router = enterprise_connectors::
+      ReportingEventRouterFactory::GetForBrowserContext(browser_context);
+  if (!reporting_event_router) {
+    return;
+  }
+
+  std::string destination =
+      GetForceSaveToCloudDestinationString(download_item->GetDangerType());
+  if (destination.empty()) {
+    return;
+  }
+
+  enterprise_connectors::DownloadContentAreaUserProvider info(*download_item);
+
+  for (const auto& file_metadata : scan_result.file_metadata) {
+    enterprise_connectors::MaybeReportDeepScanningVerdict(
+        reporting_event_router, &info, /*source=*/"", destination,
+        file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*content_transfer_method=*/"", info.GetContentAreaAccountEmail(),
+        file_metadata.size,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
+        file_metadata.scan_response,
+        enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD);
+  }
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
@@ -937,7 +992,37 @@ EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction::Run() {
     return RespondNow(Error("Download ID cannot be empty."));
   }
 
-  // TODO(krashi): Implement handling of the Force Save to Cloud event.
+  if (params->event.event !=
+      api::enterprise_reporting_private::ForceSaveToCloudEventType::
+          kSavedToCloud) {
+    return RespondNow(Error("Unsupported event type."));
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  content::DownloadManager* manager =
+      profile->GetOriginalProfile()->GetDownloadManager();
+  if (!manager) {
+    return RespondNow(Error("Download not found."));
+  }
+
+  download::DownloadItem* download_item = nullptr;
+  uint32_t numeric_id = 0;
+  if (base::StringToUint(params->event.download_id, &numeric_id)) {
+    download_item = manager->GetDownload(numeric_id);
+  }
+
+  if (!download_item) {
+    return RespondNow(Error("Download not found."));
+  }
+
+  auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
+      download_item->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (!scan_result || scan_result->file_metadata.empty()) {
+    return RespondNow(Error("No scan result found for download."));
+  }
+
+  ReportForceSaveToCloudEvent(browser_context(), download_item, *scan_result);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   return RespondNow(NoArguments());

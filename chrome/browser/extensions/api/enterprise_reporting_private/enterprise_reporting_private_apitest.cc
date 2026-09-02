@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -22,7 +23,12 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/download/public/common/download_item.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "content/public/browser/download_manager.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -1227,25 +1233,54 @@ class EnterpriseReportForceSaveToCloudEventHandledTest
  public:
   EnterpriseReportForceSaveToCloudEventHandledTest() = default;
 
+  void SetUpOnMainThread() override {
+    EnterpriseReportingPrivateApiTest::SetUpOnMainThread();
+    event_report_validator_helper_ = std::make_unique<
+        enterprise_connectors::test::EventReportValidatorHelper>(
+        profile(), /*browser_test=*/true);
+  }
+
+  void TearDownOnMainThread() override {
+    event_report_validator_helper_.reset();
+    EnterpriseReportingPrivateApiTest::TearDownOnMainThread();
+  }
+
+  download::DownloadItem* CreateDownloadItem(
+      uint32_t id,
+      download::DownloadDangerType danger_type,
+      std::unique_ptr<enterprise_connectors::ScanResult> scan_result =
+          nullptr) {
+    base::Time current = base::Time::Now();
+    std::vector<GURL> url_chain = {GURL("https://example.com/download.txt")};
+    download::DownloadItem* item =
+        profile()->GetDownloadManager()->CreateDownloadItem(
+            base::Uuid::GenerateRandomV4().AsLowercaseString(), id,
+            base::FilePath(FILE_PATH_LITERAL("/path/to/download.txt")),
+            base::FilePath(FILE_PATH_LITERAL("/path/to/download.txt")),
+            url_chain, GURL("https://example.com"),
+            content::StoragePartitionConfig::CreateDefault(profile()),
+            GURL("https://example.com/tab"), GURL(),
+            url::Origin::Create(GURL("https://example.com")), "text/plain",
+            "text/plain", current, current, std::string(), std::string(), 100,
+            100, "hash", download::DownloadItem::COMPLETE, danger_type,
+            download::DOWNLOAD_INTERRUPT_REASON_NONE, false, current, false,
+            {});
+    if (scan_result) {
+      item->SetUserData(enterprise_connectors::ScanResult::kKey,
+                        std::move(scan_result));
+    }
+    return item;
+  }
+
+ protected:
+  std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
+      event_report_validator_helper_;
+
  private:
   base::test::ScopedFeatureList scoped_features_{
       extensions_features::
           kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled};
 };
-
-IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
-                       Success) {
-  static constexpr char kTestJS[] = R"(
-    await chrome.enterprise.reportingPrivate.reportForceSaveToCloudEventHandled(
-        {
-          "downloadId": "12345",
-          "event": "savedToCloud"
-        });
-    chrome.test.succeed();
-  )";
-
-  RunTest(kTestJS);
-}
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
                        EmptyDownloadIdFails) {
@@ -1262,5 +1297,146 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
 
   RunTest(kTestJS);
 }
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
+                       DownloadNotFoundFails) {
+  static constexpr char kTestJS[] = R"(
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.reportingPrivate.reportForceSaveToCloudEventHandled(
+            {
+              "downloadId": "99999",
+              "event": "savedToCloud"
+            }),
+        'Error: Download not found.');
+    chrome.test.succeed();
+  )";
+
+  RunTest(kTestJS);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
+                       NoScanResultFails) {
+  CreateDownloadItem(12345,
+                     download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE);
+
+  static constexpr char kTestJS[] = R"(
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.reportingPrivate.reportForceSaveToCloudEventHandled(
+            {
+              "downloadId": "12345",
+              "event": "savedToCloud"
+            }),
+        'Error: No scan result found for download.');
+    chrome.test.succeed();
+  )";
+
+  RunTest(kTestJS);
+}
+
+struct ForceSaveToCloudTestParam {
+  std::string test_name;
+  download::DownloadDangerType danger_type;
+  enterprise_connectors::TriggeredRule::ForceSaveToCloudDestination destination;
+  std::string destination_string;
+};
+
+class EnterpriseReportForceSaveToCloudEventHandledSuccessTest
+    : public EnterpriseReportForceSaveToCloudEventHandledTest,
+      public testing::WithParamInterface<ForceSaveToCloudTestParam> {};
+
+IN_PROC_BROWSER_TEST_P(EnterpriseReportForceSaveToCloudEventHandledSuccessTest,
+                       Success) {
+  const auto& param = GetParam();
+
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token("request-token-123");
+  auto* result = response.add_results();
+  result->set_tag("dlp");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* rule = result->add_triggered_rules();
+  rule->set_action(enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+  rule->set_force_save_to_cloud_destination(param.destination);
+  rule->set_rule_name("Force Save rule");
+  rule->set_rule_id("1234");
+
+  enterprise_connectors::FileMetadata file_metadata(
+      "download.txt",
+      "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+      "text/plain", 100, response);
+  auto scan_result = std::make_unique<enterprise_connectors::ScanResult>(
+      std::move(file_metadata));
+
+  CreateDownloadItem(12345, param.danger_type, std::move(scan_result));
+
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  base::RunLoop run_loop;
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+
+  chrome::cros::reporting::proto::TriggeredRuleInfo info;
+  info.set_rule_id(1234);
+  info.set_rule_name("Force Save rule");
+  info.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::FORCE_SAVE_TO_CLOUD);
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_file_name("download.txt");
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(100);
+  expected_event.set_download_digest_sha_256(
+      "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_FORCED_SAVE_TO_CLOUD);
+  expected_event.set_scan_id("request-token-123");
+  expected_event.set_url("https://example.com/download.txt");
+  expected_event.set_tab_url("https://example.com/tab");
+  expected_event.set_destination(param.destination_string);
+  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  auto* referrer = expected_event.add_referrers();
+  referrer->set_url("https://example.com/download.txt");
+  referrer->set_ip("example.com");
+  *expected_event.mutable_triggered_rule_info()->Add() = info;
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile()->GetPrefs(), true, {"sensitiveDataEvent"}, {});
+
+  static constexpr char kTestJS[] = R"(
+    await chrome.enterprise.reportingPrivate.reportForceSaveToCloudEventHandled(
+        {
+          "downloadId": "12345",
+          "event": "savedToCloud"
+        });
+    chrome.test.succeed();
+  )";
+
+  RunTest(kTestJS);
+  run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EnterpriseReportForceSaveToCloudEventHandledSuccessTest,
+    testing::Values(
+        ForceSaveToCloudTestParam{
+            .test_name = "GoogleDrive",
+            .danger_type = download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE,
+            .destination = enterprise_connectors::TriggeredRule::CORP_G_DRIVE,
+            .destination_string = "Google Drive",
+        },
+        ForceSaveToCloudTestParam{
+            .test_name = "OneDrive",
+            .danger_type =
+                download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE,
+            .destination = enterprise_connectors::TriggeredRule::CORP_ONEDRIVE,
+            .destination_string = "OneDrive",
+        }),
+    [](const testing::TestParamInfo<ForceSaveToCloudTestParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace extensions
