@@ -741,6 +741,73 @@ TEST_F(NativeViewHostAuraTest, Attach) {
   DestroyHost();
 }
 
+TEST_F(NativeViewHostAuraTest, HostMovedWithSameLayerBounds) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    GTEST_SKIP();
+  }
+  CreateTopLevel();
+  toplevel()->SetBounds({0, 0, 200, 200});
+
+  View* container =
+      toplevel()->client_view()->AddChildView(std::make_unique<View>());
+
+  NativeViewHost* host1 =
+      container->AddChildView(std::make_unique<NativeViewHost>());
+  host1->SetBoundsRect({10, 10, 80, 80});
+
+  NativeViewHost* host2 =
+      container->AddChildView(std::make_unique<NativeViewHost>());
+  host2->SetBoundsRect({30, 40, 80, 80});
+
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_CONTROL);
+  child_params.parent = toplevel()->GetNativeView();
+  child->Init(std::move(child_params));
+  child->SetContentsView(new View);
+
+  aura::Window* child_win = child->GetNativeView();
+  host1->Attach(child_win);
+  test::RunScheduledLayout(toplevel());
+
+  const gfx::Point client_origin = toplevel()->client_view()->bounds().origin();
+  const gfx::Rect bounds_in_host1{client_origin.x() + 10,
+                                  client_origin.y() + 10, 80, 80};
+  EXPECT_EQ(bounds_in_host1, child_win->bounds());
+  EXPECT_EQ((gfx::Rect{80, 80}), child_win->layer()->bounds());
+
+  NativeViewHostWindowObserver test_observer;
+  child_win->AddObserver(&test_observer);
+
+  // Detach from host1 and attach to host2, which has the same size but a
+  // different location. The child window's layer bounds relative to
+  // host2->layer() remains (0, 0, 80, 80). Because the layer bounds do not
+  // change, Layer::SetBounds() is a no-op, but Window::SetBoundsInternal must
+  // still update the child window's bounds to match host2's position
+  // and notify observers.
+  host1->Detach();
+  host2->Attach(child_win);
+  test::RunScheduledLayout(toplevel());
+
+  const gfx::Rect bounds_in_host2{client_origin.x() + 30,
+                                  client_origin.y() + 40, 80, 80};
+  EXPECT_EQ(bounds_in_host2, child_win->bounds());
+  EXPECT_EQ((gfx::Rect{80, 80}), child_win->layer()->bounds());
+
+  bool found_bounds_changed = false;
+  for (const auto& event : test_observer.events()) {
+    if (event.type == NativeViewHostWindowObserver::EVENT_BOUNDS_CHANGED) {
+      found_bounds_changed = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_bounds_changed);
+
+  child_win->RemoveObserver(&test_observer);
+  host2->Detach();
+}
+
 // Ensure the native window is hidden when the host view is hidden.
 TEST_F(NativeViewHostAuraTest, SimpleShowAndHide) {
   CreateHost();
@@ -1252,9 +1319,11 @@ TEST_F(NativeViewHostAuraTest, NestedLayerHierarchy) {
   toplevel()->SetBounds(gfx::Rect(0, 0, 500, 500));
   toplevel()->Show();
 
+  View* container =
+      toplevel()->client_view()->AddChildView(std::make_unique<View>());
   View* parent_view = new View();
   parent_view->SetPaintToLayer();
-  toplevel()->client_view()->AddChildView(parent_view);
+  container->AddChildView(parent_view);
   parent_view->SetBounds(10, 10, 100, 100);
 
   CreateTestingHost();
