@@ -881,6 +881,11 @@ std::string GetContextualTasksSearchCapabilitiesVersion() {
   return kContextualTasksSearchCapabilitiesVersion.Get();
 }
 
+bool IsContextualTasksUnboundedMenuEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksUnboundedMenu) ||
+         IsContextualTasksSidePanelRearchitectureEnabled();
+}
+
 bool IsContextualTasksUIEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
          base::FeatureList::IsEnabled(kContextualTasks) ||

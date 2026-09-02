@@ -59,4 +59,21 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_SetOverrideRuntime) {
   EXPECT_EQ(std::nullopt, GetForcedEmbeddedPageHost());
 }
 
+TEST(FeaturesTest, IsContextualTasksUnboundedMenuEnabled_DefaultDisabled) {
+  EXPECT_FALSE(IsContextualTasksUnboundedMenuEnabled());
+}
+
+TEST(FeaturesTest, IsContextualTasksUnboundedMenuEnabled_FlagEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(kContextualTasksUnboundedMenu);
+  EXPECT_TRUE(IsContextualTasksUnboundedMenuEnabled());
+}
+
+TEST(FeaturesTest,
+     IsContextualTasksUnboundedMenuEnabled_SidePanelRearchitectureEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(kContextualTasksSidePanelRearchitecture);
+  EXPECT_TRUE(IsContextualTasksUnboundedMenuEnabled());
+}
+
 }  // namespace contextual_tasks
