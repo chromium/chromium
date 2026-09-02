@@ -21,7 +21,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,6 +29,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
+import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.AccountPreviewPreferenceStringUtils;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -316,15 +317,21 @@ public class FullscreenSigninMediator
         // If no account was preselected or just added, set the preferred account as default
         // before showing the UI. This is necessary to override the previously selected account
         // in case updateAccount is called before the initial load completion.
-        if (isPreferredAccountEnabled()
-                && mConfig.selectedAccountEmail == null
+        AccountPreviewPreference accountPreference = null;
+        if (mConfig.selectedAccountEmail == null
                 && mPendingSelectedAccountEmail == null
                 && mAddedAccount == null) {
             List<AccountInfo> accounts =
                     AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
             if (!accounts.isEmpty()) {
-                mDefaultAccount = mAccountPreviewDataService.getPreferredAccountOrDefault(accounts);
-                setSelectedAccount(mDefaultAccount);
+                accountPreference = getValidAccountPreference(accounts);
+                if (accountPreference != null) {
+                    mDefaultAccount =
+                            assertNonNull(
+                                    AccountUtils.findAccountByGaiaId(
+                                            accounts, accountPreference.getGaiaId()));
+                    setSelectedAccount(mDefaultAccount);
+                }
             }
         }
 
@@ -353,7 +360,8 @@ public class FullscreenSigninMediator
 
         mModel.set(FullscreenSigninProperties.TITLE_STRING, getTitleText());
         mModel.set(
-                FullscreenSigninProperties.SUBTITLE_STRING, getSubtitleText(profile, hasPolicies));
+                FullscreenSigninProperties.SUBTITLE_STRING,
+                getSubtitleText(profile, hasPolicies, accountPreference));
 
         mModel.set(
                 FullscreenSigninProperties.FOOTER_STRING,
@@ -408,7 +416,10 @@ public class FullscreenSigninMediator
         return mConfig.title;
     }
 
-    private @Nullable String getSubtitleText(Profile profile, boolean hasPolicies) {
+    private @Nullable String getSubtitleText(
+            Profile profile,
+            boolean hasPolicies,
+            @Nullable AccountPreviewPreference shownAccountPreference) {
         if (!mIsSigninSupported || mIsChild) {
             return null;
         }
@@ -429,9 +440,22 @@ public class FullscreenSigninMediator
                 break;
             }
         }
-        return isSyncDataManaged
-                ? mContext.getString(R.string.signin_fre_subtitle_without_sync)
-                : mConfig.subtitle;
+        if (isSyncDataManaged) {
+            return mContext.getString(R.string.signin_fre_subtitle_without_sync);
+        }
+        // TODO(crbug.com/553530451): Migrate access point specific subtitle customization to a per
+        // access point string delegate instead of checking individual access points here.
+        boolean isCustomizedSubtitleEnabled =
+                mAccessPoint == SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO;
+        if (isCustomizedSubtitleEnabled && shownAccountPreference != null) {
+            String customizedSubtitle =
+                    AccountPreviewPreferenceStringUtils.getSubtitleForDefaultFlow(
+                            mContext, shownAccountPreference);
+            if (customizedSubtitle != null) {
+                return customizedSubtitle;
+            }
+        }
+        return mConfig.subtitle;
     }
 
     private void updateShouldHideDismissButton() {
@@ -883,9 +907,13 @@ public class FullscreenSigninMediator
                 mDialogCoordinator.dismissDialog();
             }
         } else {
+            // Do not update the subtitle once set during initialization to avoid visual flicker.
+            AccountPreviewPreference preference = getValidAccountPreference(accounts);
             mDefaultAccount =
-                    isPreferredAccountEnabled()
-                            ? mAccountPreviewDataService.getPreferredAccountOrDefault(accounts)
+                    preference != null
+                            ? assertNonNull(
+                                    AccountUtils.findAccountByGaiaId(
+                                            accounts, preference.getGaiaId()))
                             : accounts.get(0);
             mSelectedAccount =
                     mSelectedAccount == null
@@ -986,13 +1014,24 @@ public class FullscreenSigninMediator
         ResettersForTesting.register(() -> sAnimationsEnabled = oldValue);
     }
 
-    @EnsuresNonNullIf("mAccountPreviewDataService")
     private boolean isPreferredAccountEnabled() {
         // Checking the feature flag here is safe because canUsePreferredAccount() is only true for
         // flows created after native initialization (FullscreenSigninAndHistorySyncCoordinator)
         return mDelegate.canUsePreferredAccount()
-                && mAccountPreviewDataService != null
                 && SigninFeatureMap.isEnabled(
                         SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
+    }
+
+    private @Nullable AccountPreviewPreference getValidAccountPreference(
+            List<AccountInfo> accounts) {
+        if (isPreferredAccountEnabled() && mAccountPreviewDataService != null) {
+            AccountPreviewPreference preference =
+                    mAccountPreviewDataService.getPreferredAccountForPromo();
+            if (preference != null
+                    && AccountUtils.findAccountByGaiaId(accounts, preference.getGaiaId()) != null) {
+                return preference;
+            }
+        }
+        return null;
     }
 }

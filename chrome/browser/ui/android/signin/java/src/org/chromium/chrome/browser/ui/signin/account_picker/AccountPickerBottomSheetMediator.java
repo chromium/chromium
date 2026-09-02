@@ -17,7 +17,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
@@ -803,16 +802,11 @@ public class AccountPickerBottomSheetMediator
         mSigninTimestampsLogger = SigninFlowTimestampsLogger.startLogging(flowVariant);
     }
 
-    @EnsuresNonNullIf("mAccountPreviewDataService")
-    private boolean isPreferredAccountEnabled() {
-        return mAccountPreviewDataService != null
-                && SigninFeatureMap.isEnabled(
-                        SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
-    }
-
     private @Nullable AccountPreviewPreference getValidAccountPreference(
             List<AccountInfo> accounts) {
-        if (isPreferredAccountEnabled()) {
+        if (mAccountPreviewDataService != null
+                && SigninFeatureMap.isEnabled(
+                        SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)) {
             AccountPreviewPreference preference =
                     mAccountPreviewDataService.getPreferredAccountForPromo();
             if (preference != null
