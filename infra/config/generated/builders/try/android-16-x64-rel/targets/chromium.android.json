@@ -1225,6 +1225,10 @@
             }
           ],
           "optional_dimensions": {
+            "30": {
+              "caches": "android_36_google_apis_x64",
+              "cpu": "x86-64-n4"
+            },
             "60": {
               "caches": "android_36_google_apis_x64"
             }
