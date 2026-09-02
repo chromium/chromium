@@ -2779,7 +2779,7 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
       HandlePaneClosed(active_dialog_unique_id_);
     }
     if (new_dialog_id != ui::kAXAndroidInvalidViewId) {
-      HandlePaneOpened(node->GetUniqueId());
+      HandlePaneOpened(new_dialog_id);
     }
     active_dialog_unique_id_ = new_dialog_id;
   }

@@ -441,8 +441,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleSortDirectionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
-  void HandlePaneOpened(int32_t unique_id);
-  void HandlePaneClosed(int32_t unique_id);
+  virtual void HandlePaneOpened(int32_t unique_id);
+  virtual void HandlePaneClosed(int32_t unique_id);
   // Dispatches events for atomic live region changes over the JNI Bridge.
   void HandleAtomicLiveRegionChanged(int32_t unique_id);
   // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.

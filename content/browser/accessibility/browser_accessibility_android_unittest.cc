@@ -106,6 +106,9 @@ class MockWebContentsAccessibilityAndroid
               (int32_t unique_id, int32_t subType),
               (override));
 
+  MOCK_METHOD(void, HandlePaneOpened, (int32_t unique_id), (override));
+  MOCK_METHOD(void, HandlePaneClosed, (int32_t unique_id), (override));
+
   MOCK_METHOD(bool,
               IsNodeLikelyKnownByAndroidFrameworkForExperiment,
               (int32_t unique_id),
@@ -2715,6 +2718,67 @@ TEST_F(BrowserAccessibilityAndroidTest, TestIsLeafSliderWithComplexChildren) {
   EXPECT_EQ(0U, slider_node->PlatformChildCount());
 }
 
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestMoveAccessibilityFocusDialogPaneOpened) {
+  ui::AXNodeData button_outside;
+  button_outside.id = 2;
+  button_outside.role = ax::mojom::Role::kButton;
+  button_outside.SetName("Outside Button");
+
+  ui::AXNodeData button_inside;
+  button_inside.id = 4;
+  button_inside.role = ax::mojom::Role::kButton;
+  button_inside.SetName("Inside Button");
+
+  ui::AXNodeData dialog_container;
+  dialog_container.id = 3;
+  dialog_container.role = ax::mojom::Role::kDialog;
+  dialog_container.SetName("Dialog Title");
+  dialog_container.child_ids = {button_inside.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {button_outside.id, dialog_container.id};
+
+  auto* update = new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(
+      root, button_outside, dialog_container, button_inside));
+  MockWebContentsAccessibilityAndroid wcaa(reinterpret_cast<intptr_t>(update));
+
+  BrowserAccessibilityAndroid* root_node =
+      wcaa.GetAXFromUniqueIDForTesting(wcaa.GetRootId(nullptr));
+  ASSERT_NE(nullptr, root_node);
+  ASSERT_EQ(2U, root_node->PlatformChildCount());
+
+  auto* outside_node =
+      static_cast<BrowserAccessibilityAndroid*>(root_node->PlatformGetChild(0));
+  auto* dialog_node =
+      static_cast<BrowserAccessibilityAndroid*>(root_node->PlatformGetChild(1));
+  ASSERT_NE(nullptr, outside_node);
+  ASSERT_NE(nullptr, dialog_node);
+  ASSERT_EQ(1U, dialog_node->PlatformChildCount());
+
+  auto* inside_node = static_cast<BrowserAccessibilityAndroid*>(
+      dialog_node->PlatformGetChild(0));
+  ASSERT_NE(nullptr, inside_node);
+
+  int32_t outside_uid = outside_node->GetUniqueId();
+  int32_t inside_uid = inside_node->GetUniqueId();
+  int32_t dialog_uid = dialog_node->GetUniqueId();
+
+  // Moving accessibility focus into the dialog should trigger
+  // `HandlePaneOpened` with the `new_dialog_id` (the dialog container's unique
+  // ID), NOT the child node's unique ID.
+  EXPECT_CALL(wcaa, HandlePaneOpened(dialog_uid)).Times(1);
+  EXPECT_CALL(wcaa, HandlePaneOpened(inside_uid)).Times(0);
+
+  wcaa.MoveAccessibilityFocus(nullptr, outside_uid, inside_uid);
+
+  // Moving focus out of the dialog should trigger `HandlePaneClosed` with the
+  // dialog container's unique ID.
+  EXPECT_CALL(wcaa, HandlePaneClosed(dialog_uid)).Times(1);
+
+  wcaa.MoveAccessibilityFocus(nullptr, inside_uid, outside_uid);
+}
+
 }  // namespace content
-
-
