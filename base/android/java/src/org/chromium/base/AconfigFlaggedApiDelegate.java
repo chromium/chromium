@@ -195,20 +195,6 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
-     * Checks if the Selection Action Menu Client is available, based on the API level and Aconfig
-     * flags. If the client is available, this method returns it wrapped in a {@code
-     * SelectionActionMenuClientWrapper}. This does not check if the client has been overridden and
-     * calling this method may return the default client. If the client is unavailable, this method
-     * returns null.
-     *
-     * @param delegate the WebViewDelegate used to get the client object.
-     */
-    default @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient(
-            WebViewDelegate delegate) {
-        return null;
-    }
-
-    /**
      * Sets the sort direction on the CollectionItemInfoCompat Builder. This may call
      * setSortDirection on the CollectionItemInfoCompat builder if the API is available.
      *
