@@ -110,6 +110,20 @@ public class XrSceneCoreSessionManagerImplTest {
     }
 
     @Test
+    public void testRequestSpaceModeChange_RequestInProgress() {
+        when(mActivity.hasWindowFocus()).thenReturn(true);
+
+        boolean result = mManager.requestSpaceModeChange(true, mCallback);
+        assertTrue(result);
+
+        boolean secondResult = mManager.requestSpaceModeChange(false, mCallback);
+        assertFalse(secondResult);
+
+        ShadowLooper.idleMainLooper();
+        assertTrue(mManager.isXrFullSpaceMode());
+    }
+
+    @Test
     public void testRequestSpaceModeChange_NoFocus() {
         when(mActivity.hasWindowFocus()).thenReturn(false);
 

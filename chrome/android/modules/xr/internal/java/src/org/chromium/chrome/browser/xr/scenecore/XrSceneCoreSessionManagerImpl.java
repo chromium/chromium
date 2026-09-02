@@ -29,6 +29,8 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -71,8 +73,8 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private Activity mActivity;
     private ActivitySpace mActivitySpace;
 
-    // If not null, a request to change XR space mode is in progress.
-    private @Nullable Boolean mIsFullSpaceModeRequested;
+    // If not TriState.NOT_SET, a request to change XR space mode is in progress.
+    private @TriState int mIsFullSpaceModeRequested;
     private @Nullable Runnable mXrModeSwitchCallback;
     private boolean mIsHeadTrackingEnabled;
     private final XrHeadPoseTracker mHeadPoseTracker;
@@ -150,7 +152,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         if (!ThreadUtils.runningOnUiThread()) return false;
 
         // Decline if the request to change XR space mode is being processed.
-        if (mIsFullSpaceModeRequested != null) {
+        if (mIsFullSpaceModeRequested != TriState.NOT_SET) {
             return false;
         }
 
@@ -160,7 +162,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
             return false;
         }
 
-        mIsFullSpaceModeRequested = requestFullSpaceMode;
+        mIsFullSpaceModeRequested = TriStateUtils.from(requestFullSpaceMode);
         mXrModeSwitchCallback = completedCallback;
 
         Scene scene = getScene();
@@ -285,6 +287,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
             mActivitySpace.removeOnBoundsChangedListener(mBoundsChangedListener);
             mActivitySpace = null;
         }
+        mIsFullSpaceModeRequested = TriState.NOT_SET;
         mXrSession = null;
         mActivity = null;
     }
@@ -305,9 +308,9 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private void boundsChangeCallback(FloatSize3d dimensions) {
         mIsFullSpaceModeNowSupplier.set(dimensions.getWidth() == Float.POSITIVE_INFINITY);
 
-        if (mIsFullSpaceModeRequested != null && mIsFullSpaceModeRequested == isXrFullSpaceMode()) {
+        if (mIsFullSpaceModeRequested == TriStateUtils.from(isXrFullSpaceMode())) {
             // Mark the current request as completed.
-            mIsFullSpaceModeRequested = null;
+            mIsFullSpaceModeRequested = TriState.NOT_SET;
             if (mXrModeSwitchCallback != null) {
                 mXrModeSwitchCallback.run();
                 mXrModeSwitchCallback = null;
