@@ -1395,6 +1395,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
     [self performTabAttachmentAnimationIfNeeded];
+  } else if (isLoading) {
+    _pendingTabAttachmentAnimation = YES;
   }
 }
 
