@@ -275,6 +275,10 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   bool quick_check_enabled_for_testing() const { return quick_check_enabled_; }
 
+  bool has_script_poller_for_testing() const {
+    return script_poller_ != nullptr;
+  }
+
   // Test-only: enable or disable PAC runtime backoff gating. This is enabled
   // by default only for system resolvers; tests may override it.
   void set_enable_pac_runtime_backoff_for_testing(bool enabled) {

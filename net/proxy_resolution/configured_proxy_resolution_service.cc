@@ -1617,15 +1617,26 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
     });
   }
 
+  // Check if this update is PvD-only, we need to evaluate this against
+  // `fetched_config_` before overwriting it with `effective_config` because
+  // `config_` may have had its automatic settings stripped following a failed
+  // initial PAC resolution.
+  const bool is_dynamic_routing_only_update =
+      fetched_config_.has_value() &&
+      effective_config.value().EqualsIgnoringDynamicRouting(
+          fetched_config_->value());
+
   // Set the new configuration as the most recently fetched one.
   fetched_config_ = effective_config;
 
-  // If this update is PvD-only (only dynamic_routing_config changed while all
-  // other settings match active config_), update config_ in-place without
-  // resetting PAC deciders or restarting PAC file fetching.
-  if (config_ &&
-      effective_config.value().EqualsIgnoringDynamicRouting(config_->value())) {
-    config_ = effective_config;
+  // If this update is PvD-only and a configuration is active, update config_
+  // in-place without resetting PAC deciders or restarting PAC file fetching.
+  if (is_dynamic_routing_only_update && config_) {
+    ProxyConfig new_config = config_->value();
+    new_config.set_dynamic_routing_config(
+        effective_config.value().dynamic_routing_config());
+    config_ =
+        ProxyConfigWithAnnotation(new_config, config_->traffic_annotation());
     if (IsReady()) {
       auto pending_requests_copy = pending_requests_;
       for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {

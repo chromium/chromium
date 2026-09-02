@@ -178,9 +178,21 @@ ProxyInfo ResolveProxySynchronously(ConfiguredProxyResolutionService* service,
 //
 // The tests which verify the polling code re-enable the polling behavior but
 // are careful to avoid timing problems.
+class MockProxyConfigService;
+
 class ConfiguredProxyResolutionServiceTest : public ::testing::Test,
                                              public WithTaskEnvironment {
  protected:
+  // Holds the test service and its associated mock config service for test
+  // cases starting from a state with failed initial PAC auto-detection.
+  struct FailedAutodetectTestEnvironment {
+    // The resolution service under test.
+    std::unique_ptr<ConfiguredProxyResolutionService> service;
+
+    // Unowned pointer to the mock config service owned by `service`.
+    raw_ptr<MockProxyConfigService> config_service;
+  };
+
   ConfiguredProxyResolutionServiceTest()
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -206,6 +218,8 @@ class ConfiguredProxyResolutionServiceTest : public ::testing::Test,
   void AddDnsEntry(const GURL& dns_host, Error error) {
     mock_host_resolver_->rules()->AddRule(dns_host.GetHost(), error);
   }
+
+  FailedAutodetectTestEnvironment CreateServiceWithFailedAutodetect();
 
   std::unique_ptr<MockHostResolverBase> mock_host_resolver_{nullptr};
 
@@ -263,6 +277,38 @@ class MockProxyConfigService : public ProxyConfigService {
   ProxyConfigWithAnnotation config_;
   base::ObserverList<Observer, true>::Unchecked observers_;
 };
+
+ConfiguredProxyResolutionServiceTest::FailedAutodetectTestEnvironment
+ConfiguredProxyResolutionServiceTest::CreateServiceWithFailedAutodetect() {
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(ProxyConfig::CreateAutoDetect());
+  auto* config_service_ptr = config_service.get();
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* factory_ptr = factory.get();
+  auto service = std::make_unique<ConfiguredProxyResolutionService>(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service->ResolveProxy(
+      GURL("http://www.google.com"), std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request,
+      NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_EQ(PacFileData::TYPE_AUTO_DETECT,
+            factory_ptr->pending_requests()[0]->script_data()->type());
+  factory_ptr->pending_requests()[0]->CompleteNow(ERR_PAC_SCRIPT_FAILED,
+                                                  nullptr);
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.is_direct());
+  EXPECT_TRUE(service->has_script_poller_for_testing());
+
+  return {std::move(service), config_service_ptr};
+}
 
 // A test network delegate that exercises the OnResolveProxy callback.
 class TestResolveProxyDelegate : public ProxyDelegate {
@@ -7279,6 +7325,48 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   // Exactly one callback ran, and it cancelled the other request before it
   // could be processed.
   EXPECT_EQ(number_of_callbacks_run, 1);
+}
+
+// Tests that when a failed automatic PAC configuration falls back to Direct
+// (with a background poller scheduled), a subsequent proxy config change to
+// Direct properly tears down the background poller rather than treating it as
+// an in-place dynamic routing update (crbug.com/551857769).
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       UpdateConfigAfterFailedAutodetectResetsPollerOnDirectUpdate) {
+  auto [service, config_service] = CreateServiceWithFailedAutodetect();
+
+  // Now, system proxy config changes to Direct (non-automatic).
+  config_service->SetConfig(ProxyConfigWithAnnotation::CreateDirect());
+
+  // The poller must be reset because the new effective config has no automatic
+  // settings.
+  EXPECT_FALSE(service->has_script_poller_for_testing());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       DynamicRoutingOnlyUpdatePreservesResolvedFallbackConfig) {
+  auto [service, config_service] = CreateServiceWithFailedAutodetect();
+
+  // Dynamic routing update arrives with the same underlying AutoDetect config.
+  ProxyConfig config = ProxyConfig::CreateAutoDetect();
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.routing_rules.push_back(CreateDynamicRoutingRule(
+      "www.google.com", "pvd_proxy:443", ProxyServer::SCHEME_HTTPS));
+  config.set_dynamic_routing_config(dynamic_config);
+
+  config_service->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Poller is preserved and dynamic routing rule is applied.
+  EXPECT_TRUE(service->has_script_poller_for_testing());
+  EXPECT_EQ(
+      "[https://pvd_proxy:443]",
+      ResolveProxySynchronously(service.get(), GURL("http://www.google.com"))
+          .proxy_chain()
+          .ToDebugString());
+  EXPECT_TRUE(
+      ResolveProxySynchronously(service.get(), GURL("http://www.yahoo.com"))
+          .is_direct());
 }
 
 }  // namespace net
