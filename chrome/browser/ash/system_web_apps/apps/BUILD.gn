@@ -339,7 +339,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/web_applications",
-      "//chrome/test:ash_integration_test_support",
+      "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/aura",

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//chrome/common/features.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -640,6 +641,52 @@ source_set("chrome_render_view_test") {
   }
 }
 
+if (is_chromeos) {
+  source_set("chrome_ash_test_base") {
+    testonly = true
+    sources = [
+      "chrome_ash_test_base.cc",
+      "chrome_ash_test_base.h",
+    ]
+    public_deps = [ "//ash:test_support" ]
+    deps = [
+      ":testing_browser_process",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+static_library("browser_tests_runner") {
+  testonly = true
+  sources = []
+
+  deps = [
+    ":chrome_test_launcher",
+    ":chrome_test_suite",
+    "//base",
+    "//base/test:test_support",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "browser_tests_main_chromeos.cc" ]
+    deps += [
+      "//ash:test_support",
+      "//services/tracing/public/cpp",
+      "//ui/base:test_support",
+    ]
+  } else {
+    sources += [ "browser_tests_main.cc" ]
+    deps += [
+      "//content/public/common",
+      "//ui/compositor",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/installer/util:strings" ]
+  }
+}
+
 source_set("chrome_test_suite") {
   testonly = true
   sources = [
@@ -1240,6 +1287,50 @@ if (is_win) {
       "window_contents_as_string_win.h",
     ]
     deps = [ "//base" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "devtools_listener_browsertest.cc",
+      "in_process_browser_test_browsertest.cc",
+      "memory_tracing_browsertest.cc",
+      "save_desktop_snapshot_browsertest.cc",
+      "test_chrome_web_ui_controller_factory_browsertest.cc",
+      "ui_test_utils_browsertest.cc",
+      "web_ui_mocha_browser_test_browsertest.cc",
+    ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    deps = [
+      ":chrome_test_utils",
+      ":devtools_coverage",
+      ":in_process_browser_test",
+      ":save_desktop_snapshot",
+      ":test_chrome_web_ui_controller_factory",
+      ":test_switches",
+      ":tracing",
+      ":ui_test_utils",
+      ":web_ui_mocha_browser_test",
+      "//base",
+      "//chrome/browser:after_startup_task_utils",
+      "//chrome/browser/preloading:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/common",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }
 

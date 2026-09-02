@@ -12,6 +12,29 @@ proto_library("proto") {
   cc_generator_options = "lite=true:"
 }
 
+static_library("ash_test_support") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "ash_integration_test.cc",
+    "ash_integration_test.h",
+    "supervised_user_integration_base_test.cc",
+    "supervised_user_integration_base_test.h",
+  ]
+  deps = [
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser/ui/ash/main_extra_parts",
+    "//chrome/common:non_code_constants",
+    "//google_apis",
+    "//net:test_support",
+    "//url",
+  ]
+  public_deps = [ "//chrome/test/base/ash/interactive:test_support" ]
+}
+
 source_set("test_support") {
   testonly = true
 

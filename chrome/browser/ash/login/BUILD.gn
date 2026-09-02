@@ -339,9 +339,9 @@ if (is_chromeos_device) {
     deps = [
       "//build:branding_buildflags",
       "//chrome/browser/ash/login/test:test_support",
-      "//chrome/test:ash_integration_test_support",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",
+      "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//chrome/test/base/chromeos/crosier:test_support",
 
       # Gather tests from subdirectories:

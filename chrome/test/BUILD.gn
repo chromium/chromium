@@ -768,6 +768,8 @@ static_library("test_support") {
   }
 
   if (toolkit_views) {
+    # TODO(crbug.com/353332589): Move chooser_bubble_testapi sources to
+    # //chrome/browser/ui/views.
     sources += [
       "../browser/ui/chooser_bubble_testapi.h",
       "../browser/ui/views/chooser_bubble_testapi_views.cc",
@@ -877,35 +879,6 @@ if (is_chromeos && is_chromeos_device) {
     outputs = [ "$root_out_dir/crosier_js_helpers/{{source_file_part}}" ]
   }
 
-  static_library("ash_integration_test_support") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [
-      # These cannot live in ":test_support" because they use
-      # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
-      "base/chromeos/crosier/ash_integration_test.cc",
-      "base/chromeos/crosier/ash_integration_test.h",
-      "base/chromeos/crosier/supervised_user_integration_base_test.cc",
-      "base/chromeos/crosier/supervised_user_integration_base_test.h",
-    ]
-
-    deps = [
-      ":test_support",
-      "//base",
-      "//build:branding_buildflags",
-      "//chrome/browser/ui/ash/main_extra_parts",
-      "//chrome/common:non_code_constants",
-      "//chrome/test/base/chromeos/crosier:test_support",
-      "//google_apis",
-      "//net:test_support",
-      "//url",
-    ]
-
-    public_deps = [ "//chrome/test/base/ash/interactive:test_support" ]
-  }
-
   test("chromeos_integration_tests") {
     configs += [ "//build/config:precompiled_headers" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -937,8 +910,8 @@ if (is_chromeos && is_chromeos_device) {
     ]
 
     deps += [
-      ":ash_integration_test_support",
       "//chrome/browser/ash/file_manager",
+      "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//chrome/test/base/chromeos/crosier:proto",
       "//chrome/test/base/chromeos/crosier/helper:common",
       "//chromeos/ash/components/dbus/printscanmgr",
@@ -1330,7 +1303,6 @@ if (is_android) {
     deps = [
       ":android_browsertests_assets",
       ":android_browsertests_java",
-      ":browser_tests_runner",
       ":platform_browser_tests",
       ":sync_integration_test_support_java",
       ":test_support",
@@ -1428,6 +1400,7 @@ if (is_android) {
       "//chrome/browser/webauthn",
       "//chrome/browser/webid",
       "//chrome/browser/webid:android_browsertests",
+      "//chrome/test/base:browser_tests_runner",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/data/webui:browser_tests",
       "//chrome/test/data/webui:interactive_ui_tests",
@@ -1842,30 +1815,6 @@ if (is_android) {
   }
 }
 
-static_library("browser_tests_runner") {
-  testonly = true
-  sources = []
-
-  deps = [
-    ":test_support",
-    "//chrome/test/base:chrome_test_launcher",
-  ]
-
-  if (is_chromeos) {
-    sources += [ "base/browser_tests_main_chromeos.cc" ]
-  } else {
-    sources += [ "base/browser_tests_main.cc" ]
-  }
-
-  if (is_win) {
-    deps += [ "//chrome/installer/util:strings" ]
-  }
-
-  if (is_android) {
-    deps += [ "//ui/compositor" ]
-  }
-}
-
 if (!is_android) {
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
@@ -1875,7 +1824,6 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
-      ":browser_tests_runner",
       ":platform_browser_tests",
       ":test_support",
       ":test_support_ui",
@@ -2448,6 +2396,8 @@ if (!is_android) {
       "//chrome/renderer/actor:browser_tests",
       "//chrome/renderer/webui_browser:browser_tests",
       "//chrome/services/removable_storage_writer:lib",
+      "//chrome/test/base:browser_tests",
+      "//chrome/test/base:browser_tests_runner",
       "//chrome/test/components_tests:browser_tests",
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
@@ -3081,13 +3031,6 @@ if (!is_android) {
       "../renderer/indigo/indigo_agent_browsertest.cc",
       "../renderer/translate/translate_agent_browsertest.cc",
       "../renderer/translate/translate_script_browsertest.cc",
-      "base/devtools_listener_browsertest.cc",
-      "base/in_process_browser_test_browsertest.cc",
-      "base/memory_tracing_browsertest.cc",
-      "base/save_desktop_snapshot_browsertest.cc",
-      "base/test_chrome_web_ui_controller_factory_browsertest.cc",
-      "base/ui_test_utils_browsertest.cc",
-      "base/web_ui_mocha_browser_test_browsertest.cc",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
@@ -8093,12 +8036,14 @@ static_library("test_support_unit") {
   }
 
   if (is_chromeos) {
+    # TODO(crbug.com/353332589): Move quick_answers test sources to
+    # //chrome/browser/ui/ash/quick_answers.
     sources += [
       "../browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.cc",
       "../browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h",
-      "base/chrome_ash_test_base.cc",
-      "base/chrome_ash_test_base.h",
     ]
+
+    public_deps += [ "//chrome/test/base:chrome_ash_test_base" ]
 
     deps += [
       "//ash:test_support",
@@ -10106,7 +10051,7 @@ source_set("xr_browser_tests_common") {
   deps = [
     "//base",
     "//chrome/browser/ui/browser_window",
-    "//chrome/test:browser_tests_runner",
+    "//chrome/test/base:browser_tests_runner",
     "//sandbox/policy",
   ]
 

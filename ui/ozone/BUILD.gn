@@ -272,7 +272,7 @@ source_set("ozone_switches") {
   deps = [ "//base" ]
 
   visibility += [
-    "//chrome/test:browser_tests_runner",
+    "//chrome/test/base:browser_tests_runner",
     "//media/mojo/services",
     "//ui/base/clipboard:clipboard_test",
     "//ui/display:display_unittests",

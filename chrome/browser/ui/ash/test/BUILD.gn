@@ -16,7 +16,7 @@ if (is_chromeos_device) {
       "//ash",
       "//base/test:test_support",
       "//chrome/common",
-      "//chrome/test:ash_integration_test_support",
+      "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//testing/gtest",
       "//ui/base/interaction",
     ]

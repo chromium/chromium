@@ -14,8 +14,8 @@ if (is_linux || is_mac || is_win) {
       "//chrome/browser/hid:device_realtarget_browsertests",
       "//chrome/browser/serial:device_realtarget_browsertests",
       "//chrome/browser/usb:device_realtarget_browsertests",
-      "//chrome/test:browser_tests_runner",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_tests_runner",
     ]
   }
 }

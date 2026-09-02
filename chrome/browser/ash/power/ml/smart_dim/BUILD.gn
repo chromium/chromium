@@ -81,7 +81,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/power/ml",
       "//chrome/browser/component_updater",
       "//chrome/common",
-      "//chrome/test:ash_integration_test_support",
+      "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//components/component_updater",
       "//net:test_support",
       "//testing/gtest",

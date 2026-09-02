@@ -219,8 +219,8 @@ if (is_chromeos_device && is_chrome_branded) {
     deps = [
       ":arc",
       "//chrome/browser/ash/login/test:test_support",
-      "//chrome/test:ash_integration_test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//chrome/test/base/chromeos/crosier:test_support",
       "//chromeos/ui/base",
       "//ui/aura",

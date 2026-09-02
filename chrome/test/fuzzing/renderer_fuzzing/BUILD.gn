@@ -48,8 +48,8 @@ if (renderer_ipc_fuzzing_enabled) {
     sources = [ "ipc_fuzzing/ipc_interfaces_dumper.cc" ]
     deps = [
       "//base",
-      "//chrome/test:browser_tests_runner",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_tests_runner",
       "//content/test:test_support",
     ]
   }
