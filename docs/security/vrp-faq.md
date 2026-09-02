@@ -400,6 +400,13 @@ security problem, and adding necessary pocs and traces as attachments.
 * The CVE number will be updated directly on the report itself and listed in
   the Chrome Browser release notes for that Stable channel update.
 
+#### My bug got a CVE but I didn't get a reward?
+
+* Chrome sometimes issues a CVE then later reexamines a report and determines
+  that it does not have security impact. Chrome does not routinely revoke
+  CVEs when this happens, but does update the bug status to reflect our new
+  assessment.
+
 ### Disclosure / Report Visibility
 
 #### What if I disclose the bug publicly before you have fixed or disclosed it?
