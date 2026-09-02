@@ -10,6 +10,7 @@ Application
     Window Controls Overlay
   Service workers
   Storage
+  WebMCPNEW
 Storage
   Local storage
     http://127.0.0.1:8000
@@ -54,6 +55,7 @@ Application
     Window Controls Overlay
   Service workers
   Storage
+  WebMCPNEW
 Storage
   Local storage
     http://127.0.0.1:8000
@@ -98,6 +100,7 @@ Application
     Window Controls Overlay
   Service workers
   Storage
+  WebMCPNEW
 Storage
   Local storage
     http://127.0.0.1:8000
@@ -142,6 +145,7 @@ Application
     Window Controls Overlay
   Service workers
   Storage
+  WebMCPNEW
 Storage
   Local storage
     http://127.0.0.1:8000
