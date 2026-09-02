@@ -1549,7 +1549,6 @@ if (is_android) {
         "../browser/extensions/api/omnibox/omnibox_api_interactive_uitest.cc",
         "../browser/extensions/api/tabs/tabs_apitest_android.cc",
         "../browser/extensions/desktop_android_extensions_browsertest.cc",
-        "../browser/ui/extensions/reload_page_dialog_controller_android_browsertest.cc",
       ]
 
       deps += [
@@ -1558,6 +1557,7 @@ if (is_android) {
         "//chrome/browser/omnibox",
         "//chrome/browser/ui:view_ids",
         "//chrome/browser/ui/extensions",
+        "//chrome/browser/ui/extensions:android_browser_tests",
         "//chrome/browser/ui/extensions:browser_tests",
         "//chrome/browser/ui/omnibox",
       ]

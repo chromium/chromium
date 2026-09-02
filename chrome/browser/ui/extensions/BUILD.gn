@@ -467,3 +467,28 @@ source_set("browser_tests") {
     }
   }
 }
+
+if (is_android) {
+  source_set("android_browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "reload_page_dialog_controller_android_browsertest.cc" ]
+    deps = [
+      ":extensions",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test/base:chrome_test_utils",
+      "//components/messages/android",
+      "//components/messages/android:test_support",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//testing/gmock",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}
