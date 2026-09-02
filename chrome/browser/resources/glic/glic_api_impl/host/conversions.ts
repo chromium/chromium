@@ -20,10 +20,11 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, CounterAbuseVerdict as CounterAbuseVerdictMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, HostCapability as HostCapabilityMojo, ImageBytesResult as ImageBytesResultMojo, ImageInfo as ImageInfoMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, OpenPinnedTabPickerOptions as OpenPinnedTabPickerOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SkillPreview as SkillPreviewMojo, SkillsPayload as SkillsPayloadMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContextOptions as TabContextOptionsMojo, TabContextResult as TabContextResultMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
+import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, CounterAbuseVerdict as CounterAbuseVerdictMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, HostCapability as HostCapabilityMojo, ImageBytesResult as ImageBytesResultMojo, ImageInfo as ImageInfoMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, OpenPinnedTabPickerOptions as OpenPinnedTabPickerOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SkillPreview as SkillPreviewMojo, SkillsPayload as SkillsPayloadMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContextOptions as TabContextOptionsMojo, TabContextResult as TabContextResultMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
 import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, ScreenshotCompressionQuality as ScreenshotCompressionQualityMojo, ScreenshotImageFormat as ScreenshotImageFormatMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
-import type {CaptureRegionResult, ConversationInfo, CounterAbuseVerdict, FileUploadPolicyState as FileUploadPolicyStateApi, GetPinCandidatesOptions, HostCapability, InvocationPayload, OpenPinnedTabPickerOptions, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, SkillPreview, SkillsPayload, TabContextOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
+import type {CaptureRegionResult, ConversationInfo, CounterAbuseVerdict, FileUploadPolicyState as FileUploadPolicyStateApi, GetPinCandidatesOptions, HostCapability, InvocationPayload, OpenPinnedTabPickerOptions, PageMetadata, PanelOpeningData, PanelState, PinCandidate, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, SkillPreview, SkillsPayload, TabContextOptions, TabData, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
 import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, Platform, WebClientMode} from '../../glic_api/glic_api.js';
+import {rgbaImageToBlob} from '../client/image_utils.js';
 import type {ResponseExtras} from '../transport/messaging.js';
 
 import {replaceProperties} from './../conversions.js';
@@ -212,12 +213,12 @@ export function originToClientOpaqueAsNull(origin: Origin|null): string|undefine
   return originToClient(origin);
 }
 
-export function tabDataToClient(
+export function tabDataToPrivate(
     tabData: TabDataMojo, extras: ResponseExtras): TabDataPrivate;
-export function tabDataToClient(
+export function tabDataToPrivate(
     tabData: TabDataMojo|null, extras: ResponseExtras): TabDataPrivate|
     undefined;
-export function tabDataToClient(
+export function tabDataToPrivate(
     tabData: TabDataMojo|null, extras: ResponseExtras): TabDataPrivate|
     undefined {
   if (!tabData) {
@@ -252,6 +253,50 @@ export function tabDataToClient(
     isWindowActive,
     lightweightPageFeatures:
         tabData.lightweightPageFeatures?.map(feature => enumToClient(feature)),
+  };
+}
+
+export function tabDataToClient(tabData: TabDataMojo): TabData;
+export function tabDataToClient(tabData: TabDataMojo|null): TabData|undefined;
+export function tabDataToClient(tabData: TabDataMojo|null): TabData|undefined {
+  if (!tabData) {
+    return undefined;
+  }
+
+  let faviconResult: Promise<Blob>|undefined;
+  const bitmap = tabData.favicon;
+  const getFavicon = bitmap ? async () => {
+    if (!faviconResult) {
+      const rgbaImage = bitmapN32ToRGBAImage(bitmap);
+      if (rgbaImage) {
+        faviconResult = Promise.resolve(rgbaImageToBlob(rgbaImage));
+      }
+    }
+    return faviconResult;
+  } : undefined;
+
+  return {
+    tabId: idToClient(tabData.tabId),
+    windowId: idToClient(tabData.windowId),
+    url: urlToClient(tabData.url),
+    title: optionalToClient(tabData.title),
+    favicon: getFavicon,
+    faviconUrl: urlToClient(tabData.faviconUrl),
+    documentMimeType: tabData.documentMimeType,
+    isObservable: optionalToClient(tabData.isObservable),
+    isMediaActive: optionalToClient(tabData.isMediaActive),
+    isTabContentCaptured: optionalToClient(tabData.isTabContentCaptured),
+    isActiveInWindow: optionalToClient(tabData.isActiveInWindow),
+    isWindowActive: optionalToClient(tabData.isWindowActive),
+    lightweightPageFeatures:
+        tabData.lightweightPageFeatures?.map(feature => enumToClient(feature)),
+  };
+}
+
+export function pinCandidateToClient(candidate: PinCandidateMojo):
+    PinCandidate {
+  return {
+    tabData: tabDataToClient(candidate.tabData),
   };
 }
 
@@ -292,13 +337,13 @@ export function focusedTabDataToClient(
     extras: ResponseExtras): FocusedTabDataPrivate {
   if (focusedTabData.focusedTab) {
     return {
-      hasFocus: {tabData: tabDataToClient(focusedTabData.focusedTab, extras)},
+      hasFocus: {tabData: tabDataToPrivate(focusedTabData.focusedTab, extras)},
     };
   }
   if (focusedTabData.noFocusedTabData) {
     return {
       hasNoFocus: {
-        tabFocusCandidateData: tabDataToClient(
+        tabFocusCandidateData: tabDataToPrivate(
             focusedTabData.noFocusedTabData.activeTabData, extras),
         noFocusReason: focusedTabData.noFocusedTabData.noFocusReason,
       },
@@ -425,7 +470,7 @@ export function timeDeltaFromClient(durationMs: number = 0): TimeDelta {
 export function tabContextToClient(
     tabContext: TabContextResultMojo,
     extras: ResponseExtras): TabContextResultPrivate {
-  const tabData: TabDataPrivate = tabDataToClient(tabContext.tabData, extras);
+  const tabData: TabDataPrivate = tabDataToPrivate(tabContext.tabData, extras);
   const webPageData = webPageDataToClient(tabContext.webPageData);
   const viewportScreenshot =
       screenshotToClient(tabContext.viewportScreenshot, extras);

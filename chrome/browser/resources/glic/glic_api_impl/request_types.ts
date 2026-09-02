@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinTabsOptions, Platform, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
@@ -414,14 +414,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 51},
     },
     {
-      name: 'subscribeToPinCandidates',
-      request: defMessage<{
-        options: GetPinCandidatesOptions,
-        pinCandidatesPipe: PendingRemote<WebClientPinCandidatesObserver>,
-      }>(),
-      histogram: {id: 52},
-    },
-    {
       name: 'openPinnedTabPicker',
       request: defMessage<{options?: OpenPinnedTabPickerOptions}>(),
       histogram: {id: 104},
@@ -744,20 +736,6 @@ export const WebClientRegionCaptureDef = defInterface({
 });
 export type WebClientRegionCapture = typeof WebClientRegionCaptureDef;
 
-export const WebClientPinCandidatesObserverDef = defInterface({
-  name: 'WebClientPinCandidatesObserver',
-  methods: [
-    {
-      name: 'pinCandidatesChanged',
-      request: defMessage<{
-        candidates: PinCandidatePrivate[],
-      }>(),
-    },
-  ],
-});
-export type WebClientPinCandidatesObserver =
-    typeof WebClientPinCandidatesObserverDef;
-
 export const WebClientTabDataObserverDef = defInterface({
   name: 'WebClientTabDataObserver',
   methods: [
@@ -787,7 +765,6 @@ export type WebClientTabFaviconObserver = typeof WebClientTabFaviconObserverDef;
 export type WebClientRequestTypes =
     InterfaceDefMethods<WebClient>&InterfaceDefMethods<ActorClient>&
     InterfaceDefMethods<WebClientRegionCapture>&
-    InterfaceDefMethods<WebClientPinCandidatesObserver>&
     InterfaceDefMethods<WebClientTabDataObserver>&
     InterfaceDefMethods<WebClientTabFaviconObserver>;
 
@@ -857,7 +834,7 @@ export const RECORDED_REQUEST_IDS = {
   PinTabs: 49,
   UnpinTabs: 50,
   UnpinAllTabs: 51,
-  SubscribeToPinCandidates: 52,
+  // Do not reuse deleted request ID: 52,
   // Do not reuse deleted request ID: 53,
   GetZeroStateSuggestionsForFocusedTab: 54,
   // Do not reuse deleted request ID: 55,
@@ -970,11 +947,6 @@ export type WebClientInitialStatePrivate =
 // TabData format for postMessage transport.
 export declare interface TabDataPrivate extends Omit<TabData, 'favicon'> {
   favicon?: RgbaImage;
-}
-
-export declare interface PinCandidatePrivate extends
-    Omit<PinCandidate, 'tabData'> {
-  tabData: TabDataPrivate;
 }
 
 // A bitmap, used to store data from a BitmapN32 without conversion.

@@ -10,7 +10,7 @@ import type {WebClient} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PostMessageRemote} from '../transport/post_message_transport.js';
 
-import {additionalContextToClient, fileUploadPolicyStateToClient, focusedTabDataToClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, tabDataToClient, timeDeltaFromClient, webClientModeToMojo} from './conversions.js';
+import {additionalContextToClient, fileUploadPolicyStateToClient, focusedTabDataToClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, tabDataToPrivate, timeDeltaFromClient, webClientModeToMojo} from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 import {PanelOpenState} from './types.js';
 
@@ -193,7 +193,7 @@ export class WebClientImpl implements WebClientInterface {
     const extras = new ResponseExtras();
     this.sender.requestNoResponse(
         'notifyPinnedTabsChanged',
-        {tabData: tabData.map((x) => tabDataToClient(x, extras))},
+        {tabData: tabData.map((x) => tabDataToPrivate(x, extras))},
         extras.transfers);
   }
 
@@ -201,7 +201,7 @@ export class WebClientImpl implements WebClientInterface {
     const extras = new ResponseExtras();
     this.sender.requestNoResponse(
         'notifyPinnedTabDataChanged',
-        {tabData: tabDataToClient(tabData, extras)}, extras.transfers);
+        {tabData: tabDataToPrivate(tabData, extras)}, extras.transfers);
   }
 
 

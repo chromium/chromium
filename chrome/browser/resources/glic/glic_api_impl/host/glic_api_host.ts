@@ -30,7 +30,7 @@ import {ZeroStateSuggestionsHostDef} from '../zero_state_suggestions/zero_state_
 
 import {urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';
-import type {CaptureRegionObserverImpl, PinCandidatesObserverImpl} from './host_from_client.js';
+import type {CaptureRegionObserverImpl} from './host_from_client.js';
 import {PanelOpenState} from './types.js';
 
 
@@ -92,8 +92,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   private panelOpenState = PanelOpenState.CLOSED;
   private instanceIsActive = true;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
-  // Present while the client is monitoring pin candidates.
-  pinCandidatesObserver?: PinCandidatesObserverImpl;
   captureRegionObserver?: CaptureRegionObserverImpl;
 
   actorHandler?: ActorHandlerRemote;
@@ -145,7 +143,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     this.webClientState = ObservableValue.withValue<WebClientState>(
         WebClientState.ERROR);  // Final state
     this.hostMessageHandler.destroy();
-    this.pinCandidatesObserver?.disconnectFromSource();
     this.captureRegionObserver?.destroy();
     if (this.actorHandler) {
       this.actorHandler.$.close();
@@ -268,11 +265,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   panelOpenStateChanged(state: PanelOpenState) {
     this.panelOpenState = state;
     this.clientActiveObs.assignAndSignal(this.isClientActive());
-    if (state === PanelOpenState.CLOSED) {
-      this.pinCandidatesObserver?.disconnectFromSource();
-    } else {
-      this.pinCandidatesObserver?.connectToSource();
-    }
   }
 
   setInstanceIsActive(instanceIsActive: boolean) {

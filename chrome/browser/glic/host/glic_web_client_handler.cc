@@ -1423,6 +1423,7 @@ class GlicWebClientHandler
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override {
+    LogApiRequestCount(GlicHostApiRequestId::kSubscribeToPinCandidates);
     host().pin_candidate_provider().SubscribeToPinCandidates(
         std::move(options), std::move(observer));
   }

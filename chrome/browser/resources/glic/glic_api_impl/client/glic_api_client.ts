@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {WebClientHandlerRemote} from '../../glic.mojom-webui.js';
+import {PinCandidatesObserverReceiver} from '../../glic.mojom-webui.js';
+import type {PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
 import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
+import {getPinCandidatesOptionsFromClient, pinCandidateToClient} from '../host/conversions.js';
+import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {assertNever} from '../transport/messaging.js';
 import type {createDirectMessagingPair, PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
-import {ErrorWithReasonImpl, newTransferableException, WebClientDef, WebClientPinCandidatesObserverDef, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientPinCandidatesObserver, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
+import {ErrorWithReasonImpl, newTransferableException, WebClientDef, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
 import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
@@ -81,6 +84,8 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
       }
     } catch (e) {
       console.warn(e);
+    } finally {
+      this.host.panelOpenStateChanged(PanelOpenState.OPEN);
     }
     return {openPanelInfo};
   }
@@ -90,6 +95,7 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
   }
 
   async notifyPanelWasClosed(): Promise<void> {
+    this.host.panelOpenStateChanged(PanelOpenState.CLOSED);
     try {
       this.host.notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
       await this.webClient.notifyPanelWasClosed?.();
@@ -347,6 +353,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   getTabFaviconByIdObservableSet:
       ObservableSetByTabId<Blob|undefined, WebClientTabFaviconObserver>;
   notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
+  private panelOpenState = PanelOpenState.CLOSED;
 
   constructor(
       public webClient: GlicWebClient,
@@ -386,7 +393,27 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     return proxy as unknown as GlicBrowserHostImpl;
   }
 
+  isPanelOpen(): boolean {
+    return this.panelOpenState === PanelOpenState.OPEN;
+  }
+
+  panelOpenStateChanged(state: PanelOpenState) {
+    this.panelOpenState = state;
+    if (state === PanelOpenState.CLOSED) {
+      this.pinCandidates?.disconnectFromSource();
+    } else {
+      if (this.pinCandidates?.hasActiveSubscription()) {
+        this.pinCandidates.connectToSource();
+      }
+    }
+  }
+
+  getHandler(): WebClientHandlerRemote|undefined {
+    return this.handler;
+  }
+
   destroy() {
+    this.pinCandidates?.setObsolete();
     this.skillsClient.destroySkills();
     this.router.destroy();
   }
@@ -931,8 +958,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   getPinCandidates?
       (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]> {
     this.pinCandidates?.setObsolete();
-    return this.pinCandidates = new PinCandidatesObservable(
-               this.clientRemote, this.router, options);
+    return this.pinCandidates = new PinCandidatesObservable(this, options);
   }
 
   async getZeroStateSuggestionsForFocusedTab?
@@ -1125,13 +1151,17 @@ export class CaptureRegionObservable extends
   }
 }
 
-class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]> {
+// TODO(harringtond): Instead of watching for panel state changes in typescript,
+// we should probably just have c++ code not send updates when the panel is not
+// visible.
+class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]>
+    implements PinCandidatesObserverInterface {
   private isObsolete = false;
-  private receiver?: PostMessageReceiver;
+  private isConnected = false;
+  private receiver?: PinCandidatesObserverReceiver;
 
   constructor(
-      private remote: PostMessageRemote<WebClientHost>,
-      private router: PostMessageRouter,
+      private host: GlicBrowserHostImpl,
       private options: GetPinCandidatesOptions) {
     super(false);
   }
@@ -1143,23 +1173,40 @@ class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]> {
       return;
     }
     if (hasActiveSubscription) {
-      const {receiver, remote} =
-          this.router.newPipeWithReceiver<WebClientPinCandidatesObserver>(
-              new WebClientPinCandidatesObserverHandler(this),
-              WebClientPinCandidatesObserverDef);
-      this.receiver = receiver;
-      this.remote.requestNoResponse(
-          'subscribeToPinCandidates',
-          {options: this.options, pinCandidatesPipe: remote});
-    } else if (this.receiver) {
-      this.receiver.close();
-      this.receiver = undefined;
+      if (this.host.isPanelOpen()) {
+        this.connectToSource();
+      }
+    } else {
+      this.disconnectFromSource();
     }
   }
 
-  processUpdate(candidates: PinCandidatePrivate[]) {
-    this.assignAndSignal(
-        candidates.map(c => ({tabData: convertTabDataFromPrivate(c.tabData)})));
+  connectToSource(): void {
+    if (this.isObsolete || this.isConnected) {
+      return;
+    }
+    const handler = this.host.getHandler();
+    if (!handler) {
+      return;
+    }
+    this.isConnected = true;
+    this.receiver = new PinCandidatesObserverReceiver(this);
+    handler.subscribeToPinCandidates(
+        getPinCandidatesOptionsFromClient(this.options),
+        this.receiver.$.bindNewPipeAndPassRemote());
+  }
+
+  disconnectFromSource(): void {
+    if (!this.isConnected) {
+      return;
+    }
+    this.isConnected = false;
+    this.receiver?.$.close();
+    this.receiver = undefined;
+  }
+
+  onPinCandidatesChanged(candidates: PinCandidateMojo[]): void {
+    this.assignAndSignal(candidates.map(c => pinCandidateToClient(c)));
   }
 
   // Mark this observable as obsolete. It should not be used any further.
@@ -1170,19 +1217,7 @@ class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]> {
           `getPinCandidates() observable was made obsolete with subscribers.`);
     }
     this.isObsolete = true;
-    this.receiver?.close();
-    this.receiver = undefined;
-  }
-}
-
-class WebClientPinCandidatesObserverHandler implements
-    PostMessageHandler<WebClientPinCandidatesObserver> {
-  constructor(private observable: PinCandidatesObservable) {}
-
-  pinCandidatesChanged(payload: {
-    candidates: PinCandidatePrivate[],
-  }): void {
-    this.observable.processUpdate(payload.candidates);
+    this.disconnectFromSource();
   }
 }
 
