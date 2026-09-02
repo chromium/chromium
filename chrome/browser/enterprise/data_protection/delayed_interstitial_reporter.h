@@ -27,15 +27,6 @@ class DelayedInterstitialReporter
  public:
   using TitleCallback = base::OnceCallback<void(const std::string& tab_title)>;
 
-  // If the page is already loaded and is_bypassing_interstitial is false,
-  // runs the callback immediately. Otherwise, creates a self-deleting observer
-  // that will run the callback upon load completion or destruction.
-  static void ReportUrlFilteringInterstitial(
-      content::WebContents* web_contents,
-      const std::string& threat_type,
-      bool is_bypassing_interstitial,
-      const safe_browsing::RTLookupResponse& rt_lookup_response);
-
   ~DelayedInterstitialReporter() override;
 
   DelayedInterstitialReporter(const DelayedInterstitialReporter&) = delete;
@@ -63,8 +54,10 @@ class DelayedInterstitialReporter
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 
+  enum class RunState { kFailed, kTimeout, kSuccess };
+
   void OnTimeout();
-  void RunCallbackAndCleanUp(bool is_timeout, bool is_success);
+  void RunCallbackAndCleanUp(RunState run_state);
 
   TitleCallback report_callback_;
   base::OneShotTimer timer_;

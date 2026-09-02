@@ -12,6 +12,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 
 namespace {
 constexpr base::TimeDelta kTimeout = base::Seconds(5);
@@ -68,7 +69,7 @@ DelayedInterstitialReporter::DelayedInterstitialReporter(
 }
 
 void DelayedInterstitialReporter::OnTimeout() {
-  RunCallbackAndCleanUp(/*is_timeout=*/true, /*is_success=*/false);
+  RunCallbackAndCleanUp(RunState::kTimeout);
 }
 
 DelayedInterstitialReporter::~DelayedInterstitialReporter() = default;
@@ -79,7 +80,7 @@ void DelayedInterstitialReporter::DidFinishLoad(
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
-  RunCallbackAndCleanUp(/*is_timeout=*/false, /*is_success=*/true);
+  RunCallbackAndCleanUp(RunState::kSuccess);
 }
 
 void DelayedInterstitialReporter::PrimaryPageChanged(content::Page& page) {
@@ -87,31 +88,33 @@ void DelayedInterstitialReporter::PrimaryPageChanged(content::Page& page) {
     is_bypassing_interstitial_ = false;
     return;
   }
-  RunCallbackAndCleanUp(/*is_timeout=*/false, /*is_success=*/false);
+  RunCallbackAndCleanUp(RunState::kFailed);
 }
 
 void DelayedInterstitialReporter::WebContentsDestroyed() {
-  RunCallbackAndCleanUp(/*is_timeout=*/false, /*is_success=*/false);
+  RunCallbackAndCleanUp(RunState::kFailed);
 }
 
-void DelayedInterstitialReporter::RunCallbackAndCleanUp(bool is_timeout,
-                                                        bool is_success) {
+void DelayedInterstitialReporter::RunCallbackAndCleanUp(RunState run_state) {
   if (report_callback_) {
     std::string tab_title;
     if (web_contents()) {
       tab_title = base::UTF16ToUTF8(web_contents()->GetTitle());
     }
 
-    if (is_success) {
-      base::UmaHistogramTimes(
-          "Enterprise.DelayedReportingInterstitial.Time." + uma_suffix_,
-          base::TimeTicks::Now() - start_time_);
-    }
-
-    if (is_success || is_timeout) {
-      base::UmaHistogramBoolean(
-          "Enterprise.DelayedReportingInterstitial.Timeout." + uma_suffix_,
-          is_timeout);
+    switch (run_state) {
+      case RunState::kSuccess:
+        base::UmaHistogramTimes(
+            "Enterprise.DelayedReportingInterstitial.Time." + uma_suffix_,
+            base::TimeTicks::Now() - start_time_);
+        [[fallthrough]];
+      case RunState::kTimeout:
+        base::UmaHistogramBoolean(
+            "Enterprise.DelayedReportingInterstitial.Timeout." + uma_suffix_,
+            run_state == RunState::kTimeout);
+        break;
+      case RunState::kFailed:
+        break;
     }
 
     std::move(report_callback_).Run(tab_title.substr(0, 1024));
