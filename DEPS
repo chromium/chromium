@@ -3102,10 +3102,10 @@ deps = {
       'bucket': 'chromium-ads-detection',
       'objects': [
           {
-              'object_name': '6b7e98d71a5d85202f359344828ac98b03c41e5887a13189a053350ef3263a0f',
-              'sha256sum': '6b7e98d71a5d85202f359344828ac98b03c41e5887a13189a053350ef3263a0f',
-              'size_bytes': 156247,
-              'generation': 1783985555949657,
+              'object_name': 'c7f77effdefd8a5767275e37efc231fbe446a7378c453964c76e73ebadf1c919',
+              'sha256sum': 'c7f77effdefd8a5767275e37efc231fbe446a7378c453964c76e73ebadf1c919',
+              'size_bytes': 157889,
+              'generation': 1788264371213430,
               'output_file': 'UnindexedRules',
           },
       ],
