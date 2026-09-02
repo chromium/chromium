@@ -490,6 +490,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Whether the Web Actuation Toggle (Auto Browse) should be shown in Settings.
   bool ShouldShowWebActuationToggle() const;
 
+  // Whether the experimental triggering ("Gemini Spark") toggle should be shown
+  // in Settings. Shared by the desktop and Android settings UIs.
+  bool ShouldShowExperimentalTriggeringToggle() const;
+
   // Returns whether user enabled actuation on web.
   bool GetUserEnabledActuationOnWeb() const;
   // Returns true if the user enabled actuation on web pref is at its default

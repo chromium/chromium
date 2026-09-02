@@ -1408,6 +1408,19 @@ bool GlicEnabling::IsExperimentalTriggeringUserControlled() const {
   return pref && !pref->IsManaged();
 }
 
+bool GlicEnabling::ShouldShowExperimentalTriggeringToggle() const {
+  if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
+    return false;
+  }
+  if (!ShouldShowWebActuationToggle()) {
+    return false;
+  }
+  if (!IsExperimentalTriggeringUserControlled()) {
+    return false;
+  }
+  return !IsExperimentalTriggeringEnabledDefault();
+}
+
 void GlicEnabling::SetUserEnabledActuationOnWeb(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
                                    enabled);

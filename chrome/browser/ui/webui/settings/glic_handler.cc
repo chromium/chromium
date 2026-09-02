@@ -439,21 +439,10 @@ bool GlicHandler::ShouldShowWebActuationToggle(Profile* profile) {
 }
 
 bool GlicHandler::ShouldShowExperimentalTriggeringToggle(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
-    return false;
-  }
-  if (!ShouldShowWebActuationToggle(profile)) {
-    return false;
-  }
   auto* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  if (!glic_service) {
-    return false;
-  }
-  if (!glic_service->enabling().IsExperimentalTriggeringUserControlled()) {
-    return false;
-  }
-  return !glic_service->enabling().IsExperimentalTriggeringEnabledDefault();
+  return glic_service &&
+         glic_service->enabling().ShouldShowExperimentalTriggeringToggle();
 }
 
 void GlicHandler::HandleGetActorLoginPermissions(const base::ListValue& args) {
