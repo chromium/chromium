@@ -38,6 +38,11 @@ const base::FeatureParam<bool>
         "enable_tab_deselection",
         IS_IOS);
 
+const base::FeatureParam<bool> kContextManagementInComposeboxTooltips(
+    &kContextManagementInComposebox,
+    "enable_context_menu_tooltips",
+    false);
+
 const base::FeatureParam<int> kContextMenuAnimationDailyLimit(
     &kContextMenuAnimationLimiting,
     "ContextMenuAnimationDailyLimit",
