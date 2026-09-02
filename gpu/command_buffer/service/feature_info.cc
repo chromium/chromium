@@ -58,10 +58,43 @@ class ScopedPixelUnpackBufferOverride {
   }
 
  private:
-    GLint orig_binding_;
+  GLint orig_binding_;
+};
+
+// Restores both draw and read framebuffer bindings on destruction to prevent
+// driver state desync when GL_READ_FRAMEBUFFER_BINDING is supported.
+// See https://crbug.com/507351786
+class ScopedFramebufferOverride {
+ public:
+  explicit ScopedFramebufferOverride(bool supports_read_framebuffer_binding)
+      : supports_read_framebuffer_binding_(supports_read_framebuffer_binding) {
+    if (supports_read_framebuffer_binding_) {
+      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw_binding_);
+      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read_binding_);
+    } else {
+      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &draw_binding_);
+    }
+  }
+
+  ~ScopedFramebufferOverride() {
+    if (supports_read_framebuffer_binding_) {
+      glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER,
+                           static_cast<GLuint>(draw_binding_));
+      glBindFramebufferEXT(GL_READ_FRAMEBUFFER,
+                           static_cast<GLuint>(read_binding_));
+    } else {
+      glBindFramebufferEXT(GL_FRAMEBUFFER, static_cast<GLuint>(draw_binding_));
+    }
+  }
+
+ private:
+  const bool supports_read_framebuffer_binding_ = false;
+  GLint draw_binding_ = 0;
+  GLint read_binding_ = 0;
 };
 
 bool IsWebGLDrawBuffersSupported(bool webglCompatibilityContext,
+                                 bool supports_read_framebuffer_binding,
                                  GLenum depth_texture_internal_format,
                                  GLenum depth_stencil_texture_internal_format,
                                  GLuint complete_fbo_for_workarounds) {
@@ -74,9 +107,9 @@ bool IsWebGLDrawBuffersSupported(bool webglCompatibilityContext,
     return false;
   }
 
-  GLint fb_binding = 0;
+  ScopedFramebufferOverride scoped_fbo(supports_read_framebuffer_binding);
+
   GLint tex_binding = 0;
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb_binding);
   glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex_binding);
 
   GLuint fbo;
@@ -163,7 +196,6 @@ bool IsWebGLDrawBuffersSupported(bool webglCompatibilityContext,
   if (complete_fbo_for_workarounds) {
     glBindFramebufferEXT(GL_FRAMEBUFFER, complete_fbo_for_workarounds);
   }
-  glBindFramebufferEXT(GL_FRAMEBUFFER, static_cast<GLuint>(fb_binding));
   glDeleteFramebuffersEXT(1, &fbo);
 
   glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(tex_binding));
@@ -1242,8 +1274,10 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
       (context_type_ == CONTEXT_TYPE_OPENGLES2 ||
        (context_type_ == CONTEXT_TYPE_WEBGL1 &&
         IsWebGLDrawBuffersSupported(
-            is_webgl_compatibility_context, depth_texture_format,
-            depth_stencil_texture_format, complete_fbo_for_workarounds)));
+            is_webgl_compatibility_context,
+            validators_.g_l_state.IsValid(GL_READ_FRAMEBUFFER_BINDING),
+            depth_texture_format, depth_stencil_texture_format,
+            complete_fbo_for_workarounds)));
   if (have_es2_draw_buffers) {
     AddExtensionString("GL_EXT_draw_buffers");
     feature_flags_.ext_draw_buffers = true;

@@ -1385,5 +1385,175 @@ TEST_P(FeatureInfoTest, InitializeMESAFramebufferFlipYExtensionTrue) {
   EXPECT_TRUE(info_->feature_flags().mesa_framebuffer_flip_y);
 }
 
+class WebGLDrawBuffersTest : public GpuServiceTest {
+ public:
+  WebGLDrawBuffersTest() = default;
+  ~WebGLDrawBuffersTest() override = default;
+
+  void SetUp() override {
+    SetUpWithGLVersion("OpenGL ES 3.0", "GL_EXT_draw_buffers");
+  }
+};
+
+TEST_F(WebGLDrawBuffersTest, RestoresFramebufferBindings) {
+  const char* extensions = "GL_EXT_draw_buffers";
+  const char* version = "OpenGL ES 3.0";
+
+  InSequence sequence;
+  EXPECT_CALL(*gl_, GetString(GL_EXTENSIONS))
+      .WillOnce(Return(reinterpret_cast<const uint8_t*>(extensions)))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetString(GL_VERSION))
+      .WillOnce(Return(reinterpret_cast<const uint8_t*>(version)))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetString(GL_RENDERER))
+      .WillOnce(Return(reinterpret_cast<const uint8_t*>("")))
+      .RetiresOnSaturation();
+
+  EXPECT_CALL(*gl_, GetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, _))
+      .WillOnce(SetArgPointee<1>(0))
+      .RetiresOnSaturation();
+
+  // IsWebGLDrawBuffersSupported probing expectations:
+  EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_DRAW_BUFFERS, _))
+      .WillOnce(SetArgPointee<1>(8))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, _))
+      .WillOnce(SetArgPointee<1>(8))
+      .RetiresOnSaturation();
+
+  // ScopedFramebufferOverride queries both draw and read bindings on ES3:
+  const GLuint kDrawFBO = 10;
+  const GLuint kReadFBO = 20;
+  EXPECT_CALL(*gl_, GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, _))
+      .WillOnce(SetArgPointee<1>(kDrawFBO))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_READ_FRAMEBUFFER_BINDING, _))
+      .WillOnce(SetArgPointee<1>(kReadFBO))
+      .RetiresOnSaturation();
+
+  EXPECT_CALL(*gl_, GetIntegerv(GL_TEXTURE_BINDING_2D, _))
+      .WillOnce(SetArgPointee<1>(0))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GenFramebuffersEXT(1, _))
+      .WillOnce(SetArgPointee<1>(100))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_FRAMEBUFFER, 100))
+      .Times(1)
+      .RetiresOnSaturation();
+
+  static const auto color_ids = std::to_array<GLuint>({1, 2, 3, 4, 5, 6, 7, 8});
+  EXPECT_CALL(*gl_, GenTextures(8, _))
+      .WillOnce(SetArrayArgument<1>(base::span<const GLuint>(color_ids).begin(),
+                                    base::span<const GLuint>(color_ids).end()))
+      .RetiresOnSaturation();
+  for (int i = 0; i < 8; ++i) {
+    EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, color_ids[i]))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+                                 GL_UNSIGNED_BYTE, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(
+        *gl_, FramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+                                      GL_TEXTURE_2D, color_ids[i], 0))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+        .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+        .RetiresOnSaturation();
+  }
+
+  EXPECT_CALL(*gl_, DeleteFramebuffersEXT(1, _)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, 0))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(2).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DeleteTextures(8, _)).Times(1).RetiresOnSaturation();
+#if DCHECK_IS_ON()
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+#endif
+
+  // On destruction, ScopedFramebufferOverride restores both bindings.
+  // See https://crbug.com/507351786
+  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_DRAW_FRAMEBUFFER, kDrawFBO))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_READ_FRAMEBUFFER, kReadFBO))
+      .Times(1)
+      .RetiresOnSaturation();
+
+  EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, _))
+      .WillOnce(SetArgPointee<1>(8))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_DRAW_BUFFERS, _))
+      .WillOnce(SetArgPointee<1>(8))
+      .RetiresOnSaturation();
+
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if DCHECK_IS_ON()
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+#endif
+  static const auto red_tx_ids = std::to_array<GLuint>({101, 102});
+  static const auto red_fb_ids = std::to_array<GLuint>({103, 104});
+  EXPECT_CALL(*gl_, GetIntegerv(GL_FRAMEBUFFER_BINDING, _))
+      .WillOnce(SetArgPointee<1>(red_fb_ids[0]))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_TEXTURE_BINDING_2D, _))
+      .WillOnce(SetArgPointee<1>(red_tx_ids[0]))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArrayArgument<1>(
+          base::span<const GLuint>(red_tx_ids).subspan(1u).data(),
+          base::span<const GLuint>(red_tx_ids).subspan(2u).data()))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, red_tx_ids[1]))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, TexImage2D(GL_TEXTURE_2D, 0, _, 8, 8, 0, GL_RED_EXT,
+                               GL_UNSIGNED_BYTE, _))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GenFramebuffersEXT(1, _))
+      .WillOnce(SetArrayArgument<1>(
+          base::span<const GLuint>(red_fb_ids).subspan(1u).data(),
+          base::span<const GLuint>(red_fb_ids).subspan(2u).data()))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_FRAMEBUFFER, red_fb_ids[1]))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_,
+              FramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                      GL_TEXTURE_2D, red_tx_ids[1], 0))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+      .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DeleteFramebuffersEXT(1, _)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_FRAMEBUFFER, red_fb_ids[0]))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, red_tx_ids[0]))
+      .Times(1)
+      .RetiresOnSaturation();
+#if DCHECK_IS_ON()
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+#endif
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+
+  auto info = base::MakeRefCounted<FeatureInfo>();
+  info->Initialize(CONTEXT_TYPE_WEBGL1, false, DisallowedFeatures());
+  EXPECT_TRUE(info->feature_flags().ext_draw_buffers);
+}
+
 }  // namespace gles2
 }  // namespace gpu
