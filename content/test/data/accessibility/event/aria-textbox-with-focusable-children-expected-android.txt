@@ -1,1 +1,5 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [focusable: not editable] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [focusable: not editable] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [focusable: editable] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [focusable: editable] class_name=android.widget.EditText
 === END INITIAL PAGE LOAD ===

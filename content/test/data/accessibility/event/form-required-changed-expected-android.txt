@@ -1,3 +1,13 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on class_name=android.widget.CheckBox
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CONTENT_INVALID] on class_name=android.widget.CheckBox
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on class_name=android.widget.CheckBox
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on class_name=android.widget.CheckBox
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.CheckBox [contentTypes=UNDEFINED] on class_name=android.widget.CheckBox
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on class_name=android.widget.RadioButton
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on class_name=android.widget.RadioButton
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on class_name=android.widget.RadioButton
 TYPE_VIEW_CLICKED class_name=android.widget.RadioButton on class_name=android.widget.RadioButton
