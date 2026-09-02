@@ -7861,12 +7861,12 @@
   {
     "name": "omnibox-search-client-prefetch",
     "owners": ["nhiroki@chromium.org", "chrome-prerendering@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-search-prefetch",
     "owners": ["nhiroki@chromium.org", "chrome-prerendering@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-search-prefetch-on-enter-key-down",
