@@ -1290,16 +1290,16 @@ TEST(CSSParserImplTest, PrivateRuleInsideStyleRule) {
 
   const HeapVector<Member<const CSSPrivateVariable>>& variables =
       private_rule->GetPrivateVariables();
-  ASSERT_EQ(2u, variables.size());
+  ASSERT_EQ(1u, variables.size());
 
   // An untyped variable with a default value.
   EXPECT_EQ(AtomicString("--x"), variables[0]->Name());
   ASSERT_TRUE(variables[0]->DefaultValue());
   EXPECT_EQ("1px", variables[0]->DefaultValue()->OriginalText());
 
-  // An untyped variable without a default value.
-  EXPECT_EQ(AtomicString("--y"), variables[1]->Name());
-  EXPECT_EQ(nullptr, variables[1]->DefaultValue());
+  for (const CSSPrivateVariable* variable : variables) {
+    EXPECT_NE(AtomicString("--y"), variable->Name());
+  }
 }
 
 TEST(CSSParserImplTest, PrivateRuleNotAllowedAtTopLevel) {
@@ -1347,17 +1347,18 @@ TEST(CSSParserImplTest, PrivateRuleTrailingWhitespace) {
 
   const HeapVector<Member<const CSSPrivateVariable>>& variables =
       private_rule->GetPrivateVariables();
-  ASSERT_EQ(4u, variables.size());
-  EXPECT_EQ(AtomicString("--a"), variables[0]->Name());
-  EXPECT_EQ(nullptr, variables[0]->DefaultValue());
-  EXPECT_EQ(AtomicString("--b"), variables[1]->Name());
+  ASSERT_EQ(2u, variables.size());
+  EXPECT_EQ(AtomicString("--b"), variables[0]->Name());
+  ASSERT_TRUE(variables[0]->DefaultValue());
+  EXPECT_EQ("1px", variables[0]->DefaultValue()->OriginalText());
+  EXPECT_EQ(AtomicString("--d"), variables[1]->Name());
   ASSERT_TRUE(variables[1]->DefaultValue());
-  EXPECT_EQ("1px", variables[1]->DefaultValue()->OriginalText());
-  EXPECT_EQ(AtomicString("--c"), variables[2]->Name());
-  EXPECT_EQ(nullptr, variables[2]->DefaultValue());
-  EXPECT_EQ(AtomicString("--d"), variables[3]->Name());
-  ASSERT_TRUE(variables[3]->DefaultValue());
-  EXPECT_EQ("2px", variables[3]->DefaultValue()->OriginalText());
+  EXPECT_EQ("2px", variables[1]->DefaultValue()->OriginalText());
+
+  for (const CSSPrivateVariable* variable : variables) {
+    EXPECT_NE(AtomicString("--a"), variable->Name());
+    EXPECT_NE(AtomicString("--c"), variable->Name());
+  }
 }
 
 TEST(CSSParserImplTest, PrivateRuleInvalidVariableIsSkipped) {

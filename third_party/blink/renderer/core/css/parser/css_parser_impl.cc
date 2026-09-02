@@ -2593,9 +2593,8 @@ StyleRuleResult* CSSParserImpl::ConsumeResultRule(
       HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
-// Parses one variable declared inside a @private block e.g. `--foo`,
-// `--foo:10px`, or `--foo <length>: 10px`. Returns nullptr if the declaration
-// is invalid.
+// Parses one variable declared inside a @private block e.g. `--foo: 10px` or
+// `--foo <length>: 10px`. Returns nullptr if the declaration is invalid.
 static CSSPrivateVariable* ConsumePrivateVariable(
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
@@ -2610,21 +2609,22 @@ static CSSPrivateVariable* ConsumePrivateVariable(
 
   std::optional<CSSSyntaxDefinition> type = ConsumeFunctionType(stream);
 
-  CSSVariableData* default_value = nullptr;
-  if (stream.Peek().GetType() == kColonToken) {
-    stream.ConsumeIncludingWhitespace();
-    // TODO(crbug.com/549237151): !important is invalid in a @private block per
-    // CSSWG resolution and needs followup to ensure it is fully rejected.
-    bool important_ignored;
-    default_value = CSSVariableParser::ConsumeUnparsedDeclaration(
-        stream, /*allow_important_annotation=*/false,
-        /*is_animation_tainted=*/false,
-        /*must_contain_variable_reference=*/false,
-        /*restricted_value=*/false,
-        /*comma_ends_declaration=*/false, important_ignored, context);
-    if (!default_value) {
-      return nullptr;
-    }
+  if (stream.Peek().GetType() != kColonToken) {
+    return nullptr;
+  }
+  stream.ConsumeIncludingWhitespace();
+  // TODO(crbug.com/549237151): !important is invalid in a @private block per
+  // CSSWG resolution and needs followup to ensure it is fully rejected.
+  bool important_ignored;
+  CSSVariableData* default_value =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/false,
+          /*comma_ends_declaration=*/false, important_ignored, context);
+  if (!default_value) {
+    return nullptr;
   }
 
   // If a type and a default are both provided, the default must parse
