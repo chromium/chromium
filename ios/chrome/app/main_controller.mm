@@ -571,6 +571,12 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
         self.appState,
         applicationContext->GetProfileManager()->GetProfileAttributesStorage(),
         base::ios::IsMultipleScenesSupported());
+
+    // Clear preferences used by SceneIdentifierMapImpl (in case the feature
+    // has been enabled and then disabled).
+    PrefService* localState = applicationContext->GetLocalState();
+    localState->ClearPref(prefs::kLastConnectedSceneIdentifier);
+    localState->ClearPref(prefs::kSceneSessionIdentifierMap);
   }
   CHECK(_sceneIdentifierMap);
 
