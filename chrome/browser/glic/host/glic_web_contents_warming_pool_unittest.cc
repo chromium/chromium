@@ -584,4 +584,24 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   EXPECT_FALSE(warming_pool.IsExpiryTimerRunningForTesting());
 }
 
+TEST_F(GlicWebContentsWarmingPoolTest, ProfileDestructionClearsWarmingPool) {
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartInitialWarming());
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.IsExpiryTimerRunningForTesting());
+
+  // Simulate profile destruction.
+  profile_.MaybeSendDestroyedNotification();
+
+  // The warming pool must be cleared immediately upon profile destruction.
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.IsExpiryTimerRunningForTesting());
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+
+  // Further attempts to warm after shutdown must be rejected.
+  EXPECT_FALSE(warming_pool.MaybeStartInitialWarming());
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+}
+
 }  // namespace glic

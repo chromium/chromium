@@ -12,8 +12,10 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 
 class Profile;
 namespace content {
@@ -29,7 +31,7 @@ class WebUIContentsContainer;
 // A pool for pre-warming Glic WebContents.
 // This is used to reduce the perceived latency when opening the Glic UI by
 // creating a WebContents in the background before it's actually needed.
-class GlicWebContentsWarmingPool {
+class GlicWebContentsWarmingPool : public ProfileObserver {
  public:
   // LINT.IfChange(GlicContainerCreationReason)
   enum class ContainerCreationReason {
@@ -44,7 +46,7 @@ class GlicWebContentsWarmingPool {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
 
   explicit GlicWebContentsWarmingPool(Profile* profile);
-  virtual ~GlicWebContentsWarmingPool();
+  ~GlicWebContentsWarmingPool() override;
 
   // Retrieves a warmed WebUIContentsContainer from the pool. If no warmed
   // container is available, one will be created and then returned. A new
@@ -137,7 +139,11 @@ class GlicWebContentsWarmingPool {
   // memory pressure state.
   bool IsWarmingAllowedByMemoryPressure() const;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   raw_ptr<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   std::unique_ptr<WebUIContentsContainer> warmed_container_;
 
   // Timer for delayed warming.

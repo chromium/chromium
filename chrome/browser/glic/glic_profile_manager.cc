@@ -257,6 +257,9 @@ void GlicProfileManager::OnOffTheRecordProfileCreated(Profile* profile) {
 }
 
 void GlicProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
+  if (current_detached_glic_ && current_detached_glic_->profile() == profile) {
+    current_detached_glic_.reset();
+  }
   profile_observations_.RemoveObservation(profile);
 }
 
