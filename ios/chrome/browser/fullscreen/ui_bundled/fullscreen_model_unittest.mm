@@ -108,7 +108,7 @@ TEST_F(FullscreenModelTest, ResetForNavigation) {
 TEST_F(FullscreenModelTest, ResetForNavigationWithManuallyForced) {
   // Enable the feature.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kHideToolbarsInOverflowMenu);
+  scoped_feature_list.InitAndEnableFeature(kHideToolbar);
 
   // Manually force fullscreen.
   model()->SetForceFullscreenMode(true);

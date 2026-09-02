@@ -10707,7 +10707,7 @@
             ]
         }
     ],
-    "HideToolbarsInOverflowMenu": [
+    "HideToolbar": [
         {
             "platforms": [
                 "ios"
@@ -10716,7 +10716,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "HideToolbarsInOverflowMenu"
+                        "HideToolbar"
                     ]
                 }
             ]

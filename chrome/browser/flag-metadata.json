@@ -6126,10 +6126,10 @@
     "expiry_milestone": 150
   },
   {
-    "name": "hide-toolbars-in-overflow-menu",
+    "name": "hide-toolbar",
     "owners": [
     "alionadangla@chromium.org", "bling-flags@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "history-embeddings",

@@ -12,6 +12,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -145,7 +146,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_disabled.push_back(kFullscreenRefactoring);
   // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
   config.features_disabled.push_back(kChromeNextIa);
-  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
+  config.features_enabled.push_back(kHideToolbar);
   return config;
 }
 
@@ -528,36 +529,14 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 // Tests that tapping on the collapsed primary toolbar exits force fullscreen
 // mode.
 - (void)testTapOnCollapsedToolbarExitsForceFullscreenMode {
+  GREYAssertNil([MetricsAppInterface setupUserActionTester],
+                @"Failed to set up user action tester.");
+
   _responses["/tallpage"] =
       base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
 
   GURL URL = self.testServer->GetURL("/tallpage");
   [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGreyUI waitForToolbarVisible:YES];
-
-  // Open the tools menu.
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Tap on "Hide Toolbars" in the tools menu.
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuHideToolbars)];
-
-  [ChromeEarlGreyUI waitForToolbarVisible:NO];
-
-  // Scroll down and up to ensure we are in forced fullscreen mode and the
-  // toolbars stay hidden.
-  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 250)];
-  [ChromeEarlGreyUI waitForToolbarVisible:NO];
-  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionUp, 250)];
-  [ChromeEarlGreyUI waitForToolbarVisible:NO];
-
-  // Tap on the primary toolbar (which is collapsed).
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::PrimaryToolbar()]
-      performAction:grey_tap()];
-
-  // Verify that it exits force fullscreen mode and the toolbar is visible.
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Long press on the omnibox to show the context menu.
@@ -568,15 +547,20 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
       performAction:grey_longPress()];
 
   // Tap on "Hide Toolbars" in the context menu.
-  id<GREYMatcher> hideToolbarsButton = grey_allOf(
-      grey_accessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS)),
-      grey_not(grey_kindOfClass([UILabel class])), grey_sufficientlyVisible(),
-      nil);
+  id<GREYMatcher> hideToolbarsButton =
+      grey_allOf(grey_accessibilityLabel(
+                     l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_HIDE_TOOLBAR)),
+                 grey_not(grey_kindOfClass([UILabel class])),
+                 grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:hideToolbarsButton]
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  GREYAssertNil([MetricsAppInterface
+                      expectCount:1
+                    forUserAction:@"Mobile.OmniboxContextMenu.HideToolbar"],
+                @"Mobile.OmniboxContextMenu.HideToolbar was not recorded");
 
   // Scroll down and up to ensure we are in forced fullscreen mode and the
   // toolbars stay hidden.
@@ -593,6 +577,9 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
   // Verify that it exits force fullscreen mode and the toolbar is visible.
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  GREYAssertNil([MetricsAppInterface releaseUserActionTester],
+                @"Failed to release user action tester.");
 }
 
 // Tests that viewport-fit=cover works as intended in landscape mode.
@@ -751,7 +738,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
-  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
+  config.features_enabled.push_back(kHideToolbar);
   config.features_disabled.push_back(
       web::features::kSmoothScrollingUseDelegate);
   config.features_disabled.push_back(kFullscreenRefactoring);
@@ -822,7 +809,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
   config.features_enabled.push_back(web::features::kSmoothScrollingUseDelegate);
-  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
+  config.features_enabled.push_back(kHideToolbar);
   config.features_disabled.push_back(kFullscreenRefactoring);
   // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
   config.features_disabled.push_back(kChromeNextIa);
@@ -865,7 +852,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kFullscreenRefactoring);
-  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
+  config.features_enabled.push_back(kHideToolbar);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   config.features_enabled.push_back(kChromeNextIa);
   return config;

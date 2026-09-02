@@ -1007,11 +1007,10 @@ inline constexpr char kHideFuseboxVoiceLensActionsName[] =
 inline constexpr char kHideFuseboxVoiceLensActionsDescription[] =
     "Hides voice and lens shortcuts in fusebox.";
 
-inline constexpr char kHideToolbarsInOverflowMenuName[] =
-    "Hide Toolbars in Overflow menu";
-inline constexpr char kHideToolbarsInOverflowMenuDescription[] =
-    "When enabled, adds a button in the overflow menu that force the "
-    "fullscreen mode on iOS.";
+inline constexpr char kHideToolbarName[] = "Hide Toolbar";
+inline constexpr char kHideToolbarDescription[] =
+    "When enabled, adds a button in the long press omnibox menu that forces "
+    "the fullscreen mode on iOS.";
 
 inline constexpr char kHttpsUpgradesName[] = "HTTPS Upgrades";
 inline constexpr char kHttpsUpgradesDescription[] =

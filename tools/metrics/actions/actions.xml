@@ -18712,6 +18712,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.OmniboxContextMenu.HideToolbar">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>bling-flags@google.com</owner>
+  <description>
+    User pressed 'Hide Toolbar' in the omnibox context menu (iOS only).
+  </description>
+</action>
+
 <action name="Mobile.OmniboxContextMenu.LensCopiedImage">
   <owner>hujasonx@google.com</owner>
   <owner>schechter@google.com</owner>

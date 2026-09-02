@@ -1456,7 +1456,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="SetTabReminder"/>
   <int value="19" label="ReaderMode"/>
   <int value="20" label="AskGemini"/>
-  <int value="21" label="HideToolbars"/>
+  <int value="21" label="Obsolete in M154 - HideToolbars"/>
   <int value="22" label="Obsolete in M150 - TabGroup"/>
   <int value="23" label="ShareThisPage"/>
   <int value="24" label="Obsolete in M152 - Signin"/>

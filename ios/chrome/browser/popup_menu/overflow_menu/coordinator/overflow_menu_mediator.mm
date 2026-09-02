@@ -377,8 +377,6 @@ void GetPresetNTPBackgroundPreview(
 
 @property(nonatomic, strong) OverflowMenuAction* askBWGAction;
 
-@property(nonatomic, strong) OverflowMenuAction* hideToolbarsAction;
-
 @property(nonatomic, strong) OverflowMenuAction* customizeHomepageAction;
 
 @property(nonatomic, strong) OverflowMenuAction* shareAction;
@@ -970,10 +968,6 @@ void GetPresetNTPBackgroundPreview(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
-  if (IsHideToolbarEnabled()) {
-    self.hideToolbarsAction = [self collapseToolbars];
-  }
-
   if ([self isGeminiAvailable]) {
     self.askBWGAction = [self openAskBWGAction];
   }
@@ -1144,24 +1138,6 @@ void GetPresetNTPBackgroundPreview(
                                      handler:^{
                                        [weakSelf startAskGemini];
                                      }];
-}
-
-- (OverflowMenuAction*)collapseToolbars {
-  __weak __typeof(self) weakSelf = self;
-  return [self
-      createOverflowMenuActionWithName:l10n_util::GetNSString(
-                                           IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS)
-                            actionType:overflow_menu::ActionType::HideToolbars
-                            symbolName:kExpandSymbol
-                          systemSymbol:YES
-                      monochromeSymbol:NO
-                       accessibilityID:kToolsMenuHideToolbars
-                          hideItemText:
-                              l10n_util::GetNSString(
-                                  IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_HIDE_TOOLBARS)
-                               handler:^{
-                                 [weakSelf startCollapseToolbars];
-                               }];
 }
 
 - (OverflowMenuAction*)newReadLaterAction {
@@ -1864,8 +1840,8 @@ void GetPresetNTPBackgroundPreview(
       return self.readerModeAction;
     case overflow_menu::ActionType::AskBWG:
       return self.askBWGAction;
-    case overflow_menu::ActionType::HideToolbars:
-      return self.hideToolbarsAction;
+    case overflow_menu::ActionType::HideToolbarsDeprecated:
+      NOTREACHED();
     case overflow_menu::ActionType::TabGroupDeprecated:
       NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
@@ -1982,9 +1958,6 @@ void GetPresetNTPBackgroundPreview(
 
   self.askBWGAction.enabled = [self isGeminiAvailable];
 
-  if (IsHideToolbarEnabled()) {
-    self.hideToolbarsAction.enabled = ![self isCurrentWebPageNTP];
-  }
 }
 
 // Updates the order of the items in each section or group.
@@ -2741,10 +2714,6 @@ void GetPresetNTPBackgroundPreview(
   }
 
   actions.push_back(overflow_menu::ActionType::ReaderMode);
-  if (IsHideToolbarEnabled()) {
-    actions.push_back(overflow_menu::ActionType::HideToolbars);
-  }
-
   return actions;
 }
 
@@ -2806,10 +2775,10 @@ void GetPresetNTPBackgroundPreview(
       return [self toggleReaderModeAction];
     case overflow_menu::ActionType::AskBWG:
       return [self openAskBWGAction];
+    case overflow_menu::ActionType::HideToolbarsDeprecated:
+      NOTREACHED();
     case overflow_menu::ActionType::TabGroupDeprecated:
       NOTREACHED();
-    case overflow_menu::ActionType::HideToolbars:
-      return [self hideToolbarsAction];
   }
 }
 
@@ -3100,18 +3069,6 @@ void GetPresetNTPBackgroundPreview(
                     showSnackbarOnCompletion:YES
                                   completion:nil];
   }];
-}
-
-- (void)startCollapseToolbars {
-  [self dismissMenu];
-  if (IsFullscreenRefactoringEnabled()) {
-    [self.fullscreenHandler
-        forceFullscreen:YES
-                feature:ForceFullscreenFeature::kHideToolbars];
-    return;
-  }
-  [self.browserCoordinatorHandler
-      forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByUser];
 }
 
 // Opens the "Set a reminder" screen for the user's current tab.

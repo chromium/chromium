@@ -58,7 +58,7 @@ enum class ActionType {
   SetTabReminder,
   // TODO(crbug.com/416002705): Rename reference to BWG.
   AskBWG,
-  HideToolbars,
+  HideToolbarsDeprecated,
   TabGroupDeprecated,  // This enum is deprecated due to feature cleanup.
   ShareThisPage,
   SigninDeprecated,

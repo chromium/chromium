@@ -147,9 +147,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::AskBWG:
         finalExpectedActionType = overflow_menu::ActionType::AskBWG;
         break;
-      case overflow_menu::ActionType::HideToolbars:
-        finalExpectedActionType = overflow_menu::ActionType::HideToolbars;
-        break;
+      case overflow_menu::ActionType::HideToolbarsDeprecated:
+        // This is deprecated, so skip it.
+        continue;
       case overflow_menu::ActionType::TabGroupDeprecated:
         // This is deprecated, so skip it.
         continue;

@@ -1196,7 +1196,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
     UIAction* hideAddressBarAction =
         [UIAction actionWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS)
+                                      IDS_IOS_TOOLBAR_MENU_HIDE_TOOLBAR)
                             image:image
                        identifier:nil
                           handler:^(UIAction* action) {
@@ -1360,6 +1360,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)hideToolbars {
+  RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.HideToolbar"));
   [self.delegate locationBarHideToolbarTapped];
 }
 
