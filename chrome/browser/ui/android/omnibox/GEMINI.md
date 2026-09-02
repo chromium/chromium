@@ -50,6 +50,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 
 ### General Guidelines
 
+- **OmniboxResourceProvider Migration**: Do not add new static methods to `OmniboxResourceProvider`. The component is actively being migrated to instance methods to eliminate redundant client-side caching and prevent UI inconsistencies. Any new functionality must be added as an instance method and accessed through an `OmniboxResourceProvider` instance (typically supplied via `PropertyModel` or dependency injection).
 - **Listener Cleanup**: Always remove listeners and observers in the component's `destroy()` method to prevent memory leaks.
 - **Destruction Propagation**: A parent component `X` **must** implement a `destroy()` method if any of the subcomponents it owns implements a `destroy()` method. The parent's `destroy()` method must clean up and invoke `destroy()` on all its children.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
@@ -87,7 +88,12 @@ When introducing or modifying Omnibox feature flags:
 ## Testing
 
 - **Test File Registration**: When creating a new unit test file (e.g. `FooUnitTest.java`), always register it in `chrome/browser/ui/android/omnibox/BUILD.gn` under the `robolectric_tests` `sources` list so `an -t` and GN correctly resolve the build target.
-- **Naming Conventions**: To clearly distinguish unit tests from integration/instrumentation/render tests, unit test files must be named `*UnitTest.java` (e.g., AutocompleteMediatorUnitTest).
+- **Naming Conventions**:
+  - Unit test files must be named `*UnitTest.java` (e.g., `AutocompleteMediatorUnitTest`) to clearly distinguish them from integration/instrumentation/render tests.
+  - UI unit tests (unit tests that run on device) must be named `*UiTest.java` (e.g., `StatusViewUiTest`).
+- **Rely on `OmniboxTestUtils` in Integration Tests**:
+  - Integration and on-device instrumentation tests (`*Test.java`) should rely on `OmniboxTestUtils` instead of inventing equivalent logic locally.
+  - Reusable omnibox-oriented helper functions, assertions, and interaction routines should be contributed directly to `OmniboxTestUtils` (`org.chromium.chrome.test.util.OmniboxTestUtils`) to foster consistency and prevent helper proliferation.
 - **Drop `@Config(manifest = Config.NONE)`**: Do not include `@Config(manifest = Config.NONE)` (or `@Config(manifest = NONE)`).
   - Omnibox unit tests are executed under `chrome_junit_tests`, which compiles Chrome's Android resources and merged manifest into a `resource_apk` archive (`chrome_junit_tests.robo.ap_`), supplied to Robolectric via `android_resource_apk` in `test_config.properties`.
   - When `android_resource_apk` is present, Robolectric's build-system loader (`DefaultManifestFactory`) loads the manifest directly from the `resource_apk` and **explicitly ignores** `@Config(manifest = ...)` annotations.
@@ -98,6 +104,9 @@ When introducing or modifying Omnibox feature flags:
   - The ideal test case is **10 ± 5 lines of code**.
   - Test cases longer than **30 lines of code** are strongly discouraged.
 - **Isolating Setup Logic**: Isolate complex initialization and mock configurations inside helper methods or `@Before` setup blocks. The test method itself should focus solely on setting up the specific scenario, triggering the target behavior, and asserting the expected outcomes in a few clear lines.
+- **Use `@UiThreadTest` over `runOnUiThreadBlocking()`**:
+  - Tests that wrap their entire logic with `runOnUiThreadBlocking()` should be rewritten as `@UiThreadTest`.
+  - Wrapping whole test bodies in `runOnUiThreadBlocking()` introduces gratuitous lambda nesting, obscures failure stack traces, and incurs unnecessary thread-hopping overhead. Annotate the test method directly with `@UiThreadTest` (from `androidx.test.annotation.UiThreadTest`) instead.
 - **Strict Mockito Stubs**: All new tests **must** (and existing tests ideally **should**) use strict Mockito stubbing to prevent aggregating dead stubbed code:
   ```java
   @Rule
@@ -107,11 +116,16 @@ When introducing or modifying Omnibox feature flags:
   - `lenient()` calls should be used in `@Before` / `@BeforeClass` (or shared setup helpers) to configure commonly used mocks.
   - `lenient()` calls are **not allowed** inside `@Test` methods.
   - `lenient()` should be used sparingly—only to address mock calls that are commonly executed and impact a significant number of test cases.
+- **Do Not Mock Data Classes**:
+  - Data classes, value objects, and state containers should not be mocked. Construct and pass real instances instead.
+  - Above all, `AutocompleteInput` **must not be mocked**—always instantiate and use real `AutocompleteInput` objects.
+- **Mockito Spies Discouraged (`@Spy` / `spy()`)**:
+  - Mockito spies should be used rarely. While not banned, they are strongly discouraged: interacting with partially stubbed live code runs real methods and constructors, creating a substantial risk of unintended state mutation and subtle side effects.
+  - When a spy is genuinely necessary, the explicit reason for using a spy **must be properly captured in a comment** at the declaration site explaining why a real object, fake, or standard mock is insufficient.
 - **Mocking and Spying with Annotations**:
   - Declare mocks (`@Mock`), spies (`@Spy`), and argument captors (`@Captor`) as class fields using Mockito annotations.
   - Direct runtime calls to `mock()` and `spy()` (as well as `ArgumentCaptor.forClass(...)`) are banned / highly discouraged due to proxy creation overhead, invocation recording, and GC pressure. `@Mock` and `@Spy` field annotations initialized once by `MockitoRule` are preferred instead.
   - Prefer plain Java fakes/stubs (implementing interfaces directly) or lightweight real objects over mocks where feasible.
-  - Adoption of `spy()` should be cautious and rare, as `spy()` executes real constructors and intercepts all nested self-invocations.
 - **Annotation Placement**: Field-level test annotations (`@Rule`, `@Mock`, `@Spy`, `@Captor`) must precede access modifiers (e.g., `@Mock private Foo mFoo;`). `@Rule` fields must be declared `public final`.
 - **Keep Tests Fast & Unwelcome Test Patterns**:
   Heavy Mockito constructs and framework-level reflection introduce measurable execution overhead, high GC pressure, and bytecode transformation penalties. Require cautious and rare adoption of these patterns to keep tests fast:
