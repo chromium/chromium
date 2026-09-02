@@ -519,9 +519,6 @@ AtMemoryHandler::ExtractAskForValuesToFill(const WebElement& field) {
   }
   AskForValuesToFillInfo info = *it;
   last_at_memory_ask_for_values_to_fills_.erase(it);
-  if (info.value_hash != HashFieldValue(field)) {
-    return std::nullopt;
-  }
   return info;
 }
 
