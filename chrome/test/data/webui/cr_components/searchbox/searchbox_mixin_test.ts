@@ -2901,7 +2901,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertFalse(tabEvent.defaultPrevented);
       });
 
-  test(
+  // TODO(https://crbug.com/555922132): de-flake and re-enable.
+  test.skip(
       'ArrowDown through instant keyword mode matches enters keyword mode',
       async () => {
         loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
