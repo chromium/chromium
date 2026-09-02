@@ -6,6 +6,8 @@
 
 #import "base/task/sequenced_task_runner.h"
 #import "base/timer/timer.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
@@ -17,21 +19,91 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+
+std::optional<ContentSettingsType> ContentSettingsTypeForPermission(
+    web::Permission permission) {
+  switch (permission) {
+    // TODO(crbug.com/552561353): Add support for geolocation permissions.
+    case web::PermissionCamera:
+      return ContentSettingsType::MEDIASTREAM_CAMERA;
+    case web::PermissionMicrophone:
+      return ContentSettingsType::MEDIASTREAM_MIC;
+  }
+}
 
 namespace {
 
 constexpr base::TimeDelta kTimeout = base::Milliseconds(250);
 
+// Commits the user's sticky permission decision to HostContentSettingsMap.
+void CommitPermissionDecisionToHostContentSettingsMap(
+    web::WebState* web_state,
+    const GURL& url,
+    NSArray<NSNumber*>* permissions,
+    PermissionDialogDecision decision) {
+  if (!web_state || !url.is_valid()) {
+    return;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  if (!profile) {
+    return;
+  }
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!settings_map) {
+    return;
+  }
+
+  ContentSetting content_setting = CONTENT_SETTING_DEFAULT;
+  switch (decision) {
+    case PermissionDialogDecision::kAlwaysAllow:
+      content_setting = CONTENT_SETTING_ALLOW;
+      break;
+    case PermissionDialogDecision::kDontAllow:
+      content_setting = CONTENT_SETTING_BLOCK;
+      break;
+    case PermissionDialogDecision::kAllowThisTime:
+      // Temporary access only.
+      return;
+  }
+
+  for (NSNumber* permission_number in permissions) {
+    web::Permission permission =
+        static_cast<web::Permission>(permission_number.unsignedIntegerValue);
+    std::optional<ContentSettingsType> type =
+        ContentSettingsTypeForPermission(permission);
+    if (!type) {
+      continue;
+    }
+
+    settings_map->SetContentSettingDefaultScope(url, url, *type,
+                                                content_setting);
+  }
+}
+
 // Completion callback for permissions alert overlay.
 void HandlePermissionDialogResponse(
+    base::WeakPtr<web::WebState> weak_web_state,
+    const GURL& requesting_url,
+    NSArray<NSNumber*>* permissions,
     web::WebStatePermissionDecisionHandler handler,
     OverlayResponse* response) {
   PermissionsDialogResponse* dialog_response =
       response ? response->GetInfo<PermissionsDialogResponse>() : nullptr;
-  web::PermissionDecision decision =
-      dialog_response && dialog_response->capture_allow()
-          ? web::PermissionDecisionGrant
-          : web::PermissionDecisionDeny;
+  web::PermissionDecision decision = web::PermissionDecisionDeny;
+  if (dialog_response) {
+    if (IsDomainLevelSitePermissionsEnabled() && weak_web_state) {
+      CommitPermissionDecisionToHostContentSettingsMap(
+          weak_web_state.get(), requesting_url, permissions,
+          dialog_response->decision());
+    }
+    decision = dialog_response->capture_allow() ? web::PermissionDecisionGrant
+                                                : web::PermissionDecisionDeny;
+  }
+
   // Post the decision handler asynchronously to prevent synchronous re-entrancy
   // and stack overflow if WebKit immediately initiates another permission
   // request upon decision completion (e.g., when permissions are repeatedly
@@ -63,11 +135,13 @@ void PermissionsTabHelper::
     PresentPermissionsDecisionDialogWithCompletionHandler(
         NSArray<NSNumber*>* permissions,
         web::WebStatePermissionDecisionHandler handler) {
+  GURL requesting_url = web_state_->GetLastCommittedURL();
   std::unique_ptr<OverlayRequest> request =
-      OverlayRequest::CreateWithConfig<PermissionsDialogRequest>(
-          web_state_->GetVisibleURL(), permissions);
+      OverlayRequest::CreateWithConfig<PermissionsDialogRequest>(requesting_url,
+                                                                 permissions);
   request->GetCallbackManager()->AddCompletionCallback(
-      base::BindOnce(&HandlePermissionDialogResponse, handler));
+      base::BindOnce(&HandlePermissionDialogResponse, web_state_->GetWeakPtr(),
+                     requesting_url, permissions, handler));
   OverlayRequestQueue::FromWebState(web_state_,
                                     OverlayModality::kWebContentArea)
       ->AddRequest(std::move(request));

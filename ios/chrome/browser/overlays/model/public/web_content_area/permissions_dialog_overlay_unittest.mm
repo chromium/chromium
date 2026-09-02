@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "testing/gtest_mac.h"
@@ -130,15 +132,15 @@ TEST_F(PermissionsDialogOverlayTest, DialogResponseDeny) {
       OverlayResponse::CreateWithInfo<AlertResponse>(
           /*tapped_button_row_index=*/0,
           /*tapped_button_column_index=*/0, nil);
-  // Since the OK button is tapped, the kConfirm action should be used and the
-  // text field input should be supplied to the JavaScriptAlertDialogResponse.
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));
   ASSERT_TRUE(response.get());
   PermissionsDialogResponse* permissions_response =
       response->GetInfo<PermissionsDialogResponse>();
   ASSERT_TRUE(permissions_response);
-  ASSERT_FALSE(permissions_response->capture_allow());
+  EXPECT_FALSE(permissions_response->capture_allow());
+  EXPECT_EQ(permissions_response->decision(),
+            PermissionDialogDecision::kDontAllow);
 }
 
 // Tests that an alert is correctly converted to a
@@ -153,12 +155,82 @@ TEST_F(PermissionsDialogOverlayTest, DialogResponseAllow) {
       OverlayResponse::CreateWithInfo<AlertResponse>(
           /*tapped_button_row_index=*/0,
           /*tapped_button_column_index=*/1, nil);
-  // Since the OK button is tapped, the kConfirm action should be used and the
-  // text field input should be supplied to the JavaScriptAlertDialogResponse.
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));
   ASSERT_TRUE(response.get());
   PermissionsDialogResponse* permissions_response =
       response->GetInfo<PermissionsDialogResponse>();
-  ASSERT_TRUE(permissions_response && permissions_response->capture_allow());
+  ASSERT_TRUE(permissions_response);
+  EXPECT_TRUE(permissions_response->capture_allow());
+  EXPECT_EQ(permissions_response->decision(),
+            PermissionDialogDecision::kAllowThisTime);
+}
+
+// Tests button configuration and responses when kDomainLevelSitePermissions is
+// enabled.
+TEST_F(PermissionsDialogOverlayTest, DomainLevelSitePermissionsChoices) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  std::unique_ptr<OverlayRequest> request =
+      CreateRequest(@[ @(web::PermissionCamera) ]);
+  AlertRequest* config = request->GetConfig<AlertRequest>();
+  ASSERT_TRUE(config);
+
+  const auto& button_configs = config->button_configs();
+  ASSERT_EQ(3U, button_configs.size());
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW),
+              button_configs[0][0].title);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME),
+              button_configs[1][0].title);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY),
+      button_configs[2][0].title);
+
+  // Test tapping "Always Allow" (row 0).
+  std::unique_ptr<OverlayResponse> always_allow_alert_response =
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          /*tapped_button_row_index=*/0,
+          /*tapped_button_column_index=*/0, nil);
+  std::unique_ptr<OverlayResponse> always_allow_response =
+      config->response_converter().Run(std::move(always_allow_alert_response));
+  ASSERT_TRUE(always_allow_response);
+  PermissionsDialogResponse* always_allow_perm_response =
+      always_allow_response->GetInfo<PermissionsDialogResponse>();
+  ASSERT_TRUE(always_allow_perm_response);
+  EXPECT_TRUE(always_allow_perm_response->capture_allow());
+  EXPECT_EQ(always_allow_perm_response->decision(),
+            PermissionDialogDecision::kAlwaysAllow);
+
+  // Test tapping "Allow This Time" (row 1).
+  std::unique_ptr<OverlayResponse> allow_once_alert_response =
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          /*tapped_button_row_index=*/1,
+          /*tapped_button_column_index=*/0, nil);
+  std::unique_ptr<OverlayResponse> allow_once_response =
+      config->response_converter().Run(std::move(allow_once_alert_response));
+  ASSERT_TRUE(allow_once_response);
+  PermissionsDialogResponse* allow_once_perm_response =
+      allow_once_response->GetInfo<PermissionsDialogResponse>();
+  ASSERT_TRUE(allow_once_perm_response);
+  EXPECT_TRUE(allow_once_perm_response->capture_allow());
+  EXPECT_EQ(allow_once_perm_response->decision(),
+            PermissionDialogDecision::kAllowThisTime);
+
+  // Test tapping "Don't Allow" (row 2).
+  std::unique_ptr<OverlayResponse> block_alert_response =
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          /*tapped_button_row_index=*/2,
+          /*tapped_button_column_index=*/0, nil);
+  std::unique_ptr<OverlayResponse> block_response =
+      config->response_converter().Run(std::move(block_alert_response));
+  ASSERT_TRUE(block_response);
+  PermissionsDialogResponse* block_perm_response =
+      block_response->GetInfo<PermissionsDialogResponse>();
+  ASSERT_TRUE(block_perm_response);
+  EXPECT_FALSE(block_perm_response->capture_allow());
+  EXPECT_EQ(block_perm_response->decision(),
+            PermissionDialogDecision::kDontAllow);
 }

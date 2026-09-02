@@ -11,6 +11,16 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #import "url/gurl.h"
 
+// Enum representing the user's decision from a permissions dialog.
+enum class PermissionDialogDecision {
+  // The user explicitly denied access permanently for the origin.
+  kDontAllow = 0,
+  // The user granted access temporarily for the current session/request only.
+  kAllowThisTime = 1,
+  // The user explicitly granted access permanently for the origin.
+  kAlwaysAllow = 2,
+};
+
 // Configuration object for OverlayRequests for dialogs that ask for camera or
 // microphone permissions.
 class PermissionsDialogRequest
@@ -37,12 +47,19 @@ class PermissionsDialogResponse
  public:
   ~PermissionsDialogResponse() override;
   // Whether the user has allowed the website to access camera or microphone.
-  bool capture_allow() const { return capture_allow_; }
+  bool capture_allow() const {
+    return decision_ == PermissionDialogDecision::kAlwaysAllow ||
+           decision_ == PermissionDialogDecision::kAllowThisTime;
+  }
+
+  // The specific decision selected by the user in the dialog.
+  PermissionDialogDecision decision() const { return decision_; }
 
  private:
   friend class OverlayUserData<PermissionsDialogResponse>;
-  PermissionsDialogResponse(bool capture_allow);
-  const bool capture_allow_;
+  explicit PermissionsDialogResponse(bool capture_allow);
+  explicit PermissionsDialogResponse(PermissionDialogDecision decision);
+  const PermissionDialogDecision decision_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_WEB_CONTENT_AREA_PERMISSIONS_DIALOG_OVERLAY_H_

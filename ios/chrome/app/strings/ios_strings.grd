@@ -6088,6 +6088,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the payment bottom sheet and revert to using the keyboard to fill in payment fields on the webpage.">
         Use keyboard
       </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME" desc="Button text to allow access to permissions for the current visit only. [iOS only]">
+        Allow This Time
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW" desc="Button text to always allow access to permissions for a website. [iOS only]">
+        Always Allow
+      </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY" desc="Button text to deny access to permissions. This should match the iOS built-in alert for permissions access.">
         Don't Allow
       </message>

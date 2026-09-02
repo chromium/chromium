@@ -4,16 +4,29 @@
 
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 
+#import "base/functional/callback_helpers.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "base/threading/platform_thread.h"
 #import "base/time/time.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings_types.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -22,6 +35,7 @@
 
 namespace {
 constexpr base::TimeDelta kTimeoutDelay = base::Milliseconds(251);
+const char kTestURL[] = "https://www.example.com";
 }  // namespace
 
 // Test fixture for PermissionsTabHelper.
@@ -29,6 +43,8 @@ class PermissionsTabHelperTest : public PlatformTest {
  public:
   PermissionsTabHelperTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    profile_ = TestProfileIOS::Builder().Build();
+    web_state_.SetBrowserState(profile_.get());
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     OverlayRequestQueue::CreateForWebState(&web_state_);
@@ -66,6 +82,7 @@ class PermissionsTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
 };
 
@@ -286,4 +303,142 @@ TEST_F(PermissionsTabHelperTest,
   EXPECT_EQ(1U, [recently_accessible_permissions() count]);
   EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
             web::PermissionCamera);
+}
+
+// Tests that when kDomainLevelSitePermissions is enabled, selecting
+// kAlwaysAllow commits CONTENT_SETTING_ALLOW to HostContentSettingsMap.
+TEST_F(PermissionsTabHelperTest,
+       TestPresentDialogAlwaysAllowCommitsContentSetting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  PermissionsTabHelper* tab_helper =
+      PermissionsTabHelper::FromWebState(&web_state_);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  tab_helper->PresentPermissionsDecisionDialogWithCompletionHandler(
+      @[ @(web::PermissionCamera) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      &web_state_, OverlayModality::kWebContentArea);
+  ASSERT_EQ(1U, queue->size());
+
+  queue->front_request()->GetCallbackManager()->SetCompletionResponse(
+      OverlayResponse::CreateWithInfo<PermissionsDialogResponse>(
+          PermissionDialogDecision::kAlwaysAllow));
+  queue->CancelAllRequests();
+
+  EXPECT_EQ(web::PermissionDecisionGrant, decision_future.Get());
+
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      settings_map->GetContentSetting(GURL(kTestURL), GURL(kTestURL),
+                                      ContentSettingsType::MEDIASTREAM_CAMERA));
+}
+
+// Tests that when kDomainLevelSitePermissions is enabled, selecting
+// kDontAllow commits CONTENT_SETTING_BLOCK to HostContentSettingsMap.
+TEST_F(PermissionsTabHelperTest,
+       TestPresentDialogDontAllowCommitsContentSetting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  PermissionsTabHelper* tab_helper =
+      PermissionsTabHelper::FromWebState(&web_state_);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  tab_helper->PresentPermissionsDecisionDialogWithCompletionHandler(
+      @[ @(web::PermissionMicrophone) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      &web_state_, OverlayModality::kWebContentArea);
+  ASSERT_EQ(1U, queue->size());
+
+  queue->front_request()->GetCallbackManager()->SetCompletionResponse(
+      OverlayResponse::CreateWithInfo<PermissionsDialogResponse>(
+          PermissionDialogDecision::kDontAllow));
+  queue->CancelAllRequests();
+
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, settings_map->GetContentSetting(
+                                       GURL(kTestURL), GURL(kTestURL),
+                                       ContentSettingsType::MEDIASTREAM_MIC));
+}
+
+// Tests that when kDomainLevelSitePermissions is enabled, selecting
+// kAllowThisTime grants permission without committing persistent changes to
+// HostContentSettingsMap.
+TEST_F(PermissionsTabHelperTest,
+       TestPresentDialogAllowThisTimeDoesNotCommitContentSetting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  PermissionsTabHelper* tab_helper =
+      PermissionsTabHelper::FromWebState(&web_state_);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  tab_helper->PresentPermissionsDecisionDialogWithCompletionHandler(
+      @[ @(web::PermissionCamera) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      &web_state_, OverlayModality::kWebContentArea);
+  ASSERT_EQ(1U, queue->size());
+
+  queue->front_request()->GetCallbackManager()->SetCompletionResponse(
+      OverlayResponse::CreateWithInfo<PermissionsDialogResponse>(
+          PermissionDialogDecision::kAllowThisTime));
+  queue->CancelAllRequests();
+
+  EXPECT_EQ(web::PermissionDecisionGrant, decision_future.Get());
+
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     GURL(kTestURL), GURL(kTestURL),
+                                     ContentSettingsType::MEDIASTREAM_CAMERA));
+}
+
+// Tests that when kDomainLevelSitePermissions is disabled, legacy dialog grants
+// do not commit changes to HostContentSettingsMap.
+TEST_F(PermissionsTabHelperTest,
+       TestPresentDialogFeatureDisabledDoesNotCommitContentSetting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
+
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  PermissionsTabHelper* tab_helper =
+      PermissionsTabHelper::FromWebState(&web_state_);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  tab_helper->PresentPermissionsDecisionDialogWithCompletionHandler(
+      @[ @(web::PermissionCamera) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      &web_state_, OverlayModality::kWebContentArea);
+  ASSERT_EQ(1U, queue->size());
+
+  queue->front_request()->GetCallbackManager()->SetCompletionResponse(
+      OverlayResponse::CreateWithInfo<PermissionsDialogResponse>(
+          /*capture_allow=*/true));
+  queue->CancelAllRequests();
+
+  EXPECT_EQ(web::PermissionDecisionGrant, decision_future.Get());
+
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     GURL(kTestURL), GURL(kTestURL),
+                                     ContentSettingsType::MEDIASTREAM_CAMERA));
 }

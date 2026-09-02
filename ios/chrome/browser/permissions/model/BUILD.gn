@@ -22,7 +22,9 @@ source_set("tab_helper") {
   ]
   deps = [
     ":infobar_delegate",
+    "//components/content_settings/core/browser",
     "//components/infobars/core",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/infobars/model/overlays:util",
@@ -30,6 +32,8 @@ source_set("tab_helper") {
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
   ]
 }
@@ -100,10 +104,16 @@ source_set("unit_tests") {
     ":tab_helper",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/permissions/model:infobar_delegate",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/permissions",
     "//ios/web/public/test",
