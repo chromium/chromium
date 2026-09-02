@@ -410,16 +410,31 @@ bool ComposeboxQueryController::HasC2paMetadata(
   return bytes_to_search.find(kC2paMarker) != std::string_view::npos;
 }
 
+bool ComposeboxQueryController::IsSupportedC2paMimeType(
+    std::optional<std::string_view> mime_type) {
+  if (!mime_type.has_value()) {
+    return false;
+  }
+  return base::EqualsCaseInsensitiveASCII(*mime_type, "image/jpeg") ||
+         base::EqualsCaseInsensitiveASCII(*mime_type, "image/jpg") ||
+         base::EqualsCaseInsensitiveASCII(*mime_type, "image/png") ||
+         base::EqualsCaseInsensitiveASCII(*mime_type, "image/webp") ||
+         base::EqualsCaseInsensitiveASCII(*mime_type, "image/heic") ||
+         base::EqualsCaseInsensitiveASCII(*mime_type, "image/heif");
+}
+
 std::optional<lens::ImageData>
 ComposeboxQueryController::MaybeCreateC2paBypassImageData(
     base::span<const uint8_t> original_image_bytes,
     int width,
-    int height) {
+    int height,
+    std::optional<std::string_view> mime_type_string) {
   // TODO(crbug.com/555150730): Pass the c2pa header detection bit from Java to
   // c++ so that c2pa header detection can be skipped in the c++ layer.
   if (original_image_bytes.empty() ||
       !base::FeatureList::IsEnabled(
           lens::features::kLensBypassCompressionForC2pa) ||
+      !IsSupportedC2paMimeType(mime_type_string) ||
       width * height > kMaxC2paPixels ||
       !HasC2paMetadata(original_image_bytes)) {
     return std::nullopt;
@@ -2069,6 +2084,7 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
     std::optional<std::string> page_title,
     std::optional<std::string> file_name,
     UploadImageType image_type,
+    std::optional<std::string> mime_type_string,
     scoped_refptr<base::RefCountedData<std::vector<uint8_t>>>
         original_image_data,
     const SkBitmap& bitmap) {
@@ -2121,7 +2137,8 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
   if (original_image_data) {
     if (std::optional<lens::ImageData> image_data_proto =
             MaybeCreateC2paBypassImageData(original_image_data->data,
-                                           bitmap.width(), bitmap.height())) {
+                                           bitmap.width(), bitmap.height(),
+                                           mime_type_string)) {
       CreateFileUploadRequestProtoWithImageDataAndContinue(
           request_id, CreateClientContext(), ref_counted_logs,
           std::move(callback), page_url, page_title, file_name, image_type,
@@ -2152,6 +2169,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
     std::optional<std::string> page_title,
     std::optional<std::string> file_name,
     UploadImageType image_type,
+    std::optional<std::string> mime_type_string,
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   CHECK(image_options.has_value());
@@ -2167,7 +2185,8 @@ void ComposeboxQueryController::CreateImageUploadRequest(
       base::BindOnce(&ComposeboxQueryController::ProcessDecodedImageAndContinue,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      image_options.value(), std::move(callback), page_url,
-                     page_title, file_name, image_type, refcounted_image_data));
+                     page_title, file_name, image_type,
+                     std::move(mime_type_string), refcounted_image_data));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -2196,6 +2215,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
         std::move(image_options), contextual_input_data->page_url,
         contextual_input_data->page_title, /*file_name=*/std::nullopt,
         UploadImageType::kViewport,
+        /*mime_type_string=*/std::nullopt,
         base::BindOnce(
             &ComposeboxQueryController::AddPageIndexToUploadRequestAndContinue,
             weak_ptr_factory_.GetWeakPtr(),
@@ -2228,6 +2248,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                     request_index))),
         contextual_input_data->page_url, contextual_input_data->page_title,
         /*file_name=*/std::nullopt, UploadImageType::kViewport,
+        /*mime_type_string=*/std::nullopt,
         /*original_image_data=*/nullptr,
         // Pass ownership of the viewport screenshot to the
         // callback.
@@ -2333,7 +2354,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
             std::move(contextual_input_data->context_input->front().bytes_),
             std::move(image_options), contextual_input_data->page_url,
             contextual_input_data->page_title, contextual_input_data->file_name,
-            UploadImageType::kFile,
+            UploadImageType::kFile, file_info->mime_type_string,
             base::BindOnce(
                 &ComposeboxQueryController::
                     AddLensUsageIntentToUploadRequestAndContinue,

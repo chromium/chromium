@@ -151,12 +151,19 @@ class ComposeboxQueryController
 
   static bool HasC2paMetadata(base::span<const uint8_t> bytes);
 
+  // Checks if the MIME type matches a supported C2PA MIME type (JPEG, PNG,
+  // WebP, HEIC, HEIF).
+  static bool IsSupportedC2paMimeType(
+      std::optional<std::string_view> mime_type);
+
   // Computes whether the image qualifies for C2PA bypass based on feature
-  // flags, dimensions, and metadata. Returns an ImageData proto if successful.
+  // flags, MIME type, dimensions, and metadata. Returns an ImageData proto if
+  // successful.
   static std::optional<lens::ImageData> MaybeCreateC2paBypassImageData(
       base::span<const uint8_t> original_image_bytes,
       int width,
-      int height);
+      int height,
+      std::optional<std::string_view> mime_type_string = std::nullopt);
 
   uint16_t get_num_context_uploading() {
     return static_cast<uint16_t>(pending_context_uploads_.size());
@@ -309,6 +316,7 @@ class ComposeboxQueryController
       std::optional<std::string> page_title,
       std::optional<std::string> file_name,
       UploadImageType image_type,
+      std::optional<std::string> mime_type_string,
       RequestBodyProtoCreatedCallback callback);
 
   // Returns the EndpointFetcher to use with the given params. Protected to
@@ -486,6 +494,7 @@ class ComposeboxQueryController
       std::optional<std::string> page_title,
       std::optional<std::string> file_name,
       UploadImageType image_type,
+      std::optional<std::string> mime_type_string,
       scoped_refptr<base::RefCountedData<std::vector<uint8_t>>>
           original_image_data,
       const SkBitmap& bitmap);
