@@ -78,7 +78,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebApkUpdateManagerUnitTest {
     @Mock public Activity mActivityMock;
-    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
