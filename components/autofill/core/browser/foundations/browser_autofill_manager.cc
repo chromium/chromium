@@ -2733,7 +2733,6 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     const FormStructure& form,
     const AutofillField& trigger_field,
     base::span<const AutofillField* const> safe_filled_fields,
-    const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
     const FillingPayload& filling_payload,
@@ -2768,8 +2767,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                      },
                      [&](const CreditCard* credit_card) {
                        LogAndRecordCreditCardFill(
-                           form, trigger_field, filled_field_ids,
-                           safe_filled_field_ids, *credit_card, trigger_source,
+                           form, trigger_field, safe_filled_field_ids,
+                           skip_reasons, *credit_card, trigger_source,
                            refill_trigger_reason.has_value());
                      },
                      [&](const EntityInstance* entity) {
@@ -2812,8 +2811,9 @@ void BrowserAutofillManager::OnDidFillOrPreviewField(
 void BrowserAutofillManager::LogAndRecordCreditCardFill(
     const FormStructure& form_structure,
     const AutofillField& trigger_field,
-    const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+        skip_reasons,
     const CreditCard& card,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
@@ -2831,8 +2831,8 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
       card_copy.SetNumber(card_copy.LastFourDigits());
     }
     metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
-        card_copy, form_structure, trigger_field, filled_field_ids,
-        safe_field_ids, metrics_->signin_state_for_metrics, trigger_source);
+        card_copy, form_structure, trigger_field, safe_field_ids, skip_reasons,
+        metrics_->signin_state_for_metrics, trigger_source);
 
     client().GetPersonalDataManager().payments_data_manager().RecordUseOfCard(
         card);

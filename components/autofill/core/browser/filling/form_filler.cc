@@ -950,19 +950,9 @@ void FormFiller::FillOrPreviewForm(
                      augmented_filling_payload.filling_product(),
                      filling_content, skip_reasons);
 
-  // TODO(crbug.com/40227071): Remove.
-  base::flat_set<FieldGlobalId> filled_field_ids;
-  for (const auto& [id, reasons] : skip_reasons) {
-    if (reasons.empty() ||
-        reasons == DenseSet{FieldFillingSkipReason::kIframeSecurityPolicy}) {
-      filled_field_ids.insert(id);
-    }
-  }
-
   manager_->OnDidFillOrPreviewForm(
-      action_persistence, form, trigger_field, safe_filled_fields,
-      std::move(filled_field_ids), skip_reasons, filling_payload,
-      trigger_source, refill_options.reason());
+      action_persistence, form, trigger_field, safe_filled_fields, skip_reasons,
+      filling_payload, trigger_source, refill_options.reason());
 }
 
 void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {

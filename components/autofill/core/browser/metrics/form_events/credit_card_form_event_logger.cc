@@ -385,8 +385,9 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
     const AutofillField& field,
-    const base::flat_set<FieldGlobalId>& newly_filled_fields,
     const base::flat_set<FieldGlobalId>& safe_filled_fields,
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+        skip_reasons,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
   CreditCard::RecordType record_type = credit_card.record_type();
@@ -404,7 +405,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
        .event_logger = *this,
        .form = form,
        .field = field,
-       .newly_filled_fields = newly_filled_fields,
+       .skip_reasons = skip_reasons,
        .safe_fields = safe_filled_fields});
 
   if (trigger_source_ == AutofillTriggerSource::kCreditCardSaveAndFill) {

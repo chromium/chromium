@@ -14,12 +14,14 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/stack_allocated.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -790,7 +792,8 @@ class AutofillMetrics {
     autofill_metrics::FormEventLoggerBase& event_logger;
     const FormStructure& form;
     const AutofillField& field;
-    const base::flat_set<FieldGlobalId>& newly_filled_fields;
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+        skip_reasons;
     const base::flat_set<FieldGlobalId>& safe_fields;
   };
 

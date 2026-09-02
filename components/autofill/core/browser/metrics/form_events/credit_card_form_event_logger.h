@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -108,19 +110,18 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // In case of masked cards, the caller must make sure this gets called before
   // the card is upgraded to a full card.
   //
-  // The `newly_filled_fields` are all fields of `form` that are newly
-  // filled by BrowserAutofillManager. They are still subject to the security
-  // policy for cross-frame filling.
-  //
-  // The `safe_filled_fields` are all fields of `newly_filled_fields` that
-  // adhere to the security policy for cross-frame filling, and therefore, the
-  // actually filled fields.
+  // The `safe_filled_fields` are all fields of `form` that adhere to the
+  // security policy for cross-frame filling, and therefore, the actually filled
+  // fields.
+  // `skip_reasons` tells us for each field (mapped by their IDs), whether the
+  // field was skipped for filling or not and why.
   void OnDidFillFormFillingSuggestion(
       const CreditCard& credit_card,
       const FormStructure& form,
       const AutofillField& field,
-      const base::flat_set<FieldGlobalId>& newly_filled_fields,
       const base::flat_set<FieldGlobalId>& safe_filled_fields,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 

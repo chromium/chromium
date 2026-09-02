@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -1032,13 +1033,24 @@ uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskMetric() const {
 // static
 void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     const LogCreditCardSeamlessnessParam& p) {
-  auto GetSeamlessness = [&p](bool only_newly_filled_fields,
-                              bool only_after_security_policy,
-                              bool only_visible_fields) {
+  auto was_filled_before_security_policy =
+      [&skip_reasons = p.skip_reasons](FieldGlobalId field_id) {
+        const DenseSet<FieldFillingSkipReason>* reasons =
+            base::FindOrNull(skip_reasons, field_id);
+        return reasons &&
+               (reasons->empty() ||
+                *reasons ==
+                    DenseSet{FieldFillingSkipReason::kIframeSecurityPolicy});
+      };
+
+  auto GetSeamlessness = [&p, &was_filled_before_security_policy](
+                             bool only_newly_filled_fields,
+                             bool only_after_security_policy,
+                             bool only_visible_fields) {
     FieldTypeSet autofilled_types;
-    for (const auto& field : p.form) {
+    for (const std::unique_ptr<AutofillField>& field : p.form) {
       FieldGlobalId id = field->global_id();
-      if (only_newly_filled_fields && !p.newly_filled_fields.contains(id)) {
+      if (only_newly_filled_fields && !was_filled_before_security_policy(id)) {
         continue;
       }
       if (only_after_security_policy && !p.safe_fields.contains(id)) {
@@ -1122,7 +1134,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
   // allow="autofill">. Whether it's enabled in the main frame is controller by
   // an HTTP header; by default, it is.
   auto requires_enabled_policy_controlled_feature_autofill =
-      [&](const AutofillField& field) {
+      [&p](const AutofillField& field) {
         auto IsSensitiveFieldType = [](FieldType field_type) {
           switch (field_type) {
             case CREDIT_CARD_TYPE:
@@ -1145,9 +1157,9 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
 
   bool some_field_needs_shared_autofill = false;
   bool some_field_has_shared_autofill = false;
-  for (const auto& field : p.form) {
+  for (const std::unique_ptr<AutofillField>& field : p.form) {
     if (requires_enabled_policy_controlled_feature_autofill(*field) &&
-        p.newly_filled_fields.contains(field->global_id())) {
+        was_filled_before_security_policy(field->global_id())) {
       if (!p.safe_fields.contains(field->global_id())) {
         some_field_needs_shared_autofill = true;
       } else {

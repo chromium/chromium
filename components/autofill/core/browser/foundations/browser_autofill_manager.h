@@ -250,19 +250,15 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Handles post-filling logic of `form`, like notifying observers and logging
   // form metrics.
-  // `filled_field_ids` are the IDs of fields that were filled by the browser.
-  // `safe_filled_fields` are the subset of `filled_fields` that were deemed
-  // safe to fill by `AutofillDriverRouter`, according to the iframe security
-  // policy.
+  // `safe_filled_fields` are the fields that were deemed safe to fill by
+  // `AutofillDriverRouter`, according to the iframe security policy.
   // `skip_reasons` tells us for each field (mapped by their IDs), whether the
   // field was skipped for filling or not and why.
-  // TODO(crbug.com/40227071): Remove `filled_field_ids`.
   void OnDidFillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormStructure& form,
       const AutofillField& trigger_field,
       base::span<const AutofillField* const> safe_filled_fields,
-      const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons,
       const FillingPayload& filling_payload,
@@ -638,8 +634,9 @@ class BrowserAutofillManager : public AutofillManager {
   void LogAndRecordCreditCardFill(
       const FormStructure& form,
       const AutofillField& trigger_field,
-      const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
       const CreditCard& card,
       AutofillTriggerSource trigger_source,
       bool is_refill);

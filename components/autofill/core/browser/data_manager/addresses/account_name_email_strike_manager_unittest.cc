@@ -119,7 +119,7 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                                         FieldGlobalId(), base::DoNothing());
   autofill_manager().OnDidFillOrPreviewForm(
       mojom::ActionPersistence::kPreview, FormStructure(FormData()),
-      AutofillField(), {}, {}, /*skip_reasons=*/{}, &profile,
+      AutofillField(), /*safe_filled_fields=*/{}, /*skip_reasons=*/{}, &profile,
       AutofillTriggerSource::kPopup, std::nullopt);
 
   EXPECT_TRUE(test_api(GetAccountNameEmailStrikeManager())
@@ -155,7 +155,7 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                                         FieldGlobalId(), base::DoNothing());
   autofill_manager().OnDidFillOrPreviewForm(
       mojom::ActionPersistence::kPreview, FormStructure(FormData()),
-      AutofillField(), {}, {}, /*skip_reasons=*/{}, &profile,
+      AutofillField(), /*safe_filled_fields=*/{}, /*skip_reasons=*/{}, &profile,
       AutofillTriggerSource::kPopup, std::nullopt);
 
   base::HistogramTester histogram_tester;
@@ -173,7 +173,7 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                                         FieldGlobalId(), base::DoNothing());
   autofill_manager().OnDidFillOrPreviewForm(
       mojom::ActionPersistence::kFill, FormStructure(FormData()),
-      AutofillField(), {}, {}, /*skip_reasons=*/{}, &profile,
+      AutofillField(), /*safe_filled_fields=*/{}, /*skip_reasons=*/{}, &profile,
       AutofillTriggerSource::kPopup, std::nullopt);
 
   EXPECT_TRUE(test_api(GetAccountNameEmailStrikeManager())
@@ -202,8 +202,8 @@ TEST_F(AccountNameEmailStrikeManagerTest,
 
   autofill_manager().OnDidFillOrPreviewForm(
       mojom::ActionPersistence::kFill, FormStructure(FormData()),
-      AutofillField(), {}, {}, /*skip_reasons=*/{}, &account_profile,
-      AutofillTriggerSource::kPopup, std::nullopt);
+      AutofillField(), /*safe_filled_fields=*/{}, /*skip_reasons=*/{},
+      &account_profile, AutofillTriggerSource::kPopup, std::nullopt);
 
   EXPECT_TRUE(test_api(GetAccountNameEmailStrikeManager())
                   .was_name_email_profile_suggestion_shown());
