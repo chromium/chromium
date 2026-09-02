@@ -83,7 +83,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -374,7 +374,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     && !Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId())
                     && tabModel.isTabModelRestored()) {
                 tabModel.mergeListOfTabsToGroup(
-                        Arrays.asList(newTab),
+                        Collections.singletonList(newTab),
                         sourceTab,
                         /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 if (mChromeActivityNativeDelegate != null) {

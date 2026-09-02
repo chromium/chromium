@@ -425,7 +425,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -2918,7 +2917,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             .getTabArchiver()
                             .unarchiveAndRestoreTabs(
                                     getTabCreator(archivedTab.isIncognito()),
-                                    Arrays.asList(archivedTab),
+                                    Collections.singletonList(archivedTab),
                                     /* updateTimestamp= */ true,
                                     /* areTabsBeingOpened= */ true);
                 } else if (!isActorIntent) {
@@ -4961,7 +4960,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
         TabModel tabModel = mTabModelSelector.getModel(tab.isIncognitoBranded());
         if (!DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
-                        tabModel, Arrays.asList(tab))
+                        tabModel, Collections.singletonList(tab))
                 .collaborationGroupsDestroyed
                 .isEmpty()) {
             return false;
