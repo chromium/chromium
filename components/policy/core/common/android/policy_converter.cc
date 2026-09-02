@@ -191,7 +191,15 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
         std::optional<base::Value> decoded_value = base::JSONReader::Read(
             str_value, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
         if (decoded_value) {
-          return decoded_value;
+          // Pass the parsed JSON only if it matches the expected type.
+          if (decoded_value->is_dict()) {
+            return decoded_value;
+          }
+          // Drop values parsed as empty strings.
+          if (decoded_value->is_string() &&
+              decoded_value->GetString().empty()) {
+            return std::nullopt;
+          }
         }
       }
       return value;
@@ -207,8 +215,18 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
         }
         std::optional<base::Value> decoded_value = base::JSONReader::Read(
             str_value, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-        return decoded_value ? std::move(decoded_value)
-                             : SplitCommaSeparatedList(str_value);
+        if (decoded_value) {
+          // Pass the parsed JSON only if it matches the expected type.
+          if (decoded_value->is_list()) {
+            return decoded_value;
+          }
+          // Drop values parsed as empty strings.
+          if (decoded_value->is_string() &&
+              decoded_value->GetString().empty()) {
+            return std::nullopt;
+          }
+        }
+        return SplitCommaSeparatedList(str_value);
       }
       return value;
     }

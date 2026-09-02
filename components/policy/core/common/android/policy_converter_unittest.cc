@@ -143,9 +143,13 @@ TEST_F(PolicyConverterTest, ConvertToListValue) {
   EXPECT_EQ("[\"foo\",\"bar\"]", Convert(base::Value("foo,bar"), list_schema));
   EXPECT_EQ("[\"foo\",\"bar\"]", Convert(base::Value("foo, bar"), list_schema));
   EXPECT_EQ("19", Convert(base::Value(19), list_schema));
+  EXPECT_EQ("[\"19\"]", Convert(base::Value("19"), list_schema));
 
   EXPECT_FALSE(
       PolicyConverter::ConvertValueToSchema(base::Value(""), list_schema)
+          .has_value());
+  EXPECT_FALSE(
+      PolicyConverter::ConvertValueToSchema(base::Value("\"\""), list_schema)
           .has_value());
 }
 
@@ -170,9 +174,13 @@ TEST_F(PolicyConverterTest, ConvertToDictValue) {
             Convert(base::Value("{\"moose\": true}"), dict_schema));
   EXPECT_EQ("\"fnord\"", Convert(base::Value("fnord"), dict_schema));
   EXPECT_EQ("1729", Convert(base::Value(1729), dict_schema));
+  EXPECT_EQ("\"1729\"", Convert(base::Value("1729"), dict_schema));
 
   EXPECT_FALSE(
       PolicyConverter::ConvertValueToSchema(base::Value(""), dict_schema)
+          .has_value());
+  EXPECT_FALSE(
+      PolicyConverter::ConvertValueToSchema(base::Value("\"\""), dict_schema)
           .has_value());
 }
 
