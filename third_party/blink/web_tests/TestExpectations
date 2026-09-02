@@ -2633,9 +2633,6 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 # Floating point output likely flaky
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
-crbug.com/555949816 external/wpt/svg/animations/animateMotion-path-moveto-only.html [ Failure Pass ]
-crbug.com/555949816 external/wpt/svg/animations/animateMotion-path-zero-length-subpaths.html [ Failure Pass ]
-
 # ====== New tests from wpt-importer added here ======
 crbug.com/555801460 external/wpt/css/css-anchor-position/position-anchor-match-parent-dynamic.html [ Failure ]
 crbug.com/555801460 external/wpt/css/css-anchor-position/position-anchor-match-parent-rendering.html [ Failure ]
