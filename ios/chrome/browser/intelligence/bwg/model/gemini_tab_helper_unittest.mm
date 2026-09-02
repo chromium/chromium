@@ -998,7 +998,7 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_Copresence) {
 TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsNtp_ChromeNextIaEnabled) {
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kChromeNextIa, kPageActionMenu, kComposeboxIpad},
+      /*enabled_features=*/{kChromeNextIa, kPageActionMenu},
       /*disabled_features=*/{});
 
   web_state_->SetBrowserState(profile_.get());

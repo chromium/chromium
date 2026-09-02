@@ -193,8 +193,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 - (void)updatePopupConstraints {
     BOOL showRegularLayout =
         IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
-    if (IsComposeboxIpadEnabled() &&
-        _presentationContext == OmniboxPresentationContext::kComposebox) {
+    if (_presentationContext == OmniboxPresentationContext::kComposebox) {
       self.bottomConstraintComposeboxRegular.active = showRegularLayout;
       self.bottomConstraintPhone.active = !showRegularLayout;
     } else {
@@ -291,10 +290,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // to defocus the omnibox.
   self.heightConstraintTablet = [popup.heightAnchor
       constraintLessThanOrEqualToAnchor:popup.superview.heightAnchor
-                             multiplier:IsComposeboxIpadEnabled() ? 1 : 0.7];
+                             multiplier:1];
 
-  if (IsComposeboxIpadEnabled() &&
-      _presentationContext == OmniboxPresentationContext::kComposebox) {
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
     // Constraints the popup bottom to its container superview so composebox for
     // large size class is a completely containerized popup. Otherwise, the
     // iphone fullscreen layout will be used.

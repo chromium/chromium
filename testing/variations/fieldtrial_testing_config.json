@@ -58,8 +58,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AIMNTPEntrypointTablet",
-                        "ComposeboxIpad"
+                        "AIMNTPEntrypointTablet"
                     ]
                 }
             ]

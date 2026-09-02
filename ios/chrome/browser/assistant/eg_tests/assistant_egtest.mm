@@ -149,9 +149,6 @@ void OpenAssistantFromOmnibox() {
   config.features_enabled.push_back(kAssistantSidePanel);
   config.features_enabled.push_back(kChromeNextIa);
   config.features_enabled.push_back(kFullscreenRefactoring);
-  if (![self isRunningTest:@selector(testOmniboxVisibleInSidePanel)]) {
-    config.features_enabled.push_back(kComposeboxIpad);
-  }
 
   return config;
 }

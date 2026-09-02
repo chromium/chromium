@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/composebox/eg_tests/inttest/composebox_inttest_app_interface.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -50,7 +49,6 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kComposeboxIpad);
 
   // Adaptive suggestions tests only work with bottom composebox as
   // suggestions are not considered hidden when they are covered by the

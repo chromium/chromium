@@ -107,7 +107,7 @@ TEST_F(SceneMediatorTest, TestTriggerNewIAPromo) {
   feature_list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSNewIAPromoFeature});
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kChromeNextIa, kComposeboxIpad}, {});
+  scoped_feature_list.InitWithFeatures({kChromeNextIa}, {});
 
   mediator_.appBarPositionAtLaunch = AppBarPosition::kBottom;
 
@@ -148,7 +148,7 @@ TEST_F(SceneMediatorTest, TestTriggerNewIAPromo_PositionNone) {
   feature_list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSNewIAPromoFeature});
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kChromeNextIa, kComposeboxIpad}, {});
+  scoped_feature_list.InitWithFeatures({kChromeNextIa}, {});
 
   // Create a mock tracker.
   auto mock_tracker = std::make_unique<feature_engagement::test::MockTracker>();

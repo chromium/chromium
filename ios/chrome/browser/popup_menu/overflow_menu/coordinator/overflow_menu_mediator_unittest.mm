@@ -785,9 +785,7 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
 TEST_F(OverflowMenuMediatorTest, TestShareActionNotVisibleByDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "true"}}},
-       {kComposeboxIpad, {}}},
-      {});
+      {{kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "true"}}}}, {});
 
   CreateMediator(/*incognito=*/NO);
   SetUpActiveWebState();
@@ -802,9 +800,7 @@ TEST_F(OverflowMenuMediatorTest, TestShareActionNotVisibleByDefault) {
 TEST_F(OverflowMenuMediatorTest, TestShareActionVisibleWithChromeNextIa) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "false"}}},
-       {kComposeboxIpad, {}}},
-      {});
+      {{kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "false"}}}}, {});
 
   CreateMediator(/*incognito=*/NO);
   SetUpActiveWebState();
@@ -1537,8 +1533,7 @@ TEST_F(OverflowMenuMediatorTest, TestReadingModeMenu) {
 TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageShownOnNTP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
-                            kOverflowMenuNTPRefactor,
+      /*enabled_features=*/{kChromeNextIa, kOverflowMenuNTPRefactor,
                             kOverflowMenuHomeCustomizationEntrypoint},
       /*disabled_features=*/{});
 
@@ -1558,8 +1553,7 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageShownOnNTP) {
 TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageHasPreviewImage) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
-                            kOverflowMenuNTPRefactor,
+      /*enabled_features=*/{kChromeNextIa, kOverflowMenuNTPRefactor,
                             kOverflowMenuHomeCustomizationEntrypoint},
       /*disabled_features=*/{});
 
@@ -1596,8 +1590,7 @@ TEST_F(OverflowMenuMediatorTest,
        TestCustomizeHomePageHasPreviewImageWithCustomBackgroundFallback) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
-                            kOverflowMenuNTPRefactor,
+      /*enabled_features=*/{kChromeNextIa, kOverflowMenuNTPRefactor,
                             kOverflowMenuHomeCustomizationEntrypoint},
       /*disabled_features=*/{});
 
@@ -1653,8 +1646,7 @@ TEST_F(OverflowMenuMediatorTest,
 TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageNotShownOnWebPage) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
-                            kOverflowMenuNTPRefactor,
+      /*enabled_features=*/{kChromeNextIa, kOverflowMenuNTPRefactor,
                             kOverflowMenuHomeCustomizationEntrypoint},
       /*disabled_features=*/{});
 
@@ -1674,8 +1666,7 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageNotShownOnWebPage) {
 TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageNotShownInIncognito) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
-                            kOverflowMenuNTPRefactor,
+      /*enabled_features=*/{kChromeNextIa, kOverflowMenuNTPRefactor,
                             kOverflowMenuHomeCustomizationEntrypoint},
       /*disabled_features=*/{});
 

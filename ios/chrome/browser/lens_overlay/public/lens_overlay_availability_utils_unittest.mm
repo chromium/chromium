@@ -174,8 +174,7 @@ TEST_F(LensOverlayAvailabilityUtilsTest,
 TEST_F(LensOverlayAvailabilityUtilsTest,
        IsLensOverlayEntrypointAvailable_OverflowMenu_UnavailableOnNTP) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kOverflowMenuNTPRefactor, kChromeNextIa, kComposeboxIpad}, {});
+  feature_list.InitWithFeatures({kOverflowMenuNTPRefactor, kChromeNextIa}, {});
   auto ntp_web_state = CreateWebStateWithURL(GURL(kChromeUINewTabURL));
   EXPECT_FALSE(IsLensOverlayEntrypointAvailable(
       LensOverlayEntrypoint::kOverflowMenu, profile_->GetPrefs(),

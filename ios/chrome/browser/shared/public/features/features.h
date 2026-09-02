@@ -708,16 +708,11 @@ bool IsAssistantContainerDebugEnabled();
 // Returns 0 if no experimental percentage is selected.
 NSInteger GetAssistantMediumDetentPercentage();
 
-// Enables the ComposeboxIpad feature.
-BASE_DECLARE_FEATURE(kComposeboxIpad);
-
-// Returns true if the ComposeboxIpad feature is enabled.
-bool IsComposeboxIpadEnabled();
 
 // Enables the ComposeboxPlusButtonBottomSheet feature.
 BASE_DECLARE_FEATURE(kComposeboxPlusButtonBottomSheet);
 
-// Returns true if the ComposeboxIpad feature is enabled.
+// Returns true if the ComposeboxPlusButtonBottomSheet feature is enabled.
 bool IsComposeboxPlusButtonBottomSheet();
 
 // Enables the ChromeNextIa feature.

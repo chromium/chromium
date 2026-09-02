@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/reversed_animation.h"
@@ -1207,7 +1206,6 @@ const CGFloat kVerticalOffset = 1;
 
 - (void)updateTextContainerInset {
   BOOL isComposeboxIpad =
-      IsComposeboxIpadEnabled() &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE;
   CGFloat minVerticalInset =
       isComposeboxIpad ? kOmniboxTextViewMinVerticalInsetIPadComposebox

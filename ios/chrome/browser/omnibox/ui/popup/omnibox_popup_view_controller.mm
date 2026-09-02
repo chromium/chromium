@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -955,10 +954,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
 #pragma mark - SelfSizingTableViewDelegate
 
 - (void)tableViewContentSizeDidChange:(CGSize)contentSize {
-  CGFloat height = contentSize.height;
-  if (IsComposeboxIpadEnabled()) {
-    height = self.tableView.intrinsicContentSize.height;
-  }
+  CGFloat height = self.tableView.intrinsicContentSize.height;
   self.preferredContentSize = CGSizeMake(contentSize.width, height);
 }
 
@@ -1108,9 +1104,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
                                            style:UITableViewStyleGrouped];
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.delegate = self;
-  if (IsComposeboxIpadEnabled()) {
-    self.tableView.contentSizeDelegate = self;
-  }
+  self.tableView.contentSizeDelegate = self;
   self.tableView.dataSource = self;
 
   self.tableView.accessibilityIdentifier =

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -179,20 +178,18 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                      withAction:@selector(preferredContentSizeCategoryChanged)];
   }
 
-  if (IsComposeboxIpadEnabled()) {
-    __weak ComposeboxViewController* weakSelf = self;
-    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
-                      withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                    UITraitCollection* previousCollection) {
-                        [weakSelf setupConstraints];
-                        if (traitEnvironment.traitCollection
-                                .horizontalSizeClass !=
-                            previousCollection.horizontalSizeClass) {
-                          [weakSelf.delegate
-                                  composeboxHorizontalSizeClassDidChange];
-                        }
-                      }];
-  }
+  __weak ComposeboxViewController* weakSelf = self;
+  [self
+      registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                UITraitCollection* previousCollection) {
+                    [weakSelf setupConstraints];
+                    if (traitEnvironment.traitCollection.horizontalSizeClass !=
+                        previousCollection.horizontalSizeClass) {
+                      [weakSelf
+                              .delegate composeboxHorizontalSizeClassDidChange];
+                    }
+                  }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -661,8 +658,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 - (void)preferredContentSizeDidChangeForChildContentContainer:
     (id<UIContentContainer>)container {
   [super preferredContentSizeDidChangeForChildContentContainer:container];
-  if (IsComposeboxIpadEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self updatePreferredContentSize:container];
   }
 }

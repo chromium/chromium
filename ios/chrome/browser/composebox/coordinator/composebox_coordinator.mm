@@ -328,8 +328,7 @@
 }
 
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {
-  if (IsComposeboxIpadEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // TODO(crbug.com/469368394): Should only return this if regular horizontal
     // size class.
     return ComposeboxInputPlatePosition::kiPad;
@@ -350,8 +349,7 @@
 
 // Returns YES if the iPad popover presentation controller should be used.
 - (BOOL)shouldUseIpadPresentationController {
-  return IsComposeboxIpadEnabled() &&
-         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
          IsRegularXRegularSizeClass(self.baseViewController.traitCollection);
 }
 

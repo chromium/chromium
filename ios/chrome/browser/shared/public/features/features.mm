@@ -802,9 +802,6 @@ bool IsLocationBarBadgeMigrationEnabled() {
 }
 
 bool IsComposeboxIOSEnabled() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return IsComposeboxIpadEnabled();
-  }
   return true;
 }
 
@@ -884,11 +881,6 @@ NSInteger GetAssistantMediumDetentPercentage() {
       kAssistantContainer, kAssistantContainerMediumDetentPercentParam, 0);
 }
 
-BASE_FEATURE(kComposeboxIpad, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsComposeboxIpadEnabled() {
-  return base::FeatureList::IsEnabled(kComposeboxIpad);
-}
 
 BASE_FEATURE(kComposeboxPlusButtonBottomSheet,
              base::FEATURE_DISABLED_BY_DEFAULT);

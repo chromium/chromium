@@ -968,22 +968,6 @@ bool IsFullscreenNextIAEnabled() {
 
   self.contentArea.frame = initialViewsRect;
 
-  // Create the typing shield.  It is initially hidden, and is made visible when
-  // the keyboard appears.
-  if (!IsComposeboxIpadEnabled()) {
-    self.typingShield = [[UIButton alloc] initWithFrame:initialViewsRect];
-    self.typingShield.hidden = YES;
-    self.typingShield.autoresizingMask = initialViewAutoresizing;
-    self.typingShield.accessibilityIdentifier = @"Typing Shield";
-    self.typingShield.accessibilityLabel = l10n_util::GetNSString(IDS_CANCEL);
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      self.typingShield.backgroundColor =
-          [UIColor colorNamed:kOmniboxPopoutOverlayColor];
-    }
-    [self.typingShield addTarget:self
-                          action:@selector(shieldWasTapped:)
-                forControlEvents:UIControlEventTouchUpInside];
-  }
   self.view.autoresizingMask = initialViewAutoresizing;
 
   [self addChildViewController:self.browserContentViewController];
@@ -995,9 +979,6 @@ bool IsFullscreenNextIAEnabled() {
     [self.view addSubview:self.contentArea];
   }
   [self.browserContentViewController didMoveToParentViewController:self];
-  if (!IsComposeboxIpadEnabled()) {
-    [self.view addSubview:self.typingShield];
-  }
   [super viewDidLoad];
 
   [self buildToolbarAndTabStrip];

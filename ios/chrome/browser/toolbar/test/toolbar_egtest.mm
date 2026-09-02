@@ -20,7 +20,6 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kChromeNextIa);
-  config.features_enabled.push_back(kComposeboxIpad);
   return config;
 }
 
