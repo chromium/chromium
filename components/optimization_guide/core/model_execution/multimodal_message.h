@@ -276,7 +276,8 @@ class MultimodalMessage final {
   MultimodalMessage Clone();
 
   // Constructs a new MultimodalMessage with the data from initial_message
-  // merged into this one.
+  // merged into this one. Any pending field markers are cleared in the merged
+  // result.
   MultimodalMessage Merge(const google::protobuf::MessageLite& initial_message);
 
   // Return the message with all media fields converted to proto.

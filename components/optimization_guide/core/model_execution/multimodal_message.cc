@@ -318,6 +318,23 @@ bool RepeatedMultimodalMessageReadView::IsIncomplete() const {
   return overlay_ && overlay_->incomplete;
 }
 
+namespace {
+
+void ClearPending(MultimodalMessageData& data) {
+  data.pending.clear();
+  for (auto& [_, nested] : data.nested) {
+    ClearPending(nested);
+  }
+  for (auto& [_, repeated] : data.repeated) {
+    repeated.incomplete = false;
+    for (auto& item : repeated.overlays) {
+      ClearPending(item);
+    }
+  }
+}
+
+}  // namespace
+
 MultimodalMessage::MultimodalMessage() = default;
 MultimodalMessage::MultimodalMessage(const MessageLite& initial_message)
     : message_(initial_message.New()) {
@@ -342,6 +359,7 @@ MultimodalMessage MultimodalMessage::Merge(const MessageLite& other) {
     return MultimodalMessage(other);
   }
   MultimodalMessage result = Clone();
+  ClearPending(result.overlay_);
   result.edit().CheckTypeAndMergeFrom(other);
   return result;
 }

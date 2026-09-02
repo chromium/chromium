@@ -733,6 +733,34 @@ TEST_F(SubstitutionTest, OnDeviceInputToStringToolCall) {
       R"(<tool-call id=call-1 name=get_weather arguments={"city":"Paris"}>)");
 }
 
+TEST_F(SubstitutionTest, MergeClearsPendingFields) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+
+  Substitutions substitutions = BlockCheck(
+      Always(StringArg(ProtoField({RequestProto::kStringValueFieldNumber}))));
+
+  MultimodalMessage request{proto::ExampleForTestingRequest()};
+  request.edit().MarkPending(RequestProto::kStringValueFieldNumber);
+
+  // Before merge, it blocks because the field is marked pending.
+  std::optional<SubstitutionResult> pending_result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(pending_result.has_value());
+  EXPECT_EQ(pending_result->ToString(), "waiting for...");
+
+  // Merge execution proto with the string field populated.
+  proto::ExampleForTestingRequest execution_proto;
+  execution_proto.set_string_value("execution_value");
+  MultimodalMessage merged = request.Merge(execution_proto);
+
+  // After merge, pending is cleared and the field is evaluated.
+  std::optional<SubstitutionResult> merged_result =
+      CreateSubstitutions(merged.read(), substitutions);
+  ASSERT_TRUE(merged_result.has_value());
+  EXPECT_EQ(merged_result->ToString(),
+            "waiting for...execution_value...complete");
+}
+
 }  // namespace
 
 }  // namespace optimization_guide
