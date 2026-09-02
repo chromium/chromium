@@ -2180,7 +2180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.BlockedInlineResourceType"
-    enum="ContentSecurityPolicyInlineType" expires_after="2026-07-19">
+    enum="ContentSecurityPolicyInlineType" expires_after="2027-07-19">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2190,11 +2190,14 @@ chromium-metrics-reviews@google.com.
 
     This is recorded when the inline resource is blocked by the synthetic
     response.
+
+    Warning: this histogram was expired from 2026-07-19 to 2026-09-02; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.BlockedResourceCount"
-    units="count" expires_after="2026-07-19">
+    units="count" expires_after="2027-07-19">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2204,11 +2207,14 @@ chromium-metrics-reviews@google.com.
     enabled and at the time when the first Content Security Policy delivered in
     a meta tag is parsed. Measures the count of resources that have been blocked
     by Content Security Policy because of synthetic response until that point.
+
+    Warning: this histogram was expired from 2026-07-19 to 2026-09-02; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.BlockedSrcType"
-    enum="SyntheticResponseBlockedSrcType" expires_after="2026-07-19">
+    enum="SyntheticResponseBlockedSrcType" expires_after="2027-07-19">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2216,6 +2222,9 @@ chromium-metrics-reviews@google.com.
 
     This is recorded when the resource from the source is blocked by the
     synthetic response.
+
+    Warning: this histogram was expired from 2026-07-19 to 2026-09-02; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2270,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.IsSharedProducerPipeValid"
-    enum="Boolean" expires_after="2026-07-19">
+    enum="Boolean" expires_after="2027-07-19">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2281,6 +2290,9 @@ chromium-metrics-reviews@google.com.
     the network, while committed the navigation with locally stored headers and
     when the network service delegation mode is enabled. If this is true, the
     data pipe producer handle provided to the network service is still valid.
+
+    Warning: this histogram was expired from 2026-07-19 to 2026-09-02; data may
+    be missing.
   </summary>
 </histogram>
 
