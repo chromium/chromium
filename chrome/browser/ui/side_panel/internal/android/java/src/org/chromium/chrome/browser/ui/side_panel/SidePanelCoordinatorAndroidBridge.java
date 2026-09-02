@@ -53,14 +53,13 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
      * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#hasContentToShow(Tab)
      */
     boolean hasContentToShow(Tab tab) {
-        // TODO(crbug.com/541376517): Update this method to actually pass the tab to native.
         boolean hasContentToShow =
                 mNativeSidePanelCoordinatorAndroid != 0
                         ? SidePanelCoordinatorAndroidBridgeJni.get()
-                                .hasContentToShow(mNativeSidePanelCoordinatorAndroid)
+                                .hasContentToShow(mNativeSidePanelCoordinatorAndroid, tab)
                         : false;
 
-        log(TAG, "hasContentToShow", hasContentToShow);
+        log(TAG, "hasContentToShow", hasContentToShow, "Tab#" + tab.getId());
         return hasContentToShow;
     }
 
@@ -284,7 +283,8 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
         void init(long nativeSidePanelCoordinatorAndroid);
 
         /** See {@link SidePanelCoordinatorAndroidBridge#hasContentToShow}. */
-        boolean hasContentToShow(long nativeSidePanelCoordinatorAndroid);
+        boolean hasContentToShow(
+                long nativeSidePanelCoordinatorAndroid, @JniType("TabAndroid*") Tab tab);
 
         /** See {@link SidePanelCoordinatorAndroidBridge#onPanelContainerUpdated}. */
         void onPanelContainerUpdated(

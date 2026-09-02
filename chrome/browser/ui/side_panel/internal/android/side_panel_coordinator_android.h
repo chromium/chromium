@@ -54,7 +54,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void Init();
   void Destroy();
   void ClosePanel(bool suppress_animations);
-  bool HasContentToShow();
+  bool HasContentToShow(TabAndroid* tab);
   void OnPanelContainerUpdated(int old_width, int new_width);
   void OnPanelContentReplaced();
   void OnActiveChanged(bool active);

@@ -101,34 +101,49 @@ void SidePanelCoordinatorAndroid::ClosePanel(bool suppress_animations) {
   Close(SidePanelEntryHideReason::kSidePanelClosed, suppress_animations);
 }
 
-bool SidePanelCoordinatorAndroid::HasContentToShow() {
-  switch (state_) {
-    case SidePanelState::kOpening:
-    case SidePanelState::kShown:
+bool SidePanelCoordinatorAndroid::HasContentToShow(TabAndroid* tab) {
+  CHECK(tab);
+
+  // Check if the tab has an active tab-scoped (contextual) entry.
+  if (auto* tab_scoped_registry = SidePanelRegistry::From(tab)) {
+    if (auto active_entry = tab_scoped_registry->GetActiveEntry()) {
+      SPLOG("HasContentToShow - tab-scoped (contextual) entry active for tab ("
+            << (*active_entry)->key().ToString() << "), returning true");
       return true;
-    case SidePanelState::kClosing:
-      // Unlike `kClosed`, we shouldn't check whether there is a deferred entry
-      // for `kClosing`.
-      //
-      // This is because a deferred entry is added before `Close()`, so by the
-      // time the state is `kClosing`, a deferred entry already exists.
-      // For the side panel to be closed, we have to return `false` without
-      // checking whether there is a deferred entry.
-      return false;
-    case SidePanelState::kClosed: {
-      // When the side panel is `kClosed`, whether there is content to show
-      // depends on whether there is a deferred entry.
-      //
-      // A deferred entry is an entry that could have been shown, but was
-      // deferred due to Android constraints such as narrow window size.
-      tabs::TabInterface* active_tab =
-          TabListInterface::From(browser())->GetActiveTab();
-      return active_tab &&
-             deferred_entry_tracker_
-                 .GetTabOrWindowScopedEntry(active_tab->GetHandle())
-                 .has_value();
     }
   }
+
+  // Check if the window registry has an active window-scoped (global) entry.
+  if (auto* window_scoped_registry = SidePanelRegistry::From(browser())) {
+    if (auto active_entry = window_scoped_registry->GetActiveEntry()) {
+      SPLOG("HasContentToShow - window-scoped (global) entry active ("
+            << (*active_entry)->key().ToString() << "), returning true");
+      return true;
+    }
+  }
+
+  // We shouldn't check whether there is a deferred entry for `kClosing`
+  // (unlike `kClosed`).
+  //
+  // This is because a deferred entry is added before `Close()`, so by the
+  // time the state is `kClosing`, a deferred entry already exists.
+  // For the side panel to be closed, we have to return `false` without
+  // checking whether there is a deferred entry.
+  if (state_ == SidePanelState::kClosing) {
+    SPLOG("HasContentToShow - state is kClosing, returning false");
+    return false;
+  }
+
+  // Check if there is a deferred entry for this tab or window.
+  if (auto deferred_entry =
+          deferred_entry_tracker_.GetTabOrWindowScopedEntry(tab->GetHandle())) {
+    SPLOG("HasContentToShow - deferred entry exists for tab ("
+          << deferred_entry->key.ToString() << "), returning true");
+    return true;
+  }
+
+  SPLOG("HasContentToShow - no entry found, returning false");
+  return false;
 }
 
 void SidePanelCoordinatorAndroid::OnPanelContainerUpdated(int old_width,
