@@ -450,28 +450,48 @@ TEST_F(IconTableTest, AllSecurityIconsAreMapped) {
   };
 
   for (auto level : levels) {
-    security_state::VisibleSecurityState state;
-
     // Standard icon
-    const gfx::VectorIcon& standard_icon =
-        location_bar_model::GetSecurityVectorIcon(level, &state);
-    EXPECT_TRUE(icon_table_.RegisterVectorIcon(standard_icon).has_value())
-        << "Missing standard icon for SecurityLevel: " << level;
+    {
+      security_state::VisibleSecurityState state;
+      const gfx::VectorIcon& standard_icon =
+          location_bar_model::GetSecurityVectorIcon(level, &state);
+      EXPECT_TRUE(icon_table_.RegisterVectorIcon(standard_icon).has_value())
+          << "Missing standard icon for SecurityLevel: " << level;
+    }
 
     // HTTPS Upgraded (WARNING triggers no_encryption)
-    state.is_https_only_mode_upgraded = true;
-    const gfx::VectorIcon& https_upgraded_icon =
-        location_bar_model::GetSecurityVectorIcon(level, &state);
-    EXPECT_TRUE(icon_table_.RegisterVectorIcon(https_upgraded_icon).has_value())
-        << "Missing HTTPS upgraded icon for SecurityLevel: " << level;
+    {
+      security_state::VisibleSecurityState state;
+      state.is_https_only_mode_upgraded = true;
+      const gfx::VectorIcon& https_upgraded_icon =
+          location_bar_model::GetSecurityVectorIcon(level, &state);
+      EXPECT_TRUE(
+          icon_table_.RegisterVectorIcon(https_upgraded_icon).has_value())
+          << "Missing HTTPS upgraded icon for SecurityLevel: " << level;
+    }
 
     // Enterprise block (DANGEROUS triggers domain/business)
-    state.malicious_content_status =
-        security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
-    const gfx::VectorIcon& enterprise_icon =
-        location_bar_model::GetSecurityVectorIcon(level, &state);
-    EXPECT_TRUE(icon_table_.RegisterVectorIcon(enterprise_icon).has_value())
-        << "Missing enterprise block icon for SecurityLevel: " << level;
+    {
+      security_state::VisibleSecurityState state;
+      state.malicious_content_status =
+          security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
+      const gfx::VectorIcon& enterprise_icon =
+          location_bar_model::GetSecurityVectorIcon(level, &state);
+      EXPECT_TRUE(icon_table_.RegisterVectorIcon(enterprise_icon).has_value())
+          << "Missing enterprise block icon for SecurityLevel: " << level;
+    }
+
+    // Suspicious site (DANGEROUS triggers shield_question)
+    {
+      security_state::VisibleSecurityState state;
+      state.malicious_content_status =
+          security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE;
+      const gfx::VectorIcon& suspicious_site_icon =
+          location_bar_model::GetSecurityVectorIcon(level, &state);
+      EXPECT_TRUE(
+          icon_table_.RegisterVectorIcon(suspicious_site_icon).has_value())
+          << "Missing suspicious site icon for SecurityLevel: " << level;
+    }
   }
 }
 
