@@ -155,16 +155,52 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files) {
           "runMochaSuite('ContextualTasksComposeboxFilesTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files_ForkTrue) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Files_ForkTrue_LensBehavior) {
   RunTest("contextual_tasks/composebox_files_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
-          "\\\\(useContextualTasksComposeboxFork = true\\\\)')");
+          "\\\\(useContextualTasksComposeboxFork = true\\\\) "
+          "LensBehavior')");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files_ForkFalse) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Files_ForkTrue_FileInputsAndUploads) {
   RunTest("contextual_tasks/composebox_files_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
-          "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
+          "\\\\(useContextualTasksComposeboxFork = true\\\\) "
+          "FileInputsAndUploads')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Files_ForkTrue_PlaceholderHints) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
+          "\\\\(useContextualTasksComposeboxFork = true\\\\) "
+          "PlaceholderHints')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Files_ForkFalse_LensBehavior) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "LensBehavior')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Files_ForkFalse_FileInputsAndUploads) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "FileInputsAndUploads')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Files_ForkFalse_PlaceholderHints) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "PlaceholderHints')");
 }
 
 // Run each AutoTab arm's nested suites as separate browser tests so each group
