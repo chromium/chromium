@@ -41,8 +41,11 @@ constexpr gfx::Size kMaxSize = {800, 600};
 
 ExtensionActionPopupContents::ExtensionActionPopupContents(
     std::unique_ptr<ExtensionViewHost> host,
-    bool inspect_with_devtools)
-    : host_(std::move(host)), inspect_with_devtools_(inspect_with_devtools) {
+    bool inspect_with_devtools,
+    ShowPopupCallback callback)
+    : host_(std::move(host)),
+      inspect_with_devtools_(inspect_with_devtools),
+      shown_callback_(std::move(callback)) {
   java_object_ = Java_ExtensionActionPopupContents_Constructor(
       AttachCurrentThread(), reinterpret_cast<int64_t>(this),
       host_->host_contents());
@@ -60,7 +63,11 @@ ExtensionActionPopupContents::ExtensionActionPopupContents(
   }
 }
 
-ExtensionActionPopupContents::~ExtensionActionPopupContents() = default;
+ExtensionActionPopupContents::~ExtensionActionPopupContents() {
+  if (shown_callback_) {
+    std::move(shown_callback_).Run(nullptr);
+  }
+}
 
 ScopedJavaLocalRef<jobject> ExtensionActionPopupContents::GetJavaObject() {
   return java_object_.AsLocalRef(AttachCurrentThread());
@@ -114,6 +121,9 @@ bool ExtensionActionPopupContents::HandleKeyboardEvent(
 }
 
 void ExtensionActionPopupContents::OnLoaded() {
+  if (shown_callback_) {
+    std::move(shown_callback_).Run(host_.get());
+  }
   if (inspect_with_devtools_) {
     DevToolsWindow::OpenDevToolsWindow(
         host_->host_contents(), DevToolsToggleAction::ShowConsolePanel(),
@@ -143,29 +153,6 @@ void ExtensionActionPopupContents::HandleCloseExtensionHost(
                                             java_object_);
 }
 
-// JNI method to create an ExtensionActionPopupContents instance.
-// This is called from the Java side to initiate the display of an extension
-// popup.
-static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
-    JNIEnv* env,
-    int64_t extension_view_host_ptr,
-    bool inspect_with_devtools) {
-  std::unique_ptr<ExtensionViewHost> host(
-      reinterpret_cast<extensions::ExtensionViewHost*>(
-          extension_view_host_ptr));
-  DCHECK(host);
-
-  // The ExtensionActionPopupContents C++ object's lifetime is managed by its
-  // Java counterpart. The Java object holds a pointer to this C++ instance.
-  // When the Java side is finished with the popup, it will explicitly call
-  // a 'destroy()' method on its Java object, which in turn calls the native
-  // ExtensionActionPopupContents::Destroy() method, leading to the deletion
-  // of this C++ object. Therefore, 'new' is used here, and ownership is
-  // effectively passed to the Java-controlled lifecycle.
-  ExtensionActionPopupContents* popup =
-      new ExtensionActionPopupContents(std::move(host), inspect_with_devtools);
-  return popup->GetJavaObject();
-}
 
 }  // namespace extensions
 

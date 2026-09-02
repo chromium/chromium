@@ -67,7 +67,8 @@ void ExtensionActionDelegateAndroid::TriggerPopup(
     PopupShowAction show_action,
     bool by_user,
     ShowPopupCallback callback) {
-  toolbar_android_->TriggerPopup(action_id_, std::move(host), show_action);
+  toolbar_android_->TriggerPopup(action_id_, std::move(host), show_action,
+                                 std::move(callback));
 }
 
 void ExtensionActionDelegateAndroid::ShowContextMenuAsFallback() {

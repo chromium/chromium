@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
+#include "chrome/browser/ui/android/extensions/extension_action_popup_contents.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
@@ -79,10 +80,14 @@ bool ExtensionsToolbarAndroid::HasActivePopup() {
 void ExtensionsToolbarAndroid::TriggerPopup(
     const ToolbarActionsModel::ActionId& action_id,
     std::unique_ptr<ExtensionViewHost> host,
-    PopupShowAction show_action) {
+    PopupShowAction show_action,
+    ShowPopupCallback callback) {
+  auto* popup_contents = new ExtensionActionPopupContents(
+      std::move(host), show_action == PopupShowAction::kShowAndInspect,
+      std::move(callback));
   Java_ExtensionsToolbarBridge_triggerPopup(
       AttachCurrentThread(), java_object_, action_id,
-      reinterpret_cast<int64_t>(host.release()),
+      popup_contents->GetJavaObject(),
       show_action == PopupShowAction::kShowAndInspect);
 }
 
@@ -130,8 +135,10 @@ void ExtensionsToolbarAndroid::CloseExtensionsMenuIfOpen() {
 
 bool ExtensionsToolbarAndroid::CanShowToolbarActionPopupForAPICall(
     const std::string& action_id) {
-  return Java_ExtensionsToolbarBridge_hasPoppedOutAction(AttachCurrentThread(),
-                                                         java_object_);
+  return !Java_ExtensionsToolbarBridge_hasPoppedOutAction(AttachCurrentThread(),
+                                                          java_object_) &&
+         !Java_ExtensionsToolbarBridge_hasActivePopup(AttachCurrentThread(),
+                                                      java_object_);
 }
 
 void ExtensionsToolbarAndroid::ToggleExtensionsMenu() {

@@ -32,7 +32,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   // Triggers the display of an extension popup in the Java UI.
   void TriggerPopup(const ToolbarActionsModel::ActionId& action_id,
                     std::unique_ptr<ExtensionViewHost> host,
-                    PopupShowAction show_action);
+                    PopupShowAction show_action,
+                    ShowPopupCallback callback);
 
   // Shows the context menu for the given action ID.
   void ShowContextMenu(const ToolbarActionsModel::ActionId& action_id);
