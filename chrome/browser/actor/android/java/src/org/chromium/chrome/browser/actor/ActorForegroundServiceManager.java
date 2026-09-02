@@ -85,6 +85,11 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         }
     }
 
+    /** Returns the singleton manager instance if initialized. */
+    public static @Nullable ActorForegroundServiceManager getInstance() {
+        return sInstance;
+    }
+
     @VisibleForTesting
     ActorForegroundServiceManager() {
         mProfileObserver =
@@ -148,6 +153,17 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mHandler.removeCallbacks(mMaybeStopServiceRunnable);
         if (mIsServiceBound) {
             stopAndUnbindService();
+        }
+    }
+
+    /**
+     * Resends loud notifications for all active working tasks (e.g. when moving to background or
+     * PiP).
+     */
+    public void resendWorkingNotifications() {
+        if (mNotificationService == null) return;
+        for (int taskId : mActiveTaskIds) {
+            mNotificationService.resendWorkingNotificationLoudly(taskId);
         }
     }
 

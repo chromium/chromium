@@ -9,6 +9,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -96,6 +97,12 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             assert selector != null;
             ActorForegroundServiceController.get().transitionActiveTasksToBackground(selector);
+            if (!ApplicationStatus.hasVisibleActivities()) {
+                ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
+                if (manager != null) {
+                    manager.resendWorkingNotifications();
+                }
+            }
         } else if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             // TODO(b/537362347): Update method to remove usage of getCurrentActingTab() when
             // refactoring for multi-task.

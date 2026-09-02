@@ -375,6 +375,11 @@ public class ActorPictureInPictureController
         startOffscreenRendering();
         showOverlay();
         checkAndExitPipIfFinished();
+
+        ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
+        if (manager != null) {
+            manager.resendWorkingNotifications();
+        }
     }
 
     private void exitPictureInPicture() {

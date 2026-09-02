@@ -760,4 +760,51 @@ public class ActorNotificationServiceTest {
                         "Step 2"),
                 wrapper.getNotification().extras.getString(Notification.EXTRA_TEXT));
     }
+
+    @Test
+    public void testResendWorkingNotificationLoudly_RunningTask_PostsLoudNotification() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        // Initial silent notification while in foreground.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ true, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        NotificationWrapper silentWrapper =
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId);
+        assertNotNull(silentWrapper);
+        assertTrue(silentWrapper.isSilent());
+
+        // Resend notification loudly (e.g. user leaves Chrome to background or enters PiP).
+        mNotificationService.resendWorkingNotificationLoudly(taskId);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        NotificationWrapper loudWrapper =
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId);
+        assertNotNull(loudWrapper);
+        assertFalse(loudWrapper.isSilent());
+    }
+
+    @Test
+    public void testResendWorkingNotificationLoudly_PausedTask_DoesNotNotify() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        // Initial silent notification while in foreground for paused task.
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.PAUSED_BY_USER,
+                /* isSilent= */ true,
+                /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Attempting to resend working notification loudly for paused task does not notify.
+        mNotificationService.resendWorkingNotificationLoudly(taskId);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+    }
 }
