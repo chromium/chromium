@@ -49,6 +49,7 @@
 }
 
 #line-focus-off {
+  --cr-button-text-color: var(--rate-button-text-color);
   background: var(--audio-player-background-color);
   border: none;
   margin-inline-end: auto;
@@ -106,7 +107,6 @@
 
 .immersive-toolbar-container cr-button {
   --cr-focus-outline-color: var(--toolbar-focus-outline-color);
-  --cr-button-text-color: var(--rate-button-text-color);
 }
 
 .announce-block {
@@ -123,6 +123,7 @@
  */
 #rate {
   --cr-focus-outline-color: var(--on-audio-player-focus-outline-color);
+  --cr-button-text-color: var(--rate-button-text-color);
   background-color: transparent;
   border: none;
   border-radius: 50%;
