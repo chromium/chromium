@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -369,36 +370,39 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
 }
 
 const AtomicString& GetColorEmojiFont(const SkFontMgr& font_manager) {
-  // Calling `AvailableColorEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
-  // may cause hangs. crbug.com/349456407
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
-  if (emoji_font.empty() && !emoji_font.IsNull()) {
-    emoji_font = AtomicString(AvailableColorEmojiFont(font_manager));
-    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  // `AtomicString` must be per thread, and calling `AvailableColorEmojiFont()`
+  // from `DEFINE_THREAD_SAFE_STATIC_LOCAL` may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<std::optional<AtomicString>>,
+                                  emoji_font, ());
+  if (!emoji_font->has_value()) {
+    emoji_font->emplace(AvailableColorEmojiFont(font_manager));
+    CHECK(!(**emoji_font).empty() || (**emoji_font).IsNull());
   }
-  return emoji_font;
+  return **emoji_font;
 }
 
 const AtomicString& GetMonoEmojiFont(const SkFontMgr& font_manager) {
-  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
-  // may cause hangs. crbug.com/349456407
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
-  if (emoji_font.empty() && !emoji_font.IsNull()) {
-    emoji_font = AtomicString(AvailableMonoEmojiFont(font_manager));
-    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  // `AtomicString` must be per thread, and calling `AvailableMonoEmojiFont()`
+  // from `DEFINE_THREAD_SAFE_STATIC_LOCAL` may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<std::optional<AtomicString>>,
+                                  emoji_font, ());
+  if (!emoji_font->has_value()) {
+    emoji_font->emplace(AvailableMonoEmojiFont(font_manager));
+    CHECK(!(**emoji_font).empty() || (**emoji_font).IsNull());
   }
-  return emoji_font;
+  return **emoji_font;
 }
 
 const AtomicString& GetMathFont(const SkFontMgr& font_manager) {
-  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
-  // may cause hangs. crbug.com/349456407
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, math_font, (g_empty_atom));
-  if (math_font.empty() && !math_font.IsNull()) {
-    math_font = AtomicString(FirstAvailableMathFont(font_manager));
-    CHECK(!math_font.empty() || math_font.IsNull());
+  // `AtomicString` must be per thread, and calling `FirstAvailableMathFont()`
+  // from `DEFINE_THREAD_SAFE_STATIC_LOCAL` may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<std::optional<AtomicString>>,
+                                  math_font, ());
+  if (!math_font->has_value()) {
+    math_font->emplace(FirstAvailableMathFont(font_manager));
+    CHECK(!(**math_font).empty() || (**math_font).IsNull());
   }
-  return math_font;
+  return **math_font;
 }
 
 const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
@@ -476,8 +480,8 @@ const AtomicString& GetFontFamilyForScript(
     AtomicFamilies() : families(ScriptToFontMap::kSize) {}
     Vector<std::optional<AtomicString>> families;
   };
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicFamilies, families, ());
-  std::optional<AtomicString>& family = families.families[script];
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<AtomicFamilies>, families, ());
+  std::optional<AtomicString>& family = (*families).families[script];
   if (family) {
     return *family;
   }
