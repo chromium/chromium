@@ -75,3 +75,15 @@ export function generateTestImageFile(
     }, fileType);
   });
 }
+
+/** Generates an image with C2PA metadata with the given dimensions. */
+export async function generateTestC2paImageFile(
+    height: number, width: number, fileType: string): Promise<File> {
+  const baseFile = await generateTestImageFile(height, width, fileType);
+  const buffer = await baseFile.arrayBuffer();
+  const marker = new TextEncoder().encode('urn:c2pa:');
+  const merged = new Uint8Array(buffer.byteLength + marker.byteLength);
+  merged.set(new Uint8Array(buffer), 0);
+  merged.set(marker, buffer.byteLength);
+  return new File([merged], 'test-c2pa-image', {type: fileType});
+}

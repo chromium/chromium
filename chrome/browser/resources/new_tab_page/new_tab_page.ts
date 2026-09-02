@@ -29,7 +29,7 @@ export {BackgroundManager} from './background_manager.js';
 export {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
 export {DoodleShareDialogElement} from './doodle_share_dialog.js';
-export {processFile} from './image_processor.js';
+export {C2PA_MARKER, hasC2paMetadata, MAX_C2PA_PIXELS, MAX_C2PA_SEARCH_BYTES, processFile, SUPPORTED_C2PA_FILE_TYPES} from './image_processor.js';
 export type {ProcessedFile} from './image_processor.js';
 export {LogoElement} from './logo.js';
 export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash} from './metrics_utils.js';
