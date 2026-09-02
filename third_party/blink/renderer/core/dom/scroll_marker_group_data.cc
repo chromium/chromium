@@ -308,6 +308,9 @@ void ScrollMarkerGroupData::AddToFocusGroup(Element& scroll_marker) {
 }
 
 void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
+  if (scroll_marker == pending_selected_marker_) {
+    pending_selected_marker_ = nullptr;
+  }
   if (wtf_size_t index = focus_group_.Find(scroll_marker); index != kNotFound) {
     focus_group_.EraseAt(index);
     // We need to update scrollers map for this scroll marker group if we
@@ -369,6 +372,7 @@ void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
         CSSSelector::PseudoType::kPseudoTargetCurrent);
   }
   selected_marker_ = pending_selected_marker_;
+  CHECK(!selected_marker_ || selected_marker_->isConnected());
 
   // Notify the newly selected marker.
   if (auto* scroll_marker_pseudo =
