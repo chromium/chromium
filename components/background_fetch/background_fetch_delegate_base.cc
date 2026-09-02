@@ -286,8 +286,6 @@ void BackgroundFetchDelegateBase::OnDownloadStarted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto download_job_id_iter = download_job_id_map_.find(download_guid);
-  // TODO(crbug.com/40546930): When DownloadService fixes cancelled jobs calling
-  // OnDownload* methods, then this can be a DCHECK.
   if (download_job_id_iter == download_job_id_map_.end()) {
     return;
   }
@@ -311,8 +309,6 @@ void BackgroundFetchDelegateBase::OnDownloadUpdated(
     uint64_t bytes_downloaded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto download_job_id_iter = download_job_id_map_.find(download_guid);
-  // TODO(crbug.com/40546930): When DownloadService fixes cancelled jobs calling
-  // OnDownload* methods, then this can be a DCHECK.
   if (download_job_id_iter == download_job_id_map_.end()) {
     return;
   }
@@ -346,9 +342,6 @@ void BackgroundFetchDelegateBase::OnDownloadFailed(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto download_job_id_iter = download_job_id_map_.find(download_guid);
-  // TODO(crbug.com/40546930): When DownloadService fixes cancelled jobs
-  // potentially calling OnDownloadFailed with a reason other than
-  // CANCELLED/ABORTED, we should add a DCHECK here.
   if (download_job_id_iter == download_job_id_map_.end()) {
     return;
   }
@@ -378,8 +371,6 @@ void BackgroundFetchDelegateBase::OnDownloadSucceeded(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto download_job_id_iter = download_job_id_map_.find(download_guid);
-  // TODO(crbug.com/40546930): When DownloadService fixes cancelled jobs calling
-  // OnDownload* methods, then this can be a DCHECK.
   if (download_job_id_iter == download_job_id_map_.end()) {
     return;
   }
@@ -487,8 +478,6 @@ void BackgroundFetchDelegateBase::GetUploadData(
     const std::string& download_guid,
     download::GetUploadDataCallback callback) {
   auto job_it = download_job_id_map_.find(download_guid);
-  // TODO(crbug.com/40546930): When DownloadService fixes cancelled jobs calling
-  // client methods, then this can be a DCHECK.
   if (job_it == download_job_id_map_.end()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
