@@ -55,3 +55,75 @@ source_set("quick_answers") {
     "//ui/wm",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "quick_answers_controller_unittest.cc",
+    "quick_answers_state_ash_unittest.cc",
+    "quick_answers_ui_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":quick_answers",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
+    "//chrome/browser/ui/ash/quick_answers/test:test_support",
+    "//chrome/browser/ui/ash/quick_answers/ui:unit_tests",
+    "//chrome/test:test_support",
+    "//chromeos/components/kiosk",
+    "//chromeos/components/kiosk:test_support",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/magic_boost/test:fake_magic_boost_state",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers:test_support",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/constants",
+    "//chromeos/strings:strings_grit",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "quick_answers_browsertest.cc",
+    "quick_answers_browsertest_base.cc",
+    "quick_answers_browsertest_base.h",
+    "quick_answers_controller_browsertest.cc",
+  ]
+
+  deps = [
+    ":quick_answers",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
+    "//chrome/browser/ui/ash/quick_answers/ui:browser_tests",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chrome/test:test_support",
+    "//chromeos/components/kiosk",
+    "//chromeos/components/kiosk:test_support",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers:test_support",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/strings",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}
