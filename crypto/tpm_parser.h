@@ -19,12 +19,15 @@
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "crypto/crypto_export.h"
+#include "crypto/hash.h"
 #include "crypto/sign.h"
 #include "crypto/tpm.rs.h"
 
 namespace crypto::tpm {
 
-using enum TpmAlg;
+using enum TpmAlgHash;
+using enum TpmAlgPublic;
+using enum TpmAlgSigScheme;
 using enum TpmCc;
 using enum TpmConstant;
 using enum TpmRh;
@@ -220,8 +223,8 @@ struct CRYPTO_EXPORT SignResponse {
 
 // TPM algorithm IDs for a given SignatureAlgorithm.
 struct CRYPTO_EXPORT SignatureAlgorithms {
-  TpmAlg sig_alg = TPM_ALG_NULL;
-  TpmAlg hash_alg = TPM_ALG_NULL;
+  TpmAlgSigScheme sig_alg = TPM_ALG_NULL;
+  TpmAlgHash hash_alg = TPM_ALG_SHA256;
 
   friend bool operator==(const SignatureAlgorithms&,
                          const SignatureAlgorithms&) = default;
@@ -290,13 +293,10 @@ CRYPTO_EXPORT TpmParseErrorOr<FlushContextResponse> ParseFlushContextResponse(
 // Builds a serialized TPM2_Hash command buffer.
 //
 // * `data` - The byte buffer to be hashed.
-// * `hash_alg` - The TPM algorithm of the hash function (e.g. TPM_ALG_SHA256).
-// * `hierarchy` - The TPM hierarchy handle for the ticket (e.g. TPM_RH_OWNER
-// for storage/test tickets, or TPM_RH_ENDORSEMENT for AIKs).
+// * `hash_kind` - The hash algorithm to use.
 CRYPTO_EXPORT std::vector<uint8_t> BuildHashCommand(
     base::span<const uint8_t> data,
-    TpmAlg hash_alg,
-    TpmRh hierarchy);
+    hash::HashKind hash_kind);
 
 // Parses a serialized TPM2_Hash response.
 //
@@ -308,9 +308,9 @@ CRYPTO_EXPORT TpmParseErrorOr<HashResponse> ParseHashResponse(
 
 // Builds a serialized TPM2_HashSequenceStart command buffer.
 //
-// * `hash_alg` - The hash algorithm to use for the sequence.
+// * `hash_kind` - The hash algorithm to use for the sequence.
 CRYPTO_EXPORT std::vector<uint8_t> BuildHashSequenceStartCommand(
-    TpmAlg hash_alg);
+    hash::HashKind hash_kind);
 
 // Parses a serialized TPM2_HashSequenceStart response.
 //
@@ -324,12 +324,9 @@ ParseHashSequenceStartResponse(base::span<const uint8_t> response_blob);
 //
 // * `sequence_handle` - The handle of the sequence to complete.
 // * `data` - The final byte buffer to append to the hash sequence.
-// * `hierarchy` - The TPM hierarchy handle for the ticket (e.g. TPM_RH_OWNER
-// for storage/test tickets, or TPM_RH_ENDORSEMENT for AIKs).
 CRYPTO_EXPORT std::vector<uint8_t> BuildSequenceCompleteCommand(
     uint32_t sequence_handle,
-    base::span<const uint8_t> data,
-    TpmRh hierarchy);
+    base::span<const uint8_t> data);
 
 // Parses a serialized TPM2_SequenceComplete response.
 //
@@ -352,11 +349,17 @@ CRYPTO_EXPORT TpmParseErrorOr<SequenceUpdateResponse>
 ParseSequenceUpdateResponse(base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_Sign command buffer.
+//
+// Uses TPM_ALG_NULL for the signing scheme so that the TPM auto-infers
+// the scheme configured on `key_handle`.
+//
+// * `key_handle` - The handle of the signing key.
+// * `digest` - The digest to sign.
+// * `validation_ticket` - The validation ticket from TPM2_Hash or
+//   TPM2_SequenceComplete.
 CRYPTO_EXPORT std::vector<uint8_t> BuildSignCommand(
     uint32_t key_handle,
     base::span<const uint8_t> digest,
-    TpmAlg sig_alg,
-    TpmAlg hash_alg,
     base::span<const uint8_t> validation_ticket);
 
 // Parses a serialized TPM2_Sign response.

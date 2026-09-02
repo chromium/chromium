@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 pub use ffi::{
-    CreateResponse, ResponseStatus, TpmAlg, TpmCc, TpmConstant, TpmEccCurve, TpmRh, TpmSt,
+    CreateResponse, ResponseStatus, TpmAlgHash, TpmAlgPublic, TpmAlgSigScheme, TpmCc, TpmConstant,
+    TpmEccCurve, TpmRh, TpmSt,
 };
 
 /// Size of a standard TPM command header (Tag + Size + CommandCode).
@@ -187,12 +188,22 @@ pub mod ffi {
     }
     // LINT.ThenChange(//crypto/tpm_parser.h:TpmCertifyVerifyResult)
 
-    /// TPM Algorithms. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=41 for details.
-    #[derive(Debug)]
+    /// TPM Public / Key Types. See Table 9 & 14 in
+    /// https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=41.
+    #[derive(Debug, PartialEq, Eq)]
     #[repr(u16)]
-    enum TpmAlg {
+    enum TpmAlgPublic {
         /// TPM_ALG_RSA is the RSA algorithm.
         TPM_ALG_RSA = 0x0001,
+        /// TPM_ALG_ECC is the ECC algorithm.
+        TPM_ALG_ECC = 0x0023,
+    }
+
+    /// TPM Cryptographic Hash Algorithms. See Table 10 in
+    /// https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=42.
+    #[derive(Debug, PartialEq, Eq)]
+    #[repr(u16)]
+    enum TpmAlgHash {
         /// TPM_ALG_SHA1 is the SHA-1 hash algorithm.
         TPM_ALG_SHA1 = 0x0004,
         /// TPM_ALG_SHA256 is the SHA-256 hash algorithm.
@@ -201,7 +212,17 @@ pub mod ffi {
         TPM_ALG_SHA384 = 0x000C,
         /// TPM_ALG_SHA512 is the SHA-512 hash algorithm.
         TPM_ALG_SHA512 = 0x000D,
-        /// TPM_ALG_NULL is the null algorithm.
+    }
+
+    /// TPM Signature Schemes. See Table 13 in
+    /// https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=44.
+    #[derive(Debug, PartialEq, Eq)]
+    #[repr(u16)]
+    enum TpmAlgSigScheme {
+        /// TPM_ALG_NULL is the null algorithm. In TPM 2.0, TPM_ALG_NULL is a
+        /// valid signature scheme indicating no scheme, or instructing
+        /// the TPM to use the scheme configured in a restricted key's
+        /// public template.
         TPM_ALG_NULL = 0x0010,
         /// TPM_ALG_RSASSA is the RSASSA signature algorithm.
         TPM_ALG_RSASSA = 0x0014,
@@ -209,8 +230,6 @@ pub mod ffi {
         TPM_ALG_RSAPSS = 0x0016,
         /// TPM_ALG_ECDSA is the ECDSA signature algorithm.
         TPM_ALG_ECDSA = 0x0018,
-        /// TPM_ALG_ECC is the ECC algorithm.
-        TPM_ALG_ECC = 0x0023,
     }
 
     /// TPM ECC Curves. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=46 for details.
@@ -237,10 +256,6 @@ pub mod ffi {
         TPM_RH_OWNER = 0x40000001,
         /// TPM_RS_PW is the handle for a password session.
         TPM_RS_PW = 0x40000009,
-        /// TPM_RH_ENDORSEMENT is the handle for the endorsement hierarchy.
-        /// This is used for Attestation Identity Keys (AIKs), because AIKs
-        /// belong to the endorsement hierarchy.
-        TPM_RH_ENDORSEMENT = 0x4000000B,
     }
 
     /// TPM Constants.
@@ -297,9 +312,9 @@ pub mod ffi {
         /// The outcome of the parsing operation.
         status: SignatureParseResult,
         /// The signature algorithm ID (e.g., TPM_ALG_RSASSA or TPM_ALG_ECDSA).
-        sig_alg: TpmAlg,
+        sig_alg: TpmAlgSigScheme,
         /// The hash algorithm ID (e.g., TPM_ALG_SHA256).
-        hash_alg: TpmAlg,
+        hash_alg: TpmAlgHash,
         /// The raw RSA signature bytes, if sig_alg is TPM_ALG_RSASSA.
         rsa_sig: Vec<u8>,
         /// The raw ECDSA r coordinate, if sig_alg is TPM_ALG_ECDSA.
@@ -386,8 +401,8 @@ pub mod ffi {
         /// Panics if `scheme` or `hash_alg` is unsupported.
         fn build_create_aik_command(
             parent_handle: u32,
-            scheme: TpmAlg,
-            hash_alg: TpmAlg,
+            scheme: TpmAlgSigScheme,
+            hash_alg: TpmAlgHash,
         ) -> Vec<u8>;
 
         /// Parses a TPM2_Create response.
@@ -414,7 +429,7 @@ pub mod ffi {
         fn parse_flush_context_response(resp: &[u8]) -> ResponseStatus;
 
         /// Builds a TPM2_Hash command buffer.
-        fn build_hash_command(data: &[u8], hash_alg: TpmAlg, hierarchy: TpmRh) -> Vec<u8>;
+        fn build_hash_command(data: &[u8], hash_alg: TpmAlgHash) -> Vec<u8>;
 
         /// Parses a TPM2_Hash response.
         ///
@@ -423,7 +438,7 @@ pub mod ffi {
         fn parse_hash_response(resp: &[u8]) -> HashResponse;
 
         /// Builds a TPM2_HashSequenceStart command buffer.
-        fn build_hash_sequence_start_command(hash_alg: TpmAlg) -> Vec<u8>;
+        fn build_hash_sequence_start_command(hash_alg: TpmAlgHash) -> Vec<u8>;
 
         /// Parses a TPM2_HashSequenceStart response.
         fn parse_hash_sequence_start_response(resp: &[u8]) -> HashSequenceStartResponse;
@@ -435,23 +450,13 @@ pub mod ffi {
         fn parse_sequence_update_response(resp: &[u8]) -> ResponseStatus;
 
         /// Builds a TPM2_SequenceComplete command buffer.
-        fn build_sequence_complete_command(
-            sequence_handle: u32,
-            data: &[u8],
-            hierarchy: TpmRh,
-        ) -> Vec<u8>;
+        fn build_sequence_complete_command(sequence_handle: u32, data: &[u8]) -> Vec<u8>;
 
         /// Parses a TPM2_SequenceComplete response.
         fn parse_sequence_complete_response(resp: &[u8]) -> HashResponse;
 
         /// Builds a TPM2_Sign command buffer.
-        fn build_sign_command(
-            key_handle: u32,
-            digest: &[u8],
-            sig_alg: TpmAlg,
-            hash_alg: TpmAlg,
-            validation_ticket: &[u8],
-        ) -> Vec<u8>;
+        fn build_sign_command(key_handle: u32, digest: &[u8], validation_ticket: &[u8]) -> Vec<u8>;
 
         /// Parses a TPM2_Sign response.
         fn parse_sign_response(resp: &[u8]) -> SignResponse;
@@ -768,7 +773,7 @@ pub fn build_certify_command(
     writer.write_tpm2b(qualifying_data);
 
     // inScheme (TPMT_SIG_SCHEME)
-    writer.write_u16(TpmAlg::TPM_ALG_NULL.repr);
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr);
 
     writer.into_inner()
 }
@@ -810,29 +815,35 @@ pub fn build_certify_command(
 /// | TPML_PCR_SELECTION  | creationPCR              |
 ///
 /// See Table 18 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=67.
-pub fn build_create_aik_command(parent_handle: u32, scheme: TpmAlg, hash_alg: TpmAlg) -> Vec<u8> {
+pub fn build_create_aik_command(
+    parent_handle: u32,
+    scheme: TpmAlgSigScheme,
+    hash_alg: TpmAlgHash,
+) -> Vec<u8> {
     let (key_type, curve_id) = match scheme {
-        TpmAlg::TPM_ALG_RSASSA | TpmAlg::TPM_ALG_RSAPSS => (TpmAlg::TPM_ALG_RSA, None),
-        TpmAlg::TPM_ALG_ECDSA => {
+        TpmAlgSigScheme::TPM_ALG_RSASSA | TpmAlgSigScheme::TPM_ALG_RSAPSS => {
+            (TpmAlgPublic::TPM_ALG_RSA, None)
+        }
+        TpmAlgSigScheme::TPM_ALG_ECDSA => {
             let curve = match hash_alg {
-                TpmAlg::TPM_ALG_SHA256 => TpmEccCurve::TPM_ECC_NIST_P256,
-                TpmAlg::TPM_ALG_SHA384 => TpmEccCurve::TPM_ECC_NIST_P384,
-                TpmAlg::TPM_ALG_SHA512 => TpmEccCurve::TPM_ECC_NIST_P521,
+                TpmAlgHash::TPM_ALG_SHA256 => TpmEccCurve::TPM_ECC_NIST_P256,
+                TpmAlgHash::TPM_ALG_SHA384 => TpmEccCurve::TPM_ECC_NIST_P384,
+                TpmAlgHash::TPM_ALG_SHA512 => TpmEccCurve::TPM_ECC_NIST_P521,
                 _ => panic!("unsupported hash_alg for ECC in build_create_aik_command"),
             };
-            (TpmAlg::TPM_ALG_ECC, Some(curve))
+            (TpmAlgPublic::TPM_ALG_ECC, Some(curve))
         }
         _ => panic!("unsupported scheme in build_create_aik_command"),
     };
     let in_scheme_size = 4; // 2 bytes scheme + 2 bytes hash_alg
     let public_parms_size = match key_type {
-        TpmAlg::TPM_ALG_RSA => 2 + in_scheme_size + 2 + 4,
-        TpmAlg::TPM_ALG_ECC => 2 + in_scheme_size + 2 + 2,
+        TpmAlgPublic::TPM_ALG_RSA => 2 + in_scheme_size + 2 + 4,
+        TpmAlgPublic::TPM_ALG_ECC => 2 + in_scheme_size + 2 + 2,
         _ => unreachable!(),
     };
     let unique_size = match key_type {
-        TpmAlg::TPM_ALG_RSA => 2,
-        TpmAlg::TPM_ALG_ECC => 4,
+        TpmAlgPublic::TPM_ALG_RSA => 2,
+        TpmAlgPublic::TPM_ALG_ECC => 4,
         _ => unreachable!(),
     };
     let tpmt_public_size = 2 // type
@@ -886,21 +897,21 @@ pub fn build_create_aik_command(parent_handle: u32, scheme: TpmAlg, hash_alg: Tp
     writer.write_u16(0); // authPolicy (empty TPM2B_DIGEST)
 
     // parameters (TPMU_PUBLIC_PARMS)
-    writer.write_u16(TpmAlg::TPM_ALG_NULL.repr); // symmetric
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr); // symmetric
     writer.write_u16(scheme.repr);
     writer.write_u16(hash_alg.repr);
     match key_type {
-        TpmAlg::TPM_ALG_RSA => {
+        TpmAlgPublic::TPM_ALG_RSA => {
             writer.write_u16(2048);
             writer.write_u32(0); // exponent (default 2^16 + 1)
                                  // unique (TPM2B_PUBLIC_KEY_RSA)
             writer.write_u16(0);
         }
-        TpmAlg::TPM_ALG_ECC => {
+        TpmAlgPublic::TPM_ALG_ECC => {
             let curve = curve_id.unwrap();
             writer.write_u16(curve.repr);
-            writer.write_u16(TpmAlg::TPM_ALG_NULL.repr); // kdf scheme
-                                                         // unique (TPMS_ECC_POINT)
+            writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr); // kdf scheme
+                                                                  // unique (TPMS_ECC_POINT)
             writer.write_u16(0); // x
             writer.write_u16(0); // y
         }
@@ -1233,14 +1244,14 @@ enum SignatureData<'a> {
 /// Information about algorithms used in a TPM signature.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct SignatureAlgorithms {
-    pub sig_alg: TpmAlg,
-    pub hash_alg: TpmAlg,
+    pub sig_alg: TpmAlgSigScheme,
+    pub hash_alg: TpmAlgHash,
 }
 
 impl SignatureAlgorithms {
     pub fn parse(reader: &mut Reader<'_>) -> Option<Self> {
-        let sig_alg = reader.read_u16().map(|repr| TpmAlg { repr })?;
-        let hash_alg = reader.read_u16().map(|repr| TpmAlg { repr })?;
+        let sig_alg = reader.read_u16().map(|repr| TpmAlgSigScheme { repr })?;
+        let hash_alg = reader.read_u16().map(|repr| TpmAlgHash { repr })?;
         Some(Self { sig_alg, hash_alg })
     }
 }
@@ -1259,11 +1270,11 @@ impl<'a> TpmtSignature<'a> {
             SignatureAlgorithms::parse(reader).ok_or(TpmSignatureParseError::BufferTooSmall)?;
 
         let signature_data = match algorithms.sig_alg {
-            TpmAlg::TPM_ALG_RSASSA => {
+            TpmAlgSigScheme::TPM_ALG_RSASSA | TpmAlgSigScheme::TPM_ALG_RSAPSS => {
                 let rsa_sig = reader.read_tpm2b().ok_or(TpmSignatureParseError::BufferTooSmall)?;
                 SignatureData::Rsa(rsa_sig)
             }
-            TpmAlg::TPM_ALG_ECDSA => {
+            TpmAlgSigScheme::TPM_ALG_ECDSA => {
                 let r = reader.read_tpm2b().ok_or(TpmSignatureParseError::BufferTooSmall)?;
                 let s = reader.read_tpm2b().ok_or(TpmSignatureParseError::BufferTooSmall)?;
                 SignatureData::Ecdsa { r, s }
@@ -1289,8 +1300,8 @@ pub fn parse_tpm_signature(signature: &[u8]) -> ffi::RawSignatureComponents {
                     ffi::SignatureParseResult::UnsupportedSignatureAlgorithm
                 }
             },
-            sig_alg: ffi::TpmAlg { repr: 0 },
-            hash_alg: ffi::TpmAlg { repr: 0 },
+            sig_alg: ffi::TpmAlgSigScheme::TPM_ALG_NULL,
+            hash_alg: ffi::TpmAlgHash::TPM_ALG_SHA256,
             rsa_sig: Vec::new(),
             ecdsa_r: Vec::new(),
             ecdsa_s: Vec::new(),
@@ -1325,7 +1336,10 @@ fn parse_tpm_signature_impl(
 }
 
 /// Builds a TPM2_Hash command.
-pub fn build_hash_command(data: &[u8], hash_alg: TpmAlg, hierarchy: TpmRh) -> Vec<u8> {
+///
+/// Note: This command builder sets the ticket hierarchy to `TPM_RH_OWNER`,
+/// matching the Storage hierarchy used by Chromium's unexportable keys.
+pub fn build_hash_command(data: &[u8], hash_alg: TpmAlgHash) -> Vec<u8> {
     assert!(
         data.len() <= TPM_MAX_BUFFER_SIZE,
         "TPM2_Hash data exceeds TPM_MAX_BUFFER_SIZE ({} bytes)",
@@ -1345,7 +1359,7 @@ pub fn build_hash_command(data: &[u8], hash_alg: TpmAlg, hierarchy: TpmRh) -> Ve
     // 2. Command Parameters
     writer.write_tpm2b(data);
     writer.write_u16(hash_alg.repr);
-    writer.write_u32(hierarchy.repr);
+    writer.write_u32(TpmRh::TPM_RH_OWNER.repr);
 
     writer.into_inner()
 }
@@ -1408,25 +1422,14 @@ fn parse_hash_response_impl<'a>(resp: &'a [u8]) -> Result<HashData<'a>, TpmParse
 }
 
 /// Builds a TPM2_Sign command.
-pub fn build_sign_command(
-    key_handle: u32,
-    digest: &[u8],
-    sig_alg: TpmAlg,
-    hash_alg: TpmAlg,
-    validation_ticket: &[u8],
-) -> Vec<u8> {
-    let mut in_scheme_size = 2;
-    if sig_alg != TpmAlg::TPM_ALG_NULL {
-        in_scheme_size += 2;
-    }
-
+pub fn build_sign_command(key_handle: u32, digest: &[u8], validation_ticket: &[u8]) -> Vec<u8> {
     let total_size = TPM_HEADER_SIZE
         + TPM_HANDLE_SIZE
         + TPM_AUTH_SIZE_SIZE
         + TPM_SESSION_SIZE
         + 2 // digest size prefix
         + digest.len()
-        + in_scheme_size
+        + 2 // inScheme: TPM_ALG_NULL (2 bytes)
         + validation_ticket.len();
 
     let mut writer = Writer::with_capacity(total_size);
@@ -1442,12 +1445,7 @@ pub fn build_sign_command(
 
     // 4. Command Parameters
     writer.write_tpm2b(digest);
-
-    writer.write_u16(sig_alg.repr);
-    if sig_alg != TpmAlg::TPM_ALG_NULL {
-        writer.write_u16(hash_alg.repr);
-    }
-
+    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr);
     writer.write_bytes(validation_ticket);
 
     writer.into_inner()
@@ -1558,7 +1556,7 @@ pub fn parse_sign_response(resp: &[u8]) -> ffi::SignResponse {
 ///
 /// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
 /// for a general overview of the structure of a TPM command.
-pub fn build_hash_sequence_start_command(hash_alg: TpmAlg) -> Vec<u8> {
+pub fn build_hash_sequence_start_command(hash_alg: TpmAlgHash) -> Vec<u8> {
     let total_size = TPM_HEADER_SIZE
         + 2 // auth size prefix (0x0000)
         + 2; // hashAlg
@@ -1750,11 +1748,10 @@ pub fn parse_sequence_update_response(resp: &[u8]) -> ffi::ResponseStatus {
 ///
 /// * `sequence_handle` - Handle of the sequence object.
 /// * `data` - Data to be added to the sequence hash.
-/// * `hierarchy` - Hierarchy handle for ticket authorization (e.g.
-///   TPM_RH_OWNER).
 ///
 /// Note: This function assumes empty password authorization for the sequence
-/// handle.
+/// handle and sets the ticket hierarchy to `TPM_RH_OWNER`, matching the Storage
+/// hierarchy used by Chromium's unexportable keys.
 ///
 /// # Panics
 ///
@@ -1787,11 +1784,7 @@ pub fn parse_sequence_update_response(resp: &[u8]) -> ffi::ResponseStatus {
 ///
 /// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
 /// for a general overview of the structure of a TPM command.
-pub fn build_sequence_complete_command(
-    sequence_handle: u32,
-    data: &[u8],
-    hierarchy: TpmRh,
-) -> Vec<u8> {
+pub fn build_sequence_complete_command(sequence_handle: u32, data: &[u8]) -> Vec<u8> {
     assert!(
         data.len() <= TPM_MAX_BUFFER_SIZE,
         "TPM2_SequenceComplete data exceeds TPM_MAX_BUFFER_SIZE ({} bytes)",
@@ -1822,7 +1815,7 @@ pub fn build_sequence_complete_command(
 
     // 4. Command Parameters
     writer.write_tpm2b(data);
-    writer.write_u32(hierarchy.repr);
+    writer.write_u32(TpmRh::TPM_RH_OWNER.repr);
 
     writer.into_inner()
 }

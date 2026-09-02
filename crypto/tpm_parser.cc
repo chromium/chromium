@@ -26,12 +26,6 @@ namespace crypto::tpm {
 
 namespace {
 
-// Asymmetric signature algorithm families supported by the TPM parser.
-enum class Algorithm {
-  kRsaSsa,
-  kEcdsa,
-};
-
 SignatureErrorOr<void> MapSignatureParseResult(SignatureParseResult result) {
   switch (result) {
     case SignatureParseResult::Ok:
@@ -71,40 +65,67 @@ TpmParseErrorOr<void> MapResponseStatus(const ResponseStatus& status) {
   NOTREACHED();
 }
 
-SignatureErrorOr<hash::HashKind> MapHashAlgorithm(TpmAlg hash_alg) {
+SignatureErrorOr<hash::HashKind> MapHashAlgorithm(TpmAlgHash hash_alg) {
   switch (hash_alg) {
-    case TpmAlg::TPM_ALG_SHA256:
+    case TPM_ALG_SHA256:
       return hash::kSha256;
-    case TpmAlg::TPM_ALG_SHA1:
+    case TPM_ALG_SHA1:
       return hash::kSha1;
     default:
       return base::unexpected(SignatureError::kUnsupportedHashAlgorithm);
   }
 }
 
-sign::SignatureKind ToSignatureKind(Algorithm alg, hash::HashKind hash) {
+constexpr TpmAlgHash ToTpmAlgHash(hash::HashKind hash_kind) {
+  switch (hash_kind) {
+    case hash::kSha1:
+      return TPM_ALG_SHA1;
+    case hash::kSha256:
+      return TPM_ALG_SHA256;
+    case hash::kSha384:
+      return TPM_ALG_SHA384;
+    case hash::kSha512:
+      return TPM_ALG_SHA512;
+  }
+  NOTREACHED();
+}
+
+sign::SignatureKind ToSignatureKind(TpmAlgSigScheme alg, hash::HashKind hash) {
   switch (alg) {
-    case Algorithm::kRsaSsa:
+    case TPM_ALG_NULL:
+      NOTREACHED();
+    case TPM_ALG_RSASSA:
       switch (hash) {
         case hash::kSha1:
-          return sign::SignatureKind::RSA_PKCS1_SHA1;
+          return sign::RSA_PKCS1_SHA1;
         case hash::kSha256:
-          return sign::SignatureKind::RSA_PKCS1_SHA256;
+          return sign::RSA_PKCS1_SHA256;
         case hash::kSha384:
-          return sign::SignatureKind::RSA_PKCS1_SHA384;
+          return sign::RSA_PKCS1_SHA384;
         case hash::kSha512:
-          return sign::SignatureKind::RSA_PKCS1_SHA512;
+          return sign::RSA_PKCS1_SHA512;
       }
-    case Algorithm::kEcdsa:
+    case TPM_ALG_RSAPSS:
       switch (hash) {
         case hash::kSha1:
-          return sign::SignatureKind::ECDSA_SHA1;
+          NOTREACHED();
         case hash::kSha256:
-          return sign::SignatureKind::ECDSA_SHA256;
+          return sign::RSA_PSS_SHA256;
         case hash::kSha384:
-          return sign::SignatureKind::ECDSA_SHA384;
+          return sign::RSA_PSS_SHA384;
         case hash::kSha512:
-          return sign::SignatureKind::ECDSA_SHA512;
+          return sign::RSA_PSS_SHA512;
+      }
+    case TPM_ALG_ECDSA:
+      switch (hash) {
+        case hash::kSha1:
+          return sign::ECDSA_SHA1;
+        case hash::kSha256:
+          return sign::ECDSA_SHA256;
+        case hash::kSha384:
+          return sign::ECDSA_SHA384;
+        case hash::kSha512:
+          return sign::ECDSA_SHA512;
       }
   }
   NOTREACHED();
@@ -114,7 +135,7 @@ SignatureErrorOr<void> VerifyRsaSignature(const keypair::PublicKey& public_key,
                                           base::span<const uint8_t> statement,
                                           hash::HashKind hash_kind,
                                           base::span<const uint8_t> rsa_sig) {
-  bool verified = sign::Verify(ToSignatureKind(Algorithm::kRsaSsa, hash_kind),
+  bool verified = sign::Verify(ToSignatureKind(TPM_ALG_RSASSA, hash_kind),
                                public_key, statement, rsa_sig);
   if (!verified) {
     return base::unexpected(SignatureError::kInvalidSignature);
@@ -131,7 +152,7 @@ SignatureErrorOr<void> VerifyEcdsaSignature(
   std::optional<std::vector<uint8_t>> der_sig =
       ConvertEcdsaRawComponentsToDer(ecdsa_r, ecdsa_s);
   bool verified = der_sig.has_value() &&
-                  sign::Verify(ToSignatureKind(Algorithm::kEcdsa, hash_kind),
+                  sign::Verify(ToSignatureKind(TPM_ALG_ECDSA, hash_kind),
                                public_key, statement, *der_sig);
   if (!verified) {
     return base::unexpected(SignatureError::kInvalidSignature);
@@ -236,10 +257,9 @@ TpmParseErrorOr<FlushContextResponse> ParseFlushContextResponse(
 }
 
 std::vector<uint8_t> BuildHashCommand(base::span<const uint8_t> data,
-                                      TpmAlg hash_alg,
-                                      TpmRh hierarchy) {
+                                      hash::HashKind hash_kind) {
   return base::ToVector(
-      build_hash_command(base::SpanToRustSlice(data), hash_alg, hierarchy));
+      build_hash_command(base::SpanToRustSlice(data), ToTpmAlgHash(hash_kind)));
 }
 
 TpmParseErrorOr<HashResponse> ParseHashResponse(
@@ -255,8 +275,9 @@ TpmParseErrorOr<HashResponse> ParseHashResponse(
   });
 }
 
-std::vector<uint8_t> BuildHashSequenceStartCommand(TpmAlg hash_alg) {
-  return base::ToVector(build_hash_sequence_start_command(hash_alg));
+std::vector<uint8_t> BuildHashSequenceStartCommand(hash::HashKind hash_kind) {
+  return base::ToVector(
+      build_hash_sequence_start_command(ToTpmAlgHash(hash_kind)));
 }
 
 TpmParseErrorOr<HashSequenceStartResponse> ParseHashSequenceStartResponse(
@@ -273,10 +294,9 @@ TpmParseErrorOr<HashSequenceStartResponse> ParseHashSequenceStartResponse(
 
 std::vector<uint8_t> BuildSequenceCompleteCommand(
     uint32_t sequence_handle,
-    base::span<const uint8_t> data,
-    TpmRh hierarchy) {
+    base::span<const uint8_t> data) {
   return base::ToVector(build_sequence_complete_command(
-      sequence_handle, base::SpanToRustSlice(data), hierarchy));
+      sequence_handle, base::SpanToRustSlice(data)));
 }
 
 TpmParseErrorOr<SequenceCompleteResponse> ParseSequenceCompleteResponse(
@@ -311,12 +331,10 @@ TpmParseErrorOr<SequenceUpdateResponse> ParseSequenceUpdateResponse(
 std::vector<uint8_t> BuildSignCommand(
     uint32_t key_handle,
     base::span<const uint8_t> digest,
-    TpmAlg sig_alg,
-    TpmAlg hash_alg,
     base::span<const uint8_t> validation_ticket) {
   return base::ToVector(
-      build_sign_command(key_handle, base::SpanToRustSlice(digest), sig_alg,
-                         hash_alg, base::SpanToRustSlice(validation_ticket)));
+      build_sign_command(key_handle, base::SpanToRustSlice(digest),
+                         base::SpanToRustSlice(validation_ticket)));
 }
 
 TpmParseErrorOr<SignResponse> ParseSignResponse(
@@ -341,9 +359,9 @@ std::optional<std::vector<uint8_t>> ParseTpmSignature(
   }
 
   switch (raw_sig.sig_alg) {
-    case TpmAlg::TPM_ALG_RSASSA:
+    case TPM_ALG_RSASSA:
       return base::ToVector(raw_sig.rsa_sig);
-    case TpmAlg::TPM_ALG_ECDSA:
+    case TPM_ALG_ECDSA:
       return ConvertEcdsaRawComponentsToDer(raw_sig.ecdsa_r, raw_sig.ecdsa_s);
     default:
       return std::nullopt;
@@ -383,10 +401,10 @@ SignatureErrorOr<void> VerifySignature(
 
   // 3. Verify signature
   switch (raw_sig.sig_alg) {
-    case TpmAlg::TPM_ALG_RSASSA:
+    case TPM_ALG_RSASSA:
       return VerifyRsaSignature(public_key, statement, hash_kind,
                                 raw_sig.rsa_sig);
-    case TpmAlg::TPM_ALG_ECDSA:
+    case TPM_ALG_ECDSA:
       return VerifyEcdsaSignature(public_key, statement, hash_kind,
                                   raw_sig.ecdsa_r, raw_sig.ecdsa_s);
     default:
