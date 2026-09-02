@@ -67,7 +67,14 @@ IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest, StopMonitoring) {
   RunTestCase("StopMonitoring");
 }
 
-IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest, SubprocessCheckbox) {
+// TODO(https://crbug.com/544164040): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SubprocessCheckbox DISABLED_SubprocessCheckbox
+#else
+#define MAYBE_SubprocessCheckbox SubprocessCheckbox
+#endif
+IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest,
+                       MAYBE_SubprocessCheckbox) {
   RunTestCase("SubprocessCheckbox");
 }
 
