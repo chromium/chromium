@@ -504,11 +504,6 @@ BASE_FEATURE_PARAM(std::string,
                    "sidts_session");
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if !defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableFakeCapabilityForTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables mTLS token binding in the identity stack. This allows binding tokens
 // to an mTLS certificate upon receiving the `mtl_token_binding` indicator in
@@ -837,12 +832,6 @@ BASE_FEATURE(kProfilesReordering, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReadContextualAccountCapabilities,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kReadIsSubjectToUniversalOptOutCapability,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReadSupportsWalletPrivatePassesInAutofillCapability,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRestrictDeviceManagementServiceOAuthScope,

@@ -30,32 +30,6 @@ TEST_F(AccountCapabilitiesTest, GetSupportedAccountCapabilityNames) {
   EXPECT_THAT(names, Contains(kCanUseModelExecutionFeaturesName));
 }
 
-#if !defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
-TEST_F(AccountCapabilitiesTest,
-       GetSupportedAccountCapabilityNames_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kEnableFakeCapabilityForTesting);
-
-  auto names =
-      AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
-
-  // Check one of the existing expected account capabilities.
-  EXPECT_THAT(names, Not(Contains(kFakeCapabilityForTestingName)));
-}
-
-TEST_F(AccountCapabilitiesTest,
-       GetSupportedAccountCapabilityNames_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kEnableFakeCapabilityForTesting};
-
-  auto names =
-      AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
-
-  // Check one of the existing expected account capabilities.
-  EXPECT_THAT(names, Contains(kFakeCapabilityForTestingName));
-}
-#endif  // !defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
-
 TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_fetch_family_member_info(),

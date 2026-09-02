@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "account_capabilities_fetcher.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"

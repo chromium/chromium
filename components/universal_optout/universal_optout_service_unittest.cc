@@ -21,7 +21,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -65,22 +64,13 @@ class UniversalOptOutServiceTest : public ::testing::Test {
     pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, false);
   }
 
-  void TearDown() override {
-    AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting();
-  }
-
   void EnableFeatureWithTargetLocations(const std::string& target_locations) {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{base::test::FeatureRefAndParams(
-                                  features::kUniversalOptOut,
-                                  {{"target_locations", target_locations}}),
-                              base::test::FeatureRefAndParams(
-                                  switches::
-                                      kReadIsSubjectToUniversalOptOutCapability,
-                                  {})},
+            features::kUniversalOptOut,
+            {{"target_locations", target_locations}})},
         /*disabled_features=*/{});
-    AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting();
   }
 
   void SetGeoLevel1(const std::string& geo_level1) {

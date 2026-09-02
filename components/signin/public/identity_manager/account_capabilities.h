@@ -59,10 +59,6 @@ class AccountCapabilities {
   const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
 
-  // Resets the cached list of supported account capability names.
-  // Useful for testing scenarios where feature flags change between tests.
-  static void ResetSupportedAccountCapabilityNamesForTesting();
-
   // clang-format off
   // keep-sorted start newline_separated=yes sticky_prefixes=#if,BUILDFLAG group_prefixes=#endif,can,has,is,must
   // clang-format on
@@ -232,11 +228,6 @@ class AccountCapabilities {
   const base::flat_map<std::string, signin::Tribool>& GetCapabilityOverrides()
       const;
 
-  // Internal version of GetSupportedAccountCapabilityNames that calculates the
-  // list on each call, rather than returning a cached value.
-  static std::vector<std::string_view>
-  GetSupportedAccountCapabilityNamesInternal();
-
   friend std::optional<AccountCapabilities>
   signin::AccountCapabilitiesFromServerResponse(
       const base::DictValue& account_capabilities);
@@ -266,15 +257,7 @@ class AccountCapabilities {
   FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
                            CapabilityOverrides);
   FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
-                           ConversionWithJNI_FlagGuardDisabled_CppToJava);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
-                           ConversionWithJNI_FlagGuardDisabled_JavaToCpp);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
                            GetSupportedAccountCapabilityNames);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
-                           GetSupportedAccountCapabilityNames_FlagDisabled);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
-                           GetSupportedAccountCapabilityNames_FlagEnabled);
   FRIEND_TEST_ALL_PREFIXES(AccountTrackerServiceTest,
                            TokenAvailable_AccountCapabilitiesCancelled);
   FRIEND_TEST_ALL_PREFIXES(AccountTrackerServiceTest,

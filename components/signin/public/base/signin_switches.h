@@ -420,14 +420,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(std::string, kCookieBindingUpgradeSessionId);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if !defined(NDEBUG) && !BUILDFLAG(IS_ANDROID)
-// A fake feature corresponding to the kFakeCapabilityForTestingName account
-// capability. This is only used in unit tests (and must be left disabled to
-// prevent fetching the fake capability).
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableFakeCapabilityForTesting);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableMtlsTokenBinding);
@@ -810,14 +802,6 @@ BASE_DECLARE_FEATURE(kProfilesReordering);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kReadContextualAccountCapabilities);
 #endif
-
-// Enables fetching the capability of the same name on all platforms.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kReadIsSubjectToUniversalOptOutCapability);
-
-// Enables fetching the capability of the same name on all platforms.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kReadSupportsWalletPrivatePassesInAutofillCapability);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Kill switch for Device Management Service OAuth scope.
