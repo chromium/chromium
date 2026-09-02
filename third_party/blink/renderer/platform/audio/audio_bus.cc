@@ -701,10 +701,13 @@ scoped_refptr<AudioBus> AudioBus::TryCreateBySampleRateConverting(
   // Sample-rate convert each channel.
   for (unsigned i = 0; i < number_of_destination_channels; ++i) {
     base::span<const float> source = resampler_source_bus->Channel(i)->Span();
-    // Use a request size of 96 to select a 32-tap kernel for backwards
-    // compatibility.
+
+    // TODO(crbug.com/556367042): Investigate using the default request size
+    // instead and rebaseline failing tests to audio resampled via a 64-tap
+    // kernel. Currently using a request size of 64 to select a 32-tap kernel
+    // for backwards compatibility.
     media::SincResampler resampler(
-        sample_rate_ratio, /*request_frames=*/96,
+        sample_rate_ratio, /*request_frames=*/64,
         base::BindRepeating(
             [](base::span<const float>& src, base::span<float> dest) {
               size_t frames_to_copy = std::min(src.size(), dest.size());

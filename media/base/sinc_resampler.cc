@@ -150,13 +150,6 @@ static int CalculateChunkSize(int block_size_, double io_ratio) {
   return block_size_ / io_ratio;
 }
 
-// Static
-size_t SincResampler::KernelSizeFromRequestFrames(int request_frames) {
-  // We want the kernel size to *more* than 1.5 * `request_frames`.
-  constexpr int kSmallKernelLimit = kMaxKernelSize * 3 / 2;
-  return request_frames <= kSmallKernelLimit ? kMinKernelSize : kMaxKernelSize;
-}
-
 SincResampler::SincResampler(double io_sample_rate_ratio,
                              int request_frames,
                              const ReadCB read_cb)
@@ -179,10 +172,10 @@ SincResampler::SincResampler(double io_sample_rate_ratio,
       r1_(input_buffer_),
       r2_(input_buffer_.subspan(kernel_size_ / 2)) {
   CHECK_GE(request_frames, static_cast<int>(kMinRequestSize))
-      << "request_frames must be greater than 1.5 kernels to allow sufficient "
+      << "request_frames must be at least 1.5 kernels to allow sufficient "
          "data for resampling";
   // This means that after the first call to Flush we will have
-  // block_size_ > kernel_size_ and r2_ < r3_.
+  // block_size_ >= kernel_size_ and r2_ < r3_.
 
   InitializeCPUSpecificFeatures();
   DCHECK(convolve_proc_);

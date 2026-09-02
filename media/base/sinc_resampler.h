@@ -28,9 +28,9 @@ class MEDIA_EXPORT SincResampler {
   static constexpr size_t kMaxKernelSize = 64;
   static constexpr size_t kMinKernelSize = 32;
 
-  // Minimum request size. SincResampler requires request_frames > 1.5 *
+  // Minimum request size. SincResampler requires request_frames >= 1.5 *
   // `kernel_size_`, where the minimum kernel size is `kMinKernelSize`.
-  static constexpr size_t kMinRequestSize = kMinKernelSize * 3 / 2 + 1;
+  static constexpr size_t kMinRequestSize = kMinKernelSize * 3 / 2;
 
   // Default request size.  Affects how often and for how much SincResampler
   // calls back for input.  Must be greater than 1.5 * `kernel_size_`.
@@ -51,7 +51,11 @@ class MEDIA_EXPORT SincResampler {
   using ReadCB = base::RepeatingCallback<void(base::span<float> destination)>;
 
   // Returns the kernel size which will be used for a given `request_frames`.
-  static size_t KernelSizeFromRequestFrames(int request_frames);
+  static constexpr size_t KernelSizeFromRequestFrames(int request_frames) {
+    return request_frames >= static_cast<int>(kMaxKernelSize * 3 / 2)
+               ? kMaxKernelSize
+               : kMinKernelSize;
+  }
 
   // Constructs a SincResampler with the specified |read_cb|, which is used to
   // acquire audio data for resampling.  |io_sample_rate_ratio| is the ratio
