@@ -80,7 +80,6 @@ public class TabGridAccessibilityHelperTest {
         int RIGHT = 1;
         int UP = 2;
         int DOWN = 3;
-        int NUM_ENTRIES = 4;
     }
 
     @Rule

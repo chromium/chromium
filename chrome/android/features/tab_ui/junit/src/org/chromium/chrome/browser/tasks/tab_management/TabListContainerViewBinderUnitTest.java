@@ -87,7 +87,6 @@ public class TabListContainerViewBinderUnitTest {
     @Captor ArgumentCaptor<Function<Integer, View>> mFetchViewByIndexCaptor;
     @Captor ArgumentCaptor<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCaptor;
     @Captor ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
-    @Captor ArgumentCaptor<MonotonicObservableSupplier<Boolean>> mOnScrollingSupplierCaptor;
 
     private MonotonicObservableSupplier<Boolean> mIsScrollingSupplier;
     private TabListContainerViewBinder.ViewHolder mViewHolder;

@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -129,7 +128,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock private Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
 
-    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =

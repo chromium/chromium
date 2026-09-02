@@ -147,9 +147,6 @@ public class TabGroupListMediatorUnitTest {
     @Captor
     private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
-    @Captor private ArgumentCaptor<Callback<Boolean>> mDeleteGroupResultCallbackCaptor;
-    @Captor private ArgumentCaptor<PropertyModel> mModalPropertyModelCaptor;
-
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
 
     private PropertyModel mPropertyModel;
