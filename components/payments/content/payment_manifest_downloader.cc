@@ -329,9 +329,10 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
       continue;
     }
 
-    std::vector<std::string> rel_parts =
-        base::SplitString(rel->second.value_or(""), HTTP_LWS,
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    // Link relation types are case-insensitive (RFC 8288 section 2.1).
+    std::vector<std::string> rel_parts = base::SplitString(
+        base::ToLowerASCII(rel->second.value_or("")), HTTP_LWS,
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (std::ranges::contains(rel_parts, "payment-method-manifest")) {
       GURL payment_method_manifest_url = final_url.Resolve(*link_url);
 

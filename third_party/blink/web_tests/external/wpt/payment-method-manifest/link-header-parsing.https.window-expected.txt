@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Link header rel parameter matching is ASCII case-insensitive
-  step_wait_func: Waiting for 2 server access logs Timed out waiting on condition
-Harness: the test ran to completion.

@@ -454,6 +454,25 @@ TEST_F(PaymentMethodManifestDownloaderTest, AbsoluteHttpsHeaderLinkUrl) {
   EXPECT_EQ("https://bobpay.test/manifest.json", GetOriginalURL());
 }
 
+// Relation types are case-insensitive (RFC 8288 section 2.1). Regression test
+// for crbug.com/545645933.
+TEST_F(PaymentMethodManifestDownloaderTest, MixedCaseRelHeaderLinkUrl) {
+  ServerResponse(200, Headers::kSend,
+                 "<manifest.json>; rel=Payment-Method-Manifest",
+                 kNoResponseBody, net::OK);
+
+  EXPECT_EQ("https://bobpay.test/manifest.json", GetOriginalURL());
+}
+
+TEST_F(PaymentMethodManifestDownloaderTest,
+       MixedCaseRelAmongMultipleRelationTypes) {
+  ServerResponse(200, Headers::kSend,
+                 "<manifest.json>; rel=\"prefetch PAYMENT-METHOD-MANIFEST\"",
+                 kNoResponseBody, net::OK);
+
+  EXPECT_EQ("https://bobpay.test/manifest.json", GetOriginalURL());
+}
+
 TEST_F(PaymentMethodManifestDownloaderTest, AbsoluteHttpHeaderLinkUrl) {
   EXPECT_CALL(*this,
               OnManifestDownload(
