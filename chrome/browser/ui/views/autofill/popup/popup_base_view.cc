@@ -114,12 +114,22 @@ class PopupBaseView::Widget : public views::Widget {
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = activatable;
 
-    // `kSecuritySurface` makes the popup to display on top of all other windows
-    // (including system ones, but the support among different OS, versions and
-    // setups is not consistent). This is not required for regular autofill
-    // popup use, but it makes certain attacks (those based on the popup being
-    // obscured) less practical.
-    params.z_order = ui::ZOrderLevel::kSecuritySurface;
+    // `kSecuritySurface` makes the popup display on top of all other windows
+    // (including system ones, but the support among different OS, versions
+    // and setups is not consistent). This is not required for regular
+    // Autofill popup use, but it makes certain attacks (those based on the
+    // popup being obscured) less practical.
+    if constexpr (BUILDFLAG(IS_CHROMEOS)) {
+      // On ChromeOS, `Activatable::kYes` and `kSecuritySurface` are
+      // incompatible because `kSecuritySurface` windows are assigned to the
+      // DragImageAndTooltipContainer, which does not support activation.
+      params.z_order =
+          activatable == views::Widget::InitParams::Activatable::kYes
+              ? ui::ZOrderLevel::kFloatingUIElement
+              : ui::ZOrderLevel::kSecuritySurface;
+    } else {
+      params.z_order = ui::ZOrderLevel::kSecuritySurface;
+    }
 
     Init(std::move(params));
     AddObserver(popup_base_view());

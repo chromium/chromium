@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
 #include "chrome/browser/autofill/autofill_flow_test_util.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
@@ -203,7 +202,7 @@ class AtMemoryInteractiveUiTest : public AutofillUiTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          AtMemoryInteractiveUiTest,
                          Values(TargetElementType::kInputText,
                                 TargetElementType::kInputNumber,
@@ -217,13 +216,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 // (input, number input, textarea, contenteditable) opens the AtMemory popup,
 // allows searching, and replaces the trigger string with the selected value
 // upon suggestion acceptance.
-// TODO(crbug.com/546877846): Fix the popup on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TriggerAndFill DISABLED_TriggerAndFill
-#else
-#define MAYBE_TriggerAndFill TriggerAndFill
-#endif
-IN_PROC_BROWSER_TEST_P(AtMemoryInteractiveUiTest, MAYBE_TriggerAndFill) {
+IN_PROC_BROWSER_TEST_P(AtMemoryInteractiveUiTest, TriggerAndFill) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/test.html")));
 
