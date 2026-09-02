@@ -127,6 +127,10 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL(
                               "/new_password_and_confirmation_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
+
+  // TODO(crbug.com/508127830): Find a better solution to fix the flakiness.
+  // Wait for asynchronous tasks to finish before interacting with the field.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 }
 
 - (void)loadSignupAutofocusPage {
@@ -215,10 +219,6 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 // tapped.
 - (void)testShowKeyboardFromButtonOnProactiveBottomSheet {
   [self loadSignupPage];
-
-  // TODO(crbug.com/508127830): Find a better solution to fix the flakiness.
-  // Wait for asynchronous tasks to finish before interacting with the field.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
