@@ -2019,7 +2019,8 @@ void PdfViewWebPlugin::HandleGetSaveDataBlockMessage(
 void PdfViewWebPlugin::HandleGetSuggestedFileName(
     const base::DictValue& message) {
   client_->PostMessage(PrepareReplyMessage(message).Set(
-      "fileName", GetFileNameForSaveFromUrl(url_)));
+      "fileName", GetFileNameForSaveFromUrlAndSuggestion(
+                      url_, engine_->GetFileNameFromContentDisposition())));
 }
 
 void PdfViewWebPlugin::HandleGetThumbnailMessage(
@@ -2300,10 +2301,13 @@ void PdfViewWebPlugin::SaveToBuffer(pdf::mojom::SaveRequestType request_type,
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-  auto message = base::DictValue()
-                     .Set("type", "saveData")
-                     .Set("token", token)
-                     .Set("fileName", GetFileNameForSaveFromUrl(url_));
+  auto message =
+      base::DictValue()
+          .Set("type", "saveData")
+          .Set("token", token)
+          .Set("fileName",
+               GetFileNameForSaveFromUrlAndSuggestion(
+                   url_, engine_->GetFileNameFromContentDisposition()));
 
   // Expose `edit_mode_` state for integration testing.
   message.Set("editModeForTesting", edit_mode_);

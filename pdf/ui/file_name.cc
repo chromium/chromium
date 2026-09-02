@@ -12,12 +12,16 @@
 
 namespace chrome_pdf {
 
-std::string GetFileNameForSaveFromUrl(const std::string& url) {
+std::string GetFileNameForSaveFromUrlAndSuggestion(
+    const std::string& url,
+    const std::string& suggested_name) {
   // Generate a file name. Unfortunately, MIME type can't be provided, since it
   // requires IO.
+  // Note that the content_disposition parameter is not used here because the
+  // caller already parsed it and extracted out `suggested_name`.
   std::u16string file_name = net::GetSuggestedFilename(
       GURL(url), /*content_disposition=*/std::string(),
-      /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
+      /*referrer_charset=*/std::string(), /*suggested_name=*/suggested_name,
       /*mime_type=*/std::string(), /*default_name=*/std::string());
   return base::UTF16ToUTF8(file_name);
 }

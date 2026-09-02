@@ -2409,6 +2409,31 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
   })"));
 }
 
+TEST_F(PdfViewWebPluginSaveTest, EditedInEditModeWithContentDisposition) {
+  plugin_->EnteredEditMode();
+
+  EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
+            plugin_->GetPluginTextInputType());
+
+  EXPECT_CALL(*engine_ptr_, GetFileNameFromContentDisposition)
+      .WillOnce(Return("custom.pdf"));
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "edited-in-edit-mode",
+    "fileName": "custom.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "save",
+    "saveRequestType": "EDITED",
+    "token": "edited-in-edit-mode",
+  })"));
+}
+
 class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
  protected:
   base::DictValue CreateRequest(pdf::mojom::SaveRequestType request_type,
@@ -2468,6 +2493,25 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, GetSuggestedFileName) {
     "type": "getSuggestedFileNameReply",
     "messageId": "foo",
     "fileName": "example.pdf",
+  })")));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getSuggestedFileName",
+    "messageId": "foo",
+  })"));
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksTest,
+       GetSuggestedFileNameWithContentDisposition) {
+  EXPECT_CALL(*engine_ptr_, GetFileNameFromContentDisposition)
+      .WillOnce(Return("custom.pdf"));
+
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "getSuggestedFileNameReply",
+    "messageId": "foo",
+    "fileName": "custom.pdf",
   })")));
 
   plugin_->OnMessage(ParseMessage(R"({
