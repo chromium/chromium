@@ -582,7 +582,7 @@ public class UrlBarUnitTest {
         mUrlBar.onTouchEvent(evt);
 
         // Since we already have focus, expect zero explicit requests to gain focus.
-        verify(mUrlBar, times(0)).requestFocus();
+        verify(mUrlBar, never()).requestFocus();
     }
 
     @Test
@@ -858,7 +858,7 @@ public class UrlBarUnitTest {
                                 "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "a"));
         mUrlBar.setText(url);
         mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length(), false);
-        verify(mUrlBar, times(0)).calculateVisibleHint();
+        verify(mUrlBar, never()).calculateVisibleHint();
 
         // Keep domain the same, but change the path.
         String url2 =
@@ -868,7 +868,7 @@ public class UrlBarUnitTest {
                                 "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "b"));
         mUrlBar.setText(url2);
         mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length(), false);
-        verify(mUrlBar, times(1)).calculateVisibleHint();
+        verify(mUrlBar).calculateVisibleHint();
         String visibleHint = mUrlBar.getVisibleTextPrefixHint().toString();
         assertEquals(url2.substring(0, NUMBER_OF_VISIBLE_CHARACTERS + 1), visibleHint);
     }
@@ -887,7 +887,7 @@ public class UrlBarUnitTest {
                                 "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "a"));
         mUrlBar.setText(url);
         mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length(), false);
-        verify(mUrlBar, times(0)).calculateVisibleHint();
+        verify(mUrlBar, never()).calculateVisibleHint();
 
         // Change the domain, but keep the path the same.
         String url2 =
@@ -896,7 +896,7 @@ public class UrlBarUnitTest {
                                 "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "a"));
         mUrlBar.setText(url2);
         mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length(), false);
-        verify(mUrlBar, times(0)).calculateVisibleHint();
+        verify(mUrlBar, never()).calculateVisibleHint();
         assertNull(mUrlBar.getVisibleTextPrefixHint());
     }
 

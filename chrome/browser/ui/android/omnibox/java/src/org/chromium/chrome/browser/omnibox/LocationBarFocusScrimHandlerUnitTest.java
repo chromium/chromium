@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
@@ -82,7 +81,7 @@ public class LocationBarFocusScrimHandlerUnitTest {
 
         // A second de-focus shouldn't trigger another hide.
         mScrimHandler.setVisibility(false);
-        verify(mScrimManager, times(1)).hideScrim(any(), eq(true));
+        verify(mScrimManager).hideScrim(any(), eq(true));
     }
 
     @Test

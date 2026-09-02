@@ -1211,7 +1211,7 @@ public class LocationBarMediatorUnitTest {
         assertNull(null, params.postData);
         assertTrue(params.extraHeaders.isEmpty());
         assertFalse(params.openInNewTab);
-        verify(mTab, times(0)).loadUrl(any());
+        verify(mTab, never()).loadUrl(any());
     }
 
     private void testLoadUrl_openInNewTab_base() {
@@ -2634,7 +2634,7 @@ public class LocationBarMediatorUnitTest {
 
         // In the streamlined architecture, onTouchAfterFocus transitions state without
         // calling beginOrResumeInput again.
-        verify(mAutocompleteCoordinator, times(1)).beginInput(any());
+        verify(mAutocompleteCoordinator).beginInput(any());
     }
 
     @Test
@@ -4965,7 +4965,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.beginInput(input);
 
         // Verify beginInput is called only once.
-        verify(mUrlCoordinator, times(1)).beginInput(any());
+        verify(mUrlCoordinator).beginInput(any());
     }
 
     @Test

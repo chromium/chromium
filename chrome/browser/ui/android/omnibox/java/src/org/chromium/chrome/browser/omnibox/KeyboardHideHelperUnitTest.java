@@ -10,7 +10,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
@@ -61,7 +60,7 @@ public class KeyboardHideHelperUnitTest {
         doReturn(500).when(mRootView).getHeight();
         mKeyboardHideHelper.onGlobalLayout();
 
-        verify(mKeyboardHiddenCallback, times(1)).run();
+        verify(mKeyboardHiddenCallback).run();
         assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
     }
 
@@ -88,7 +87,7 @@ public class KeyboardHideHelperUnitTest {
         height.set(500);
         mKeyboardHideHelper.onGlobalLayout();
 
-        verify(mKeyboardHiddenCallback, times(1)).run();
+        verify(mKeyboardHiddenCallback).run();
         assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
     }
 

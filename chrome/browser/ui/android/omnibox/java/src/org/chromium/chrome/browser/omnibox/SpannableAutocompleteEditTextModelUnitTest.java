@@ -13,7 +13,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -97,7 +97,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
 
         clearInvocations(mConnection, mDelegate);
         mModel.dispatchKeyEvent(event);
-        verify(mDelegate, times(0)).super_dispatchKeyEvent(event);
+        verify(mDelegate, never()).super_dispatchKeyEvent(event);
         verify(mConnection).commitAutocomplete();
 
         // Secondary, not directly linked to the test.
@@ -134,7 +134,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
 
         clearInvocations(mConnection, mDelegate);
         mModel.dispatchKeyEvent(event);
-        verify(mConnection, times(0)).commitAutocomplete();
+        verify(mConnection, never()).commitAutocomplete();
         verify(mDelegate).super_dispatchKeyEvent(event);
 
         // Secondary, not directly linked to the test.
@@ -174,7 +174,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
 
         clearInvocations(mConnection, mDelegate);
         mModel.dispatchKeyEvent(event);
-        verify(mConnection, times(0)).commitAutocomplete();
+        verify(mConnection, never()).commitAutocomplete();
         verify(mDelegate).super_dispatchKeyEvent(event);
     }
 

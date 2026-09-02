@@ -395,10 +395,10 @@ public class HintTextUpdaterUnitTest {
         mUserTextSupplier.set("");
 
         mUpdater.onTitleChanged();
-        verify(mTracker, times(1)).shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT);
+        verify(mTracker).shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT);
 
         mUpdater.onTitleChanged();
-        verify(mTracker, times(1)).shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT);
+        verify(mTracker).shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT);
 
         mUpdater.endInput();
         verify(mTracker).dismissed(FeatureConstants.AIM_ACTIVATION_HINT);

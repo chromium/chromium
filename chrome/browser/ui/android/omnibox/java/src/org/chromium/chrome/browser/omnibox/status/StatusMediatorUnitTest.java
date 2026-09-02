@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -238,7 +239,7 @@ public final class StatusMediatorUnitTest {
         assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
         assertEquals(IconTransitionType.ROTATE, icon.getTransitionType());
         icon.getAnimationFinishedCallback().run();
-        verify(mPageInfoIphController, times(1))
+        verify(mPageInfoIphController)
                 .onPermissionDialogShown(
                         any(),
                         eq(mMediator.getPermissionStatusHandlerForTesting().getIphTimeoutMs()));
@@ -657,15 +658,15 @@ public final class StatusMediatorUnitTest {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
 
-        verify(mCookieControlsBridge, times(0)).updateWebContents(any(), any(), anyBoolean());
+        verify(mCookieControlsBridge, never()).updateWebContents(any(), any(), anyBoolean());
 
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
         mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
+        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
 
         mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
+        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
 
         doReturn(NEW_TAB_ID).when(mTab).getId();
         mMediator.onUrlChanged();
@@ -681,10 +682,10 @@ public final class StatusMediatorUnitTest {
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
         mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
+        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
 
         mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
+        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
     }
 
     @Test
@@ -696,7 +697,7 @@ public final class StatusMediatorUnitTest {
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
         mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
+        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
 
         // Tab crashed, need to update the web contents at next url change.
         mMediator.onTabCrashed();
@@ -729,7 +730,7 @@ public final class StatusMediatorUnitTest {
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
         mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(1))
+        verify(mCookieControlsBridge)
                 .updateWebContents(any(), any(), /* isIncognitoBranded= */ eq(true));
     }
 
