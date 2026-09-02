@@ -261,7 +261,8 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
             : GetBoundsBetweenExclusionZones(params);
   }
   const bool tabstrip_enabled =
-      delegate().ShouldLayoutTabStrip() && delegate().ShouldDrawTabStrip();
+      delegate().ShouldLayoutTabStrip() &&
+      delegate().GetTabStripType() == TabStripType::kHorizontal;
   const bool overlay_controls_enabled =
       delegate().IsWindowControlsOverlayEnabled();
   CHECK(!tabstrip_enabled || !overlay_controls_enabled)

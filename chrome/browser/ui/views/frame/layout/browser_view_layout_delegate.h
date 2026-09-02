@@ -34,8 +34,10 @@ class BrowserViewLayoutDelegate {
     kFullscreenWithToolbar
   };
 
-  virtual bool ShouldDrawTabStrip() const = 0;
-  virtual bool ShouldDrawVerticalTabStrip() const = 0;
+  // The style of tab strip present, if any.
+  enum class TabStripType { kNone, kVertical, kHorizontal };
+
+  virtual TabStripType GetTabStripType() const = 0;
   virtual bool IsVerticalTabStripCollapsed() const = 0;
   virtual bool ShouldDrawWebAppFrameToolbar() const = 0;
   virtual bool GetUnframedModeEnabled() const = 0;
