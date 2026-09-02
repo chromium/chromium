@@ -842,6 +842,68 @@ class RunTestTargetsTest(TestCase):
     self.assertNotIn('--single-variant', second_call_args)
 
 
+class GetChangedTestFilesTest(TestCase):
+  def setUp(self):
+    super().setUp()
+    self.setUpPyfakefs()
+    self.fs.create_dir(const.SRC_DIR)
+    self.mock_run_command = mock.patch('utils.command_util.RunCommand').start()
+    self.addCleanup(mock.patch.stopall)
+
+  def test_no_git_ref(self):
+    def run_command_side_effect(cmd, *args, **kwargs):
+      if 'merge-base' in cmd:
+        return 'merge_base_commit_hash\n'
+      if 'diff' in cmd:
+        self.assertIn('merge_base_commit_hash', cmd)
+        return 'foo_unittest.cc\nbar.cc\n'
+      return ''
+
+    self.mock_run_command.side_effect = run_command_side_effect
+
+    self.fs.create_file(
+      os.path.join(const.SRC_DIR, 'foo_unittest.cc'), contents='TEST(A, B) {}'
+    )
+    self.fs.create_file(os.path.join(const.SRC_DIR, 'bar.cc'))
+
+    files = file_finder.GetChangedTestFiles(None)
+    self.assertEqual(['foo_unittest.cc'], files)
+
+  def test_with_git_ref(self):
+    def run_command_side_effect(cmd, *args, **kwargs):
+      if 'merge-base' in cmd:
+        self.fail('git merge-base should not be called')
+      if 'diff' in cmd:
+        self.assertIn('my_custom_ref', cmd)
+        return 'foo_unittest.cc\n'
+      return ''
+
+    self.mock_run_command.side_effect = run_command_side_effect
+
+    self.fs.create_file(
+      os.path.join(const.SRC_DIR, 'foo_unittest.cc'), contents='TEST(A, B) {}'
+    )
+
+    files = file_finder.GetChangedTestFiles('my_custom_ref')
+    self.assertEqual(['foo_unittest.cc'], files)
+
+  def test_deleted_file_ignored(self):
+    def run_command_side_effect(cmd, *args, **kwargs):
+      if 'diff' in cmd:
+        return 'deleted_unittest.cc\nexisting_unittest.cc\n'
+      return ''
+
+    self.mock_run_command.side_effect = run_command_side_effect
+
+    self.fs.create_file(
+      os.path.join(const.SRC_DIR, 'existing_unittest.cc'),
+      contents='TEST(A, B) {}',
+    )
+
+    files = file_finder.GetChangedTestFiles('ref^..ref')
+    self.assertEqual(['existing_unittest.cc'], files)
+
+
 class MainExitCodeTest(TestCase):
   def setUp(self):
     super().setUp()

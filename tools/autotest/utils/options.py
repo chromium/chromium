@@ -22,6 +22,7 @@ class AutotestConfig:
   path_index: str | None
   run_changed: bool | None
   run_related: bool | None
+  git_ref: str | None
   line: int | None
   gtest_filter: str | None
   test_policy_to_pref_mappings_filter: str | None
@@ -164,6 +165,13 @@ def autotest_options(f):
       '--run_related',
       is_flag=True,
       help='Run tests related to files modified since diverging from main.',
+    ),
+    click.option(
+      '--git-ref',
+      '--git_ref',
+      type=str,
+      help='Specifies git reference or commit range which is used to determine'
+      ' related and changed files.',
     ),
     click.option(
       '--line',
