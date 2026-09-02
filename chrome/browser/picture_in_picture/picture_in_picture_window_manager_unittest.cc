@@ -176,6 +176,21 @@ TEST_F(PictureInPictureWindowManagerTest,
       PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture());
 }
 
+TEST_F(PictureInPictureWindowManagerTest, IsInPictureInPicture) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  EXPECT_FALSE(picture_in_picture_window_manager->IsInPictureInPicture());
+
+  MockPictureInPictureWindowController controller;
+  picture_in_picture_window_manager->EnterPictureInPictureWithController(
+      &controller);
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+
+  EXPECT_CALL(controller, Close(/*should_pause_video=*/false));
+  EXPECT_TRUE(picture_in_picture_window_manager->ExitPictureInPicture());
+  EXPECT_FALSE(picture_in_picture_window_manager->IsInPictureInPicture());
+}
+
 TEST_F(PictureInPictureWindowManagerTest, OnEnterVideoPictureInPicture) {
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();

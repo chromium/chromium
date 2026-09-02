@@ -688,6 +688,8 @@ public abstract class ChromeFeatureList {
             "PermissionDedicatedCpssSettingAndroid";
     public static final String PERSIST_ACROSS_REBOOTS = "PersistAcrossReboots";
     public static final String PERSIST_ACROSS_REBOOTS_DEBUG_LOGS = "PersistAcrossRebootsDebugLogs";
+    public static final String PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID =
+            "PictureInPictureMovesToolbarAndroid";
     public static final String POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND =
             "PowerSavingModeBroadcastReceiverInBackground";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
@@ -1306,6 +1308,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(PERSIST_ACROSS_REBOOTS, true);
     public static final CachedFlag sPersistAcrossRebootsDebugLogs =
             newCachedFlag(PERSIST_ACROSS_REBOOTS_DEBUG_LOGS, false);
+    public static final CachedFlag sPictureInPictureMovesToolbarAndroid =
+            newCachedFlag(PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID, false);
     public static final CachedFlag sPowerSavingModeBroadcastReceiverInBackground =
             newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
@@ -1612,6 +1616,7 @@ public abstract class ChromeFeatureList {
                     sPdfReuseFragment,
                     sPersistAcrossReboots,
                     sPersistAcrossRebootsDebugLogs,
+                    sPictureInPictureMovesToolbarAndroid,
                     sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,
                     sProtectRecentlyVisibleTab,

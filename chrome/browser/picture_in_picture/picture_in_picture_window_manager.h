@@ -122,6 +122,10 @@ class PictureInPictureWindowManager {
   // Called to notify that the initiator web contents should be focused.
   void FocusInitiator();
 
+  // Returns whether a picture-in-picture window (video or document pip) is
+  // currently open.
+  bool IsInPictureInPicture() const;
+
   // Gets the web contents in the opener browser window.
   content::WebContents* GetWebContents() const;
 

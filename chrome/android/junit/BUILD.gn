@@ -941,6 +941,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/MediaCapturePickerInvokerTest.java",
       "src/org/chromium/chrome/browser/media/MediaCapturePickerManagerTest.java",
       "src/org/chromium/chrome/browser/media/MediaCaptureUtilsTest.java",
+      "src/org/chromium/chrome/browser/media/PictureInPictureWindowManagerBridgeUnitTest.java",
       "src/org/chromium/chrome/browser/media/TabSharingToolbarMediatorTest.java",
       "src/org/chromium/chrome/browser/media/TabSharingToolbarUiCoordinatorTest.java",
       "src/org/chromium/chrome/browser/media/TabSharingToolbarViewBinderTest.java",

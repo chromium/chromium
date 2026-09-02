@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupp
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.media.PictureInPictureWindowManagerBridge;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
@@ -2063,6 +2064,7 @@ public class ToolbarManager
                         mOmniboxFocusStateSupplier,
                         mFormFieldFocusedSupplier.getObservable(),
                         mFindInPageShowingSupplier,
+                        PictureInPictureWindowManagerBridge.getIsPictureInPictureShowingSupplier(),
                         keyboardAccessoryStateSupplier.getInsetSupplier(),
                         mWindowAndroid.getKeyboardDelegate(),
                         mControlContainer,
@@ -2866,6 +2868,8 @@ public class ToolbarManager
                 && !currentTab.getUrl().isEmpty()) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
+
+        PictureInPictureWindowManagerBridge.initializeWithNative();
 
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }

@@ -6410,6 +6410,12 @@ inline constexpr char kPCCTMinimumHeightDescription[] =
     "When enabled, this sets the minimum "
     "height to 30% or 220dp, whichever is greater, for ephemeral pCCTs.";
 
+inline constexpr char kPictureInPictureMovesToolbarAndroidName[] =
+    "Picture-in-Picture moves toolbar to top on Android";
+inline constexpr char kPictureInPictureMovesToolbarAndroidDescription[] =
+    "When enabled on Android, entering Picture-in-Picture moves the toolbar to "
+    "the top to prevent occlusion by the Picture-in-Picture window.";
+
 inline constexpr char kReadAloudNativeName[] =
     "Read Aloud Native C++ Implementation";
 inline constexpr char kReadAloudNativeDescription[] =

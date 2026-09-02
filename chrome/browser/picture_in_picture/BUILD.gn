@@ -129,6 +129,7 @@ source_set("impl") {
       "auto_picture_in_picture_tab_model_observer_helper.cc",
       "document_picture_in_picture_bridge_android.cc",
       "picture_in_picture_bounds_cache_bridge.cc",
+      "picture_in_picture_window_manager_bridge.cc",
     ]
     deps += [
       "//chrome/android:chrome_jni_headers",

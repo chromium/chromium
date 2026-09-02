@@ -15355,6 +15355,7 @@ from previous Chrome versions.
   <int value="196103097" label="PaintPreviewShowOnStartup:disabled"/>
   <int value="196265972" label="CanvasDrawElement:disabled"/>
   <int value="197180779" label="SearchResumptionModuleAndroid:disabled"/>
+  <int value="197466592" label="PictureInPictureMovesToolbarAndroid:disabled"/>
   <int value="198386935" label="OmitCorsClientCert:enabled"/>
   <int value="198719062" label="WebAssemblyLazyCompilation:disabled"/>
   <int value="198762155" label="SharingPeerConnectionSender:enabled"/>
@@ -19035,6 +19036,7 @@ from previous Chrome versions.
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:enabled"/>
   <int value="1327928774" label="ClipboardHistorySimpleRender:enabled"/>
   <int value="1328029475" label="TerminalAlternativeRenderer:disabled"/>
+  <int value="1329638708" label="PictureInPictureMovesToolbarAndroid:enabled"/>
   <int value="1330264457" label="OmniboxUIExperimentVerticalLayout:disabled"/>
   <int value="1330592192" label="FedCmLightweightMode:enabled"/>
   <int value="1330600806" label="enable-hls-playback:enabled"/>

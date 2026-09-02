@@ -313,6 +313,8 @@ public class ToolbarPositionControllerTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsFindInPageShowing =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIsPictureInPictureShowing =
+            ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
     private final FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
@@ -397,6 +399,7 @@ public class ToolbarPositionControllerTest {
                         mIsOmniboxFocused,
                         mIsFormFieldFocused.getObservable(),
                         mIsFindInPageShowing,
+                        mIsPictureInPictureShowing,
                         mKeyboardAccessoryHeightSupplier,
                         mKeyboardVisibilityDelegate,
                         mControlContainer,
@@ -641,12 +644,14 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID)
     public void testCalculateStateTransition() {
         boolean prefStateChanged = false;
         boolean ntpShowing = false;
         boolean tabSwitcherShowing = false;
         boolean isOmniboxFocused = false;
         boolean isFindInPageShowing = false;
+        boolean isPictureInPictureShowing = false;
         boolean isFormFieldFocusedWithKeyboardVisible = false;
         boolean doesUserPreferTopToolbar = false;
 
@@ -658,6 +663,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -671,6 +677,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -684,6 +691,7 @@ public class ToolbarPositionControllerTest {
                         true,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -697,6 +705,7 @@ public class ToolbarPositionControllerTest {
                         true,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -710,6 +719,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         true,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -722,6 +732,21 @@ public class ToolbarPositionControllerTest {
                         ntpShowing,
                         tabSwitcherShowing,
                         isOmniboxFocused,
+                        true,
+                        isPictureInPictureShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
                         true,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
@@ -736,6 +761,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         true,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -749,6 +775,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -762,6 +789,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -777,6 +805,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -791,6 +820,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
@@ -805,6 +835,7 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         true,
@@ -819,9 +850,67 @@ public class ToolbarPositionControllerTest {
                         tabSwitcherShowing,
                         isOmniboxFocused,
                         isFindInPageShowing,
+                        isPictureInPictureShowing,
                         isFormFieldFocusedWithKeyboardVisible,
                         /* isBrowserControlsHidden= */ false,
                         true,
+                        ControlsPosition.BOTTOM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID)
+    public void testPictureInPictureShowing_snapsToTopAndBack() {
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        assertEquals(ControlsPosition.BOTTOM, (int) mToolbarPosition.get());
+
+        mIsPictureInPictureShowing.set(true);
+        assertEquals(ControlsPosition.TOP, (int) mToolbarPosition.get());
+
+        mIsPictureInPictureShowing.set(false);
+        assertEquals(ControlsPosition.BOTTOM, (int) mToolbarPosition.get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID)
+    public void testPictureInPictureShowing_userPrefersTop_remainsOnTop() {
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+        assertEquals(ControlsPosition.TOP, (int) mToolbarPosition.get());
+
+        mIsPictureInPictureShowing.set(true);
+        assertEquals(ControlsPosition.TOP, (int) mToolbarPosition.get());
+
+        mIsPictureInPictureShowing.set(false);
+        assertEquals(ControlsPosition.TOP, (int) mToolbarPosition.get());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID)
+    public void testPictureInPictureShowing_flagDisabled_remainsAtBottom() {
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        assertEquals(ControlsPosition.BOTTOM, (int) mToolbarPosition.get());
+
+        mIsPictureInPictureShowing.set(true);
+        assertEquals(ControlsPosition.BOTTOM, (int) mToolbarPosition.get());
+
+        mIsPictureInPictureShowing.set(false);
+        assertEquals(ControlsPosition.BOTTOM, (int) mToolbarPosition.get());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID)
+    public void testCalculateStateTransition_flagDisabled_pipIgnored() {
+        assertEquals(
+                StateTransition.NONE,
+                ToolbarPositionController.calculateStateTransition(
+                        /* prefStateChanged= */ false,
+                        /* ntpShowing= */ false,
+                        /* tabSwitcherShowing= */ false,
+                        /* isOmniboxFocused= */ false,
+                        /* isFindInPageShowing= */ false,
+                        /* isPictureInPictureShowing= */ true,
+                        /* isFormFieldFocusedWithKeyboardVisible= */ false,
+                        /* isBrowserControlsHidden= */ false,
+                        /* doesUserPreferTopToolbar= */ false,
                         ControlsPosition.BOTTOM));
     }
 
@@ -1332,6 +1421,7 @@ public class ToolbarPositionControllerTest {
                         /* tabSwitcherShowing= */ false,
                         /* isOmniboxFocused= */ false,
                         /* isFindInPageShowing= */ false,
+                        /* isPictureInPictureShowing= */ false,
                         /* isFormFieldFocusedWithKeyboardVisible= */ false,
                         /* isBrowserControlsHidden= */ true,
                         /* doesUserPreferTopToolbar= */ false,
@@ -1345,6 +1435,7 @@ public class ToolbarPositionControllerTest {
                         /* tabSwitcherShowing= */ false,
                         /* isOmniboxFocused= */ false,
                         /* isFindInPageShowing= */ false,
+                        /* isPictureInPictureShowing= */ false,
                         /* isFormFieldFocusedWithKeyboardVisible= */ false,
                         /* isBrowserControlsHidden= */ true,
                         /* doesUserPreferTopToolbar= */ true,

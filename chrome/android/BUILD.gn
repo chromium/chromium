@@ -3108,6 +3108,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
       "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
       "java/src/org/chromium/chrome/browser/media/PictureInPictureBoundsCacheBridge.java",
+      "java/src/org/chromium/chrome/browser/media/PictureInPictureWindowManagerBridge.java",
       "java/src/org/chromium/chrome/browser/media/VideoOverlayActivity.java",
       "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
       "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",

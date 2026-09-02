@@ -8344,6 +8344,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "picture-in-picture-moves-toolbar-android",
+    "owners": [ "philyan@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 175
+  },
+  {
     "name": "picture-in-picture-mute-control",
     "owners": [ "tibeekeocha@microsoft.com", "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 165
