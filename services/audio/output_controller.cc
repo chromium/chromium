@@ -16,8 +16,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/threading/platform_thread.h"
@@ -677,8 +679,7 @@ void OutputController::ToggleLocalOutput() {
 
 void OutputController::ProcessDeviceChange() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Media.AudioOutputController.ProcessDeviceChangeTime");
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   SendLogMessage(
       base::StringPrintf("%s([state=%s])", __func__, StateToString(state_)));
   TRACE_EVENT0("audio", "OutputController::ProcessDeviceChange");
@@ -693,6 +694,41 @@ void OutputController::ProcessDeviceChange() {
   RecreateStream(RecreateReason::DEVICE_CHANGE);
   if (state_ == kCreated && restore_playback)
     StartStream();
+
+  // Device changes can coincide with system sleep/wake (e.g. closing a laptop
+  // lid or unplugging a dock). Field traces show that ProcessDeviceChange can
+  // start just before suspend or after suspend has already been initiated (e.g.
+  // during a ThreadController::Suspended interval), freezing the audio thread
+  // mid-operation until the machine resumes.
+  //
+  // Because TimeTicks advances during sleep, the elapsed duration accumulates
+  // the entire sleep period. Comparing GetLastSystemResumeTime() > `start_time`
+  // detects that the operation spanned a suspend/resume cycle:
+  // - If still suspended, GetLastSystemResumeTime() returns TimeTicks::Max().
+  // - Once resumed, it returns the wake timestamp (which is > `start_time`).
+  // - If no system suspend/resume was observed, it returns an empty time.
+  bool was_suspended = false;
+  if (base::PowerMonitor::GetInstance()->IsInitialized()) {
+    was_suspended =
+        base::PowerMonitor::GetInstance()->GetLastSystemResumeTime() >
+        start_time;
+  }
+
+  // Record to separate histograms depending on whether sleep occurred:
+  // - ProcessDeviceChangeTime2 uses UmaHistogramMediumTimes (up to 3 min)
+  //   to track normal execution latency without distortion from sleep.
+  // - ProcessDeviceChangeTime.Suspended uses UmaHistogramLongTimes (up to 1
+  //   hr) to capture wake-from-sleep latency, as sleep durations can span
+  //   minutes or hours.
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
+  if (!was_suspended) {
+    base::UmaHistogramMediumTimes(
+        "Media.AudioOutputController.ProcessDeviceChangeTime2", elapsed);
+  } else {
+    base::UmaHistogramLongTimes(
+        "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended",
+        elapsed);
+  }
 }
 
 std::pair<float, bool> OutputController::ReadCurrentPowerAndClip() {

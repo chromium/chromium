@@ -2761,6 +2761,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AudioOutputController.ProcessDeviceChangeTime.Suspended"
+    units="ms" expires_after="2027-03-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The time taken to process an audio output device change when the operation
+    spanned a system sleep / suspend cycle (e.g. closing a laptop lid or
+    unplugging a dock). Emitted when stream recreation finishes after the
+    machine resumes.
+  </summary>
+</histogram>
+
 <histogram name="Media.AudioOutputController.ProxyStreamCreationResult"
     enum="AudioOutputStreamCreationResult" expires_after="2026-09-13">
   <owner>guidou@chromium.org</owner>
@@ -2831,7 +2843,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".CreateTime"/>
     <variant name=".PauseTime"/>
     <variant name=".PlayTime"/>
-    <variant name=".ProcessDeviceChangeTime"/>
+    <variant name=".ProcessDeviceChangeTime2"
+        summary=".ProcessDeviceChangeTime2, excluding intervals where the
+                 machine entered system sleep / suspend"/>
     <variant name=".StartStreamTime"/>
     <variant name=".StopStreamTime"/>
     <variant name=".ToggleLocalOutputTime"/>
