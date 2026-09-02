@@ -33,6 +33,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -230,6 +231,8 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
         CreateBrowserForTest(profile1(), BrowserWindowInterface::TYPE_POPUP);
 
     browser1()->GetWindow()->Activate();
+    BrowserUiController::From(browser1())
+        ->set_update_ui_immediately_for_testing();
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile1()));
@@ -325,6 +328,7 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
     BrowserWindowCreateParams params(type, profile, /*from_user_gesture=*/true);
     BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
     browser->GetWindow()->Show();
+    BrowserUiController::From(browser)->set_update_ui_immediately_for_testing();
     return browser;
   }
 
@@ -340,6 +344,8 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
         web_contents,
         base::StringPrintf("document.title = '%s';", title.c_str())));
     ASSERT_EQ(base::UTF8ToUTF16(title), title_watcher.WaitAndGetTitle());
+    BrowserUiController::From(browser)->ProcessPendingUIUpdates();
+    page_.receiver_.FlushForTesting();
   }
 
   TabSearchUI* webui_controller() { return webui_controller_.get(); }
@@ -394,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_GetTabs) {
   ClearSetupExpectations();
 
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
-  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(0);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
   handler()->mock_debounce_timer()->Fire();
 
@@ -473,11 +479,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
 
   ClearSetupExpectations();
 
-  // We expect TabUpdated to be called when we simulate interaction.
-  base::RunLoop run_loop;
-  EXPECT_CALL(page_, TabUpdated(_))
-      .WillOnce(
-          [&](tab_search::mojom::TabUpdateInfoPtr info) { run_loop.Quit(); });
+  EXPECT_CALL(page_, TabUpdated(_)).Times(0);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
 
   base::TimeTicks tab1_ticks;
@@ -504,12 +506,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
           });
   handler()->GetProfileData(std::move(callback1));
 
-  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  task_runner->FastForwardBy(base::Seconds(1));
-
   // Simulate interaction with the first tab (which is at index 0: ?2).
   browser1()->tab_strip_model()->GetWebContentsAt(0)->Copy();
-  run_loop.Run();
 
   // Get last active time ticks again and verify.
   tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
@@ -902,21 +900,34 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabUpdated) {
 
   ClearSetupExpectations();
 
+  const std::string updated_title = "Updated Tab 1";
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
   EXPECT_CALL(
       page_,
       TabUpdated(Truly(
-          [this](const tab_search::mojom::TabUpdateInfoPtr& tab_update_info) {
+          [this, updated_title](
+              const tab_search::mojom::TabUpdateInfoPtr& tab_update_info) {
             const tab_search::mojom::TabPtr& tab = tab_update_info->tab;
             if (tab->url == this->tab_url1_.spec()) {
-              ExpectNewTab(tab.get(), this->tab_url1_.spec(), kTabName1);
+              ExpectNewTab(tab.get(), this->tab_url1_.spec(), updated_title);
               return true;
             }
             return false;
           })))
       .Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
+
+  content::WebContents* web_contents =
+      browser1()->GetTabStripModel()->GetActiveWebContents();
+  content::TitleWatcher title_watcher(web_contents,
+                                      base::UTF8ToUTF16(updated_title));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf("document.title = '%s';", updated_title.c_str())));
+  ASSERT_EQ(base::UTF8ToUTF16(updated_title), title_watcher.WaitAndGetTitle());
+  BrowserUiController::From(browser1())->ProcessPendingUIUpdates();
+  page_.receiver_.FlushForTesting();
 
   AddTabWithTitle(browser1(), tab_url2_, kTabName2);
   FireTimer();
@@ -1063,6 +1074,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
   }
   ASSERT_TRUE(restored_contents);
   content::WaitForLoadStop(restored_contents);
+  content::TitleWatcher title_watcher(restored_contents, u"Tab 2");
+  ASSERT_EQ(u"Tab 2", title_watcher.WaitAndGetTitle());
 
   base::test::TestFuture<tab_search::mojom::ProfileDataPtr> future2;
   handler()->GetProfileData(future2.GetCallback());
@@ -1192,8 +1205,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
 }
 
 // TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecentlyClosedTabEntriesFilterOpenTabUrls \
   DISABLED_RecentlyClosedTabEntriesFilterOpenTabUrls
 #else
@@ -1296,8 +1308,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
 }
 
 // TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecentlyClosedTabInFuture DISABLED_RecentlyClosedTabInFuture
 #else
 #define MAYBE_RecentlyClosedTabInFuture RecentlyClosedTabInFuture
@@ -1396,8 +1407,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_ReplaceActiveSplitTab) {
 }
 
 // TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TabSearchUsedPref DISABLED_TabSearchUsedPref
 #else
 #define MAYBE_TabSearchUsedPref TabSearchUsedPref
@@ -1412,7 +1422,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabSearchUsedPref) {
   ClearSetupExpectations();
 
   // 1. SwitchToTab (switch from index 0 (active) to index 1 (inactive))
-  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(0);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
 
   const int32_t tab_id1 =
@@ -1448,6 +1458,12 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabSearchUsedPref) {
   handler()->CloseTab(tab_id3);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return browser1()->tab_strip_model()->count() == 2; }));
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(profile1());
+  ASSERT_TRUE(tab_restore_service);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_restore_service->entries().size() >= 1u; }));
 
   EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
   prefs->SetBoolean(tab_search_prefs::kTabSearchUsed, false);
