@@ -333,10 +333,11 @@ void PageContentAnnotationsService::AnnotateVisitBatch() {
   // Cancel any pending timers.
   batch_annotations_start_timer_.Cancel();
 
-  current_visit_annotation_batch_.assign(
-      std::move_iterator(visits_to_annotate_.begin()),
-      std::make_move_iterator(visits_to_annotate_.end()));
-  visits_to_annotate_.clear();
+  current_visit_annotation_batch_.reserve(visits_to_annotate_.size());
+  while (!visits_to_annotate_.empty()) {
+    current_visit_annotation_batch_.push_back(std::move(
+        visits_to_annotate_.extract(visits_to_annotate_.begin()).value()));
+  }
 
   // Used for testing.
   LOCAL_HISTOGRAM_BOOLEAN(
