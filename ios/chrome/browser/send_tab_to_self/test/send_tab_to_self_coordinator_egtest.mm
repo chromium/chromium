@@ -55,6 +55,27 @@ void DismissSnackbar() {
       performAction:grey_tap()];
 }
 
+// Returns a matcher for a snackbar displaying `message`.
+id<GREYMatcher> SnackbarWithMessage(NSString* message) {
+  return grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                    grey_descendant(grey_accessibilityLabel(message)), nil);
+}
+
+// Returns a matcher for a snackbar displaying `message` and `subtext`.
+id<GREYMatcher> SnackbarWithMessageAndSubtext(NSString* message,
+                                              NSString* subtext) {
+  return grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                    grey_descendant(grey_accessibilityLabel(message)),
+                    grey_descendant(grey_accessibilityLabel(subtext)), nil);
+}
+
+// Returns a matcher for an infobar banner label stack displaying `label`.
+id<GREYMatcher> InfobarBannerLabelsStack(NSString* label) {
+  return grey_allOf(
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
+      grey_accessibilityLabel(label), nil);
+}
+
 // Opens the Tab Grid and waits until a tab grid cell is sufficiently visible.
 void OpenTabGridAndWaitTillVisible() {
   [ChromeEarlGreyUI openTabGrid];
@@ -279,10 +300,9 @@ void OpenTabGridAndWaitTillVisible() {
   NSString* snackbarMessage =
       l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
                               base::SysNSStringToUTF16(kTargetDeviceName));
-  id<GREYMatcher> snackbarMatcher = grey_allOf(
-      chrome_test_util::SnackbarViewMatcher(),
-      grey_descendant(grey_accessibilityLabel(snackbarMessage)), nil);
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SnackbarWithMessage(
+                                                       snackbarMessage)];
 
   // Verify that the text fragment was successfully captured and attached to the
   // STTS entry in the model.
@@ -332,11 +352,9 @@ void OpenTabGridAndWaitTillVisible() {
   NSString* snackbarMessage =
       l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
                               base::SysNSStringToUTF16(kTargetDeviceName));
-  id<GREYMatcher> snackbarMatcher = grey_allOf(
-      chrome_test_util::SnackbarViewMatcher(),
-      grey_descendant(grey_accessibilityLabel(snackbarMessage)),
-      grey_descendant(grey_accessibilityLabel(fakeIdentity.userEmail)), nil);
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      SnackbarWithMessageAndSubtext(snackbarMessage,
+                                                    fakeIdentity.userEmail)];
 }
 
 - (void)testSendTabToSelfAndVerifyErrorSnackbar {
@@ -376,10 +394,9 @@ void OpenTabGridAndWaitTillVisible() {
   // Check your internet connection and try again.").
   NSString* errorSnackbarMessage =
       l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST);
-  id<GREYMatcher> snackbarMatcher = grey_allOf(
-      chrome_test_util::SnackbarViewMatcher(),
-      grey_descendant(grey_accessibilityLabel(errorSnackbarMessage)), nil);
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SnackbarWithMessage(
+                                                       errorSnackbarMessage)];
 }
 
 // Tests that a text fragment is correctly consumed and scrolls the page
@@ -902,11 +919,9 @@ void OpenTabGridAndWaitTillVisible() {
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
   NSString* combinedLabel =
       [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  id<GREYMatcher> labelsStackMatcher =
-      grey_allOf(grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
-                 grey_accessibilityLabel(combinedLabel), nil);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:labelsStackMatcher];
+      waitForSufficientlyVisibleElementWithMatcher:InfobarBannerLabelsStack(
+                                                       combinedLabel)];
 
   // Tap "Open" on the banner and verify that the received tab is opened
   // directly in the foreground.
@@ -966,11 +981,9 @@ void OpenTabGridAndWaitTillVisible() {
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
   NSString* combinedLabel =
       [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  id<GREYMatcher> labelsStackMatcher =
-      grey_allOf(grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
-                 grey_accessibilityLabel(combinedLabel), nil);
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:labelsStackMatcher];
+      waitForSufficientlyVisibleElementWithMatcher:InfobarBannerLabelsStack(
+                                                       combinedLabel)];
 
   // Open the Tab Grid to verify the activity label on the auto-opened
   // background tab.
@@ -1258,10 +1271,7 @@ void OpenTabGridAndWaitTillVisible() {
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
   NSString* combinedLabel =
       [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  id<GREYMatcher> labelsStackMatcher =
-      grey_allOf(grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
-                 grey_accessibilityLabel(combinedLabel), nil);
-  [[EarlGrey selectElementWithMatcher:labelsStackMatcher]
+  [[EarlGrey selectElementWithMatcher:InfobarBannerLabelsStack(combinedLabel)]
       assertWithMatcher:grey_nil()];
 
   // Verify tab order: the new tab should be at index 1 (adjacent to index
