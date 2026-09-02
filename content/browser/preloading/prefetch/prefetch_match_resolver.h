@@ -16,7 +16,6 @@
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/preload_serving_metrics.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
