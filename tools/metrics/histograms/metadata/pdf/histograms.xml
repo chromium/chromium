@@ -305,6 +305,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.Ink2TextAnnotationStrikethrough" enum="Boolean"
+    expires_after="2027-02-14">
+  <owner>thestig@chromium.org</owner>
+  <owner>andyphan@chromium.org</owner>
+  <summary>
+    Tracks whether an Ink2 text annotation in the PDF viewer has the
+    strikethrough style applied. This is recorded whenever a non-empty text
+    annotation is committed by the user (either created or edited), but not if
+    it occurs as part of undo or redo operations.
+  </summary>
+</histogram>
+
 <histogram name="PDF.Ink2TextAnnotationTypeface"
     enum="PDFInk2TextAnnotationTypeface" expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>

@@ -1438,9 +1438,10 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
   base::HistogramTester histograms;
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationBold", 0);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationItalic", 0);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationStrikethrough", 0);
 
   {
-    // Send an edited message with bold=true, italic=true, strikethrough=false.
+    // Send an edited message with bold=true, italic=false, strikethrough=false.
     base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
                                                           kPageIndex, kPdfZoom);
 
@@ -1460,6 +1461,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
 
     histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationBold", true, 1);
     histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationItalic", false, 1);
+    histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationStrikethrough", false,
+                                  1);
   }
 
   {
@@ -1482,13 +1485,45 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
 
     histograms.ExpectBucketCount("PDF.Ink2TextAnnotationBold", false, 1);
     histograms.ExpectBucketCount("PDF.Ink2TextAnnotationItalic", true, 1);
+    histograms.ExpectBucketCount("PDF.Ink2TextAnnotationStrikethrough", false,
+                                 2);
     histograms.ExpectTotalCount("PDF.Ink2TextAnnotationBold", 2);
     histograms.ExpectTotalCount("PDF.Ink2TextAnnotationItalic", 2);
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationStrikethrough", 2);
+  }
+
+  {
+    // Send an edited message with bold=false, italic=false, strikethrough=true.
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+    base::ListValue typefaces_edit;
+    typefaces_edit.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+    data.Set("newTypefaces", std::move(typefaces_edit));
+
+    base::DictValue text_attributes_edit = SampleTextAttributesDict();
+    text_attributes_edit.Set("styles", base::DictValue()
+                                           .Set("bold", false)
+                                           .Set("italic", false)
+                                           .Set("strikethrough", true));
+    data.Set("textAttributes", std::move(text_attributes_edit));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+
+    histograms.ExpectBucketCount("PDF.Ink2TextAnnotationBold", false, 2);
+    histograms.ExpectBucketCount("PDF.Ink2TextAnnotationItalic", false, 2);
+    histograms.ExpectBucketCount("PDF.Ink2TextAnnotationStrikethrough", true,
+                                 1);
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationBold", 3);
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationItalic", 3);
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationStrikethrough", 3);
   }
 
   RunNegativeTextAnnotationMetricsTestScenarios(
       kFrontendId, kFontId, kPageIndex, kPdfZoom, histograms,
-      {{"PDF.Ink2TextAnnotationBold", 2}, {"PDF.Ink2TextAnnotationItalic", 2}});
+      {{"PDF.Ink2TextAnnotationBold", 3},
+       {"PDF.Ink2TextAnnotationItalic", 3},
+       {"PDF.Ink2TextAnnotationStrikethrough", 3}});
 }
 
 TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageSizeMetrics) {
