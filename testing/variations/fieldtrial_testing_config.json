@@ -17612,6 +17612,25 @@
             ]
         }
     ],
+    "ServiceWorkerDatabaseDoomOnMissingNextId": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260901",
+                    "enable_features": [
+                        "ServiceWorkerDatabaseDoomOnMissingNextId"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite": [
         {
             "platforms": [
