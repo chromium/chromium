@@ -138,6 +138,7 @@ static_library("test_support") {
   testonly = true
   visibility = [
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_suite",
     "//chrome/test/base/chromeos/crosier:test_support",
   ]
 

@@ -537,13 +537,43 @@ source_set("profile_lifecycle_test_utils") {
 
 source_set("chrome_test_suite") {
   testonly = true
-  sources = [ "chrome_test_suite.h" ]
+  sources = [
+    "chrome_test_suite.cc",
+    "chrome_test_suite.h",
+  ]
   public_deps = [
     "//base",
     "//content/test:test_support",
   ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/signin",
+    "//chrome/common",
+    "//components/content_settings/core/common",
+    "//components/signin/public/identity_manager:test_support",
+    "//media",
+    "//testing/gtest",
+  ]
   if (is_android) {
     public_deps += [ "//components/gcm_driver/instance_id:test_support" ]
+
+    # Android uses //chrome:chrome_android_core instead of the //chrome/app
+    # target.
+    deps += [ "//chrome:chrome_android_core" ]
+  } else {
+    deps += [ "//chrome/app:test_support" ]
+  }
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
+  if (is_mac) {
+    deps += [
+      "//chrome/browser:app_controller_mac",
+      "//chrome/browser:chrome_browser_application_mac",
+    ]
   }
 }
 

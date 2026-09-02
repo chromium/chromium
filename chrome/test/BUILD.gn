@@ -218,7 +218,6 @@ static_library("test_support") {
     "../app/startup_timestamps.h",
     "base/chrome_render_view_test.cc",
     "base/chrome_render_view_test.h",
-    "base/chrome_test_suite.cc",
     "base/chrome_test_utils.cc",
     "base/chrome_unit_test_suite.cc",
     "base/chrome_unit_test_suite.h",
