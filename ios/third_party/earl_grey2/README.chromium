@@ -2,7 +2,7 @@ Name: Earl Grey 2
 Short Name: EG2
 URL: https://github.com/google/EarlGrey
 Version: N/A
-Revision: 048386dc322f30bc4fd54011fb61b668b1e66776
+Revision: 1ec7f9a2750f1fe9c2de4da5cc4b875089b04a07
 Update Mechanism: Autoroll
 License: CC-BY-4.0, Apache-2.0
 License File: LICENSE
