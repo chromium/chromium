@@ -4,16 +4,16 @@
 
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 
+#include <memory>
+
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/default_clock.h"
-#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/lifetime/scheduled_restart_test_utils.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/idle/idle_polling_service.h"
@@ -28,26 +28,6 @@ class TestIdleTimeProvider : public ui::IdleTimeProvider {
  public:
   base::TimeDelta CalculateIdleTime() override { return base::Seconds(0); }
   bool CheckIdleStateIsLocked() override { return false; }
-};
-
-class FakeUpgradeDetector : public UpgradeDetector {
- public:
-  FakeUpgradeDetector()
-      : UpgradeDetector(base::DefaultClock::GetInstance(),
-                        base::DefaultTickClock::GetInstance()) {}
-
-  base::Time GetAnnoyanceLevelDeadline(
-      UpgradeNotificationAnnoyanceLevel level) override {
-    return base::Time();
-  }
-
-  void SetUpgradeAvailable() {
-    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_LOW);
-    set_upgrade_available(UPGRADE_AVAILABLE_REGULAR);
-    NotifyUpgrade();
-  }
-
-  using UpgradeDetector::NotifyUpgrade;
 };
 
 }  // namespace

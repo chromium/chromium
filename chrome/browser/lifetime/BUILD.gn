@@ -232,6 +232,23 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [ "scheduled_restart_manager_unittest.cc" ]
+      deps += [ ":test_support" ]
+    }
+    if (is_linux) {
+      deps += [ "//components/dbus" ]
+    }
+  }
+
+  if (is_win || is_mac || is_linux) {
+    source_set("test_support") {
+      testonly = true
+      public = [ "scheduled_restart_test_utils.h" ]
+      sources = [ "scheduled_restart_test_utils.cc" ]
+      public_deps = [
+        "//base",
+        "//chrome/browser/upgrade_detector",
+      ]
+      deps = [ ":lifetime" ]
     }
   }
 
@@ -281,6 +298,7 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [ "scheduled_restart_manager_browsertest.cc" ]
+      deps += [ ":test_support" ]
     }
 
     if (is_chromeos) {

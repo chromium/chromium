@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_LIFETIME_SCHEDULED_RESTART_MANAGER_H_
 #define CHROME_BROWSER_LIFETIME_SCHEDULED_RESTART_MANAGER_H_
 
-#include <string>
-#include <utility>
+#include <stdint.h>
 
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -77,6 +82,20 @@ class ScheduledRestartManager : public UpgradeObserver,
   // Cancels any active restart schedule and stops monitoring.
   void CancelSchedule();
 
+  // Registers a callback to be notified whenever a restart schedule is set,
+  // changed, or cleared (e.g., used by AppMenuIconController to update UI
+  // badges).
+  using ScheduleChangedCallback = base::RepeatingClosure;
+  [[nodiscard]] base::CallbackListSubscription AddScheduleChangedCallback(
+      ScheduleChangedCallback callback);
+
+  // Evaluates whether an update reminder nudge should be presented based on
+  // unpatched delay, nudge cooldown, and daily lull hours.
+  bool ShouldShowNudge() const;
+
+  // Records the current timestamp as the last nudge presentation time.
+  void RecordNudgeShown();
+
   // UpgradeObserver:
   void OnUpgradeRecommended() override;
 
@@ -96,12 +115,29 @@ class ScheduledRestartManager : public UpgradeObserver,
   // overridden to 30s when `--simulate-upgrade` is active for manual testing.
   static base::TimeDelta GetIdleThreshold();
 
+  // Returns the configured first nudge delay, or 30s during simulation.
+  static base::TimeDelta GetFirstNudgeDelay();
+
+  // Returns the configured nudge cooldown, or 30s during simulation.
+  static base::TimeDelta GetNudgeCooldown();
+
+  // Evaluates whether the given time falls within configured lull windows.
+  bool IsInLullWindow(base::Time time) const;
+
   void set_relaunch_callback_for_testing(base::RepeatingClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     relaunch_callback_ = std::move(callback);
   }
 
  private:
+  struct TimeWindow {
+    uint16_t start_minutes = 0;  // Minutes since midnight [0, 1440).
+    uint16_t end_minutes = 0;    // Minutes since midnight [0, 1440).
+  };
+
+  // Parses a comma-separated list of "HH:MM-HH:MM" lull window ranges.
+  static std::vector<TimeWindow> ParseLullWindows(std::string_view windows_str);
+
   void SetSchedule(ScheduledRestartMode mode)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   void UpdateMonitoringState() VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -110,6 +146,8 @@ class ScheduledRestartManager : public UpgradeObserver,
   void MaybeExecuteRestart() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   const raw_ref<UpgradeDetector> upgrade_detector_;
+  const bool is_upgrade_simulated_;
+  const std::vector<TimeWindow> lull_windows_;
   ScheduledRestartMode mode_ GUARDED_BY_CONTEXT(sequence_checker_) =
       ScheduledRestartMode::kNone;
 
@@ -120,6 +158,8 @@ class ScheduledRestartManager : public UpgradeObserver,
       idle_observation_ GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   base::RepeatingClosure relaunch_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::RepeatingClosureList schedule_changed_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_executing_restart_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
