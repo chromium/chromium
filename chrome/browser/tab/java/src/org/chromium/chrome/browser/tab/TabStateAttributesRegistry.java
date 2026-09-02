@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.Collection;
 import java.util.Map;
 
 /** Registry class to hold multiple TabStateAttributes mapped by Class key. */
@@ -22,6 +23,11 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
 
     public TabStateAttributesRegistry(Tab tab) {
         super(tab);
+    }
+
+    /** Returns all {@link TabStateAttributes} instances registered in this registry. */
+    public Collection<TabStateAttributes> getAllAttributes() {
+        return mAttributesMap.values();
     }
 
     /**

@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /**
@@ -38,6 +39,8 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
             @TabId int placeholderTabId,
             @Nullable Integer taskId) {
         assert !tab.hasParentCollection() : "LiveBackgroundTab must not have a parent collection.";
+        assert !tab.isDestroyed() : "LiveBackgroundTab must not wrap a destroyed tab.";
+        assert !tab.isOffTheRecord() : "LiveBackgroundTab does not support incognito tabs.";
         mPool = pool;
         mTab = tab;
         mPlaceholderTabId = placeholderTabId;
@@ -67,5 +70,15 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
     /** Returns the task ID associated with the background session, or null if none. */
     public @Nullable Integer getTaskId() {
         return mTaskId;
+    }
+
+    /** Marks this background tab dirty to trigger disk persistence by BackgroundTabPool. */
+    public void markDirty() {
+        markDirty(mTab);
+    }
+
+    /** Marks the given tab dirty so its storage observer (BackgroundTabPool) saves it to disk. */
+    public static void markDirty(Tab tab) {
+        TabStateAttributes.setDirty(tab);
     }
 }

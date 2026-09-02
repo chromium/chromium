@@ -84,7 +84,12 @@ public interface ActorForegroundServiceController {
     /** Handles cleanup when a message-triggered task is stopped for a context ID. */
     default void onMessageTriggerTaskStopped(String contextId) {}
 
-    /** Handles restoration and cleanup when an actor task completes. */
+    /**
+     * Handles task completion by persisting associated background tabs to disk and restoring warm
+     * sessions.
+     *
+     * @param taskId The ID of the completed task.
+     */
     default void onTaskCompleted(int taskId) {}
 
     /** Destroys the background actuation manager and cleans up its resources. */

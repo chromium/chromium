@@ -34,9 +34,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
+import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -53,6 +55,7 @@ public class BackgroundTabPoolTest {
     private static final @TabId int TAB_ID_1 = 101;
     private static final @TabId int TAB_ID_2 = 102;
     private static final @TabId int PLACEHOLDER_ID = 999;
+    private static final @ActorTaskId int TASK_ID = 555;
 
     public final @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -82,6 +85,13 @@ public class BackgroundTabPoolTest {
     @Test
     public void testGetProfileToken() {
         assertEquals(PROFILE_TOKEN, mPool.getProfileToken());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testAddDestroyedTabThrowsAssertion() {
+        Tab tab = createMockTab(TAB_ID_1);
+        when(tab.isDestroyed()).thenReturn(true);
+        new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, /* taskId= */ null);
     }
 
     @Test
@@ -207,6 +217,61 @@ public class BackgroundTabPoolTest {
         assertNull(mPool.getLiveTab(TAB_ID_1));
         assertTrue(mPool.getAllTabIds().isEmpty());
         assertNull(mPool.loadTab(TAB_ID_1, PLACEHOLDER_ID));
+    }
+
+    @Test
+    public void testLiveBackgroundTab_staticMarkDirtyTriggersSave() {
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, BackgroundTabPool.class, TabCreationState.FROZEN_ON_RESTORE);
+
+        LiveBackgroundTab liveTab = new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, TASK_ID);
+        mPool.addLiveTab(liveTab);
+        mExecutor.runAll();
+
+        // Calling static LiveBackgroundTab.markDirty(tab) triggers save via TabStateAttributes
+        // observer
+        LiveBackgroundTab.markDirty(tab);
+        mExecutor.runAll();
+
+        // Verify state is persisted by loading cold from a new pool
+        mPool.destroy();
+        BackgroundTabPool coldPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
+        Tab createdTab = createMockTab(TAB_ID_1);
+        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+
+        BackgroundPoolTab coldLoaded = coldPool.loadTab(TAB_ID_1, PLACEHOLDER_ID);
+        assertNotNull(coldLoaded);
+        assertTrue(coldLoaded instanceof ColdBackgroundTab);
+    }
+
+    @Test
+    public void testLiveBackgroundTab_markDirtyTriggersSave() {
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, BackgroundTabPool.class, TabCreationState.FROZEN_ON_RESTORE);
+
+        LiveBackgroundTab liveTab = new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, TASK_ID);
+        mPool.addLiveTab(liveTab);
+        mExecutor.runAll();
+
+        // Calling markDirty() directly triggers save via TabStateAttributes observer
+        liveTab.markDirty();
+        mExecutor.runAll();
+
+        // Verify state is persisted by loading cold from a new pool
+        mPool.destroy();
+        BackgroundTabPool coldPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
+        Tab createdTab = createMockTab(TAB_ID_1);
+        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+
+        BackgroundPoolTab coldLoaded = coldPool.loadTab(TAB_ID_1, PLACEHOLDER_ID);
+        assertNotNull(coldLoaded);
+        assertTrue(coldLoaded instanceof ColdBackgroundTab);
     }
 
     @Test
@@ -359,7 +424,9 @@ public class BackgroundTabPoolTest {
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(tabId);
         when(tab.isOffTheRecord()).thenReturn(false);
+        when(tab.isDestroyed()).thenReturn(false);
         when(tab.hasParentCollection()).thenReturn(false);
+        when(tab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         return tab;
     }

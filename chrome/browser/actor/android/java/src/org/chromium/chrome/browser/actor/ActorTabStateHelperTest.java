@@ -34,6 +34,7 @@ import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -45,6 +46,9 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
+import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -54,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -478,5 +483,50 @@ public class ActorTabStateHelperTest {
 
         verify(mTabModel).removeObserver(tabModelObserver);
         verify(mTabModelSelector, never()).selectModel(anyBoolean());
+    }
+
+    @Test
+    public void testPersistTabsForCompletedTask() {
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.isDestroyed()).thenReturn(false);
+        when(tab1.getUrl()).thenReturn(GURL.emptyGURL());
+        UserDataHost host1 = new UserDataHost();
+        when(tab1.getUserDataHost()).thenReturn(host1);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab1, TabStateAttributes.StoreKey.class, TabCreationState.LIVE_IN_BACKGROUND);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.isDestroyed()).thenReturn(false);
+        when(tab2.getUrl()).thenReturn(GURL.emptyGURL());
+        UserDataHost host2 = new UserDataHost();
+        when(tab2.getUserDataHost()).thenReturn(host2);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab2, TabStateAttributes.StoreKey.class, TabCreationState.LIVE_IN_BACKGROUND);
+
+        BackgroundSession session = new BackgroundSession(tab1, 500);
+        session.addTab(tab2);
+
+        List<BackgroundSession> sessions = Collections.singletonList(session);
+
+        // Before completion, attributes are UNTIDY
+        TabStateAttributes attr1 =
+                TabStateAttributesRegistry.getAttributesFor(
+                        tab1, TabStateAttributes.StoreKey.class);
+        TabStateAttributes attr2 =
+                TabStateAttributesRegistry.getAttributesFor(
+                        tab2, TabStateAttributes.StoreKey.class);
+        assertEquals(DirtinessState.UNTIDY, attr1.getDirtinessState());
+        assertEquals(DirtinessState.UNTIDY, attr2.getDirtinessState());
+
+        // Calling persistTabsForCompletedTask transitions both to DIRTY
+        ActorTabStateHelper.persistTabsForCompletedTask(sessions, 500);
+
+        assertEquals(DirtinessState.DIRTY, attr1.getDirtinessState());
+        assertEquals(DirtinessState.DIRTY, attr2.getDirtinessState());
+
+        // Calling with unknown taskId is a no-op
+        ActorTabStateHelper.persistTabsForCompletedTask(sessions, 999);
     }
 }
