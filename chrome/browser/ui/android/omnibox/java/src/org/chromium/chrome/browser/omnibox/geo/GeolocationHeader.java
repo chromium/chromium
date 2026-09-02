@@ -83,16 +83,16 @@ public class GeolocationHeader {
     /** The maximum age in milliseconds of a location before we'll request a refresh. */
     @VisibleForTesting static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000; // 5 minutes
 
-    /** The X-Geo header prefix, preceding any location descriptors */
+    /** The X-Geo header prefix, preceding any location descriptors. */
     private static final String XGEO_HEADER_PREFIX = "X-Geo:";
 
     /**
      * The location descriptor separator used in the X-Geo header to separate encoding prefix, and
-     * encoded descriptors
+     * encoded descriptors.
      */
     private static final String LOCATION_SEPARATOR = " ";
 
-    /** The location descriptor prefix used in the X-Geo header to specify a proto wire encoding */
+    /** The location descriptor prefix used in the X-Geo header to specify a proto wire encoding. */
     private static final String LOCATION_PROTO_PREFIX = "w";
 
     private static final String DUMMY_URL_QUERY = "some_query";

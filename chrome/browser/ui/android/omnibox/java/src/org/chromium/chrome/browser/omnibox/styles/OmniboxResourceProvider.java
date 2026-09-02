@@ -835,7 +835,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Returns a drawable for a given attribute depending on a {@link BrandedColorScheme}
+     * Returns a drawable for a given attribute depending on a {@link BrandedColorScheme}.
      *
      * @param context The {@link Context} used to retrieve resources.
      * @param brandedColorScheme {@link BrandedColorScheme} to use.

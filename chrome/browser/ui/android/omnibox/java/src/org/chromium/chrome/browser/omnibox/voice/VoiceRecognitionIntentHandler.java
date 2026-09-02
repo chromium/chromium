@@ -303,7 +303,7 @@ public class VoiceRecognitionIntentHandler {
         return results;
     }
 
-    /** Start tracking query duration by capturing when it started */
+    /** Start tracking query duration by capturing when it started. */
     private void startTrackingQueryDuration() {
         mQueryStartTimeMs = android.os.SystemClock.elapsedRealtime();
     }

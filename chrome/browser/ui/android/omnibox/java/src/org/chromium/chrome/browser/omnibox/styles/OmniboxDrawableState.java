@@ -21,7 +21,7 @@ public class OmniboxDrawableState {
     /** Embedded drawable object. */
     public final Drawable drawable;
 
-    /** Whether supplied drawable can be tinted */
+    /** Whether supplied drawable can be tinted. */
     public final boolean allowTint;
 
     /** Whether drawable should be rounded. */
