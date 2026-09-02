@@ -2543,16 +2543,9 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_IncognitoButton[] = {
     {"incognito_button", "true"}};
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
-    {"group_hover_card", "true"},
-    {"incognito_button", "true"}};
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
-    {"enable_by_default", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with incognito-button", kAndroidVerticalTabs_IncognitoButton, nullptr},
-    {"with all experimental features", kAndroidVerticalTabs_All, nullptr},
-    {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
