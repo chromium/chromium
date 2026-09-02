@@ -1762,8 +1762,7 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.panelActive())
         .waitFor(isActive => !isActive);
     try {
-      await this.host.createTab(
-          'https://www.google.com', {openInBackground: false});
+      await this.host.createTab(location.href, {openInBackground: true});
     } catch {
     }
   }

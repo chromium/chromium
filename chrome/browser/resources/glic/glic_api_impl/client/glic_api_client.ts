@@ -10,7 +10,7 @@ import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
-import {getPinCandidatesOptionsFromClient, pinCandidateToClient} from '../host/conversions.js';
+import {createTabOptionsFromClient, getPinCandidatesOptionsFromClient, pinCandidateToClient, tabDataToClient, urlFromClient} from '../host/conversions.js';
 import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {assertNever} from '../transport/messaging.js';
@@ -34,7 +34,7 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
   constructor(
       private directPair: ReturnType<
           typeof createDirectMessagingPair<WebClientHost, WebClient>>,
-      private handler?: WebClientHandlerRemote,
+      private handler: WebClientHandlerRemote,
   ) {}
 
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
@@ -359,7 +359,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       public webClient: GlicWebClient,
       directPair: ReturnType<
           typeof createDirectMessagingPair<WebClientHost, WebClient>>,
-      private handler?: WebClientHandlerRemote,
+      private handler: WebClientHandlerRemote,
   ) {
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
@@ -408,7 +408,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     }
   }
 
-  getHandler(): WebClientHandlerRemote|undefined {
+  getHandler(): WebClientHandlerRemote {
     return this.handler;
   }
 
@@ -560,15 +560,14 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     return this.formFactor!;
   }
 
-  async createTab(url: string, options: CreateTabOptions): Promise<TabData> {
-    const result = await this.clientRemote.requestWithResponse('createTab', {
-      url,
-      options,
-    });
-    if (!result.tabData) {
+  async createTab(url: string, options: CreateTabOptions = {}):
+      Promise<TabData> {
+    const response = await this.handler.createTab(
+        urlFromClient(url), createTabOptionsFromClient(options));
+    if (!response.tabData) {
       throw new Error('createTab: failed');
     }
-    return convertTabDataFromPrivate(result.tabData);
+    return tabDataToClient(response.tabData);
   }
 
   async activateTabWithUrl(exactUrl: string, options: ActivateTabOptions = {}):
@@ -1186,9 +1185,6 @@ class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]>
       return;
     }
     const handler = this.host.getHandler();
-    if (!handler) {
-      return;
-    }
     this.isConnected = true;
     this.receiver = new PinCandidatesObserverReceiver(this);
     handler.subscribeToPinCandidates(

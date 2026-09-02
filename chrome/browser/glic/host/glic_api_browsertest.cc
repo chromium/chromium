@@ -4442,9 +4442,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.CreateTab",
       GlicRequestEvent::kRequestReceivedWhileInactive, 1);
-
-  // Confirm that this request gets latency metrics recorded.
-  histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
 }
 
 class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTest {

@@ -171,28 +171,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     }
   }
 
-  async createTab(request: {
-    url: string,
-    options: {openInBackground?: boolean, windowId?: string},
-  }) {
-    const response = await this.handler.createTab(urlFromClient(request.url), {
-      openInBackground: request.options.openInBackground === true,
-      windowId: idFromClient(request.options.windowId),
-    });
-    const tabData = response.tabData;
-    if (tabData) {
-      return {
-        tabData: {
-          tabId: idToClient(tabData.tabId),
-          windowId: idToClient(tabData.windowId),
-          url: urlToClient(tabData.url),
-          title: optionalToClient(tabData.title),
-        },
-      };
-    }
-    return {};
-  }
-
   async activateTabWithUrl(request: {
     exactUrl: string,
     options: {pattern?: string, fallbackWindowId?: string},

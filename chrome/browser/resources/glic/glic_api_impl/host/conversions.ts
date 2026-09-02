@@ -20,9 +20,9 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, CounterAbuseVerdict as CounterAbuseVerdictMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, HostCapability as HostCapabilityMojo, ImageBytesResult as ImageBytesResultMojo, ImageInfo as ImageInfoMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, OpenPinnedTabPickerOptions as OpenPinnedTabPickerOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SkillPreview as SkillPreviewMojo, SkillsPayload as SkillsPayloadMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContextOptions as TabContextOptionsMojo, TabContextResult as TabContextResultMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
+import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, CounterAbuseVerdict as CounterAbuseVerdictMojo, CreateTabOptions as CreateTabOptionsMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, HostCapability as HostCapabilityMojo, ImageBytesResult as ImageBytesResultMojo, ImageInfo as ImageInfoMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, OpenPinnedTabPickerOptions as OpenPinnedTabPickerOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SkillPreview as SkillPreviewMojo, SkillsPayload as SkillsPayloadMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContextOptions as TabContextOptionsMojo, TabContextResult as TabContextResultMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
 import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, ScreenshotCompressionQuality as ScreenshotCompressionQualityMojo, ScreenshotImageFormat as ScreenshotImageFormatMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
-import type {CaptureRegionResult, ConversationInfo, CounterAbuseVerdict, FileUploadPolicyState as FileUploadPolicyStateApi, GetPinCandidatesOptions, HostCapability, InvocationPayload, OpenPinnedTabPickerOptions, PageMetadata, PanelOpeningData, PanelState, PinCandidate, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, SkillPreview, SkillsPayload, TabContextOptions, TabData, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
+import type {CaptureRegionResult, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState as FileUploadPolicyStateApi, GetPinCandidatesOptions, HostCapability, InvocationPayload, OpenPinnedTabPickerOptions, PageMetadata, PanelOpeningData, PanelState, PinCandidate, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, SkillPreview, SkillsPayload, TabContextOptions, TabData, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
 import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, Platform, WebClientMode} from '../../glic_api/glic_api.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
 import type {ResponseExtras} from '../transport/messaging.js';
@@ -559,6 +559,14 @@ export function openPinnedTabPickerOptionsToMojo(
     return null;
   }
   return {};
+}
+
+export function createTabOptionsFromClient(options: CreateTabOptions = {}):
+    CreateTabOptionsMojo {
+  return {
+    openInBackground: options.openInBackground ?? false,
+    windowId: idFromClient(options.windowId),
+  };
 }
 
 export function byteArrayFromClient(buffer: ArrayBuffer): number[] {

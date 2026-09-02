@@ -99,7 +99,7 @@ export class GlicBrowserHostSkills implements SkillsClientInterface,
 
   initialize(
       initialState: WebClientInitialStatePrivate,
-      handler?: WebClientHandlerRemote) {
+      handler: WebClientHandlerRemote) {
     this.setSkillsEnabled(initialState.enableSkills);
 
     // Support legacy behavior (which had these functions exist or not exist
@@ -115,14 +115,12 @@ export class GlicBrowserHostSkills implements SkillsClientInterface,
       this.getSkillToInvoke = undefined;
     }
 
-    if (handler) {
-      this.skillsHandler = maybeWrapWithLogging(
-          new SkillsHandlerRemote(), {prefix: 'SkillsHandler'});
-      this.skillsClientReceiver = new SkillsClientReceiver(this);
-      handler.createSkillsHandler(
-          this.skillsHandler.$.bindNewPipeAndPassReceiver(),
-          this.skillsClientReceiver.$.bindNewPipeAndPassRemote());
-    }
+    this.skillsHandler = maybeWrapWithLogging(
+        new SkillsHandlerRemote(), {prefix: 'SkillsHandler'});
+    this.skillsClientReceiver = new SkillsClientReceiver(this);
+    handler.createSkillsHandler(
+        this.skillsHandler.$.bindNewPipeAndPassReceiver(),
+        this.skillsClientReceiver.$.bindNewPipeAndPassRemote());
   }
 
   destroySkills(): void {

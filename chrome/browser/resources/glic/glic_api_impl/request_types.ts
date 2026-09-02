@@ -70,18 +70,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 98},
     },
     {
-      name: 'createTab',
-      request: defMessage<{
-        url: string,
-        options: {openInBackground?: boolean, windowId?: string},
-      }>(),
-      response: defMessage<{
-        // Undefined on failure.
-        tabData?: TabDataPrivate,
-      }>(),
-      histogram: {id: 3},
-    },
-    {
       name: 'activateTabWithUrl',
       request: defMessage<{
         exactUrl: string,
@@ -785,7 +773,7 @@ type InterfaceHistogramIds<I extends InterfaceDef> = {
 export const RECORDED_REQUEST_IDS = {
   WebClientCreated: 1,
   WebClientInitialized: 2,
-  CreateTab: 3,
+  // Do not reuse deleted request ID: 3,
   OpenGlicSettingsPage: 4,
   ClosePanel: 5,
   ClosePanelAndShutdown: 6,
