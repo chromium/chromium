@@ -32,26 +32,23 @@ self.onmessage = async function(e) {
       if (devicePromise) await devicePromise;
       const args = e.data.args || [];
       const target = e.data.elementImage;
-      const destination = { texture: ctx.getCurrentTexture() };
+      const destDict = {texture: ctx.getCurrentTexture()};
 
       const sourceDict = { source: target };
-      const destDict = { destination: destination };
 
       if (args.length === 6) {
         sourceDict.sourceX = args[0];
         sourceDict.sourceY = args[1];
         sourceDict.sourceWidth = args[2];
         sourceDict.sourceHeight = args[3];
-        destDict.width = args[4];
-        destDict.height = args[5];
+        destDict.size = {width: args[4], height: args[5]};
       } else if (args.length === 4) {
         sourceDict.sourceX = args[0];
         sourceDict.sourceY = args[1];
         sourceDict.sourceWidth = args[2];
         sourceDict.sourceHeight = args[3];
       } else if (args.length === 2) {
-        destDict.width = args[0];
-        destDict.height = args[1];
+        destDict.size = {width: args[0], height: args[1]};
       }
 
       queue.drawElementImageToTexture(sourceDict, destDict);

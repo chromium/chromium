@@ -50,8 +50,6 @@
           usage: GPUTextureUsage.COPY_DST
         });
 
-        const destination = { texture: texture };
-
         // Helper to generate a source dict.
         function makeSource(src, sx, sy, swidth, sheight) {
           const source = { source: src };
@@ -63,10 +61,13 @@
         }
 
         // Helper to generate a dest dict.
-        function makeDest(dest, width, height) {
-          const d = { destination: dest };
-          if (width !== undefined) d.width = width;
-          if (height !== undefined) d.height = height;
+        function makeDest(tex, width, height) {
+          const d = { texture: tex }
+          if (width !== undefined || height !== undefined) {
+            d.size = {};
+          }
+          if (width !== undefined) d.size.width = width;
+          if (height !== undefined) d.size.height = height;
           return d;
         }
 
@@ -74,10 +75,10 @@
         // Must specify all or none.
 
         // None specified: should NOT throw.
-        queue.drawElementImageToTexture(makeSource(child), makeDest(destination));
+        queue.drawElementImageToTexture(makeSource(child), makeDest(texture));
 
         // All specified: should NOT throw.
-        queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination));
+        queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(texture));
 
         // Mismatched: should throw OperationError.
         const mismatchSrcCases = [
@@ -91,49 +92,28 @@
 
         for (const src of mismatchSrcCases) {
           assert_throws_dom("OperationError",
-            () => queue.drawElementImageToTexture(src, makeDest(destination)),
+            () => queue.drawElementImageToTexture(src, makeDest(texture)),
             `Should throw OperationError for mismatched source params: ${JSON.stringify(src)}`
           );
         }
 
         // 2. Verify (width, height) validation.
-        // Must specify neither or both.
 
         // Neither specified: should NOT throw.
-        queue.drawElementImageToTexture(makeSource(child), makeDest(destination));
+        queue.drawElementImageToTexture(makeSource(child), makeDest(texture));
 
         // Both specified: should NOT throw.
-        queue.drawElementImageToTexture(makeSource(child), makeDest(destination, 10, 10));
-
-        // Mismatched: should throw OperationError.
-        const mismatchDestCases = [
-          makeDest(destination, 10), // Only width
-          makeDest(destination, undefined, 10), // Only height
-        ];
-
-        for (const dest of mismatchDestCases) {
-          assert_throws_dom("OperationError",
-            () => queue.drawElementImageToTexture(makeSource(child), dest),
-            `Should throw OperationError for mismatched dest params: ${JSON.stringify(dest)}`
-          );
-        }
+        queue.drawElementImageToTexture(makeSource(child), makeDest(texture, 10, 10));
 
         // 3. Mixed cases.
         // Valid sx/sy/swidth/sheight (all) and valid width/height (both) -> should not throw.
-        queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10, 10));
+        queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(texture, 10, 10));
 
         // Mismatched sx/sy/swidth/sheight (some) and valid width/height (both) -> should throw OperationError.
         assert_throws_dom("OperationError",
-          () => queue.drawElementImageToTexture(makeSource(child, 0, 0, 10), makeDest(destination, 10, 10)),
+          () => queue.drawElementImageToTexture(makeSource(child, 0, 0, 10), makeDest(texture, 10, 10)),
           "Should throw OperationError for mismatched source and valid dest"
         );
-
-        // Valid sx/sy/swidth/sheight (all) and mismatched width/height (one) -> should throw OperationError.
-        assert_throws_dom("OperationError",
-          () => queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10)),
-          "Should throw OperationError for valid source and mismatched dest"
-        );
-
       }, "drawElementImageToTexture parameter group validation");
     </script>
   </body>

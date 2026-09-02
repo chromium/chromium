@@ -4,8 +4,14 @@
 
 // https://gpuweb.github.io/gpuweb/
 
+// TODO(paint-dev): This is obsolete and should be removed along with
+// GPUQueue.copyElementImageToTexture.
 dictionary GPUCopyElementImageDestination {
     required GPUImageCopyTextureTagged destination;
     GPUIntegerCoordinate width;
     GPUIntegerCoordinate height;
+};
+
+dictionary GPUDrawElementImageDestination : GPUImageCopyTextureTagged {
+    GPUExtent3D size;
 };

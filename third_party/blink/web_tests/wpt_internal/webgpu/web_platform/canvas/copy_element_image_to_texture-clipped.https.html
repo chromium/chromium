@@ -40,7 +40,7 @@
     await resizeToPixelGrid(cvs);
     queue.drawElementImageToTexture(
       { source: cvs.firstElementChild },
-      { destination: { texture: ctx.getCurrentTexture() }});
+      { texture: ctx.getCurrentTexture() });
     takeScreenshot();
   </script>
 </html>

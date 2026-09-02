@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_copy_element_image_destination.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_copy_element_image_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_draw_element_image_destination.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_draw_element_image_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texel_copy_texture_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuextent3ddict_unsignedlongenforcerangesequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -499,7 +501,7 @@ void GPUQueue::copyElementImageToTexture(
 
 void GPUQueue::drawElementImageToTexture(
     GPUDrawElementImageSource* source,
-    GPUCopyElementImageDestination* destination,
+    GPUDrawElementImageDestination* destination,
     ExceptionState& exception_state) {
   if (source->hasSourceX() != source->hasSourceY() ||
       source->hasSourceX() != source->hasSourceWidth() ||
@@ -510,11 +512,13 @@ void GPUQueue::drawElementImageToTexture(
         "(sourceX, sourceY, sourceWidth, sourceHeight).");
     return;
   }
-  if (destination->hasWidth() != destination->hasHeight()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Must specify neither or both of (width,height).");
-    return;
+  std::optional<wgpu::Extent3D> dawn_copy_size;
+  if (destination->hasSize()) {
+    dawn_copy_size.emplace();
+    if (!ConvertToDawn(destination->size(), &dawn_copy_size.value(), device_,
+                       exception_state)) {
+      return;
+    }
   }
 
   std::optional<float> sx;
@@ -530,13 +534,13 @@ void GPUQueue::drawElementImageToTexture(
 
   std::optional<uint32_t> width;
   std::optional<uint32_t> height;
-  if (destination->hasWidth()) {
-    width = destination->width();
-    height = destination->height();
+  if (dawn_copy_size.has_value()) {
+    width = dawn_copy_size->width;
+    height = dawn_copy_size->height;
   }
 
   DrawElementImageToTextureInternal(source->source(), sx, sy, swidth, sheight,
-                                    width, height, destination->destination(),
+                                    width, height, destination,
                                     exception_state);
 }
 

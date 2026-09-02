@@ -23,6 +23,7 @@ class GPUBuffer;
 class GPUCommandBuffer;
 class GPUCopyElementImageDestination;
 class GPUCopyElementImageSource;
+class GPUDrawElementImageDestination;
 class GPUDrawElementImageSource;
 class GPUImageCopyExternalImage;
 class GPUImageCopyTextureTagged;
@@ -88,11 +89,13 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                   GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
+  // TODO(paint-dev): This is obsolete and should be removed in favor of
+  // drawElementImageToTexture.
   void copyElementImageToTexture(GPUCopyElementImageSource* source,
                                  GPUCopyElementImageDestination* destination,
                                  ExceptionState& exception_state);
   void drawElementImageToTexture(GPUDrawElementImageSource* source,
-                                 GPUCopyElementImageDestination* destination,
+                                 GPUDrawElementImageDestination* destination,
                                  ExceptionState& exception_state);
   // }}} End of WebIDL binding implementation.
 
