@@ -34,6 +34,9 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
+// Resets the header state, clearing all internal properties.
+- (void)reset;
+
 // Helper to create a circular icon button for header accessories.
 + (UIButton*)createCircularIconButtonWithIcon:(UIImage*)icon
                                        action:(UIAction*)action;

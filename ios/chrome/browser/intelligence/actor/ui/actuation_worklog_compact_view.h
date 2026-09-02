@@ -37,6 +37,9 @@
                     chip:(ActuationWorklogChip*)chip
                 animated:(BOOL)animated;
 
+// Resets and purges all current step views and queued transitions.
+- (void)reset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_COMPACT_VIEW_H_

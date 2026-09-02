@@ -46,6 +46,12 @@ using enum actor::ToolType;
   }
 }
 
+- (void)reset {
+  [_items removeAllObjects];
+  [_chips removeAllObjects];
+  _taskTitle = nil;
+}
+
 @end
 
 class ActuationWorklogMediatorTest : public PlatformTest {
@@ -139,12 +145,14 @@ TEST_F(ActuationWorklogMediatorTest, TestConsecutiveDeduplication) {
   EXPECT_NSEQ(fake_consumer_.items[2].title, @"Action A");
 }
 
-// Tests that state transitions toggle actuationActive without emitting items.
-TEST_F(ActuationWorklogMediatorTest, TestStateTransitionsDoNotEmitItems) {
+// Tests the different state transitions.
+TEST_F(ActuationWorklogMediatorTest, TestTaskLifecycleTransitionsAndReset) {
   EXPECT_FALSE(fake_consumer_.actuationActive);
 
-  ChangeState(kActing, kInit);
+  RegisterTask();
   EXPECT_TRUE(fake_consumer_.actuationActive);
+  ASSERT_EQ(fake_consumer_.items.count, 1u);
+  ASSERT_NE(fake_consumer_.taskTitle, nil);
 
   ChangeState(kReflecting);
   EXPECT_TRUE(fake_consumer_.actuationActive);
@@ -152,4 +160,16 @@ TEST_F(ActuationWorklogMediatorTest, TestStateTransitionsDoNotEmitItems) {
   EndActuation();
   EXPECT_FALSE(fake_consumer_.actuationActive);
   EXPECT_EQ(fake_consumer_.items.count, 0u);
+  EXPECT_EQ(fake_consumer_.taskTitle, nil);
+}
+
+// Tests that disconnecting the mediator resets the consumer.
+TEST_F(ActuationWorklogMediatorTest, TestDisconnectResetsConsumer) {
+  RegisterTask();
+  ASSERT_EQ(fake_consumer_.items.count, 1u);
+  ASSERT_NE(fake_consumer_.taskTitle, nil);
+
+  [mediator_ disconnect];
+  EXPECT_EQ(fake_consumer_.items.count, 0u);
+  EXPECT_EQ(fake_consumer_.taskTitle, nil);
 }

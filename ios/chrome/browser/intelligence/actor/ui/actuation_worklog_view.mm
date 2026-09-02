@@ -204,6 +204,16 @@ const CGFloat kSpringDamping = 1.0;
                    completion:nil];
 }
 
+- (void)reset {
+  for (UIView* view in [_itemsStackView.arrangedSubviews copy]) {
+    [view removeFromSuperview];
+  }
+  [_itemViews removeAllObjects];
+  _collapsed = NO;
+  _chipContainer.hidden = YES;
+  _chipContainer.alpha = 0.0;
+}
+
 #pragma mark - ActuationWorklogItemViewDelegate
 
 - (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView {

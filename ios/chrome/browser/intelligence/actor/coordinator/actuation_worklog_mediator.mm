@@ -73,6 +73,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }
 
 - (void)disconnect {
+  [_consumer reset];
   _consumer = nil;
   _latestEmittedTaskUpdate = nil;
 }
@@ -142,6 +143,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                     finalState:(actor::ActorTaskState)finalState {
   _latestEmittedTaskUpdate = nil;
   [_consumer setActuationActive:NO];
+  [_consumer reset];
 }
 
 @end

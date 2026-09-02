@@ -24,6 +24,9 @@
                          chip:(ActuationWorklogChip*)chip
                      animated:(BOOL)animated;
 
+// Resets and clears all worklog timeline items and state.
+- (void)reset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_CONSUMER_H_

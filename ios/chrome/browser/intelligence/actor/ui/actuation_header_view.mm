@@ -63,6 +63,14 @@ UIImage* DefaultGeminiLogo() {
   return self;
 }
 
+- (void)reset {
+  self.title = nil;
+  self.subtitle = nil;
+  self.actuating = NO;
+  self.primaryAccessoryButton = nil;
+  self.secondaryAccessoryButton = nil;
+}
+
 // TODO(crbug.com/552512657): Add helper for textual capsule/pill buttons.
 + (UIButton*)createCircularIconButtonWithIcon:(UIImage*)icon
                                        action:(UIAction*)action {

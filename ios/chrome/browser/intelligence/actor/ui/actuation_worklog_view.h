@@ -53,6 +53,9 @@
 // Passing nil hides the chip.
 - (void)setChip:(ActuationWorklogChip*)chip;
 
+// Resets all timeline items, chip, and collapse state.
+- (void)reset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_H_

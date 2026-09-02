@@ -93,6 +93,14 @@ using intelligence::actor::kSpacingLarge;
   [self scrollToBottomAnimated:animated];
 }
 
+- (void)reset {
+  [_headerView reset];
+  [_compactView reset];
+  [_fullView reset];
+  [_scrollView setContentOffset:CGPointZero animated:NO];
+  _compactHeightConstraint.constant = 0.0;
+}
+
 #pragma mark - ActuationWorklogCompactViewDelegate
 
 - (void)worklogCompactView:(ActuationWorklogCompactView*)view

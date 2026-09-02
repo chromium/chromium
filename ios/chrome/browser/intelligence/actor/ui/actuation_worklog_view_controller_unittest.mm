@@ -59,4 +59,33 @@ TEST_F(ActuationWorklogViewControllerTest, SetActuationActive) {
   EXPECT_TRUE(view_controller.view.hidden);
 }
 
+// Test reset clears title and worklog content.
+TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
+  ActuationWorklogViewController* view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  id<ActuationWorklogConsumer> consumer =
+      static_cast<id<ActuationWorklogConsumer>>(view_controller);
+
+  // Force view load.
+  EXPECT_NE(view_controller.view, nil);
+
+  [consumer setTaskTitle:@"Task Title"];
+  ActuationWorklogItem* item =
+      [ActuationWorklogItem simpleItemWithTitle:@"Step 1" active:YES];
+  [consumer updateWorklogWithItem:item chip:nil animated:NO];
+  [consumer reset];
+
+  ActuationHeaderView* header_view =
+      static_cast<ActuationHeaderView*>(FindViewByAccessibilityIdentifier(
+          view_controller.view, kActuationHeaderAccessibilityIdentifier));
+  ASSERT_NE(header_view, nil);
+  EXPECT_EQ(header_view.title, nil);
+
+  UIScrollView* scroll_view =
+      static_cast<UIScrollView*>(FindViewByAccessibilityIdentifier(
+          view_controller.view, kFullWorklogScrollViewAccessibilityIdentifier));
+  ASSERT_NE(scroll_view, nil);
+  EXPECT_TRUE(CGPointEqualToPoint(scroll_view.contentOffset, CGPointZero));
+}
+
 }  // namespace

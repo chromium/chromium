@@ -116,6 +116,19 @@ const CGFloat kCompactBottomBufferHeight = kToolChipHeight + kSpacingMedium;
   [self processNextPendingTransitionIfNeeded];
 }
 
+- (void)reset {
+  [_pendingTransitions removeAllObjects];
+  _isTransitioning = NO;
+  [_currentView removeFromSuperview];
+  [_nextView removeFromSuperview];
+  _currentView = nil;
+  _nextView = nil;
+  _currentTopConstraint = nil;
+  _stepsViewHeightConstraint.constant = 0.0;
+  _lastReportedHeight = 0.0;
+  [self setChipVisible:NO];
+}
+
 #pragma mark - UIView
 
 - (void)layoutSubviews {
