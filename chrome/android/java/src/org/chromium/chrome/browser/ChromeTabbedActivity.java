@@ -263,7 +263,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
@@ -1878,8 +1877,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mInactivityTrackerSupplier.get().getTimeSinceLastBackgroundedMs());
 
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mRootUiCoordinator.getDesktopWindowStateManager(),
-                !mFromResumption);
+                mRootUiCoordinator.getDesktopWindowStateManager(), !mFromResumption);
 
         if (mSendTabToSelfGestureDetector == null
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE)) {
@@ -5779,14 +5777,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 .readBoolean(
                         ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE,
                         /* defaultValue= */ false)) {
+            ArchivedTabModelOrchestrator orchestrator =
+                    ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get());
             mArchivedTabsAutoDeletePromoManager =
                     new ArchivedTabsAutoDeletePromoManager(
                             ChromeTabbedActivity.this,
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
-                            new TabArchiveSettings(ChromeSharedPreferences.getInstance()),
-                            ArchivedTabModelOrchestrator.getForProfile(
-                                            mTabModelSelector.getCurrentModel().getProfile())
-                                    .getTabCountSupplier(),
+                            orchestrator.getTabArchiveSettings(),
+                            orchestrator.getTabCountSupplier(),
                             mTabModelSelector.getModel(/* incognito= */ false));
         }
     }

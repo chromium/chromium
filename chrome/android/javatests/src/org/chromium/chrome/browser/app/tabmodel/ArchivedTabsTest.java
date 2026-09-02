@@ -127,6 +127,9 @@ public class ArchivedTabsTest {
                             null);
                 });
         CriteriaHelper.pollUiThread(() -> 1 == mArchivedTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 1 == mTabArchiveSettings.getArchivedTabCount());
+        CriteriaHelper.pollUiThread(
+                () -> 1 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
 
         TabUiTestHelper.enterTabSwitcher(cta);
         runOnUiThreadBlocking(
@@ -135,8 +138,14 @@ public class ArchivedTabsTest {
                             cta.getTabModelSelectorSupplier().get(), /* allowUndo= */ true);
                 });
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 0 == mTabArchiveSettings.getArchivedTabCount());
+        CriteriaHelper.pollUiThread(
+                () -> 0 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         CriteriaHelper.pollUiThread(() -> 1 == mArchivedTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 1 == mTabArchiveSettings.getArchivedTabCount());
+        CriteriaHelper.pollUiThread(
+                () -> 1 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
     }
 }

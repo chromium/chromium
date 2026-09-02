@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -63,5 +64,13 @@ public class ArchivedTabModelOrchestratorUnitTest {
                 /* onStandardActiveIndexRead= */ null);
 
         verify(mMockTabPersistentStore).loadState(eq(true), eq(false));
+    }
+
+    @Test
+    public void testGetTabCountSupplier() {
+        assertEquals(0, mOrchestrator.getTabCountSupplier().get().intValue());
+
+        mOrchestrator.getTabArchiveSettings().setArchivedTabCount(3);
+        assertEquals(3, mOrchestrator.getTabCountSupplier().get().intValue());
     }
 }

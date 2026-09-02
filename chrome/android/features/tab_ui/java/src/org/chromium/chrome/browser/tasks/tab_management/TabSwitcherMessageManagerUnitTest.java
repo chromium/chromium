@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.SuggestionLifecycleObserverHandler;
@@ -112,6 +113,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -150,7 +152,8 @@ public class TabSwitcherMessageManagerUnitTest {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
         mCurrentTabModelSupplier.set(mTabModel);
-        when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
+        when(mTabArchiveSettings.getArchivedTabCountSupplier()).thenReturn(mTabCountSupplier);
+        when(mArchivedTabModelOrchestrator.getTabArchiveSettings()).thenReturn(mTabArchiveSettings);
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
@@ -198,6 +201,7 @@ public class TabSwitcherMessageManagerUnitTest {
         AppHeaderUtils.setAppInDesktopWindowForTesting(false);
         mMessageManager.removeObserver(mMessageUpdateObserver);
         mMessageManager.destroy();
+        ArchivedTabModelOrchestrator.setInstanceForTesting(null);
         assertFalse(mCurrentTabModelSupplier.hasObservers());
     }
 

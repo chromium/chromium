@@ -305,7 +305,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
 
     /** Returns a supplier for the archive tab count. */
     public NonNullObservableSupplier<Integer> getTabCountSupplier() {
-        return mArchivedTabCountTracker.getSupplier();
+        return getTabArchiveSettings().getArchivedTabCountSupplier();
     }
 
     public @Nullable TabModel getTabModel() {
@@ -439,6 +439,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         }
 
         mArchivedTabCountTracker.setupInternalObservers(model, mTabGroupSyncService);
+        mArchivedTabCountTracker
+                .getSupplier()
+                .addSyncObserverAndPostIfNonNull(
+                        (count) -> {
+                            if (mTabArchiveSettings != null) {
+                                mTabArchiveSettings.setArchivedTabCount(count);
+                            }
+                        });
 
         TabModel regularTabModel = mTabModelSelector.getModel(/* incognito= */ false);
         mHistoricalTabModelObserver = new HistoricalTabModelObserver(regularTabModel);
@@ -580,7 +588,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
             markStoresInitialized();
         }
 
-        mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        mTabArchiveSettings = getTabArchiveSettings();
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         mTabGroupSyncService = assertNonNull(TabGroupSyncServiceFactory.getForProfile(mProfile));
         TabModel regularTabModel = mTabModelSelector.getModel(/* incognito= */ false);
@@ -622,7 +630,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     // Getter methods
 
     public TabArchiveSettings getTabArchiveSettings() {
-        assertNativeReady();
+        if (mTabArchiveSettings == null) {
+            mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        }
         return mTabArchiveSettings;
     }
 

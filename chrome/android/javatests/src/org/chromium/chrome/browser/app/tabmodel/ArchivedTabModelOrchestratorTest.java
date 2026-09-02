@@ -17,7 +17,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,12 +70,17 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation.SuggestionF
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for ArchivedTabModelOrchestrator. */
@@ -127,29 +134,68 @@ public class ArchivedTabModelOrchestratorTest {
     private TabCreator mRegularTabCreator;
     private TabArchiveSettings mTabArchiveSettings;
     private WebPageStation mPage;
+    private final Map<String, SavedTabGroup> mSavedTabGroups =
+            Collections.synchronizedMap(new HashMap<>());
+    private final List<TabGroupSyncService.Observer> mSyncObservers = new CopyOnWriteArrayList<>();
     private final TabPersistencePolicy mTabPersistencePolicy =
             new TabbedModeTabPersistencePolicy(0, false, false, SupplierUtils.alwaysFalse());
 
     @Before
     public void setUp() throws Exception {
+        mSavedTabGroups.clear();
+        mSyncObservers.clear();
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
-        when(mTabGroupSyncService.getArchivedGroupCount())
-                .thenAnswer(
+        doAnswer(invocation -> mSavedTabGroups.keySet().toArray(new String[0]))
+                .when(mTabGroupSyncService)
+                .getAllGroupIds();
+        doAnswer(invocation -> mSavedTabGroups.get(invocation.getArgument(0, String.class)))
+                .when(mTabGroupSyncService)
+                .getGroup(any(String.class));
+        doAnswer(
                         invocation -> {
-                            TabGroupSyncService service =
-                                    (TabGroupSyncService) invocation.getMock();
+                            mSyncObservers.add(invocation.getArgument(0));
+                            return null;
+                        })
+                .when(mTabGroupSyncService)
+                .addObserver(any());
+        doAnswer(
+                        invocation -> {
+                            mSyncObservers.remove(invocation.getArgument(0));
+                            return null;
+                        })
+                .when(mTabGroupSyncService)
+                .removeObserver(any());
+        doAnswer(
+                        invocation -> {
                             int count = 0;
-                            for (String syncId : service.getAllGroupIds()) {
-                                SavedTabGroup group = service.getGroup(syncId);
+                            for (SavedTabGroup group : mSavedTabGroups.values()) {
                                 if (group != null && group.archivalTimeMs != null) {
                                     count++;
                                 }
                             }
                             return count;
-                        });
-        when(mTabGroupSyncService.getVersioningMessageController())
-                .thenReturn(mVersioningMessageController);
+                        })
+                .when(mTabGroupSyncService)
+                .getArchivedGroupCount();
+        doAnswer(
+                        invocation -> {
+                            String syncId = invocation.getArgument(0);
+                            boolean isArchived = invocation.getArgument(1);
+                            SavedTabGroup group = mSavedTabGroups.get(syncId);
+                            if (group != null) {
+                                group.archivalTimeMs =
+                                        isArchived ? System.currentTimeMillis() : null;
+                                for (TabGroupSyncService.Observer observer : mSyncObservers) {
+                                    observer.onTabGroupUpdated(group, TriggerSource.LOCAL);
+                                }
+                            }
+                            return null;
+                        })
+                .when(mTabGroupSyncService)
+                .updateArchivalStatus(any(), anyBoolean());
+        doReturn(mVersioningMessageController)
+                .when(mTabGroupSyncService)
+                .getVersioningMessageController();
 
         mDeferredStartupHandler = new FakeDeferredStartupHandler();
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
@@ -282,6 +328,8 @@ public class ArchivedTabModelOrchestratorTest {
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
+        assertEquals(1, mTabArchiveSettings.getArchivedTabCount());
+        assertEquals(1, (int) mTabArchiveSettings.getArchivedTabCountSupplier().get());
         runOnUiThreadBlocking(
                 () ->
                         mOrchestrator
@@ -304,13 +352,15 @@ public class ArchivedTabModelOrchestratorTest {
                 });
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
+        assertEquals(0, mTabArchiveSettings.getArchivedTabCount());
+        assertEquals(0, (int) mTabArchiveSettings.getArchivedTabCountSupplier().get());
     }
 
     @Test
     @MediumTest
     public void testRescueTabs_ArchiveDisabled() {
-        setupSavedTabGroup();
         finishLoading();
+        setupSavedTabGroup();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
@@ -335,6 +385,8 @@ public class ArchivedTabModelOrchestratorTest {
                 });
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
+        assertEquals(2, mTabArchiveSettings.getArchivedTabCount());
+        assertEquals(2, (int) mTabArchiveSettings.getArchivedTabCountSupplier().get());
 
         runOnUiThreadBlocking(
                 () -> {
@@ -345,14 +397,16 @@ public class ArchivedTabModelOrchestratorTest {
 
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
-        verify(mTabGroupSyncService, times(2)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
+        assertEquals(0, mTabArchiveSettings.getArchivedTabCount());
+        assertEquals(0, (int) mTabArchiveSettings.getArchivedTabCountSupplier().get());
+        verify(mTabGroupSyncService, times(1)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
     }
 
     @Test
     @MediumTest
     public void testRescueTabs_ArchiveDisabledWhileNoOrchestatorsRegistered() {
-        setupSavedTabGroup();
         finishLoading();
+        setupSavedTabGroup();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
@@ -398,7 +452,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
-        verify(mTabGroupSyncService, times(2)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
+        verify(mTabGroupSyncService, times(1)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
     }
 
     @Test
@@ -544,7 +598,6 @@ public class ArchivedTabModelOrchestratorTest {
         savedTabGroup.syncId = SYNC_GROUP_ID1;
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
 
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(savedTabGroup);
+        mSavedTabGroups.put(SYNC_GROUP_ID1, savedTabGroup);
     }
 }

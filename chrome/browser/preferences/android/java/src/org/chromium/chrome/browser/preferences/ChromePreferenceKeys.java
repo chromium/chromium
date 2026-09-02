@@ -1048,6 +1048,7 @@ public final class ChromePreferenceKeys {
     public static final String TAB_DECLUTTER_ARCHIVE_ENABLED = "Chrome.Tab.ArchiveEnabled";
     public static final String TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS =
             "Chrome.Tab.ArchiveTimeDeltaHours";
+    public static final String TAB_DECLUTTER_ARCHIVED_TAB_COUNT = "Chrome.Tab.ArchivedTabCount";
     public static final String TAB_DECLUTTER_AUTO_DELETE_ENABLED =
             "Chrome.Tab.ArchiveAutoDeleteEnabled";
     public static final String TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE =
@@ -1373,6 +1374,7 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
                 TAB_DECLUTTER_ARCHIVE_ENABLED,
                 TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
+                TAB_DECLUTTER_ARCHIVED_TAB_COUNT,
                 TAB_DECLUTTER_AUTO_DELETE_ENABLED,
                 TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE,
                 TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,

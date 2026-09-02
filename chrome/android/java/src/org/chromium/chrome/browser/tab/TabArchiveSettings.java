@@ -12,6 +12,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
@@ -30,6 +33,9 @@ public class TabArchiveSettings {
     public interface Observer {
         // Called when a setting was changed.
         void onSettingChanged();
+
+        // Called when the archived tab count is changed.
+        default void onArchivedTabCountChanged(int count) {}
     }
 
     // The default time to consider a tab as inactive.
@@ -73,6 +79,7 @@ public class TabArchiveSettings {
 
     private final SharedPreferencesManager mPrefsManager;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final SettableNonNullObservableSupplier<Integer> mArchivedTabCountSupplier;
 
     /**
      * Constructor.
@@ -82,6 +89,9 @@ public class TabArchiveSettings {
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public TabArchiveSettings(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
+        int initialCount =
+                mPrefsManager.readInt(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVED_TAB_COUNT, 0);
+        mArchivedTabCountSupplier = ObservableSuppliers.createNonNull(initialCount);
         ContextUtils.getAppSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
@@ -91,6 +101,7 @@ public class TabArchiveSettings {
     public void destroy() {
         ContextUtils.getAppSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(mPrefsListener);
+        mArchivedTabCountSupplier.destroy();
     }
 
     /** Adds the given observer to the list. */
@@ -255,9 +266,40 @@ public class TabArchiveSettings {
         return DEFAULT_MAX_SIMULTANEOUS_ARCHIVES;
     }
 
+    /** Returns a supplier for the archived tab count. */
+    public NonNullObservableSupplier<Integer> getArchivedTabCountSupplier() {
+        return mArchivedTabCountSupplier;
+    }
+
+    /** Returns the cached archived tab count. */
+    public int getArchivedTabCount() {
+        return mArchivedTabCountSupplier.get();
+    }
+
+    /** Sets the cached archived tab count and updates the supplier and observers. */
+    public void setArchivedTabCount(int count) {
+        if (mArchivedTabCountSupplier.get() == count) return;
+        mPrefsManager.writeInt(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVED_TAB_COUNT, count);
+        mArchivedTabCountSupplier.set(count);
+        for (Observer obs : mObservers) {
+            obs.onArchivedTabCountChanged(count);
+        }
+    }
+
     // Private methods.
 
     private void maybeNotifyObservers(@Nullable String key) {
+        if (ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVED_TAB_COUNT.equals(key)) {
+            int count =
+                    mPrefsManager.readInt(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVED_TAB_COUNT, 0);
+            if (mArchivedTabCountSupplier.get() == count) return;
+            mArchivedTabCountSupplier.set(count);
+            for (Observer obs : mObservers) {
+                obs.onArchivedTabCountChanged(count);
+            }
+            return;
+        }
+
         if (!PREF_KEYS_FOR_NOTIFICATIONS.contains(key)) return;
 
         for (Observer obs : mObservers) {
@@ -274,5 +316,7 @@ public class TabArchiveSettings {
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE);
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVED_TAB_COUNT);
+        mArchivedTabCountSupplier.set(0);
     }
 }
