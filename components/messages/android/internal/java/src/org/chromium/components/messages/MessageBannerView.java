@@ -16,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +100,8 @@ public class MessageBannerView extends RelativeLayout {
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mCloseButton = findViewById(R.id.message_close_button);
         mDivider = findViewById(R.id.message_divider);
-        mSecondaryButton.setOnClickListener(
+        setProtectedOnClickListener(
+                mSecondaryButton,
                 (View v) -> {
                     handleSecondaryButtonClick();
                 });
@@ -229,8 +231,13 @@ public class MessageBannerView extends RelativeLayout {
         mPrimaryButton.setVisibility(showButton ? VISIBLE : GONE);
     }
 
-    void setPrimaryButtonClickListener(OnClickListener listener) {
-        mPrimaryButton.setOnClickListener(
+    void setPrimaryButtonClickListener(@Nullable OnClickListener listener) {
+        if (listener == null) {
+            setProtectedOnClickListener(mPrimaryButton, null);
+            return;
+        }
+        setProtectedOnClickListener(
+                mPrimaryButton,
                 (view) -> {
                     // Ignore click events if a progress bar is showing.
                     if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
@@ -244,8 +251,8 @@ public class MessageBannerView extends RelativeLayout {
         mEnableCloseButton = enable;
     }
 
-    void setCloseButtonClickListener(OnClickListener listener) {
-        mCloseButton.setOnClickListener(listener);
+    void setCloseButtonClickListener(@Nullable OnClickListener listener) {
+        setProtectedOnClickListener(mCloseButton, listener);
     }
 
     void setSecondaryIcon(Drawable icon) {
@@ -496,6 +503,28 @@ public class MessageBannerView extends RelativeLayout {
         if (focusButton(mSecondaryButton)) return true;
         if (focusButton(mCloseButton)) return true;
         return super.requestFocus(direction, previouslyFocusedRect);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        // Consume events within the protection period, but do not block system keys (e.g. back,
+        // volume, power).
+        if (isWithinTapProtectionPeriod() && !event.isSystem()) {
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    private void setProtectedOnClickListener(View view, @Nullable OnClickListener listener) {
+        if (listener == null) {
+            view.setOnClickListener(null);
+            return;
+        }
+        view.setOnClickListener(
+                (v) -> {
+                    if (isWithinTapProtectionPeriod()) return;
+                    listener.onClick(v);
+                });
     }
 
     private boolean isWithinTapProtectionPeriod() {
