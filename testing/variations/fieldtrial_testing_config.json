@@ -739,6 +739,21 @@
             ]
         }
     ],
+    "AndroidFreLayoutUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260901",
+                    "enable_features": [
+                        "AndroidFreLayoutUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMediaInsertion": [
         {
             "platforms": [
