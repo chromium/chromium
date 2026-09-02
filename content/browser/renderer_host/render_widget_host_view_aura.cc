@@ -603,14 +603,20 @@ RenderFrameHostImpl* RenderWidgetHostViewAura::GetFocusedFrame() const {
 }
 
 void RenderWidgetHostViewAura::HandleBoundsInRootChanged() {
+  const gfx::Rect bounds_in_root = window_->GetBoundsInRootWindow();
+  // `bounds_in_root` can be empty when the window has empty bounds, or when it
+  // has been removed from the window tree (or is in a transient state during
+  // reparenting across root windows before its layer is attached).
+  if (bounds_in_root.IsEmpty()) {
+    return;
+  }
 #if BUILDFLAG(IS_WIN)
   if (legacy_render_widget_host_HWND_) {
     // `SetBounds()` calls ::SetWindowPos which can spin a nested message loop
     // on Windows, potentially destroying `this`.
     base::WeakPtr<RenderWidgetHostViewAura> weak_this(
         weak_ptr_factory_.GetWeakPtr());
-    legacy_render_widget_host_HWND_->SetBounds(
-        window_->GetBoundsInRootWindow());
+    legacy_render_widget_host_HWND_->SetBounds(bounds_in_root);
     if (!weak_this) {
       return;
     }
