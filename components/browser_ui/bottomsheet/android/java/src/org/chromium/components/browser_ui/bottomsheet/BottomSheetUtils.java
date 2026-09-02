@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui;
+package org.chromium.components.browser_ui.bottomsheet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Utility methods for the Bottom Sheet. */
 @NullMarked
