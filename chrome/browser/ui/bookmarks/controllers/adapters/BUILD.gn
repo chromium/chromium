@@ -5,6 +5,7 @@
 source_set("adapters") {
   sources = [
     "bookmark_bar_action_adapter.h",
+    "bookmark_bar_model_adapter.h",
     "bookmark_bar_prefs_adapter.h",
   ]
   public_deps = [
@@ -24,14 +25,18 @@ source_set("impl") {
     sources += [
       "desktop_bookmark_bar_action_adapter.cc",
       "desktop_bookmark_bar_action_adapter.h",
+      "desktop_bookmark_bar_model_adapter.cc",
+      "desktop_bookmark_bar_model_adapter.h",
       "desktop_bookmark_bar_prefs_adapter.cc",
       "desktop_bookmark_bar_prefs_adapter.h",
     ]
     deps += [
+      "//chrome/browser/bookmarks",
       "//chrome/browser/page_load_metrics",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/prefs",
       "//ui/base:types",

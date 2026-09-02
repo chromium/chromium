@@ -33,6 +33,7 @@ source_set("impl") {
       "desktop_bookmark_bar_ui_controller_injector.h",
     ]
     deps += [
+      "//chrome/browser/bookmarks",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
     ]

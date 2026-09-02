@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_ui_controller_injector.h"
 
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/controllers/adapters/desktop_bookmark_bar_action_adapter.h"
+#include "chrome/browser/ui/bookmarks/controllers/adapters/desktop_bookmark_bar_model_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/adapters/desktop_bookmark_bar_prefs_adapter.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
@@ -14,7 +17,10 @@ DesktopBookmarkBarUIControllerInjector::DesktopBookmarkBarUIControllerInjector(
       prefs_adapter_(std::make_unique<DesktopBookmarkBarPrefsAdapter>(
           browser_->GetProfile())),
       action_adapter_(
-          std::make_unique<DesktopBookmarkBarActionAdapter>(browser_)) {}
+          std::make_unique<DesktopBookmarkBarActionAdapter>(browser_)),
+      model_adapter_(std::make_unique<DesktopBookmarkBarModelAdapter>(
+          BookmarkMergedSurfaceServiceFactory::GetForProfile(
+              browser_->GetProfile()))) {}
 
 DesktopBookmarkBarUIControllerInjector::
     ~DesktopBookmarkBarUIControllerInjector() = default;
@@ -27,4 +33,9 @@ DesktopBookmarkBarUIControllerInjector::GetPrefsAdapter() {
 BookmarkBarActionAdapter*
 DesktopBookmarkBarUIControllerInjector::GetActionAdapter() {
   return action_adapter_.get();
+}
+
+BookmarkBarModelAdapter*
+DesktopBookmarkBarUIControllerInjector::GetModelAdapter() {
+  return model_adapter_.get();
 }

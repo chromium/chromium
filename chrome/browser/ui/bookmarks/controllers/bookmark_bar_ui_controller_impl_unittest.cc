@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_action_adapter.h"
+#include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_model_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_prefs_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_client.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_injector.h"
@@ -64,11 +65,29 @@ class MockBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
               (override));
 };
 
+class MockBookmarkBarModelAdapter : public BookmarkBarModelAdapter {
+ public:
+  MOCK_METHOD(bool, IsLoaded, (), (const, override));
+  MOCK_METHOD(const bookmarks::BookmarkNode*,
+              GetNodeById,
+              (int64_t),
+              (const, override));
+  MOCK_METHOD((std::vector<const bookmarks::BookmarkNode*>),
+              GetUnderlyingNodes,
+              (const bookmarks_api::BookmarkParentFolderId&),
+              (const, override));
+  MOCK_METHOD(void,
+              CanPasteFromClipboard,
+              (const BookmarkParentFolder*, base::OnceCallback<void(bool)>),
+              (override));
+};
+
 class MockBookmarkBarUIControllerInjector
     : public BookmarkBarUIControllerInjector {
  public:
   MOCK_METHOD(BookmarkBarPrefsAdapter*, GetPrefsAdapter, (), (override));
   MOCK_METHOD(BookmarkBarActionAdapter*, GetActionAdapter, (), (override));
+  MOCK_METHOD(BookmarkBarModelAdapter*, GetModelAdapter, (), (override));
 };
 
 class BookmarkBarUIControllerImplTest : public testing::Test {
@@ -82,6 +101,8 @@ class BookmarkBarUIControllerImplTest : public testing::Test {
         .WillByDefault(testing::Return(&mock_prefs_adapter_));
     ON_CALL(*mock_injector_, GetActionAdapter())
         .WillByDefault(testing::Return(&mock_action_adapter_));
+    ON_CALL(*mock_injector_, GetModelAdapter())
+        .WillByDefault(testing::Return(&mock_model_adapter_));
 
     controller_ =
         std::make_unique<BookmarkBarUIControllerImpl>(std::move(injector));
@@ -94,6 +115,7 @@ class BookmarkBarUIControllerImplTest : public testing::Test {
 
   testing::NiceMock<MockBookmarkBarPrefsAdapter> mock_prefs_adapter_;
   testing::NiceMock<MockBookmarkBarActionAdapter> mock_action_adapter_;
+  testing::NiceMock<MockBookmarkBarModelAdapter> mock_model_adapter_;
   raw_ptr<testing::NiceMock<MockBookmarkBarUIControllerInjector>>
       mock_injector_;
   std::unique_ptr<BookmarkBarUIControllerImpl> controller_;
