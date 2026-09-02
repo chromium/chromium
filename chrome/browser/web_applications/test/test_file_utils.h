@@ -9,6 +9,8 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -37,7 +39,7 @@ class TestFileUtils : public FileUtilsWrapper {
 
   static constexpr int kNoLimit = -1;
 
-  // Simulate "disk full" error: limit disk space for |WriteFile| operations.
+  // Simulate "disk full" error: limit disk space for `WriteFile` operations.
   void SetRemainingDiskSpaceSize(int remaining_disk_space);
 
   void SetNextDeleteFileRecursivelyResult(std::optional<bool> delete_result);
@@ -45,18 +47,19 @@ class TestFileUtils : public FileUtilsWrapper {
 
   TestFileUtils* AsTestFileUtils() override;
 
-  const std::vector<base::FilePath>& deleted_files() const {
-    return deleted_files_;
-  }
+  std::vector<base::FilePath> deleted_files() const;
 
  private:
   ~TestFileUtils() override;
 
-  absl::flat_hash_map<base::FilePath, base::FilePath> read_file_rerouting_;
-  std::optional<bool> delete_file_recursively_result_;
-  absl::flat_hash_map<base::FilePath, bool> delete_file_recursively_results_;
-  int remaining_disk_space_ = kNoLimit;
-  std::vector<base::FilePath> deleted_files_;
+  mutable base::Lock lock_;
+  absl::flat_hash_map<base::FilePath, base::FilePath> read_file_rerouting_
+      GUARDED_BY(lock_);
+  std::optional<bool> delete_file_recursively_result_ GUARDED_BY(lock_);
+  absl::flat_hash_map<base::FilePath, bool> delete_file_recursively_results_
+      GUARDED_BY(lock_);
+  int remaining_disk_space_ GUARDED_BY(lock_) = kNoLimit;
+  std::vector<base::FilePath> deleted_files_ GUARDED_BY(lock_);
 };
 
 }  // namespace web_app
