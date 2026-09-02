@@ -1080,6 +1080,98 @@ TEST_F(InlineLayoutAlgorithmTest, LineClampAndMaxContent) {
   EXPECT_FALSE(cursor.Current().IsEllipsis());
 }
 
+// crbug.com/40385624: If the font lacks horizontal ellipsis (U+2026), Blink
+// should fall back to three dots ("...") instead of falling back to a platform
+// font.
+TEST_F(InlineLayoutAlgorithmTest, EllipsisFallbackToDots) {
+  LoadFontFromFile(
+      GetFrame(),
+      blink::test::BlinkWebTestsDir() +
+          "/third_party/DroidSans/DroidSans.ttf.subset-U002E-U0041-42.ttf",
+      AtomicString("DroidSansSubset"));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #root {
+        font-family: DroidSansSubset;
+        font-size: 24px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 2em;
+      }
+    </style>
+    <div id="root">ABAB</div>
+  )HTML");
+
+  LayoutBlockFlow* root =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
+  InlineCursor cursor(*root);
+  while (cursor && !cursor.Current().IsEllipsis()) {
+    cursor.MoveToNext();
+  }
+  ASSERT_TRUE(cursor);
+  EXPECT_EQ(cursor.CurrentText(), "...");
+  EXPECT_EQ(cursor.Current().GetStyleVariant(),
+            StyleVariant::kStandardEllipsis);
+  EXPECT_EQ(cursor.CurrentItem()
+                ->Style()
+                .GetFont()
+                ->GetFontDescription()
+                .Family()
+                .FamilyName(),
+            "DroidSansSubset");
+}
+
+// crbug.com/40385624: `::first-line` styling applies to the ellipsis.
+// The container has the default font (which has U+2026), but `::first-line`
+// has DroidSansSubset (which lacks U+2026). The ellipsis must use the
+// `::first-line` font, falling back to "...", and `::first-line` font size.
+TEST_F(InlineLayoutAlgorithmTest, EllipsisFallbackToDotsFirstLine) {
+  LoadFontFromFile(
+      GetFrame(),
+      blink::test::BlinkWebTestsDir() +
+          "/third_party/DroidSans/DroidSans.ttf.subset-U002E-U0041-42.ttf",
+      AtomicString("DroidSansSubset"));
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #root {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 10em;
+        font-size: 24px;
+      }
+      #root::first-line {
+        font-family: DroidSansSubset;
+        font-size: 16px;
+      }
+    </style>
+    <div id="root">
+      ABABABABABABABABABABAB ABABABABABABAB
+    </div>
+  )HTML");
+
+  LayoutBlockFlow* root =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
+  InlineCursor cursor(*root);
+  while (cursor && !cursor.Current().IsEllipsis()) {
+    cursor.MoveToNext();
+  }
+  ASSERT_TRUE(cursor);
+  EXPECT_EQ(cursor.CurrentText(), "...");
+  EXPECT_EQ(cursor.Current().GetStyleVariant(),
+            StyleVariant::kFirstLineEllipsis);
+  EXPECT_EQ(cursor.CurrentItem()
+                ->Style()
+                .GetFont()
+                ->GetFontDescription()
+                .Family()
+                .FamilyName(),
+            "DroidSansSubset");
+  EXPECT_EQ(cursor.CurrentItem()->Style().FontSize(), 16);
+}
+
 TEST_F(InlineLayoutAlgorithmTest, TextEmphasisAsRuby) {
   SetBodyInnerHTML(R"HTML(
     <style>
