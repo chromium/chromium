@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -21,34 +20,22 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/** Tests relating to {@link LevelDBPersistedTabDataStorageFactory} */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class LevelDBPersistedTabDataStorageFactoryTest {
+/** Unit tests for {@link LevelDBPersistedTabDataStorageFactory}. */
+@RunWith(BaseRobolectricTestRunner.class)
+public class LevelDBPersistedTabDataStorageFactoryUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
     @Mock private Profile mProfile1;
-
     @Mock private Profile mProfile2;
-
     @Mock private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     @Before
-    public void setUp() throws Exception {
-        mActivityTestRule.startOnBlankPage();
+    public void setUp() {
         LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDBPersistedTabDataStorage);
         doNothing()
                 .when(mLevelDBPersistedTabDataStorage)
@@ -59,11 +46,9 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testFactoryMethod() {
-        Profile realProfile = ProfileManager.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
         ProfileManager.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage profile1Storage = factory.create();
@@ -73,18 +58,15 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
         LevelDBPersistedTabDataStorage profile1StorageAgain = factory.create();
         Assert.assertEquals(profile1Storage, profile1StorageAgain);
         Assert.assertNotEquals(profile1Storage, profile2Storage);
-        // Restore the original profile so the Activity can shut down correctly.
-        ProfileManager.setLastUsedProfileForTesting(realProfile);
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testStorageDestroyedWhenProfileDestroyed() {
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage storage = factory.create();
-        ProfileManager.onProfileDestroyed(profile);
+        ProfileManager.onProfileDestroyed(mProfile1);
         Assert.assertTrue(storage.isDestroyed());
     }
 }
