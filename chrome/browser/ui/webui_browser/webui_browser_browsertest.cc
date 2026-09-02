@@ -283,10 +283,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, TabFullscreenEnterAndExit) {
   ASSERT_TRUE(second_tab);
   ASSERT_NE(web_contents, second_tab);
 
-  auto* fullscreen_controller = browser()
-                                    ->GetFeatures()
-                                    .exclusive_access_manager()
-                                    ->fullscreen_controller();
+  auto* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
 
   // Enter tab fullscreen mode on second tab.
   fullscreen_controller->EnterFullscreenModeForTab(

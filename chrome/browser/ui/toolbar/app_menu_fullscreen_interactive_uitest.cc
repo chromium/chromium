@@ -102,9 +102,9 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
             [](std::unique_ptr<ui_test_utils::FullscreenWaiter>& waiter,
                bool is_fullscreen, BrowserWindowInterface* browser,
                views::View* browser_view) {
-              auto* fullscreen_controller = browser->GetFeatures()
-                                                .exclusive_access_manager()
-                                                ->fullscreen_controller();
+              auto* fullscreen_controller =
+                  ExclusiveAccessManager::From(browser)
+                      ->fullscreen_controller();
 
               // Wait for fullscreen transition complete.
               // Fullscreen transition is an async process on Mac, which

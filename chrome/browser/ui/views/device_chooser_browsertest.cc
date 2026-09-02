@@ -306,10 +306,8 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
 
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  FullscreenController* fullscreen_controller = browser()
-                                                    ->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
 
   // While bubble is showing, tab fullscreen cannot be entered.
   EXPECT_FALSE(content::ExecJs(web_contents,

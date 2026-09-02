@@ -100,9 +100,8 @@ ContentNotFullscreenPrecondition::~ContentNotFullscreenPrecondition() = default;
 user_education::FeaturePromoResult
 ContentNotFullscreenPrecondition::CheckPrecondition(
     user_education::UnownedTypedDataCollection& data) const {
-  auto* const fullscreen_controller = browser_->GetFeatures()
-                                          .exclusive_access_manager()
-                                          ->fullscreen_controller();
+  auto* const fullscreen_controller =
+      ExclusiveAccessManager::From(&browser_.get())->fullscreen_controller();
   if (fullscreen_controller->IsWindowFullscreenForTabOrPending() ||
       fullscreen_controller->IsExtensionFullscreenOrPending()) {
     return user_education::FeaturePromoResult::kBlockedByUi;

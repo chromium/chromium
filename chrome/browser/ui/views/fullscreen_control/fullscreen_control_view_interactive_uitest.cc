@@ -124,7 +124,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
-    return browser()->GetFeatures().exclusive_access_manager();
+    return ExclusiveAccessManager::From(browser());
   }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {

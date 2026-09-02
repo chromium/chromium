@@ -646,10 +646,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        ToastRendersOverWebContents) {
 #if BUILDFLAG(IS_MAC)
   FullscreenController* const fullscreen_controller =
-      browser()
-          ->GetFeatures()
-          .exclusive_access_manager()
-          ->fullscreen_controller();
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
   fullscreen_controller->set_is_tab_fullscreen_for_testing(true);
 #else
   ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});

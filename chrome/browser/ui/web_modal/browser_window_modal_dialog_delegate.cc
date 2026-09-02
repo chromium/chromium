@@ -62,8 +62,7 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
   // Skip fullscreen-within-tab, which shows the browser frame.
   if (blocked) {
     content::FullscreenState fullscreen_state =
-        browser_->GetFeatures()
-            .exclusive_access_manager()
+        ExclusiveAccessManager::From(browser_)
             ->fullscreen_controller()
             ->GetFullscreenState(web_contents);
     if (fullscreen_state.target_mode == content::FullscreenMode::kContent) {

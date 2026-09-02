@@ -100,9 +100,7 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
       BrowserWindowInterface* const browser = tab->GetBrowserWindowInterface();
       if (browser) {
         FullscreenController* const fullscreen_controller =
-            browser->GetFeatures()
-                .exclusive_access_manager()
-                ->fullscreen_controller();
+            ExclusiveAccessManager::From(browser)->fullscreen_controller();
         fullscreen_subscription_ =
             fullscreen_controller->RegisterOnFullscreenStateChanged(
                 base::BindRepeating(

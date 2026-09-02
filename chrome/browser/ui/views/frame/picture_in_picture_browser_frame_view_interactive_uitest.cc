@@ -1286,9 +1286,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                        WindowDisplaysOnFullscreenSpaces) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  browser()
-      ->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser())
       ->fullscreen_controller()
       ->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
 

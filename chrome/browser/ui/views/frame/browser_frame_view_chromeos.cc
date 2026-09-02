@@ -831,11 +831,9 @@ bool BrowserFrameViewChromeOS::ShouldEnableImmersiveModeController() const {
     return !GetBrowserView()->GetSupportsTabStrip();
   }
 
-  const auto* fullscreen_controller = GetBrowserView()
-                                          ->browser()
-                                          ->GetFeatures()
-                                          .exclusive_access_manager()
-                                          ->fullscreen_controller();
+  const auto* fullscreen_controller =
+      ExclusiveAccessManager::From(GetBrowserView()->browser())
+          ->fullscreen_controller();
   // For other scnarios, use immersive if the browser is in fullscreen, and it
   // is NOT requested via extension or HTML API `requestFullscreen()`.
   return browser_widget()->IsFullscreen() &&

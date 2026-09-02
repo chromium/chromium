@@ -38,10 +38,7 @@ class FullscreenUtilMacTest : public InProcessBrowserTest {
   }
 
   FullscreenController* GetFullscreenController() {
-    return browser()
-        ->GetFeatures()
-        .exclusive_access_manager()
-        ->fullscreen_controller();
+    return ExclusiveAccessManager::From(browser())->fullscreen_controller();
   }
 
   bool IsBrowserFullscreen() {

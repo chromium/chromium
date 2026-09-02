@@ -85,10 +85,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserInteractiveTest,
            web_contents->GetVisibility() == content::Visibility::HIDDEN;
   }));
 
-  auto* pointer_lock_controller = browser()
-                                      ->GetFeatures()
-                                      .exclusive_access_manager()
-                                      ->pointer_lock_controller();
+  auto* pointer_lock_controller =
+      ExclusiveAccessManager::From(browser())->pointer_lock_controller();
 
   const char kRequestPointerLockJS[] = R"(
     new Promise((resolve) => {
