@@ -196,6 +196,10 @@ export const BridgeConstants = {
       EXEC_COMMAND: 'execCommand',
       ADD_MENU_ITEM: 'addMenuItem',
       ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
+      // A lightweight, single-menu alternative to EXEC_COMMAND(OPEN_MENUS),
+      // which rebuilds every ChromeVox menu. Used to present conversion
+      // candidates, currently for Japanese IME kana-to-kanji conversion.
+      SHOW_CANDIDATE_MENU: 'showCandidateMenu',
     },
   },
 
@@ -224,6 +228,7 @@ export const BridgeConstants = {
       PERFORM_ADD_MENU_TEST: 'performAddMenuTest',
       PERFORM_ADD_NODE_MENU_TEST: 'performAddNodeMenuTest',
       PERFORM_ADVANCE_ACTIVE_MENU_BY_TEST: 'performAdvanceActiveMenuByTest',
+      PERFORM_CANDIDATE_MENU_CANCEL_TEST: 'performCandidateMenuCancelTest',
       PERFORM_CLEAR_MENUS_TEST: 'performClearMenusTest',
       PERFORM_DENY_SIGNED_OUT_TEST: 'performDenySignedOutTest',
       PERFORM_FIND_ENABLED_MENU_INDEX_TEST: 'performFindEnabledMenuIndexText',

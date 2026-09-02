@@ -626,6 +626,19 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
   }
 
   /**
+   * Sends a braille pan command to the input handler.
+   * @param {string} direction 'left' or 'right'.
+   * @return {boolean} Whether the event was handled.
+   */
+  sendPan(direction) {
+    const event = {
+      command: direction === 'left' ? BrailleKeyCommand.PAN_LEFT :
+                                      BrailleKeyCommand.PAN_RIGHT,
+    };
+    return this.inputHandler.onBrailleKeyEvent(event);
+  }
+
+  /**
    * Shortcut for asserting that the value expansion mode is {@code NONE}.
    */
   assertExpandingNone() {
@@ -832,87 +845,6 @@ AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'KeysImeNotActive', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionCycleAndAccept',
-    async function() {
-      const editor = this.createTenjiEditor();
-
-      // Typed kana shows as composition (preedit) text, not committed text.
-      assertTrue(this.sendCells('145 1345 245'));
-      editor.assertCompositionIs('てんじ');
-      editor.assertContentIs('', 0);
-
-      // A blank cell starts conversion.
-      assertTrue(this.sendCells('0'));
-      await this.inputHandler.commitRequestForTest;
-
-      // The first candidate from the mock dictionary replaces the kana in
-      // the composition.
-      editor.assertCompositionIs('点字');
-      editor.assertContentIs('', 0);
-
-      // A blank cell cycles through the remaining candidates: the second
-      // dictionary entry, then the kana and katakana readings, then wraps
-      // around to the first candidate.
-      assertTrue(this.sendCells('0'));
-      editor.assertCompositionIs('展示');
-      assertTrue(this.sendCells('0'));
-      editor.assertCompositionIs('てんじ');
-      assertTrue(this.sendCells('0'));
-      editor.assertCompositionIs('テンジ');
-      assertTrue(this.sendCells('0'));
-      editor.assertCompositionIs('点字');
-
-      // Enter accepts the current candidate, committing the composition,
-      // without sending a key event.
-      assertTrue(this.sendKeyEvent('Enter'));
-      editor.assertCompositionIs('');
-      editor.assertContentIs('点字', '点字'.length);
-      assertEquals(0, this.keyEvents.length);
-
-      // Typing continues normally after accepting.
-      assertTrue(this.sendCells('1'));
-      editor.assertCompositionIs('あ');
-      editor.assertContentIs('点字', '点字'.length);
-    });
-
-AX_TEST_F(
-    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionTypingAccepts',
-    async function() {
-      const editor = this.createTenjiEditor();
-
-      assertTrue(this.sendCells('145 1345 245 0'));
-      await this.inputHandler.commitRequestForTest;
-      editor.assertCompositionIs('点字');
-
-      // Typing a non-blank cell accepts the current candidate and starts a
-      // new word in the composition.
-      assertTrue(this.sendCells('12'));
-      editor.assertContentIs('点字', '点字'.length);
-      editor.assertCompositionIs('い');
-    });
-
-AX_TEST_F(
-    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionCancel',
-    async function() {
-      const editor = this.createTenjiEditor();
-
-      assertTrue(this.sendCells('145 1345 245 0'));
-      await this.inputHandler.commitRequestForTest;
-      editor.assertCompositionIs('点字');
-
-      // Backspace cancels the conversion, restoring the original kana as
-      // composition text without committing it, so editing can continue.
-      assertTrue(this.sendKeyEvent('Backspace'));
-      editor.assertCompositionIs('てんじ ');
-      editor.assertContentIs('', 0);
-      assertEquals(0, this.keyEvents.length);
-
-      // Typing continues normally in the restored composition.
-      assertTrue(this.sendCells('1'));
-      editor.assertCompositionIs('てんじ あ');
-    });
-
-AX_TEST_F(
     'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionUnknownWord',
     async function() {
       const editor = this.createTenjiEditor();
@@ -932,14 +864,180 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionQueuedCycles',
-    async function() {
+    'ChromeVoxBrailleInputHandlerTest',
+    'ConversionQueuesCellsUntilMenuResolves', async function() {
+      // A cell typed while a conversion is pending -- candidates being
+      // fetched, or the user still choosing one in the Panel's menu -- is
+      // queued and replayed once that settles (see queuedCellsWhilePending_
+      // in maybeStartConversion_), rather than being dropped or misapplied
+      // to the entry state that's already been committed.
       const editor = this.createTenjiEditor();
+      editor.setAllowDeletes(true);
+      let resolveOpen;
+      const savedOpen = CandidateMenuBackground.open;
+      CandidateMenuBackground.open = () => new Promise(resolve => {
+        resolveOpen = resolve;
+      });
 
-      // Type 'てんじ' and two blank cells in quick succession, without
-      // waiting for the conversion to start. The second blank cell is
-      // queued and applied as a candidate cycle once candidates arrive.
-      assertTrue(this.sendCells('145 1345 245 0 0'));
-      await this.inputHandler.commitRequestForTest;
-      editor.assertCompositionIs('展示');
+      try {
+        // A blank cell starts conversion, which stays pending until the
+        // menu resolves.
+        assertTrue(this.sendCells('145 1345 245 0'));
+
+        // Typed while pending: queued rather than applied immediately.
+        assertTrue(this.sendCells('0'));
+        editor.assertContentIs('', 0);
+
+        // Let the candidate fetch (a microtask, no real async work in the
+        // mock provider) resolve and reach CandidateMenuBackground.open,
+        // which is what assigns resolveOpen.
+        await Promise.resolve();
+        resolveOpen('点字');
+
+        // Accepting replaces the committed kana with the candidate, then
+        // the queued blank cell replays: with no kana ahead of it, it's
+        // just its own word separator, committed as a space like any
+        // standalone blank cell (see KanaKanjiConversionUnknownWord). Both
+        // settle by the time this first commitRequestForTest resolves, since
+        // the replay's own commit is chained off of it.
+        await this.inputHandler.commitRequestForTest;
+        editor.assertContentIs('点字 ', '点字 '.length);
+      } finally {
+        CandidateMenuBackground.open = savedOpen;
+      }
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest', 'PanAlwaysPropagatesEvenWhilePending',
+    function() {
+      // Braille pan always propagates to its usual meaning (panning the
+      // display, or once panned through, moving to the next/previous
+      // automation object) regardless of whether a conversion is pending:
+      // currentRange already tracks the Panel's focused candidate item
+      // while the menu is open, so plain object navigation is enough to
+      // move through candidates without BrailleInputHandler needing to
+      // special-case pan.
+      try {
+        this.inputHandler['conversionPending_'] = false;
+        assertFalse(this.sendPan('left'));
+        assertFalse(this.sendPan('right'));
+
+        this.inputHandler['conversionPending_'] = true;
+        assertFalse(this.sendPan('left'));
+        assertFalse(this.sendPan('right'));
+      } finally {
+        this.inputHandler['conversionPending_'] = false;
+      }
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest',
+    'PendingConversionSurvivesImeChurnFromMenuFocus', function() {
+      // Opening (and closing) the fullscreen candidate menu blurs and
+      // refocuses the underlying field, which the IME framework reports as
+      // if focus changed elsewhere: an 'inputContext' message, sometimes a
+      // 'reset' message, and (since the IME also reconnects its port
+      // periodically on its own) a port disconnect. None of these should
+      // cancel an in-progress conversion.
+      const editor = this.createEditor();
+      const sentinelEntryState = {};
+      try {
+        this.inputHandler['conversionPending_'] = true;
+        this.inputHandler['entryState_'] = sentinelEntryState;
+
+        editor.message_(
+            {type: 'inputContext', context: {type: 'text', contextID: 99}});
+        assertTrue(this.inputHandler['conversionPending_']);
+        assertEquals(sentinelEntryState, this.inputHandler['entryState_']);
+
+        editor.message_({type: 'reset'});
+        assertTrue(this.inputHandler['conversionPending_']);
+        assertEquals(sentinelEntryState, this.inputHandler['entryState_']);
+
+        this.port.onDisconnect.getListener()(this.port);
+        assertTrue(this.inputHandler['conversionPending_']);
+        assertEquals(sentinelEntryState, this.inputHandler['entryState_']);
+      } finally {
+        this.inputHandler['conversionPending_'] = false;
+        this.inputHandler['entryState_'] = null;
+      }
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest',
+    'ImeChurnClearsEntryStateWhenNotPending', function() {
+      // Same messages as above, but without a conversion pending: this is
+      // the ordinary case (e.g. focus moving to a different field), where
+      // they should still clear the entry state as before.
+      const editor = this.createEditor();
+      const sentinelEntryState = {};
+      this.inputHandler['conversionPending_'] = false;
+      this.inputHandler['entryState_'] = sentinelEntryState;
+
+      editor.message_(
+          {type: 'inputContext', context: {type: 'text', contextID: 99}});
+      assertEquals(null, this.inputHandler['entryState_']);
+
+      this.inputHandler['entryState_'] = sentinelEntryState;
+      editor.message_({type: 'reset'});
+      assertEquals(null, this.inputHandler['entryState_']);
+
+      this.inputHandler['entryState_'] = sentinelEntryState;
+      this.port.onDisconnect.getListener()(this.port);
+      assertEquals(null, this.inputHandler['entryState_']);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest',
+    'ConversionCommitsKanaThenReplacesOnAccept', async function() {
+      // The kana is committed as ordinary text before
+      // the candidate menu opens, instead of staying as an active IME
+      // composition for as long as the menu is shown. An active
+      // composition gets special, platform-level treatment for Enter (it
+      // is committed immediately, before the key can ever reach the
+      // Panel's own key handling), which broke selecting a candidate with
+      // Enter -- it always committed the kana instead of the highlighted
+      // candidate. A selected candidate now replaces the already-committed
+      // kana via 'replaceText'. See maybeStartConversion_.
+      const editor = this.createTenjiEditor();
+      // Selecting a candidate now replaces the already-committed kana by
+      // deleting it and inserting the candidate (see 'replaceText' in
+      // maybeStartConversion_), so this editor must allow deletes.
+      editor.setAllowDeletes(true);
+      const savedOpen = CandidateMenuBackground.open;
+      CandidateMenuBackground.open = () => Promise.resolve('点字');
+
+      try {
+        assertTrue(this.sendCells('145 1345 245 0'));
+        await this.inputHandler.commitRequestForTest;
+        editor.assertCompositionIs('');
+        editor.assertContentIs('点字', '点字'.length);
+      } finally {
+        CandidateMenuBackground.open = savedOpen;
+      }
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest',
+    'ConversionCancelLeavesCommittedKanaAsIs', async function() {
+      // Cancelling (CandidateMenuBackground.open resolving null) leaves
+      // the already-committed kana as ordinary text; there is nothing left
+      // to restore, since it was never left as an uncommitted composition.
+      // The trailing word-separator (from the blank cell that triggered
+      // conversion) is retained: in Tenji orthography, spaces between words
+      // (wakachigaki) are meaningful punctuation for kana text that isn't
+      // being converted to kanji, unlike the accept path, where the
+      // separator is consumed and replaced by the kanji candidate instead.
+      const editor = this.createTenjiEditor();
+      const savedOpen = CandidateMenuBackground.open;
+      CandidateMenuBackground.open = () => Promise.resolve(null);
+
+      try {
+        assertTrue(this.sendCells('145 1345 245 0'));
+        await this.inputHandler.commitRequestForTest;
+        editor.assertCompositionIs('');
+        editor.assertContentIs('てんじ ', 'てんじ '.length);
+      } finally {
+        CandidateMenuBackground.open = savedOpen;
+      }
     });

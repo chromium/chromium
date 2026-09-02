@@ -50,6 +50,11 @@ AX_TEST_F('ChromeVoxMenuManagerTest', 'ClearMenus', async function() {
       BridgeConstants.PanelTest.Action.PERFORM_CLEAR_MENUS_TEST);
 });
 
+AX_TEST_F('ChromeVoxMenuManagerTest', 'CandidateMenuCancel', async function() {
+  await this.runTestInPanelManager(
+      BridgeConstants.PanelTest.Action.PERFORM_CANDIDATE_MENU_CANCEL_TEST);
+});
+
 AX_TEST_F('ChromeVoxMenuManagerTest', 'DenySignedOut', async function() {
   await this.runTestInPanelManager(
       BridgeConstants.PanelTest.Action.PERFORM_DENY_SIGNED_OUT_TEST);

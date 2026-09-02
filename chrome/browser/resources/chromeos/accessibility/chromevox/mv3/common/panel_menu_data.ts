@@ -38,6 +38,28 @@ export interface PanelTabMenuItemData {
   tabId: number;
 }
 
+/**
+ * An item for the single-purpose candidate menu used to present conversion
+ * candidates, currently used by Japanese IME kana-to-kanji conversion.
+ * Unlike PanelNodeMenuItemData, this isn't derived from walking the
+ * automation tree, so it carries its own label/accessible-name text rather
+ * than a menuId to route through.
+ */
+export interface CandidateMenuItemData {
+  /**
+   * The candidate itself: the item's visible label, and what gets
+   * committed if selected.
+   */
+  candidate: string;
+  /**
+   * The detailed per-character reading, set as the item's accessible name
+   * override so it's announced/brailled on focus instead of `candidate`
+   * (see menu_manager.ts). Lets homophone candidates be told apart without
+   * changing what's shown or what gets selected.
+   */
+  accessibleName: string;
+}
+
 export const ALL_PANEL_MENU_NODE_DATA: PanelNodeMenuData[] = [
   {
     menuId: PanelNodeMenuId.HEADING,

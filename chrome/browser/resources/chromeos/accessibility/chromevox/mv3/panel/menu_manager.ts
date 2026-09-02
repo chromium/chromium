@@ -5,6 +5,8 @@
 /**
  * @fileoverview Class to manage the ChromeVox menus.
  */
+import type {BridgeCallbackId} from '/common/bridge_callback_manager.js';
+import {BridgeCallbackManager} from '/common/bridge_callback_manager.js';
 import {StringUtil} from '/common/string_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -19,7 +21,7 @@ import {KeyMap} from '../common/key_map.js';
 import type {KeyBinding} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
-import type {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import type {CandidateMenuItemData, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
@@ -41,6 +43,16 @@ export class MenuManager {
   protected nodeMenuDictionary_:
       Partial<Record<PanelNodeMenuId, PanelNodeMenu>> = {};
   protected searchMenu_: PanelSearchMenu|null = null;
+  /**
+   * The single-purpose menu used to present conversion candidates,
+   * currently used by Japanese IME kana-to-kanji conversion, and the
+   * callback to resolve with the selected candidate, or null if the menu
+   * closes without one being selected (Escape, clicking outside it, the
+   * window losing focus, or any other way the menus can close -- see
+   * cancelPendingCandidateMenu()).
+   */
+  private candidateMenu_: PanelMenu|null = null;
+  private candidateResultCallbackId_: BridgeCallbackId|null = null;
 
   static disableMissingMsgsErrorsForTesting = false;
 
@@ -440,6 +452,10 @@ export class MenuManager {
         this.advanceItemBy(1);
         break;
       case 'Escape':
+        // Dismissing the candidate menu without selecting an item means the
+        // user cancelled conversion; closeMenusAndRestoreFocus() lets the
+        // background know via cancelPendingCandidateMenu(), same as every
+        // other way of closing the menus.
         // TODO(b/314203187): Not null asserted, check that this is correct.
         PanelInterface.instance!.closeMenusAndRestoreFocus();
         break;
@@ -516,6 +532,66 @@ export class MenuManager {
     this.activateMenu(menu, true /* activateFirstItem */);
     mouseUpEvent.preventDefault();
     mouseUpEvent.stopPropagation();
+  }
+
+  /**
+   * Opens a single candidate menu listing `items`, without the
+   * jump/speech/chromevox/actions/node menus onOpenMenus() builds.
+   * Selecting one (Enter/Space/click, the same generic menu-item
+   * activation used everywhere else) resolves `resultCallbackId` with that
+   * candidate. If the menu closes without one being selected,
+   * cancelPendingCandidateMenu() resolves it with null instead.
+   */
+  async onShowCandidateMenu(
+      items: CandidateMenuItemData[],
+      resultCallbackId: BridgeCallbackId): Promise<void> {
+    await BackgroundBridge.PanelBackground.saveCurrentNode();
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    PanelInterface.instance!.setMode(PanelMode.FULLSCREEN_MENUS);
+    if (!document.hasFocus()) {
+      await waitForWindowFocus();
+    }
+    this.candidateResultCallbackId_ = resultCallbackId;
+    this.candidateMenu_ = this.addMenu('panel_menu_candidates');
+    this.activateMenu(this.candidateMenu_, false /* activateFirstItem */);
+    for (const itemData of items) {
+      const item = this.candidateMenu_.addMenuItem(
+          itemData.candidate, undefined, undefined, undefined, async () => {
+            const callbackId = this.candidateResultCallbackId_;
+            this.candidateResultCallbackId_ = null;
+            if (callbackId) {
+              await BridgeCallbackManager.performCallback(
+                  callbackId, itemData.candidate);
+            }
+          });
+      // Override the accessible name so the detailed reading is what's
+      // announced/brailled on focus, without changing the item's visible
+      // label (which stays the plain candidate, matching what gets
+      // selected).
+      item.element?.setAttribute('aria-label', itemData.accessibleName);
+    }
+    if (items.length > 0) {
+      this.candidateMenu_.activateItem(0);
+    }
+  }
+
+  /**
+   * Resolves a still-open candidate menu's result callback with null, as
+   * if the user cancelled it, and clears it either way. A no-op if a
+   * candidate was already selected (which clears the callback itself) or
+   * no candidate menu is open. Called whenever the menus close, so a
+   * pending conversion always resolves instead of hanging forever no
+   * matter how the menu closed -- Escape, clicking outside it (the menu
+   * itself doesn't fill the screen even in fullscreen mode), or the
+   * window losing focus (e.g. a system notification or dialog stealing
+   * activation; this isn't an OS-exclusive fullscreen lock).
+   */
+  async cancelPendingCandidateMenu(): Promise<void> {
+    const callbackId = this.candidateResultCallbackId_;
+    this.candidateResultCallbackId_ = null;
+    if (callbackId) {
+      await BridgeCallbackManager.performCallback(callbackId, null);
+    }
   }
 
   /**

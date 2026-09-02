@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BridgeCallbackManager} from '/common/bridge_callback_manager.js';
 import {BridgeHelper} from '/common/bridge_helper.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
@@ -29,6 +30,9 @@ export class MenuManagerWithTestEndpoints extends MenuManager {
     BridgeHelper.registerHandler(
         TARGET, Action.PERFORM_ADVANCE_ACTIVE_MENU_BY_TEST,
         () => this.performAdvanceActiveMenuByTest_());
+    BridgeHelper.registerHandler(
+        TARGET, Action.PERFORM_CANDIDATE_MENU_CANCEL_TEST,
+        () => this.performCandidateMenuCancelTest_());
     BridgeHelper.registerHandler(
         TARGET, Action.PERFORM_CLEAR_MENUS_TEST,
         () => this.performClearMenusTest_());
@@ -179,6 +183,66 @@ export class MenuManagerWithTestEndpoints extends MenuManager {
       return 'this.menus_.length - 1 !== activeIndex()';
     }
 
+    return 'pass';
+  }
+
+  private async performCandidateMenuCancelTest_(): Promise<string> {
+    const items = [{candidate: 'a', accessibleName: 'a, 1/1'}];
+    const results: Array<string|null> = [];
+    const originalPerformCallback = BridgeCallbackManager.performCallback;
+    // @ts-ignore
+    BridgeCallbackManager.performCallback =
+        async (_id: unknown, ...args: unknown[]) => {
+      results.push(args[0] as string | null);
+    };
+    try {
+      // cancelPendingCandidateMenu() is what closeMenusAndRestoreFocus()
+      // now calls for every way the menus can close (Escape, clicking
+      // outside them, losing window focus, ...), so exercising it directly
+      // here covers all of those without needing to simulate each one.
+      // @ts-ignore
+      await this.onShowCandidateMenu(items, {});
+      // @ts-ignore
+      if (!this.candidateResultCallbackId_) {
+        return 'candidateResultCallbackId_ is null after onShowCandidateMenu';
+      }
+
+      await this.cancelPendingCandidateMenu();
+      if (JSON.stringify(results) !== JSON.stringify([null])) {
+        return `expected a single null result, got ${JSON.stringify(results)}`;
+      }
+      // @ts-ignore
+      if (this.candidateResultCallbackId_) {
+        return 'candidateResultCallbackId_ is not null after cancelling';
+      }
+
+      // A second cancel (e.g. another close path firing right after the
+      // first) must not resolve a second time.
+      await this.cancelPendingCandidateMenu();
+      if (JSON.stringify(results) !== JSON.stringify([null])) {
+        return `cancelling twice fired the callback again: ${
+            JSON.stringify(results)}`;
+      }
+
+      // Selecting a candidate must also prevent a later cancel (from
+      // whatever closed the menu after the selection) from firing too.
+      // @ts-ignore
+      await this.onShowCandidateMenu(items, {});
+      // @ts-ignore
+      const selectCallback = this.candidateMenu_.items[0].callback;
+      await selectCallback();
+      if (JSON.stringify(results) !== JSON.stringify([null, 'a'])) {
+        return `expected selection to resolve with the candidate, got ${
+            JSON.stringify(results)}`;
+      }
+      await this.cancelPendingCandidateMenu();
+      if (JSON.stringify(results) !== JSON.stringify([null, 'a'])) {
+        return `cancelling after a selection fired again: ${
+            JSON.stringify(results)}`;
+      }
+    } finally {
+      BridgeCallbackManager.performCallback = originalPerformCallback;
+    }
     return 'pass';
   }
 

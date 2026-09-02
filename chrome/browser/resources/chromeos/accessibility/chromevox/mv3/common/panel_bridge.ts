@@ -6,12 +6,13 @@
  * @fileoverview Provides an interface for other renderers to communicate with
  * the ChromeVox panel.
  */
+import type {BridgeCallbackId} from '/common/bridge_callback_manager.js';
 import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from './bridge_constants.js';
 import {PanelCommand} from './panel_command.js';
-import type {PanelNodeMenuItemData} from './panel_menu_data.js';
+import type {CandidateMenuItemData, PanelNodeMenuItemData} from './panel_menu_data.js';
 import {MenuDataForTest} from './panel_menu_data.js';
 
 const PanelTarget = BridgeConstants.Panel.TARGET;
@@ -24,6 +25,19 @@ export class PanelBridge {
   static addMenuItem(itemData: PanelNodeMenuItemData): Promise<void> {
     return BridgeHelper.sendMessage(
         PanelTarget, PanelAction.ADD_MENU_ITEM, itemData);
+  }
+
+  /**
+   * Opens a single candidate menu listing `items` (no jump/actions menus
+   * alongside it, unlike EXEC_COMMAND(OPEN_MENUS)). `resultCallbackId` is
+   * resolved with the selected candidate, or null if the menu closes
+   * without one being selected.
+   */
+  static showCandidateMenu(
+      items: CandidateMenuItemData[],
+      resultCallbackId: BridgeCallbackId): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTarget, PanelAction.SHOW_CANDIDATE_MENU, items, resultCallbackId);
   }
 
   static async onCurrentRangeChanged(): Promise<void> {
