@@ -142,6 +142,12 @@ const base::FeatureParam<base::TimeDelta>
     kActorLoginObservationStartDelayDuration{&kActorLoginObservationStartDelay,
                                              "start_delay", base::Seconds(3)};
 
+BASE_FEATURE(kActorTypeToolObservationStartDelay,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kActorTypeToolObservationStartDelayDuration{
+        &kActorTypeToolObservationStartDelay, "start_delay", base::Seconds(1)};
+
 BASE_FEATURE(kActorSendBrowserSignalForAction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

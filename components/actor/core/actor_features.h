@@ -109,6 +109,10 @@ BASE_DECLARE_FEATURE(kActorLoginObservationStartDelay);
 extern const base::FeatureParam<base::TimeDelta>
     kActorLoginObservationStartDelayDuration;
 
+BASE_DECLARE_FEATURE(kActorTypeToolObservationStartDelay);
+extern const base::FeatureParam<base::TimeDelta>
+    kActorTypeToolObservationStartDelayDuration;
+
 // Kill switch to disable sending a browser signal (which is used for user
 // interaction) before sending action to renderer.
 BASE_DECLARE_FEATURE(kActorSendBrowserSignalForAction);

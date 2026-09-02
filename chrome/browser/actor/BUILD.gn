@@ -405,6 +405,7 @@ source_set("unit_tests") {
     "tools/click_tool_request_unittest.cc",
     "tools/file_upload_tool_request_unittest.cc",
     "tools/file_upload_tool_unittest.cc",
+    "tools/type_tool_request_unittest.cc",
   ]
   deps = [
     ":actor",
