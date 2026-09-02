@@ -24,9 +24,11 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_install_element.h"
@@ -663,6 +665,53 @@ TEST_F(HTMLCapabilityElementBaseTest,
             permission_element->initialPermissionStatus());
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::GRANTED),
             permission_element->permissionStatus());
+}
+
+TEST_F(HTMLCapabilityElementBaseTest, FocusRequiresUserActivation) {
+  auto* permission_element = CreatePermissionElement("camera");
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+
+  // 1. Script-initiated focus without transient user activation is blocked.
+  permission_element->Focus(FocusParams());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+
+  permission_element->Focus(FocusParams(FocusTrigger::kScript));
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+
+  // 2. User-gesture focus succeeds even without transient user activation.
+  permission_element->Focus(FocusParams(FocusTrigger::kUserGesture));
+  EXPECT_EQ(permission_element, GetDocument().FocusedElement());
+
+  GetDocument().ClearFocusedElement();
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+
+  // 3. Script-initiated focus with transient user activation succeeds.
+  LocalFrame::NotifyUserActivation(
+      GetDocument().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+  permission_element->Focus(FocusParams());
+  EXPECT_EQ(permission_element, GetDocument().FocusedElement());
+}
+
+TEST_F(HTMLCapabilityElementBaseTest,
+       DialogAutofocusDoesNotFocusWithoutUserActivation) {
+  SetBodyContent(R"HTML(
+    <dialog id='d'>
+      <usermedia id='camera' type='camera' autofocus></usermedia>
+    </dialog>
+  )HTML");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* dialog = To<HTMLDialogElement>(
+      GetDocument().QuerySelector(AtomicString("dialog")));
+  auto* permission_element = To<HTMLCapabilityElementBase>(
+      GetDocument().QuerySelector(AtomicString("usermedia")));
+
+  // Open the dialog programmatically without user activation.
+  dialog->showModal(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(dialog->IsOpenAndActive());
+  EXPECT_NE(permission_element, GetDocument().FocusedElement());
 }
 
 class HTMLCapabilityElementBaseClickingEnabledTest

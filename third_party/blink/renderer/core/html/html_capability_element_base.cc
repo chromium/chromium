@@ -389,10 +389,12 @@ void HTMLCapabilityElementBase::Focus(const FocusParams& params) {
   if (fallback_mode_) {
     return HTMLElement::Focus(params);
   }
-  // This will only apply to `focus` and `blur` JS API. Other focus types (like
+  // This will only apply to script-initiated focusing. Other focus types (like
   // accessibility focusing and manual user focus), will still be permitted as
-  // usual.
-  if (params.type == mojom::blink::FocusType::kScript &&
+  // usual. `FocusTrigger` (rather than `FocusType`) is used because internal
+  // script-driven paths such as dialog.showModal() / popover autofocus reach
+  // this with FocusType::kNone.
+  if (params.focus_trigger == FocusTrigger::kScript &&
       !LocalFrame::HasTransientUserActivation(GetDocument().GetFrame())) {
     return;
   }
