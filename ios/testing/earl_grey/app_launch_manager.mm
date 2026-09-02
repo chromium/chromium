@@ -253,7 +253,14 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 - (BOOL)backgroundApplication {
   XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
   // Tell the system to background the app.
-  [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
+  // TODO(crbug.com/540470551): pressButton:XCUIDeviceButtonHome is broken on
+  // < iOS 27 when Xcode 27 is installed. Use springboard activation workaround.
+  if (@available(iOS 27, *)) {
+    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
+  } else {
+    [[[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]
+        activate];
+  }
   BOOL (^conditionBlock)(void) = ^BOOL {
     return currentApplication.state == XCUIApplicationStateRunningBackground ||
            currentApplication.state ==
