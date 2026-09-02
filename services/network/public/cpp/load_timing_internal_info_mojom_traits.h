@@ -14,6 +14,7 @@
 #include "net/http/alternate_protocol_usage.h"
 #include "net/http/http_connection_info.h"
 #include "net/socket/next_proto.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "services/network/public/mojom/load_timing_internal_info.mojom-shared.h"
 
 namespace mojo {
@@ -49,6 +50,42 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static network::mojom::ResolutionSource ToMojom(
       net::ResolutionSource resolution_source);
   static net::ResolutionSource FromMojom(network::mojom::ResolutionSource in);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::QuicSessionEstablishmentReason,
+               net::QuicSessionEstablishmentReason> {
+  static network::mojom::QuicSessionEstablishmentReason ToMojom(
+      net::QuicSessionEstablishmentReason reason);
+  static net::QuicSessionEstablishmentReason FromMojom(
+      network::mojom::QuicSessionEstablishmentReason in);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::QuicSessionNonReuseReason,
+               net::QuicSessionNonReuseReason> {
+  static network::mojom::QuicSessionNonReuseReason ToMojom(
+      net::QuicSessionNonReuseReason reason);
+  static net::QuicSessionNonReuseReason FromMojom(
+      network::mojom::QuicSessionNonReuseReason in);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::QuicConnectionReuseDetailsDataView,
+                 net::QuicConnectionReuseDetails> {
+  static std::optional<net::QuicSessionEstablishmentReason>
+  establishment_reason(const net::QuicConnectionReuseDetails& details) {
+    return details.establishment_reason;
+  }
+  static std::optional<net::QuicSessionNonReuseReason> non_reuse_reason(
+      const net::QuicConnectionReuseDetails& details) {
+    return details.non_reuse_reason;
+  }
+  static bool Read(network::mojom::QuicConnectionReuseDetailsDataView data,
+                   net::QuicConnectionReuseDetails* details);
 };
 
 template <>
@@ -101,6 +138,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::MultiplexedSessionCreationInitiator,
+               net::MultiplexedSessionCreationInitiator> {
+  static network::mojom::MultiplexedSessionCreationInitiator ToMojom(
+      net::MultiplexedSessionCreationInitiator initiator);
+  static net::MultiplexedSessionCreationInitiator FromMojom(
+      network::mojom::MultiplexedSessionCreationInitiator in);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                  net::LoadTimingInternalInfo> {
   static std::optional<base::TimeDelta> max_stream_limit_pending_delay(
@@ -123,6 +170,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const net::LoadTimingInternalInfo& info);
   static const std::optional<net::ResolutionDetails>& resolution_details(
       const net::LoadTimingInternalInfo& info);
+  static const std::optional<net::QuicConnectionReuseDetails>&
+  quic_connection_reuse_details(const net::LoadTimingInternalInfo& info);
+  static std::optional<net::MultiplexedSessionCreationInitiator>
+  session_creation_initiator(const net::LoadTimingInternalInfo& info);
   static bool Read(network::mojom::LoadTimingInternalInfoDataView data,
                    net::LoadTimingInternalInfo* info);
 };

@@ -1101,7 +1101,7 @@ historical analysis. -->
   <int value="1" label="kPreconnect"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/spdy/multiplexed_session_creation_initiator.h:MultiplexedSessionCreationInitiator) -->
+<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:MultiplexedSessionCreationInitiator) -->
 
 <enum name="MultiPortStatusOnMigration">
   <int value="0" label="Not validated"/>
@@ -3185,7 +3185,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="In-flight session existed, and was preconnect"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicSessionEstablishmentReason) -->
+<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:QuicSessionEstablishmentReason) -->
 
 <!-- LINT.IfChange(QuicSessionKeyMismatchedField) -->
 
@@ -3244,7 +3244,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Session existed: Multiple non-reuse reasons"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicSessionNonReuseReason) -->
+<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:QuicSessionNonReuseReason) -->
 
 <!-- LINT.IfChange(QuicSessionPoolAsyncDnsJobSuccessSource) -->
 

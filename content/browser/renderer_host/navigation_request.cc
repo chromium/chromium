@@ -7729,6 +7729,11 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
                 ->max_stream_limit_pending_delay,
         .resolution_details =
             response_head_->load_timing_internal_info->resolution_details,
+        .quic_connection_reuse_details =
+            response_head_->load_timing_internal_info
+                ->quic_connection_reuse_details,
+        .session_creation_initiator = response_head_->load_timing_internal_info
+                                          ->session_creation_initiator,
     };
   }
 

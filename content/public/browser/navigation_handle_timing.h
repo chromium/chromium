@@ -12,6 +12,7 @@
 #include "net/base/load_timing_internal_info.h"
 #include "net/dns/public/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 
 namespace content {
 
@@ -35,11 +36,20 @@ struct CONTENT_EXPORT NavigationHandleTiming {
     std::optional<base::TimeDelta> max_stream_limit_pending_delay;
     // The details of the host resolution result.
     std::optional<net::ResolutionDetails> resolution_details;
+    // Details about why a QUIC connection was established or not reused.
+    std::optional<net::QuicConnectionReuseDetails>
+        quic_connection_reuse_details;
+    // Indicates the initiator of the multiplexed session (e.g. preconnect).
+    std::optional<net::MultiplexedSessionCreationInitiator>
+        session_creation_initiator;
   };
 
   NavigationHandleTiming();
   NavigationHandleTiming(const NavigationHandleTiming& timing);
   NavigationHandleTiming& operator=(const NavigationHandleTiming& timing);
+  NavigationHandleTiming(NavigationHandleTiming&& timing);
+  NavigationHandleTiming& operator=(NavigationHandleTiming&& timing);
+  ~NavigationHandleTiming();
 
   // The time the URLLoader for the navigation started.
   base::TimeTicks loader_start_time;

@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/http/alternate_protocol_usage.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 
 namespace mojo {
 
@@ -115,6 +116,200 @@ EnumTraits<network::mojom::ResolutionSource, net::ResolutionSource>::FromMojom(
   NOTREACHED();
 }
 
+network::mojom::MultiplexedSessionCreationInitiator
+EnumTraits<network::mojom::MultiplexedSessionCreationInitiator,
+           net::MultiplexedSessionCreationInitiator>::
+    ToMojom(net::MultiplexedSessionCreationInitiator initiator) {
+  switch (initiator) {
+    case net::MultiplexedSessionCreationInitiator::kUnknown:
+      return network::mojom::MultiplexedSessionCreationInitiator::kUnknown;
+    case net::MultiplexedSessionCreationInitiator::kPreconnect:
+      return network::mojom::MultiplexedSessionCreationInitiator::kPreconnect;
+  }
+  NOTREACHED();
+}
+
+net::MultiplexedSessionCreationInitiator
+EnumTraits<network::mojom::MultiplexedSessionCreationInitiator,
+           net::MultiplexedSessionCreationInitiator>::
+    FromMojom(network::mojom::MultiplexedSessionCreationInitiator in) {
+  switch (in) {
+    case network::mojom::MultiplexedSessionCreationInitiator::kUnknown:
+      return net::MultiplexedSessionCreationInitiator::kUnknown;
+    case network::mojom::MultiplexedSessionCreationInitiator::kPreconnect:
+      return net::MultiplexedSessionCreationInitiator::kPreconnect;
+  }
+  NOTREACHED();
+}
+
+network::mojom::QuicSessionEstablishmentReason
+EnumTraits<network::mojom::QuicSessionEstablishmentReason,
+           net::QuicSessionEstablishmentReason>::
+    ToMojom(net::QuicSessionEstablishmentReason reason) {
+  switch (reason) {
+    case net::QuicSessionEstablishmentReason::kUnknown:
+      return network::mojom::QuicSessionEstablishmentReason::kUnknown;
+    case net::QuicSessionEstablishmentReason::kNoSessionExisted:
+      return network::mojom::QuicSessionEstablishmentReason::kNoSessionExisted;
+    case net::QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect:
+      return network::mojom::QuicSessionEstablishmentReason::
+          kSessionExistedButNotPreconnect;
+    case net::QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect:
+      return network::mojom::QuicSessionEstablishmentReason::
+          kSessionExistedAndWasPreconnect;
+    case net::QuicSessionEstablishmentReason::kSessionExistedBoth:
+      return network::mojom::QuicSessionEstablishmentReason::
+          kSessionExistedBoth;
+    case net::QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect:
+      return network::mojom::QuicSessionEstablishmentReason::
+          kInflightSessionButNotPreconnect;
+    case net::QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect:
+      return network::mojom::QuicSessionEstablishmentReason::
+          kInflightSessionAndWasPreconnect;
+  }
+  NOTREACHED();
+}
+
+net::QuicSessionEstablishmentReason
+EnumTraits<network::mojom::QuicSessionEstablishmentReason,
+           net::QuicSessionEstablishmentReason>::
+    FromMojom(network::mojom::QuicSessionEstablishmentReason in) {
+  switch (in) {
+    case network::mojom::QuicSessionEstablishmentReason::kUnknown:
+      return net::QuicSessionEstablishmentReason::kUnknown;
+    case network::mojom::QuicSessionEstablishmentReason::kNoSessionExisted:
+      return net::QuicSessionEstablishmentReason::kNoSessionExisted;
+    case network::mojom::QuicSessionEstablishmentReason::
+        kSessionExistedButNotPreconnect:
+      return net::QuicSessionEstablishmentReason::
+          kSessionExistedButNotPreconnect;
+    case network::mojom::QuicSessionEstablishmentReason::
+        kSessionExistedAndWasPreconnect:
+      return net::QuicSessionEstablishmentReason::
+          kSessionExistedAndWasPreconnect;
+    case network::mojom::QuicSessionEstablishmentReason::kSessionExistedBoth:
+      return net::QuicSessionEstablishmentReason::kSessionExistedBoth;
+    case network::mojom::QuicSessionEstablishmentReason::
+        kInflightSessionButNotPreconnect:
+      return net::QuicSessionEstablishmentReason::
+          kInflightSessionButNotPreconnect;
+    case network::mojom::QuicSessionEstablishmentReason::
+        kInflightSessionAndWasPreconnect:
+      return net::QuicSessionEstablishmentReason::
+          kInflightSessionAndWasPreconnect;
+  }
+  NOTREACHED();
+}
+
+network::mojom::QuicSessionNonReuseReason EnumTraits<
+    network::mojom::QuicSessionNonReuseReason,
+    net::QuicSessionNonReuseReason>::ToMojom(net::QuicSessionNonReuseReason
+                                                 reason) {
+  switch (reason) {
+    case net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_TrueColdStart;
+    case net::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_SocketTag:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_SocketTag;
+    case net::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey;
+    case net::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_PrivacyMode:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_PrivacyMode;
+    case net::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_SecureDnsPolicy:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_SecureDnsPolicy;
+    case net::QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_Other;
+    case net::QuicSessionNonReuseReason::kSessionExisted_ServerGoaway:
+      return network::mojom::QuicSessionNonReuseReason::
+          kSessionExisted_ServerGoaway;
+    case net::QuicSessionNonReuseReason::kSessionExisted_Disconnected:
+      return network::mojom::QuicSessionNonReuseReason::
+          kSessionExisted_Disconnected;
+    case net::QuicSessionNonReuseReason::kSessionExisted_OtherGoingAway:
+      return network::mojom::QuicSessionNonReuseReason::
+          kSessionExisted_OtherGoingAway;
+    case net::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_MultipleFields:
+      return network::mojom::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_MultipleFields;
+    case net::QuicSessionNonReuseReason::kSessionExisted_MultipleReasons:
+      return network::mojom::QuicSessionNonReuseReason::
+          kSessionExisted_MultipleReasons;
+  }
+  NOTREACHED();
+}
+
+net::QuicSessionNonReuseReason
+EnumTraits<network::mojom::QuicSessionNonReuseReason,
+           net::QuicSessionNonReuseReason>::
+    FromMojom(network::mojom::QuicSessionNonReuseReason in) {
+  switch (in) {
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_TrueColdStart:
+      return net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart;
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_SocketTag:
+      return net::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_SocketTag;
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey:
+      return net::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey;
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_PrivacyMode:
+      return net::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_PrivacyMode;
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_SecureDnsPolicy:
+      return net::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_SecureDnsPolicy;
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_Other:
+      return net::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_Other;
+    case network::mojom::QuicSessionNonReuseReason::
+        kSessionExisted_ServerGoaway:
+      return net::QuicSessionNonReuseReason::kSessionExisted_ServerGoaway;
+    case network::mojom::QuicSessionNonReuseReason::
+        kSessionExisted_Disconnected:
+      return net::QuicSessionNonReuseReason::kSessionExisted_Disconnected;
+    case network::mojom::QuicSessionNonReuseReason::
+        kSessionExisted_OtherGoingAway:
+      return net::QuicSessionNonReuseReason::kSessionExisted_OtherGoingAway;
+    case network::mojom::QuicSessionNonReuseReason::
+        kNoSessionExisted_KeyMismatch_MultipleFields:
+      return net::QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_MultipleFields;
+    case network::mojom::QuicSessionNonReuseReason::
+        kSessionExisted_MultipleReasons:
+      return net::QuicSessionNonReuseReason::kSessionExisted_MultipleReasons;
+  }
+  NOTREACHED();
+}
+
+// static
+bool StructTraits<network::mojom::QuicConnectionReuseDetailsDataView,
+                  net::QuicConnectionReuseDetails>::
+    Read(network::mojom::QuicConnectionReuseDetailsDataView data,
+         net::QuicConnectionReuseDetails* details) {
+  if (!data.ReadEstablishmentReason(&details->establishment_reason)) {
+    return false;
+  }
+  if (!data.ReadNonReuseReason(&details->non_reuse_reason)) {
+    return false;
+  }
+  return true;
+}
+
 // static
 std::optional<base::TimeDelta>
 StructTraits<network::mojom::LoadTimingInternalInfoDataView,
@@ -166,6 +361,22 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                   net::LoadTimingInternalInfo>::
     http_network_session_quic_enabled(const net::LoadTimingInternalInfo& info) {
   return info.http_network_session_quic_enabled;
+}
+
+// static
+const std::optional<net::QuicConnectionReuseDetails>&
+StructTraits<network::mojom::LoadTimingInternalInfoDataView,
+             net::LoadTimingInternalInfo>::
+    quic_connection_reuse_details(const net::LoadTimingInternalInfo& info) {
+  return info.quic_connection_reuse_details;
+}
+
+// static
+std::optional<net::MultiplexedSessionCreationInitiator>
+StructTraits<network::mojom::LoadTimingInternalInfoDataView,
+             net::LoadTimingInternalInfo>::
+    session_creation_initiator(const net::LoadTimingInternalInfo& info) {
+  return info.session_creation_initiator;
 }
 
 // static
@@ -304,8 +515,14 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
   }
   info->http_network_session_quic_enabled =
       data.http_network_session_quic_enabled();
-
   if (!data.ReadResolutionDetails(&info->resolution_details)) {
+    return false;
+  }
+  if (!data.ReadQuicConnectionReuseDetails(
+          &info->quic_connection_reuse_details)) {
+    return false;
+  }
+  if (!data.ReadSessionCreationInitiator(&info->session_creation_initiator)) {
     return false;
   }
   return true;
