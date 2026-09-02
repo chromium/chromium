@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 using ::permissions::PredictionService;

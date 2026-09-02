@@ -4,11 +4,11 @@
 
 #include "content/public/browser/site_isolation_policy.h"
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/byte_size.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_P(OriginKeyedProcessesEnabledPolicyBrowserTest, Simple) {
       https_server()->GetURL("crossorigin.a.test", "/simple.html"));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", cross_origin_url));

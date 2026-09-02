@@ -49,6 +49,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)

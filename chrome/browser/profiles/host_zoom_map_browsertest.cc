@@ -46,6 +46,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using content::HostZoomMap;

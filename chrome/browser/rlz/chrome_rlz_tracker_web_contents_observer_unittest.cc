@@ -7,6 +7,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/rlz/mock_rlz_tracker_delegate.h"
 #include "components/rlz/rlz_tracker.h"
+#include "ui/base/page_transition_types.h"
 
 using ::testing::_;
 using ::testing::Return;

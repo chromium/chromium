@@ -20,6 +20,7 @@
 #include "components/push_notification/fake_push_notification_client.h"
 #include "components/push_notification/push_notification_constants.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"

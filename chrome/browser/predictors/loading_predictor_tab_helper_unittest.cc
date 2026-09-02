@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"

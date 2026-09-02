@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 

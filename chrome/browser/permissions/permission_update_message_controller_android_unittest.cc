@@ -12,6 +12,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_controller.h"
 
 class PermissionUpdateMessageControllerAndroidTest
     : public ChromeRenderViewHostTestHarness {

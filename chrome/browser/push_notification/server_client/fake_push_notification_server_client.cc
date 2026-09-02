@@ -4,6 +4,8 @@
 
 #include "chrome/browser/push_notification/server_client/fake_push_notification_server_client.h"
 
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
 namespace push_notification {
 
 FakePushNotificationServerClient::Factory::Factory() = default;

@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "ui/base/page_transition_types.h"
 
 SearchPreloadPipeline::SearchPreloadPipeline(GURL canonical_url)
     : pipeline_info_(content::PreloadPipelineInfo::Create(

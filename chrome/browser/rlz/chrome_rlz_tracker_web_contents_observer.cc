@@ -9,6 +9,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "ui/base/page_transition_types.h"
 
 ChromeRLZTrackerWebContentsObserver::ChromeRLZTrackerWebContentsObserver(
     content::WebContents* web_contents)

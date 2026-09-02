@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(SwiftShaderEnabledBrowserTest, EnableUnsafeSwiftShader) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   EXPECT_TRUE(IsWebGLEnabled(contents));
 
   const base::CommandLine* command_line =

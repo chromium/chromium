@@ -5,7 +5,7 @@
 #include "chrome/browser/performance_manager/mechanisms/termination_target_setter.h"
 
 #include "base/test/test_timeouts.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/performance_manager/public/performance_manager.h"
