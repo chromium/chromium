@@ -164,6 +164,7 @@ source_set("impl") {
     "extension_settings_overridden_dialog.cc",
     "extension_side_panel_coordinator.cc",
     "extension_side_panel_manager.cc",
+    "extension_side_panel_utils.cc",
     "extension_uninstall_dialog_impl.cc",
     "extensions_container.cc",
     "extensions_menu_view_model.cc",
@@ -236,7 +237,6 @@ source_set("impl") {
       "extension_dialog_utils_android.cc",
       "extension_install_ui_android.cc",
       "extension_side_panel_coordinator_android.cc",
-      "extension_side_panel_utils_android.cc",
     ]
     deps += [
       "//chrome/browser/ui/android/tab_model",
@@ -248,7 +248,6 @@ source_set("impl") {
     sources += [
       "extension_dialog_utils_views.cc",
       "extension_side_panel_coordinator_views.cc",
-      "extension_side_panel_utils_views.cc",
     ]
     deps += [
       "//chrome/browser/ui/views/extensions:extension_view_utils",
