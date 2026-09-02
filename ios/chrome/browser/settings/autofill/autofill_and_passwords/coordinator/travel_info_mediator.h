@@ -16,9 +16,6 @@
 // Consumer for this mediator.
 @property(nonatomic, weak) id<TravelInfoConsumer> consumer;
 
-// Whether Suggestions from Gemini entry point should be shown.
-@property(nonatomic, assign) BOOL shouldShowSuggestionsFromGemini;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_COORDINATOR_TRAVEL_INFO_MEDIATOR_H_

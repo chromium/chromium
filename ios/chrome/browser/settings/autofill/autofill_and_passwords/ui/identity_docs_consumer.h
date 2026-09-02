@@ -9,6 +9,8 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/suggestions_from_gemini_entry_point_consumer.h"
+
 @class TableViewItem;
 
 namespace autofill {
@@ -16,7 +18,7 @@ class EntityType;
 }  // namespace autofill
 
 // Consumer protocol for the Identity Docs settings page.
-@protocol IdentityDocsConsumer <NSObject>
+@protocol IdentityDocsConsumer <SuggestionsFromGeminiEntryPointConsumer>
 
 // Sets the lists of identity documents.
 - (void)
@@ -33,10 +35,6 @@ class EntityType;
 - (void)setIdentityDocsToggleState:(BOOL)on
                            enabled:(BOOL)enabled
                            managed:(BOOL)managed;
-
-// Sets whether Suggestions from Gemini should be shown, and its enabled state.
-- (void)setShouldShowSuggestionsFromGemini:(BOOL)shouldShow
-                                   enabled:(BOOL)enabled;
 
 @end
 

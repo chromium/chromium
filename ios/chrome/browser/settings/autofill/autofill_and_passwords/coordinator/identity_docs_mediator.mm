@@ -9,7 +9,6 @@
 #import "base/notreached.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
-#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator_protected.h"
@@ -34,7 +33,6 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
 @implementation IdentityDocsMediator {
   PrefBackedBoolean* _identityDocsEnabled;
   PrefBackedBoolean* _autofillProfileEnabled;
-  PrefBackedBoolean* _personalContextEnabled;
 }
 
 - (instancetype)initWithEntityDataManager:
@@ -53,12 +51,7 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
           initWithPrefService:prefService
                      prefName:autofill::prefs::kAutofillProfileEnabled];
       _autofillProfileEnabled.observer = self;
-      _personalContextEnabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:prefService
-                     prefName:
-                         personal_context::prefs::
-                             kPersonalContextInAutofillSettingsToggleStatus];
-      _personalContextEnabled.observer = self;
+      self.personalContextEnabled.observer = self;
     }
   }
   return self;
@@ -75,22 +68,20 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
 
     [self updateConsumerToggleState];
 
-    [self updateSuggestionsFromGeminiConsumerState];
+    [self updateSuggestionsFromGeminiForConsumer:_consumer];
   }
 }
 
 - (void)disconnect {
-  [super disconnect];
+  self.personalContextEnabled.observer = nil;
   _identityDocsEnabled.observer = nil;
   [_identityDocsEnabled stop];
   _identityDocsEnabled = nil;
   _autofillProfileEnabled.observer = nil;
   [_autofillProfileEnabled stop];
   _autofillProfileEnabled = nil;
-  _personalContextEnabled.observer = nil;
-  [_personalContextEnabled stop];
-  _personalContextEnabled = nil;
   _consumer = nil;
+  [super disconnect];
 }
 
 #pragma mark - BooleanObserver
@@ -99,8 +90,8 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
   if (observableBoolean == _identityDocsEnabled ||
       observableBoolean == _autofillProfileEnabled) {
     [self updateConsumerToggleState];
-  } else if (observableBoolean == _personalContextEnabled) {
-    [self updateSuggestionsFromGeminiConsumerState];
+  } else if (observableBoolean == self.personalContextEnabled) {
+    [self updateSuggestionsFromGeminiForConsumer:_consumer];
   }
 }
 
@@ -128,21 +119,6 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
                            enabled:profileEnabled
                            managed:managed];
   }
-}
-
-#pragma mark - Private
-
-// Updates the consumer with the Suggestions from Gemini entry point visibility
-// and enabled state.
-- (void)updateSuggestionsFromGeminiConsumerState {
-  if (!self.consumer) {
-    return;
-  }
-
-  BOOL enabled = _personalContextEnabled ? _personalContextEnabled.value : NO;
-  [self.consumer
-      setShouldShowSuggestionsFromGemini:_shouldShowSuggestionsFromGemini
-                                 enabled:enabled];
 }
 
 #pragma mark - IdentityDocsMutator

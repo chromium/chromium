@@ -21,6 +21,7 @@
 #import "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -29,7 +30,10 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator_protected.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/suggestions_from_gemini_entry_point_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -48,6 +52,9 @@
 
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   PrefChangeRegistrar _prefChangeRegistrar;
+
+  // Backing boolean to observe Suggestions from Gemini preference changes.
+  PrefBackedBoolean* _personalContextEnabled;
 }
 
 - (instancetype)initWithEntityDataManager:
@@ -68,6 +75,11 @@
           optimization_guide::prefs::
               kAutofillPredictionImprovementsEnterprisePolicyAllowed,
           &_prefChangeRegistrar);
+      _personalContextEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:prefService
+                     prefName:
+                         personal_context::prefs::
+                             kPersonalContextInAutofillSettingsToggleStatus];
     }
   }
   return self;
@@ -76,6 +88,8 @@
 - (void)disconnect {
   _entityDataManagerObserver.reset();
   _entityDataManager = nullptr;
+  [_personalContextEnabled stop];
+  _personalContextEnabled = nil;
   if (_prefService) {
     _prefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
@@ -148,6 +162,8 @@
   return 20.0;
 }
 
+#pragma mark - Protected
+
 - (autofill::DenseSet<autofill::EntityTypeName>)supportedEntityTypes {
   NOTREACHED();
 }
@@ -155,8 +171,6 @@
 - (void)pushItemsToConsumer:(NSArray<TableViewItem*>*)items {
   NOTREACHED();
 }
-
-#pragma mark - Private
 
 - (void)pushEntitiesToConsumer {
   if (!_entityDataManager) {
@@ -198,6 +212,33 @@
   [self pushItemsToConsumer:items];
 }
 
+- (void)updateConsumerToggleState {
+  // Overridden by subclasses.
+}
+
+- (BOOL)isAutofillAiDisabledByEnterprisePolicy {
+  return self.prefService &&
+         autofill::IsAutofillAiDisabledByEnterprisePolicy(self.prefService);
+}
+
+- (id<ObservableBoolean>)personalContextEnabled {
+  return _personalContextEnabled;
+}
+
+- (void)updateSuggestionsFromGeminiForConsumer:
+    (id<SuggestionsFromGeminiEntryPointConsumer>)consumer {
+  if (!consumer) {
+    return;
+  }
+
+  BOOL enabled = _personalContextEnabled ? _personalContextEnabled.value : NO;
+  [consumer
+      setShouldShowSuggestionsFromGemini:self.shouldShowSuggestionsFromGemini
+                                 enabled:enabled];
+}
+
+#pragma mark - Private
+
 - (TableViewItem*)itemForEntityInstance:
                       (const autofill::EntityInstance&)instance
                               withLabel:(const autofill::EntityLabel&)label {
@@ -234,17 +275,6 @@
           kAutofillPredictionImprovementsEnterprisePolicyAllowed) {
     [self updateConsumerToggleState];
   }
-}
-
-#pragma mark - Protected
-
-- (void)updateConsumerToggleState {
-  // Overridden by subclasses.
-}
-
-- (BOOL)isAutofillAiDisabledByEnterprisePolicy {
-  return self.prefService &&
-         autofill::IsAutofillAiDisabledByEnterprisePolicy(self.prefService);
 }
 
 @end

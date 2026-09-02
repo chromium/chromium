@@ -12,9 +12,18 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator.h"
 
 @class TableViewItem;
+@protocol ObservableBoolean;
+@protocol SuggestionsFromGeminiEntryPointConsumer;
 
 // Protected methods for subclasses of AutofillAIBaseMediator.
 @interface AutofillAIBaseMediator (Protected)
+
+// Observable boolean for the personal context preference.
+@property(nonatomic, readonly) id<ObservableBoolean> personalContextEnabled;
+
+// Updates the given `consumer` with the current Suggestions from Gemini state.
+- (void)updateSuggestionsFromGeminiForConsumer:
+    (id<SuggestionsFromGeminiEntryPointConsumer>)consumer;
 
 // Writable entity types supported by this mediator.
 - (std::vector<autofill::EntityType>)writableEntityTypes;
@@ -24,6 +33,9 @@
 
 // Subclasses must override to provide the items to the consumer.
 - (void)pushItemsToConsumer:(NSArray<TableViewItem*>*)items;
+
+// Pushes filtered entity items to the consumer.
+- (void)pushEntitiesToConsumer;
 
 // Called when observed preferences change.
 - (void)updateConsumerToggleState;
