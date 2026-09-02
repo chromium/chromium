@@ -19173,12 +19173,10 @@ namespace {
 class ReuseInitiatorProcessTest : public PrerenderBrowserTest {
  public:
   ReuseInitiatorProcessTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrerender2ReuseInitiatorProcess,
-          {{"prerender_action_type", "prerender-until-script"}}},
-         {blink::features::kPrerenderUntilScript, {}},
-         {features::kPrerenderUntilScriptUpgrade, {}}},
-        {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPrerenderUntilScript,
+                              features::kPrerenderUntilScriptUpgrade},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -19186,8 +19184,7 @@ class ReuseInitiatorProcessTest : public PrerenderBrowserTest {
 };
 
 // Tests that a same-origin prerender-until-script with moderate eagerness
-// reuses the initiator's process when the feature is enabled with default
-// eagerness (moderate).
+// reuses the initiator's process when the feature is enabled by default.
 // TODO(crbug.com/40269669): Add the implementation of pointer interaction
 // on Android to the function below.
 #if BUILDFLAG(IS_ANDROID)
@@ -19283,6 +19280,115 @@ IN_PROC_BROWSER_TEST_F(ReuseInitiatorProcessTest,
   RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
   ChildProcessId prerender_process_id = prerender_rfh->GetProcess()->GetID();
   EXPECT_NE(initiator_process_id, prerender_process_id);
+}
+
+class ReuseInitiatorProcessDisabledTest : public PrerenderBrowserTest {
+ public:
+  ReuseInitiatorProcessDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPrerenderUntilScript,
+                              features::kPrerenderUntilScriptUpgrade},
+        /*disabled_features=*/{features::kPrerenderUntilScriptProcessReuse});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a same-origin prerender-until-script DOES NOT reuse the process
+// when the feature is disabled (killswitch).
+// TODO(crbug.com/40269669): Add the implementation of pointer interaction
+// on Android to the function below.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ModerateEagernessPrerenderUntilScriptDoesNotReuseProcessWhenDisabled \
+  DISABLED_ModerateEagernessPrerenderUntilScriptDoesNotReuseProcessWhenDisabled
+#else
+#define MAYBE_ModerateEagernessPrerenderUntilScriptDoesNotReuseProcessWhenDisabled \
+  ModerateEagernessPrerenderUntilScriptDoesNotReuseProcessWhenDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ReuseInitiatorProcessDisabledTest,
+    MAYBE_ModerateEagernessPrerenderUntilScriptDoesNotReuseProcessWhenDisabled) {
+  GURL url = GetUrl("/empty.html");
+  GURL prerender_url = GetUrl("/title1.html");
+
+  // 1. Navigate to the initiator page.
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHost* initiator_rfh = current_frame_host();
+  ChildProcessId initiator_process_id = initiator_rfh->GetProcess()->GetID();
+
+  // 2. Start a same-origin prerender-until-script with moderate eagerness.
+  InsertAnchor(prerender_url);
+  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
+  prerender_helper()->AddPrerenderUntilScriptAsync(
+      prerender_url, blink::mojom::SpeculationEagerness::kModerate);
+  PointerHoverToAnchor(prerender_url);
+  observer.WaitForTrigger(prerender_url);
+
+  PrerenderHostId host_id = prerender_helper()->GetHostForUrl(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  // 3. Verify the prerender process ID DOES NOT match the initiator's process
+  // ID because the killswitch disabled the process reuse feature.
+  RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  ChildProcessId prerender_process_id = prerender_rfh->GetProcess()->GetID();
+  EXPECT_NE(initiator_process_id, prerender_process_id);
+}
+
+class ReuseInitiatorProcessPrerenderActionOnlyTest
+    : public PrerenderBrowserTest {
+ public:
+  ReuseInitiatorProcessPrerenderActionOnlyTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2ReuseInitiatorProcess,
+          {{"prerender_action_type", "prerender"}}},
+         {blink::features::kPrerenderUntilScript, {}},
+         {features::kPrerenderUntilScriptUpgrade, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that when kPrerender2ReuseInitiatorProcess is enabled only for regular
+// prerender, prerender-until-script still falls back to the default process
+// reuse behavior and reuses the process.
+// TODO(crbug.com/40269669): Add the implementation of pointer interaction
+// on Android to the function below.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderUntilScriptStillReusesProcessWithPrerenderActionOnly \
+  DISABLED_PrerenderUntilScriptStillReusesProcessWithPrerenderActionOnly
+#else
+#define MAYBE_PrerenderUntilScriptStillReusesProcessWithPrerenderActionOnly \
+  PrerenderUntilScriptStillReusesProcessWithPrerenderActionOnly
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ReuseInitiatorProcessPrerenderActionOnlyTest,
+    MAYBE_PrerenderUntilScriptStillReusesProcessWithPrerenderActionOnly) {
+  GURL url = GetUrl("/empty.html");
+  GURL prerender_url = GetUrl("/title1.html");
+
+  // 1. Navigate to the initiator page.
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHost* initiator_rfh = current_frame_host();
+  ChildProcessId initiator_process_id = initiator_rfh->GetProcess()->GetID();
+
+  // 2. Start a same-origin prerender-until-script with moderate eagerness.
+  InsertAnchor(prerender_url);
+  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
+  prerender_helper()->AddPrerenderUntilScriptAsync(
+      prerender_url, blink::mojom::SpeculationEagerness::kModerate);
+  PointerHoverToAnchor(prerender_url);
+  observer.WaitForTrigger(prerender_url);
+
+  PrerenderHostId host_id = prerender_helper()->GetHostForUrl(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  // 3. Verify the prerender process ID matches the initiator's process ID.
+  RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  ChildProcessId prerender_process_id = prerender_rfh->GetProcess()->GetID();
+  EXPECT_EQ(initiator_process_id, prerender_process_id);
 }
 
 class ReuseInitiatorProcessAllActionsTest : public PrerenderBrowserTest {

@@ -1403,9 +1403,7 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
 }
 
 bool PrerenderHost::ShouldAllowProcessReuse() const {
-  if (attributes_.IsBrowserInitiated() ||
-      !base::FeatureList::IsEnabled(
-          features::kPrerender2ReuseInitiatorProcess)) {
+  if (attributes_.IsBrowserInitiated()) {
     return false;
   }
 
@@ -1426,32 +1424,6 @@ bool PrerenderHost::ShouldAllowProcessReuse() const {
     return false;
   }
 
-  std::string allowed_action =
-      features::kPrerender2ReuseInitiatorProcessActionType.Get();
-
-  bool action_matches = false;
-  if (allowed_action == "all") {
-    action_matches = true;
-  } else if (allowed_action == "prerender" &&
-             attributes_.prerender_action_type ==
-                 blink::mojom::SpeculationAction::kPrerender) {
-    action_matches = true;
-  } else if (allowed_action == "prerender-until-script" &&
-             attributes_.prerender_action_type ==
-                 blink::mojom::SpeculationAction::kPrerenderUntilScript) {
-    action_matches = true;
-  }
-
-  if (!action_matches) {
-    return false;
-  }
-
-  std::string allowed_eagerness =
-      features::kPrerender2ReuseInitiatorProcessEagerness.Get();
-  if (allowed_eagerness == "all") {
-    return true;
-  }
-
   auto get_eagerness_score = [](blink::mojom::SpeculationEagerness e) {
     switch (e) {
       case blink::mojom::SpeculationEagerness::kConservative:
@@ -1467,20 +1439,63 @@ bool PrerenderHost::ShouldAllowProcessReuse() const {
 
   CHECK(attributes_.GetEagerness().has_value());
   int current_score = get_eagerness_score(attributes_.GetEagerness().value());
-  int allowed_score = 1;  // Default Moderate
-  if (allowed_eagerness == "conservative") {
-    allowed_score = 0;
-  } else if (allowed_eagerness == "moderate") {
-    allowed_score = 1;
-  } else if (allowed_eagerness == "eager") {
-    allowed_score = 2;
-  } else if (allowed_eagerness == "immediate") {
-    allowed_score = 3;
-  } else {
-    return false;
+  CHECK_GE(current_score, 0);
+
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2ReuseInitiatorProcess)) {
+    std::string allowed_action =
+        features::kPrerender2ReuseInitiatorProcessActionType.Get();
+
+    bool action_matches = false;
+    if (allowed_action == "all") {
+      action_matches = true;
+    } else if (allowed_action == "prerender" &&
+               attributes_.prerender_action_type ==
+                   blink::mojom::SpeculationAction::kPrerender) {
+      action_matches = true;
+    } else if (allowed_action == "prerender-until-script" &&
+               attributes_.prerender_action_type ==
+                   blink::mojom::SpeculationAction::kPrerenderUntilScript) {
+      action_matches = true;
+    }
+
+    if (action_matches) {
+      std::string allowed_eagerness =
+          features::kPrerender2ReuseInitiatorProcessEagerness.Get();
+      if (allowed_eagerness == "all") {
+        return true;
+      }
+
+      int allowed_score = 1;  // Default Moderate
+      if (allowed_eagerness == "conservative") {
+        allowed_score = 0;
+      } else if (allowed_eagerness == "moderate") {
+        allowed_score = 1;
+      } else if (allowed_eagerness == "eager") {
+        allowed_score = 2;
+      } else if (allowed_eagerness == "immediate") {
+        allowed_score = 3;
+      } else {
+        allowed_score = -1;
+      }
+
+      if (current_score <= allowed_score) {
+        return true;
+      }
+    }
   }
 
-  return current_score <= allowed_score;
+  // By default, process reuse is enabled for prerender-until-script with
+  // moderate or conservative eagerness.
+  if (attributes_.prerender_action_type ==
+          blink::mojom::SpeculationAction::kPrerenderUntilScript &&
+      base::FeatureList::IsEnabled(
+          features::kPrerenderUntilScriptProcessReuse)) {
+    constexpr int kDefaultAllowedScore = 1;  // Moderate
+    return current_score <= kDefaultAllowedScore;
+  }
+
+  return false;
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
