@@ -319,8 +319,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(browser_tabs + 1, browser()->GetTabStripModel()->count());
 }
 
-
-IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/556290954): de-flake and re-enable.
+#define MAYBE_OpenAllBookmarks DISABLED_OpenAllBookmarks
+#else
+#define MAYBE_OpenAllBookmarks OpenAllBookmarks
+#endif
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_OpenAllBookmarks) {
   BrowserWindowInterface* regular_browser = browser();
   BookmarkModel* bookmark_model =
       WaitForBookmarkModel(regular_browser->GetProfile());
