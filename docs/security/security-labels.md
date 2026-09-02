@@ -26,11 +26,7 @@ for that.)
 **Low(S3)**, **Unknown / Not Yet Assessed (S4)**}: Designates the severity
 of a vulnerability according to our
 [severity guidelines](severity-guidelines.md).
-* **Priority: P#**: Priority should generally match Severity (but should be
-  higher if there is evidence of active exploitation):
-  * **Security_Severity-Critical**: **P0**.
-  * **High** and **Medium**: **P1**.
-  * **Low**: **P2**.
+* **Priority: P#**: Is set by a robot, but teams can increase it if they wish.
 * **Found In: MMM#**: Designates which milestones of Chrome are
 impacted by the bug. Multiple milestones may be set in the Found In field,
 but the most important one is the earliest affected milestone. See
@@ -105,7 +101,7 @@ want to track which Chromium component(s) the bug is in.
 * **ReleaseBlock field = Stable**: When we find a security bug regression that
 has not yet shipped to stable, we use this label to try and prevent the security
 regression from ever affecting users of the Stable channel.
-* **OS-**{**Chrome**, **Linux**, **Windows**, ...}: Denotes which operating
+* **OS:**{**ChromeOS**, **Linux**, **Windows**, ...}: Denotes which operating
 systems are affected.
 * **Merge: field**{**Request-?**, **Approved-?**, **Merged-?**}: Security fixes
 are frequently merged to earlier release branches.
@@ -117,13 +113,13 @@ update the CVE field for appropriate bug(s) with the CVE number  for easy
 searching.
 **Type=Vulnerability** bugs should always have **Severity of S0-S3**,
 **Found In - ### set**, **Security_Impact** hotlist, **OS**, **Priority**,
-**M**, **Component Tags**, and an **Assigner** set.
+**M**, **Component Tags**, and an **Assignee** set.
 
 ### When to use the  Security_Impact-None hotlist {#TOC-Security-Impact-None}
 
 **Security_Impact-None** says that the bug can't affect any users running the
 default configuration of Chrome. It's most commonly used for cases where
-code is entirely disabled or absent in the production build.
+code is entirely disabled by runtime flags or absent in the production build.
 
 Other cases where it's OK to set **Security_Impact-None**:
 
@@ -146,7 +142,7 @@ Cases where it's *not* OK to set **Security_Impact-None**:
   even if that field trial configuration has been switched off. That's because
   the code may be active for devices which can't access the field trial
   configuration service.
-* The feature is turned on only for a small percent of users, e.g. 1%.
+* The feature is turned on for any users, even if only for a small percent of users, e.g. 1%.
 * Feature or flag checks are done somewhere that the attacker could influence.
   For example a privilege escalation from a lower-privileged process
   (e.g. renderer) to a higher-privileged process (e.g. browser)
@@ -163,7 +159,7 @@ Cases where it's *not* OK to set **Security_Impact-None**:
 It's important to get this right, because this label influences how rapidly
 we merge and release the fix. Ask for help if you're not sure.
 
-Some **Security_Impact-None** bugs may still be subject to VRP rewards, if
+Some **Security_Impact-None** bugs may still be considered for VRP rewards, if
 those bugs are found in code that we're likely to enable in the future.
 
 ### OS Field
@@ -289,6 +285,15 @@ perhaps stable if also impacted.
 ### Drop **X from ReleaseBlock field** For **Security_Impact-None** Bugs
 
 No need to stop a release if the bug doesn't have any consequences.
+
+## Self-Service hotlists for VRP Reporters
+
+VRP reporters can set the following hotlists if they are a member of the low
+volume announce list vrp-reporters@chromium.org. The purpose of each hotlist
+is described in their issue tracker configuration.
+
+ * [Security-Fixed-Issue-Request](https://issues.chromium.org/hotlists/8059017/edit)
+ * [Security-Severity-Reassessment-Request](https://issues.chromium.org/hotlists/8059196/edit)
 
 ## An Example
 
