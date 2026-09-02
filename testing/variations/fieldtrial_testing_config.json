@@ -6601,6 +6601,23 @@
             ]
         }
     ],
+    "DesktopAndroidAccountSettingsRefinements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignOutDeletesBrowsingData",
+                        "SignOutOfChrome",
+                        "SwitchToIncognitoInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopAndroidLinkCapturing": [
         {
             "platforms": [
@@ -17928,36 +17945,6 @@
             ]
         }
     ],
-    "SignOutDeletesBrowsingData": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SignOutDeletesBrowsingData"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SignOutOfChrome": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SignOutOfChrome"
-                    ]
-                }
-            ]
-        }
-    ],
     "SigninPromoLimitsExperiment": [
         {
             "platforms": [
@@ -18788,21 +18775,6 @@
                     "name": "WarpDisabledForWindowsTests",
                     "disable_features": [
                         "AllowD3D11WarpFallback"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SwitchToIncognitoInSettings": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SwitchToIncognitoInSettings"
                     ]
                 }
             ]
