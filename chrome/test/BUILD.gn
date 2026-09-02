@@ -167,8 +167,7 @@ static_library("test_support") {
     "//chrome/browser/safe_browsing:test_database_helper",
     "//chrome/browser/search_engines:test_support",
     "//chrome/browser/signin:identity_test_support",
-    "//chrome/test/base:browser_feature_test_waiters",
-    "//chrome/test/base:browser_window_waiters",
+    "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_render_view_test",
     "//chrome/test/base:chrome_test_scoped_utils",
@@ -185,7 +184,7 @@ static_library("test_support") {
     "//chrome/test/base:tracing",
     "//chrome/test/base:web_feature_histogram_tester",
     "//chrome/test/base:web_ui_mocha_browser_test",
-    "//chrome/test/base:web_ui_test_data_source",
+    "//chrome/test/base:web_ui_test_support",
   ]
 
   if (is_android) {
@@ -510,8 +509,7 @@ static_library("test_support") {
       "//components/upload_list",
     ]
     public_deps += [
-      "//chrome/test/base:launchservices_utils_mac",
-      "//chrome/test/base:scoped_bundle_swizzler_mac",
+      "//chrome/test/base:test_utils_mac",
       "//components/crash/core/app",
     ]
   }
@@ -525,8 +523,7 @@ static_library("test_support") {
     public_deps += [
       "//chrome/chrome_elf:crash",
       "//chrome/install_static/test:test_support",
-      "//chrome/test/base:process_inspector_win",
-      "//chrome/test/base:process_lineage_win",
+      "//chrome/test/base:process_helpers_win",
       "//components/crash/core/app",
       "//third_party/wtl",
     ]
@@ -542,7 +539,6 @@ static_library("test_support") {
       "//chrome/test/base:aura_window_title_observer",
       "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
       "//chrome/test/base:cros_extension_js_browser_test",
-      "//chrome/test/base:js_test_api",
       "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
     ]
 
@@ -650,10 +646,6 @@ static_library("test_support") {
       "//ui/base:pixel_diff_test_support",
       "//ui/views:view_pixel_diff_test_support",
     ]
-  }
-
-  if (use_aura) {
-    public_deps += [ "//chrome/test/base:test_browser_window_aura" ]
   }
 
   if (toolkit_views) {
@@ -1622,7 +1614,6 @@ if (is_android) {
     public_deps = [
       "//chrome/test/base:android_browser_test",
       "//chrome/test/base:chrome_test_path_utils",
-      "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/base:interactive_test_utils",
       "//chrome/test/base:mixin_based_in_process_browser_test",
       "//chrome/test/base:platform_browser_test",
@@ -8005,22 +7996,19 @@ if (!is_android) {
       "//chrome/browser/ui/views/web_apps/sub_apps",
       "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/test/base:browser_feature_test_waiters",
+      "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:chrome_test_utils",
       "//chrome/test/base:devtools_coverage",
       "//chrome/test/base:fake_gaia_mixin",
       "//chrome/test/base:in_process_browser_test",
-      "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/base:interactive_test_utils",
       "//chrome/test/base:mixin_based_in_process_browser_test",
       "//chrome/test/base:platform_browser_test",
       "//chrome/test/base:save_desktop_snapshot",
-      "//chrome/test/base:test_chrome_web_ui_controller_factory",
       "//chrome/test/base:test_launcher_utils",
       "//chrome/test/base:ui_test_utils",
       "//chrome/test/base:web_ui_mocha_browser_test",
-      "//chrome/test/base:web_ui_test_data_source",
-      "//chrome/test/base:web_view_focus_helper",
+      "//chrome/test/base:web_ui_test_support",
       "//chrome/test/interaction",
       "//chrome/test/permissions",
       "//components/autofill/content/browser:test_support",
@@ -8197,10 +8185,7 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      public_deps += [
-        "//chrome/test/base:launchservices_utils_mac",
-        "//chrome/test/base:scoped_bundle_swizzler_mac",
-      ]
+      public_deps += [ "//chrome/test/base:test_utils_mac" ]
       deps += [
         "//chrome/browser:chrome_browser_application_mac",
         "//chrome/browser/apps/app_shim",
@@ -8211,9 +8196,8 @@ if (!is_android) {
     if (is_win) {
       public_deps += [
         "//chrome/test/base:always_on_top_window_killer_win",
-        "//chrome/test/base:window_contents_as_string_win",
+        "//chrome/test/base:process_helpers_win",
       ]
-      public_deps += [ "//chrome/test/base:process_lineage_win" ]
       deps += [ "//chrome/browser/os_crypt" ]
     }
 
@@ -8225,9 +8209,6 @@ if (!is_android) {
       public_deps += [
         "//chrome/test/base:cros_web_ui_browser_test",
         "//chrome/test/base:javascript_browser_test",
-        "//chrome/test/base:js_test_api",
-        "//chrome/test/base:mojo_web_ui_browser_test",
-        "//chrome/test/base:web_ui_test_handler",
       ]
 
       deps += [

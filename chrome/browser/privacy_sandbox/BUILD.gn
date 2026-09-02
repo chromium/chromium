@@ -188,7 +188,6 @@ if (!is_android) {
         [ "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc" ]
     public_deps = [
       "//base/test:test_support",
-      "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/base:mixin_based_in_process_browser_test",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
     ]

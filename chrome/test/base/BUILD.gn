@@ -49,12 +49,13 @@ source_set("web_feature_histogram_tester") {
   ]
 }
 
-source_set("web_ui_test_data_source") {
+source_set("web_ui_test_support") {
   testonly = true
   sources = [
     "web_ui_test_data_source.cc",
     "web_ui_test_data_source.h",
   ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   public_deps = [
     "//base",
     "//content/public/browser",
@@ -69,6 +70,15 @@ source_set("web_ui_test_data_source") {
   ]
   if (is_chromeos) {
     deps += [ "//ash/webui/common:trusted_types_util" ]
+  }
+  if (!is_android) {
+    sources += [
+      "test_chrome_web_ui_controller_factory.cc",
+      "test_chrome_web_ui_controller_factory.h",
+    ]
+    public_deps +=
+        [ "//chrome/browser/ui/webui:chrome_web_ui_controller_factory" ]
+    deps += [ "//chrome/browser/profiles:profile" ]
   }
 }
 
@@ -156,15 +166,6 @@ source_set("scoped_metrics_service_for_synthetic_trials") {
   ]
 }
 
-source_set("in_process_browser_test_mixin") {
-  testonly = true
-  sources = [
-    "in_process_browser_test_mixin.cc",
-    "in_process_browser_test_mixin.h",
-  ]
-  public_deps = [ "//base" ]
-}
-
 static_library("chrome_test_launcher") {
   testonly = true
   sources = [
@@ -208,17 +209,24 @@ source_set("test_launcher_utils") {
   }
 }
 
-source_set("browser_feature_test_waiters") {
+source_set("browser_test_waiters") {
   testonly = true
   sources = [
     "autocomplete_change_observer.cc",
     "autocomplete_change_observer.h",
+    "browser_closed_waiter.cc",
+    "browser_closed_waiter.h",
+    "browser_created_waiter.cc",
+    "browser_created_waiter.h",
     "find_result_waiter.cc",
     "find_result_waiter.h",
     "search_test_utils.cc",
     "search_test_utils.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+  ]
   deps = [
     "//chrome/browser/omnibox",
     "//chrome/browser/profiles",
@@ -506,20 +514,6 @@ source_set("testing_browser_process_impl") {
   }
 }
 
-source_set("browser_window_waiters") {
-  testonly = true
-  sources = [
-    "browser_closed_waiter.cc",
-    "browser_closed_waiter.h",
-    "browser_created_waiter.cc",
-    "browser_created_waiter.h",
-  ]
-  public_deps = [
-    "//base",
-    "//chrome/browser/ui/browser_window",
-  ]
-}
-
 source_set("profile_lifecycle_test_utils") {
   testonly = true
   sources = [
@@ -742,7 +736,7 @@ source_set("web_ui_mocha_browser_test") {
   deps = [
     ":chrome_test_utils",
     ":test_switches",
-    ":web_ui_test_data_source",
+    ":web_ui_test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//content/public/browser",
@@ -877,7 +871,7 @@ if (!is_android) {
       sources += [ "in_process_browser_test_mac.mm" ]
       public_deps += [ "//ui/base:test_support" ]
       deps += [
-        ":scoped_bundle_swizzler_mac",
+        ":test_utils_mac",
         "//chrome/browser/ui/cocoa",
         "//chrome/browser/ui/tabs:tab_strip",
       ]
@@ -923,7 +917,7 @@ if (!is_android) {
       "//url",
     ]
     deps = [
-      ":browser_feature_test_waiters",
+      ":browser_test_waiters",
       "//chrome/browser",
       "//chrome/browser/bookmarks",
       "//chrome/browser/history",
@@ -965,10 +959,13 @@ if (!is_android) {
     sources = [
       "interactive_test_utils.cc",
       "interactive_test_utils.h",
+      "web_view_focus_helper.cc",
+      "web_view_focus_helper.h",
     ]
     public_deps = [
       "//base",
       "//chrome/browser/ui:view_ids",
+      "//content/public/browser",
       "//ui/base:test_support",
       "//ui/display",
       "//ui/gfx",
@@ -981,6 +978,7 @@ if (!is_android) {
       "//testing/gtest",
       "//ui/base",
       "//ui/events",
+      "//ui/views/controls/webview",
     ]
     if (toolkit_views) {
       sources += [ "interactive_test_utils_views.cc" ]
@@ -1002,11 +1000,14 @@ if (!is_android) {
       ]
     }
     if (is_win) {
-      sources += [ "interactive_test_utils_win.cc" ]
+      sources += [
+        "interactive_test_utils_win.cc",
+        "window_contents_as_string_win.cc",
+        "window_contents_as_string_win.h",
+      ]
       deps += [
-        ":process_lineage_win",
+        ":process_helpers_win",
         ":save_desktop_snapshot",
-        ":window_contents_as_string_win",
       ]
     }
     if (is_mac) {
@@ -1021,12 +1022,14 @@ if (!is_android) {
   source_set("mixin_based_in_process_browser_test") {
     testonly = true
     sources = [
+      "in_process_browser_test_mixin.cc",
+      "in_process_browser_test_mixin.h",
       "mixin_based_in_process_browser_test.cc",
       "mixin_based_in_process_browser_test.h",
     ]
     public_deps = [
       ":in_process_browser_test",
-      ":in_process_browser_test_mixin",
+      "//base",
     ]
   }
 
@@ -1044,24 +1047,6 @@ if (!is_android) {
       "//base",
       "//chrome/test/supervised_user:child_accounts",
       "//net:test_support",
-    ]
-  }
-
-  source_set("web_view_focus_helper") {
-    testonly = true
-    sources = [
-      "web_view_focus_helper.cc",
-      "web_view_focus_helper.h",
-    ]
-    public_deps = [
-      "//base",
-      "//content/public/browser",
-      "//ui/views",
-    ]
-    deps = [
-      ":interactive_test_utils",
-      "//testing/gtest",
-      "//ui/views/controls/webview",
     ]
   }
 
@@ -1117,6 +1102,17 @@ if (!is_android) {
       "//ui/color",
       "//ui/views",
     ]
+    if (use_aura) {
+      sources += [
+        "test_browser_window_aura.cc",
+        "test_browser_window_aura.h",
+      ]
+      public_deps += [ "//ui/aura:test_support" ]
+      deps += [
+        "//ui/wm",
+        "//ui/wm/public",
+      ]
+    }
   }
 
   source_set("browser_with_test_window_test") {
@@ -1202,67 +1198,32 @@ if (!is_android) {
       "//ui/gfx/codec",
     ]
   }
-
-  source_set("test_chrome_web_ui_controller_factory") {
-    testonly = true
-    sources = [
-      "test_chrome_web_ui_controller_factory.cc",
-      "test_chrome_web_ui_controller_factory.h",
-    ]
-    public_deps = [
-      "//base",
-      "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
-      "//content/public/browser",
-    ]
-    deps = [
-      ":web_ui_test_data_source",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-    ]
-  }
 }
 
 if (is_mac) {
-  source_set("launchservices_utils_mac") {
+  source_set("test_utils_mac") {
     testonly = true
     sources = [
       "launchservices_utils_mac.h",
       "launchservices_utils_mac.mm",
+      "scoped_bundle_swizzler_mac.h",
+      "scoped_bundle_swizzler_mac.mm",
     ]
     public_deps = [ "//base" ]
     deps = [ "//build:branding_buildflags" ]
   }
-
-  source_set("scoped_bundle_swizzler_mac") {
-    testonly = true
-    sources = [
-      "scoped_bundle_swizzler_mac.h",
-      "scoped_bundle_swizzler_mac.mm",
-    ]
-    deps = [ "//base" ]
-  }
 }
 
 if (is_win) {
-  source_set("process_inspector_win") {
+  source_set("process_helpers_win") {
     testonly = true
     sources = [
       "process_inspector_win.cc",
       "process_inspector_win.h",
-    ]
-    deps = [ "//base" ]
-  }
-
-  source_set("process_lineage_win") {
-    testonly = true
-    sources = [
       "process_lineage_win.cc",
       "process_lineage_win.h",
     ]
-    deps = [
-      ":process_inspector_win",
-      "//base",
-    ]
+    deps = [ "//base" ]
   }
 
   source_set("always_on_top_window_killer_win") {
@@ -1272,21 +1233,12 @@ if (is_win) {
       "always_on_top_window_killer_win.h",
     ]
     deps = [
-      ":process_lineage_win",
+      ":process_helpers_win",
       ":save_desktop_snapshot",
       "//base",
       "//base/test:test_support",
       "//ui/display",
     ]
-  }
-
-  source_set("window_contents_as_string_win") {
-    testonly = true
-    sources = [
-      "window_contents_as_string_win.cc",
-      "window_contents_as_string_win.h",
-    ]
-    deps = [ "//base" ]
   }
 }
 
@@ -1309,11 +1261,11 @@ if (!is_android) {
       ":devtools_coverage",
       ":in_process_browser_test",
       ":save_desktop_snapshot",
-      ":test_chrome_web_ui_controller_factory",
       ":test_switches",
       ":tracing",
       ":ui_test_utils",
       ":web_ui_mocha_browser_test",
+      ":web_ui_test_support",
       "//base",
       "//chrome/browser:after_startup_task_utils",
       "//chrome/browser/preloading:test_support",
@@ -1401,12 +1353,14 @@ if (is_android) {
   source_set("mixin_based_in_process_browser_test") {
     testonly = true
     sources = [
+      "in_process_browser_test_mixin.cc",
+      "in_process_browser_test_mixin.h",
       "mixin_based_in_process_browser_test.cc",
       "mixin_based_in_process_browser_test.h",
     ]
     public_deps = [
       ":android_browser_test",
-      ":in_process_browser_test_mixin",
+      "//base",
     ]
   }
 
@@ -1418,16 +1372,6 @@ if (is_android) {
 }
 
 if (is_chromeos) {
-  source_set("js_test_api") {
-    testonly = true
-    sources = [
-      "ash/js_test_api.cc",
-      "ash/js_test_api.h",
-    ]
-    public_deps = [ "//base" ]
-    deps = [ "//chrome/common" ]
-  }
-
   source_set("browser_process_platform_part_test_api_chromeos") {
     testonly = true
     sources = [
@@ -1455,36 +1399,19 @@ if (is_chromeos) {
     deps = [ "//ui/aura:test_support" ]
   }
 
-  source_set("web_ui_test_handler") {
-    testonly = true
-    sources = [
-      "ash/web_ui_test_handler.cc",
-      "ash/web_ui_test_handler.h",
-    ]
-    public_deps = [ "//content/public/browser" ]
-    deps = [
-      "//base",
-      "//chrome/common:mojo_bindings",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//mojo/public/cpp/bindings",
-      "//testing/gtest",
-      "//third_party/blink/public/common:headers",
-    ]
-  }
-
   source_set("javascript_browser_test") {
     testonly = true
     sources = [
       "ash/javascript_browser_test.cc",
       "ash/javascript_browser_test.h",
+      "ash/js_test_api.cc",
+      "ash/js_test_api.h",
     ]
     public_deps = [
       ":in_process_browser_test",
       "//base",
     ]
     deps = [
-      ":js_test_api",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/ui",
       "//chrome/common",
@@ -1515,8 +1442,12 @@ if (is_chromeos) {
   source_set("cros_web_ui_browser_test") {
     testonly = true
     sources = [
+      "ash/mojo_web_ui_browser_test.cc",
+      "ash/mojo_web_ui_browser_test.h",
       "ash/web_ui_browser_test.cc",
       "ash/web_ui_browser_test.h",
+      "ash/web_ui_test_handler.cc",
+      "ash/web_ui_test_handler.h",
     ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -1525,25 +1456,28 @@ if (is_chromeos) {
     public_deps = [
       ":devtools_coverage",
       ":javascript_browser_test",
-      ":web_ui_test_handler",
       "//base",
       "//content/public/browser",
     ]
     deps = [
-      ":js_test_api",
-      ":test_chrome_web_ui_controller_factory",
       ":test_switches",
-      ":web_ui_test_data_source",
+      ":web_ui_test_support",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs",
       "//chrome/common",
+      "//chrome/common:mojo_bindings",
+      "//chrome/test/data/webui:resources",
+      "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
       "//content/public/common",
       "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
       "//net",
       "//services/network/public/mojom",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
       "//ui/base",
     ]
   }
@@ -1577,51 +1511,9 @@ if (is_chromeos) {
       "//ui/base",
     ]
   }
-
-  source_set("mojo_web_ui_browser_test") {
-    testonly = true
-    sources = [
-      "ash/mojo_web_ui_browser_test.cc",
-      "ash/mojo_web_ui_browser_test.h",
-    ]
-    public_deps = [ ":cros_web_ui_browser_test" ]
-    deps = [
-      ":web_ui_test_handler",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser:chrome_content_browser_client",
-      "//chrome/common",
-      "//chrome/test/data/webui:resources",
-      "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
-      "//content/public/browser",
-      "//content/public/common",
-      "//mojo/public/cpp/bindings",
-      "//ui/base",
-    ]
-  }
 }
 
 if (use_aura) {
-  source_set("test_browser_window_aura") {
-    testonly = true
-    sources = [
-      "test_browser_window_aura.cc",
-      "test_browser_window_aura.h",
-    ]
-    public_deps = [
-      ":test_browser_window",
-      "//ui/aura:test_support",
-    ]
-    deps = [
-      "//base",
-      "//chrome/browser/ui/browser_window:create_browser_window",
-      "//ui/views",
-      "//ui/wm",
-      "//ui/wm/public",
-    ]
-  }
-
   source_set("drag_and_drop_test_utils") {
     testonly = true
     sources = [
