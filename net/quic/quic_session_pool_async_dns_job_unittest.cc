@@ -63,8 +63,8 @@ class QuicSessionPoolAsyncDnsJobTest : public QuicSessionPoolTestBase,
   // All features go through the base fixture, which settles them before any
   // test activity. A second ScopedFeatureList would swap the feature state
   // again while the task environment threads are already running.
-  std::vector<base::test::FeatureRef> EnabledFeatures(
-      const std::vector<base::test::FeatureRef>& additional = {}) const {
+  static std::vector<base::test::FeatureRef> EnabledFeatures(
+      const std::vector<base::test::FeatureRef>& additional = {}) {
     std::vector<base::test::FeatureRef> enabled = additional;
     if (GetParam()) {
       enabled.push_back(features::kAsyncQuicSession);
