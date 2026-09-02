@@ -216,10 +216,7 @@ static_library("test_support") {
     public_deps += [ "//chrome/test/base:android_ui_test_utils" ]
   }
 
-  sources = [
-    "../app/startup_timestamps.h",
-    "base/chrome_test_utils.cc",
-  ]
+  sources = [ "../app/startup_timestamps.h" ]
 
   if (enable_guest_view) {
     public_deps += [ "//components/guest_view/browser:test_support" ]

@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
-#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/testing_browser_process_death_test_mixin.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"

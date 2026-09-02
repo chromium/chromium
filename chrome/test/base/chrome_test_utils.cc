@@ -5,7 +5,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 
 #include "build/build_config.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
@@ -80,12 +79,6 @@ bool NavigateToURL(content::WebContents* web_contents, const GURL& url) {
   // Wait for load to stop.
   observer.Wait();
   return observer.last_navigation_succeeded();
-}
-
-TestingBrowserProcessDeathTestMixin::TestingBrowserProcessDeathTestMixin() {
-  if (!TestingBrowserProcess::GetGlobal()) {
-    TestingBrowserProcess::CreateInstance();
-  }
 }
 
 }  // namespace chrome_test_utils

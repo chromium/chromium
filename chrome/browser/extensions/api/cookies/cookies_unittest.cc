@@ -19,7 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/common/extensions/api/cookies.h"
-#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/testing_browser_process_death_test_mixin.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
