@@ -2232,11 +2232,6 @@ inline constexpr char kAccessibilityMouseKeysName[] = "Mouse Keys";
 inline constexpr char kAccessibilityMouseKeysDescription[] =
     "This option enables you to control the mouse with the keyboard.";
 
-inline constexpr char kAccessibilityCaptionsOnBrailleDisplayName[] =
-    "Captions on Braille Display";
-inline constexpr char kAccessibilityCaptionsOnBrailleDisplayDescription[] =
-    "This option allows access to captions for media via a braille display.";
-
 inline constexpr char kApplyClientsideModelPredictionsForPasswordTypesName[] =
     "Apply clientside model predictions for password forms.";
 inline constexpr char

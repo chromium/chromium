@@ -223,7 +223,6 @@ declare global {
       export enum AccessibilityFeature {
         DICTATION_CONTEXT_CHECKING = 'dictationContextChecking',
         GOOGLE_TTS_HIGH_QUALITY_VOICES = 'googleTtsHighQualityVoices',
-        CAPTIONS_ON_BRAILLE_DISPLAY = 'captionsOnBrailleDisplay',
       }
 
       export enum SelectToSpeakPanelAction {

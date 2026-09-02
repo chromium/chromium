@@ -274,14 +274,6 @@ bool IsAccessibilityMouseKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
 }
 
-BASE_FEATURE(kAccessibilityCaptionsOnBrailleDisplay,
-             "CaptionsOnBrailleDisplay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityCaptionsOnBrailleDisplayEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityCaptionsOnBrailleDisplay);
-}
-
 BASE_FEATURE(kAccessibilityDisableTouchpad, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityDisableTouchpadEnabled() {
   return base::FeatureList::IsEnabled(

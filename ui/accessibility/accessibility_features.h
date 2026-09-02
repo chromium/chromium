@@ -232,10 +232,6 @@ AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsChromeVoxEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMouseKeys);
 AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
 
-// Show captions on a braille display.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCaptionsOnBrailleDisplay);
-AX_BASE_EXPORT bool IsAccessibilityCaptionsOnBrailleDisplayEnabled();
-
 // Controls whether the shake cursor to locate feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();

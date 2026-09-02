@@ -517,9 +517,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled = ::features::
           IsExperimentalAccessibilityDictationContextCheckingEnabled();
       break;
-    case accessibility_private::AccessibilityFeature::kCaptionsOnBrailleDisplay:
-      enabled = ::features::IsAccessibilityCaptionsOnBrailleDisplayEnabled();
-      break;
     case accessibility_private::AccessibilityFeature::
         kGoogleTtsAutomaticReconnect:
       enabled = ::features::IsAccessibilityGoogleTtsAutomaticReconnectEnabled();

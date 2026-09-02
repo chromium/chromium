@@ -507,9 +507,7 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
     LoggedInSpokenFeedbackTest::SetUpCommandLine(command_line);
 
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition,
-         ::features::kAccessibilityCaptionsOnBrailleDisplay},
-        {});
+        {ash::features::kOnDeviceSpeechRecognition}, {});
   }
 
   void SetCaptionText(const std::string& text) {

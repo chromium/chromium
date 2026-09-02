@@ -13,7 +13,6 @@ import {constants} from '/common/constants.js';
 import {CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {EventGenerator} from '/common/event_generator.js';
-import {Features} from '/common/features.js';
 import {KeyCode} from '/common/key_code.js';
 import {LocalStorage} from '/common/local_storage.js';
 import {RectUtil} from '/common/rect_util.js';
@@ -56,7 +55,6 @@ import {SmartStickyMode} from './smart_sticky_mode.js';
 import AutomationNode = chrome.automation.AutomationNode;
 type CreateType = chrome.windows.CreateType;
 import Dir = constants.Dir;
-const AccessibilityFeature = chrome.accessibilityPrivate.AccessibilityFeature;
 const Restriction = chrome.automation.Restriction;
 const RoleType = chrome.automation.RoleType;
 const SetNativeChromeVoxResponse =
@@ -225,16 +223,12 @@ export class CommandHandler implements CommandHandlerInterface {
         EventGenerator.sendKeyPress(KeyCode.D, {search: true});
         return false;
       case Command.TOGGLE_CAPTIONS:
-        if (Features.isEnabled(
-                AccessibilityFeature.CAPTIONS_ON_BRAILLE_DISPLAY)) {
-          if (CaptionsHandler.inCaptions()) {
-            CaptionsHandler.close();
-          } else {
-            CaptionsHandler.open();
-          }
-          return false;
+        if (CaptionsHandler.inCaptions()) {
+          CaptionsHandler.close();
+        } else {
+          CaptionsHandler.open();
         }
-        return true;  // Don't consume the key events.
+        return false;
       case Command.OPEN_KEYBOARD_SHORTCUTS:
         EventGenerator.sendKeyPress(KeyCode.S, {search: true, ctrl: true});
         return false;
