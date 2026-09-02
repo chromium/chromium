@@ -764,7 +764,7 @@ TEST_F(PasswordSuggestionHelperTest,
   password_form.password_element_renderer_id = password_renderer_id;
   EXPECT_CALL(password_form_cache_,
               GetPasswordForm(::testing::_, form_renderer_id))
-      .WillOnce(Return(&password_form));
+      .WillRepeatedly(Return(&password_form));
 
   NSArray<FormSuggestion*>* suggestions =
       [helper_ retrieveSuggestionsWithForm:query];
@@ -1116,4 +1116,84 @@ TEST_F(PasswordSuggestionHelperTest,
   EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
   EXPECT_FALSE(suggestionToEvaluate.metadata.is_single_username_form);
   EXPECT_TRUE(suggestionToEvaluate.metadata.should_trigger_submission);
+  EXPECT_EQ(password_manager::SubmissionReadinessState::kTwoFields,
+            suggestionToEvaluate.metadata.submission_readiness);
+}
+
+// Tests retrieving suggestions when no form is in cache, resulting in
+// `kNoInformation` submission readiness.
+TEST_F(PasswordSuggestionHelperTest,
+       RetrieveSuggestions_SubmissionReadiness_NoInformation) {
+  FormSuggestionProviderQuery* query =
+      BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
+  FormRendererId form_renderer_id = query.formRendererID;
+  FieldRendererId username_renderer_id = autofill::test::MakeFieldRendererId();
+  FieldRendererId password_renderer_id = query.fieldRendererID;
+
+  PasswordFormFillData form_fill_data = CreatePasswordFillData(
+      form_renderer_id, username_renderer_id, password_renderer_id);
+  [helper_ processWithPasswordFormFillData:form_fill_data
+                                forFrameId:main_frame_->GetFrameId()
+                               isMainFrame:main_frame_->IsMainFrame()
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
+
+  // Form cache has no form for form_renderer_id.
+  EXPECT_CALL(password_form_cache_, GetPasswordForm(_, form_renderer_id))
+      .WillRepeatedly(Return(nullptr));
+
+  NSArray<FormSuggestion*>* suggestions =
+      [helper_ retrieveSuggestionsWithForm:query];
+
+  ASSERT_EQ(1u, [suggestions count]);
+
+  FormSuggestion* suggestionToEvaluate = suggestions.firstObject;
+
+  EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
+  EXPECT_FALSE(suggestionToEvaluate.metadata.is_single_username_form);
+  EXPECT_FALSE(suggestionToEvaluate.metadata.should_trigger_submission);
+  EXPECT_EQ(password_manager::SubmissionReadinessState::kNoInformation,
+            suggestionToEvaluate.metadata.submission_readiness);
+}
+
+// Tests retrieving suggestions when auto-submission feature is disabled,
+// verifying submission readiness is still populated while submission trigger
+// remains false.
+TEST_F(PasswordSuggestionHelperTest,
+       RetrieveSuggestions_SubmissionReadiness_FeatureDisabled) {
+  // Feature kIOSPasswordAutoSubmission is disabled by default.
+  FormSuggestionProviderQuery* query =
+      BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
+  FormRendererId form_renderer_id = query.formRendererID;
+  FieldRendererId username_renderer_id = autofill::test::MakeFieldRendererId();
+  FieldRendererId password_renderer_id = query.fieldRendererID;
+
+  PasswordFormFillData form_fill_data = CreatePasswordFillData(
+      form_renderer_id, username_renderer_id, password_renderer_id);
+  [helper_ processWithPasswordFormFillData:form_fill_data
+                                forFrameId:main_frame_->GetFrameId()
+                               isMainFrame:main_frame_->IsMainFrame()
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
+
+  password_manager::PasswordForm form;
+  form.form_data.set_renderer_id(form_renderer_id);
+  form.username_element_renderer_id = username_renderer_id;
+  form.password_element_renderer_id = password_renderer_id;
+
+  autofill::FormFieldData username_field;
+  username_field.set_renderer_id(username_renderer_id);
+  autofill::FormFieldData password_field;
+  password_field.set_renderer_id(password_renderer_id);
+  form.form_data.set_fields({username_field, password_field});
+
+  EXPECT_CALL(password_form_cache_, GetPasswordForm(_, form_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  NSArray<FormSuggestion*>* suggestions =
+      [helper_ retrieveSuggestionsWithForm:query];
+
+  ASSERT_EQ(1u, [suggestions count]);
+  FormSuggestion* suggestion = suggestions.firstObject;
+  EXPECT_FALSE(suggestion.metadata.should_trigger_submission);
+  EXPECT_EQ(password_manager::SubmissionReadinessState::kTwoFields,
+            suggestion.metadata.submission_readiness);
 }

@@ -66,29 +66,19 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   return GetFormExtractionTimeoutMs() + base::Milliseconds(50);
 }
 
-// Determines if the form should be automatically submitted.
-// The heuristic deems a form submittable if:
-// 1. It has valid username and password fields.
-// 2. There are no focusable fields (excluding checkboxes) between the
-//    username and the password.
-// 3. There are no focusable fields (excluding checkboxes) after the
-//    password.
-// 4. It does not likely contain a CAPTCHA.
-// Note: Empty fields found before the username do not prevent submission.
-bool ShouldTriggerSubmission(
+// Determines the submission readiness state for the given form.
+password_manager::SubmissionReadinessState CalculateSubmissionReadiness(
     password_manager::PasswordManagerInterface* password_manager,
     password_manager::PasswordManagerDriver* driver,
     autofill::FormRendererId form_renderer_id) {
-  if (!driver || !password_manager ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordAutoSubmission)) {
-    return false;
+  if (!driver || !password_manager) {
+    return password_manager::SubmissionReadinessState::kNoInformation;
   }
   const password_manager::PasswordForm* form =
       password_manager->GetPasswordFormCache()->GetPasswordForm(
           driver, form_renderer_id);
   if (!form) {
-    return false;
+    return password_manager::SubmissionReadinessState::kNoInformation;
   }
   autofill::FieldGlobalId username_field_id;
   autofill::FieldGlobalId password_field_id;
@@ -100,10 +90,8 @@ bool ShouldTriggerSubmission(
       password_field_id = field.global_id();
     }
   }
-  password_manager::SubmissionReadinessState readiness =
-      password_manager::CalculateSubmissionReadiness(
-          form->form_data, username_field_id, password_field_id);
-  return password_manager::CalculateTriggerSubmission(readiness);
+  return password_manager::CalculateSubmissionReadiness(
+      form->form_data, username_field_id, password_field_id);
 }
 
 }  // namespace
@@ -257,6 +245,17 @@ bool ShouldTriggerSubmission(
                                       formQuery.fieldRendererID,
                                       isPasswordField);
 
+    IOSPasswordManagerDriver* driver =
+        IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
+            _webState.get(), [self frameWithId:frameId]);
+    password_manager::SubmissionReadinessState submission_readiness =
+        CalculateSubmissionReadiness(_passwordManager, driver,
+                                     formQuery.formRendererID);
+    bool should_trigger_submission =
+        password_manager::CalculateTriggerSubmission(submission_readiness) &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSPasswordAutoSubmission);
+
     for (const auto& usernameAndRealm : usernameAndRealms) {
       NSString* username = SysUTF16ToNSString(usernameAndRealm.username);
       NSString* realm = nil;
@@ -270,16 +269,11 @@ bool ShouldTriggerSubmission(
               ? autofill::SuggestionType::kBackupPasswordEntry
               : autofill::SuggestionType::kPasswordEntry;
 
-      IOSPasswordManagerDriver* driver =
-          IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
-              _webState.get(), [self frameWithId:frameId]);
-      bool should_trigger_submission = ShouldTriggerSubmission(
-          _passwordManager, driver, formQuery.formRendererID);
-
       FormSuggestionMetadata metadata;
       metadata.is_single_username_form = is_single_username_form;
       metadata.likely_from_real_password_field = isPasswordField;
       metadata.should_trigger_submission = should_trigger_submission;
+      metadata.submission_readiness = submission_readiness;
 
       [results
           addObject:[FormSuggestion suggestionWithValue:username
