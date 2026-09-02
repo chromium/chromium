@@ -83,7 +83,7 @@ public class WindowAndroidTest {
 
     @Before
     public void setup() {
-        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
+        DisplayUtil.setIsInInternalDisplayForTesting(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             doReturn(mWindowManager).when(mContext).getSystemService(WindowManager.class);
             doReturn(mWindowMetrics).when(mWindowManager).getCurrentWindowMetrics();
@@ -490,8 +490,8 @@ public class WindowAndroidTest {
     @EnableFeatures({UiAndroidFeatures.ANDROID_UPDATE_DISPLAY_FOR_CONTEXT})
     public void
             testUpdateDisplayForContext_resetsPreferredDisplayModeId_whenMovingToExternalDisplay() {
-        // Initially, isOnDefaultDisplay is true, so refresh rate changes are allowed.
-        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
+        // Initially, isInInternalDisplay is true, so refresh rate changes are allowed.
+        DisplayUtil.setIsInInternalDisplayForTesting(true);
 
         // Build a real Robolectric activity.
         Activity activity =
@@ -508,8 +508,8 @@ public class WindowAndroidTest {
         params.preferredDisplayModeId = 123;
         window.setAttributes(params);
 
-        // Mock moving to an external display (isOnDefaultDisplay becomes false).
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
+        // Mock moving to an external display (isInInternalDisplay becomes false).
+        DisplayUtil.setIsInInternalDisplayForTesting(false);
 
         DisplayAndroid newDisplay = mock(DisplayAndroid.class);
         when(newDisplay.getAdaptiveRefreshRateInfo())
@@ -531,8 +531,8 @@ public class WindowAndroidTest {
     @EnableFeatures({UiAndroidFeatures.ANDROID_UPDATE_DISPLAY_FOR_CONTEXT})
     public void
             testUpdateDisplayForContext_doesNotResetPreferredDisplayModeId_whenRemainingOnDefaultDisplay() {
-        // Initially, isOnDefaultDisplay is true, so refresh rate changes are allowed.
-        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
+        // Initially, isInInternalDisplay is true, so refresh rate changes are allowed.
+        DisplayUtil.setIsInInternalDisplayForTesting(true);
 
         // Build a real Robolectric activity.
         Activity activity =
@@ -549,8 +549,8 @@ public class WindowAndroidTest {
         params.preferredDisplayModeId = 123;
         window.setAttributes(params);
 
-        // Mock display change but still remaining on default display (isOnDefaultDisplay is true).
-        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
+        // Mock display change but still remaining on default display (isInInternalDisplay is true).
+        DisplayUtil.setIsInInternalDisplayForTesting(true);
 
         DisplayAndroid newDisplay = mock(DisplayAndroid.class);
         when(newDisplay.getAdaptiveRefreshRateInfo())
@@ -571,7 +571,7 @@ public class WindowAndroidTest {
     @Test
     public void testConstructor_initializesAllowChangeRefreshRateCorrectly_onDefaultDisplay()
             throws Exception {
-        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
+        DisplayUtil.setIsInInternalDisplayForTesting(true);
         Activity activity =
                 org.robolectric.Robolectric.buildActivity(Activity.class).create().get();
         ActivityWindowAndroid windowAndroid =
@@ -586,7 +586,7 @@ public class WindowAndroidTest {
     @Test
     public void testConstructor_initializesAllowChangeRefreshRateCorrectly_onExternalDisplay()
             throws Exception {
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
+        DisplayUtil.setIsInInternalDisplayForTesting(false);
         Activity activity =
                 org.robolectric.Robolectric.buildActivity(Activity.class).create().get();
         ActivityWindowAndroid windowAndroid =

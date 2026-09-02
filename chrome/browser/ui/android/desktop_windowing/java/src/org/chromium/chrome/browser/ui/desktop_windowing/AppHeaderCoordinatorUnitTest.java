@@ -109,7 +109,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
+        DisplayUtil.setIsInInternalDisplayForTesting(true);
         mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(mSpyActivity.getWindow());
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
@@ -221,7 +221,7 @@ public class AppHeaderCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
+        DisplayUtil.setIsInInternalDisplayForTesting(false);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -235,7 +235,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void enabledOnExternalDisplayForSamsung_PostApi36() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
+        DisplayUtil.setIsInInternalDisplayForTesting(false);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -244,7 +244,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void enabledOnExternalDisplayWhenAllowed() {
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
+        DisplayUtil.setIsInInternalDisplayForTesting(false);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 

@@ -171,11 +171,11 @@ public class AppHeaderUtils {
             InsetsRectProvider insetsRectProvider, Context context) {
         @DesktopWindowHeuristicResult int newResult;
 
-        boolean isOnExternalDisplay = !DisplayUtil.isContextInDefaultDisplay(context);
+        boolean isOnExternalDisplay = !DisplayUtil.isContextInInternalDisplay(context);
 
         Insets captionBarInset = insetsRectProvider.getCachedInset();
         boolean allowHeaderCustomization =
-                AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
+                AppHeaderUtils.shouldAllowHeaderCustomizationOnExternalDisplay()
                         || !isOnExternalDisplay;
 
         if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
@@ -198,7 +198,7 @@ public class AppHeaderUtils {
      * @return {@code true} if app header customization should be allowed on an external display,
      *     {@code false} otherwise.
      */
-    public static boolean shouldAllowHeaderCustomizationOnNonDefaultDisplay() {
+    public static boolean shouldAllowHeaderCustomizationOnExternalDisplay() {
         // Determine if app header customization will be ignored on the external display on specific
         // OEMs.
         if (sHeaderCustomizationDisallowedOnExternalDisplayForOem == null) {

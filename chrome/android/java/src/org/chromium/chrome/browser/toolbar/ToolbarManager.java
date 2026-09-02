@@ -964,12 +964,12 @@ public class ToolbarManager
             mAdjustedToolbarThemeColorProvider.addThemeColorObserver(this);
         }
 
-        final boolean isDefaultDisplay = DisplayUtil.isContextInDefaultDisplay(mActivity);
+        final boolean isInternalDisplay = DisplayUtil.isContextInInternalDisplay(mActivity);
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
                         /* context= */ mActivity,
                         ToolbarFeatures.isAppHeaderCustomizationSupported(
-                                        mIsTablet, isDefaultDisplay)
+                                        mIsTablet, isInternalDisplay)
                                 ? mActivityLifecycleDispatcher
                                 : null,
                         mDesktopWindowStateManager);

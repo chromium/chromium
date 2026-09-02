@@ -555,7 +555,7 @@ public class StripLayoutHelperManager
 
         mIsHeaderCustomizationSupported =
                 ToolbarFeatures.isAppHeaderCustomizationSupported(
-                        /* isTablet= */ true, DisplayUtil.isContextInDefaultDisplay(mContext));
+                        /* isTablet= */ true, DisplayUtil.isContextInInternalDisplay(mContext));
         mScrollableStripHeight = res.getDimension(R.dimen.tab_strip_height) / mDensity;
         mHeight =
                 mIsHeaderCustomizationSupported
