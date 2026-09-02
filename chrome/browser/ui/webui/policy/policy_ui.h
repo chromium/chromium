@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_H_
 
-#include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
+#include <memory>
+
 #include "chrome/common/webui_url_constants.h"
-#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -17,13 +18,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-class Profile;
-
 namespace content {
 class WebUI;
 }
 
 class PolicyUI;
+class PolicyUIHandler;
+class Profile;
 
 class PolicyUIConfig : public content::DefaultWebUIConfig<PolicyUI> {
  public:
@@ -51,6 +52,7 @@ class PolicyUI : public ui::MojoWebUIController,
   static base::Value GetSchema(Profile* profile);
 
  private:
+  // policy::mojom::PolicyPageHandlerFactory:
   void CreateHandler(
       mojo::PendingReceiver<policy::mojom::PolicyPageHandler> handler,
       mojo::PendingRemote<policy::mojom::PolicyPageClient> client) override;
