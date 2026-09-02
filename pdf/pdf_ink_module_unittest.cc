@@ -296,7 +296,7 @@ class FakeClient : public PdfInkModuleClient {
               DrawText,
               (int page_index,
                InkTextId id,
-               base::span<const InkTextInfo> text_info,
+               base::span<const InkTextLine> text_lines,
                float ascent,
                double pdf_zoom,
                const InkTextBoxAttributes& attributes),
@@ -1208,7 +1208,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNew) {
                                 ElementsAreArray(kTypefaceBlob)));
   EXPECT_CALL(client(),
               DrawText(kPageIndex, kTextId,
-                       ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                       ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                        kPdfZoom, SampleInkTextBoxAttributesMatcher()));
   EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
   EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
@@ -1569,7 +1569,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNoEdit) {
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
@@ -1623,7 +1623,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
@@ -1644,7 +1644,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId1,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              "ah", PageOrientation::kOriginal)));
@@ -1680,7 +1680,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
@@ -1736,7 +1736,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
@@ -1777,7 +1777,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
@@ -1803,7 +1803,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId1,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
@@ -1826,7 +1826,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
@@ -1869,7 +1869,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), RequestThumbnail(kPageIndex, _));
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
@@ -1907,7 +1907,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
@@ -1943,7 +1943,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId0,
-                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kAscent,
+                 ElementsAre(SampleInkTextLineMatcher(kFontId)), kAscent,
                  kPdfZoom, SampleInkTextBoxAttributesMatcher()));
     EXPECT_CALL(client(), AddFont(_, _, _)).Times(0);
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
@@ -2090,7 +2090,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), AddFont(kFontId, _, ElementsAreArray(kTypefaceBlob)));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              kModifiedText, PageOrientation::kClockwise90)));
@@ -2136,7 +2136,7 @@ TEST_F(PdfInkModuleTextTest,
                                                         /*active=*/false));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              kModifiedText, PageOrientation::kClockwise90)));
@@ -2176,7 +2176,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), AddFont(kFontId, _, ElementsAreArray(kTypefaceBlob)));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              "hi", PageOrientation::kClockwise90)));
@@ -2215,7 +2215,7 @@ TEST_F(PdfInkModuleTextTest,
 
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              "hi", PageOrientation::kClockwise90)));
@@ -2258,7 +2258,7 @@ TEST_F(PdfInkModuleTextTest,
     EXPECT_CALL(client(), AddFont(kFontId, _, ElementsAreArray(kTypefaceBlob)));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              "hi", PageOrientation::kClockwise270)));
@@ -2296,7 +2296,7 @@ TEST_F(PdfInkModuleTextTest,
 
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
-                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         ElementsAre(SampleInkTextLineMatcher(kFontId)),
                          kAscent, kPdfZoom,
                          SampleInkTextBoxAttributesMatcherWith(
                              "hi", PageOrientation::kClockwise270)));

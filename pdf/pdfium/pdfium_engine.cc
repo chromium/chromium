@@ -247,11 +247,11 @@ gfx::PointF CalculateCanonicalTextRunOrigin(
 // Calculates the text object origin transform (relative to the textbox origin)
 // within a text annotation in PDF points.
 FS_MATRIX CalculateTextObjectOriginTransform(
-    const InkTextInfo& item,
+    const gfx::RectF& location,
     double pdf_zoom,
     const InkTextBoxAttributes& attributes,
     float ascent) {
-  gfx::RectF text_run_textbox_rect = item.location;
+  gfx::RectF text_run_textbox_rect = location;
   text_run_textbox_rect.InvScale(pdf_zoom);
 
   gfx::SizeF canonical_textbox_size = attributes.rect.size();
@@ -332,8 +332,8 @@ ScopedFPDFPageObject CreateTextObjectForRun(
     CHECK(FPDFPageObj_TransformF(text_object.get(), &skew_matrix));
   }
 
-  FS_MATRIX text_origin_matrix =
-      CalculateTextObjectOriginTransform(item, pdf_zoom, attributes, ascent);
+  FS_MATRIX text_origin_matrix = CalculateTextObjectOriginTransform(
+      item.location, pdf_zoom, attributes, ascent);
   // Local translation must be applied before the textbox's global transform
   // to ensure correct rotation/scaling of the offset.
   CHECK(FPDFPageObj_TransformF(text_object.get(), &text_origin_matrix));
@@ -5548,7 +5548,7 @@ void PDFiumEngine::DiscardText(InkTextId id) {
 
 void PDFiumEngine::DrawText(int page_index,
                             InkTextId id,
-                            base::span<const InkTextInfo> text_info,
+                            base::span<const InkTextLine> text_lines,
                             float ascent,
                             double pdf_zoom,
                             const InkTextBoxAttributes& attributes) {
@@ -5567,44 +5567,52 @@ void PDFiumEngine::DrawText(int page_index,
 
   ascent /= pdf_zoom;
 
+  size_t total_text_objects = 0;
+  for (const InkTextLine& line : text_lines) {
+    total_text_objects += line.text_info.size();
+  }
   PageObjectVector page_objects;
-  page_objects.reserve(text_info.size());
+  page_objects.reserve(total_text_objects);
   FPDF_PAGEOBJECTMARK mark = nullptr;
-  for (const InkTextInfo& item : text_info) {
-    FPDF_FONT font = GetAddedFont(item.font_id);
-    if (!font) {
-      // Only possible for emoji fonts.
-      // TODO(crbug.com/502468286): Change to a CHECK once emoji fonts are
-      // supported.
-      continue;
+  for (const InkTextLine& line : text_lines) {
+    for (const InkTextInfo& item : line.text_info) {
+      FPDF_FONT font = GetAddedFont(item.font_id);
+      if (!font) {
+        // Only possible for emoji fonts.
+        // TODO(crbug.com/502468286): Change to a CHECK once emoji fonts are
+        // supported.
+        continue;
+      }
+
+      ScopedFPDFPageObject text_object =
+          CreateTextObjectForRun(doc(), font, pdf_font_size, item, attributes,
+                                 pdf_zoom, ascent, textbox_matrix);
+
+      // The metadata mark must be attached to every text object in the
+      // annotation. Initialize it on the first successfully created text
+      // object.
+      if (!mark) {
+        mark = FPDFPageObj_AddMark(text_object.get(),
+                                   kInkTextAnnotationIdentifierKey);
+        CHECK(mark);
+        AddMetadataToTextObject(doc(), text_object.get(), mark,
+                                GetNextTextboxId(), attributes);
+      } else {
+        CHECK(FPDFPageObj_AddExistingMark(text_object.get(), mark));
+      }
+
+      if (!base::IsStringASCII(item.text)) {
+        FPDF_PAGEOBJECTMARK span =
+            FPDFPageObj_AddMark(text_object.get(), "Span");
+        CHECK(span);
+        std::vector<unsigned char> blob = ToUTF16BEBlob(item.text);
+        FPDFPageObjMark_SetBlobParam(doc(), text_object.get(), span,
+                                     "ActualText", blob.data(), blob.size());
+      }
+
+      page_objects.push_back(text_object.get());
+      CHECK(FPDFPage_InsertObject(page, text_object.release()));
     }
-
-    ScopedFPDFPageObject text_object =
-        CreateTextObjectForRun(doc(), font, pdf_font_size, item, attributes,
-                               pdf_zoom, ascent, textbox_matrix);
-
-    // The metadata mark must be attached to every text object in the
-    // annotation. Initialize it on the first successfully created text object.
-    if (!mark) {
-      mark = FPDFPageObj_AddMark(text_object.get(),
-                                 kInkTextAnnotationIdentifierKey);
-      CHECK(mark);
-      AddMetadataToTextObject(doc(), text_object.get(), mark,
-                              GetNextTextboxId(), attributes);
-    } else {
-      CHECK(FPDFPageObj_AddExistingMark(text_object.get(), mark));
-    }
-
-    if (!base::IsStringASCII(item.text)) {
-      FPDF_PAGEOBJECTMARK span = FPDFPageObj_AddMark(text_object.get(), "Span");
-      CHECK(span);
-      std::vector<unsigned char> blob = ToUTF16BEBlob(item.text);
-      FPDFPageObjMark_SetBlobParam(doc(), text_object.get(), span, "ActualText",
-                                   blob.data(), blob.size());
-    }
-
-    page_objects.push_back(text_object.get());
-    CHECK(FPDFPage_InsertObject(page, text_object.release()));
   }
 
   ink_edited_pages_needing_regeneration_.insert(page_index);

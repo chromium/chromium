@@ -209,6 +209,16 @@ testing::Matcher<const InkTextInfo&> SampleInkTextInfoMatcher(
                        /*is_horizontal=*/true);
 }
 
+testing::Matcher<const InkTextLine&> SampleInkTextLineMatcher(
+    FontId typeface_id) {
+  return testing::AllOf(
+      testing::Field(&InkTextLine::location,
+                     gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f)),
+      testing::Field(
+          &InkTextLine::text_info,
+          testing::ElementsAre(SampleInkTextInfoMatcher(typeface_id))));
+}
+
 base::DictValue SampleSerializedTypeface(FontId font_id,
                                          base::span<const uint8_t> font_data) {
   return base::DictValue()

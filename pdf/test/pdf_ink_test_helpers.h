@@ -96,6 +96,10 @@ base::BlobStorage SampleInkTextInfoBlob(FontId typeface_id);
 testing::Matcher<const InkTextInfo&> SampleInkTextInfoMatcher(
     FontId typeface_id);
 
+// Matches `SampleInkTextInfoBlob()` when converted into an `InkTextLine`.
+testing::Matcher<const InkTextLine&> SampleInkTextLineMatcher(
+    FontId typeface_id);
+
 base::DictValue SampleSerializedTypeface(FontId font_id,
                                          base::span<const uint8_t> font_data);
 

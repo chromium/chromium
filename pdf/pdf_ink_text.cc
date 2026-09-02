@@ -216,10 +216,24 @@ InkTextInfo::InkTextInfo(InkTextInfo&&) noexcept = default;
 InkTextInfo& InkTextInfo::operator=(InkTextInfo&&) noexcept = default;
 InkTextInfo::~InkTextInfo() = default;
 
-std::vector<InkTextInfo> InkTextInfo::BlinkTextInfoToPDFTextInfo(
+InkTextLine::InkTextLine(const gfx::RectF& location,
+                         std::vector<InkTextInfo> text_info)
+    : location(location), text_info(std::move(text_info)) {}
+
+InkTextLine::InkTextLine(InkTextInfo single_text_info)
+    : location(single_text_info.location) {
+  text_info.push_back(std::move(single_text_info));
+}
+
+InkTextLine::InkTextLine(InkTextLine&&) noexcept = default;
+InkTextLine& InkTextLine::operator=(InkTextLine&&) noexcept = default;
+InkTextLine::~InkTextLine() = default;
+
+std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
     const std::vector<pdf::mojom::InkTextRunPtr>& text_runs,
     float effective_zoom) {
-  std::vector<InkTextInfo> results;
+  std::vector<InkTextLine> results;
+  results.reserve(text_runs.size());
   for (const pdf::mojom::InkTextRunPtr& text_run : text_runs) {
     const std::vector<pdf::mojom::InkTypefaceRunPtr>& typeface_runs =
         text_run->typeface_runs;
@@ -269,6 +283,7 @@ std::vector<InkTextInfo> InkTextInfo::BlinkTextInfoToPDFTextInfo(
     // Process `text_run_info` and `extra_glyph_info` into separate
     // `InkTextInfo` structs each representing a single PDF text object using
     // the information in `typeface_runs`.
+    std::vector<InkTextInfo> line_text_infos;
     size_t run_start = 0;
     base::span<ExtraGlyphInfo> extra_glyph_info_span(extra_glyph_info);
     for (const pdf::mojom::InkTypefaceRunPtr& typeface_run : typeface_runs) {
@@ -289,7 +304,7 @@ std::vector<InkTextInfo> InkTextInfo::BlinkTextInfoToPDFTextInfo(
           typeface_run_glyph_info,
           [](const ExtraGlyphInfo& info) { return info.offset == 0; });
       if (all_zero) {
-        results.push_back(std::move(typeface_run_info));
+        line_text_infos.push_back(std::move(typeface_run_info));
       } else {
         // Convert the character_index values to indexes into
         // `typeface_run_info`.text (from indexes into `text_run`.text).
@@ -307,11 +322,15 @@ std::vector<InkTextInfo> InkTextInfo::BlinkTextInfoToPDFTextInfo(
         }
         std::vector<InkTextInfo> split_infos =
             Split2DOffsets(typeface_run_info, typeface_run_glyph_info);
-        results.insert(results.end(),
-                       std::make_move_iterator(split_infos.begin()),
-                       std::make_move_iterator(split_infos.end()));
+        line_text_infos.insert(line_text_infos.end(),
+                               std::make_move_iterator(split_infos.begin()),
+                               std::make_move_iterator(split_infos.end()));
       }
       run_start = run_end;
+    }
+    if (!line_text_infos.empty()) {
+      results.push_back(
+          InkTextLine(text_run_info.location, std::move(line_text_infos)));
     }
   }
   return results;

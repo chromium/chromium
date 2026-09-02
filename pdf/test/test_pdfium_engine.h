@@ -144,7 +144,7 @@ class TestPDFiumEngine : public PDFiumEngine {
               DrawText,
               (int,
                InkTextId,
-               base::span<const InkTextInfo>,
+               base::span<const InkTextLine>,
                float,
                double,
                const InkTextBoxAttributes&),

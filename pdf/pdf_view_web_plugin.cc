@@ -328,11 +328,11 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
 
   void DrawText(int page_index,
                 InkTextId id,
-                base::span<const InkTextInfo> text_info,
+                base::span<const InkTextLine> text_lines,
                 float ascent,
                 double pdf_zoom,
                 const InkTextBoxAttributes& attributes) override {
-    plugin_->engine_->DrawText(page_index, id, text_info, ascent, pdf_zoom,
+    plugin_->engine_->DrawText(page_index, id, text_lines, ascent, pdf_zoom,
                                attributes);
   }
 
