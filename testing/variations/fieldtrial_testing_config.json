@@ -6934,6 +6934,24 @@
             ]
         }
     ],
+    "DevToolsAiV2Architecture": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DevToolsAiV2Architecture"
+                    ]
+                }
+            ]
+        }
+    ],
     "DevToolsConsoleInsightsTeasers": [
         {
             "platforms": [
