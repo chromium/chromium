@@ -137,6 +137,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIContextualCueingInternalsHost,
 #endif
       kChromeUICrashesHost,
+      kChromeUICriticalActionsInternalsHost,
       kChromeUICreditsHost,
       kChromeUICrossDeviceSigninQrBubbleHost,
       kChromeUIDeviceLogHost,

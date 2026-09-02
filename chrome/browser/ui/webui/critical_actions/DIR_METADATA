@@ -1,0 +1,6 @@
+monorail: {
+  component: "Chrome>Privacy>Browser Privacy"
+}
+buganizer_public: {
+  component_id: 1291309
+}
