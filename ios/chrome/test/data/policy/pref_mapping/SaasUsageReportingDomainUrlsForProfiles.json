@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SaasUsageReportingDomainUrlsForProfiles": [
+            "https://gemini.google.com"
+          ]
+        },
+        "policies_settings": {
+          "SaasUsageReportingDomainUrlsForProfiles": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.saas_usage.domain_urls_for_profile": {
+            "location": "user_profile",
+            "value": [
+              "https://gemini.google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

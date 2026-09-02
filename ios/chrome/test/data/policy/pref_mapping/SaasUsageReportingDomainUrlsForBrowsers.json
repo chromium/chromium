@@ -1,0 +1,24 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SaasUsageReportingDomainUrlsForBrowsers": [
+            "https://gemini.google.com"
+          ]
+        },
+        "prefs": {
+          "enterprise_reporting.saas_usage.domain_urls_for_browser": {
+            "location": "local_state",
+            "value": [
+              "https://gemini.google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

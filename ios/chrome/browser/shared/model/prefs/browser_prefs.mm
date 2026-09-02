@@ -157,7 +157,6 @@
 
 namespace {
 
-
 // Deprecated 10/2025
 inline constexpr char kSessionStorageFormatPref[] =
     "ios.session.storage.format";
@@ -337,6 +336,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       enterprise_reporting::kLastUploadSucceededTimestamp, base::Time());
   registry->RegisterTimeDeltaPref(
       enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
+  registry->RegisterListPref(
+      enterprise_reporting::kSaasUsageDomainUrlsForBrowser);
 
   registry->RegisterDictionaryPref(prefs::kOverflowMenuDestinationUsageHistory,
                                    PrefRegistry::LOSSY_PREF);
@@ -741,6 +742,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       enterprise_reporting::kLastSignalsUploadSucceededConfig, std::string());
   registry->RegisterListPref(
       enterprise_reporting::kSecuritySignalsClientCertificatesSelectors);
+  registry->RegisterListPref(
+      enterprise_reporting::kSaasUsageDomainUrlsForProfile);
 
   // Register prefs related to Enterprise Isolated Mode.
   enterprise_isolated_mode::RegisterProfilePrefs(registry);
@@ -1039,7 +1042,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-
 
   // Added 10/2025.
   prefs->ClearPref(kSessionStorageFormatPref);

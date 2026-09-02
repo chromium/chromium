@@ -27,6 +27,7 @@ supported_on:
 - chrome.*:147-
 future_on:
 - android
+- ios
 owners:
 - janzarzycki@google.com
 - igorruvinov@chromium.org

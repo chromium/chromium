@@ -88,6 +88,8 @@
 //ios/chrome/test/data/policy/pref_mapping/ProvisionalNotificationsAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/ProxyProvisioningDomains.json
 //ios/chrome/test/data/policy/pref_mapping/RestrictAccountsToPatterns.json
+//ios/chrome/test/data/policy/pref_mapping/SaasUsageReportingDomainUrlsForBrowsers.json
+//ios/chrome/test/data/policy/pref_mapping/SaasUsageReportingDomainUrlsForProfiles.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProxiedRealTimeChecksAllowed.json
