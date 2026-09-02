@@ -208,7 +208,7 @@ public class OmniboxFeatures {
     // Shows the preview match's favicon in the status view. Originally and incorrectly called exact
     // match. The feature string remains exact, but java code should be updated to the right name.
     public static final CachedFlag sPreviewMatchFavicons =
-            newFlag(OmniboxFeatureList.EXACT_MATCH_FAVICONS, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.EXACT_MATCH_FAVICONS, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sServeJavaCachedZeroSuggest =
             newFlag(

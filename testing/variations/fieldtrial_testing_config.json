@@ -8515,21 +8515,6 @@
             ]
         }
     ],
-    "ExactMatchFavicons": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExactMatchFavicons"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExcludePipFromScreenCapture": [
         {
             "platforms": [

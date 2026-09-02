@@ -384,7 +384,7 @@ BASE_FEATURE(kOmniboxMobileParityUpdateV2, ENABLED);
 BASE_FEATURE(kOmniboxXGeoPermissionGranularity, ENABLED);
 
 // When the first suggestion is a url, the favicon is shown in the status view.
-BASE_FEATURE(kExactMatchFavicons, DISABLED);
+BASE_FEATURE(kExactMatchFavicons, ENABLED);
 
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
