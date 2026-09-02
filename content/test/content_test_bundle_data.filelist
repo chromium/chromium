@@ -7065,6 +7065,8 @@ data/accessibility/mac/attributes/ax-help-expected.txt
 data/accessibility/mac/attributes/ax-help.html
 data/accessibility/mac/attributes/ax-highest-editable-ancestor-expected.txt
 data/accessibility/mac/attributes/ax-highest-editable-ancestor.html
+data/accessibility/mac/attributes/ax-insertion-point-line-number-contenteditable-expected.txt
+data/accessibility/mac/attributes/ax-insertion-point-line-number-contenteditable.html
 data/accessibility/mac/attributes/ax-insertion-point-line-number-expected.txt
 data/accessibility/mac/attributes/ax-insertion-point-line-number.html
 data/accessibility/mac/attributes/ax-invalid-expected.txt

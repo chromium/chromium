@@ -1,0 +1,19 @@
+contenteditable.setAccessibilityFocused(TRUE)=NULL
+contenteditable.accessibilityAttributeNames.has(AXInsertionPointLineNumber)='yes'
+contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+contenteditable.accessibilityInsertionPointLineNumber=0
+press ArrowRight
+contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+contenteditable.accessibilityInsertionPointLineNumber=0
+press ArrowDown
+contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+// TODO(crbug.com/548552911): Line number should be 1
+contenteditable.accessibilityInsertionPointLineNumber=0
+press ArrowLeft
+contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+// TODO(crbug.com/548552911): Line number should be 1
+contenteditable.accessibilityInsertionPointLineNumber=0
+press ArrowDown
+contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+// TODO(crbug.com/548552911): Line number should be 2
+contenteditable.accessibilityInsertionPointLineNumber=0

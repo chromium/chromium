@@ -1051,6 +1051,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
 // LINT.IfChange
 - (NSInteger)accessibilityInsertionPointLineNumber {
+  // TODO(crbug.com/548552911): In a textarea created using `contenteditable`,
+  // this algorithm returns the wrong value.
+
   if (![self instanceActive]) {
     return NSNotFound;
   }
@@ -1094,6 +1097,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
 // LINT.IfChange
 - (NSNumber*)AXInsertionPointLineNumber {
+  // TODO(crbug.com/548552911): In a textarea created using `contenteditable`,
+  // this algorithm returns the wrong value.
+
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())

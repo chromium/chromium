@@ -328,6 +328,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacAttributes>("ax-insertion-point-line-number.html");
 }
 
+// TODO(crbug.com/548552911): This test shows the incorrect line number.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXInsertionPointLineNumberContenteditable) {
+  RunTypedTest<kMacAttributes>(
+      "ax-insertion-point-line-number-contenteditable.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
   RunTypedTest<kMacAttributes>("ax-invalid.html");
 }

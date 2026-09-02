@@ -1,0 +1,30 @@
+<!--
+@SCRIPT:
+  contenteditable.setAccessibilityFocused(TRUE)
+  wait for AXFocusedUIElementChanged on AXTextField
+  contenteditable.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
+  contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  contenteditable.accessibilityInsertionPointLineNumber
+  press ArrowRight
+  contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  contenteditable.accessibilityInsertionPointLineNumber
+  press ArrowDown
+  contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  // TODO(crbug.com/548552911): Line number should be 1
+  contenteditable.accessibilityInsertionPointLineNumber
+  press ArrowLeft
+  contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  // TODO(crbug.com/548552911): Line number should be 1
+  contenteditable.accessibilityInsertionPointLineNumber
+  press ArrowDown
+  contenteditable.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  // TODO(crbug.com/548552911): Line number should be 2
+  contenteditable.accessibilityInsertionPointLineNumber
+-->
+<!DOCTYPE html>
+<style>
+    textarea { font-family: monospace; width: 50ch; }
+</style>
+<div id="contenteditable" contenteditable="true">
+<div>First line</div><div>Second line</div><div>Third line</div>
+</div>
