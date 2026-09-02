@@ -42,10 +42,12 @@ source_set("test_support") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
   ]
   deps = [
+    "//base/test:test_support",
     "//fuchsia_web/common",
     "//net",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",

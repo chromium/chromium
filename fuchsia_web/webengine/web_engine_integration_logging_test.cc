@@ -47,10 +47,14 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
       : isolated_archivist_(
             *filtered_service_directory().outgoing_directory()) {}
 
-  ~WebEngineIntegrationLoggingTest() override {
+  ~WebEngineIntegrationLoggingTest() override = default;
+
+  void TearDown() override {
     // We're about to shut down the realm; unbind to unhook the error handler.
     frame_.Unbind();
     context_.Unbind();
+    context_provider_.reset();
+    WebEngineIntegrationTestBase::TearDown();
   }
 
   void StartWebEngine(base::CommandLine command_line) override {

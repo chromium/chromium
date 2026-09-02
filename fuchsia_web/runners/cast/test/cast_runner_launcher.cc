@@ -31,6 +31,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/run_loop.h"
+#include "fuchsia_web/common/test/fake_feedback_service.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 
@@ -358,11 +359,16 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
 }
 
 CastRunnerLauncher::~CastRunnerLauncher() {
+  Teardown();
+}
+
+void CastRunnerLauncher::Teardown() {
   if (realm_root_.has_value()) {
     base::RunLoop run_loop;
     realm_root_.value().Teardown(
         [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
     run_loop.Run();
+    realm_root_.reset();
   }
 }
 

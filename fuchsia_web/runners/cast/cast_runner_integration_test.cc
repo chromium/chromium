@@ -454,9 +454,8 @@ class CastRunnerIntegrationTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (crash_observer_) {
-      crash_observer_->VerifyNoCrashes();
-    }
+    cast_runner_.Teardown();
+    crash_observer_.VerifyNoCrashes();
   }
 
   // Returns the services exposed by the `CastRunnerLauncher` test Realm,
@@ -475,7 +474,10 @@ class CastRunnerIntegrationTest : public testing::Test {
     return cast_runner_.fake_cast_agent().app_config_manager();
   }
 
-  void DisableCrashObserver() { crash_observer_.reset(); }
+  void ExpectAbnormalTermination(std::string_view component_name) {
+    crash_observer_.ExpectAbnormalTermination(
+        base::StrCat({cast_runner_.realm_prefix(), component_name}));
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -487,10 +489,9 @@ class CastRunnerIntegrationTest : public testing::Test {
   const base::test::ScopedRunLoopTimeout scoped_timeout_{
       FROM_HERE, TestTimeouts::action_max_timeout()};
 
+  test::TestComponentCrashObserver crash_observer_;
   test::CastRunnerLauncher cast_runner_;
   net::EmbeddedTestServer test_server_;
-  std::optional<test::TestComponentCrashObserver> crash_observer_{
-      std::in_place};
 };
 
 }  // namespace
@@ -1061,7 +1062,7 @@ TEST_F(CastRunnerIntegrationTest,
 // fetched.
 TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
   // CastRunner is expected to exit when CorsExemptHeaderProvider is missing.
-  DisableCrashObserver();
+  ExpectAbnormalTermination("cast_runner");
 
   // Prevent the FakeCastAgent from publishing the
   // chromium.cast.CorsExemptHeaderProvider service.

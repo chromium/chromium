@@ -54,10 +54,14 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
  protected:
   WebEngineIntegrationTest() = default;
 
-  ~WebEngineIntegrationTest() override {
+  ~WebEngineIntegrationTest() override = default;
+
+  void TearDown() override {
     // We're about to shut down the realm; unbind to unhook the error handler.
     frame_.Unbind();
     context_.Unbind();
+    context_provider_.reset();
+    WebEngineIntegrationTestBase::TearDown();
   }
 
   void StartWebEngine(base::CommandLine command_line) override {

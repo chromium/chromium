@@ -4,7 +4,10 @@
 {
   use: [
     {
-      event_stream: [ "stopped" ],
+      event_stream: [
+        "started",
+        "stopped",
+      ],
       from: "parent",
     },
   ],

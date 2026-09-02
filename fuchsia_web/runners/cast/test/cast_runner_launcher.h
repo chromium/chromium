@@ -10,9 +10,10 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
+#include <string>
 
-#include "fuchsia_web/common/test/fake_feedback_service.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
 #include "fuchsia_web/runners/cast/test/fake_cast_agent.h"
 
@@ -39,6 +40,15 @@ class CastRunnerLauncher {
 
   CastRunnerLauncher(const CastRunnerLauncher&) = delete;
   CastRunnerLauncher& operator=(const CastRunnerLauncher&) = delete;
+
+  // Tears down the managed `Realm` and all child components synchronously.
+  void Teardown();
+
+  // Returns the moniker prefix for components within this launcher's Realm.
+  std::string realm_prefix() const {
+    return base::StrCat({"realm_builder:",
+                         realm_root_.value().component().GetChildName(), "/"});
+  }
 
   // Returns a reference to the set of services exposed by the launcher, which
   // includes both the capabilities exposed by the `cast_runner` component, and
