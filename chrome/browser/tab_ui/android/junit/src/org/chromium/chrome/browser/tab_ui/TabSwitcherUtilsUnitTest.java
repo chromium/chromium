@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
@@ -51,7 +50,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabSwitcherUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabSwitcherUtilsUnitTest {
     private static final int TAB_ID_1 = 9;
     private static final Token TAB_GROUP_ID_1 = new Token(12, 34);
