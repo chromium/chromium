@@ -155,6 +155,12 @@ public class FirstRunUtils {
                 && arm <= SafetyFrePromoArm.PASSWORD_MANAGER_AND_HISTORY_QUICK_DELETE;
     }
 
+    /** Returns whether the Safety FRE promo carousel should be shown. */
+    public static boolean shouldShowSafetyFrePromoCarousel() {
+        return shouldShowSafetyFrePromo()
+                && isCardBasedPromoArm(ChromeFeatureList.sSafetyFrePromoArm.getValue());
+    }
+
     public static List<SafetyPromoItem> getItemsForSafetyFrePromoArm(@SafetyFrePromoArm int arm) {
         switch (arm) {
             case SafetyFrePromoArm.PASSWORD_MANAGER:

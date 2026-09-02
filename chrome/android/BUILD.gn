@@ -1226,6 +1226,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/safe_browsing/android:junit",
       "//chrome/browser/safety_check/android:junit",
       "//chrome/browser/safety_hub/android:junit",
+      "//chrome/browser/safety_promo:junit",
       "//chrome/browser/search_engines/android:junit",
       "//chrome/browser/serial/android:junit",
       "//chrome/browser/signin/services/android:junit",

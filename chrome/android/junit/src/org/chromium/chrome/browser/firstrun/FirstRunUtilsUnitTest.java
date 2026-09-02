@@ -52,6 +52,19 @@ public class FirstRunUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testShouldShowSafetyFrePromoCarousel() {
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.PASSWORD_MANAGER);
+        assertTrue(FirstRunUtils.shouldShowSafetyFrePromoCarousel());
+
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.ANIMATED_ILLUSTRATION);
+        assertFalse(FirstRunUtils.shouldShowSafetyFrePromoCarousel());
+
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.UNDEFINED);
+        assertFalse(FirstRunUtils.shouldShowSafetyFrePromoCarousel());
+    }
+
+    @Test
     public void testIsCardBasedPromoArm() {
         assertFalse(FirstRunUtils.isCardBasedPromoArm(SafetyFrePromoArm.UNDEFINED));
         assertFalse(FirstRunUtils.isCardBasedPromoArm(SafetyFrePromoArm.ANIMATED_ILLUSTRATION));

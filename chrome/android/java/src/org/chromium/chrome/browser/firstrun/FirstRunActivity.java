@@ -392,6 +392,14 @@ public class FirstRunActivity extends FirstRunActivityBase
         if (FirstRunUtils.shouldShowSafetyFrePromo()) {
             mPages.add(new FirstRunPage<>(SafetyPromoFirstRunFragment.class, () -> true));
             mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_SHOWN);
+
+            mPages.add(
+                    new FirstRunPage<>(
+                            SafetyPromoCarouselFirstRunFragment.class,
+                            FirstRunUtils::shouldShowSafetyFrePromoCarousel));
+            // TODO(crbug.com/543028748): Introduce and log a dedicated MobileFreProgress state for
+            // the carousel page instead of reusing SAFETY_PROMO_SHOWN.
+            mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_SHOWN);
         }
 
         if (mPagerAdapter != null) {

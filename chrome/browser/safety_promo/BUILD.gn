@@ -8,6 +8,11 @@ assert(is_android)
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselAdapter.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselCoordinator.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselView.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoFirstRunView.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoItem.java",
   ]
@@ -15,6 +20,7 @@ android_library("java") {
     ":java_resources",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.safety_promo"
@@ -43,5 +49,28 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.safety_promo"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselAdapterUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
