@@ -107,12 +107,11 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
   context_state->InitializeGL(GpuPreferences(), workarounds, GpuFeatureInfo());
 }
 
-class EGLImageBackingFactoryThreadSafeTest
-    : public testing::TestWithParam<viz::SharedImageFormat> {
+class EGLImageBackingFactoryTest : public testing::Test {
  public:
-  EGLImageBackingFactoryThreadSafeTest()
+  EGLImageBackingFactoryTest()
       : shared_image_manager_(std::make_unique<SharedImageManager>(true)) {}
-  ~EGLImageBackingFactoryThreadSafeTest() override {
+  ~EGLImageBackingFactoryTest() override {
     // |context_state_| must be destroyed on its own context.
     if (context_state_) {
       context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
@@ -124,14 +123,6 @@ class EGLImageBackingFactoryThreadSafeTest
     if (!IsEglImageSupported()) {
       GTEST_SKIP();
     }
-
-#if BUILDFLAG(IS_ANDROID)
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/40278643): fix this tests to work with passthrough.
-      GTEST_SKIP();
-    }
-#endif
 
     GpuDriverBugWorkarounds workarounds;
 
@@ -147,6 +138,9 @@ class EGLImageBackingFactoryThreadSafeTest
         std::make_unique<SharedImageRepresentationFactory>(
             shared_image_manager_.get(), nullptr);
 
+    supports_etc1_ = context_state_->feature_info()
+                         ->validators()
+                         ->compressed_texture_format.IsValid(GL_ETC1_RGB8_OES);
   }
 
   bool use_passthrough() {
@@ -154,8 +148,6 @@ class EGLImageBackingFactoryThreadSafeTest
         base::CommandLine::ForCurrentProcess());
     return passthrough;
   }
-
-  viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
@@ -269,7 +261,53 @@ class EGLImageBackingFactoryThreadSafeTest
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
+  bool supports_etc1_ = false;
+};
 
+TEST_F(EGLImageBackingFactoryTest, CompressedFormatRequiresInitialData) {
+  if (!supports_etc1_) {
+    GTEST_SKIP() << "ETC1 not supported";
+  }
+
+  auto format = viz::SinglePlaneFormat::kETC1;
+  gfx::Size size(64, 64);
+  // Note: The specific usage doesn't matter here as long as it's supported by
+  // GLTextureImageBacking.
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+
+  // Compressed textures cannot be cleared so they must be created with initial
+  // pixel data.
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
+  EXPECT_FALSE(supported);
+
+  // With correctly sized initial data the format is supported.
+  size_t required_size = format.MaybeEstimatedSizeInBytes(size).value();
+  std::vector<uint8_t> initial_data(required_size);
+  supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, initial_data);
+  EXPECT_TRUE(supported);
+}
+
+class EGLImageBackingFactoryThreadSafeTest
+    : public EGLImageBackingFactoryTest,
+      public testing::WithParamInterface<viz::SharedImageFormat> {
+ public:
+  void SetUp() override {
+    EGLImageBackingFactoryTest::SetUp();
+
+#if BUILDFLAG(IS_ANDROID)
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (gles2::UsePassthroughCommandDecoder(command_line)) {
+      // TODO(crbug.com/40278643): fix this tests to work with passthrough.
+      GTEST_SKIP();
+    }
+#endif
+  }
+
+  viz::SharedImageFormat get_format() { return GetParam(); }
 };
 
 class CreateAndValidateSharedImageRepresentations {

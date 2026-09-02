@@ -74,9 +74,6 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
     supports_rgba_f16_ =
         feature_info->validators()->pixel_type.IsValid(GL_HALF_FLOAT_OES) ||
         feature_info->gl_version_info().IsAtLeastGLES(3, 0);
-    supports_etc1_ =
-        feature_info->validators()->compressed_texture_format.IsValid(
-            GL_ETC1_RGB8_OES);
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
 
@@ -117,9 +114,6 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
         format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ar30_ || supports_ab30_;
     }
-    if (format == viz::SinglePlaneFormat::kETC1) {
-      return supports_etc1_;
-    }
     if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       return supports_bgra_;
     }
@@ -132,7 +126,6 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
   bool supports_r_rg_ = false;
   bool supports_rg16_ = false;
   bool supports_rgba_f16_ = false;
-  bool supports_etc1_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
   bool supports_bgra_ = false;
@@ -166,33 +159,6 @@ class GLTextureImageBackingFactoryWithUploadTest
 
 using GLTextureImageBackingFactoryWithReadbackTest =
     GLTextureImageBackingFactoryWithUploadTest;
-
-TEST_F(GLTextureImageBackingFactoryTest, CompressedFormatRequiresInitialData) {
-  if (!supports_etc1_) {
-    GTEST_SKIP();
-  }
-
-  auto format = viz::SinglePlaneFormat::kETC1;
-  gfx::Size size(64, 64);
-  // Note: The specific usage doesn't matter here as long as it's supported by
-  // GLTextureImageBacking.
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
-
-  // Compressed textures cannot be cleared so they must be created with initial
-  // pixel data.
-  bool supported = backing_factory_->CanCreateSharedImage(
-      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-      GrContextType::kGL, {});
-  EXPECT_FALSE(supported);
-
-  // With correctly sized initial data the format is supported.
-  size_t required_size = format.MaybeEstimatedSizeInBytes(size).value();
-  std::vector<uint8_t> initial_data(required_size);
-  supported = backing_factory_->CanCreateSharedImage(
-      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-      GrContextType::kGL, initial_data);
-  EXPECT_TRUE(supported);
-}
 
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
   auto format = viz::SinglePlaneFormat::kBGR_565;
@@ -806,8 +772,7 @@ std::string TestParamToString(
 }
 
 const auto kInitialDataFormats =
-    ::testing::Values(viz::SinglePlaneFormat::kETC1,
-                      viz::SinglePlaneFormat::kRGBA_8888,
+    ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kRGBA_4444,
                       viz::SinglePlaneFormat::kR_8,

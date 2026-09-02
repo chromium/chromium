@@ -7,6 +7,8 @@
 #include <list>
 #include <utility>
 
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -19,6 +21,10 @@
 
 namespace gpu {
 namespace {
+
+// TODO(kylechar): Remove after M155 hits stable.
+BASE_FEATURE(kAllowCompressedGLTextureBackings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr SharedImageUsageSet kWebGPUUsages =
     SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
@@ -102,6 +108,11 @@ bool GLTextureImageBackingFactory::IsSupported(
         !GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
       return false;
     }
+  }
+
+  if (format.IsCompressed() &&
+      !base::FeatureList::IsEnabled(kAllowCompressedGLTextureBackings)) {
+    return false;
   }
 
   // This is not beneficial on iOS. The main purpose of this is a multi-gpu
