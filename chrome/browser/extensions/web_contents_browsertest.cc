@@ -27,6 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

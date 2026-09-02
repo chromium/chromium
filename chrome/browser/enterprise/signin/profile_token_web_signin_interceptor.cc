@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/base/page_transition_types.h"
 
 ProfileTokenWebSigninInterceptor::ProfileTokenWebSigninInterceptor(
     Profile* profile,

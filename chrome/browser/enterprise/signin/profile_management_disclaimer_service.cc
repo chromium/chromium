@@ -60,6 +60,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace {

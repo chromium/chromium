@@ -15,6 +15,7 @@
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/pdf/common/constants.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"

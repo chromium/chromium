@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace extensions {
 

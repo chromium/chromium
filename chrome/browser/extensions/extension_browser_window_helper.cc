@@ -16,6 +16,7 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+#include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)

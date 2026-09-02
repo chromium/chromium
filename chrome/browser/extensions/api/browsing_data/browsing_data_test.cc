@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, UnsupportedDataType) {
   ASSERT_TRUE(extension);
 
   content::WebContentsConsoleObserver console_observer(
-      browser()->GetTabStripModel()->GetActiveWebContents());
+      chrome_test_utils::GetActiveWebContents(this));
   console_observer.SetPattern(
       "Requested data type(s) are not supported: passwords.");
 
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, MultipleUnsupportedDataTypes) {
   ASSERT_TRUE(extension);
 
   content::WebContentsConsoleObserver console_observer(
-      browser()->GetTabStripModel()->GetActiveWebContents());
+      chrome_test_utils::GetActiveWebContents(this));
   console_observer.SetPattern(
       "Requested data type(s) are not supported: passwords, pluginData.");
 

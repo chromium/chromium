@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/test/test_extension_dir.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace extensions {
 

@@ -8,6 +8,7 @@
 
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 

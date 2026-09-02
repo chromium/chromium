@@ -80,7 +80,9 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using bookmarks::BookmarkModel;

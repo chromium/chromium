@@ -57,6 +57,7 @@
 #include "net/base/net_errors.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/base/page_transition_types.h"
 
 using profile_management::features::kOidcAuthIsDasherBased;
 using profile_management::features::kOidcAuthStubClientId;

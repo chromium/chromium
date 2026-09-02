@@ -6,7 +6,7 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/safe_browsing/safe_browsing_service.h",
   "+chrome/browser/shell_integration.h",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",

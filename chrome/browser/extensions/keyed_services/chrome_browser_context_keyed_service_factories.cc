@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "extensions/browser/manifest_v2_handler.h"
 #include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/plugin_manager.h"

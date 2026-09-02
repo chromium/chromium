@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/sessions/core/session_id.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"

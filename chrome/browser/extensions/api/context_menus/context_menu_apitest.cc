@@ -36,15 +36,14 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_menu_model_android.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#else
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusBasics) {
   ASSERT_TRUE(RunExtensionTest("context_menus/basics")) << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 class ExtensionTabContextMenuApiTest : public ExtensionContextMenuApiTest {
  public:
   ExtensionTabContextMenuApiTest() {

@@ -12,6 +12,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/base/page_transition_types.h"
 
 namespace extensions {
 

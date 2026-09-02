@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"

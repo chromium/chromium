@@ -32,6 +32,7 @@
 #include "components/favicon/core/favicon_handler.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -50,6 +51,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/url_constants.h"
 

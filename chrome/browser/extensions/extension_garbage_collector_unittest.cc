@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/install_tracker.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 

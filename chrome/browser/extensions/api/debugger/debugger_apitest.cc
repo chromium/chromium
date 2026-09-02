@@ -25,6 +25,8 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/navigation_controller.h"
+#include "ui/base/page_transition_types.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
 #endif

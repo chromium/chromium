@@ -28,6 +28,11 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "components/tabs/public/tab_interface.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -69,6 +74,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -760,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, TargetBlankIncognito) {
       "/extensions/api_test/webnavigation/targetBlank/a.html");
 
   BrowserWindowInterface* otr_browser = OpenURLOffTheRecord(profile(), url);
-  WebContents* tab = otr_browser->GetTabStripModel()->GetActiveWebContents();
+  WebContents* tab = otr_browser->GetActiveTabInterface()->GetContents();
   content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(tab);
 
   // There's a link with target=_blank on a.html. Click on it to open it in a

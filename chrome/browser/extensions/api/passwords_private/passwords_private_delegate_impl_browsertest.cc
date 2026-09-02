@@ -52,6 +52,8 @@
 #include "chrome/browser/ui/passwords/settings/mock_password_import_controller.h"
 #include "chrome/browser/ui/passwords/settings/password_import_controller_interface.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -99,6 +101,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 using device_reauth::ReauthResult;
 using password_manager::PasswordForm;

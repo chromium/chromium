@@ -7,6 +7,7 @@
 #include "base/one_shot_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"

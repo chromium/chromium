@@ -37,6 +37,7 @@
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/data_decoder/data_decoder_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

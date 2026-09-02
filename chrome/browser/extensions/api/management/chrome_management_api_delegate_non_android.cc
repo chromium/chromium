@@ -65,6 +65,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace extensions {
 namespace {

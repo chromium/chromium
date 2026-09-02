@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance_process_assignment.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 namespace extensions {

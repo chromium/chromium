@@ -52,6 +52,7 @@
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/tree_generator.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/display/display_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

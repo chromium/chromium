@@ -109,6 +109,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
 

@@ -39,6 +39,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 

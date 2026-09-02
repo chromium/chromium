@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
