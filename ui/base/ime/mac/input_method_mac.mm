@@ -33,4 +33,13 @@ bool InputMethodMac::IsCandidatePopupOpen() const {
   return false;
 }
 
+void InputMethodMac::OnWillChangeFocusedClient(TextInputClient* focused_before,
+                                               TextInputClient*) {
+  if (focused_before) {
+    // AppKit can keep a conversion session alive after an insertText: callback
+    // clears the client's composition.
+    CancelComposition(focused_before);
+  }
+}
+
 }  // namespace ui

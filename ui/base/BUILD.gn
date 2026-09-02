@@ -1205,6 +1205,10 @@ test("ui_base_unittests") {
       ]
       deps += [ "//ui/base/ime/win" ]
     }
+    if (is_mac) {
+      sources += [ "ime/mac/input_method_mac_unittest.mm" ]
+      deps += [ "//ui/base/ime/mac" ]
+    }
     if (is_chromeos) {
       sources += [
         "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",

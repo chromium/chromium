@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_MAC) InputMethodMac
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
+
+ protected:
+  void OnWillChangeFocusedClient(TextInputClient* focused_before,
+                                 TextInputClient* focused) override;
 };
 
 }  // namespace ui
