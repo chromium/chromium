@@ -557,6 +557,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/browser_context_keyed_service_factories.h"
+#include "chrome/browser/controlled_frame/controlled_frame_media_permission_cache_factory.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -932,6 +933,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   glic::ContextualCueingServiceFactory::GetInstance();
 #endif
   ContextualSearchServiceFactory::GetInstance();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  controlled_frame::ControlledFrameMediaPermissionCacheFactory::GetInstance();
+#endif
   CookieSettingsFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   metrics::CriticalUserJourneyServiceFactory::GetInstance();

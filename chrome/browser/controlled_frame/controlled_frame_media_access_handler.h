@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_CONTROLLED_FRAME_CONTROLLED_FRAME_MEDIA_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_CONTROLLED_FRAME_CONTROLLED_FRAME_MEDIA_ACCESS_HANDLER_H_
 
-#include <map>
-#include <set>
-
 #include "chrome/browser/media/media_access_handler.h"
 
 namespace content {
@@ -60,7 +57,6 @@ class ControlledFrameMediaAccessHandler : public MediaAccessHandler {
                                     const url::Origin& requesting_origin,
                                     blink::mojom::MediaStreamType type);
 
-  std::map<url::Origin, std::set<url::Origin>> requests_;
 };
 
 }  // namespace controlled_frame

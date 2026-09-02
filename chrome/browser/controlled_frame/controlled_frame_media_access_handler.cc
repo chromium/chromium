@@ -5,6 +5,8 @@
 #include "chrome/browser/controlled_frame/controlled_frame_media_access_handler.h"
 
 #include "base/types/expected.h"
+#include "chrome/browser/controlled_frame/controlled_frame_media_permission_cache.h"
+#include "chrome/browser/controlled_frame/controlled_frame_media_permission_cache_factory.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -90,14 +92,16 @@ bool ControlledFrameMediaAccessHandler::CheckMediaAccessPermission(
 
   // Technically, Controlled Frame permission check needs to be done
   // asynchronously (via an event handled by the embedder). However, this method
-  // must return immediately. |requests_| is used as a caching mechanism. An
-  // embedder origin + requesting origin pair in |requests_| must have already
-  // passed the asynchronous checks at least once. Unfortunately, this means
-  // once a permission is granted, it cannot be revoked in the same session.
+  // must return immediately. `ControlledFrameMediaPermissionCache` is used as a
+  // caching mechanism. An embedder origin + requesting origin pair in the cache
+  // must have already passed the asynchronous checks at least once.
   // Note that the type check can be omitted here because WebView Permission
   // Request API does not differentiate audio and video requests, they are both
   // treated as "media".
-  if (!requests_[embedder_origin].contains(requesting_origin)) {
+  auto* cache =
+      ControlledFrameMediaPermissionCacheFactory::GetForBrowserContext(
+          render_frame_host->GetBrowserContext());
+  if (!cache || !cache->HasPermission(embedder_origin, requesting_origin)) {
     return false;
   }
 
@@ -128,7 +132,12 @@ void ControlledFrameMediaAccessHandler::HandleRequest(
       web_view->embedder_rfh()->GetLastCommittedOrigin();
   const url::Origin& requesting_origin = request.url_origin;
 
-  requests_[embedder_origin].insert(requesting_origin);
+  auto* cache =
+      ControlledFrameMediaPermissionCacheFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+  if (cache) {
+    cache->AddPermission(embedder_origin, requesting_origin);
+  }
 
   if (request.audio_type !=
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&

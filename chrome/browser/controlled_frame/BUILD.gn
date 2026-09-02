@@ -46,10 +46,17 @@ source_set("media_access_handler") {
 }
 
 source_set("media_access_handler_impl") {
-  sources = [ "controlled_frame_media_access_handler.cc" ]
+  sources = [
+    "controlled_frame_media_access_handler.cc",
+    "controlled_frame_media_permission_cache.cc",
+    "controlled_frame_media_permission_cache.h",
+    "controlled_frame_media_permission_cache_factory.cc",
+    "controlled_frame_media_permission_cache_factory.h",
+  ]
   public_deps = [ "//chrome/browser/media:access_handler" ]
   deps = [
     ":media_access_handler",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//extensions/browser",
@@ -100,12 +107,14 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "controlled_frame_media_permission_cache_unittest.cc",
     "controlled_frame_menu_icon_loader_unittest.cc",
     "controlled_frame_permissions_unittest.cc",
   ]
 
   deps = [
     ":controlled_frame",
+    ":media_access_handler_impl",
     ":test_support",
     "//base",
     "//base/test:test_support",

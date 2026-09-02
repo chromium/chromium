@@ -1025,6 +1025,7 @@ source_set("profiles_extra_parts_impl") {
       "//apps",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
+      "//chrome/browser/controlled_frame:media_access_handler_impl",
       "//chrome/browser/extensions",
       "//chrome/browser/sync_file_system",
       "//chrome/browser/ui/web_applications",

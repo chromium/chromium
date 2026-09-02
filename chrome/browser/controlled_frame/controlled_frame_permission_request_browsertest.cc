@@ -822,3 +822,105 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameUnattachedGuestPermissionRequestTest,
 }
 
 }  // namespace controlled_frame
+
+namespace controlled_frame {
+
+class ControlledFrameMediaPermissionCacheBrowserTest
+    : public ControlledFrameTestBase {
+ protected:
+  void SetPermission(const GURL& url,
+                     ContentSettingsType type,
+                     ContentSetting setting) {
+    HostContentSettingsMapFactory::GetForProfile(profile())
+        ->SetContentSettingDefaultScope(url, url, type, setting);
+  }
+
+  std::string QueryPermission(content::RenderFrameHost* frame,
+                              const std::string& name) {
+    return content::EvalJs(frame, content::JsReplace(R"(
+      navigator.permissions.query({name: $1}).then(r => r.state);
+    )",
+                                                     name))
+        .ExtractString();
+  }
+
+  std::string RunGetVideo(content::RenderFrameHost* frame) {
+    return content::EvalJs(frame, R"(
+      (async function() {
+        try {
+          const stream =
+              await navigator.mediaDevices.getUserMedia({video: true});
+          const success = stream.getVideoTracks().length > 0;
+          stream.getTracks().forEach(t => t.stop());
+          return success ? 'SUCCESS' : 'FAIL';
+        } catch (err) {
+          return 'FAIL: ' + err.name;
+        }
+      })();
+    )")
+        .ExtractString();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameMediaPermissionCacheBrowserTest,
+                       ClearBrowsingDataClearsCache) {
+  GURL guest_url =
+      embedded_https_test_server().GetURL("guest.com", "/empty.html");
+  url::Origin guest_origin = url::Origin::Create(guest_url);
+
+  // Set profile-wide permissions for the guest origin.
+  SetPermission(guest_url, ContentSettingsType::MEDIASTREAM_CAMERA,
+                CONTENT_SETTING_ALLOW);
+
+  // Install and open IWA, then create ControlledFrame pointing to the guest
+  // origin.
+  web_app::ManifestBuilder manifest_builder = web_app::ManifestBuilder();
+  manifest_builder.AddPermissionsPolicyWildcard(
+      network::mojom::PermissionsPolicyFeature::kCamera);
+
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/"guest.com", "/empty.html",
+          manifest_builder);
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+  ASSERT_EQ(controlled_frame->GetLastCommittedOrigin(), guest_origin);
+
+  // Set profile-wide permissions for the embedder IWA origin.
+  SetPermission(app_frame->GetLastCommittedOrigin().GetURL(),
+                ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  // Setup the embedder listener to approve unless should_deny is true.
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.should_deny = false;
+    const cf = document.querySelector('controlledframe');
+    cf.addEventListener('permissionrequest', (e) => {
+      if (window.should_deny) {
+        e.request.deny();
+      } else {
+        e.request.allow();
+      }
+    });
+  )"));
+
+  // The first request will succeed because the embedder approves it and the
+  // content setting is ALLOW.
+  EXPECT_EQ("SUCCESS", RunGetVideo(controlled_frame));
+
+  // Clear the content settings for Camera (simulating Clear Browsing Data)
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->ClearSettingsForOneType(ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  // Now change the embedder's approval logic to deny requests to verify that
+  // the cache was cleared and it falls back to the embedder listener.
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.should_deny = true;
+  )"));
+
+  // This request should now fail because the cache was wiped, and the
+  // embedder listener now explicitly denies the request. If the cache was not
+  // wiped, this would incorrectly return SUCCESS.
+  EXPECT_EQ("FAIL: NotAllowedError", RunGetVideo(controlled_frame));
+}
+
+}  // namespace controlled_frame
