@@ -719,13 +719,13 @@ TEST_F(AtMemoryHandlerTest, AtMemoryReplaceTriggerAbortsIfNoHistoryEntryFound) {
   FieldRendererId field_id = form_util::GetFieldRendererId(input);
   Focus("f");
 
-  input.SetValue(blink::WebString::FromUtf16(u"hello @@"));
-  input.SetSelectionRange(8, 8);
+  input.SetValue(blink::WebString::FromUtf16(u"hello"));
+  input.SetSelectionRange(5, 5);
   autofill_agent().ApplyFieldAction(
       mojom::FieldActionType::kReplaceSelectionForAtMemory,
       mojom::ActionPersistence::kFill, field_id, u"result");
   // Filling should be aborted; value remains unchanged.
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+  EXPECT_EQ(input.Value().Utf16(), u"hello");
 }
 
 // Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory aborts if the
@@ -736,11 +736,13 @@ TEST_F(AtMemoryHandlerTest, AtMemoryReplaceTriggerAbortsIfValueChanged) {
   blink::WebInputElement input = GetInputElementById("f");
   Focus("f");
 
-  SimulateSlowTyping("hello @@");
-  input.SetValue(blink::WebString::FromUtf16(u"hello @@ changed"));
+  SimulateSlowTyping("hello ");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  input.SetValue(blink::WebString::FromUtf16(u"hello changed"));
   WaitForApplyFieldAction();
   // Filling should be aborted; value remains unchanged.
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@ changed");
+  EXPECT_EQ(input.Value().Utf16(), u"hello changed");
 }
 
 // Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory refocuses the
@@ -756,14 +758,13 @@ TEST_F(AtMemoryHandlerTest, RefocusesAndRestoresCaretIfUnfocused) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .Times(AnyNumber());
   // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .WillOnce([this, &other](const FormData& form, FieldRendererId field_id,
                                const gfx::Rect& caret_bounds,
                                AutofillSuggestionTriggerSource trigger_source,
@@ -774,7 +775,9 @@ TEST_F(AtMemoryHandlerTest, RefocusesAndRestoresCaretIfUnfocused) {
         ApplyFieldActionAsync(field_id);
       });
 
-  SimulateSlowTyping("hello @@");
+  SimulateSlowTyping("hello ");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
   WaitForApplyFieldAction();
   EXPECT_EQ(input.Value().Utf16(), u"hello result");
   EXPECT_EQ(input.GetDocument().FocusedElement(), input);
@@ -794,13 +797,12 @@ TEST_F(AtMemoryHandlerTest, WaitsForWindowFocusBeforeFilling) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .Times(AnyNumber());
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .WillOnce([this](const FormData& form, FieldRendererId field_id,
                        const gfx::Rect& caret_bounds,
                        AutofillSuggestionTriggerSource trigger_source,
@@ -811,16 +813,17 @@ TEST_F(AtMemoryHandlerTest, WaitsForWindowFocusBeforeFilling) {
         ApplyFieldActionAsync(field_id, u"result");
       });
 
-  SimulateSlowTyping("hello @");
-  SimulateUserTypingAsciiCharacter('@', /*flush_message_loop=*/true);
+  SimulateSlowTyping("hello ");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
   // The first attempt (num_try = 0) fails because the window lacks focus and
   // schedules a retry in 20 ms.
   WaitForApplyFieldAction();
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+  EXPECT_EQ(input.Value().Utf16(), u"hello ");
 
   // After 20 ms, the first retry runs and finds the window is still unfocused.
   task_environment_.FastForwardBy(base::Milliseconds(20));
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+  EXPECT_EQ(input.Value().Utf16(), u"hello ");
 
   // Restore window focus. The next retry in 20 ms will see the focused state.
   GetWebFrameWidget()->SetFocus(true);
@@ -843,13 +846,12 @@ TEST_F(AtMemoryHandlerTest, FillsAfterMaxRetriesIfWindowNeverGainsFocus) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .Times(AnyNumber());
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .WillOnce([this](const FormData& form, FieldRendererId field_id,
                        const gfx::Rect& caret_bounds,
                        AutofillSuggestionTriggerSource trigger_source,
@@ -860,14 +862,15 @@ TEST_F(AtMemoryHandlerTest, FillsAfterMaxRetriesIfWindowNeverGainsFocus) {
         ApplyFieldActionAsync(field_id, u"result");
       });
 
-  SimulateSlowTyping("hello @");
-  SimulateUserTypingAsciiCharacter('@', /*flush_message_loop=*/true);
+  SimulateSlowTyping("hello ");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
   WaitForApplyFieldAction();
 
   // Fast forward through 4 retries (4 * 20 ms = 80 ms). The field is not filled
   // yet.
   task_environment_.FastForwardBy(base::Milliseconds(80));
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+  EXPECT_EQ(input.Value().Utf16(), u"hello ");
 
   // The 5th retry (at 100 ms) hits kMaxRetries and fills as a fallback.
   task_environment_.FastForwardBy(base::Milliseconds(20));
@@ -1124,14 +1127,16 @@ TEST_F(AtMemoryHandlerContentEditableTest,
        AtMemoryReplaceTriggerAbortsIfValueChanged) {
   blink::WebElement ce = GetWebElementById("ce");
 
-  SimulateSlowTyping("hello @@");
+  SimulateSlowTyping("hello ");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
   ExecuteJavaScriptForTests(R"(
-    document.getElementById('ce').innerText = 'hello @@ changed';
+    document.getElementById('ce').innerText = 'hello changed';
   )");
   test_api(autofill_agent()).ContentEditableDidChange(ce);
   WaitForApplyFieldAction();
   // Filling should be aborted; value remains unchanged.
-  EXPECT_EQ(ce.TextContent().Utf16(), u"hello @@ changed");
+  EXPECT_EQ(ce.TextContent().Utf16(), u"hello changed");
 }
 
 // Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory refocuses the
@@ -1152,14 +1157,13 @@ TEST_F(AtMemoryHandlerContentEditableTest,
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .Times(AnyNumber());
   // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
       .WillOnce([this, &other](const FormData& form, FieldRendererId field_id,
                                const gfx::Rect& caret_bounds,
                                AutofillSuggestionTriggerSource trigger_source,
@@ -1170,7 +1174,9 @@ TEST_F(AtMemoryHandlerContentEditableTest,
         EXPECT_EQ(other.GetDocument().FocusedElement(), other);
       });
 
-  SimulateSlowTyping("hello @@");
+  SimulateSlowTyping("hello ");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
   WaitForApplyFieldAction();
   EXPECT_EQ(ce.TextContent().Utf16(), u"hello result");
   EXPECT_EQ(ce.GetDocument().FocusedElement(), ce);
@@ -1231,7 +1237,9 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInInput) {
 
   SendCtrlKeyDown();
   SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
+  WaitForApplyFieldAction();
+  blink::WebInputElement input = GetInputElementById("f");
+  EXPECT_EQ(input.Value().Utf16(), u"result");
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory in a <textarea>.
@@ -1247,7 +1255,9 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInTextArea) {
 
   SendCtrlKeyDown();
   SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
+  WaitForApplyFieldAction();
+  blink::WebFormControlElement textarea = GetFormControlElementById("f");
+  EXPECT_EQ(textarea.Value().Utf16(), u"result");
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory in a contenteditable.
@@ -1263,7 +1273,9 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInContentEditable) {
 
   SendCtrlKeyDown();
   SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
+  WaitForApplyFieldAction();
+  blink::WebElement f = GetWebElementById("f");
+  EXPECT_EQ(f.TextContent().Utf16(), u"result");
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory even when a non-empty
