@@ -21,11 +21,6 @@ ALWAYS_INLINE T& RareDataUpdate<T>::RefreshNodeAndUnwrap(Node& node) && {
   return *field_;
 }
 
-template <typename T>
-ALWAYS_INLINE T& Node::UnpackAndRefresh(RareDataUpdate<T> update) {
-  return std::move(update).RefreshNodeAndUnwrap(*this);
-}
-
 DOMNodeId Node::NodeID(base::PassKey<DOMNodeIds>) const {
   return data_ ? const_cast<const NodeRareData*>(data_.Get())->NodeId()
                : kInvalidDOMNodeId;
