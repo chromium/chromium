@@ -21,7 +21,7 @@ import org.chromium.url.GURL;
 
 /** Tests WebappsIconUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
+@Config(sdk = Build.VERSION_CODES.Q)
 public class WebappsIconUtilsTest {
 
     @Test
