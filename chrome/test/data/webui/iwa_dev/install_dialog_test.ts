@@ -8,7 +8,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {PLACEHOLDER_URL as PROXY_PLACEHOLDER_URL} from 'chrome://iwa-dev/install_dev_proxy_tab.js';
 import type {IwaDevInstallDialogElement} from 'chrome://iwa-dev/install_dialog.js';
 import {TabIndex} from 'chrome://iwa-dev/install_dialog.js';
-import {MIN_FETCH_DELAY_MS, PLACEHOLDER_URL} from 'chrome://iwa-dev/install_update_manifest_tab.js';
+import {MIN_FETCH_DELAY_MS} from 'chrome://iwa-dev/install_update_manifest_tab.js';
 import type {UpdateManifest} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -332,16 +332,6 @@ suite('<iwa-dev-install-dialog>', () => {
 
           assertFalse(input.invalid);
           assertEquals(validUrl, e.detail.url);
-        });
-
-    test(
-        'auto-completes placeholder url on Tab keydown when url input is empty',
-        async () => {
-          assertEquals('', input.value);
-          input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab'}));
-          await microtasksFinished();
-
-          assertEquals(PLACEHOLDER_URL, input.value);
         });
 
     test('updates UI upon successful manifest fetch', async () => {

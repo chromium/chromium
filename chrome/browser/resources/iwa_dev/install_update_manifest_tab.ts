@@ -10,8 +10,7 @@ import {getCss} from './install_update_manifest_tab.css.js';
 import {getHtml} from './install_update_manifest_tab.html.js';
 import type {ChannelMetadata, UpdateManifest, VersionEntry} from './iwa_dev.mojom-webui.js';
 
-export const PLACEHOLDER_URL =
-    'https://github.com/chromeos/iwa-sink/releases/latest/download/update.json';
+export const PLACEHOLDER_URL = 'https://example.com/update_manifest.json';
 
 export const MIN_FETCH_DELAY_MS = 750;
 
@@ -134,11 +133,6 @@ export class IwaDevInstallUpdateManifestTabElement extends
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Tab' && !this.url_) {
-      e.preventDefault();
-      this.url_ = PLACEHOLDER_URL;
-      return;
-    }
     if (e.key === 'Enter' && !this.isFetching_) {
       this.onFetchClick_();
     }
