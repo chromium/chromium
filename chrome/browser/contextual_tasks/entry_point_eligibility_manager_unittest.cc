@@ -389,9 +389,27 @@ TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True) {
       account_info.email, signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
-      .WillRepeatedly(testing::Return(true));
+      .WillRepeatedly(Return(true));
 
   profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  InitializeManager();
+
+  EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       IsPinningEligible_True_ForceEntryPointEligibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::
+                                kEnableContextualTasksPinButtonInToolbar,
+                            contextual_tasks::
+                                kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
 
   InitializeManager();
 
@@ -404,18 +422,22 @@ TEST_F(EntryPointEligibilityManagerTest,
   feature_list.InitAndDisableFeature(
       contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
-  auto account_info =
-      identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
-          "test@example.com");
-  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
-  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-      account_info.email, signin::ConsentLevel::kSignin);
-
-  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
       .WillRepeatedly(testing::Return(true));
 
-  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
+  InitializeManager();
+
+  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       IsPinningEligible_False_NotFuseboxEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(false));
 
   InitializeManager();
 
@@ -428,20 +450,10 @@ TEST_F(EntryPointEligibilityManagerTest,
   feature_list.InitAndEnableFeature(
       contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
-  auto account_info =
-      identity_test_env_adaptor_->identity_test_env()
-          ->MakePrimaryAccountAvailable("test@example.com",
-                                        signin::ConsentLevel::kSignin);
-  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
-
-  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
       .WillRepeatedly(testing::Return(true));
 
-  // Feature disabled for entrypoint eligibility.
   mock_ui_service_->GetFakeEligibilityManager()->SetEligibilityOverride(false);
-
-  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
 
   InitializeManager();
 
@@ -458,6 +470,51 @@ TEST_F(EntryPointEligibilityManagerTest,
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(otr_profile));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       NotifyEntryPointEligibilityChanged_AimEligibilityChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  auto account_info =
+      identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
+          "test@example.com");
+  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
+      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+      account_info.email, signin::ConsentLevel::kSignin);
+
+  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+      .WillRepeatedly(Return(true));
+
+  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  base::RepeatingClosure aim_callback;
+  EXPECT_CALL(*mock_aim_service_, RegisterEligibilityChangedCallback(_))
+      .WillRepeatedly([&](base::RepeatingClosure cb) {
+        aim_callback = std::move(cb);
+        return base::CallbackListSubscription();
+      });
+
+  InitializeManager();
+  ASSERT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+
+  std::optional<bool> notified_eligibility;
+  auto subscription = manager_->RegisterOnEntryPointEligibilityChanged(
+      base::BindLambdaForTesting(
+          [&](bool eligible) { notified_eligibility = eligible; }));
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(false));
+  ASSERT_TRUE(aim_callback);
+  aim_callback.Run();
+
+  EXPECT_TRUE(notified_eligibility.has_value());
 }
 
 }  // namespace contextual_tasks
