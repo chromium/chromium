@@ -2,14 +2,25 @@
 <html>
 <body>
 <title> Tests that a suggested value is not found by a text search. </title>
+
 <input id='text' type='text'>
 <textarea id='textarea'></textarea>
+<select id='listbox' size='2'></select>
+<select id='dropdown'></select>
+<style>
+option {
+  visibility: hidden;
+}
+</style>
+
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
 <script>
 
 var input = document.getElementById('text');
 var textarea = document.getElementById('textarea');
+const listbox = document.getElementById('listbox');
+const dropdown = document.getElementById('dropdown');
 
 if (!window.internals) {
   testFailed('This test requires internals object');
@@ -35,22 +46,30 @@ if (!window.internals) {
       ['image', 'nonsense'],
       ['radio', 'select-me'],
       ['range', '3'],
-      ['week', '2075-W33'],
-      ['date', '2075-05-01', ''],
-      ['datetime-local', '2075-05-01T19:30'],
+      ['week', '2075-W33', '2075'],
+      ['date', '2075-05-01', '2075'],
+      ['datetime-local', '2075-05-01T19:30', '2075'],
       // These do support suggested values.
-      ['month', '2075-02'],
-      ['text', 'blabla'],
-      ['tel', '3'],
+      ['month', '2026-08', '2026'],
+      ['text', 'blabla', 'bla'],
+      ['tel', '12345', '234'],
     ];
 
-  // Tests for different types that the value is not found if set as a suggested value.
-  for ( const [type, value] of testcases ) {
+    // Tests for different types that the value is not found if set as a suggested value.
+    for (const [type, value, query = value] of testcases) {
+      input.value = '';
       input.type = type;
       internals.setSuggestedValue(input, value);
-      assert_false(lookup(value));
-    }
+      assert_false(lookup(query), `Suggested value query "${query}" in input[type=${type}] should not be found.`);
+      if (query !== value) {
+        assert_false(lookup(value), `Suggested value "${value}" in input[type=${type}] should not be found.`);
+      }
 
+      // crbug.com/553252820. Suggeted value should not be findable after it was cleared.
+      input.value = input.value;
+      assert_false(lookup(query), `Suggested value query "${query}" in input[type=${type}] should not be found after reset.`);
+    }
+    input.remove();
   }, 'Test that suggested values in an input field is not found by search');
 
   test(() => {
@@ -65,6 +84,32 @@ if (!window.internals) {
     assert_false(lookup('value'));
 
   }, 'Test that suggested values in a text area are not found by search');
+
+  test(() => {
+    // Verify that options with visibility:hidden are not found in a dropdown select.
+    dropdown.innerHTML = '<option value="value">option-text</option><option>preview</option>';
+    assert_false(lookup('option-text'));
+    assert_false(lookup('option'));
+    assert_false(lookup('preview'));
+
+    // Verify that that 'preview' is not found if set as a suggested value.
+    internals.setSuggestedValue(dropdown, 'preview');
+    assert_false(lookup('preview'));
+    assert_false(lookup('view'));
+  }, 'Test that suggested values in a dropdown select are not found by search');
+
+  test(() => {
+    // Verify that options with visibility:hidden are not found in a listbox select.
+    listbox.innerHTML = '<option value="value">option-text</option><option>preview</option>';
+    assert_false(lookup('option-text'));
+    assert_false(lookup('option'));
+    assert_false(lookup('preview'));
+
+    // Verify that that 'preview' is not found if set as a suggested value.
+    internals.setSuggestedValue(listbox, 'preview');
+    assert_false(lookup('preview'));
+    assert_false(lookup('view'));
+  }, 'crbug.com/553136688: Test that suggested values in a listbox select are not found by search');
 
 }
 

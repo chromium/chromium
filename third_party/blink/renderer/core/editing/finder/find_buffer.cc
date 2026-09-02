@@ -71,10 +71,22 @@ bool FindBuffer::ShouldIgnoreContents(const Node& node) {
   const auto* element = DynamicTo<HTMLElement>(node);
   if (!element)
     return false;
+
+  // Skip elements showing autofill-preview.
+  if (IsA<TextControlElement>(*element) &&
+      !To<TextControlElement>(*element).SuggestedValue().empty()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::FindIgnoreSuggestionFixEnabled()) {
+    if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
+      if (!select->SuggestedValue().empty()) {
+        return true;
+      }
+    }
+  }
+
   return (!element->ShouldSerializeEndTag() &&
           !IsA<HTMLInputElement>(*element)) ||
-         (IsA<TextControlElement>(*element) &&
-          !To<TextControlElement>(*element).SuggestedValue().empty()) ||
          IsA<HTMLIFrameElement>(*element) || IsA<HTMLImageElement>(*element) ||
          IsA<HTMLMeterElement>(*element) || IsA<HTMLObjectElement>(*element) ||
          IsA<HTMLProgressElement>(*element) ||
