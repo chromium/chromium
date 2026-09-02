@@ -5046,14 +5046,16 @@ const ComputedStyle* Element::StyleForLayoutObject(
 
   if (ElementAnimations* element_animations = GetElementAnimations()) {
     // For multiple style recalc passes for the same element in the same
-    // lifecycle, which can happen for container queries, we may end up having
-    // pending updates from the previous pass. In that case the update from the
-    // previous pass should be dropped as it will be re-added if necessary. It
-    // may be that an update detected in the previous pass would no longer be
-    // necessary if the animated property flipped back to the old style with no
-    // change as the result.
+    // lifecycle, for example during interleaved style recalc, pending pseudo
+    // updates, or autosize, we may end up having pending updates from the
+    // previous pass. In that case the update from the previous pass should be
+    // dropped as it will be re-added if necessary. It may be that an update
+    // detected in the previous pass would no longer be necessary if the
+    // animated property flipped back to the old style with no change as the
+    // result.
     DCHECK(GetDocument().GetStyleEngine().InInterleavedStyleRecalc() ||
            PostStyleUpdateScope::InPendingPseudoUpdate() ||
+           (GetDocument().View() && GetDocument().View()->IsBeingAutoSized()) ||
            element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
   }

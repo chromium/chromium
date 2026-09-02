@@ -93,12 +93,15 @@
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -1192,6 +1195,214 @@ TEST_F(WebViewTest, AutoResizeDoesNotResetWithoutLayout) {
 
   EXPECT_EQ(200, client.GetTestData().Width());
   EXPECT_EQ(resize_count, client.ResizeCount());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizePreservesHeightDuringWidthRemeasurement) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body { margin: 8px; }
+          main { width: 300px; height: 650px; overflow-y: hidden; }
+        </style>
+        <main></main>
+      )HTML",
+      client);
+  ASSERT_EQ(600, client.GetTestData().Height());
+
+  frame->ExecuteScript(WebScriptSource(
+      "document.querySelector('main').style.height = '100vh';"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(600, client.GetTestData().Height());
+
+  frame->GetFrame()->View()->SetNeedsLayout();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(600, client.GetTestData().Height());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizePreservesTransitionAcrossRemeasurement) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body { margin: 0; width: 400px; }
+          #container { container-type: inline-size; width: 10px; }
+          @container (min-width: 1px) {
+            #container-dependent { color: green; }
+          }
+          #target { opacity: 0; transition: opacity 100s linear; }
+          @media (max-width: 100px) { #target { color: red; } }
+        </style>
+        <div id="target">content</div>
+        <div id="container"><div id="container-dependent"></div></div>
+        <select id="select"><option>option</option></select>
+      )HTML",
+      client);
+  ASSERT_EQ(400, client.GetTestData().Width());
+  Document& document = *frame->GetFrame()->GetDocument();
+  Element* target = document.getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+  ASSERT_TRUE(select->UsesMenuList());
+  ASSERT_TRUE(document.GetStyleEngine().StyleAffectedByLayout());
+  ASSERT_TRUE(document.GetStyleEngine().HasViewportDependentMediaQueries());
+  ASSERT_TRUE(target->getAnimations().empty());
+
+  frame->ExecuteScript(WebScriptSource(
+      "document.body.style.width = '200px';"
+      "document.getElementById('target').style.opacity = '1';"));
+  // The size container query marks document style as layout-dependent, causing
+  // MenuListSelectType's style update to upgrade to layout. Autosize then
+  // recalculates #target before its pending transition update is applied.
+  select->DefaultEventHandler(*Event::Create(event_type_names::kChange));
+
+  EXPECT_EQ(200, client.GetTestData().Width());
+  EXPECT_EQ(1u, target->getAnimations().size());
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(200, client.GetTestData().Width());
+  EXPECT_EQ(1u, target->getAnimations().size());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizePreservesDocumentScrollOffsetAfterFormChanges) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body { margin: 0; width: 400px; }
+          #spacer { height: 400px; }
+          #tail { height: 500px; }
+          @media (max-width: 100px) { #tail { display: none; } }
+        </style>
+        <div id="spacer"></div>
+        <input id="input">
+        <div id="layout-trigger"></div>
+        <div id="tail"></div>
+        <script>
+          const input = document.getElementById('input');
+          const layoutTrigger = document.getElementById('layout-trigger');
+          input.addEventListener('input', () => {
+            layoutTrigger.style.width = input.value.length + 'px';
+          });
+          input.addEventListener('blur', () => {
+            layoutTrigger.style.height = '1px';
+          });
+        </script>
+      )HTML",
+      client);
+  Document* document = frame->GetFrame()->GetDocument();
+
+  ASSERT_GE(document->scrollingElement()->scrollHeight() -
+                document->scrollingElement()->clientHeight(),
+            250);
+  frame->ExecuteScript(WebScriptSource("scrollTo(0, 250); input.focus();"));
+  UpdateAllLifecyclePhases();
+  ASSERT_EQ(250, document->scrollingElement()->scrollTop());
+
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
+  frame->FrameWidget()->GetActiveWebInputMethodController()->CommitText(
+      "x", empty_ime_text_spans, WebRange(), 0);
+  UpdateAllLifecyclePhases();
+  ASSERT_GE(document->scrollingElement()->scrollHeight() -
+                document->scrollingElement()->clientHeight(),
+            250);
+  EXPECT_EQ(250, document->scrollingElement()->scrollTop());
+
+  frame->ExecuteScript(WebScriptSource("scrollTo(0, 250); input.blur();"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(250, document->scrollingElement()->scrollTop());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizePreservesScrollOffsetAfterFormChanges) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body { margin: 0; width: 400px; }
+          #scroller { height: 300px; overflow: auto; }
+          #spacer, #tail { height: 300px; }
+          @media (max-width: 100px) { #scroller { height: auto; } }
+        </style>
+        <div id="scroller">
+          <div id="spacer"></div>
+          <input id="input">
+          <button id="button">Change setting</button>
+          <div id="layout-trigger"></div>
+          <div id="tail"></div>
+        </div>
+        <script>
+          const scroller = document.getElementById('scroller');
+          const input = document.getElementById('input');
+          const layoutTrigger = document.getElementById('layout-trigger');
+          const button = document.getElementById('button');
+          const tail = document.getElementById('tail');
+          input.addEventListener('input', () => {
+            layoutTrigger.style.width = input.value.length + 'px';
+          });
+          input.addEventListener('blur', () => {
+            layoutTrigger.style.height = '1px';
+          });
+          button.addEventListener('click', () => {
+            layoutTrigger.style.marginTop = '1px';
+          });
+        </script>
+      )HTML",
+      client);
+  Element* scroller = frame->GetFrame()->GetDocument()->getElementById(
+      AtomicString("scroller"));
+  ASSERT_TRUE(scroller);
+
+  frame->ExecuteScript(
+      WebScriptSource("scroller.scrollTop = 250; input.focus();"));
+  UpdateAllLifecyclePhases();
+  ASSERT_EQ(250, scroller->scrollTop());
+
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
+  frame->FrameWidget()->GetActiveWebInputMethodController()->CommitText(
+      "x", empty_ime_text_spans, WebRange(), 0);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(250, scroller->scrollTop());
+
+  frame->ExecuteScript(
+      WebScriptSource("scroller.scrollTop = 250; button.click();"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(250, scroller->scrollTop());
+
+  frame->ExecuteScript(
+      WebScriptSource("scroller.scrollTop = 250; input.blur();"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(250, scroller->scrollTop());
+
+  frame->ExecuteScript(WebScriptSource(
+      "scroller.scrollTop = 250; layoutTrigger.style.display = 'none';"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(250, scroller->scrollTop());
+
+  // A genuinely smaller final scroll range must still clamp the offset.
+  frame->ExecuteScript(WebScriptSource(
+      "scroller.scrollTop = 250; tail.style.display = 'none';"));
+  UpdateAllLifecyclePhases();
+  EXPECT_LT(scroller->scrollTop(), 250);
+  EXPECT_EQ(scroller->scrollHeight() - scroller->clientHeight(),
+            scroller->scrollTop());
 
   web_view_helper_.Reset();
 }
