@@ -26,6 +26,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/headless/headless_command_processor.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -393,21 +394,18 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       headless::ProcessHeadlessCommands(
           profile_, tab.url,
           base::BindOnce(
-              [](base::WeakPtr<BrowserWindowInterface> browser,
-                 std::unique_ptr<ScopedProfileKeepAlive> profile_keepalive,
+              [](std::unique_ptr<ScopedProfileKeepAlive> profile_keepalive,
                  headless::HeadlessCommandHandler::Result result) {
-                if (browser && browser->GetWindow()) {
 #if BUILDFLAG(IS_MAC)
-                  // On Macs Chrome keeps running after the last browser
-                  // window is closed which is not expected for headless
-                  // command execution, so explicitly allow application
-                  // to terminate after the browser window is closed.
-                  app_controller_mac::AllowApplicationToTerminate();
+                // On Macs Chrome keeps running after the last browser
+                // window is closed which is not expected for headless
+                // command execution, so explicitly allow application
+                // to terminate after the browser window is closed.
+                app_controller_mac::AllowApplicationToTerminate();
 #endif
-                  browser->GetWindow()->Close();
-                }
+                chrome::CloseAllBrowsersAndQuit();
               },
-              browser->GetWeakPtr(), std::move(profile_keepalive)));
+              std::move(profile_keepalive)));
       continue;
     }
     // Active tab overwrites apply only to one tab per launch, and can only
