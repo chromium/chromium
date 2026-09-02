@@ -118,7 +118,7 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
   if (widget && widget->IsActive() && location_bar()->IsFocusWithin()) {
     if (!IsReverting()) {
       OnFocus(/*query_zps=*/false);
-      SyncNativeStateToWebUI(/*query_zps=*/true);
+      SyncNativeStateToWebUI(/*query_zps=*/false);
     }
   }
 }
