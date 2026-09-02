@@ -64,6 +64,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -158,6 +160,8 @@ class KeyboardAccessoryViewBinder {
         private final KeyboardAccessoryView mKeyboardAccessory;
         private final UiConfiguration mUiConfiguration;
         private final ViewGroup mParent;
+        private final List<BarItemViewHolder> mChildViewHolders = new ArrayList<>();
+        private final List<Integer> mChildViewTypes = new ArrayList<>();
 
         BarItemGroupViewHolder(
                 KeyboardAccessoryView keyboardAccessory,
@@ -172,13 +176,55 @@ class KeyboardAccessoryViewBinder {
         @Override
         @SuppressWarnings({"rawtypes", "unchecked"}) // Heterogeneous viewHolder dispatch by type.
         protected void bind(GroupBarItem group, KeyboardAccessoryChipGroup chipGroup) {
+            List<ActionBarItem> items = group.getActionBarItems();
+            if (canReuseChildHolders(items)) {
+                rebindChildHolders(items);
+                return;
+            }
+
+            recycle();
             chipGroup.removeAllViews();
-            for (ActionBarItem item : group.getActionBarItems()) {
+            for (ActionBarItem item : items) {
                 BarItemViewHolder viewHolder =
                         create(mKeyboardAccessory, mUiConfiguration, mParent, item.getViewType());
-
-                viewHolder.bind(item, viewHolder.itemView);
+                mChildViewHolders.add(viewHolder);
+                mChildViewTypes.add(item.getViewType());
+                viewHolder.bind(item);
                 chipGroup.addView(viewHolder.itemView);
+            }
+        }
+
+        @Override
+        protected void recycle() {
+            for (BarItemViewHolder viewHolder : mChildViewHolders) {
+                viewHolder.recycle();
+            }
+            mChildViewHolders.clear();
+            mChildViewTypes.clear();
+        }
+
+        /**
+         * Checks if the existing child view holders can be reused for the given items without
+         * recreating views. Child holders can be reused if the count and view types of items match
+         * exactly, avoiding unnecessary view inflation and visual flickering when only properties
+         * change.
+         */
+        private boolean canReuseChildHolders(List<ActionBarItem> items) {
+            if (mChildViewHolders.size() != items.size()) {
+                return false;
+            }
+            for (int i = 0; i < items.size(); i++) {
+                if (mChildViewTypes.get(i) != items.get(i).getViewType()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /** Rebinds the existing child view holders with updated item models. */
+        private void rebindChildHolders(List<ActionBarItem> items) {
+            for (int i = 0; i < items.size(); i++) {
+                mChildViewHolders.get(i).bind(items.get(i));
             }
         }
     }
