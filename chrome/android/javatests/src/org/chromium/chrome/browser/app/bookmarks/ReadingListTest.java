@@ -43,10 +43,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -74,6 +71,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -105,8 +103,6 @@ public class ReadingListTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
     private static final int TEST_PORT = 12345;
 
@@ -118,7 +114,7 @@ public class ReadingListTest {
     // trigger native load / CommandLineFlag setup.
     private GURL mTestUrlA;
     private @Nullable BookmarkActivity mBookmarkActivity;
-    private @Mock Profile mProfile;
+    private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -133,6 +129,7 @@ public class ReadingListTest {
                 .getEmbeddedTestServerRule()
                 .setServerPort(TEST_PORT);
         mTestUrlA = new GURL("http://a.com");
+        mProfile = ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
     }
 
     @After
