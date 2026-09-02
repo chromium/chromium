@@ -179,9 +179,9 @@ class CBOR_EXPORT Value {
   // These will all fatally assert if the type doesn't match.
   SimpleValue GetSimpleValue() const;
   bool GetBool() const;
-  const int64_t& GetInteger() const LIFETIME_BOUND;
-  const int64_t& GetUnsigned() const LIFETIME_BOUND;
-  const int64_t& GetNegative() const LIFETIME_BOUND;
+  int64_t GetInteger() const;
+  int64_t GetUnsigned() const;
+  int64_t GetNegative() const;
   const BinaryValue& GetBytestring() const LIFETIME_BOUND;
   std::string_view GetBytestringAsString() const LIFETIME_BOUND;
   // Returned string may contain NUL characters.

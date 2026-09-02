@@ -159,18 +159,18 @@ bool Value::GetBool() const {
   return simple_value_ == SimpleValue::TRUE_VALUE;
 }
 
-const int64_t& Value::GetInteger() const {
+int64_t Value::GetInteger() const {
   CHECK(is_integer());
   return integer_value_;
 }
 
-const int64_t& Value::GetUnsigned() const {
+int64_t Value::GetUnsigned() const {
   CHECK(is_unsigned());
   CHECK_GE(integer_value_, 0);
   return integer_value_;
 }
 
-const int64_t& Value::GetNegative() const {
+int64_t Value::GetNegative() const {
   CHECK(is_negative());
   CHECK_LT(integer_value_, 0);
   return integer_value_;
