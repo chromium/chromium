@@ -164,18 +164,15 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private CrossDeviceThemeTracker.@Nullable Observer mThemeTrackerObserver;
 
     private final Callback<@Nullable Tab> mTabChangeCallback =
-            new Callback<@Nullable Tab>() {
-                @Override
-                public void onResult(@Nullable Tab tab) {
-                    if (mObservedTab != null) {
-                        mObservedTab.removeObserver(mTabObserver);
-                    }
-                    mObservedTab = tab;
-                    if (mObservedTab != null) {
-                        mObservedTab.addObserver(mTabObserver);
-                    }
-                    onTabChangeOrGainFocus(tab);
+            (tab) -> {
+                if (mObservedTab != null) {
+                    mObservedTab.removeObserver(mTabObserver);
                 }
+                mObservedTab = tab;
+                if (mObservedTab != null) {
+                    mObservedTab.addObserver(mTabObserver);
+                }
+                onTabChangeOrGainFocus(tab);
             };
 
     /**

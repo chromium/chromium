@@ -340,17 +340,14 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             // drawing to occur before animations have a chance to work.
             new Handler()
                     .post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    // The tab model has changed to regular and all the visual
-                                    // elements wrt regular mode is in-place. We can now signal
-                                    // the re-auth to hide the dialog.
-                                    if (mIncognitoReauthDialogDelegate != null
-                                            && !newModel.isIncognito()) {
-                                        mIncognitoReauthDialogDelegate
-                                                .onAfterRegularTabModelChanged();
-                                    }
+                            () -> {
+                                // The tab model has changed to regular and all the visual
+                                // elements wrt regular mode is in-place. We can now signal
+                                // the re-auth to hide the dialog.
+                                if (mIncognitoReauthDialogDelegate != null
+                                        && !newModel.isIncognito()) {
+                                    mIncognitoReauthDialogDelegate
+                                            .onAfterRegularTabModelChanged();
                                 }
                             });
         }

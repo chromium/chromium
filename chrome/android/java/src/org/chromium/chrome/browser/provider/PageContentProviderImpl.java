@@ -454,29 +454,26 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         // because there's nothing reading from it.
         PostTask.postTask(
                 TaskTraits.USER_VISIBLE,
-                new Runnable() {
-                    @Override
-                    public void run() {
+                () -> {
+                    try {
+                        try (ParcelFileDescriptor.AutoCloseOutputStream outputStream =
+                                new AutoCloseOutputStream(writeSide)) {
+                            ByteArrayInputStream bytesStream = new ByteArrayInputStream(bytes);
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = bytesStream.read(buffer)) != -1) {
+                                outputStream.write(buffer, 0, bytesRead);
+                            }
+                            outputStream.flush();
+                        } finally {
+                            if (writeSide != null) {
+                                writeSide.close();
+                            }
+                        }
+                    } catch (IOException ex) {
                         try {
-                            try (ParcelFileDescriptor.AutoCloseOutputStream outputStream =
-                                    new AutoCloseOutputStream(writeSide)) {
-                                ByteArrayInputStream bytesStream = new ByteArrayInputStream(bytes);
-                                byte[] buffer = new byte[4096];
-                                int bytesRead;
-                                while ((bytesRead = bytesStream.read(buffer)) != -1) {
-                                    outputStream.write(buffer, 0, bytesRead);
-                                }
-                                outputStream.flush();
-                            } finally {
-                                if (writeSide != null) {
-                                    writeSide.close();
-                                }
-                            }
-                        } catch (IOException ex) {
-                            try {
-                                writeSide.closeWithError("IOException on write side");
-                            } catch (IOException ignored) {
-                            }
+                            writeSide.closeWithError("IOException on write side");
+                        } catch (IOException ignored) {
                         }
                     }
                 });
@@ -761,43 +758,39 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
         try (var t = TraceEvent.scoped("PageContentProvider.requestStringPageContentsAsync")) {
             ThreadUtils.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-
-                            try (var u =
-                                    TraceEvent.scoped(
-                                            "PageContentProvider.requestStringPageContentsAsyncOnUiThread")) {
-                                if (webContents == null
-                                        || webContents.isDestroyed()
-                                        || webContents.getMainFrame() == null) {
-                                    PageContentProviderMetrics.recordPageProviderEvent(
-                                            requestType,
-                                            Format.TEXT,
-                                            PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
-                                            isGsa);
-                                    pageContentFuture.completeExceptionally(
-                                            new Exception("WebContents destroyed"));
-                                    return;
-                                }
-                                InnerTextBridge.getInnerText(
-                                        webContents.getMainFrame(),
-                                        result -> {
-                                            if (result == null) {
-                                                PageContentProviderMetrics.recordPageProviderEvent(
-                                                        requestType,
-                                                        Format.TEXT,
-                                                        PageContentProviderEvent
-                                                                .REQUEST_FAILED_EMPTY_RESULT,
-                                                        isGsa);
-                                                pageContentFuture.completeExceptionally(
-                                                        new Exception("Error during extraction"));
-                                            } else {
-                                                pageContentFuture.complete(
-                                                        result.getBytes(StandardCharsets.UTF_8));
-                                            }
-                                        });
+                    () -> {
+                        try (var u =
+                                TraceEvent.scoped(
+                                        "PageContentProvider.requestStringPageContentsAsyncOnUiThread")) {
+                            if (webContents == null
+                                    || webContents.isDestroyed()
+                                    || webContents.getMainFrame() == null) {
+                                PageContentProviderMetrics.recordPageProviderEvent(
+                                        requestType,
+                                        Format.TEXT,
+                                        PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
+                                        isGsa);
+                                pageContentFuture.completeExceptionally(
+                                        new Exception("WebContents destroyed"));
+                                return;
                             }
+                            InnerTextBridge.getInnerText(
+                                    webContents.getMainFrame(),
+                                    result -> {
+                                        if (result == null) {
+                                            PageContentProviderMetrics.recordPageProviderEvent(
+                                                    requestType,
+                                                    Format.TEXT,
+                                                    PageContentProviderEvent
+                                                            .REQUEST_FAILED_EMPTY_RESULT,
+                                                    isGsa);
+                                            pageContentFuture.completeExceptionally(
+                                                    new Exception("Error during extraction"));
+                                        } else {
+                                            pageContentFuture.complete(
+                                                    result.getBytes(StandardCharsets.UTF_8));
+                                        }
+                                    });
                         }
                     });
         }
@@ -810,41 +803,38 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
         try (var t = TraceEvent.scoped("PageContentProvider.requestProtoPageContentsAsync")) {
             ThreadUtils.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            try (var u =
-                                    TraceEvent.scoped(
-                                            "PageContentProvider.requestProtoPageContentsAsyncOnUiThread")) {
-                                if (webContents == null
-                                        || webContents.isDestroyed()
-                                        || webContents.getMainFrame() == null) {
-                                    PageContentProviderMetrics.recordPageProviderEvent(
-                                            requestType,
-                                            Format.PROTO,
-                                            PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
-                                            isGsa);
-                                    pageContentFuture.completeExceptionally(
-                                            new Exception("WebContents destroyed"));
-                                    return;
-                                }
-                                PageContentProtoProviderBridge.getAiPageContent(
-                                        webContents,
-                                        result -> {
-                                            if (result == null) {
-                                                PageContentProviderMetrics.recordPageProviderEvent(
-                                                        requestType,
-                                                        Format.PROTO,
-                                                        PageContentProviderEvent
-                                                                .REQUEST_FAILED_EMPTY_RESULT,
-                                                        isGsa);
-                                                pageContentFuture.completeExceptionally(
-                                                        new Exception("Error during extraction"));
-                                            } else {
-                                                pageContentFuture.complete(result.toByteArray());
-                                            }
-                                        });
+                    () -> {
+                        try (var u =
+                                TraceEvent.scoped(
+                                        "PageContentProvider.requestProtoPageContentsAsyncOnUiThread")) {
+                            if (webContents == null
+                                    || webContents.isDestroyed()
+                                    || webContents.getMainFrame() == null) {
+                                PageContentProviderMetrics.recordPageProviderEvent(
+                                        requestType,
+                                        Format.PROTO,
+                                        PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
+                                        isGsa);
+                                pageContentFuture.completeExceptionally(
+                                        new Exception("WebContents destroyed"));
+                                return;
                             }
+                            PageContentProtoProviderBridge.getAiPageContent(
+                                    webContents,
+                                    result -> {
+                                        if (result == null) {
+                                            PageContentProviderMetrics.recordPageProviderEvent(
+                                                    requestType,
+                                                    Format.PROTO,
+                                                    PageContentProviderEvent
+                                                            .REQUEST_FAILED_EMPTY_RESULT,
+                                                    isGsa);
+                                            pageContentFuture.completeExceptionally(
+                                                    new Exception("Error during extraction"));
+                                        } else {
+                                            pageContentFuture.complete(result.toByteArray());
+                                        }
+                                    });
                         }
                     });
         }

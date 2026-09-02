@@ -37,25 +37,13 @@ public class AutomotiveBackButtonToolbarCoordinator {
     /** Duration automotive back button toolbar is visible after a valid swipe */
     private static final long SHOW_TOOLBAR_ON_SWIPE_DURATION_MS = 10000;
 
-    private final Runnable mHideToolbar =
-            new Runnable() {
-                @Override
-                public void run() {
-                    if (mIsFullscreen) {
-                        assert (mEdgeSwipeGestureDetector != null);
-                        mEdgeSwipeGestureDetector.setIsReadyForNewScroll(false);
-                        mIsAnimationActive = true;
-                        mOnSwipeAutomotiveToolbar.startAnimation(mHideOnSwipeToolbarAnimation);
-                    }
-                }
-            };
-
     private final Handler mHandler = new Handler();
     private final Context mContext;
     private final View mBackButtonToolbarForAutomotive;
     private final FullscreenManager mFullscreenManager;
     private final TouchEventProvider mTouchEventProvider;
     private final BackPressManager mBackPressedManager;
+    private final Runnable mHideToolbar = this::hideToolbar;
 
     private Toolbar mOnSwipeAutomotiveToolbar;
     private EdgeSwipeGestureDetector mEdgeSwipeGestureDetector;
@@ -237,6 +225,14 @@ public class AutomotiveBackButtonToolbarCoordinator {
             if (backbuttonToolbar != null) {
                 backbuttonToolbar.setVisibility(View.GONE);
             }
+        }
+    }
+
+    private void hideToolbar() {
+        if (mIsFullscreen) {
+            mEdgeSwipeGestureDetector.setIsReadyForNewScroll(false);
+            mIsAnimationActive = true;
+            mOnSwipeAutomotiveToolbar.startAnimation(mHideOnSwipeToolbarAnimation);
         }
     }
 }

@@ -1533,17 +1533,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             // TabPersistentStore and delete the metadata file for the other instance, then notify
             // observers.
             if (mPersistencePolicy.isMergeInProgress()) {
+                // This eventually calls saveTabModelSelectorMetadata() which must
+                // be called from the UI thread. #mergeState() starts an async task
+                // in the background that goes through this code path.
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                // This eventually calls saveTabModelSelectorMetadata() which much
-                                // be called from the UI thread. #mergeState() starts an async task
-                                // in the background that goes through this code path.
-                                saveTabListAsynchronously();
-                            }
-                        });
+                        this::saveTabListAsynchronously);
                 for (String mergedFileName : new HashSet<>(mMergedFileNames)) {
                     deleteFileAsync(mergedFileName);
                 }
