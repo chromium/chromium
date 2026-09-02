@@ -246,36 +246,39 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   // how the Synced Set Up flow should be presented.
   AppStartupParameters* _startupParameters;
   // Caches profile prefs that differ between this device and a remote device.
-  // The map stores the pref name and a pair of values
+  // The map stores the pref name and a pair of values of the pref on a remote
+  // device and on the local device.
   std::map<std::string_view, PrefValueToApply> _profilePrefsToApply;
   // Caches local-state prefs that differ between this device and a remote
-  // device. The map stores the pref name and a pair of values
+  // device. The map stores the pref name and a pair of values of the pref on a
+  // remote device and on the local device.
   std::map<std::string_view, PrefValueToApply> _localStatePrefsToApply;
   // The current primary signed-in identity.
   id<SystemIdentity> _primaryIdentity;
-  // Command handler for snackbar commands.
-  id<SnackbarCommands> _snackbarCommandsHandler;
-  // Current state of the the Synced Set Up flow.
+  // Handler for snackbar commands. Snackbar interactions drive the state
+  // transitions of this mediator.
+  id<SnackbarCommands> _snackbarHandler;
+  // Current state of the Synced Set Up flow.
   SyncedSetUpState _state;
   // Number of active Snackbars. This helps determine when this mediator is
   // finished.
-  size_t _snackbarCount;
+  int _snackbarCount;
 }
 
 #pragma mark - Public methods
 
 - (instancetype)
-        initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
-      authenticationService:(AuthenticationService*)authenticationService
-      accountManagerService:(ChromeAccountManagerService*)accountManagerService
-      deviceInfoSyncService:
-          (syncer::DeviceInfoSyncService*)deviceInfoSyncService
-         profilePrefService:(PrefService*)profilePrefService
-            identityManager:(signin::IdentityManager*)identityManager
-               webStateList:(WebStateList*)webStateList
-          startupParameters:(AppStartupParameters*)startupParameters
-    snackbarCommandsHandler:(id<SnackbarCommands>)handler {
-  if ((self = [super init])) {
+      initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
+    authenticationService:(AuthenticationService*)authenticationService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+    deviceInfoSyncService:(syncer::DeviceInfoSyncService*)deviceInfoSyncService
+       profilePrefService:(PrefService*)profilePrefService
+          identityManager:(signin::IdentityManager*)identityManager
+             webStateList:(WebStateList*)webStateList
+        startupParameters:(AppStartupParameters*)startupParameters
+          snackbarHandler:(id<SnackbarCommands>)snackbarHandler {
+  self = [super init];
+  if (self) {
     CHECK(tracker);
     CHECK(authenticationService);
     CHECK(accountManagerService);
@@ -283,7 +286,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
     CHECK(profilePrefService);
     CHECK(identityManager);
     CHECK(webStateList);
-    CHECK(handler);
+    CHECK(snackbarHandler);
 
     _prefTracker = tracker;
     _authenticationService = authenticationService;
@@ -292,9 +295,8 @@ void LogSnackbarInteraction(SyncedSetUpState state,
     _profilePrefService = profilePrefService;
     _webStateList = webStateList;
     _startupParameters = startupParameters;
-    _state = SyncedSetUpState::kIdle;
+    _snackbarHandler = snackbarHandler;
     _snackbarCount = 0;
-    _snackbarCommandsHandler = handler;
     _identityManager = identityManager;
 
     _identityManagerObserverBridge =
@@ -303,6 +305,8 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   }
   return self;
 }
+
+#pragma mark - Public
 
 - (void)disconnect {
   _identityManagerObserverBridge.reset();
@@ -317,34 +321,19 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   _webStateList = nullptr;
   _primaryIdentity = nil;
   _startupParameters = nil;
-  _snackbarCommandsHandler = nil;
+  _snackbarHandler = nil;
 }
 
-- (void)setConsumer:(id<SyncedSetUpConsumer>)consumer {
-  if (_consumer == consumer) {
-    return;
-  }
-  _consumer = consumer;
-  [self updatePrimaryIdentity];
-  [self updateConsumer];
-}
-
-- (void)setDelegate:(id<SyncedSetUpMediatorDelegate>)delegate {
-  _delegate = delegate;
-  if (!_delegate) {
-    [self notifyMediatorIsFinished];
-    return;
-  }
-
+- (void)startSyncedSetUpFlow {
   [self cachePrefs];
   [self configureInitialState];
 
   switch (_state) {
     case SyncedSetUpState::kPendingAutoApply:
-      [self.delegate mediatorWillStartPostFirstRunFlow:self];
+      [self.delegate syncedSetUpMediatorWillStartPostFirstRunFlow:self];
       return;
     case SyncedSetUpState::kPendingApplyAction:
-      [self.delegate mediatorWillStartFromUrlPage:self];
+      [self.delegate syncedSetUpMediatorWillStartFromURLPage:self];
       break;
     case SyncedSetUpState::kIdle:
       [self notifyMediatorIsFinished];
@@ -368,18 +357,18 @@ void LogSnackbarInteraction(SyncedSetUpState state,
       _state = SyncedSetUpState::kPendingUndoAction;
       return;
     case SyncedSetUpState::kPendingApplyAction:
-      if ([self maybeShowSnackbar]) {
+      if ([self showSnackbarIfNeeded]) {
         return;
       }
       break;
     case SyncedSetUpState::kPendingRedoAction:
-      if ([self maybeShowSnackbar]) {
+      if ([self showSnackbarIfNeeded]) {
         _state = SyncedSetUpState::kPendingUndoAction;
         return;
       }
       break;
     case SyncedSetUpState::kPendingUndoAction:
-      if ([self maybeShowSnackbar]) {
+      if ([self showSnackbarIfNeeded]) {
         _state = SyncedSetUpState::kPendingRedoAction;
         return;
       }
@@ -392,15 +381,27 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   [self notifyMediatorIsFinished];
 }
 
-- (BOOL)maybeShowSnackbar {
-  if ([self shouldShowSnackbar]) {
-    _snackbarCount++;
-    LogSnackbarInteraction(_state, SnackbarInteractionType::kShown);
-    [_snackbarCommandsHandler showSnackbarMessage:[self snackbarMessage]];
-    [self.delegate recordSyncedSetUpShown:self];
-    return YES;
+- (BOOL)showSnackbarIfNeeded {
+  if (![self shouldShowSnackbar]) {
+    return NO;
   }
-  return NO;
+
+  _snackbarCount++;
+  LogSnackbarInteraction(_state, SnackbarInteractionType::kShown);
+  [_snackbarHandler showSnackbarMessage:[self snackbarMessage]];
+  [self.delegate syncedSetUpMediatorDidShow:self];
+  return YES;
+}
+
+#pragma mark - Accessors & Mutators
+
+- (void)setConsumer:(id<SyncedSetUpConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+  _consumer = consumer;
+  [self updatePrimaryIdentity];
+  [self updateConsumer];
 }
 
 #pragma mark - IdentityManagerObserving
@@ -424,7 +425,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   [self updateConsumer];
 }
 
-#pragma mark - Private methods
+#pragma mark - Private
 
 // Caches remote profile and local-state pref values that differ from the local
 // device.
@@ -707,7 +708,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   if (_startupParameters.postOpeningAction !=
       TabOpeningPostOpeningAction::NO_ACTION) {
     // The app started with external intent and landed on a URL page that will
-    // be obsructed by another UI element.
+    // be obstructed by another UI element.
     return NO;
   }
 
@@ -722,7 +723,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
     case SyncedSetUpState::kPendingRedoAction:
       [self applyPrefsFromRemoteDevice];
       _state = SyncedSetUpState::kPendingUndoAction;
-      [self maybeShowSnackbar];
+      [self showSnackbarIfNeeded];
       return;
     case SyncedSetUpState::kPendingAutoApply:
     case SyncedSetUpState::kPendingUndoAction:
@@ -731,7 +732,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
       // device prefs.
       [self applyPrefsFromLocalDevice];
       _state = SyncedSetUpState::kPendingRedoAction;
-      [self maybeShowSnackbar];
+      [self showSnackbarIfNeeded];
       return;
     case SyncedSetUpState::kIdle:
       NOTREACHED();
@@ -741,8 +742,9 @@ void LogSnackbarInteraction(SyncedSetUpState state,
 // Handles the dismissal of a Synced Set Up Snackbar. If there is no visible
 // Snackbar after the current one dismisses, the dismissal ends this mediator.
 - (void)handleSnackbarDismissal {
+  CHECK_GT(_snackbarCount, 0);
   _snackbarCount--;
-  if (!_snackbarCount) {
+  if (_snackbarCount == 0) {
     [self notifyMediatorIsFinished];
   }
 }

@@ -9,12 +9,11 @@
 
 @class SyncedSetUpCoordinator;
 
-// Delegate for the `SyncedSetUpCoordinator`.
+// Delegate for events from the `SyncedSetUpCoordinator`.
 @protocol SyncedSetUpCoordinatorDelegate <NSObject>
 
-// Requests the delegate to stop the coordinator.
-- (void)syncedSetUpCoordinatorWantsToBeDismissed:
-    (SyncedSetUpCoordinator*)coordinator;
+// Called when the Synced Set Up flow finishes.
+- (void)syncedSetUpCoordinatorDidFinish:(SyncedSetUpCoordinator*)coordinator;
 
 @end
 

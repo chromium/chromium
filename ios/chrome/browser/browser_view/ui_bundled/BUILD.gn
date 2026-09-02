@@ -312,7 +312,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
     "//ios/chrome/browser/synced_set_up/coordinator",
-    "//ios/chrome/browser/synced_set_up/utils",
+    "//ios/chrome/browser/synced_set_up/public:utils",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tab_picker/coordinator",
     "//ios/chrome/browser/tab_switcher/tab_strip/coordinator",

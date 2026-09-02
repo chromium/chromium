@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"

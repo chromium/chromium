@@ -66,26 +66,27 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
       self.browser->GetSceneState().controller.startupParameters;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
-  id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
 
   _mediator = [[SyncedSetUpMediator alloc]
-          initWithPrefTracker:tracker
-        authenticationService:authService
-        accountManagerService:accountManagerService
-        deviceInfoSyncService:deviceInfoSyncService
-           profilePrefService:profile->GetPrefs()
-              identityManager:identityManager
-                 webStateList:self.browser->GetWebStateList()
-            startupParameters:startupParameters
-      snackbarCommandsHandler:snackbarCommandsHandler];
+        initWithPrefTracker:tracker
+      authenticationService:authService
+      accountManagerService:accountManagerService
+      deviceInfoSyncService:deviceInfoSyncService
+         profilePrefService:profile->GetPrefs()
+            identityManager:identityManager
+               webStateList:self.browser->GetWebStateList()
+          startupParameters:startupParameters
+            snackbarHandler:snackbarHandler];
 
   _viewController = [[SyncedSetUpViewController alloc] init];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _viewController.transitioningDelegate = self;
-  _mediator.consumer = _viewController;
 
+  _mediator.consumer = _viewController;
   _mediator.delegate = self;
+  [_mediator startSyncedSetUpFlow];
 }
 
 - (void)stop {
@@ -104,7 +105,7 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
 
 #pragma mark - SyncedSetUpMediatorDelegate
 
-- (void)recordSyncedSetUpShown:(SyncedSetUpMediator*)mediator {
+- (void)syncedSetUpMediatorDidShow:(SyncedSetUpMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
   PrefService* profilePrefService = self.profile->GetPrefs();
   CHECK(profilePrefService);
@@ -115,19 +116,20 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
                                  impressionCount + 1);
 }
 
-- (void)mediatorWillStartPostFirstRunFlow:(SyncedSetUpMediator*)mediator {
+- (void)syncedSetUpMediatorWillStartPostFirstRunFlow:
+    (SyncedSetUpMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
   [self showSyncedSetUpInterstitial];
 }
 
-- (void)mediatorWillStartFromUrlPage:(SyncedSetUpMediator*)mediator {
+- (void)syncedSetUpMediatorWillStartFromURLPage:(SyncedSetUpMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
   [_mediator applyPrefs];
 }
 
 - (void)syncedSetUpMediatorDidComplete:(SyncedSetUpMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
-  [self.delegate syncedSetUpCoordinatorWantsToBeDismissed:self];
+  [self.delegate syncedSetUpCoordinatorDidFinish:self];
 }
 
 #pragma mark - UIViewControllerTransitioningDelegate
@@ -146,7 +148,7 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
   return [[SyncedSetUpAnimator alloc] initForPresenting:NO];
 }
 
-#pragma mark - Private Methods
+#pragma mark - Private
 
 // Shows the full-screen welcome interstitial for the Synced Set Up flow.
 - (void)showSyncedSetUpInterstitial {
@@ -156,15 +158,14 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
 
   base::UmaHistogramBoolean("IOS.SyncedSetUp.Interstitial.Shown", true);
 
-  __weak __typeof(self) weakSelf = self;
   __weak __typeof(_mediator) weakMediator = _mediator;
-
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:^{
                                         [weakMediator applyPrefs];
                                       }];
 
+  __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf dismissSyncedSetUpInterstitial];
@@ -179,11 +180,10 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
   }
 
   __weak __typeof(_mediator) weakMediator = _mediator;
-
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
-                           [weakMediator maybeShowSnackbar];
+                           [weakMediator showSnackbarIfNeeded];
                          }];
 }
 

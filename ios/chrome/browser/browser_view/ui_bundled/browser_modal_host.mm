@@ -165,7 +165,7 @@
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
@@ -2259,8 +2259,7 @@ const char kContextPanelDismissedHistogram[] =
 
 #pragma mark - SyncedSetUpCoordinatorDelegate
 
-- (void)syncedSetUpCoordinatorWantsToBeDismissed:
-    (SyncedSetUpCoordinator*)coordinator {
+- (void)syncedSetUpCoordinatorDidFinish:(SyncedSetUpCoordinator*)coordinator {
   CHECK_EQ(_syncedSetUpCoordinator, coordinator);
   [self stopSyncedSetUpCoordinator];
 }

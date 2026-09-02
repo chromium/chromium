@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-class AuthenticationService;
-class ChromeAccountManagerService;
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -23,6 +20,8 @@ class DeviceInfoSyncService;
 }  // namespace syncer
 
 @class AppStartupParameters;
+class AuthenticationService;
+class ChromeAccountManagerService;
 class PrefService;
 @protocol SnackbarCommands;
 @protocol SyncedSetUpMediatorDelegate;
@@ -41,29 +40,49 @@ class WebStateList;
 @property(nonatomic, weak) id<SyncedSetUpMediatorDelegate> delegate;
 
 - (instancetype)
-        initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
-      authenticationService:(AuthenticationService*)authenticationService
-      accountManagerService:(ChromeAccountManagerService*)accountManagerService
-      deviceInfoSyncService:
-          (syncer::DeviceInfoSyncService*)deviceInfoSyncService
-         profilePrefService:(PrefService*)profilePrefService
-            identityManager:(signin::IdentityManager*)identityManager
-               webStateList:(WebStateList*)webStateList
-          startupParameters:(AppStartupParameters*)startupParameters
-    snackbarCommandsHandler:(id<SnackbarCommands>)handler
+      initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
+    authenticationService:(AuthenticationService*)authenticationService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+    deviceInfoSyncService:(syncer::DeviceInfoSyncService*)deviceInfoSyncService
+       profilePrefService:(PrefService*)profilePrefService
+          identityManager:(signin::IdentityManager*)identityManager
+             webStateList:(WebStateList*)webStateList
+        startupParameters:(AppStartupParameters*)startupParameters
+          snackbarHandler:(id<SnackbarCommands>)snackbarHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects the mediator.
+// Disconnects this mediator from its browser services, releases service
+// dependencies, and clears its internal state. This mediator should not be used
+// after being disconnected.
 - (void)disconnect;
 
-// Main controller for this mediator. Tries to apply available prefs and
-// presents the appropriate Synced Set Up Snackbar.
+// Starts the Synced Set Up flow. Evaluates synced preferences across devices,
+// determines the initial setup state, and initiates the setup flow via delegate
+// callbacks.
+- (void)startSyncedSetUpFlow;
+
+// Main entrypoint for applying prefs using this mediator. Applies a new set of
+// preferences to the current device (either applying queued prefs from a remote
+// device, or restoring the previous local device prefs during an undo/redo
+// flow) then presents the appropriate Synced Set Up snackbar.
 - (void)applyPrefs;
 
-// Presents the Synced Set Up Snackbar. Returns YES if the Snackbar was shown.
-- (BOOL)maybeShowSnackbar;
+// Displays a Synced Set Up snackbar if the current state and page conditions
+// allow.
+// Returns YES if a snackbar was displayed, or NO otherwise. A snackbar is shown
+// when:
+// - Prompting the user to apply remote preferences.
+// - Prompting the user to undo/redo immediately after Synced Set Up changes
+// preferences on the current device.
+//
+// A snackbar is not shown if:
+// - This mediator is idle.
+// - The pending preference change would not be visible on the active page (e.g.
+// NTP customization on a webpage, or omnibox position on the NTP).
+// - The page is obstructed by an external launch intent or modal UI.
+- (BOOL)showSnackbarIfNeeded;
 
 @end
 

@@ -45,7 +45,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
 
 // Used to create PassKey to access the UIViewController through the
 // BrowserProvider interface (crbug.com/40606165).

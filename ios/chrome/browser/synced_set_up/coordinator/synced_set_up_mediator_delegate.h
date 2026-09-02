@@ -10,16 +10,17 @@
 @class SyncedSetUpMediator;
 
 // Delegate for the `SyncedSetUpMediator`.
-@protocol SyncedSetUpMediatorDelegate
+@protocol SyncedSetUpMediatorDelegate <NSObject>
 
 // Called when the Synced Set Up UI is shown to the user.
-- (void)recordSyncedSetUpShown:(SyncedSetUpMediator*)mediator;
+- (void)syncedSetUpMediatorDidShow:(SyncedSetUpMediator*)mediator;
 
 // Called when the `SyncedSetUpMediator` is used during the post-FRE flow.
-- (void)mediatorWillStartPostFirstRunFlow:(SyncedSetUpMediator*)mediator;
+- (void)syncedSetUpMediatorWillStartPostFirstRunFlow:
+    (SyncedSetUpMediator*)mediator;
 
 // Called when the `SyncedSetUpMediator` is used from a URL page.
-- (void)mediatorWillStartFromUrlPage:(SyncedSetUpMediator*)mediator;
+- (void)syncedSetUpMediatorWillStartFromURLPage:(SyncedSetUpMediator*)mediator;
 
 // Called when the `SyncedSetUpMediator` is finished.
 - (void)syncedSetUpMediatorDidComplete:(SyncedSetUpMediator*)mediator;

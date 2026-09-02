@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
-
-#import <Foundation/Foundation.h>
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -49,15 +47,15 @@ SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state) {
   return active_scene;
 }
 
-bool CanShowSyncedSetUp(const PrefService* profile_pref_service) {
+BOOL CanShowSyncedSetUp(const PrefService* profile_pref_service) {
   if (!profile_pref_service) {
-    return false;
+    return NO;
   }
 
   // Impressions preference not registered.
   if (!profile_pref_service->FindPreference(
           prefs::kSyncedSetUpImpressionCount)) {
-    return false;
+    return NO;
   }
 
   int impression_count =

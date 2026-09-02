@@ -208,8 +208,8 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
-    "//ios/chrome/browser/synced_set_up/public",
-    "//ios/chrome/browser/synced_set_up/utils",
+    "//ios/chrome/browser/synced_set_up/public:metrics",
+    "//ios/chrome/browser/synced_set_up/public:utils",
   ]
 }
 
@@ -382,8 +382,8 @@ source_set("synced_set_up_profile_agent") {
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:cross_device_pref_tracker_factory",
     "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:observer_bridge",
-    "//ios/chrome/browser/synced_set_up/public",
-    "//ios/chrome/browser/synced_set_up/utils",
+    "//ios/chrome/browser/synced_set_up/public:metrics",
+    "//ios/chrome/browser/synced_set_up/public:utils",
   ]
 }
 
@@ -482,8 +482,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
-    "//ios/chrome/browser/synced_set_up/public",
-    "//ios/chrome/browser/synced_set_up/utils",
+    "//ios/chrome/browser/synced_set_up/public:metrics",
+    "//ios/chrome/browser/synced_set_up/public:utils",
     "//ios/chrome/browser/welcome_back/metrics",
     "//ios/chrome/browser/welcome_back/model",
     "//ios/chrome/browser/welcome_back/model:features",

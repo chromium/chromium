@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/cross_device_pref_tracker_observer_bridge.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
 
 namespace {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_utils.h"
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"

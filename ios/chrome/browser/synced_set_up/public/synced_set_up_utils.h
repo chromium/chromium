@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNCED_SET_UP_UTILS_UTILS_H_
-#define IOS_CHROME_BROWSER_SYNCED_SET_UP_UTILS_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_UTILS_H_
+#define IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_UTILS_H_
+
+#import <Foundation/Foundation.h>
 
 class PrefService;
 @class ProfileState;
@@ -24,6 +26,6 @@ SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state);
 
 // Returns true if the Synced Set Up UI can be shown based on the impression
 // limit. This should be passed a profile pref service.
-bool CanShowSyncedSetUp(const PrefService* profile_pref_service);
+BOOL CanShowSyncedSetUp(const PrefService* profile_pref_service);
 
-#endif  // IOS_CHROME_BROWSER_SYNCED_SET_UP_UTILS_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_UTILS_H_
