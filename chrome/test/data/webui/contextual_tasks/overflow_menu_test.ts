@@ -211,8 +211,8 @@ suite('OverflowMenuTest', () => {
       assertFalse(!!pinButton);
     });
 
-    test('hides pin button when not aim eligible', async () => {
-      overflowMenu.isAimEligible = false;
+    test('hides pin button when pin button is not enabled', async () => {
+      overflowMenu.isPinButtonEnabled = false;
       await microtasksFinished();
 
       const pinButton =

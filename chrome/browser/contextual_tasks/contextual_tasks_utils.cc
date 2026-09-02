@@ -18,6 +18,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -337,8 +338,7 @@ bool GetEffectivePinState(Profile* profile) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
-                                    bool eligible) {
+void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window) {
   if (!browser_window || !BrowserActions::From(browser_window)) {
     return;
   }
@@ -361,7 +361,9 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
         if (auto* model =
                 PinnedToolbarActionsModel::Get(browser_window->GetProfile())) {
           if (model->Contains(kActionSidePanelShowContextualTasks)) {
-            action_item->SetVisible(eligible);
+            action_item->SetVisible(
+                contextual_tasks::EntryPointEligibilityManager::
+                    IsPinningEligible(browser_window->GetProfile()));
           }
         }
       }
