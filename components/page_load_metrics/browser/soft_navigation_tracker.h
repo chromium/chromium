@@ -169,7 +169,7 @@ class SoftNavigationTracker {
   //    to ensure sufficient time has elapsed to capture late INP, CLS, and LCP
   //    data for this navigation.
   //
-  // Any remaining committed navigations in this map are flushed in order upon
+  // The remaining active open navigation in this map is flushed upon
   // page unload / backgrounding in `CompleteActiveNavigationAndFlush()`.
   std::map<uint64_t, std::unique_ptr<SoftNavigationData>> navigations_;
 };

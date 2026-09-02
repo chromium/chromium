@@ -196,6 +196,90 @@ TEST(SoftNavigationTrackerTest,
 }
 
 TEST(SoftNavigationTrackerTest,
+     FlushDoesNotDispatchFcpOrCompleteForIncompleteNavigations) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Nav 2 commits without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav_commits;
+  nav_commits.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(150)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav_commits)));
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+  EXPECT_TRUE(observer.fcps.empty());
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Teardown / flush does not dispatch FCP or completion for unrendered nav 2.
+  tracker.CompleteActiveNavigationAndFlush();
+  EXPECT_TRUE(observer.fcps.empty());
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+}
+
+TEST(SoftNavigationTrackerTest,
+     FlushDoesNotDispatchFcpForBlockedOutOfOrderNavigations) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Nav 2 and Nav 3 commit without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav_commits;
+  nav_commits.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(150)));
+  nav_commits.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(250)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav_commits)));
+
+  // Nav 3 receives FCP out of order while Nav 2 has not received FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav3_fcp;
+  nav3_fcp.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(220)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav3_fcp)));
+  EXPECT_TRUE(observer.fcps.empty());
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Teardown / flush must not fire FCP for Nav 3 or complete either navigation.
+  tracker.CompleteActiveNavigationAndFlush();
+  EXPECT_TRUE(observer.fcps.empty());
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+}
+
+TEST(SoftNavigationTrackerTest,
+     FlushOnlyCompletesNavigationsWithPreviouslyReportedFcp) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Nav 2 commits with FCP -> FCP dispatched immediately.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav2;
+  nav2.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(150),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(120)));
+  ASSERT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav2)));
+  EXPECT_EQ(observer.fcps.size(), 1u);
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Nav 3 commits without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav3_commit;
+  nav3_commit.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(250)));
+  ASSERT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
+                                            std::move(nav3_commit)));
+  EXPECT_EQ(observer.fcps.size(), 1u);
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Teardown / flush completes Nav 2 without re-firing FCP, and ignores Nav 3.
+  tracker.CompleteActiveNavigationAndFlush();
+  EXPECT_EQ(observer.fcps.size(), 1u);
+  ASSERT_EQ(observer.completed_nav_ids.size(), 1u);
+  EXPECT_EQ(observer.completed_nav_ids[0], 2u);
+}
+
+TEST(SoftNavigationTrackerTest,
      UpdateMainFrameMetricsValidatesIncomingMetrics) {
   base::TimeTicks base_time = base::TimeTicks::Now();
   TestObserver observer;

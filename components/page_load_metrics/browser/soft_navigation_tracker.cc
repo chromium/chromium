@@ -128,20 +128,21 @@ void SoftNavigationTracker::TryAdvanceAndDispatchSoftNavigationEvents() {
 }
 
 void SoftNavigationTracker::CompleteActiveNavigationAndFlush() {
-  // Drain and report all committed navigations in ascending navigation ID
-  // order.
-  // TODO(crbug.com/494593459): Investigate whether abandoned/in-flight commits
-  // that were unloaded before presenting FCP should be reported to observers
-  // with an optional FCP.
-  for (const auto& [id, nav] : navigations_) {
-    if (HasCommitAndFirstContentfulPaint(nav.get())) {
-      if (id > last_reported_fcp_navigation_id_) {
-        last_reported_fcp_navigation_id_ = id;
-        client_->OnSoftNavigationFirstContentfulPaint(*nav->metrics);
-      }
-      client_->OnSoftNavigationCompleted(*nav);
-    }
+  if (navigations_.empty()) {
+    return;
   }
+
+  // Drain and report the active open navigation that has already reported FCP.
+  // Incomplete navigations that never reported FCP are dropped.
+  auto it = navigations_.begin();
+  if (it->first == last_reported_fcp_navigation_id_) {
+    CHECK(HasCommitAndFirstContentfulPaint(it->second.get()));
+    client_->OnSoftNavigationCompleted(*it->second);
+  }
+
+  // TODO(crbug.com/490096674): It is theoretically possible that we clear more
+  // than a single pending navigation here, without flushing it. Consider
+  // adding histograms to track how often that actually happens.
   navigations_.clear();
 }
 
