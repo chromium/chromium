@@ -385,7 +385,7 @@ public class ContextMenuTest {
 
         verify(mDataProtectionBridgeMock)
                 .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
-        verify(mItemDelegate, Mockito.never()).onOpenInEphemeralTab(any(), anyString());
+        verify(mItemDelegate, Mockito.never()).onOpenInEphemeralTab(any(), anyString(), any());
     }
 
     @Test

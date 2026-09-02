@@ -3558,7 +3558,11 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params = getHttpLinkParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_open_in_new_tab_in_group);
-        verify(mItemDelegate).onOpenInNewTabInGroup(params.getUrl(), params.getReferrer());
+        verify(mItemDelegate)
+                .onOpenInNewTabInGroup(
+                        params.getUrl(),
+                        params.getReferrer(),
+                        params.getAdditionalNavigationParams());
     }
 
     @Test
@@ -3591,7 +3595,8 @@ public class ChromeContextMenuPopulatorTest {
                         params.getUrl(),
                         params.getReferrer(),
                         /* isIncognito= */ false,
-                        /* preferNew= */ false);
+                        /* preferNew= */ false,
+                        params.getAdditionalNavigationParams());
     }
 
     @Test
@@ -3606,7 +3611,8 @@ public class ChromeContextMenuPopulatorTest {
                         params.getUrl(),
                         params.getReferrer(),
                         /* isIncognito= */ false,
-                        /* preferNew= */ true);
+                        /* preferNew= */ true,
+                        params.getAdditionalNavigationParams());
     }
 
     @Test
@@ -3615,16 +3621,50 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params = getHttpLinkParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_open_in_ephemeral_tab);
-        verify(mItemDelegate).onOpenInEphemeralTab(params.getUrl(), params.getLinkText());
+        verify(mItemDelegate)
+                .onOpenInEphemeralTab(
+                        params.getUrl(),
+                        params.getLinkText(),
+                        params.getAdditionalNavigationParams());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_openImageInEphemeralTab() {
+        ContextMenuParams params = getImageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        mPopulator.onItemSelected(R.id.contextmenu_open_image_in_ephemeral_tab);
+        verify(mItemDelegate)
+                .onOpenInEphemeralTab(
+                        params.getSrcUrl(),
+                        params.getTitleText(),
+                        params.getAdditionalNavigationParams());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_openImageInNewTab() {
+        ContextMenuParams params = getImageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        mPopulator.onItemSelected(R.id.contextmenu_open_image_in_new_tab);
+        verify(mItemDelegate)
+                .onOpenImageInNewTab(
+                        params.getSrcUrl(),
+                        params.getReferrer(),
+                        params.getAdditionalNavigationParams());
     }
 
     @Test
     @SmallTest
     public void testOnItemSelected_openImage() {
-        ContextMenuParams params = getHttpLinkParams();
+        ContextMenuParams params = getImageParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_open_image);
-        verify(mItemDelegate).onOpenImageUrl(params.getSrcUrl(), params.getReferrer());
+        verify(mItemDelegate)
+                .onOpenImageUrl(
+                        params.getSrcUrl(),
+                        params.getReferrer(),
+                        params.getAdditionalNavigationParams());
     }
 
     @Test

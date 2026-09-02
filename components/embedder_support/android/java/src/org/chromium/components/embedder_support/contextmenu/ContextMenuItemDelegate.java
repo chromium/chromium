@@ -194,17 +194,27 @@ public interface ContextMenuItemDelegate {
      * Called when the {@code url} is of an image and should be opened in a new page.
      *
      * @param url The image URL to open.
-     * @param referrer The referrer to be used for navigation.
+     * @param referrer The referrer to use when opening the URL.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
-    default void onOpenImageInNewTab(GURL url, @Nullable Referrer referrer) {}
+    default void onOpenImageInNewTab(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
 
     /**
      * Called when the {@code url} should be opened in an ephemeral page.
      *
      * @param url The URL to open.
      * @param title The title text to show on top control.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
-    default void onOpenInEphemeralTab(GURL url, String title) {}
+    default void onOpenInEphemeralTab(
+            GURL url,
+            String title,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
 
     /**
      * @return Whether opening a link in a new tab is supported.
@@ -246,7 +256,7 @@ public interface ContextMenuItemDelegate {
      * the current page.
      *
      * @param url The URL to open.
-     * @param referrer The attribution impression to associate with the navigation.
+     * @param referrer The referrer to use when opening the URL.
      * @param navigateToTab Whether or not to navigate to the new page.
      * @param additionalNavigationParams Additional information that needs to be passed to the
      *     navigation request.
@@ -261,9 +271,14 @@ public interface ContextMenuItemDelegate {
      * Called when {@code url} should be opened in a new page in the same group as the current page.
      *
      * @param url The URL to open.
-     * @param referrer The attribution impression to associate with the navigation.
+     * @param referrer The referrer to use when opening the URL.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
-    default void onOpenInNewTabInGroup(GURL url, @Nullable Referrer referrer) {}
+    default void onOpenInNewTabInGroup(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
 
     /**
      * Called when the {@code url} should be opened in a new incognito page.
@@ -279,9 +294,15 @@ public interface ContextMenuItemDelegate {
      * @param referrer The referrer to use when opening the URL.
      * @param isIncognito Whether the other window should be incognito.
      * @param preferNew Whether the URL should be opened in a new window.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
     default void openInOtherWindow(
-            GURL url, @Nullable Referrer referrer, boolean isIncognito, boolean preferNew) {}
+            GURL url,
+            @Nullable Referrer referrer,
+            boolean isIncognito,
+            boolean preferNew,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
 
     /**
      * Opens a URL in an incognito window.
@@ -309,8 +330,14 @@ public interface ContextMenuItemDelegate {
      * Called when the {@code url} is of an image and should be opened in the same page.
      *
      * @param url The image URL to open.
+     * @param referrer The referrer to use when opening the URL.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
-    default void onOpenImageUrl(GURL url, @Nullable Referrer referrer) {}
+    default void onOpenImageUrl(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
 
     /**
      * Called when a link should be opened in the main Chrome browser.

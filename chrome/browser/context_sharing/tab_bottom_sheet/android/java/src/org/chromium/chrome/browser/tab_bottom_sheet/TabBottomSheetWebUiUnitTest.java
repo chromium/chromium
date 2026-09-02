@@ -417,7 +417,7 @@ public class TabBottomSheetWebUiUnitTest {
         when(mockSelector.getCurrentTab()).thenReturn(mockTab);
         when(mockTab.isIncognito()).thenReturn(false);
 
-        delegate.onOpenInNewTabInGroup(url, null);
+        delegate.onOpenInNewTabInGroup(url, null, null);
         verify(mockSelector)
                 .openNewTab(
                         any(),
@@ -440,7 +440,7 @@ public class TabBottomSheetWebUiUnitTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mockOrchestrator);
 
         // Test New Window
-        delegate.openInOtherWindow(url, null, false, true);
+        delegate.openInOtherWindow(url, null, false, true, null);
         verify(mockOrchestrator)
                 .openUrlInOtherWindow(
                         eq(mMockActivity), any(), eq(Tab.INVALID_TAB_ID), eq(true), eq(false));
@@ -590,7 +590,7 @@ public class TabBottomSheetWebUiUnitTest {
 
         GURL testUrl = new GURL("https://example.com/image.jpg");
         String testTitle = "Test Image";
-        delegate.onOpenInEphemeralTab(testUrl, testTitle);
+        delegate.onOpenInEphemeralTab(testUrl, testTitle, /* additionalNavigationParams= */ null);
 
         verify(mockOpener).accept(eq(testUrl), eq(testTitle));
     }

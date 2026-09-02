@@ -89,6 +89,7 @@ public class PaymentsWindowCoordinatorTest {
                         /* canPromoteToNewTab= */ eq(false),
                         /* shouldHaveContextMenu= */ eq(false),
                         /* initiatorOrigin= */ any(),
+                        /* additionalNavigationParams= */ any(),
                         any(Runnable.class));
         verify(mEphemeralTabCoordinator).addObserver(any(EphemeralTabObserver.class));
     }
@@ -112,6 +113,7 @@ public class PaymentsWindowCoordinatorTest {
                         /* canPromoteToNewTab= */ eq(false),
                         /* shouldHaveContextMenu= */ eq(false),
                         /* initiatorOrigin= */ any(),
+                        /* additionalNavigationParams= */ any(),
                         callbackCaptor.capture());
 
         callbackCaptor.getValue().run();
@@ -133,6 +135,7 @@ public class PaymentsWindowCoordinatorTest {
                         /* canPromoteToNewTab= */ eq(false),
                         /* shouldHaveContextMenu= */ eq(false),
                         /* initiatorOrigin= */ any(),
+                        /* additionalNavigationParams= */ any(),
                         any(Runnable.class));
         verify(mEphemeralTabCoordinator, never()).addObserver(any(EphemeralTabObserver.class));
     }
@@ -152,6 +155,7 @@ public class PaymentsWindowCoordinatorTest {
                         /* canPromoteToNewTab= */ eq(false),
                         /* shouldHaveContextMenu= */ eq(false),
                         /* initiatorOrigin= */ any(),
+                        /* additionalNavigationParams= */ any(),
                         any(Runnable.class));
         verify(mEphemeralTabCoordinator, never()).addObserver(any(EphemeralTabObserver.class));
     }

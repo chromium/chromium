@@ -196,6 +196,52 @@ public class ContextMenuLoadUrlParamsTest {
     }
 
     /**
+     * Verifies that the referrer and additional navigation params are correctly set for "Open in
+     * new tab in group".
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testOpenInNewTabInGroupReferrer() throws TimeoutException {
+        triggerContextMenuLoad(
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLink",
+                R.id.contextmenu_open_in_new_tab_in_group);
+
+        assertNotNull(sOpenNewTabLoadUrlParams);
+        assertEquals(
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
+                sOpenNewTabLoadUrlParams.getReferrer().getUrl());
+
+        AdditionalNavigationParams navigationParams =
+                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams();
+        assertNotNull(navigationParams);
+    }
+
+    /**
+     * Verifies that the referrer and additional navigation params are correctly set for "Open image
+     * in new tab".
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testOpenImageInNewTabReferrer() throws TimeoutException {
+        triggerContextMenuLoad(
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testImage",
+                R.id.contextmenu_open_image_in_new_tab);
+
+        assertNotNull(sOpenNewTabLoadUrlParams);
+        assertEquals(
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
+                sOpenNewTabLoadUrlParams.getReferrer().getUrl());
+
+        AdditionalNavigationParams navigationParams =
+                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams();
+        assertNotNull(navigationParams);
+    }
+
+    /**
      * Verifies that the referrer and additional navigation params are not set for "Open in new
      * incognito tab".
      */

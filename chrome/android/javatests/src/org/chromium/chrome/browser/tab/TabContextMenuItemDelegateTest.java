@@ -151,7 +151,8 @@ public class TabContextMenuItemDelegateTest {
                                         new GURL("about:blank"),
                                         new Referrer("about:blank", 0),
                                         /* isIncognito= */ false,
-                                        /* preferNew= */ false));
+                                        /* preferNew= */ false,
+                                        /* additionalNavigationParams= */ null));
         mExtraTabbedActivities.add(secondActivity);
 
         // Don't show instance picker dialog when there is only one other window.
@@ -161,7 +162,8 @@ public class TabContextMenuItemDelegateTest {
                             new GURL("about:blank"),
                             new Referrer("about:blank", 0),
                             /* isIncognito= */ false,
-                            /* preferNew= */ false);
+                            /* preferNew= */ false,
+                            /* additionalNavigationParams= */ null);
                 });
         assertFalse(
                 "Dialog should not be visible when there is only one other window.",
@@ -179,7 +181,8 @@ public class TabContextMenuItemDelegateTest {
                             new GURL("about:blank"),
                             new Referrer("about:blank", 0),
                             /* isIncognito= */ false,
-                            /* preferNew= */ false);
+                            /* preferNew= */ false,
+                            /* additionalNavigationParams= */ null);
                 });
         assertTrue(
                 "Dialog should be visible when there are at least two other windows.",
@@ -206,7 +209,8 @@ public class TabContextMenuItemDelegateTest {
                                         new GURL("about:blank"),
                                         new Referrer("about:blank", 0),
                                         /* isIncognito= */ false,
-                                        /* preferNew= */ true));
+                                        /* preferNew= */ true,
+                                        /* additionalNavigationParams= */ null));
         mExtraTabbedActivities.add(activity);
     }
 
@@ -267,7 +271,9 @@ public class TabContextMenuItemDelegateTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextMenuDelegate.onOpenInNewTabInGroup(
-                            new GURL("about:blank"), new Referrer("about:blank", 0));
+                            new GURL("about:blank"),
+                            new Referrer("about:blank", 0),
+                            /* additionalNavigationParams= */ null);
                 });
     }
 }

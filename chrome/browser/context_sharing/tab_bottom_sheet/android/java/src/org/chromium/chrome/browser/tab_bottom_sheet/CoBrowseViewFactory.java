@@ -215,6 +215,7 @@ public class CoBrowseViewFactory {
                 /* canPromoteToNewTab= */ true,
                 /* shouldHaveContextMenu= */ true,
                 initiatorOrigin,
+                /* additionalNavigationParams= */ null,
                 /* requestDeniedCallback= */ CallbackUtils.emptyRunnable());
     }
 

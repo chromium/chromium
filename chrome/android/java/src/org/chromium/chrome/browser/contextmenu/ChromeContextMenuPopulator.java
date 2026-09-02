@@ -1394,7 +1394,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             : mParams.getSrcUrl();
             verifyGenericCopyImageActionIsAllowedByPolicy(
                     url.getSpec(),
-                    () -> mItemDelegate.onOpenImageInNewTab(url, mParams.getReferrer()));
+                    () ->
+                            mItemDelegate.onOpenImageInNewTab(
+                                    url,
+                                    mParams.getReferrer(),
+                                    mParams.getAdditionalNavigationParams()));
         } else if (itemId == R.id.contextmenu_open_image_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_EPHEMERAL_TAB);
             GURL url =
@@ -1408,7 +1412,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     url.getSpec(),
                     () -> {
                         String title = getTitleOrGuessIfNotPresent();
-                        mItemDelegate.onOpenInEphemeralTab(url, title);
+                        mItemDelegate.onOpenInEphemeralTab(
+                                url, title, mParams.getAdditionalNavigationParams());
                     });
         } else if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
@@ -1421,7 +1426,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_open_in_new_tab_in_group) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB_IN_GROUP);
             RecordUserAction.record("TabContextMenu.OpenInNewTabInGroup");
-            mItemDelegate.onOpenInNewTabInGroup(mParams.getUrl(), mParams.getReferrer());
+            mItemDelegate.onOpenInNewTabInGroup(
+                    mParams.getUrl(),
+                    mParams.getReferrer(),
+                    mParams.getAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_TAB);
             mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());
@@ -1434,20 +1442,28 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getUrl(),
                     mParams.getReferrer(),
                     mItemDelegate.isIncognito(),
-                    /* preferNew= */ false);
+                    /* preferNew= */ false,
+                    mParams.getAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_new_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_WINDOW);
             mItemDelegate.openInOtherWindow(
                     mParams.getUrl(),
                     mParams.getReferrer(),
                     mItemDelegate.isIncognito(),
-                    /* preferNew= */ true);
+                    /* preferNew= */ true,
+                    mParams.getAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_EPHEMERAL_TAB);
-            mItemDelegate.onOpenInEphemeralTab(mParams.getUrl(), mParams.getLinkText());
+            mItemDelegate.onOpenInEphemeralTab(
+                    mParams.getUrl(),
+                    mParams.getLinkText(),
+                    mParams.getAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_image) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE);
-            mItemDelegate.onOpenImageUrl(mParams.getSrcUrl(), mParams.getReferrer());
+            mItemDelegate.onOpenImageUrl(
+                    mParams.getSrcUrl(),
+                    mParams.getReferrer(),
+                    mParams.getAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_read_later) {
             recordContextMenuSelection(ContextMenuUma.Action.READ_LATER);
             // TODO(crbug.com/40156623): Download the page to offline page backend.

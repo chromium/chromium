@@ -113,6 +113,7 @@ public class PageInfoAboutThisSiteController {
                     /* canPromoteToNewTab= */ true,
                     /* shouldHaveContextMenu= */ false,
                     /* initiatorOrigin= */ null,
+                    /* additionalNavigationParams= */ null,
                     () ->
                             assumeNonNull(mEphemeralTabCoordinator)
                                     .removeObserver(assumeNonNull(mEphemeralTabObserver)));

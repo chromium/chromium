@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate.LinkOpener;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -47,18 +48,21 @@ class TabBottomSheetWebUiLinkOpener implements LinkOpener {
     }
 
     @Override
-    public void openInNewTab(GURL url) {
+    public void openInNewTab(
+            GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url.getSpec()));
         safeStartActivity(intent);
     }
 
     @Override
-    public void openInNewTabInGroup(GURL url) {
+    public void openInNewTabInGroup(
+            GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams) {
         TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
         Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(mWindowAndroid);
         if (selector != null && currentTab != null) {
             LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+            loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
             selector.openNewTab(
                     loadUrlParams,
                     TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
@@ -83,10 +87,12 @@ class TabBottomSheetWebUiLinkOpener implements LinkOpener {
     }
 
     @Override
-    public void openInNewWindow(GURL url) {
+    public void openInNewWindow(
+            GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity != null) {
             LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+            loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
             MultiInstanceOrchestratorFactory.getInstance()
                     .openUrlInOtherWindow(
                             activity,

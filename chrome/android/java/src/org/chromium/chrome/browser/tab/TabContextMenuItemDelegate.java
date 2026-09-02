@@ -309,13 +309,25 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * @param referrer The referrer to use when opening the URL.
      * @param isIncognito Whether the other window should be incognito.
      * @param preferNew Whether the URL should be opened in a new window.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
     @Override
     public void openInOtherWindow(
-            GURL url, @Nullable Referrer referrer, boolean isIncognito, boolean preferNew) {
+            GURL url,
+            @Nullable Referrer referrer,
+            boolean isIncognito,
+            boolean preferNew,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+        // Only attach referrer and initiator navigation parameters if the target window is not
+        // incognito, to prevent leaking state across the regular-to-incognito privacy boundary.
+        // When opening in incognito, omitting AdditionalNavigationParams causes the native layer to
+        // treat this as a direct browser-initiated navigation without an initiator frame token,
+        // avoiding stale token lookups while preserving privacy.
         if (!isIncognito) {
             loadUrlParams.setReferrer(referrer);
+            loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
         }
         MultiInstanceOrchestratorFactory.getInstance()
                 .openUrlInOtherWindow(
@@ -348,7 +360,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * the current page.
      *
      * @param url The URL to open.
-     * @param referrer The attribution impression to associate with the navigation.
+     * @param referrer The referrer to use when opening the URL.
      * @param navigateToTab Whether or not to navigate to the new page.
      * @param additionalNavigationParams Additional information that needs to be passed to the
      *     navigation request.
@@ -377,13 +389,20 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * Called when {@code url} should be opened in a new page in the same group as the current page.
      *
      * @param url The URL to open.
+     * @param referrer The referrer to use when opening the URL.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
     @Override
-    public void onOpenInNewTabInGroup(GURL url, @Nullable Referrer referrer) {
+    public void onOpenInNewTabInGroup(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
+        loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
         mTabModelSelector.openNewTab(
                 loadUrlParams,
                 TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
@@ -415,12 +434,19 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * Called when the {@code url} is of an image and should be opened in the same page.
      *
      * @param url The image URL to open.
+     * @param referrer The referrer to use when opening the URL.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
     @Override
-    public void onOpenImageUrl(GURL url, @Nullable Referrer referrer) {
+    public void onOpenImageUrl(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setTransitionType(PageTransition.LINK);
         loadUrlParams.setReferrer(referrer);
+        loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
         mTab.loadUrl(loadUrlParams);
     }
 
@@ -428,11 +454,18 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * Called when the {@code url} is of an image and should be opened in a new page.
      *
      * @param url The image URL to open.
+     * @param referrer The referrer to use when opening the URL.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
     @Override
-    public void onOpenImageInNewTab(GURL url, @Nullable Referrer referrer) {
+    public void onOpenImageInNewTab(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
+        loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
         mTabModelSelector.openNewTab(
                 loadUrlParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, mTab, isIncognito());
     }
@@ -442,9 +475,14 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      *
      * @param url The URL to open.
      * @param title The title text to show on top control.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
      */
     @Override
-    public void onOpenInEphemeralTab(GURL url, String title) {
+    public void onOpenInEphemeralTab(
+            GURL url,
+            String title,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         EphemeralTabCoordinator ephemeralTabCoordinator = mEphemeralTabCoordinatorSupplier.get();
         if (ephemeralTabCoordinator == null) {
             return;
@@ -459,6 +497,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                         || mActivityType == ActivityType.CUSTOM_TAB,
                 /* shouldHaveContextMenu= */ true,
                 initiatorOrigin,
+                additionalNavigationParams,
                 CallbackUtils.emptyRunnable());
     }
 

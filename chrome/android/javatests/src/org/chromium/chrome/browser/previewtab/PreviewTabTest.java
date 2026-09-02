@@ -176,7 +176,8 @@ public class PreviewTabTest {
                                             callbackHelper.notifyCalled();
                                         }
                                     });
-                    contextMenu.onOpenInEphemeralTab(new GURL(url), "Echo Cookie");
+                    contextMenu.onOpenInEphemeralTab(
+                            new GURL(url), "Echo Cookie", /* additionalNavigationParams= */ null);
                 });
         callbackHelper.waitForCallback(callCount);
     }
@@ -273,6 +274,7 @@ public class PreviewTabTest {
                                 /* canPromoteToNewTab= */ true,
                                 /* shouldHaveContextMenu= */ true,
                                 /* initiatorOrigin= */ null,
+                                /* additionalNavigationParams= */ null,
                                 () -> {}));
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
@@ -302,6 +304,7 @@ public class PreviewTabTest {
                                 /* canPromoteToNewTab= */ true,
                                 /* shouldHaveContextMenu= */ true,
                                 /* initiatorOrigin= */ null,
+                                /* additionalNavigationParams= */ null,
                                 () -> {}));
         endAnimations();
 
@@ -369,6 +372,7 @@ public class PreviewTabTest {
                                 /* canPromoteToNewTab= */ true,
                                 /* shouldHaveContextMenu= */ true,
                                 /* initiatorOrigin= */ null,
+                                /* additionalNavigationParams= */ null,
                                 () -> {}));
         endAnimations();
         mEphemeralTabObserver.onToolbarCreatedCallback.waitForCallback(0, 1);

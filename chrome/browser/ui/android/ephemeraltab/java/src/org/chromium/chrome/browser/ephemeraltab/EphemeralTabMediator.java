@@ -25,6 +25,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -149,17 +150,29 @@ public class EphemeralTabMediator {
     }
 
     /** Loads a new URL into the tab and makes it visible. */
-    void requestShowContent(GURL url, String title, @Nullable Origin initiatorOrigin) {
-        loadUrl(url, initiatorOrigin);
+    void requestShowContent(
+            GURL url,
+            String title,
+            @Nullable Origin initiatorOrigin,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        loadUrl(url, initiatorOrigin, additionalNavigationParams);
         assumeNonNull(mSheetContent);
         mSheetContent.updateTitle(title);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
     private void loadUrl(GURL url, @Nullable Origin initiatorOrigin) {
+        loadUrl(url, initiatorOrigin, /* additionalNavigationParams= */ null);
+    }
+
+    private void loadUrl(
+            GURL url,
+            @Nullable Origin initiatorOrigin,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         assumeNonNull(mWebContents);
         LoadUrlParams params = new LoadUrlParams(url);
         params.setInitiatorOrigin(initiatorOrigin);
+        params.setAdditionalNavigationParams(additionalNavigationParams);
         mWebContents.getNavigationController().loadUrl(params);
     }
 

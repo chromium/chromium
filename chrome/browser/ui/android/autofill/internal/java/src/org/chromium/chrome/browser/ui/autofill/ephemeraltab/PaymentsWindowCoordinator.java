@@ -64,6 +64,7 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
                 /* canPromoteToNewTab= */ false,
                 /* shouldHaveContextMenu= */ false,
                 /* initiatorOrigin= */ null,
+                /* additionalNavigationParams= */ null,
                 /* requestDeniedCallback= */ this::onUserDeniedTabOpening);
     }
 

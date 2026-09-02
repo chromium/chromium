@@ -32,13 +32,16 @@ import java.util.function.BiConsumer;
 @NullMarked
 public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelegate {
     public interface LinkOpener {
-        void openInNewTab(GURL url);
+        void openInNewTab(
+                GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams);
 
-        void openInNewTabInGroup(GURL url);
+        void openInNewTabInGroup(
+                GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams);
 
         void openInNewIncognitoTab(GURL url);
 
-        void openInNewWindow(GURL url);
+        void openInNewWindow(
+                GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams);
 
         void openInIncognitoWindow(GURL url);
 
@@ -217,7 +220,11 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
     }
 
     @Override
-    public void onOpenImageInNewTab(GURL url, @Nullable Referrer referrer) {
+    public void onOpenImageInNewTab(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        // Note: additionalNavigationParams cannot be passed across external Intent boundaries.
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse(url.getSpec()));
@@ -228,9 +235,14 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
     }
 
     @Override
-    public void onOpenInEphemeralTab(GURL url, String title) {
+    public void onOpenInEphemeralTab(
+            GURL url,
+            String title,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (!supportsOpenInEphemeralTab()) return;
 
+        // Note: additionalNavigationParams cannot be passed across external Intent boundaries or
+        // through mEphemeralTabOpener.
         if (mEphemeralTabOpener != null) {
             mEphemeralTabOpener.accept(url, title);
         } else {
@@ -312,14 +324,17 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             boolean navigateToTab,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (mLinkOpener != null) {
-            mLinkOpener.openInNewTab(url);
+            mLinkOpener.openInNewTab(url, additionalNavigationParams);
         }
     }
 
     @Override
-    public void onOpenInNewTabInGroup(GURL url, @Nullable Referrer referrer) {
+    public void onOpenInNewTabInGroup(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (mLinkOpener != null) {
-            mLinkOpener.openInNewTabInGroup(url);
+            mLinkOpener.openInNewTabInGroup(url, additionalNavigationParams);
         }
     }
 
@@ -332,12 +347,16 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
 
     @Override
     public void openInOtherWindow(
-            GURL url, @Nullable Referrer referrer, boolean isIncognito, boolean preferNew) {
+            GURL url,
+            @Nullable Referrer referrer,
+            boolean isIncognito,
+            boolean preferNew,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (mLinkOpener != null) {
             if (isIncognito) {
                 mLinkOpener.openInIncognitoWindow(url);
             } else {
-                mLinkOpener.openInNewWindow(url);
+                mLinkOpener.openInNewWindow(url, additionalNavigationParams);
             }
         }
     }
