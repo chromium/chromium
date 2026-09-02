@@ -93,7 +93,7 @@ public interface LocationBar {
 
     /**
      * Toggle showing only the origin portion of the URL (as opposed to the default behavior of
-     * showing the max amount of the url, prioritizing the origin)
+     * showing the max amount of the url, prioritizing the origin).
      */
     default void setShowOriginOnly(boolean showOriginOnly) {}
 
@@ -136,7 +136,7 @@ public interface LocationBar {
      * represented as a percentage (e.g., 100.0) or a fraction (e.g., 1.0). Instead, it uses an
      * internal table where a value of `0.0` corresponds to 100% zoom. The default zoom level can
      * differ if the user has set a preference. For the complete mapping of values to zoom
-     * percentages, see the zoom table variable. Read more at {@link PageZoomUtils}
+     * percentages, see the zoom table variable. Read more at {@link PageZoomUtils}.
      *
      * @param zoomLevel The new zoom level.
      */

@@ -603,9 +603,9 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /**
      * Signal that the list of suggestions shown in the associated omnibox suggestions list has
-     * changed
+     * changed.
      *
-     * @param hasSuggestions Number of suggestions being presented
+     * @param hasSuggestions Number of suggestions being presented.
      */
     void onSuggestionsChanged(boolean hasSuggestions) {}
 

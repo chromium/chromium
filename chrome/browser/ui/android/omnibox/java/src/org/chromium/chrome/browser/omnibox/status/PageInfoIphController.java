@@ -26,7 +26,7 @@ public class PageInfoIphController {
     private final View mStatusView;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param educationHelper The helper controlling user education.
      * @param statusView The status view in the omnibox. Used as anchor for IPH bubble.

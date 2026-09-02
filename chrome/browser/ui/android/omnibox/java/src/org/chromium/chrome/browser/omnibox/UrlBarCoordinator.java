@@ -352,7 +352,7 @@ public class UrlBarCoordinator
 
     /**
      * Toggle showing only the origin portion of the URL (as opposed to the default behavior of
-     * showing the max amount of the url, prioritizing the origin)
+     * showing the max amount of the url, prioritizing the origin).
      */
     public void setShowOriginOnly(boolean showOriginOnly) {
         mMediator.setShowOriginOnly(showOriginOnly);

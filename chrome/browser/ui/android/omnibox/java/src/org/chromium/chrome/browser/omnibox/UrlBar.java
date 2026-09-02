@@ -806,7 +806,7 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     /**
-     * Set the listener to be notified when the URL text has changed. (for autocomplete suggestions)
+     * Set the listener to be notified when the URL text has changed (for autocomplete suggestions).
      *
      * @param listener The listener to be notified.
      */

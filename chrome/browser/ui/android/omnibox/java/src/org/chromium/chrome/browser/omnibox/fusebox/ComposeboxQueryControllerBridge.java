@@ -32,7 +32,7 @@ import java.util.Optional;
 
 /**
  * Bridge for native Composebox query controller functionality, allowing for management of a
- * Composebox session
+ * Composebox session.
  */
 @SuppressWarnings("unused")
 @NullMarked
