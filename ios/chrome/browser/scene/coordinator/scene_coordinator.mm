@@ -743,6 +743,11 @@ inline LayoutStateScenePassKey PassKey() {
   CHECK(!self.currentBrowser->GetProfile()->IsOffTheRecord())
       << "Current interface is incognito and should NOT show history. Call "
          "this on regular interface.";
+
+  if (_historyCoordinator) {
+    [self stopHistoryCoordinator];
+  }
+
   _historyCoordinator = CreateHistoryCoordinator(self.activeViewController,
                                                  _regularBrowser.get());
   _historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
