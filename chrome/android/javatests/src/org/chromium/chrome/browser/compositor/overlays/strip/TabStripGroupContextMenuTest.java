@@ -86,10 +86,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
+    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
 public class TabStripGroupContextMenuTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -130,6 +130,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testOpenNewTabInGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -156,6 +157,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testUngroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -232,6 +234,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testCloseGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -354,6 +357,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testUpdateAndDeleteGroupTitle() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -412,6 +416,7 @@ public class TabStripGroupContextMenuTest {
     @Test
     @SmallTest
     @Feature("KeyboardA11y")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288697
     public void testKeyboardFocusAndActivation() {
         // Prepare standard state and show menu.
         prepareStandardState();
