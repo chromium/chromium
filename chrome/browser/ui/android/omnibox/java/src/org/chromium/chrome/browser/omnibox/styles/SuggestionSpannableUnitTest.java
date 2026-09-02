@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.omnibox.R;
 /** Tests for {@link SuggestionSpannable}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionSpannableUnitTest {
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
     @Mock private ColorStateList mColor1;
     @Mock private ColorStateList mColor2;

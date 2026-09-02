@@ -47,7 +47,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 public class OmniboxResourceProviderUnitTest {
     private static final String TAG = "ORPTest";
 
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @ColorInt int mDefaultColor;
     private Context mContext;
     private OmniboxResourceProvider mProvider;

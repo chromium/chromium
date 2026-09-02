@@ -60,7 +60,7 @@ public final class OmniboxImageSupplierUnitTest {
     private static final GURL NAV_URL_2 = JUnitTestGURLs.URL_2;
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
 
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Bitmap mBitmap1;
     @Mock private Bitmap mBitmap2;
