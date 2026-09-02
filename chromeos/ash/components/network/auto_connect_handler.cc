@@ -163,7 +163,7 @@ ConnectToNetworkRequestVerdict AutoConnectHandler::ConnectToNetworkRequested(
   // enforced, block manual connection requests until at least one full scan has
   // been done. They would interrupt scanning, and an initial scan is required
   // to properly enforce the policy.
-  if (ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable() &&
+  if (IsAllowOnlyPolicyWiFiToConnectIfAvailableActive() &&
       !initial_scan_done_) {
     return ConnectToNetworkRequestVerdict::kVetoWaitingForScan;
   }
@@ -172,6 +172,21 @@ ConnectToNetworkRequestVerdict AutoConnectHandler::ConnectToNetworkRequested(
   request_best_connection_pending_ = false;
 
   return ConnectToNetworkRequestVerdict::kProceed;
+}
+
+void AutoConnectHandler::NetworkConnectionStateChanged(
+    const NetworkState* network) {
+  // Connection attempts originating in ash-chrome to SSIDs currently disallowed
+  // by `AllowOnlyPolicyWiFiToConnectIfAvailable` will be blocked in
+  // `ConnectToNetworkRequested` before starting. But in some situations,
+  // components other than ash-chrome can initiate a connection - in this case,
+  // switch back to a managed network immediately if needed.
+  if (network->Matches(NetworkTypePattern::WiFi()) &&
+      network->IsConnectingOrConnected() && !network->IsManagedByPolicy()) {
+    // A non-managed WiFi network is connecting - enforce "only managed WiFi
+    // if available" if configured.
+    MaybeEnforceAllowOnlyPolicyWiFiToConnectIfAvailable();
+  }
 }
 
 void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
@@ -191,7 +206,7 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
   //   network and `AllowOnlyPolicyWiFiToConnectIfAvailable` is active, the
   //   device should ensure that it is connected to a device policy network now.
   if (managed_configuration_handler_->HasAnyPolicyNetwork(userhash) ||
-      ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable()) {
+      IsAllowOnlyPolicyWiFiToConnectIfAvailableActive()) {
     AddBestConnectionRequest(
         AutoConnectReason::AUTO_CONNECT_REASON_POLICY_APPLIED);
     // Processing the added request will trigger a fresh scan.
@@ -213,23 +228,7 @@ void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
 
   initial_scan_done_ = true;
 
-  // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled and a
-  // managed network is visible.
-  const NetworkState* managed_network =
-      network_state_handler_->GetAvailableManagedWifiNetwork();
-  if (ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable() &&
-      managed_network) {
-    const NetworkState* connected_network =
-        network_state_handler_->ConnectedNetworkByType(
-            NetworkTypePattern::WiFi());
-    if (connected_network && !connected_network->IsManagedByPolicy()) {
-      network_connection_handler_->ConnectToNetwork(
-          managed_network->path(), base::DoNothing(),
-          base::BindOnce(&ConnectToNetworkErrorCallback), false,
-          ConnectCallbackMode::ON_COMPLETED);
-      return;
-    }
-  }
+  MaybeEnforceAllowOnlyPolicyWiFiToConnectIfAvailable();
 }
 
 void AutoConnectHandler::DevicePropertiesUpdated(const DeviceState* device) {
@@ -254,6 +253,7 @@ void AutoConnectHandler::ResolveRequestCompleted(
     AddBestConnectionRequest(
         AutoConnectReason::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED);
   }
+
   ProcessPendingBestConnectionRequests();
 }
 
@@ -500,8 +500,7 @@ void AutoConnectHandler::CallShillScanAndConnectToBestServices() {
                      network_handler::ErrorCallback()));
 }
 
-bool AutoConnectHandler::
-    ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable() {
+bool AutoConnectHandler::IsAllowOnlyPolicyWiFiToConnectIfAvailableActive() {
   // The policy should only be enforced in a user session.
   // It should only be enforced after all policy-provided NetworkConfigurations
   // have been configured in shill, for both device and user policy.
@@ -516,6 +515,32 @@ bool AutoConnectHandler::
   return device_policy_applied_ && user_policy_applied_ &&
          managed_configuration_handler_
              ->AllowOnlyPolicyWiFiToConnectIfAvailable();
+}
+
+void AutoConnectHandler::MaybeEnforceAllowOnlyPolicyWiFiToConnectIfAvailable() {
+  if (!IsAllowOnlyPolicyWiFiToConnectIfAvailableActive()) {
+    return;
+  }
+
+  // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled and a
+  // managed network is visible.
+  const NetworkState* managed_network =
+      network_state_handler_->GetAvailableManagedWifiNetwork();
+  if (!managed_network) {
+    return;
+  }
+
+  // An "active" network is connecting or connected.
+  const NetworkState* active_network =
+      network_state_handler_->ActiveNetworkByType(NetworkTypePattern::WiFi());
+  if (!active_network || active_network->IsManagedByPolicy()) {
+    return;
+  }
+
+  network_connection_handler_->ConnectToNetwork(
+      managed_network->path(), base::DoNothing(),
+      base::BindOnce(&ConnectToNetworkErrorCallback), false,
+      ConnectCallbackMode::ON_COMPLETED);
 }
 
 void AutoConnectHandler::CheckWifiEnabled() {

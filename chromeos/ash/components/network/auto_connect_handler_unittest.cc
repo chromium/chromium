@@ -105,11 +105,15 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
     std::move(success_callback).Run();
   }
 
+  // NetworkConnectionHandler:
   void ConnectToNetwork(const std::string& service_path,
                         base::OnceClosure success_callback,
                         network_handler::ErrorCallback error_callback,
                         bool check_error_state,
-                        ConnectCallbackMode mode) override {}
+                        ConnectCallbackMode mode) override {
+    connect_calls_.push_back(service_path);
+    std::move(success_callback).Run();
+  }
 
   void Init(
       NetworkStateHandler* network_state_handler,
@@ -126,8 +130,15 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
 
   int auto_connect_reasons() { return auto_connect_reasons_; }
 
+  const std::vector<std::string>& connect_calls() const {
+    return connect_calls_;
+  }
+
+  void clear_connect_calls() { connect_calls_.clear(); }
+
  private:
   base::RepeatingCallback<void(const std::string&)> disconnect_handler_;
+  std::vector<std::string> connect_calls_;
   int num_auto_connect_events_ = 0;
   int auto_connect_reasons_ = 0;
 };
@@ -212,6 +223,16 @@ class AutoConnectHandlerTest : public testing::Test {
   void SetDisconnected(const std::string& service_path) {
     helper_.SetServiceProperty(service_path, shill::kStateProperty,
                                base::Value(shill::kStateIdle));
+  }
+
+  void SetConnected(const std::string& service_path) {
+    helper_.SetServiceProperty(service_path, shill::kStateProperty,
+                               base::Value(shill::kStateOnline));
+  }
+
+  void SetConnecting(const std::string& service_path) {
+    helper_.SetServiceProperty(service_path, shill::kStateProperty,
+                               base::Value(shill::kStateAssociation));
   }
 
   std::string GetServiceState(const std::string& service_path) {
@@ -1142,6 +1163,192 @@ TEST_F(AutoConnectHandlerTest,
   EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
                 AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
             test_network_connection_handler_->auto_connect_reasons());
+}
+
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableEnforcedOnScanCompleted) {
+  std::string wifi_unmanaged_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnected);
+  ASSERT_FALSE(wifi_unmanaged_service_path.empty());
+  std::string wifi_managed_service_path =
+      ConfigureService(kConfigWifi1ManagedSharedConnectable);
+  ASSERT_FALSE(wifi_managed_service_path.empty());
+
+  // Prevent fake shill from auto-completing scan so we can control completion.
+  helper().manager_test()->SetAutoCompleteScan(false);
+
+  auto global_config = base::DictValue().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  SetupDevicePolicy(kPolicy, global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  // Connect to the unmanaged network
+  SetConnected(wifi_unmanaged_service_path);
+  test_network_connection_handler_->clear_connect_calls();
+
+  // Start a scan and then trigger its completion.
+  const auto* wifi_device =
+      helper().network_state_handler()->GetDeviceStateByType(
+          NetworkTypePattern::WiFi());
+  ASSERT_NE(nullptr, wifi_device);
+  helper().network_state_handler()->RequestScan(NetworkTypePattern::WiFi());
+  helper().manager_test()->TriggerScanCompleted(wifi_device->path());
+
+  // ScanCompleted should enforce the policy and connect to the available
+  // managed network.
+  EXPECT_TRUE(base::test::RunUntil([=, this]() {
+    const auto& connect_calls =
+        test_network_connection_handler_->connect_calls();
+    return connect_calls.size() == 1 &&
+           connect_calls[0] == wifi_managed_service_path;
+  }));
+}
+
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableOverrulesUnmanagedConnected) {
+  std::string wifi_unmanaged_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi_unmanaged_service_path.empty());
+  std::string wifi_managed_service_path =
+      ConfigureService(kConfigWifi1ManagedSharedConnectable);
+  ASSERT_FALSE(wifi_managed_service_path.empty());
+
+  auto global_config = base::DictValue().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  SetupDevicePolicy(kPolicy, global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  test_network_connection_handler_->clear_connect_calls();
+
+  // An unmanaged WiFi network connects (state becomes online).
+  SetConnected(wifi_unmanaged_service_path);
+
+  // Since AllowOnlyPolicyWiFiToConnectIfAvailable is enforced and the managed
+  // network wifi_managed is available, a connection to wifi_managed should be
+  // initiated.
+  ASSERT_EQ(1u, test_network_connection_handler_->connect_calls().size());
+  EXPECT_EQ(wifi_managed_service_path,
+            test_network_connection_handler_->connect_calls()[0]);
+}
+
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableOverrulesUnmanagedConnecting) {
+  std::string wifi_unmanaged_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi_unmanaged_service_path.empty());
+  std::string wifi_managed_service_path =
+      ConfigureService(kConfigWifi1ManagedSharedConnectable);
+  ASSERT_FALSE(wifi_managed_service_path.empty());
+
+  auto global_config = base::DictValue().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  SetupDevicePolicy(kPolicy, global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  test_network_connection_handler_->clear_connect_calls();
+
+  // An unmanaged WiFi network starts connecting.
+  SetConnecting(wifi_unmanaged_service_path);
+
+  // Since AllowOnlyPolicyWiFiToConnectIfAvailable is enforced and the managed
+  // network wifi_managed is available, a connection to wifi_managed should be
+  // initiated.
+  ASSERT_EQ(1u, test_network_connection_handler_->connect_calls().size());
+  EXPECT_EQ(wifi_managed_service_path,
+            test_network_connection_handler_->connect_calls()[0]);
+}
+
+TEST_F(
+    AutoConnectHandlerTest,
+    AllowOnlyPolicyWiFiToConnectIfAvailableNoConnectWhenManagedWiFiConnecting) {
+  std::string wifi_unmanaged_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi_unmanaged_service_path.empty());
+  std::string wifi_managed_service_path =
+      ConfigureService(kConfigWifi1ManagedSharedConnectable);
+  ASSERT_FALSE(wifi_managed_service_path.empty());
+
+  auto global_config = base::DictValue().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  SetupDevicePolicy(kPolicy, global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  test_network_connection_handler_->clear_connect_calls();
+
+  // Managed WiFi network starts connecting.
+  SetConnecting(wifi_managed_service_path);
+
+  // Since wifi_managed is managed by policy, NetworkConnectionStateChanged
+  // should not trigger any connection request.
+  EXPECT_TRUE(test_network_connection_handler_->connect_calls().empty());
+}
+
+TEST_F(
+    AutoConnectHandlerTest,
+    AllowOnlyPolicyWiFiToConnectIfAvailableNoConnectWhenNoManagedWiFiAvailable) {
+  std::string wifi_unmanaged_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi_unmanaged_service_path.empty());
+
+  auto global_config = base::DictValue().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  // No policy network configs provided, so no managed WiFi network exists.
+  SetupDevicePolicy(/*network_configs_json=*/std::string(), global_config);
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  test_network_connection_handler_->clear_connect_calls();
+
+  // Unmanaged WiFi network connects.
+  SetConnected(wifi_unmanaged_service_path);
+
+  // Since no managed network is available, no connection request should be
+  // made.
+  EXPECT_TRUE(test_network_connection_handler_->connect_calls().empty());
+}
+
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableNoConnectWhenNotEnabled) {
+  std::string wifi_unmanaged_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi_unmanaged_service_path.empty());
+  std::string wifi_managed_service_path =
+      ConfigureService(kConfigWifi1ManagedSharedConnectable);
+  ASSERT_FALSE(wifi_managed_service_path.empty());
+
+  // Policy is NOT enabled.
+  SetupDevicePolicy(kPolicy, /*global_config=*/base::DictValue());
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  test_network_connection_handler_->clear_connect_calls();
+
+  // Unmanaged WiFi network connects.
+  SetConnected(wifi_unmanaged_service_path);
+
+  // Policy is not enabled, so no connect request should be triggered.
+  EXPECT_TRUE(test_network_connection_handler_->connect_calls().empty());
 }
 
 }  // namespace ash

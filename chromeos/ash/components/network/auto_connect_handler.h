@@ -70,6 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void ScanCompleted(const DeviceState* device) override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
   void DeviceListChanged() override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   // ClientCertResolver::Observer
   void ResolveRequestCompleted(bool network_properties_changed) override;
@@ -139,8 +140,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void CallShillScanAndConnectToBestServices();
 
   // Returns true if the AllowOnlyPolicyWiFiToConnectIfAvailable policy is
-  // enabled and should be enforced. It will only be enforced in a user session.
-  bool ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable();
+  // enabled and active. It only becomes active after device and user policy
+  // application have happened.
+  bool IsAllowOnlyPolicyWiFiToConnectIfAvailableActive();
+
+  // Enforces AllowOnlyPolicyWiFiToConnectIfAvailable if
+  // it is active (see IsAllowOnlyPolicyWiFiToConnectIfAvailableActive) and the
+  // initial scan has been performed.
+  void MaybeEnforceAllowOnlyPolicyWiFiToConnectIfAvailable();
 
   // Evaluates wifi enablement and resets `initial_scan_done_` if needed.
   void CheckWifiEnabled();

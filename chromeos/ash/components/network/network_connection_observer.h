@@ -37,10 +37,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
       const std::string& service_path);
 
   // Called when a connection request succeeds.
+  // Note that this is only called for requests that went through
+  // NetworkConnectionHandler, so it will not be called e.g. if shill
+  // auto-connects to a network. Use
+  // NetworkStateHandlerObserver::NetworkConnectionStateChanged to observe all
+  // network connection events.
   virtual void ConnectSucceeded(const std::string& service_path);
 
   // Called when a connection request fails. Valid error names are defined in
   // NetworkConnectionHandler.
+  // Note that this is only called for requests that went through
+  // NetworkConnectionHandler, so it will not be called e.g. if shill
+  // attempts to auto-connect to a network. Use
+  // NetworkStateHandlerObserver::NetworkConnectionStateChanged to observe all
+  // network connection events.
   virtual void ConnectFailed(const std::string& service_path,
                              const std::string& error_name);
 

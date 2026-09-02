@@ -22,6 +22,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -782,10 +783,11 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     }
   }
 
-  void OnConnectToServiceFailed(base::OnceClosure run_loop_quit_closure,
-                                const std::string& error_name,
-                                const std::string& error_message) {
-    ADD_FAILURE() << "Connect failed with " << error_name << " - "
+  void OnShillOperationFailed(base::OnceClosure run_loop_quit_closure,
+                              std::string operation_name,
+                              const std::string& error_name,
+                              const std::string& error_message) {
+    ADD_FAILURE() << operation_name << " failed with " << error_name << " - "
                   << error_message;
     std::move(run_loop_quit_closure).Run();
   }
@@ -794,8 +796,19 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     base::RunLoop run_loop;
     ash::ShillServiceClient::Get()->Connect(
         dbus::ObjectPath(service_path), run_loop.QuitClosure(),
-        base::BindOnce(&NetworkPolicyApplicationTest::OnConnectToServiceFailed,
-                       base::Unretained(this), run_loop.QuitClosure()));
+        base::BindOnce(&NetworkPolicyApplicationTest::OnShillOperationFailed,
+                       base::Unretained(this), run_loop.QuitClosure(),
+                       "Connect to " + service_path));
+    run_loop.Run();
+  }
+
+  void DisconnectFromService(const std::string& service_path) {
+    base::RunLoop run_loop;
+    ash::ShillServiceClient::Get()->Disconnect(
+        dbus::ObjectPath(service_path), run_loop.QuitClosure(),
+        base::BindOnce(&NetworkPolicyApplicationTest::OnShillOperationFailed,
+                       base::Unretained(this), run_loop.QuitClosure(),
+                       "Disconnect from " + service_path));
     run_loop.Run();
   }
 
@@ -1984,6 +1997,93 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       EXPECT_EQ(connect_before_scan_result.error(),
                 ash::NetworkConnectionHandler::kErrorBlockedByPolicy);
     }
+}
+
+// Behavior of AllowOnlyPolicyNetworksToConnectIfAvailable when shill
+// auto-connects to an unmanaged network.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       OnlyPolicyIfAvailable_EnforceOnUnmanagedConnect) {
+  constexpr char kGuidWifi1[] = "wifi_orig_guid_1";
+  constexpr char kGuidWifi2[] = "wifi_orig_guid_2";
+  constexpr char kGuidPolicyWifi1[] = "wifi_policy_guid_1";
+
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(), {kGuidWifi1, kGuidWifi2});
+  AddPskWifiService(kServiceWifi1, kGuidWifi1, "WifiOne", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifi2, "WifiTwo", shill::kStateIdle);
+  available_waiter.Wait();
+
+  // Apply device ONC policy
+  {
+    const std::string kDeviceONC = base::StrCat({
+        R"(
+        {
+          "GlobalNetworkConfiguration": {
+            "AllowOnlyPolicyNetworksToConnectIfAvailable": true
+          },
+          "NetworkConfigurations": [
+            {
+              "GUID": ")",
+        kGuidPolicyWifi1, R"(",
+              "Name": "PolicyDeviceLevelWifi",
+              "Type": "WiFi",
+              "WiFi": {
+                "HiddenSSID": false,
+                "Passphrase": "DeviceLevelWifiPwd",
+                "SSID": "PolicyDeviceLevelWifi",
+                "Security": "WPA-PSK"
+              }
+            }
+          ]
+        })"});
+    SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
+
+    EXPECT_TRUE(CrosNetworkConfigGetGlobalPolicy()
+                    ->allow_only_policy_wifi_networks_to_connect_if_available);
+  }
+  // Make the device policy network visible.
+  SetServiceVisibility(kGuidPolicyWifi1, true);
+
+  // Sign-in a user. The device policy network should connect because the
+  // AllowOnlyPolicyNetworksToConnectIfAvailable became effective on user login.
+  std::optional<std::string> policy_wifi_service_path =
+      shill_service_client_test_->FindServiceMatchingGUID(kGuidPolicyWifi1);
+  ASSERT_TRUE(policy_wifi_service_path);
+  ServiceStateWaiter wifi_connected_waiter(shill_service_client_test_,
+                                           policy_wifi_service_path.value());
+
+  shill_manager_client_test_->SetBestServiceToConnect(
+      policy_wifi_service_path.value());
+
+  {
+    LoginUser(test_account_id_);
+    const std::string user_hash = GetTestUserHash();
+    shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+  }
+
+  wifi_connected_waiter.Wait(shill::kStateOnline);
+
+  // Expects that the non-policy WiFi services are now prohibited.
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidPolicyWifi1));
+
+  // Shill disconnects from the policy wifi and initiates a connection to
+  // unmanaged kServiceWifi1.
+  ServiceStateWaiter wifi_policy_reconnected_waiter(
+      shill_service_client_test_, policy_wifi_service_path.value());
+
+  DisconnectFromService(policy_wifi_service_path.value());
+  ConnectToService(kServiceWifi1);
+
+  // Expect that AutoConnectHandler triggers connection back to the
+  // policy-managed wifi.
+  wifi_policy_reconnected_waiter.Wait(shill::kStateOnline);
+
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidPolicyWifi1), shill::kStateOnline);
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidPolicyWifi1));
 }
 
 // Checks the edge case where a policy with GUID {same_guid} applies to network
