@@ -52,6 +52,7 @@ BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidFirstRunLaunchBounds);
 BASE_DECLARE_FEATURE(kAndroidFreLayoutUpdate);
 BASE_DECLARE_FEATURE(kAndroidHistoryClustering);
+BASE_DECLARE_FEATURE(kAndroidKeyboardShortcutOpenFile);
 BASE_DECLARE_FEATURE(kAndroidNoCaptureWhenScrollingDisabledOnDesktop);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);

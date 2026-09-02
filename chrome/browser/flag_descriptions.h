@@ -5613,6 +5613,11 @@ inline constexpr char kAndroidGrammarCheckDescription[] =
     "When typing, allows spellcheckers to highlight grammar errors and suggest "
     "corrections on browser text input.";
 
+inline constexpr char kAndroidKeyboardShortcutOpenFileName[] =
+    "Android Keyboard Shortcut Open File";
+inline constexpr char kAndroidKeyboardShortcutOpenFileDescription[] =
+    "Enables the Android Keyboard Shortcut Open File feature.";
+
 inline constexpr char kAndroidMediaInsertionName[] =
     "Enable IME media insertion";
 inline constexpr char kAndroidMediaInsertionDescription[] =

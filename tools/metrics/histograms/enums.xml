@@ -8527,6 +8527,7 @@ from previous Chrome versions.
   <int value="-1919405102" label="NtpStarterChip:enabled"/>
   <int value="-1919199528"
       label="AlwaysShowServerCardsInSyncTransport:disabled"/>
+  <int value="-1919066922" label="AndroidKeyboardShortcutOpenFile:disabled"/>
   <int value="-1918375566" label="AutofillVirtualViewStructureAndroid:enabled"/>
   <int value="-1917538656" label="GetTheMostOutOfProgram:disabled"/>
   <int value="-1917031398" label="OmniboxNativeVoiceSuggestProvider:disabled"/>
@@ -21105,6 +21106,7 @@ from previous Chrome versions.
   <int value="1972178452" label="CCTResizableWindowAboveNavbar:enabled"/>
   <int value="1972232935" label="DisplayMoveWindowAccels:enabled"/>
   <int value="1972275425" label="DevToolsAutomaticFileSystems:disabled"/>
+  <int value="1972447689" label="AndroidKeyboardShortcutOpenFile:enabled"/>
   <int value="1972720114" label="WebPaymentsJustInTimePaymentApp:enabled"/>
   <int value="1973376634" label="WebXRMultiGpu:enabled"/>
   <int value="1973449518" label="AndroidDesktopBookmarkLayout:enabled"/>

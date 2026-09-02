@@ -14033,6 +14033,12 @@ const FeatureEntry kFeatureEntries[] = {
          "SecurePaymentConfirmationCredentialDiscoveryMode")},
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-keyboard-shortcut-open-file",
+     flag_descriptions::kAndroidKeyboardShortcutOpenFileName,
+     flag_descriptions::kAndroidKeyboardShortcutOpenFileDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidKeyboardShortcutOpenFile)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

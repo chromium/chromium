@@ -406,6 +406,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-keyboard-shortcut-open-file",
+    "owners": ["nehasapre@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-media-picker",
     "owners": [ "hscham@chromium.org", "mbujak@google.com" ],
     "expiry_milestone": 160
