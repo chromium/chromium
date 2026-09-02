@@ -15,6 +15,7 @@ import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -102,6 +104,7 @@ final class SigninButtonMediator
     private @Nullable Profile mProfile;
     private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private @Nullable SigninManager mSigninManager;
+    private @Nullable AccountMenuCoordinator mAccountMenuCoordinator;
 
     // We observe IdentityManager to receive primary account state change notifications.
     private @Nullable IdentityManager mIdentityManager;
@@ -320,6 +323,10 @@ final class SigninButtonMediator
     private void setProfile(@Nullable Profile profile) {
         mProfile = profile;
         resetProfileDataCache();
+        if (mAccountMenuCoordinator != null) {
+            mAccountMenuCoordinator.destroy();
+            mAccountMenuCoordinator = null;
+        }
         if (mIdentityManager != null) {
             mIdentityManager.removeObserver(this);
             mIdentityManager = null;
@@ -384,6 +391,17 @@ final class SigninButtonMediator
 
         mOnSigninTapped.run();
         recordSigninButtonUsed(mProfile);
+
+        // TODO(crbug.com/551756560): Use a delegate pattern to handle form-factor-based behavior
+        // instead of branching here.
+        if (DeviceInfo.isDesktop()
+                && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)) {
+            if (mAccountMenuCoordinator == null) {
+                mAccountMenuCoordinator = new AccountMenuCoordinator(mContext);
+            }
+            mAccountMenuCoordinator.show(view);
+            return;
+        }
 
         Profile originalProfile = mProfile.getOriginalProfile();
         if (assumeNonNull(mSigninManager).isSigninAllowed()) {

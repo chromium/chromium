@@ -66,4 +66,32 @@ found in the LICENSE file.
    <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow">
         <item name="android:popupElevation">0dp</item>
     </style>
+
+    <!-- Styles for the Account Menu popup -->
+    <style name="AccountMenuControlRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/account_menu_row_min_height</item>
+        <item name="android:paddingStart">
+            @dimen/account_menu_horizontal_padding
+        </item>
+        <item name="android:paddingEnd">
+            @dimen/account_menu_horizontal_padding
+        </item>
+        <item name="android:drawablePadding">
+            @dimen/account_menu_horizontal_padding
+        </item>
+        <item name="android:drawableTint">?android:attr/textColorPrimary</item>
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:background">
+            @drawable/list_item_background_selector
+        </item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
 </resources>

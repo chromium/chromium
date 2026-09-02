@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -567,6 +568,23 @@ public class SigninButtonCoordinatorTest {
         ColorStateList unfocusedTint = avatarButton.getImageTintList();
         assertNotNull(unfocusedTint);
         assertNotEquals("Tint should change when window is inactive", focusedTint, unfocusedTint);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.DESKTOP)
+    @EnableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
+    public void testClickSigninButton_DesktopOpensAccountMenu() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        startActivityOnNtp();
+
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        onView(withId(R.id.signin_button)).perform(click());
+
+        // Verify that the account menu popup is displayed.
+        ViewUtils.waitForVisibleView(withId(R.id.account_menu_container));
     }
 
     private void startActivityOnNtp() {
