@@ -453,9 +453,7 @@ class GlicApiTestWithWebContentsWarming : public GlicApiTest {
           {
               {features::kGlicWebContentsWarmingDelay.name, "200ms"},
           }},
-         {features::kGlicWarming,
-          {{features::kGlicWarmingDelayMs.name, "0"},
-           {features::kGlicWarmingJitterMs.name, "0"}}}},
+         {features::kGlicWarming, {{features::kGlicWarmingDelayMs.name, "0"}}}},
         {});
   }
 

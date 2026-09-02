@@ -89,7 +89,6 @@ class GlicWarmingChecksBrowserTest : public GlicWarmingChecksTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlicWarming,
                                {{features::kGlicWarmingDelayMs.name, delay_ms},
-                                {features::kGlicWarmingJitterMs.name, "0"},
                                 {features::kGlicWarmingMinRequiredRamMb.name,
                                  min_required_ram_mb}}},
                               {features::kGlicAnchorEntryPointForOnboardedUsers,

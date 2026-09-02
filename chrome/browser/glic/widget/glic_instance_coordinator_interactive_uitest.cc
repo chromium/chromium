@@ -644,9 +644,7 @@ class GlicInstanceCoordinatorWithDelayedPreloadingUiTest
   GlicInstanceCoordinatorWithDelayedPreloadingUiTest() {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicWarming,
-          {{features::kGlicWarmingDelayMs.name, "0"},
-           {features::kGlicWarmingJitterMs.name, "0"}}}},
+        {{features::kGlicWarming, {{features::kGlicWarmingDelayMs.name, "0"}}}},
         /*disabled_features=*/{});
   }
   ~GlicInstanceCoordinatorWithDelayedPreloadingUiTest() override = default;

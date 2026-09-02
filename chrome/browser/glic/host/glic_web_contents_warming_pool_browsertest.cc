@@ -58,8 +58,7 @@ class GlicWarmingPoolBrowserTest
  public:
   GlicWarmingPoolBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kGlicWarming,
-         {{"glic-warming-delay-ms", "100"}, {"glic-warming-jitter-ms", "0"}}},
+        {features::kGlicWarming, {{"glic-warming-delay-ms", "100"}}},
         {features::kGlicWebContentsWarming,
          {{"glic-web-contents-warming-delay", "100ms"}}},
     };

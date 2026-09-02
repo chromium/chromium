@@ -909,11 +909,6 @@ BASE_FEATURE(kGlicWarming, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicWarmingDelayMs{
     &kGlicWarming, "glic-warming-delay-ms", 20 * 1000};
 
-// Adds noise to the warming delay. The effective delay is increased by a
-// random positive number of milliseconds between 0 and kGlicWarmingJitterMs.
-const base::FeatureParam<int> kGlicWarmingJitterMs{
-    &kGlicWarming, "glic-warming-jitter-ms", 10 * 1000};
-
 // Blocks prewarming if the device has less than this amount of physical memory.
 // If 0, memory is not checked.
 const base::FeatureParam<size_t> kGlicWarmingMinRequiredRamMb{

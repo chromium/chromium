@@ -33,9 +33,7 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
  public:
   DISABLED_GlicProfileManagerUiTest() {
     std::vector<base::test::FeatureRefAndParams> enabled = {
-        {features::kGlicWarming,
-         {{features::kGlicWarmingDelayMs.name, "0"},
-          {features::kGlicWarmingJitterMs.name, "0"}}}};
+        {features::kGlicWarming, {{features::kGlicWarmingDelayMs.name, "0"}}}};
     feature_list_.InitWithFeaturesAndParameters(enabled, {});
   }
 

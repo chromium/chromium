@@ -110,17 +110,8 @@ namespace {
 
 base::TimeDelta GetWarmingDelay(GlicWarmingTrigger trigger) {
   switch (trigger) {
-    case GlicWarmingTrigger::kStartup: {
-      base::TimeDelta delay_start =
-          base::Milliseconds(features::kGlicWarmingDelayMs.Get());
-      base::TimeDelta delay_limit =
-          delay_start +
-          base::Milliseconds(features::kGlicWarmingJitterMs.Get());
-      if (delay_limit > delay_start) {
-        return RandTimeDelta(delay_start, delay_limit);
-      }
-      return delay_start;
-    }
+    case GlicWarmingTrigger::kStartup:
+      return base::Milliseconds(features::kGlicWarmingDelayMs.Get());
     case GlicWarmingTrigger::kNudge:
     case GlicWarmingTrigger::kIph:
       return base::TimeDelta();
