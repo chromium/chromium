@@ -13,9 +13,11 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "content/common/content_export.h"
+#include "content/common/zygote/zygote_handle_impl_linux.h"
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -39,12 +41,14 @@ class CONTENT_EXPORT ZygoteHostImpl : public ZygoteHost {
   // Returns whether or not this pid is the pid of a zygote.
   bool IsZygotePid(pid_t pid) override;
 
-  void SetRendererSandboxStatus(int status);
   int GetRendererSandboxStatus() override;
 
-  pid_t LaunchZygote(base::CommandLine* cmd_line,
-                     base::ScopedFD* control_fd,
-                     base::FileHandleMappingVector additional_remapped_fds);
+  // Starts a zygote process and returns a callback that waits for it to become
+  // ready. See ZygoteLaunchCallback.
+  ZygoteLaunchCompletionCallback LaunchZygote(
+      base::CommandLine* cmd_line,
+      base::ScopedFD* control_fd,
+      base::FileHandleMappingVector additional_remapped_fds);
 
   void AdjustRendererOOMScore(base::ProcessHandle process_handle,
                               int score) override;
@@ -53,7 +57,7 @@ class CONTENT_EXPORT ZygoteHostImpl : public ZygoteHost {
                            base::PlatformFile log_file_fd) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  bool HasZygote() { return !zygote_pids_.empty(); }
+  bool HasZygote() { return has_zygote_; }
 
  private:
   friend struct base::DefaultSingletonTraits<ZygoteHostImpl>;
@@ -61,10 +65,16 @@ class CONTENT_EXPORT ZygoteHostImpl : public ZygoteHost {
   ZygoteHostImpl();
   ~ZygoteHostImpl() override;
 
+  // Waits for a zygote started inside the namespace or setuid sandbox to
+  // report that it is running, and returns its pid.
+  pid_t FinishSandboxedZygoteLaunch(base::Process process, int control_fd);
+
   // Tells the ZygoteHost the PIDs of all the zygotes.
   void AddZygotePid(pid_t pid);
 
-  int renderer_sandbox_status_;
+  // Whether LaunchZygote() has been called. Zygotes are launched before any
+  // other threads are created.
+  bool has_zygote_ = false;
 
   bool use_namespace_sandbox_;
   bool use_suid_sandbox_;

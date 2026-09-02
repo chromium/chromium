@@ -81,6 +81,7 @@
 #include "content/child/field_trial.h"
 #include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/common/process_priority_tracker.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/common/url_schemes.h"
@@ -312,8 +313,8 @@ void AsanProcessInfoCB(const char* reason,
 #endif  // defined(ADDRESS_SANITIZER)
 
 #if BUILDFLAG(USE_ZYGOTE)
-pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
-                         base::ScopedFD* control_fd) {
+ZygoteLaunchCompletionCallback LaunchZygoteHelper(base::CommandLine* cmd_line,
+                                                  base::ScopedFD* control_fd) {
   // Append any switches from the browser process that need to be forwarded on
   // to the zygote/renderers.
   static const char* const kForwardSwitches[] = {
@@ -369,13 +370,7 @@ void InitializeZygoteSandboxForBrowserProcess(
   if (!parsed_command_line.HasSwitch(switches::kNoUnsandboxedZygote)) {
     CreateUnsandboxedZygote(base::BindOnce(LaunchZygoteHelper));
   }
-  ZygoteCommunication* generic_zygote =
-      CreateGenericZygote(base::BindOnce(LaunchZygoteHelper));
-
-  // This operation is done through the ZygoteHostImpl as a proxy because of
-  // race condition concerns.
-  ZygoteHostImpl::GetInstance()->SetRendererSandboxStatus(
-      generic_zygote->GetSandboxStatus());
+  CreateGenericZygote(base::BindOnce(LaunchZygoteHelper));
 }
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
@@ -1326,6 +1321,21 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       // Finch configurations.
       BrowserTaskExecutor::PostFeatureListInit();
     }
+
+#if BUILDFLAG(USE_ZYGOTE)
+    // The zygotes, if any, were forked in Initialize(), before the
+    // FeatureList existed. Unless deferring is enabled, finish their handshake
+    // now that it does, which keeps the wait on the main thread ahead of
+    // BrowserMain.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kNoZygote) &&
+        !base::FeatureList::IsEnabled(features::kDeferZygoteHandshake)) {
+      if (GetUnsandboxedZygote()) {
+        GetUnsandboxedZygote()->EnsureLaunchFinished();
+      }
+      GetGenericZygote()->EnsureLaunchFinished();
+    }
+#endif
 
     // The hang watcher needs to be started once the feature list is available
     // but before the IO thread is started.

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/common/content_export.h"
+#include "content/public/common/zygote/zygote_buildflags.h"
 
 namespace features {
 
@@ -71,6 +72,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCDPScreenshotNewSurface);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCodeCacheDeletionWithoutFilter);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCopyFromSurfaceAlwaysCallCallback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCriticalClientHint);
+#if BUILDFLAG(USE_ZYGOTE)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferZygoteHandshake);
+#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsDevTools);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWorkerOrWorkletAgentDoubleReleaseFix);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerDevToolsWorkerReadyCheck);

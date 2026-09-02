@@ -5,12 +5,12 @@
 #ifndef CONTENT_COMMON_ZYGOTE_ZYGOTE_COMMUNICATION_LINUX_H_
 #define CONTENT_COMMON_ZYGOTE_ZYGOTE_COMMUNICATION_LINUX_H_
 
+#include <sys/types.h>
+
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
-
-#include <sys/types.h>
 
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
@@ -19,13 +19,25 @@
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 
 namespace base {
+class CommandLine;
 class Pickle;
 }  // namespace base
 
 namespace content {
+
+// Completes the launch of a zygote: blocks until the zygote process is ready to
+// accept commands and returns its pid.
+using ZygoteLaunchCompletionCallback = base::OnceCallback<pid_t()>;
+
+// Starts a zygote process for |cmd_line| and provides the control fd for it.
+// The returned callback must be run before the zygote is used.
+using ZygoteLaunchCallback =
+    base::OnceCallback<ZygoteLaunchCompletionCallback(base::CommandLine*,
+                                                      base::ScopedFD*)>;
 
 // Handles interprocess communication with the Linux zygote process. The zygote
 // does not use standard Chrome IPC or mojo, see:
@@ -36,8 +48,12 @@ class CONTENT_EXPORT ZygoteCommunication {
   explicit ZygoteCommunication(ZygoteType type);
   ~ZygoteCommunication();
 
-  void Init(
-      base::OnceCallback<pid_t(base::CommandLine*, base::ScopedFD*)> launcher);
+  // Launches the zygote process. Waiting for it to finish starting up is
+  // deferred until the zygote is first used, or EnsureLaunchFinished().
+  void Init(ZygoteLaunchCallback launcher);
+
+  // Blocks until the zygote process has finished starting up.
+  void EnsureLaunchFinished();
 
   // Reinitialize logging. Needed on ChromeOS, which switches to a log file
   // in the user's home directory once they log in.
@@ -88,6 +104,9 @@ class CONTENT_EXPORT ZygoteCommunication {
   // Get the sandbox status from the zygote.
   ssize_t ReadSandboxStatus();
 
+  // Same as EnsureLaunchFinished(), for callers that hold |control_lock_|.
+  void EnsureLaunchFinishedLocked() EXCLUSIVE_LOCKS_REQUIRED(control_lock_);
+
   // Indicates whether the Zygote starts unsandboxed or not.
   const ZygoteType type_;
 
@@ -96,6 +115,8 @@ class CONTENT_EXPORT ZygoteCommunication {
   // acquired before sending a command and released after the result has been
   // received.
   base::Lock control_lock_;
+  // Completes the launch of the zygote process; null once it has run.
+  ZygoteLaunchCompletionCallback finish_launch_ GUARDED_BY(control_lock_);
   // The pid of the zygote.
   pid_t pid_;
   // The list of running zygote children.
