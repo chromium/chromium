@@ -194,6 +194,7 @@ import java.util.function.Consumer;
 /** Tests for {@link TouchToFillPaymentMethodView} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING)
 public class TouchToFillPaymentMethodViewTest {
     /** An observer used to record events that occur with respect to the bottom sheet. */
     private static class TestSheetObserver implements BottomSheetObserver {

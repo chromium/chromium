@@ -3483,6 +3483,21 @@
             ]
         }
     ],
+    "BottomSheetOnDesktopWindowing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BottomSheetOnDesktopWindowing"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrokenAlternativeServiceDelays": [
         {
             "platforms": [
