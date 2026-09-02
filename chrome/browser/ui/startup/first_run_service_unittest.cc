@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -114,11 +115,9 @@ TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
   auto first_run_service =
       FirstRunService(*profile, *identity_test_env.identity_manager());
 
-  // Run and complete the first run.
-  base::RunLoop fre_completion_loop;
-  first_run_service.TryMarkFirstRunAlreadyFinished(
-      fre_completion_loop.QuitClosure());
-  fre_completion_loop.Run();
+  // Complete the first run.
+  first_run_service.FinishFirstRun(
+      ProfilePicker::FirstRunFinishReason::kFinishedFlow);
   EXPECT_FALSE(ShouldOpenFirstRun(profile));
 
   // The profile name is still unchanged.
