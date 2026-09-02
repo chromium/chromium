@@ -536,6 +536,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH,
         OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER,
         OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW,
+        OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_SAME_PWA,
         OverrideUrlLoadingResultType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -557,7 +558,10 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         /* We should move the navigation to a new window. */
         int OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW = 6;
 
-        int NUM_ENTRIES = 7;
+        /* We should move the navigation to a new window of the same PWA. */
+        int OVERRIDE_WITH_REPARENT_TO_SAME_PWA = 7;
+
+        int NUM_ENTRIES = 8;
     }
 
     // LINT.ThenChange(:printDebugShouldOverrideUrlLoadingResultType)
@@ -685,6 +689,12 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW);
         }
+
+        /** Use this result when the navigation should be moved to a new window of the same PWA. */
+        public static OverrideUrlLoadingResult forReparentToSamePwa() {
+            return new OverrideUrlLoadingResult(
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_SAME_PWA);
+        }
     }
 
     public static boolean sAllowIntentsToSelfForTesting;
@@ -705,6 +715,11 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         WindowAndroid windowAndroid = assumeNonNull(mDelegate.getWindowAndroid());
         mModalDialogManager = assumeNonNull(windowAndroid.getModalDialogManager());
         mDelegate.setExternalNavigationHelper(this);
+    }
+
+    /** Reparents the current tab into a new window of the same PWA. */
+    public void reparentTabToSamePwa() {
+        mDelegate.reparentTabToSamePwa();
     }
 
     private static boolean debug() {
@@ -850,6 +865,9 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                 break;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW:
                 resultString = "OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW";
+                break;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_SAME_PWA:
+                resultString = "OVERRIDE_WITH_REPARENT_TO_SAME_PWA";
                 break;
             case OverrideUrlLoadingResultType.NO_OVERRIDE: // Fall through.
             default:
@@ -1357,12 +1375,19 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      */
     private OverrideUrlLoadingResult fallBackToHandlingInApp(ExternalNavigationParams params) {
         // The default behavior for Desktop windowing should be to open a browser tab. In case
-        // a new frame navigation starts in a PWA, we should reparent the tab to the browser.
+        // a new frame navigation starts in a PWA, we should reparent the tab to the browser or to
+        // the same PWA if in-scope.
         if (params.isInDesktopWindowingMode()
                 && params.isInitialNavigationInFrame()
                 && params.isTabInPWA()
                 && !params.isFromIntent()
                 && UrlUtilities.isHttpOrHttps(params.getUrl())) {
+            if (mDelegate.isUrlInPwaScope(params.getUrl())) {
+                if (debug()) {
+                    Log.i(TAG, "No specialized handler found, reparent to same PWA.");
+                }
+                return OverrideUrlLoadingResult.forReparentToSamePwa();
+            }
             if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
             return OverrideUrlLoadingResult.forReparentToBrowser();
         }
@@ -1760,7 +1785,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     /** Returns whether a Tab instance should be reparented from the PWA to the browser. */
-    public boolean shouldReparentTab(
+    public boolean willReparentTab(
             GURL url,
             boolean isTabInPWA,
             boolean isInitialNavigationInFrame,
@@ -1773,6 +1798,28 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                 && webContents.hasOpener()
                 && mDelegate.wasTabLaunchedFromLinkCreatingNewForegroundTab()
                 && UrlUtilities.isHttpOrHttps(url);
+    }
+
+    /** Returns whether a Tab instance should be reparented from the PWA to the browser. */
+    public @Nullable OverrideUrlLoadingResult shouldReparentTab(ExternalNavigationParams params) {
+        if (!willReparentTab(
+                params.getUrl(),
+                params.isTabInPWA(),
+                params.isInitialNavigationInFrame(),
+                params.isInDesktopWindowingMode())) {
+            return null;
+        }
+
+        if (mDelegate.isUrlInPwaScope(params.getUrl())) {
+            if (debug()) {
+                Log.i(TAG, "Reparent auxiliary browsing context navigation to same PWA.");
+            }
+            return OverrideUrlLoadingResult.forReparentToSamePwa();
+        }
+        if (debug()) {
+            Log.i(TAG, "Reparent auxiliary browsing context navigation from a PWA.");
+        }
+        return OverrideUrlLoadingResult.forReparentToBrowser();
     }
 
     // A new auxiliary browsing context navigation starting in the browser in desktop windowing
@@ -1865,22 +1912,13 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         }
 
         // All cases where a navigation that starts in a PWA should cause a Tab reparenting towards
-        // the Chrome browser.
-        // TODO(crbug.com/416562397): consider in-scope PWAs in the reparenting process.
+        // the Chrome browser or a new window of the same PWA.
         if (handleTabInPopup(params)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (shouldReparentTab(
-                params.getUrl(),
-                params.isTabInPWA(),
-                params.isInitialNavigationInFrame(),
-                params.isInDesktopWindowingMode())) {
-            if (debug()) {
-                Log.i(TAG, "Reparent auxiliary browsing context navigation from a PWA.");
-            }
-            return OverrideUrlLoadingResult.forReparentToBrowser();
-        }
+        OverrideUrlLoadingResult shouldReparent = shouldReparentTab(params);
+        if (shouldReparent != null) return shouldReparent;
 
         if (isDesktopBrowserAuxiliaryNavigation(params)) {
             return OverrideUrlLoadingResult.forNoOverride();

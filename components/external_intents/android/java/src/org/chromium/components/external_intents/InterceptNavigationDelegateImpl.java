@@ -319,6 +319,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH:
                 shouldIgnore = true;
                 break;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_SAME_PWA:
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER:
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
@@ -346,6 +347,16 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 && !mClient.isTabDetached()) {
             // Reparenting task must be executed after runResultCallback has been called.
             mClient.startReparentingTaskToNewWindow();
+        }
+
+        if (!shouldIgnore
+                && result.getResultType()
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_SAME_PWA
+                && !mClient.isTabDetached()) {
+            // Reparenting task must be executed after runResultCallback has been called.
+            if (mExternalNavHandler != null) {
+                mExternalNavHandler.reparentTabToSamePwa();
+            }
         }
     }
 
@@ -673,7 +684,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             return false;
         }
 
-        return mExternalNavHandler.shouldReparentTab(
+        return mExternalNavHandler.willReparentTab(
                 url,
                 mClient.isTabInPWA(),
                 isInitialNavigation(),

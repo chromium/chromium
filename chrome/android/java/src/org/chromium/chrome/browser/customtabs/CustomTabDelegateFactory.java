@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackUtils;
@@ -28,7 +29,9 @@ import org.chromium.blink.mojom.DisplayMode.EnumType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -145,6 +148,22 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             // http://crbug.com/40485189 : Do not forward URL requests to external intents for URLs
             // within the Webapp/TWA's scope.
             return isUrlInVerifiedScope;
+        }
+
+        @Override
+        public boolean isUrlInPwaScope(GURL url) {
+            return mVerifier != null && mVerifier.isUrlInVerifiedScope(url.getSpec());
+        }
+
+        @Override
+        public void reparentTabToSamePwa() {
+            if (mIntentDataProvider != null && mIntentDataProvider.getIntent() != null) {
+                Intent intent = new Intent(mIntentDataProvider.getIntent());
+                intent.removeExtra(TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
+                ReparentingTask.from(getTab()).begin(getAvailableContext(), intent, null, null);
+            }
         }
 
         @Override

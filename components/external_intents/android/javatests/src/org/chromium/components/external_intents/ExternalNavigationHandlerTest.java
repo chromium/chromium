@@ -205,6 +205,7 @@ public class ExternalNavigationHandlerTest {
 
     @Before
     public void setUp() {
+        mDelegate.reset();
         mRealApplicationContext = ContextUtils.getApplicationContext();
         mContext = new TestContext(InstrumentationRegistry.getTargetContext(), mDelegate);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
@@ -2261,6 +2262,31 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testReparentTopLevelNavigationToSamePwaWhenInScope() {
+        mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
+        mDelegate.setIsUrlInPwaScope(true);
+
+        mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
+        ExternalNavigationParams params =
+                new ExternalNavigationParams.Builder(
+                                new GURL(SEARCH_RESULT_URL_FOR_TOM_HANKS), false)
+                        .setOpenInNewTab(true)
+                        .setIsMainFrame(true)
+                        .setIsRendererInitiated(true)
+                        .setIsInDesktopWindowingMode(true)
+                        .setIsTabInPWA(true)
+                        .setIsInitialNavigationInFrame(true)
+                        .setRedirectHandler(redirectHandlerForLinkClick())
+                        .build();
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_SAME_PWA,
+                result.getResultType());
+        Assert.assertNull(mUrlHandler.mStartActivityIntent);
+    }
+
+    @Test
+    @SmallTest
     public void testDoNotReparentTopLevelNavigationWithSpecializedHandler() {
         mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
 
@@ -3890,6 +3916,17 @@ public class ExternalNavigationHandlerTest {
         @Override
         public void setExternalNavigationHelper(ExternalNavigationHelper helper) {}
 
+        private boolean mIsUrlInPwaScope;
+
+        public void setIsUrlInPwaScope(boolean isUrlInPwaScope) {
+            mIsUrlInPwaScope = isUrlInPwaScope;
+        }
+
+        @Override
+        public boolean isUrlInPwaScope(GURL url) {
+            return mIsUrlInPwaScope;
+        }
+
         public void setAllowExternalNavigationForHttpProtocols(boolean value) {
             mAllowExternalNavigationForHttpProtocols = value;
         }
@@ -3901,6 +3938,15 @@ public class ExternalNavigationHandlerTest {
 
         public void reset() {
             startIncognitoIntentCalled = false;
+            mIsUrlInPwaScope = false;
+            reparentTabToSamePwaCalled = false;
+        }
+
+        public boolean reparentTabToSamePwaCalled;
+
+        @Override
+        public void reparentTabToSamePwa() {
+            reparentTabToSamePwaCalled = true;
         }
 
         public void setContext(Context context) {

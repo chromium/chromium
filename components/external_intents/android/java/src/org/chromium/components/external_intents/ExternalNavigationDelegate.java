@@ -213,4 +213,16 @@ public interface ExternalNavigationDelegate {
      * @param url The {@link GURL} of the current page.
      */
     boolean allowExternalNavigationForHttpProtocols(GURL url);
+
+    /**
+     * Returns whether the given URL is within the scope of the current PWA/TWA.
+     *
+     * @param url The {@link GURL} to check.
+     */
+    default boolean isUrlInPwaScope(GURL url) {
+        return false;
+    }
+
+    /** Reparents the tab associated with this delegate to a new instance of the same PWA. */
+    default void reparentTabToSamePwa() {}
 }

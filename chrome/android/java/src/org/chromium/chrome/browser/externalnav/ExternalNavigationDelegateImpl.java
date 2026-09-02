@@ -100,6 +100,10 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return activityContext;
     }
 
+    protected final Tab getTab() {
+        return mTab;
+    }
+
     public static void setWillChromeHandleIntentHookForTesting(Predicate<Intent> hook) {
         sWillChromeHandleIntentHookForTesting = hook;
         ResettersForTesting.register(() -> sWillChromeHandleIntentHookForTesting = null);
