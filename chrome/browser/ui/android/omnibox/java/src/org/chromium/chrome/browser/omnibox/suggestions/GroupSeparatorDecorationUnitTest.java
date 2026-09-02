@@ -44,7 +44,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @RunWith(BaseRobolectricTestRunner.class)
 public class GroupSeparatorDecorationUnitTest {
     @Rule
-    public final MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private RecyclerView mRecyclerView;
     @Mock private View mChildViewWithLineSeparator;
