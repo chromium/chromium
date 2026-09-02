@@ -27,6 +27,9 @@ struct InputData {
   bool flushing = false;
 };
 
+// Special error code we use to differentiate real errors from end of buffer.
+constexpr OSStatus kNoMoreDataError = -12345;
+
 constexpr int kAacFramesPerBuffer = 1024;
 
 // Callback used to provide input data to the AudioConverter.
@@ -41,7 +44,11 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
     return noErr;
   }
 
-  CHECK(input_data->bus);
+  if (!input_data->bus) {
+    *num_packets = 0;
+    return kNoMoreDataError;
+  }
+
   DCHECK_EQ(input_data->bus->frames(), kAacFramesPerBuffer);
 
   const AudioBus* bus = input_data->bus;
@@ -69,8 +76,10 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
   // nFramesPerPacket is 1 for the input stream.
   *num_packets = bus->frames();
 
-  // This callback should never be called more than once. Otherwise, we will
-  // run into the CHECK above.
+  // This callback might be called more than once per
+  // AudioConverterFillComplexBuffer call (e.g. for encoder priming/lookahead).
+  // Nulling out `bus` ensures that subsequent calls in the same conversion
+  // cycle return kNoMoreDataError.
   input_data->bus = nullptr;
   return noErr;
 }
@@ -400,18 +409,15 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
         encoder_, ProvideInputCallback, &input_data, &num_packets,
         &output_buffer_list, &packet_description);
 
-    // We expect "1 in, 1 out" when feeding packets into the encoder, except
-    // when flushing.
-    if (result == noErr && !num_packets) {
-      DCHECK(is_flushing);
-      return;
-    }
-
-    if (result != noErr) {
+    if (result != noErr && result != kNoMoreDataError) {
       OSSTATUS_DLOG(ERROR, result)
           << "AudioConverterFillComplexBuffer() failed";
       std::move(current_done_cb_)
           .Run(EncoderStatus::Codes::kEncoderFailedEncode);
+      return;
+    }
+
+    if (!num_packets) {
       return;
     }
 

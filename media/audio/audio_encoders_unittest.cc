@@ -291,6 +291,10 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 #if BUILDFLAG(IS_MAC)
     if (options_.codec == AudioCodec::kAAC)
       return 2112;
+#elif BUILDFLAG(IS_ANDROID)
+    if (options_.codec == AudioCodec::kAAC) {
+      return 1024;
+    }
 #endif
     return 0;
   }
@@ -412,6 +416,28 @@ TEST_P(AudioEncodersTest, EncodeAndFlush) {
   ProduceAudioAndEncode();
   ProduceAudioAndEncode();
   ProduceAudioAndEncode();
+
+  FlushAndVerifyStatus();
+
+  ValidateDoneCallbacksRun();
+  ValidateOutputDuration();
+}
+
+TEST_P(AudioEncodersTest, ShortInputAndFlush) {
+  if (EncoderHasDelay()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  if (options_.codec == AudioCodec::kAAC) {
+    GTEST_SKIP() << "MFAudioEncoder requires at least 3 frames before flush.";
+  }
+#endif
+
+  InitializeEncoder();
+  ProduceAudioAndEncode(
+      base::TimeTicks::Now(),
+      std::max(1, static_cast<int>(options_.sample_rate * 0.01)));
 
   FlushAndVerifyStatus();
 
