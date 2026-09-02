@@ -1887,7 +1887,7 @@ Element* ContainerNode::getElementById(const AtomicString& id) const {
 }
 
 NodeListsNodeData& ContainerNode::EnsureNodeLists() {
-  return UnpackAndRefresh(EnsureRareData().EnsureNodeLists());
+  return EnsureRareData().EnsureNodeLists().RefreshNodeAndUnwrap(*this);
 }
 
 // https://html.spec.whatwg.org/C/#autofocus-delegate

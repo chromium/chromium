@@ -1404,7 +1404,9 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   }
 
   ExplicitlySetAttrElementsMap& explicitly_set_attr_elements_map =
-      UnpackAndRefresh(EnsureRareData().EnsureExplicitlySetElementsForAttr());
+      EnsureRareData()
+          .EnsureExplicitlySetElementsForAttr()
+          .RefreshNodeAndUnwrap(*this);
 
   // If the reflected element is explicitly null then we remove the content
   // attribute and the explicitly set attr-element.
@@ -1669,7 +1671,9 @@ void Element::SetElementArrayAttribute(
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
   ExplicitlySetAttrElementsMap& element_attribute_map =
-      UnpackAndRefresh(EnsureRareData().EnsureExplicitlySetElementsForAttr());
+      EnsureRareData()
+          .EnsureExplicitlySetElementsForAttr()
+          .RefreshNodeAndUnwrap(*this);
 
   if (!given_elements) {
     // 1. If the given value is null:
@@ -1823,7 +1827,7 @@ void Element::RemovePopoverData() {
 }
 
 PopoverData& Element::EnsurePopoverData() {
-  return UnpackAndRefresh(EnsureRareData().EnsurePopoverData());
+  return EnsureRareData().EnsurePopoverData().RefreshNodeAndUnwrap(*this);
 }
 PopoverData* Element::GetPopoverData() const {
   if (const NodeRareData* data = RareData()) {
@@ -1844,7 +1848,7 @@ void Element::SetAltContentData(ContentData* content_data) {
 }
 
 InvokerData& Element::EnsureInvokerData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureInvokerData());
+  return EnsureRareData().EnsureInvokerData().RefreshNodeAndUnwrap(*this);
 }
 InvokerData* Element::GetInvokerData() const {
   if (const NodeRareData* data = RareData()) {
@@ -1858,7 +1862,9 @@ void Element::RemoveInterestInvokerTargetData() {
   RareData()->RemoveInterestInvokerTargetData();
 }
 InterestInvokerTargetData& Element::EnsureInterestInvokerTargetData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureInterestInvokerTargetData());
+  return EnsureRareData()
+      .EnsureInterestInvokerTargetData()
+      .RefreshNodeAndUnwrap(*this);
 }
 InterestInvokerTargetData* Element::GetInterestInvokerTargetData() const {
   if (const NodeRareData* data = RareData()) {
@@ -2014,9 +2020,9 @@ bool Element::InterestGained(Element* target, InterestState state) {
 
   // This is now the target's interest invoker
   CHECK(!target->SourceInterestInvoker());
-  target
-      ->UnpackAndRefresh(
-          target->EnsureRareData().EnsureInterestInvokerTargetData())
+  target->EnsureRareData()
+      .EnsureInterestInvokerTargetData()
+      .RefreshNodeAndUnwrap(*target)
       .setInterestInvoker(this);
   ChangeInterestState(target, state);
 
@@ -5204,7 +5210,9 @@ bool Element::SkipStyleRecalcForContainer(
 
   // Store the child_change so that we can continue interleaved style layout
   // from where we left off.
-  UnpackAndRefresh(EnsureRareData().EnsureContainerQueryData())
+  EnsureRareData()
+      .EnsureContainerQueryData()
+      .RefreshNodeAndUnwrap(*this)
       .SkipStyleRecalc(child_change.ForceMarkReattachLayoutTree());
 
   GetDocument().GetStyleEngine().IncrementSkippedContainerRecalc();
@@ -5920,7 +5928,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
     if (ContainerQueryEvaluator* evaluator = GetContainerQueryEvaluator()) {
       if (!NeedsContainerQueryEvaluator(*evaluator, *new_style)) {
-        UnpackAndRefresh(EnsureRareData().EnsureContainerQueryData())
+        EnsureRareData()
+            .EnsureContainerQueryData()
+            .RefreshNodeAndUnwrap(*this)
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
         if (style_recalc_context.anchor_evaluator == nullptr) {
@@ -7632,8 +7642,9 @@ bool Element::DidAttachInternals() const {
 }
 
 ElementInternals& Element::EnsureElementInternals() {
-  return UnpackAndRefresh(
-      EnsureRareData().EnsureElementInternals(To<HTMLElement>(*this)));
+  return EnsureRareData()
+      .EnsureElementInternals(To<HTMLElement>(*this))
+      .RefreshNodeAndUnwrap(*this);
 }
 
 const ElementInternals* Element::GetElementInternals() const {
@@ -9252,8 +9263,9 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
 }
 
 void Element::SetIsAdRelated(AdProvenance ad_provenance) {
-  UnpackAndRefresh(EnsureRareData().EnsureDisplayAdElementMonitor(
-      this, std::move(ad_provenance)));
+  EnsureRareData()
+      .EnsureDisplayAdElementMonitor(this, std::move(ad_provenance))
+      .RefreshNodeAndUnwrap(*this);
 }
 
 bool Element::IsAdRelated() const {
@@ -9899,7 +9911,8 @@ ElementIntersectionObserverData* Element::IntersectionObserverData() const {
 }
 
 ElementIntersectionObserverData& Element::EnsureIntersectionObserverData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureIntersectionObserverData());
+  return EnsureRareData().EnsureIntersectionObserverData().RefreshNodeAndUnwrap(
+      *this);
 }
 
 HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>*
@@ -9912,7 +9925,8 @@ Element::ResizeObserverData() const {
 
 HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>&
 Element::EnsureResizeObserverData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureResizeObserverData());
+  return EnsureRareData().EnsureResizeObserverData().RefreshNodeAndUnwrap(
+      *this);
 }
 
 DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
@@ -9923,7 +9937,8 @@ DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
 
 DisplayLockContext& Element::EnsureDisplayLockContext() {
   SetHasDisplayLockContext();
-  return UnpackAndRefresh(EnsureRareData().EnsureDisplayLockContext(this));
+  return EnsureRareData().EnsureDisplayLockContext(this).RefreshNodeAndUnwrap(
+      *this);
 }
 
 ContainerQueryData* Element::GetContainerQueryData() const {
@@ -9942,7 +9957,7 @@ ContainerQueryEvaluator* Element::GetContainerQueryEvaluator() const {
 
 ContainerQueryEvaluator& Element::EnsureContainerQueryEvaluator() {
   ContainerQueryData& data =
-      UnpackAndRefresh(EnsureRareData().EnsureContainerQueryData());
+      EnsureRareData().EnsureContainerQueryData().RefreshNodeAndUnwrap(*this);
   ContainerQueryEvaluator* evaluator = data.GetContainerQueryEvaluator();
   if (!evaluator) {
     evaluator = MakeGarbageCollected<ContainerQueryEvaluator>(*this);
@@ -9952,7 +9967,7 @@ ContainerQueryEvaluator& Element::EnsureContainerQueryEvaluator() {
 }
 
 StyleScopeData& Element::EnsureStyleScopeData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureStyleScopeData());
+  return EnsureRareData().EnsureStyleScopeData().RefreshNodeAndUnwrap(*this);
 }
 
 StyleScopeData* Element::GetStyleScopeData() const {
@@ -9963,7 +9978,7 @@ StyleScopeData* Element::GetStyleScopeData() const {
 }
 
 OutOfFlowData& Element::EnsureOutOfFlowData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureOutOfFlowData());
+  return EnsureRareData().EnsureOutOfFlowData().RefreshNodeAndUnwrap(*this);
 }
 
 OutOfFlowData* Element::GetOutOfFlowData() const {
@@ -12403,15 +12418,18 @@ CSSStyleDeclaration* Element::style() {
   if (!IsStyledElement()) {
     return nullptr;
   }
-  return &UnpackAndRefresh(
-      EnsureRareData().EnsureInlineCSSStyleDeclaration(this));
+  return &EnsureRareData()
+              .EnsureInlineCSSStyleDeclaration(this)
+              .RefreshNodeAndUnwrap(*this);
 }
 
 StylePropertyMap* Element::attributeStyleMap() {
   if (!IsStyledElement()) {
     return nullptr;
   }
-  return &UnpackAndRefresh(EnsureRareData().EnsureInlineStylePropertyMap(this));
+  return &EnsureRareData()
+              .EnsureInlineStylePropertyMap(this)
+              .RefreshNodeAndUnwrap(*this);
 }
 
 StylePropertyMapReadOnly* Element::ComputedStyleMap() {
@@ -12892,7 +12910,7 @@ void Element::ChangeInterestState(Element* target, InterestState new_state) {
     return;
   }
   InvokerData* invoker_data =
-      &UnpackAndRefresh(EnsureRareData().EnsureInvokerData());
+      &EnsureRareData().EnsureInvokerData().RefreshNodeAndUnwrap(*this);
   auto& document = GetDocument();
   if (new_state == InterestState::kNoInterest) {
     DCHECK(document.ElementsWithInterest().Contains(this));
@@ -13926,8 +13944,9 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
 }
 
 AnchorPositionScrollData& Element::EnsureAnchorPositionScrollData() {
-  return UnpackAndRefresh(
-      EnsureRareData().EnsureAnchorPositionScrollData(this));
+  return EnsureRareData()
+      .EnsureAnchorPositionScrollData(this)
+      .RefreshNodeAndUnwrap(*this);
 }
 
 void Element::RemoveAnchorPositionScrollData() {
@@ -13944,7 +13963,9 @@ AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
 }
 
 ScrollMarkerGroupData& Element::EnsureScrollTargetGroupData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureScrollMarkerGroupData(this));
+  return EnsureRareData()
+      .EnsureScrollMarkerGroupData(this)
+      .RefreshNodeAndUnwrap(*this);
 }
 
 void Element::RemoveScrollTargetGroupData() {
@@ -14113,7 +14134,9 @@ void Element::setHTML(const String& html,
 }
 
 void Element::SetNamedTriggers(NamedAnimationTriggerMap&& named_triggers) {
-  UnpackAndRefresh(EnsureRareData().EnsureAnimationTriggerData())
+  EnsureRareData()
+      .EnsureAnimationTriggerData()
+      .RefreshNodeAndUnwrap(*this)
       .SetNamedTriggers(named_triggers);
 }
 
@@ -14179,7 +14202,9 @@ bool Element::SupportsBaseAppearance(AppearanceValue appearance_value) const {
 }
 
 OverscrollAreaTracker& Element::EnsureOverscrollAreaTracker() {
-  return UnpackAndRefresh(EnsureRareData().EnsureOverscrollAreaTracker(this));
+  return EnsureRareData()
+      .EnsureOverscrollAreaTracker(this)
+      .RefreshNodeAndUnwrap(*this);
 }
 
 OverscrollAreaTracker* Element::GetOverscrollAreaTracker() const {

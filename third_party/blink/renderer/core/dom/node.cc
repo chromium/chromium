@@ -389,7 +389,8 @@ void Node::setNodeValue(const String&, ExceptionState&) {
 
 NodeList* Node::childNodes() {
   auto* this_node = DynamicTo<ContainerNode>(this);
-  auto& node_lists = UnpackAndRefresh(EnsureRareData().EnsureNodeLists());
+  auto& node_lists =
+      EnsureRareData().EnsureNodeLists().RefreshNodeAndUnwrap(*this);
   if (this_node)
     return node_lists.EnsureChildNodeList(*this_node);
   return node_lists.EnsureEmptyChildNodeList(*this);
@@ -1780,7 +1781,7 @@ void Node::ClearNodeLists() {
 }
 
 FlatTreeNodeData& Node::EnsureFlatTreeNodeData() {
-  return UnpackAndRefresh(EnsureRareData().EnsureFlatTreeNodeData());
+  return EnsureRareData().EnsureFlatTreeNodeData().RefreshNodeAndUnwrap(*this);
 }
 
 FlatTreeNodeData* Node::GetFlatTreeNodeData() const {
@@ -3282,7 +3283,7 @@ void Node::RegisterMutationObserver(
     const HashSet<AtomicString>& attribute_filter) {
   MutationObserverRegistration* registration = nullptr;
   auto& mutation_observer_data =
-      UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData());
+      EnsureRareData().EnsureMutationObserverData().RefreshNodeAndUnwrap(*this);
   for (const auto& item : mutation_observer_data.Registry()) {
     if (&item->Observer() == &observer) {
       registration = item.Get();
@@ -3311,13 +3312,17 @@ void Node::UnregisterMutationObserver(
   // understandable by humans.  The explicit dispose() is needed to have the
   // registration object unregister itself promptly.
   registration->Dispose();
-  UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData())
+  EnsureRareData()
+      .EnsureMutationObserverData()
+      .RefreshNodeAndUnwrap(*this)
       .RemoveRegistration(registration);
 }
 
 void Node::RegisterTransientMutationObserver(
     MutationObserverRegistration* registration) {
-  UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData())
+  EnsureRareData()
+      .EnsureMutationObserverData()
+      .RefreshNodeAndUnwrap(*this)
       .AddTransientRegistration(registration);
 }
 
@@ -3329,7 +3334,9 @@ void Node::UnregisterTransientMutationObserver(
   if (!transient_registry)
     return;
 
-  UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData())
+  EnsureRareData()
+      .EnsureMutationObserverData()
+      .RefreshNodeAndUnwrap(*this)
       .RemoveTransientRegistration(registration);
 }
 
