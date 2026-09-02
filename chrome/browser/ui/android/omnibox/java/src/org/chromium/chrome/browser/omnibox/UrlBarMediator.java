@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
-import android.text.Spanned;
 import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
@@ -337,33 +336,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         // equality. Internally, TextView applies many additional spans that need to be
         // ignored for this comparison to be useful, so this is scoped to only the span types
         // applied by our UI.
-        UrlEmphasisSpan[] currentSpans =
-                existingCharSequence instanceof Spanned
-                        ? ((Spanned) existingCharSequence)
-                                .getSpans(0, existingCharSequence.length(), UrlEmphasisSpan.class)
-                        : new UrlEmphasisSpan[0];
-        UrlEmphasisSpan[] newSpans =
-                newCharSequence instanceof Spanned
-                        ? ((Spanned) newCharSequence)
-                                .getSpans(0, newCharSequence.length(), UrlEmphasisSpan.class)
-                        : new UrlEmphasisSpan[0];
-        if (currentSpans.length != newSpans.length) return false;
-        if (currentSpans.length == 0) return true;
-
-        Spanned currentText = (Spanned) existingCharSequence;
-        Spanned newText = (Spanned) newCharSequence;
-        for (int i = 0; i < currentSpans.length; i++) {
-            UrlEmphasisSpan currentSpan = currentSpans[i];
-            UrlEmphasisSpan newSpan = newSpans[i];
-            if (!currentSpan.equals(newSpan)
-                    || currentText.getSpanStart(currentSpan) != newText.getSpanStart(newSpan)
-                    || currentText.getSpanEnd(currentSpan) != newText.getSpanEnd(newSpan)
-                    || currentText.getSpanFlags(currentSpan) != newText.getSpanFlags(newSpan)) {
-                return false;
-            }
-        }
-
-        return true;
+        return OmniboxViewUtil.haveEquivalentSpans(
+                existingCharSequence, newCharSequence, UrlEmphasisSpan.class);
     }
 
     /**

@@ -27,6 +27,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.EditTextWithLeading;
@@ -277,13 +278,26 @@ public class AutocompleteEditText extends EditTextWithLeading
     public void setText(CharSequence text, BufferType type) {
         if (DEBUG) Log.i(TAG, "setText -- text: %s", text);
         mDisableTextScrollingFromAutocomplete = false;
-        if (TextUtils.equals(getText(), text)) {
+        if (isTextEquivalentToExistingText(text)) {
             if (mModel != null) mModel.onSetText(text);
             return;
         }
 
         super.setText(text, type);
         if (mModel != null) mModel.onSetText(text);
+    }
+
+    /**
+     * Returns whether setting {@code text} would leave the URL-emphasis state unchanged. Subclasses
+     * may extend this policy for other persistent spans. Framework, selection, composing, watcher,
+     * and IME spans are intentionally ignored so they do not defeat the no-reset path.
+     */
+    protected boolean isTextEquivalentToExistingText(CharSequence text) {
+        Editable currentText = getText();
+        return currentText != null
+                && TextUtils.equals(currentText, text)
+                && OmniboxViewUtil.haveEquivalentSpans(
+                        currentText, text, UrlEmphasisSpan.class);
     }
 
     @Override
