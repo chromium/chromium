@@ -29,9 +29,11 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -69,7 +71,8 @@ PageActionTestAccessor::PageActionTestAccessor(BrowserWindowInterface* browser,
 
 PageActionTestAccessor::~PageActionTestAccessor() = default;
 
-page_actions::PageActionViewInterface* PageActionTestAccessor::GetInterface() {
+page_actions::PageActionViewInterface* PageActionTestAccessor::GetInterface()
+    const {
   if (!browser_) {
     return nullptr;
   }
@@ -82,7 +85,7 @@ page_actions::PageActionViewInterface* PageActionTestAccessor::GetInterface() {
 }
 
 page_actions::WebUIPageActionControl*
-PageActionTestAccessor::GetWebUIPageActionControl() {
+PageActionTestAccessor::GetWebUIPageActionControl() const {
   if (!browser_) {
     return nullptr;
   }
@@ -101,15 +104,16 @@ PageActionTestAccessor::GetWebUIPageActionControl() {
   return nullptr;
 }
 
-const page_actions::PageActionModelInterface*
-PageActionTestAccessor::GetModel() {
+const page_actions::PageActionModelInterface* PageActionTestAccessor::GetModel()
+    const {
   if (auto* const control = GetWebUIPageActionControl()) {
     return control->GetObservedModel(action_id_);
   }
   return nullptr;
 }
 
-page_actions::PageActionView* PageActionTestAccessor::GetPageActionView() {
+page_actions::PageActionView* PageActionTestAccessor::GetPageActionView()
+    const {
   if (features::IsWebUILocationBarEnabled()) {
     return nullptr;
   }
@@ -120,7 +124,7 @@ page_actions::PageActionView* PageActionTestAccessor::GetPageActionView() {
   return static_cast<page_actions::PageActionView*>(interface_ptr);
 }
 
-ui::TrackedElementWebUI* PageActionTestAccessor::GetTrackedElement() {
+ui::TrackedElementWebUI* PageActionTestAccessor::GetTrackedElement() const {
   if (!browser_) {
     return nullptr;
   }
@@ -144,11 +148,11 @@ ui::TrackedElementWebUI* PageActionTestAccessor::GetTrackedElement() {
   return element->AsA<ui::TrackedElementWebUI>();
 }
 
-views::View* PageActionTestAccessor::GetView() {
+views::View* PageActionTestAccessor::GetView() const {
   return GetPageActionView();
 }
 
-content::WebContents* PageActionTestAccessor::GetWebContents() {
+content::WebContents* PageActionTestAccessor::GetWebContents() const {
   if (!browser_) {
     return nullptr;
   }
@@ -165,7 +169,7 @@ content::WebContents* PageActionTestAccessor::GetWebContents() {
 }
 
 bool PageActionTestAccessor::EvaluateWebUI(
-    std::string_view element_predicate_js) {
+    std::string_view element_predicate_js) const {
   if (auto* tracked_el = GetTrackedElement()) {
     if (content::WebContents* contents = GetWebContents()) {
       const std::string script = base::StringPrintf(
@@ -212,7 +216,7 @@ bool PageActionTestAccessor::EvaluateWebUI(
   return false;
 }
 
-bool PageActionTestAccessor::GetVisible() {
+bool PageActionTestAccessor::GetVisible() const {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
       return model->GetVisible();
@@ -224,7 +228,7 @@ bool PageActionTestAccessor::GetVisible() {
   return pav ? pav->GetVisible() : false;
 }
 
-bool PageActionTestAccessor::IsChipVisible() {
+bool PageActionTestAccessor::IsChipVisible() const {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
       return model->GetVisible() && model->IsChipShowing();
@@ -244,7 +248,7 @@ bool PageActionTestAccessor::IsChipVisible() {
   return pav->IsChipVisible();
 }
 
-bool PageActionTestAccessor::IsIconVisible() {
+bool PageActionTestAccessor::IsIconVisible() const {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
       return model->GetVisible() && !model->IsChipShowing();
@@ -264,7 +268,7 @@ bool PageActionTestAccessor::IsIconVisible() {
   return !pav->IsChipVisible();
 }
 
-bool PageActionTestAccessor::HasFocus() {
+bool PageActionTestAccessor::HasFocus() const {
   if (auto* pav = GetPageActionView()) {
     return pav->HasFocus();
   }
@@ -272,7 +276,85 @@ bool PageActionTestAccessor::HasFocus() {
   return EvaluateWebUI("(el) => el.matches(':focus')");
 }
 
-bool PageActionTestAccessor::IsAnimating() {
+bool PageActionTestAccessor::IsLabelVisible() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    return EvaluateWebUI(
+        R"((el) => {
+          if (el.hidden || window.getComputedStyle(el).display === 'none') {
+            return false;
+          }
+          const chipBtn = el.shadowRoot
+              ? el.shadowRoot.querySelector('toolbar-chip-button')
+              : null;
+          if (!chipBtn || !chipBtn.hasAttribute('has-label')) {
+            return false;
+          }
+          const textSpan = chipBtn.querySelector('#text');
+          if (!textSpan) {
+            return false;
+          }
+          return textSpan.getBoundingClientRect().width > 0;
+        })");
+  }
+  auto* pav = GetPageActionView();
+  if (!pav || !pav->GetVisible()) {
+    return false;
+  }
+  return pav->IsChipVisible() && pav->GetLabelForTesting()->width() != 0;
+}
+
+bool PageActionTestAccessor::IsAtMinimumSize() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    return EvaluateWebUI(
+        R"((el) => {
+          const chipBtn = el.shadowRoot
+              ? el.shadowRoot.querySelector('toolbar-chip-button')
+              : null;
+          if (!chipBtn) return true;
+          const btn = chipBtn.shadowRoot
+              ? chipBtn.shadowRoot.querySelector('#button')
+              : chipBtn;
+          const rect = btn.getBoundingClientRect();
+          return rect.width <= rect.height;
+        })");
+  }
+  auto* pav = GetPageActionView();
+  if (!pav) {
+    return true;
+  }
+  return pav->size() == pav->GetMinimumSize();
+}
+
+bool PageActionTestAccessor::IsIconCentered() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    return EvaluateWebUI(
+        R"((el) => {
+          const chipBtn = el.shadowRoot
+              ? el.shadowRoot.querySelector('toolbar-chip-button')
+              : null;
+          if (!chipBtn) return true;
+          const btn = chipBtn.shadowRoot
+              ? chipBtn.shadowRoot.querySelector('#button')
+              : chipBtn;
+          const icon = chipBtn.querySelector('#icon');
+          if (!icon) return true;
+          const btnRect = btn.getBoundingClientRect();
+          const iconRect = icon.getBoundingClientRect();
+          const leftGap = iconRect.left - btnRect.left;
+          const rightGap = btnRect.right - iconRect.right;
+          return Math.abs(leftGap - rightGap) <= 1;
+        })");
+  }
+  auto* pav = GetPageActionView();
+  if (!pav) {
+    return true;
+  }
+  const auto* const image_container = pav->GetImageContainerView();
+  return image_container->x() ==
+         pav->width() - image_container->bounds().right();
+}
+
+bool PageActionTestAccessor::IsAnimating() const {
   if (features::IsWebUILocationBarEnabled()) {
     return EvaluateWebUI(
         R"((el) => {
@@ -293,7 +375,7 @@ bool PageActionTestAccessor::IsAnimating() {
   return pav->is_animating_label();
 }
 
-bool PageActionTestAccessor::HasIconHighlight() {
+bool PageActionTestAccessor::HasIconHighlight() const {
   if (auto* pav = GetPageActionView()) {
     return views::InkDrop::Get(pav)->GetInkDrop()->GetTargetInkDropState() ==
            views::InkDropState::ACTIVATED;
@@ -308,7 +390,7 @@ bool PageActionTestAccessor::HasIconHighlight() {
   return EvaluateWebUI(kScript);
 }
 
-std::u16string PageActionTestAccessor::GetText() {
+std::u16string PageActionTestAccessor::GetText() const {
   if (!IsChipVisible()) {
     return std::u16string();
   }
@@ -343,7 +425,7 @@ std::u16string PageActionTestAccessor::GetText() {
   return pav ? std::u16string(pav->GetText()) : std::u16string();
 }
 
-std::u16string PageActionTestAccessor::GetTooltipText() {
+std::u16string PageActionTestAccessor::GetTooltipText() const {
   if (auto* interface_ptr = GetInterface()) {
     return interface_ptr->GetTooltipText();
   }
@@ -353,7 +435,7 @@ std::u16string PageActionTestAccessor::GetTooltipText() {
   return std::u16string();
 }
 
-std::u16string PageActionTestAccessor::GetAccessibleName() {
+std::u16string PageActionTestAccessor::GetAccessibleName() const {
   if (auto* interface_ptr = GetInterface()) {
     return interface_ptr->GetAccessibleName();
   }
@@ -363,7 +445,7 @@ std::u16string PageActionTestAccessor::GetAccessibleName() {
   return std::u16string();
 }
 
-ui::ImageModel PageActionTestAccessor::GetImage() {
+ui::ImageModel PageActionTestAccessor::GetImage() const {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
       return model->GetImage();
@@ -374,6 +456,70 @@ ui::ImageModel PageActionTestAccessor::GetImage() {
   return pav ? pav->GetImageModel(views::Button::STATE_NORMAL)
                    .value_or(ui::ImageModel())
              : ui::ImageModel();
+}
+
+ui::TrackedElement* PageActionTestAccessor::GetElement() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    return GetTrackedElement();
+  }
+  if (auto* pav = GetPageActionView()) {
+    return views::ElementTrackerViews::GetInstance()->GetElementForView(
+        pav, /*assign_temporary_id=*/true);
+  }
+  return nullptr;
+}
+
+page_actions::PageActionView* PageActionTestAccessor::view() const {
+  return GetPageActionView();
+}
+
+std::optional<size_t> PageActionTestAccessor::GetIndex() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    if (auto* const control = GetWebUIPageActionControl()) {
+      auto states = control->GetPageActionStates();
+      for (size_t i = 0; i < states.size(); ++i) {
+        if (webui_toolbar::MojomPageActionIdToActionId(
+                states[i]->page_action_id) == action_id_) {
+          return i;
+        }
+      }
+    }
+    return std::nullopt;
+  }
+  if (auto* pav = GetPageActionView()) {
+    if (auto* parent = pav->parent()) {
+      return parent->GetIndexOf(pav);
+    }
+  }
+  return std::nullopt;
+}
+
+void PageActionTestAccessor::FinishAnimation() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    if (content::WebContents* contents = GetWebContents()) {
+      const std::string script =
+          R"((() => {
+            const anims = document.getAnimations({subtree: true});
+            for (const anim of anims) {
+              try {
+                anim.finish();
+              } catch (e) {
+                try {
+                  anim.currentTime = anim.effect?.getTiming()?.duration || 0;
+                } catch (e2) {}
+              }
+            }
+            return true;
+          })())";
+      std::ignore = content::EvalJs(contents, script);
+    }
+  } else if (auto* pav = GetPageActionView()) {
+    auto animation = std::make_unique<gfx::AnimationTestApi>(
+        &pav->GetSlideAnimationForTesting());
+    auto now = base::TimeTicks::Now();
+    animation->SetStartTime(now);
+    animation->Step(now + base::Minutes(1));
+  }
 }
 
 void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {

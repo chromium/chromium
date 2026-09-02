@@ -23,8 +23,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -51,21 +50,6 @@ namespace {
 constexpr size_t kFullSpaceTextLength = 0;
 constexpr size_t kReducedSpaceTextLength = 500;
 
-bool IsLabelVisible(PageActionView* page_action) {
-  return page_action->IsChipVisible() &&
-         page_action->GetLabelForTesting()->width() != 0;
-}
-
-bool IsAtMinimumSize(PageActionView* page_action) {
-  return page_action->size() == page_action->GetMinimumSize();
-}
-
-bool IsIconCentered(PageActionView* page_action) {
-  const auto* const image_container = page_action->GetImageContainerView();
-  return image_container->x() ==
-         page_action->width() - image_container->bounds().right();
-}
-
 void EnsurePageActionEnabled(actions::ActionId action_id) {
   auto* action = actions::ActionManager::Get().FindAction(action_id);
   CHECK(action);
@@ -74,26 +58,25 @@ void EnsurePageActionEnabled(actions::ActionId action_id) {
 }
 
 MATCHER(IsChipExpanded, "Check if the chip is expanded") {
-  if (arg == nullptr) {
-    *result_listener << "Page action is null";
+  PageActionTestAccessor accessor = arg;
+  if (!accessor.GetVisible()) {
+    *result_listener << "Page action is not visible";
     return false;
   }
-  if (!IsLabelVisible(arg)) {
+  if (!accessor.IsLabelVisible()) {
     *result_listener << "Label is not visible";
     return false;
   }
-  if (IsAtMinimumSize(arg)) {
-    *result_listener << "Chip is at minimum size, Size: "
-                     << arg->size().ToString();
+  if (accessor.IsAtMinimumSize()) {
+    *result_listener << "Chip is at minimum size";
     return false;
   }
-  if (arg->is_animating_label()) {
+  if (accessor.IsAnimating()) {
     *result_listener << "Page action is animating";
     return false;
   }
-  if (IsIconCentered(arg)) {
-    *result_listener << "Chip is centered, Insets: "
-                     << arg->GetInsets().ToString();
+  if (accessor.IsIconCentered()) {
+    *result_listener << "Chip icon is centered";
     return false;
   }
 
@@ -101,26 +84,25 @@ MATCHER(IsChipExpanded, "Check if the chip is expanded") {
 }
 
 MATCHER(IsChipCollapsed, "Check if the chip is collapsed") {
-  if (arg == nullptr) {
-    *result_listener << "Page action is null";
+  PageActionTestAccessor accessor = arg;
+  if (!accessor.GetVisible()) {
+    *result_listener << "Page action is not visible";
     return false;
   }
-  if (IsLabelVisible(arg)) {
+  if (accessor.IsLabelVisible()) {
     *result_listener << "Label is visible";
     return false;
   }
-  if (!IsAtMinimumSize(arg)) {
-    *result_listener << "Chip is not at minimum size, Size: "
-                     << arg->size().ToString();
+  if (!accessor.IsAtMinimumSize()) {
+    *result_listener << "Chip is not at minimum size";
     return false;
   }
-  if (arg->is_animating_label()) {
+  if (accessor.IsAnimating()) {
     *result_listener << "Page action is animating";
     return false;
   }
-  if (!IsIconCentered(arg)) {
-    *result_listener << "Chip is not centered, Insets: "
-                     << arg->GetInsets().ToString();
+  if (!accessor.IsIconCentered()) {
+    *result_listener << "Chip icon is not centered";
     return false;
   }
 
@@ -159,34 +141,31 @@ class PageActionUiTestBase {
         ->page_action_controller();
   }
 
-  LocationBarView* location_bar() const {
+  LocationBar* location_bar() const {
     return BrowserView::GetBrowserViewForBrowser(GetBrowser())
-        ->toolbar()
-        ->location_bar_view();
+        ->GetLocationBar();
   }
 
-  OmniboxViewViews* omnibox_view() const {
-    return static_cast<OmniboxViewViews*>(location_bar()->omnibox_view());
+  OmniboxView* omnibox_view() const { return location_bar()->GetOmniboxView(); }
+
+  PageActionTestAccessor GetPageAction(actions::ActionId action_id) const {
+    return PageActionTestAccessor(GetBrowser(), action_id);
   }
 
-  PageActionContainerView* page_action_container() const {
-    return location_bar()->page_action_container();
+  PageActionTestAccessor GetTestPageAction() const {
+    return GetPageAction(kActionShowTranslate);
   }
 
-  PageActionView* GetPageActionView(actions::ActionId action_id) const {
-    return page_action_container()->GetPageActionView(action_id);
+  PageActionTestAccessor GetTranslatePageAction() const {
+    return GetPageAction(kActionShowTranslate);
   }
 
-  PageActionView* GetTestPageActionView() const {
-    return GetPageActionView(kActionShowTranslate);
+  PageActionTestAccessor GetMemorySaverPageAction() const {
+    return GetPageAction(kActionShowMemorySaverChip);
   }
 
-  void FastForwardAnimation(PageActionView* view) {
-    auto animation = std::make_unique<gfx::AnimationTestApi>(
-        &view->GetSlideAnimationForTesting());
-    auto now = base::TimeTicks::Now();
-    animation->SetStartTime(now);
-    animation->Step(now + base::Minutes(1));
+  void FastForwardAnimation(PageActionTestAccessor action) {
+    action.FinishAnimation();
     EnsureLayout();
   }
 
@@ -220,14 +199,6 @@ class PageActionUiTestBase {
 
   void HideAnchoredMessage(actions::ActionId action_id) const {
     page_action_controller()->HideAnchoredMessage(action_id);
-  }
-
-  PageActionView* GetTranslatePageActionView() const {
-    return GetPageActionView(kActionShowTranslate);
-  }
-
-  PageActionView* GetMemorySaverPageActionView() const {
-    return GetPageActionView(kActionShowMemorySaverChip);
   }
 
   void ShowPageAction(actions::ActionId action_id) const {
@@ -273,7 +244,7 @@ class PageActionUiTestBase {
   void AdjustAvailableSpace(size_t text_length) {
     omnibox_view()->SetUserText(std::u16string(text_length, 'a'));
 
-    // Step 2: Immediately unhide the page actions.
+    // Immediately unhide the page actions.
     page_action_controller()->SetShouldHidePageActions(false);
 
     EnsureLayout();
@@ -314,21 +285,21 @@ class PageActionInteractiveUiTest : public InteractiveBrowserTest,
 // collapses the suggestion chip from label mode to icon-only mode.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipCollapsesToIconWhenSpaceIsReduced) {
-  PageActionView* view = GetTestPageActionView();
+  auto action = GetTestPageAction();
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipExpanded());
+  EXPECT_THAT(action, IsChipExpanded());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 }
 
 // Tests that increasing available space from reduced to full restores the
@@ -337,19 +308,19 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipRestoresLabelWhenSpaceIsRestored) {
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
-  PageActionView* view = GetTestPageActionView();
+  auto action = GetTestPageAction();
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipExpanded());
+  EXPECT_THAT(action, IsChipExpanded());
 }
 
 // Tests that transitioning from full available space to reduced and then back
@@ -357,27 +328,27 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(
     PageActionInteractiveUiTest,
     SuggestionChipTransitionsBetweenLabelAndIconWhenSpaceChanges) {
-  PageActionView* view = GetTestPageActionView();
+  auto action = GetTestPageAction();
 
   AdjustAvailableSpace(kFullSpaceTextLength);
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipExpanded());
+  EXPECT_THAT(action, IsChipExpanded());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipExpanded());
+  EXPECT_THAT(action, IsChipExpanded());
 }
 
 // Tests that starting with reduced space, moving to full space, and then
@@ -385,28 +356,27 @@ IN_PROC_BROWSER_TEST_F(
 // label modes repeatedly.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipSwitchesModesOnMultipleSpaceAdjustments) {
-  PageActionView* view = GetTestPageActionView();
+  auto action = GetTestPageAction();
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(action, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipExpanded());
+  EXPECT_THAT(action, IsChipExpanded());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
-  FastForwardAnimation(view);
+  FastForwardAnimation(action);
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 }
 
 // Tests that calling ShowPageAction on a page action results in an icon-only
@@ -416,9 +386,9 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ShowTestPageActionIcon();
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  PageActionView* view = GetTestPageActionView();
+  auto action = GetTestPageAction();
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 }
 
 // Tests that once a page action is shown as an icon-only view, it remains
@@ -428,35 +398,32 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ShowTestPageActionIcon();
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  PageActionView* view = GetTestPageActionView();
+  auto action = GetTestPageAction();
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
-  EXPECT_THAT(view, IsChipCollapsed());
+  EXPECT_THAT(action, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(action, IsChipCollapsed());
 }
 
 // Tests that toggling the suggestion chip state for two actions reorders their
 // views appropriately.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipReordersMultipleActions) {
-  PageActionContainerView* container = page_action_container();
-  ASSERT_TRUE(container);
+  ShowTranslatePageActionIcon();
+  ShowMemorySaverPageActionIcon();
 
-  PageActionView* memory_saver_view = GetMemorySaverPageActionView();
-  ASSERT_TRUE(memory_saver_view);
-  PageActionView* translate_view = GetTranslatePageActionView();
-  ASSERT_TRUE(translate_view);
+  auto memory_saver_action = GetMemorySaverPageAction();
+  auto translate_action = GetTranslatePageAction();
 
-  auto initial_memory_saver_index = container->GetIndexOf(memory_saver_view);
+  auto initial_memory_saver_index = memory_saver_action.GetIndex();
   ASSERT_TRUE(initial_memory_saver_index.has_value());
-  auto initial_translate_index = container->GetIndexOf(translate_view);
+  auto initial_translate_index = translate_action.GetIndex();
   ASSERT_TRUE(initial_translate_index.has_value());
 
   // For this test, we assume that the translate page action appears before the
@@ -471,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   // Expect translate view to move to the front (index 0) as it's the only chip.
   {
-    auto new_translate_index = container->GetIndexOf(translate_view);
+    auto new_translate_index = translate_action.GetIndex();
     ASSERT_TRUE(new_translate_index.has_value());
     EXPECT_EQ(new_translate_index.value(), 0u);
   }
@@ -479,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // Since translate is at index 0, the memory saver should maintain its
   // relative order among non-chips.
   {
-    auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    auto new_memory_saver_index = memory_saver_action.GetIndex();
     ASSERT_TRUE(new_memory_saver_index.has_value());
     EXPECT_EQ(new_memory_saver_index.value(),
               initial_memory_saver_index.value());
@@ -494,14 +461,14 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // order. Since translate was initially before memory saver, translate should
   // remain at index 0.
   {
-    auto new_translate_index = container->GetIndexOf(translate_view);
+    auto new_translate_index = translate_action.GetIndex();
     ASSERT_TRUE(new_translate_index.has_value());
     EXPECT_EQ(new_translate_index.value(), 0u);
   }
   // And the memory saver view should now be at index 1, immediately after
   // the translate chip, preserving its relative initial order among chips.
   {
-    auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    auto new_memory_saver_index = memory_saver_action.GetIndex();
     ASSERT_TRUE(new_memory_saver_index.has_value());
     EXPECT_EQ(new_memory_saver_index.value(), 1u);
   }
@@ -513,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   // Memory saver should now be the only active chip and move to index 0.
   {
-    auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    auto new_memory_saver_index = memory_saver_action.GetIndex();
     ASSERT_TRUE(new_memory_saver_index.has_value());
     EXPECT_EQ(new_memory_saver_index.value(), 0u);
   }
@@ -522,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // In this case, it will be at index 1 + its initial index (since Memory Saver
   // is the only chip at index 0, and it was initially after Translate).
   {
-    auto new_translate_index = container->GetIndexOf(translate_view);
+    auto new_translate_index = translate_action.GetIndex();
     ASSERT_TRUE(new_translate_index.has_value());
     EXPECT_EQ(new_translate_index.value(),
               1u + initial_translate_index.value());
@@ -536,12 +503,12 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // With no active chips, all icons should revert to their original relative
   // order.
   {
-    auto final_translate_index = container->GetIndexOf(translate_view);
+    auto final_translate_index = translate_action.GetIndex();
     ASSERT_TRUE(final_translate_index.has_value());
     EXPECT_EQ(final_translate_index.value(), initial_translate_index.value());
   }
   {
-    auto final_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    auto final_memory_saver_index = memory_saver_action.GetIndex();
     ASSERT_TRUE(final_memory_saver_index.has_value());
     EXPECT_EQ(final_memory_saver_index.value(),
               initial_memory_saver_index.value());
@@ -885,8 +852,8 @@ class PageActionPixelIconsHiddenTest : public PageActionPixelTestBase {
   }
 
   bool VerifyUi() override {
-    PageActionView* test_view = GetTestPageActionView();
-    EXPECT_FALSE(test_view->GetVisible());
+    auto test_action = GetTestPageAction();
+    EXPECT_FALSE(test_action.GetVisible());
     return true;
   }
 };
@@ -910,10 +877,8 @@ class PageActionPixelShowIconTest : public PageActionPixelTestBase {
   }
 
   bool VerifyUi() override {
-    PageActionView* test_view = GetTestPageActionView();
-    EXPECT_TRUE(test_view->GetVisible());
-    EXPECT_FALSE(IsLabelVisible(test_view));
-    EXPECT_TRUE(IsAtMinimumSize(test_view));
+    auto test_action = GetTestPageAction();
+    EXPECT_THAT(test_action, IsChipCollapsed());
     return true;
   }
 };
@@ -934,15 +899,13 @@ class PageActionPixelShowChipTest : public PageActionPixelTestBase {
   void ShowUi(const std::string& name) override {
     AdjustAvailableSpace(kFullSpaceTextLength);
     ShowTestSuggestionChip();
-    FastForwardAnimation(GetTestPageActionView());
+    FastForwardAnimation(GetTestPageAction());
     PageActionPixelTestBase::ShowUi(name);
   }
 
   bool VerifyUi() override {
-    PageActionView* test_view = GetTestPageActionView();
-    EXPECT_TRUE(test_view->GetVisible());
-    EXPECT_TRUE(IsLabelVisible(test_view));
-    EXPECT_FALSE(IsAtMinimumSize(test_view));
+    auto test_action = GetTestPageAction();
+    EXPECT_THAT(test_action, IsChipExpanded());
     return true;
   }
 };
@@ -964,15 +927,13 @@ class PageActionPixelShowChipReducedTest : public PageActionPixelTestBase {
   void ShowUi(const std::string& name) override {
     AdjustAvailableSpace(kReducedSpaceTextLength);
     ShowTestSuggestionChip();
-    FastForwardAnimation(GetTestPageActionView());
+    FastForwardAnimation(GetTestPageAction());
     PageActionPixelTestBase::ShowUi(name);
   }
 
   bool VerifyUi() override {
-    PageActionView* test_view = GetTestPageActionView();
-    EXPECT_TRUE(test_view->GetVisible());
-    EXPECT_FALSE(IsLabelVisible(test_view));
-    EXPECT_TRUE(IsAtMinimumSize(test_view));
+    auto test_action = GetTestPageAction();
+    EXPECT_THAT(test_action, IsChipCollapsed());
     return true;
   }
 };
@@ -1001,13 +962,12 @@ class PageActionPixelReorderTest : public PageActionPixelTestBase {
   }
 
   bool VerifyUi() override {
-    PageActionContainerView* container = page_action_container();
-    PageActionView* memory_saver_view = GetMemorySaverPageActionView();
-    PageActionView* translate_view = GetTranslatePageActionView();
+    auto memory_saver_action = GetMemorySaverPageAction();
+    auto translate_action = GetTranslatePageAction();
 
     // Get the current indices as optionals.
-    auto memory_saver_index = container->GetIndexOf(memory_saver_view);
-    auto translate_index = container->GetIndexOf(translate_view);
+    auto memory_saver_index = memory_saver_action.GetIndex();
+    auto translate_index = translate_action.GetIndex();
     if (!memory_saver_index.has_value() || !translate_index.has_value()) {
       return false;
     }

@@ -27,6 +27,7 @@ class WebUIPageActionControl;
 }  // namespace page_actions
 
 namespace ui {
+class TrackedElement;
 class TrackedElementWebUI;
 }
 
@@ -44,29 +45,36 @@ class PageActionTestAccessor {
   PageActionTestAccessor& operator=(const PageActionTestAccessor&) = default;
   ~PageActionTestAccessor();
 
-  bool GetVisible();
-  bool IsChipVisible();
-  bool IsIconVisible();
-  bool IsAnimating();
-  bool HasFocus();
-  bool HasIconHighlight();
-  std::u16string GetText();
-  std::u16string GetTooltipText();
-  std::u16string GetAccessibleName();
-  ui::ImageModel GetImage();
+  bool GetVisible() const;
+  bool IsChipVisible() const;
+  bool IsIconVisible() const;
+  bool IsLabelVisible() const;
+  bool IsAtMinimumSize() const;
+  bool IsIconCentered() const;
+  bool IsAnimating() const;
+  bool HasFocus() const;
+  bool HasIconHighlight() const;
+  std::u16string GetText() const;
+  std::u16string GetTooltipText() const;
+  std::u16string GetAccessibleName() const;
+  ui::ImageModel GetImage() const;
+  ui::TrackedElement* GetElement() const;
+  page_actions::PageActionView* view() const;
+  std::optional<size_t> GetIndex() const;
+  void FinishAnimation() const;
   void Click(page_actions::PageActionTrigger trigger =
                  page_actions::PageActionTrigger::kMouse);
   void SetSuppressionThreshold(base::TimeDelta threshold);
 
  private:
-  page_actions::PageActionViewInterface* GetInterface();
-  const page_actions::PageActionModelInterface* GetModel();
-  page_actions::PageActionView* GetPageActionView();
-  page_actions::WebUIPageActionControl* GetWebUIPageActionControl();
-  bool EvaluateWebUI(std::string_view element_predicate_js);
-  ui::TrackedElementWebUI* GetTrackedElement();
-  views::View* GetView();
-  content::WebContents* GetWebContents();
+  page_actions::PageActionViewInterface* GetInterface() const;
+  const page_actions::PageActionModelInterface* GetModel() const;
+  page_actions::PageActionView* GetPageActionView() const;
+  page_actions::WebUIPageActionControl* GetWebUIPageActionControl() const;
+  bool EvaluateWebUI(std::string_view element_predicate_js) const;
+  ui::TrackedElementWebUI* GetTrackedElement() const;
+  views::View* GetView() const;
+  content::WebContents* GetWebContents() const;
 
   raw_ptr<BrowserWindowInterface> browser_;
   actions::ActionId action_id_;

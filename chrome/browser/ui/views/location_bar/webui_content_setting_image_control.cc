@@ -97,6 +97,9 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
     // location bar, managed by the Permissions Dashboard, so we don't include
     // them in the right hand side content setting images here.
     if (model->image_type() == ImageType::kMediaStream) {
+      model->Update(setting_view_delegate_->ShouldHideContentSettingImage()
+                        ? nullptr
+                        : web_contents);
       continue;
     }
 
@@ -243,9 +246,11 @@ bool WebUIContentSettingImageControl::TestPressed(size_t index) {
   if (index >= models_.size()) {
     return false;
   }
-  content::WebContents* web_contents =
-      setting_view_delegate_->GetContentSettingWebContents();
-  if (web_contents) {
+  if (setting_view_delegate_) {
+    content::WebContents* web_contents =
+        setting_view_delegate_->ShouldHideContentSettingImage()
+            ? nullptr
+            : setting_view_delegate_->GetContentSettingWebContents();
     models_[index]->Update(web_contents);
   }
   if (!models_[index]->is_visible()) {

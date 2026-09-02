@@ -70,9 +70,10 @@ class PageActionInteractiveTestMixin : public T {
   auto WaitForPageActionChipVisible(actions::ActionId action_id) {
     return WaitForPageActionState(
         action_id,
-        base::BindRepeating([](page_actions::PageActionTestAccessor* accessor) {
-          return accessor->IsChipVisible() && !accessor->IsAnimating();
-        }),
+        base::BindRepeating(
+            [](const page_actions::PageActionTestAccessor* accessor) {
+              return accessor->IsChipVisible() && !accessor->IsAnimating();
+            }),
         "WaitForPageActionChipVisible()");
   }
 
@@ -91,16 +92,17 @@ class PageActionInteractiveTestMixin : public T {
   auto WaitForPageActionChipNotVisible(actions::ActionId action_id) {
     return WaitForPageActionState(
         action_id,
-        base::BindRepeating([](page_actions::PageActionTestAccessor* accessor) {
-          return !accessor->IsChipVisible() && !accessor->IsAnimating();
-        }),
+        base::BindRepeating(
+            [](const page_actions::PageActionTestAccessor* accessor) {
+              return !accessor->IsChipVisible() && !accessor->IsAnimating();
+            }),
         "WaitForPageActionChipNotVisible()");
   }
 
  private:
   auto WaitForPageActionState(
       actions::ActionId action_id,
-      base::RepeatingCallback<bool(page_actions::PageActionTestAccessor*)>
+      base::RepeatingCallback<bool(const page_actions::PageActionTestAccessor*)>
           matcher,
       std::string_view description) {
     auto steps =

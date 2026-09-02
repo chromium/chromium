@@ -24,7 +24,9 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -300,17 +302,18 @@ class IntentChipButtonBrowserUiTest
   }
 
   bool VerifyUi() override {
-    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    if (!browser_view) {
-      return false;
-    }
-
-    auto* const location_bar = browser_view->GetLocationBarView();
     auto intent_chip = GetIntentChip(browser());
 
     bool is_intent_chip_visible_and_expanded =
         intent_chip.GetVisible() && !IsIntentChipFullyCollapsed(browser());
     if (!is_intent_chip_visible_and_expanded) {
+      return false;
+    }
+
+    auto* const location_bar =
+        BrowserElements::From(browser())->GetElement(kLocationBarElementId);
+    EXPECT_NE(location_bar, nullptr);
+    if (!location_bar) {
       return false;
     }
 

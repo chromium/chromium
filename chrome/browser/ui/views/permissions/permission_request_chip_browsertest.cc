@@ -12,8 +12,10 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -355,23 +358,32 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
 
 class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
  public:
+  PermissionRequestChipBrowserUiTest() = default;
+
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     RequestPermission(browser());
   }
 
   bool VerifyUi() override {
-    LocationBarView* const location_bar =
-        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+    LocationBar* const location_bar =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
     PermissionChipInterface* const chip =
         location_bar->GetChipController()->chip();
     if (!chip->GetVisible() || chip->IsFullyCollapsed()) {
       return false;
     }
 
+    auto* const element =
+        BrowserElements::From(browser())->GetElement(kLocationBarElementId);
+    EXPECT_NE(element, nullptr);
+    if (!element) {
+      return false;
+    }
+
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(location_bar, test_info->test_suite_name(),
+    return VerifyPixelUi(element, test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
 
