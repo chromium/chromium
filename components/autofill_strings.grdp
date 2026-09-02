@@ -408,10 +408,10 @@
     Addresses and more
   </message>
   <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_LABEL" desc="Label for a toggle that allows users to control whether email addresses should be automatically confirmed on supported sites." formatter_data="android_java">
-    Automatically confirm your emails
+    Automatically verify your email
   </message>
   <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_SECTION_TITLE" desc="Title for the email verification section in settings." formatter_data="android_java">
-    Verified Email
+    Verified email
   </message>
   <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_EMPTY_LABEL" desc="Label shown when no verified email addresses are stored." formatter_data="android_java">
     Verified email addresses will appear here
