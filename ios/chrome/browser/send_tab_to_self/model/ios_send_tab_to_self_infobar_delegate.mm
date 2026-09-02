@@ -32,9 +32,6 @@
 
 namespace {
 
-NSString* const kSendTabToSelfConclusionNotification =
-    @"SendTabToSelfConclusionNotification";
-
 // Returns the index of the WebState in `web_state_list` belonging to the most
 // recently received Send Tab to Self batch, ignoring previously received tabs.
 int GetMostRecentReceivedWebStateIndex(WebStateList* web_state_list) {
@@ -79,12 +76,7 @@ IOSSendTabToSelfInfoBarDelegate::Create(const SendTabToSelfEntry* entry,
       entry, opened_tab_count, model, scene_handler, web_state_list);
 }
 
-IOSSendTabToSelfInfoBarDelegate::~IOSSendTabToSelfInfoBarDelegate() {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:registration_
-                name:kSendTabToSelfConclusionNotification
-              object:nil];
-}
+IOSSendTabToSelfInfoBarDelegate::~IOSSendTabToSelfInfoBarDelegate() = default;
 
 const std::string& IOSSendTabToSelfInfoBarDelegate::GetGUID() const {
   return guid_;
@@ -100,39 +92,11 @@ IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
       opened_tab_count_(opened_tab_count),
       scene_handler_(scene_handler),
       web_state_list_(web_state_list),
-      guid_(entry->GetGUID()),
-      weak_ptr_factory_(this) {
+      guid_(entry->GetGUID()) {
   DCHECK(entry);
   DCHECK(model);
   DCHECK(scene_handler);
   DCHECK(web_state_list_);
-
-  base::WeakPtr<IOSSendTabToSelfInfoBarDelegate> weakPtr =
-      weak_ptr_factory_.GetWeakPtr();
-  // Observe for conclusion notification from other instances.
-  registration_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:kSendTabToSelfConclusionNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification* note) {
-                if (!weakPtr) {
-                  return;
-                }
-
-                // Ignore the notification if it was sent by `weakPtr` (i.e. the
-                // instance that responded first to the send to self infobar)
-                if (note.object == weakPtr->registration_) {
-                  return;
-                }
-
-                infobars::InfoBar* infobar = weakPtr->infobar();
-                infobars::InfoBarManager* owner = infobar->owner();
-                if (!owner) {
-                  return;
-                }
-
-                owner->RemoveInfoBar(infobar);
-              }];
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -182,7 +146,6 @@ std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
 bool IOSSendTabToSelfInfoBarDelegate::Accept() {
   send_tab_to_self::RecordNotificationStatus(
       send_tab_to_self::NotificationStatus::kOpened);
-  SendConclusionNotification();
 
   const SendTabToSelfEntry* entry = model_->GetEntryByGUID(guid_);
 
@@ -212,15 +175,7 @@ bool IOSSendTabToSelfInfoBarDelegate::Accept() {
 
 bool IOSSendTabToSelfInfoBarDelegate::Cancel() {
   model_->DismissEntry(guid_);
-  SendConclusionNotification();
   return true;
-}
-
-void IOSSendTabToSelfInfoBarDelegate::SendConclusionNotification() {
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:kSendTabToSelfConclusionNotification
-                    object:registration_
-                  userInfo:nil];
 }
 
 }  // namespace send_tab_to_self

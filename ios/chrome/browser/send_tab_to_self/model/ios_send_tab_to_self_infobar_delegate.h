@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
+#import "base/memory/raw_ptr.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
 
 @protocol SceneCommands;
 class WebStateList;
@@ -59,17 +58,11 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
   bool Cancel() override;
 
-  // Send the notice of conclusion of this infobar to other windows.
-  void SendConclusionNotification();
-
   // The SendTabToSelfModel. Must outlive this instance.
   raw_ptr<SendTabToSelfModel> model_ = nullptr;
 
   // The number of tabs opened in the received batch.
   size_t opened_tab_count_ = 0;
-
-  // Registration with NSNotificationCenter for this window.
-  __strong id<NSObject> registration_ = nil;
 
   // Handler for scene commands.
   __weak id<SceneCommands> scene_handler_ = nil;
@@ -79,8 +72,6 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // The GUID of the entry.
   std::string guid_;
-
-  base::WeakPtrFactory<IOSSendTabToSelfInfoBarDelegate> weak_ptr_factory_;
 };
 
 }  // namespace send_tab_to_self
