@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -40,8 +41,8 @@ String RemoteInvocationErrorToString(
     case mojom::blink::RemoteInvocationError::NON_ASSIGNABLE_TYPES:
       return "an incompatible object type passed to method parameter";
     default:
-      return String::Format("unknown RemoteInvocationError value: %d",
-                            static_cast<int>(value));
+      return Format("unknown RemoteInvocationError value: {}",
+                    static_cast<int>(value));
   }
 }
 

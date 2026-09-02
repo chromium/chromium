@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -552,10 +553,9 @@ void IDBTransaction::Put(int64_t object_store_id,
         mojom::blink::IDBTransactionPutResult::NewErrorResult(
             mojom::blink::IDBError::New(
                 mojom::blink::IDBException::kUnknownError,
-                String::Format("The serialized keys and/or value are too large"
-                               " (size=%" PRIuS " bytes, max=%" PRIuS
-                               " bytes).",
-                               estimated_size, max_put_value_size))));
+                Format("The serialized keys and/or value are too large "
+                       "(size={} bytes, max={} bytes).",
+                       estimated_size, max_put_value_size))));
     return;
   }
 

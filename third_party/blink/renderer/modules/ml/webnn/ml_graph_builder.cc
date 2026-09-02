@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/fp16/src/include/fp16.h"
 
 namespace blink {
@@ -1712,9 +1713,9 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   base::span<uint8_t> bytes = AsByteSpan(*buffer);
   if (descriptor.PackedByteLength() != bytes.size()) {
     exception_state.ThrowTypeError(
-        String::Format("The buffer's byte length (%zu) doesn't match the "
-                       "expected byte length (%zu).",
-                       bytes.size(), descriptor.PackedByteLength()));
+        Format("The buffer's byte length ({}) doesn't match the expected "
+               "byte length ({}).",
+               bytes.size(), descriptor.PackedByteLength()));
     return nullptr;
   }
 
@@ -2950,10 +2951,9 @@ MLOperand* MLGraphBuilder::reshape(MLOperand* input,
   if (input->NumberOfElements() != newshape_number_of_elements) {
     exception_state.ThrowTypeError(BuildErrorMessage(
         label,
-        String::Format(
-            "The number of elements (%zu) implied by new shape doesn't match "
-            "the number of elements (%zu) in the input tensor.",
-            newshape_number_of_elements, input->NumberOfElements())));
+        Format("The number of elements ({}) implied by new shape doesn't match "
+               "the number of elements ({}) in the input tensor.",
+               newshape_number_of_elements, input->NumberOfElements())));
     return nullptr;
   }
 

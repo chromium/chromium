@@ -959,13 +959,15 @@ void MediaRecorderHandler::OnEncodedVideo(
         last_seen_codec_description_.size() &&
         last_seen_codec_description_ != codec_description.value() &&
         recorder_) {
-      const String& message = UNSAFE_TODO(String::Format(
-          "When using \"%s\" for mp4 encoding, the codec description is not "
-          "supposed to change during the entire recording. Normally, a change "
-          "in the encoding resolution may lead to this situation. "
-          "Consider switching to \"%s\" instead to resolve this problem",
-          video_codec == media::VideoCodec::kH264 ? "avc1" : "hvc1",
-          video_codec == media::VideoCodec::kH264 ? "avc3" : "hev1"));
+      const String& message =
+          StrCat({"When using \"",
+                  video_codec == media::VideoCodec::kH264 ? "avc1" : "hvc1",
+                  "\" for mp4 encoding, the codec description is not supposed "
+                  "to change during the entire recording. Normally, a change "
+                  "in the encoding resolution may lead to this situation. "
+                  "Consider switching to \"",
+                  video_codec == media::VideoCodec::kH264 ? "avc3" : "hev1",
+                  "\" instead to resolve this problem"});
       auto* context = recorder_->GetExecutionContext();
       if (context && !context->IsContextDestroyed()) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -1011,9 +1013,9 @@ void MediaRecorderHandler::HandleEncodedVideo(
   if (*last_seen_codec_ != params.codec) {
     recorder_->OnError(
         DOMExceptionCode::kUnknownError,
-        String::Format("Video codec changed from %s to %s",
-                       media::GetCodecName(*last_seen_codec_).c_str(),
-                       media::GetCodecName(params.codec).c_str()));
+        StrCat({"Video codec changed from ",
+                media::GetCodecName(*last_seen_codec_).c_str(), " to ",
+                media::GetCodecName(params.codec).c_str()}));
     return;
   }
   if (!muxer_adapter_) {

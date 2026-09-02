@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -646,8 +647,7 @@ class RTCPeerConnectionHandler::Observer
             &RTCPeerConnectionHandler::Observer::OnIceCandidateErrorImpl,
             WrapCrossThreadPersistent(this),
             port ? String::FromUtf8(address) : String(),
-            static_cast<uint16_t>(port),
-            String::Format("%s:%d", address.c_str(), port),
+            static_cast<uint16_t>(port), Format("{}:{}", address, port),
             String::FromUtf8(url), error_code, String::FromUtf8(error_text)));
   }
 

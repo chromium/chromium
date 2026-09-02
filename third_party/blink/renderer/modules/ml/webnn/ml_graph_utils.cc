@@ -146,8 +146,9 @@ base::expected<void, String> ValidateFilterLayout(
     // TODO(crbug.com/1273291): support other layouts by transposing the
     // filter operand.
     if (filter_layout.AsEnum() != V8MLConv2dFilterOperandLayout::Enum::kOhwi) {
-      return base::unexpected(UNSAFE_TODO(String::Format(
-          "The filter layout %s is not supported.", filter_layout.AsCStr())));
+      return base::unexpected(
+          StrCat({"The filter layout ", filter_layout.AsStringView(),
+                  " is not supported."}));
     }
   } else {
     // For depthwise conv2d, NHWC input layout expects weights layout in ihwo
@@ -157,8 +158,9 @@ base::expected<void, String> ValidateFilterLayout(
     // TODO(crbug.com/1273291): support other layouts by transposing the
     // filter operand.
     if (filter_layout.AsEnum() != V8MLConv2dFilterOperandLayout::Enum::kIhwo) {
-      return base::unexpected(UNSAFE_TODO(String::Format(
-          "The filter layout %s is not supported.", filter_layout.AsCStr())));
+      return base::unexpected(
+          StrCat({"The filter layout ", filter_layout.AsStringView(),
+                  " is not supported."}));
     }
   }
 

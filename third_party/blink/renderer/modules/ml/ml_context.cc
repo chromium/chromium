@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -252,9 +253,8 @@ base::expected<void, String> ValidateNamedMLTensors(
     const MLGraph::NamedOperandDescriptors& expected_named_descriptors) {
   if (named_tensors.size() !=
       base::checked_cast<wtf_size_t>(expected_named_descriptors.size())) {
-    return base::unexpected(String::Format(
-        "The number (%u) of MLTensor(s) doesn't match the "
-        "expectation (%u).",
+    return base::unexpected(Format(
+        "The number ({}) of MLTensor(s) doesn't match the expectation ({}).",
         named_tensors.size(), expected_named_descriptors.size()));
   }
   for (const auto& [name, tensor] : named_tensors) {

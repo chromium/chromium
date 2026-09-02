@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -95,8 +96,8 @@ bool PaymentsValidators::IsValidErrorMsgFormat(const String& error,
 
   if (optional_error_message) {
     *optional_error_message =
-        String::Format("Error message should be at most %zu characters long",
-                       kMaximumStringLength);
+        Format("Error message should be at most {} characters long",
+               kMaximumStringLength);
   }
 
   return false;
@@ -200,9 +201,9 @@ void PaymentsValidators::ValidateAndStringifyObject(
 
   if (output.length() > kMaxJSONStringLength) {
     exception_state.ThrowTypeError(
-        String::Format("JSON serialization of PaymentRequest objects should be "
-                       "no longer than %zu characters",
-                       kMaxJSONStringLength));
+        Format("JSON serialization of PaymentRequest objects should be no "
+               "longer than {} characters",
+               kMaxJSONStringLength));
   }
 }
 
