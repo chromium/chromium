@@ -34,8 +34,6 @@ source_set("util") {
     "pasteboard_util.mm",
     "property_animator_group.h",
     "property_animator_group.mm",
-    "reversed_animation.h",
-    "reversed_animation.mm",
     "rtl_geometry.h",
     "rtl_geometry.mm",
     "top_view_controller.h",
