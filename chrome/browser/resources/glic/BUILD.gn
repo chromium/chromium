@@ -85,6 +85,9 @@ build_webui("build") {
   }
 
   if (optimize_webui) {
+    extra_grdp_deps += [ ":build_internals_grdp" ]
+    extra_grdp_files += [ "$target_gen_dir/internals_resources.grdp" ]
+
     optimize_webui_host = "glic"
     optimize_webui_in_files = [
       "glic.js",
@@ -100,6 +103,26 @@ build_webui("build") {
   }
 
   ts_composite = true
+}
+
+if (optimize_webui) {
+  build_internals_manifest = "$target_gen_dir/build_internals_manifest.json"
+
+  optimize_webui("build_internals") {
+    host = "glic"
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    js_module_in_files = [ "internals.js" ]
+    out_manifest = build_internals_manifest
+    deps = [ ":build_ts" ]
+  }
+
+  generate_grd("build_internals_grdp") {
+    manifest_files = [ build_internals_manifest ]
+    deps = [ ":build_internals" ]
+    resource_path_rewrites = [ "internals.rollup.js|internals.js" ]
+    grd_prefix = "glic"
+    out_grd = "$target_gen_dir/internals_resources.grdp"
+  }
 }
 
 glic_api_ts_files = [

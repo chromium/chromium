@@ -26,6 +26,8 @@ GlicInternalsUI::GlicInternalsUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kGlicResources,
                               IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
+  source->AddResourcePath("internals", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
+  source->AddResourcePath("internals/", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicInternalsUI)
