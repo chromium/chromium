@@ -30,7 +30,4 @@ specific_include_rules = {
     "+storage/browser",
     "+ui/shell_dialogs",
   ],
-  "headless_browser_user_agent_metadata_browsertest.*": [
-    "+components/embedder_support/user_agent_utils.h",
-  ],
 }

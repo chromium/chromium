@@ -26,9 +26,6 @@ specific_include_rules = {
     # TODO(benwells): Move app_browsertest_util into apps component once there
     # is an apps shell to test with.
     "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
-    # Pieces of the extensions system that need to move to src/extensions.
-    # See http://crbug.com/162530 for details.
-    "+chrome/browser/extensions/api/file_system/file_system_api.h",
     # To access sandbox includes.
     "+sandbox/policy",
   ],
