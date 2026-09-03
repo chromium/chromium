@@ -647,12 +647,50 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
 
   // Verifies the structure and content of the SubmitQuery protobuf message sent
   // from the browser to the inner WebContents.
-  auto VerifySubmitQueryMessage(
+  MultiStep VerifySubmitQueryMessage(
       lens::LensOverlayRequestId::MediaType expected_media_type,
       std::optional<std::string> expected_added_input_name = std::nullopt,
       int expected_message_index = 0,
       std::optional<lens::LensOverlayContextualInputUploadType>
           expected_upload_type = std::nullopt) {
+    return VerifySubmitQueryMessageImpl(
+        expected_media_type, expected_added_input_name, expected_message_index,
+        expected_upload_type, nullptr, nullptr);
+  }
+
+  MultiStep VerifySubmitQueryMessageAndExtractUuid(
+      lens::LensOverlayRequestId::MediaType expected_media_type,
+      std::optional<std::string> expected_added_input_name,
+      int expected_message_index,
+      std::optional<lens::LensOverlayContextualInputUploadType>
+          expected_upload_type,
+      std::reference_wrapper<uint64_t> out_uuid) {
+    return VerifySubmitQueryMessageImpl(
+        expected_media_type, expected_added_input_name, expected_message_index,
+        expected_upload_type, nullptr, &out_uuid.get());
+  }
+
+  MultiStep VerifySubmitQueryMessageWithExpectedUuid(
+      lens::LensOverlayRequestId::MediaType expected_media_type,
+      std::optional<std::string> expected_added_input_name,
+      int expected_message_index,
+      std::optional<lens::LensOverlayContextualInputUploadType>
+          expected_upload_type,
+      std::reference_wrapper<uint64_t> expected_uuid) {
+    return VerifySubmitQueryMessageImpl(
+        expected_media_type, expected_added_input_name, expected_message_index,
+        expected_upload_type, &expected_uuid.get(), nullptr);
+  }
+
+ public:
+  MultiStep VerifySubmitQueryMessageImpl(
+      lens::LensOverlayRequestId::MediaType expected_media_type,
+      std::optional<std::string> expected_added_input_name,
+      int expected_message_index,
+      std::optional<lens::LensOverlayContextualInputUploadType>
+          expected_upload_type,
+      const uint64_t* expected_uuid,
+      uint64_t* out_uuid) {
     return Steps(
         // Wait until the inner WebContents receives the message at the expected
         // index.
@@ -664,8 +702,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         WithElement(kInnerWebContentsId, [expected_media_type,
                                           expected_added_input_name,
                                           expected_message_index,
-                                          expected_upload_type](
-                                             ui::TrackedElement* el) {
+                                          expected_upload_type, expected_uuid,
+                                          out_uuid](ui::TrackedElement* el) {
           auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
           // Extract the binary protobuf message from JavaScript by converting
           // the matching ArrayBuffer into a base64 encoded string.
@@ -694,6 +732,18 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                         .request_id()
                         .media_type(),
                     expected_media_type);
+
+          uint64_t current_uuid = message.submit_query()
+                                      .payload()
+                                      .lens_image_query_data(0)
+                                      .request_id()
+                                      .uuid();
+          if (expected_uuid) {
+            EXPECT_EQ(current_uuid, *expected_uuid);
+          }
+          if (out_uuid) {
+            *out_uuid = current_uuid;
+          }
 
           // Verify additional context inputs if expected by the test case.
           if (expected_added_input_name.has_value()) {
@@ -747,13 +797,60 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         }));
   }
 
-  auto VerifyMultipleSubmitQueryMessage(
+ public:
+  MultiStep VerifyMultipleSubmitQueryMessage(
       const std::string& expected_query_text,
       int expected_viewport_image_count,
       int expected_upload_image_count,
       int expected_upload_file_count,
       std::vector<std::string> expected_added_input_names,
       int expected_message_index = 0) {
+    return VerifyMultipleSubmitQueryMessageImpl(
+        expected_query_text, expected_viewport_image_count,
+        expected_upload_image_count, expected_upload_file_count,
+        expected_added_input_names, expected_message_index, nullptr, nullptr);
+  }
+
+  MultiStep VerifyMultipleSubmitQueryMessageAndExtractUuid(
+      const std::string& expected_query_text,
+      int expected_viewport_image_count,
+      int expected_upload_image_count,
+      int expected_upload_file_count,
+      std::vector<std::string> expected_added_input_names,
+      int expected_message_index,
+      std::reference_wrapper<uint64_t> out_uuid) {
+    return VerifyMultipleSubmitQueryMessageImpl(
+        expected_query_text, expected_viewport_image_count,
+        expected_upload_image_count, expected_upload_file_count,
+        expected_added_input_names, expected_message_index, nullptr,
+        &out_uuid.get());
+  }
+
+  MultiStep VerifyMultipleSubmitQueryMessageWithExpectedUuid(
+      const std::string& expected_query_text,
+      int expected_viewport_image_count,
+      int expected_upload_image_count,
+      int expected_upload_file_count,
+      std::vector<std::string> expected_added_input_names,
+      int expected_message_index,
+      std::reference_wrapper<uint64_t> expected_uuid) {
+    return VerifyMultipleSubmitQueryMessageImpl(
+        expected_query_text, expected_viewport_image_count,
+        expected_upload_image_count, expected_upload_file_count,
+        expected_added_input_names, expected_message_index,
+        &expected_uuid.get(), nullptr);
+  }
+
+ public:
+  MultiStep VerifyMultipleSubmitQueryMessageImpl(
+      const std::string& expected_query_text,
+      int expected_viewport_image_count,
+      int expected_upload_image_count,
+      int expected_upload_file_count,
+      std::vector<std::string> expected_added_input_names,
+      int expected_message_index,
+      const uint64_t* expected_uuid,
+      uint64_t* out_uuid) {
     return Steps(
         // Wait until the inner WebContents receives the message at the expected
         // index.
@@ -767,8 +864,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                                           expected_upload_image_count,
                                           expected_upload_file_count,
                                           expected_added_input_names,
-                                          expected_message_index](
-                                             ui::TrackedElement* el) {
+                                          expected_message_index, expected_uuid,
+                                          out_uuid](ui::TrackedElement* el) {
           auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
           // Extract the binary protobuf message from JavaScript by converting
           // the matching ArrayBuffer into a base64 encoded string.
@@ -795,6 +892,21 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
               message.submit_query().payload().lens_image_query_data_size(),
               expected_viewport_image_count + expected_upload_image_count +
                   expected_upload_file_count);
+
+          if (message.submit_query().payload().lens_image_query_data_size() >
+              0) {
+            uint64_t current_uuid = message.submit_query()
+                                        .payload()
+                                        .lens_image_query_data(0)
+                                        .request_id()
+                                        .uuid();
+            if (expected_uuid) {
+              EXPECT_EQ(current_uuid, *expected_uuid);
+            }
+            if (out_uuid) {
+              *out_uuid = current_uuid;
+            }
+          }
 
           // Verify additional context inputs.
           if (!expected_added_input_names.empty()) {
@@ -2445,6 +2557,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       ContextualTasksPanelController::From(browser());
 
   const int expected_turn2_viewport_image_count = 0;
+  uint64_t session_uuid = 0;
 
   RunTestSequence(
       InstrumentTab(kPrimaryTab, 0), Do([&]() {
@@ -2474,9 +2587,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       ClickButton(kSidePanelWebContentsId, kSubmitButton),
 
       // Verify Turn 1 query has the webpage and image context.
-      VerifySubmitQueryMessage(
+      VerifySubmitQueryMessageAndExtractUuid(
           lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
-          std::nullopt, /*expected_message_index=*/0),
+          std::nullopt, /*expected_message_index=*/0, std::nullopt,
+          std::ref(session_uuid)),
 
       // Turn 2: Submit a second query without changing the viewport screenshot.
       InputText(kSidePanelWebContentsId, "second query"),
@@ -2504,9 +2618,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       // Verify Turn 3 query is sent, and because the screenshot changed,
       // a new context upload was triggered, producing a webpage and image
       // context.
-      VerifySubmitQueryMessage(
+      VerifySubmitQueryMessageWithExpectedUuid(
           lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
-          std::nullopt, /*expected_message_index=*/2));
+          std::nullopt, /*expected_message_index=*/2, std::nullopt,
+          std::ref(session_uuid)));
 }
 
 class ContextualTasksRecontextUiTest
@@ -2558,6 +2673,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksRecontextUiTest,
   const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
                                    "#composebox", "cr-composebox-submit",
                                    "#submitContainer"};
+
+  uint64_t session_uuid = 0;
 
   RunTestSequence(
       InstrumentTab(kPrimaryTab, 0),
@@ -2647,9 +2764,42 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksRecontextUiTest,
 
       // Verify Turn 2 query correctly triggers an image upload due to the
       // viewport change.
-      VerifySubmitQueryMessage(
+      VerifySubmitQueryMessageAndExtractUuid(
           lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
-          std::nullopt, /*expected_message_index=*/0));
+          std::nullopt, /*expected_message_index=*/0, std::nullopt,
+          std::ref(session_uuid)),
+
+      // Turn 3: Change the viewport again.
+      Do([&]() {
+        TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
+      }),
+
+      // Emulate focus into the searchbox. Turn 3: submit a third query.
+      FocusWebContents(kSidePanelWebContentsId),
+      ExecuteJsAt(kSidePanelWebContentsId,
+                  DeepQuery{"contextual-tasks-app", "#composebox",
+                            "#composebox", "#composeboxInput", "#input"},
+                  R"(el => {
+                      if (el.tagName === 'TEXTAREA') {
+                          el.value = 'third query';
+                      } else {
+                          el.innerText = 'third query';
+                      }
+                      el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+                      el.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+                  })"),
+      ExecuteJsAt(
+          kSidePanelWebContentsId,
+          DeepQuery{"contextual-tasks-app", "#composebox", "#composebox",
+                    "cr-composebox-submit", "#submitContainer"},
+          R"(el => { el.click(); })", ExecuteJsMode::kFireAndForget),
+
+      // Verify Turn 3 query correctly triggers an image upload and maintains
+      // the UUID.
+      VerifySubmitQueryMessageWithExpectedUuid(
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, /*expected_message_index=*/1, std::nullopt,
+          std::ref(session_uuid)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
