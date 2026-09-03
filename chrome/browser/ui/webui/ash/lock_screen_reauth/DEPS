@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/extensions/tab_helper.h",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/webui/ash/internet",
