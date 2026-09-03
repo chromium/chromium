@@ -223,12 +223,8 @@
 #if BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
 
-#include "chrome/browser/infobars/browser_infobar_manager.h"
-#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
 #include "chrome/browser/shutdown_watchdog_mac.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 
@@ -1069,37 +1065,6 @@ void ChromeBrowserMainParts::ToolkitInitialized() {
   InitializeActionIdStringMapping();
 }
 
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-void PromptUpdaterPromotion() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kNoDefaultBrowserCheck)) {
-          return;
-        }
-        if (infobars::IsInfoBarMigrated(
-                infobars::InfoBarDelegate::
-                    KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC)) {
-          auto* browser_infobar_manager =
-              infobars::BrowserInfoBarManager::From(g_browser_process);
-          CHECK(browser_infobar_manager);
-          browser_infobar_manager->ShowGlobally(
-              infobars::InfoBarDelegate::
-                  KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC);
-          return;
-        }
-        BrowserWindowInterface* browser =
-            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-        if (browser && browser->GetProfile() &&
-            browser->GetProfile()->GetPrefs()->GetBoolean(
-                prefs::kShowUpdatePromotionInfoBar)) {
-          KeystonePromotionInfoBarDelegate::Create(
-              browser->GetTabStripModel()->GetActiveWebContents());
-        }
-      }));
-}
-#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-
 void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateMainMessageLoop");
 
@@ -1114,7 +1079,7 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
   }
   updater::SchedulePeriodicTasks(
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-      base::BindRepeating(&PromptUpdaterPromotion)
+      base::BindRepeating(&ShowUpdaterPromotionInfoBar)
 #else
       base::DoNothing()
 #endif

@@ -25,7 +25,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/version_info/version_info.h"
@@ -50,12 +49,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/updater/updater.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/grit/theme_resources.h"
 #endif
 
 namespace infobars {
@@ -190,47 +183,6 @@ void RegisterInfoBars() {
                     .SetDismissAction(base::BindRepeating(
                         &default_browser::PinInfoBarController::OnDismiss))
                     .Build();
-    browser_infobar_manager->Register(std::move(spec));
-  }
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  if (IsInfoBarMigrated(
-          InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC)) {
-    auto spec =
-        InfoBarSpec::Builder(
-            InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC)
-            .SetMessageText(l10n_util::GetStringFUTF16(
-                IDS_PROMOTE_INFOBAR_TEXT,
-                l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)))
-            .SetIconId(IDR_PRODUCT_LOGO_32)
-            .SetScope(InfoBarScope::kGlobal)
-            .SetExpireOnNavigation(false)
-            .SetBrowserFilter(
-                base::BindRepeating([](BrowserWindowInterface* browser) {
-                  return browser && browser->GetProfile() &&
-                         browser->GetProfile()->GetPrefs()->GetBoolean(
-                             prefs::kShowUpdatePromotionInfoBar);
-                }))
-            .AddOkButton(
-                l10n_util::GetStringUTF16(IDS_PROMOTE_INFOBAR_PROMOTE_BUTTON),
-                base::BindRepeating([](content::WebContents*) {
-                  updater::SetUpSystemUpdater();
-                }))
-            .AddCancelButton(
-                l10n_util::GetStringUTF16(IDS_PROMOTE_INFOBAR_DONT_ASK_BUTTON),
-                base::BindRepeating([](content::WebContents* web_contents) {
-                  if (!web_contents) {
-                    return;
-                  }
-                  Profile* profile = Profile::FromBrowserContext(
-                      web_contents->GetBrowserContext());
-                  if (profile) {
-                    profile->GetPrefs()->SetBoolean(
-                        prefs::kShowUpdatePromotionInfoBar, false);
-                  }
-                }))
-            .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
 #endif
