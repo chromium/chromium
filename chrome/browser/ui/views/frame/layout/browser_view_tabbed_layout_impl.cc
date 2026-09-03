@@ -449,8 +449,16 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
     min_side_panel_width = panel->GetMinimumSize().width();
     preferred_side_panel_width = panel->GetPreferredSize().width();
 
-    if (panel->GetCurrentEntryType() == SidePanelType::kContent &&
-        panel->ShouldRestrictMaxWidth()) {
+    // Previously the reading mode side panel had an exception to extend to 90%
+    // of the screen width, unlike other side panels. After a full-screen
+    // reading mode experience was added with Immersive reading mode, the
+    // exception was removed to allow reading mode to be capped at 66% of the
+    // page like other side panels. However, if the maximum for other side
+    // panels is reduced further in the future, special care should be taken to
+    // ensure that reading mode side panel users aren't negatively impacted.
+    // Another exception for reading mode may be needed, if this ever happens.
+    // See crbug.com/394339052 for more details.
+    if (panel->GetCurrentEntryType() == SidePanelType::kContent) {
       preferred_side_panel_width =
           std::min(preferred_side_panel_width,
                    base::ClampFloor(params.visual_client_area.width() *

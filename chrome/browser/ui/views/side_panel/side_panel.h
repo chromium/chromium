@@ -44,7 +44,6 @@ class SidePanel : public views::AccessiblePaneView,
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kCloseAnimationCompletedEvent);
 
   void SetPanelWidth(int width);
-  bool ShouldRestrictMaxWidth() const;
   void UpdateWidthOnEntryChanged();
   void UpdateSidePanelWidthPref(const std::string& panel_id, int width);
   void UpdateHorizontalAlignment(

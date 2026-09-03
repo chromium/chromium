@@ -471,47 +471,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   // Verify the side panel width is capped at two thirds of the browser width.
   EXPECT_EQ(GetSidePanel()->width(), two_thirds_browser_width);
 }
-
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
-                       ReadAnythingSidePanelWidthNotCappedAtTwoThirds) {
-  Init();
-  // Set side panel to left-aligned so positive resize increments mean an
-  // increase in side panel width.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetProfile()
-      ->GetPrefs()
-      ->SetBoolean(prefs::kSidePanelHorizontalAlignment, false);
-  coordinator()->DisableAnimationsForTesting();
-
-  const int min_side_panel_width = GetSidePanel()->GetMinimumSize().width();
-
-  // Set the browser width so that two thirds of the browser would be larger
-  // than the minimum side panel width.
-  gfx::Rect original_browser_bounds(
-      BrowserView::GetBrowserViewForBrowser(browser())->GetBounds());
-  gfx::Rect new_bounds(original_browser_bounds);
-  new_bounds.set_width(min_side_panel_width * 3);
-  // Explicitly restore the browser window on ChromeOS, as it would otherwise
-  // be maximized and the SetBounds call would be a no-op.
-#if BUILDFLAG(IS_CHROMEOS)
-  BrowserView::GetBrowserViewForBrowser(browser())->Restore();
-#endif
-  BrowserView::GetBrowserViewForBrowser(browser())->SetBounds(new_bounds);
-
-  // Switch to the read anything side panel and verify the width is greater than
-  // two thirds of the browser width.
-  coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
-                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  int browser_width = BrowserView::GetBrowserViewForBrowser(browser())
-                          ->GetLocalBounds()
-                          .width();
-  int two_thirds_browser_width = browser_width * 2 / 3;
-  GetSidePanel()->SetPanelWidth(two_thirds_browser_width + 10);
-  views::test::RunScheduledLayout(
-      BrowserView::GetBrowserViewForBrowser(browser()));
-  EXPECT_GT(GetSidePanel()->width(), two_thirds_browser_width);
-}
-
 // TODO(crbug.com/384507412): Flaky on Linux and ChromeOS.
 // Disabled due to new, better layout logic. New tests need to be written.
 // These have a tendency to fail on CI because they are highly dependent on e.g.
@@ -671,13 +630,20 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   GetSidePanel()->OnResize(large_increment, true);
   views::test::RunScheduledLayout(
       BrowserView::GetBrowserViewForBrowser(browser()));
-
+  const int browser_width = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->GetLocalBounds()
+                                .width();
+  const int two_thirds_browser_width = browser_width * 2 / 3;
+  const int expected_side_panel_width = std::max(
+      two_thirds_browser_width, GetSidePanel()->GetMinimumSize().width());
+  EXPECT_EQ(expected_side_panel_width, GetSidePanel()->width());
   MultiContentsView* multi_contents_view =
       BrowserView::GetBrowserViewForBrowser(browser())->multi_contents_view();
-  EXPECT_EQ(multi_contents_view->width() -
-                multi_contents_view->split_view_insets_for_testing().width(),
-            BrowserViewLayout::kContentsContainerMinimumWidth +
-                views::Separator::kThickness - 1);
+  const int expected_multi_contents_width =
+      std::max(BrowserViewLayout::kContentsContainerMinimumWidth +
+                   views::Separator::kThickness - 1,
+               browser_width - two_thirds_browser_width);
+  EXPECT_EQ(multi_contents_view->width(), expected_multi_contents_width);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
