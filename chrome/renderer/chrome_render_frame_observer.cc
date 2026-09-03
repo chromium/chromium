@@ -82,6 +82,7 @@
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
@@ -200,6 +201,12 @@ bool ShouldForceTranslateAgentCreation(const GURL& url) {
   return false;
 #endif
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+bool IsLocalPage(const GURL& url) {
+  return url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kContentScheme);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -756,7 +763,7 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 void ChromeRenderFrameObserver::PdfPageCaptured(const std::u16string& contents,
                                                 const std::string& pdf_lang,
                                                 const GURL& page_url) {
-  if (translate_agent_) {
+  if (translate_agent_ && !IsLocalPage(page_url)) {
     translate_agent_->PdfPageCaptured(contents, pdf_lang, page_url);
   }
 }
