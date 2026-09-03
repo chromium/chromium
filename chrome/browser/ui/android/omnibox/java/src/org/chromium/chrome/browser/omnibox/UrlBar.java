@@ -1559,6 +1559,12 @@ public class UrlBar extends AutocompleteEditText {
             if (!(mPointerDragActive && draggingSelection)) {
                 return false;
             }
+            // Suppress framework driven auto-scrolling if we're focused and currently selecting all
+            // text so that the beginning of the url remains visible.
+        } else if (getText() != null
+                && getSelectionStart() == 0
+                && getSelectionEnd() == getText().length()) {
+            return false;
         }
         assert !mPendingScroll || hasFocus();
 

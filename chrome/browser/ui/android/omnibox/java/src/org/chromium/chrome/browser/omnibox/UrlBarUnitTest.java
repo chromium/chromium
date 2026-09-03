@@ -2160,4 +2160,59 @@ public class UrlBarUnitTest {
         doReturn(false).when(mUrlBar).isInTouchMode();
         assertSame(target, mUrlBar.focusSearch(View.FOCUS_BACKWARD));
     }
+
+    @Test
+    public void testBringPointIntoView_unfocused_suppressedByDefault() {
+        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.setText("https://example.com");
+
+        assertFalse(mUrlBar.bringPointIntoView(5));
+    }
+
+    @Test
+    public void testBringPointIntoView_unfocused_pointerDragWithoutSelection_suppressed() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.setText("https://example.com");
+
+        // Touch down activates pointer drag.
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.setSelection(5, 5);
+
+        assertFalse(mUrlBar.bringPointIntoView(5));
+    }
+
+    @Test
+    public void testBringPointIntoView_unfocused_pointerDragWithSelection_allowed() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mUrlBar.onFocusChanged(false, 0, null);
+        mUrlBar.setText("https://example.com");
+
+        // Touch down activates pointer drag, and non-empty selection allows drag-scrolling.
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+        mUrlBar.setSelection(0, 5);
+
+        mUrlBar.bringPointIntoView(5);
+        verify(mUrlBar).bringPointIntoView(5);
+    }
+
+    @Test
+    public void testBringPointIntoView_focused_selectAll_suppressed() {
+        String text = "https://example.com";
+        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.setText(text);
+        mUrlBar.setSelection(0, text.length());
+
+        assertFalse(mUrlBar.bringPointIntoView(5));
+    }
+
+    @Test
+    public void testBringPointIntoView_focused_partialSelection_allowed() {
+        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.setText("https://example.com");
+        mUrlBar.setSelection(0, 5);
+
+        mUrlBar.bringPointIntoView(5);
+        verify(mUrlBar).bringPointIntoView(5);
+    }
 }
