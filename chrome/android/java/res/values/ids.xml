@@ -46,6 +46,7 @@ found in the LICENSE file.
     <item type="id" name="open_recently_closed_tab" />
     <item type="id" name="open_tab_strip_context_menu" />
     <item type="id" name="print_id" />
+    <item type="id" name="quit_chrome" />
     <item type="id" name="select_next_tab" />
     <item type="id" name="select_previous_tab" />
     <item type="id" name="show_menu" />

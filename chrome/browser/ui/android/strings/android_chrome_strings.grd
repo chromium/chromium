@@ -6081,6 +6081,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_TOGGLE_CARET_BROWSING" desc="A text label that appears next to the keyboard shortcut that will toggle caret browsing. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Toggle caret browsing
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_QUIT_CHROME" desc="A text label that appears next to the keyboard shortcut that will quit Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Quit Chrome
+      </message>
+      <message name="IDS_CONFIRM_TO_QUIT_TOAST" desc="Toast message instructing the user to hold Ctrl+Q to quit Chrome.">
+        Hold Ctrl+Q to quit
+      </message>
 
       <if expr="enable_arcore">
         <!-- AR module -->

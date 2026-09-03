@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
+import org.chromium.chrome.browser.ConfirmQuitHelper;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.GracefulShutdownService;
 import org.chromium.chrome.browser.IntentHandler;
@@ -1611,6 +1612,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onPauseWithNative() {
+        // Cancel any pending hold-to-quit timer and reset state when moving to the background.
+        ConfirmQuitHelper.getInstance().cancel(/* dismissToast= */ true);
         RecordUserAction.record("MobileGoToBackground");
         mLaunchCause = LaunchCauseMetrics.LaunchCause.UNINITIALIZED;
         Tab tab = getActivityTab();
@@ -2206,6 +2209,19 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return onKeyUp(event.getKeyCode(), event);
         }
         return false;
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // Cancel the hold-to-quit timer if the user releases either key of the Ctrl+Q shortcut
+        // (releasing Q or releasing Ctrl). Releasing unrelated keys while Ctrl is still held
+        // does not abort the quit or consume the key event.
+        if (ConfirmQuitHelper.getInstance().isQuitInProgress()
+                && (keyCode == KeyEvent.KEYCODE_Q || !event.isCtrlPressed())) {
+            ConfirmQuitHelper.getInstance().cancel(/* dismissToast= */ false);
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     /** Returns snackbar manager for all snackbar related operations. */
@@ -2976,6 +2992,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             getProfileProviderSupplier().get().getOriginalProfile())
                     .onMenuItemClicked(this);
             return true;
+        }
+
+        if (id == R.id.quit_chrome && !fromMenu) {
+            return ConfirmQuitHelper.getInstance().handleQuitRequest(this);
         }
 
         final Tab currentTab = getActivityTab();

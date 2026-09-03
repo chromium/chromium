@@ -98,4 +98,24 @@ public class KeyboardShortcutsUnitTest {
 
         verify(mController).onMenuOrKeyboardAction(eq(R.id.new_incognito_tab_menu_id), eq(false));
     }
+
+    @Test
+    public void testQuitChrome_TriggersMenuOrKeyboardAction() {
+        doReturn(true).when(mController).onMenuOrKeyboardAction(eq(R.id.quit_chrome), eq(false));
+
+        KeyEvent event =
+                new KeyEvent(
+                        SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_Q,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+
+        assertTrue(
+                KeyboardShortcuts.onKeyDown(
+                        event, true, true, mTabModelSelector, mController, mToolbarManager));
+
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.quit_chrome), eq(false));
+    }
 }

@@ -1754,7 +1754,7 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="Toggle multi-task menu (not implemented)"/>
   <int value="14" label="Close tab"/>
   <int value="15" label="Close window"/>
-  <int value="16" label="Quit Chrome (not implemented)"/>
+  <int value="16" label="Quit Chrome"/>
   <int value="17" label="Jump to omnibox"/>
   <int value="18" label="Jump to search"/>
   <int value="19" label="Focus the next web contents pane (not implemented)"/>

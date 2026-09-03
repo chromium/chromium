@@ -1789,6 +1789,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ConfirmQuit.Result" enum="AndroidConfirmQuitResult"
+    expires_after="2027-09-01">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the outcome of a Ctrl+Q hold-to-quit confirmation shortcut attempt
+    on Android. Recorded when Chrome is quit via holding the shortcut for the
+    duration threshold, when Chrome is quit via double-tapping the shortcut, or
+    when the quit attempt is canceled before completion (e.g. by releasing the
+    shortcut key or backgrounding the activity).
+  </summary>
+</histogram>
+
 <histogram name="Android.ContactsPicker.ContactCount" units="Contacts"
     expires_after="2027-02-17">
   <owner>finnur@chromium.org</owner>

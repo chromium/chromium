@@ -197,6 +197,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidConfirmQuitResult) -->
+
+<enum name="AndroidConfirmQuitResult">
+  <int value="0" label="Quit via Hold"/>
+  <int value="1" label="Quit via Double-tap"/>
+  <int value="2" label="Canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ConfirmQuitHelper.java:ConfirmQuitResult) -->
+
 <!-- LINT.IfChange(AndroidDefaultBrowserState) -->
 
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
