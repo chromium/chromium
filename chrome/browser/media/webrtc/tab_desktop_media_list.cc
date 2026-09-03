@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -165,11 +166,19 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
     }
     content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
     DCHECK(main_frame);
+
+    auto* page_user_data =
+        enterprise_data_protection::DataProtectionPageUserData::GetForPage(
+            contents->GetPrimaryPage());
+
     DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
                             DesktopMediaID::kNullId,
                             content::WebContentsMediaCaptureId(
                                 main_frame->GetProcess()->GetDeprecatedID(),
                                 main_frame->GetRoutingID()));
+
+    media_id.is_sharing_blocked =
+        page_user_data && !page_user_data->settings().allow_screenshots;
 
     // Get tab's last active time stamp.
     const base::TimeTicks t = contents->GetLastActiveTimeTicks();

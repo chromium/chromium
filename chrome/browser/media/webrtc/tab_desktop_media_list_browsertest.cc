@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
@@ -509,4 +510,37 @@ IN_PROC_BROWSER_TEST_F(TabDesktopMediaListWithIwaIncludedTest,
   InstallAndOpenIsolatedWebApp();
 
   EXPECT_EQ(initial_list_size + 1, list().GetSourceCount());
+}
+
+class TabDesktopMediaListProtectionTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabDesktopMediaListProtectionTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(TabDesktopMediaListProtectionTest,
+                       SetsIsSharingBlockedCorrectly) {
+  const bool allow_screenshots = GetParam();
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(contents->GetPrimaryPage(), "test_id",
+                                        allow_screenshots);
+
+  TabDesktopMediaList media_list(
+      contents, base::BindRepeating([](content::WebContents*) { return true; }),
+      /*include_chrome_app_windows=*/false);
+
+  base::RunLoop run_loop;
+  media_list.Update(run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_GE(media_list.GetSourceCount(), 1);
+  const auto& source = media_list.GetSource(0);
+  EXPECT_EQ(source.id.is_sharing_blocked, !allow_screenshots);
 }
