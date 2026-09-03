@@ -355,7 +355,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const gfx::PointF& position) const {
     return position.OffsetFromOrigin();
   }
-  virtual gfx::Vector2d ScrollOffsetInt() const = 0;
+  virtual gfx::Vector2d PixelSnappedScrollOffset() const = 0;
   virtual ScrollOffset GetScrollOffset() const = 0;
   // Returns a floored version of the scroll offset as the web-exposed scroll
   // offset to ensure web compatibility in DOM APIs.

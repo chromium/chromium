@@ -1717,13 +1717,6 @@ PhysicalOffset LayoutBox::ScrolledContentOffset() const {
       GetScrollableArea()->GetScrollOffset());
 }
 
-gfx::Vector2d LayoutBox::PixelSnappedScrolledContentOffset() const {
-  NOT_DESTROYED();
-  DCHECK(IsScrollContainer());
-  DCHECK(GetScrollableArea());
-  return GetScrollableArea()->ScrollOffsetInt();
-}
-
 PhysicalRect LayoutBox::ClippingRect() const {
   NOT_DESTROYED();
   PhysicalRect result(InfiniteIntRect());

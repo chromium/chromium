@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
-#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -780,35 +780,6 @@ bool PhysicalBoxFragment::MayIntersect(
   return true;
 }
 
-gfx::Vector2d PhysicalBoxFragment::PixelSnappedOverscrollContentOffset() const {
-  DCHECK(GetLayoutObject());
-  if (!IsNonOverlayOverscrollScrollContainer()) {
-    // This intentionally skips the ::-internal-overscroll-area-parents as they
-    // are self painting layers so we rely on the layer position to account
-    // for their overscroll offset.
-    return gfx::Vector2d();
-  }
-  gfx::Vector2d offset;
-  if (auto* tracker = To<Element>(GetLayoutObject()->GetNode())
-                          ->GetOverscrollAreaTracker()) {
-    for (const Element* element : tracker->DOMSortedElements()) {
-      PseudoElement* pseudo =
-          element->GetPseudoElement(kPseudoIdOverscrollAreaParent);
-      if (LayoutBox* layout_box = pseudo->GetLayoutBox()) {
-        offset += layout_box->PixelSnappedScrolledContentOffset();
-      }
-    }
-  }
-  return offset;
-}
-
-gfx::Vector2d PhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
-  DCHECK(GetLayoutObject());
-  return IsScrollContainer() ? To<LayoutBox>(*GetLayoutObject())
-                                   .PixelSnappedScrolledContentOffset()
-                             : gfx::Vector2d();
-}
-
 PhysicalSize PhysicalBoxFragment::ScrollSize() const {
   DCHECK(GetLayoutObject());
   const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
@@ -1553,9 +1524,8 @@ PositionWithAffinity PhysicalBoxFragment::PositionForPoint(
     return layout_object_->PositionForPoint(point);
   }
   const PhysicalOffset point_in_contents =
-      IsScrollContainer()
-          ? point + PhysicalOffset(PixelSnappedScrolledContentOffset())
-          : point;
+      point +
+      PhysicalOffset(BoxFragmentPainter(*this).PixelSnappedScrollOffset());
 
   if (!layout_object_->ChildPaintBlockedByDisplayLock()) {
     if (const FragmentItems* items = Items()) {

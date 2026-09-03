@@ -619,7 +619,7 @@ bool PaintLayerScrollableArea::BackgroundNeedsRepaintOnScroll() const {
   return false;
 }
 
-gfx::Vector2d PaintLayerScrollableArea::ScrollOffsetInt() const {
+gfx::Vector2d PaintLayerScrollableArea::PixelSnappedScrollOffset() const {
   return SnapScrollOffsetToPhysicalPixels(scroll_offset_);
 }
 

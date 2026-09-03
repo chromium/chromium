@@ -450,7 +450,7 @@ bool CanScrollInDirection(const LocalFrame* frame,
     return false;
   ScrollableArea* scrollable_area = frame->View()->GetScrollableArea();
   gfx::Size size = scrollable_area->ContentsSize();
-  gfx::Vector2d offset = scrollable_area->ScrollOffsetInt();
+  gfx::Vector2d offset = scrollable_area->PixelSnappedScrollOffset();
   PhysicalRect rect(scrollable_area->VisibleContentRect(kIncludeScrollbars));
 
   switch (direction) {

@@ -145,9 +145,9 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
       if (overlay_visibility_ == OverlayVisibility::kVisible) {
         // Maps the rectangle from its coordinates within the viewport's
         // coordinate system to the document's coordinate system.
-        rect_to_report =
-            rect_in_viewport +
-            local_root_main_frame.View()->LayoutViewport()->ScrollOffsetInt();
+        rect_to_report = rect_in_viewport + local_root_main_frame.View()
+                                                ->LayoutViewport()
+                                                ->PixelSnappedScrollOffset();
       }
     }
   }

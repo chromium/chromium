@@ -2767,7 +2767,7 @@ TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
   // Arrow key caused scroll down in post event dispatch process. Ensure page
   // scrolled.
   ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
-  EXPECT_GT(scrollable_area->ScrollOffsetInt().y(), 0);
+  EXPECT_GT(scrollable_area->PixelSnappedScrollOffset().y(), 0);
 }
 
 TEST_F(EventHandlerSimTest, DoNotScrollWithTouchpadIfOverflowIsHidden) {
@@ -2895,7 +2895,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   DispatchElementTargetedGestureScroll(gesture_scroll_end);
 
   Compositor().BeginFrame();
-  ASSERT_EQ(scrollable_area->ScrollOffsetInt().y(), delta_y);
+  ASSERT_EQ(scrollable_area->PixelSnappedScrollOffset().y(), delta_y);
   ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), delta_y);
 
   // Remove the scroller, update layout, and ensure the same gestures
@@ -2965,7 +2965,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
   ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().y(), 0);
-  ASSERT_EQ(scrollable_area->ScrollOffsetInt().y(), delta_y);
+  ASSERT_EQ(scrollable_area->PixelSnappedScrollOffset().y(), delta_y);
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {

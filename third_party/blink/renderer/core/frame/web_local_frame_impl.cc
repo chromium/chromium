@@ -473,7 +473,8 @@ class ChromePrintContext : public PrintContext {
     gfx::Rect page_rect = PageRect(page_index);
 
     // Cancel out the scroll offset used in screen mode.
-    gfx::Vector2d offset = frame_view->LayoutViewport()->ScrollOffsetInt();
+    gfx::Vector2d offset =
+        frame_view->LayoutViewport()->PixelSnappedScrollOffset();
     context.Save();
     context.Translate(static_cast<float>(offset.x()),
                       static_cast<float>(offset.y()));

@@ -321,7 +321,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const gfx::PointF& position) const override {
     return ScrollOffset(position - gfx::PointF(ScrollOrigin()));
   }
-  gfx::Vector2d ScrollOffsetInt() const override;
+  gfx::Vector2d PixelSnappedScrollOffset() const override;
   ScrollOffset GetScrollOffset() const override;
   // Commits a final scroll offset for the frame, if it might have changed.
   // If it did change, enqueues a scroll event.

@@ -7334,7 +7334,7 @@ gfx::Point AXObject::GetScrollOffset() const {
     return gfx::Point();
   // TODO(crbug.com/1274078): Should this be converted to scroll position, or
   // should the result type be gfx::Vector2d?
-  return gfx::PointAtOffsetFromOrigin(area->ScrollOffsetInt());
+  return gfx::PointAtOffsetFromOrigin(area->PixelSnappedScrollOffset());
 }
 
 gfx::Point AXObject::MinimumScrollOffset() const {

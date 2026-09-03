@@ -93,11 +93,11 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
     scroll_offset_ = offset;
     scroll_offset_.SetToMin(maximum_scroll_offset_);
   }
-  gfx::Vector2d ScrollOffsetInt() const override {
+  gfx::Vector2d PixelSnappedScrollOffset() const override {
     return SnapScrollOffsetToPhysicalPixels(scroll_offset_);
   }
   ScrollOffset GetScrollOffset() const override {
-    return ScrollOffset(ScrollOffsetInt());
+    return ScrollOffset(PixelSnappedScrollOffset());
   }
   gfx::Vector2d MinimumScrollOffsetInt() const override {
     return gfx::ToFlooredVector2d(minimum_scroll_offset_);

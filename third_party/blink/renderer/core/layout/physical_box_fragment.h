@@ -361,10 +361,6 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   PhysicalRect OverflowClipRect(
       const BlockBreakToken* incoming_break_token,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
-  // Returns the total offset of all overscroll area parents. This is used to
-  // shift content which is not within an overscroll area.
-  gfx::Vector2d PixelSnappedOverscrollContentOffset() const;
-  gfx::Vector2d PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
 
   InkOverflow::Type InkOverflowType() const {

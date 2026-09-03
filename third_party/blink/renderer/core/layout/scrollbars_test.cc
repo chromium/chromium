@@ -3605,7 +3605,7 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
-  EXPECT_EQ(scrollable_area->ScrollOffsetInt(), gfx::Vector2d(0, 200));
+  EXPECT_EQ(scrollable_area->PixelSnappedScrollOffset(), gfx::Vector2d(0, 200));
 
   HandleMouseMoveEvent(195, 195);
   HandleMousePressEvent(195, 195);

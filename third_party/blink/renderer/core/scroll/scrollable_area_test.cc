@@ -175,8 +175,8 @@ TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
   scrollable_area->DidCompositorScroll(gfx::PointF(40, 51),
                                        cc::ScrollSourceType::kNone);
 
-  EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().x());
-  EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().y());
+  EXPECT_EQ(40, scrollable_area->PixelSnappedScrollOffset().x());
+  EXPECT_EQ(51, scrollable_area->PixelSnappedScrollOffset().y());
 }
 
 TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {

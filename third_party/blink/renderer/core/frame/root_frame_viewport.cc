@@ -151,7 +151,8 @@ void RootFrameViewport::RestoreToAnchor(const ScrollOffset& target_offset) {
         delta.y() < 0 ? floor(delta.y()) : ceil(delta.y()));
 
     LayoutViewport().SetScrollOffset(
-        ScrollOffset(LayoutViewport().ScrollOffsetInt() + layout_delta),
+        ScrollOffset(LayoutViewport().PixelSnappedScrollOffset() +
+                     layout_delta),
         mojom::blink::ScrollType::kAnchoring,
         cc::ScrollSourceType::kStationaryScroll);
   }
@@ -213,7 +214,7 @@ ScrollOffset RootFrameViewport::ScrollOffsetFromScrollAnimators() const {
 gfx::Rect RootFrameViewport::VisibleContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   return gfx::Rect(
-      gfx::PointAtOffsetFromOrigin(ScrollOffsetInt()),
+      gfx::PointAtOffsetFromOrigin(PixelSnappedScrollOffset()),
       GetVisualViewport().VisibleContentRect(scrollbar_inclusion).size());
 }
 
@@ -478,7 +479,7 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   return did_scroll;
 }
 
-gfx::Vector2d RootFrameViewport::ScrollOffsetInt() const {
+gfx::Vector2d RootFrameViewport::PixelSnappedScrollOffset() const {
   return SnapScrollOffsetToPhysicalPixels(GetScrollOffset());
 }
 

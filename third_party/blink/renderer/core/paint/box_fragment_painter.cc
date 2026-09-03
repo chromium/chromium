@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
@@ -2236,8 +2237,11 @@ bool BoxFragmentPainter::HitTestContext::AddNodeToResultWithContentOffset(
     const PhysicalBoxFragment& container,
     const T& bounds_rect,
     PhysicalOffset offset) const {
-  if (container.IsScrollContainer())
-    offset += PhysicalOffset(container.PixelSnappedScrolledContentOffset());
+  if (container.IsScrollContainer()) {
+    offset += PhysicalOffset(To<LayoutBox>(*container.GetLayoutObject())
+                                 .GetScrollableArea()
+                                 ->PixelSnappedScrollOffset());
+  }
   return AddNodeToResult(node, &container, bounds_rect, offset);
 }
 
@@ -2322,11 +2326,8 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
         return true;
     } else {
       const PhysicalOffset scrolled_offset =
-          physical_offset -
-          PhysicalOffset(
-              GetPhysicalFragment().PixelSnappedOverscrollContentOffset()) -
-          PhysicalOffset(
-              GetPhysicalFragment().PixelSnappedScrolledContentOffset());
+          physical_offset - PhysicalOffset(PixelSnappedOverscrollOffset()) -
+          PhysicalOffset(PixelSnappedScrollOffset());
       HitTestContext adjusted_hit_test{hit_test.phase, hit_test.location,
                                        scrolled_offset, hit_test.result};
       if (HitTestChildren(adjusted_hit_test, scrolled_offset))
@@ -2761,10 +2762,7 @@ bool BoxFragmentPainter::HitTestBlockChildren(
 
     // Note: |accumulated_offset| includes container scrolled offset added
     // in |BoxFragmentPainter::NodeAtPoint()|. See http://crbug.com/1268782
-    const PhysicalOffset scrolled_offset =
-        box_fragment_.IsScrollContainer()
-            ? PhysicalOffset(box_fragment_.PixelSnappedScrolledContentOffset())
-            : PhysicalOffset();
+    const PhysicalOffset scrolled_offset(PixelSnappedScrollOffset());
     result.SetNodeAndPosition(
         node, &box_fragment_,
         hit_test_location.Point() - accumulated_offset - scrolled_offset);
@@ -3046,6 +3044,38 @@ void BoxFragmentPainter::RecordRegionCaptureAndTrackedElementData(
     paint_info.context.GetPaintController().RecordTrackedElementData(
         display_item_client, ToPixelSnappedRect(paint_rect), *sub_rects);
   }
+}
+
+gfx::Vector2d BoxFragmentPainter::PixelSnappedOverscrollOffset() const {
+  if (!box_fragment_.IsNonOverlayOverscrollScrollContainer()) {
+    // This intentionally skips the ::-internal-overscroll-area-parents as they
+    // are self painting layers so we rely on the layer position to account
+    // for their overscroll offset.
+    return gfx::Vector2d();
+  }
+  gfx::Vector2d offset;
+  const auto* layout_object = box_fragment_.GetLayoutObject();
+  CHECK(layout_object);
+  if (auto* tracker =
+          To<Element>(layout_object->GetNode())->GetOverscrollAreaTracker()) {
+    for (const Element* element : tracker->DOMSortedElements()) {
+      PseudoElement* pseudo =
+          element->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+      if (LayoutBox* layout_box = pseudo->GetLayoutBox()) {
+        offset += layout_box->GetScrollableArea()->PixelSnappedScrollOffset();
+      }
+    }
+  }
+  return offset;
+}
+
+gfx::Vector2d BoxFragmentPainter::PixelSnappedScrollOffset() const {
+  if (box_fragment_.IsScrollContainer()) {
+    return To<LayoutBox>(box_fragment_.GetLayoutObject())
+        ->GetScrollableArea()
+        ->PixelSnappedScrollOffset();
+  }
+  return gfx::Vector2d();
 }
 
 }  // namespace blink

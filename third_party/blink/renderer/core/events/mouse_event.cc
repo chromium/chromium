@@ -175,7 +175,8 @@ void MouseEvent::InitCoordinates(const double client_x,
     if (LocalFrame* frame = local_dom_window->GetFrame()) {
       // Adjust page_x_ and page_y_ by layout viewport scroll offset.
       if (ScrollableArea* scrollable_area = frame->View()->LayoutViewport()) {
-        gfx::Vector2d scroll_offset = scrollable_area->ScrollOffsetInt();
+        gfx::Vector2d scroll_offset =
+            scrollable_area->PixelSnappedScrollOffset();
         page_x_ += scroll_offset.x() / zoom_factor;
         page_y_ += scroll_offset.y() / zoom_factor;
       }

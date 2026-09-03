@@ -926,7 +926,8 @@ void LayoutView::UpdateHitTestResult(HitTestResult& result,
     if (const auto* layout_box = node->GetLayoutBox())
       adjusted_point -= layout_box->PhysicalLocation();
     if (IsScrollContainer()) {
-      adjusted_point += PhysicalOffset(PixelSnappedScrolledContentOffset());
+      adjusted_point +=
+          PhysicalOffset(GetScrollableArea()->PixelSnappedScrollOffset());
     }
     result.SetNodeAndPosition(node, adjusted_point);
   }

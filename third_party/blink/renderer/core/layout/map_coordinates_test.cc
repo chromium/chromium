@@ -560,7 +560,9 @@ TEST_F(MapCoordinatesTest, FixedPosInFixedPosScrollView) {
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
+  EXPECT_EQ(
+      50,
+      GetDocument().View()->LayoutViewport()->PixelSnappedScrollOffset().y());
 
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, view, PhysicalOffset());
@@ -595,7 +597,9 @@ TEST_F(MapCoordinatesTest, FixedPosInAbsolutePosScrollView) {
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
+  EXPECT_EQ(
+      50,
+      GetDocument().View()->LayoutViewport()->PixelSnappedScrollOffset().y());
 
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, view, PhysicalOffset());
@@ -624,7 +628,9 @@ TEST_F(MapCoordinatesTest, FixedPosInTransform) {
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
+  EXPECT_EQ(
+      50,
+      GetDocument().View()->LayoutViewport()->PixelSnappedScrollOffset().y());
 
   auto* target = GetLayoutBoxByElementId("target");
   auto* container = GetLayoutBoxByElementId("container");
@@ -664,7 +670,9 @@ TEST_F(MapCoordinatesTest, FixedPosInContainPaint) {
       ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
+  EXPECT_EQ(
+      50,
+      GetDocument().View()->LayoutViewport()->PixelSnappedScrollOffset().y());
 
   auto* target = GetLayoutBoxByElementId("target");
   auto* container = GetLayoutBoxByElementId("container");

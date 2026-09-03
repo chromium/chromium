@@ -94,7 +94,9 @@ class MockScrollableAreaForAnimatorTest
   PhysicalOffset LocalToScrollOriginOffset() const override { return {}; }
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }
-  gfx::Vector2d ScrollOffsetInt() const override { return gfx::Vector2d(); }
+  gfx::Vector2d PixelSnappedScrollOffset() const override {
+    return gfx::Vector2d();
+  }
   int VisibleHeight() const override { return 768; }
   int VisibleWidth() const override { return 1024; }
   CompositorElementId GetScrollElementId() const override {
@@ -118,7 +120,7 @@ class MockScrollableAreaForAnimatorTest
   ScrollOffset GetScrollOffset() const override {
     if (animator)
       return animator->CurrentOffset();
-    return ScrollOffsetInt();
+    return PixelSnappedScrollOffset();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final {

@@ -87,7 +87,8 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_index) const {
   // about that here.
   DCHECK_EQ(gfx::RectF(physical_rect), gfx::RectF(page_rect));
 
-  page_rect.Offset(-frame_->View()->LayoutViewport()->ScrollOffsetInt());
+  page_rect.Offset(
+      -frame_->View()->LayoutViewport()->PixelSnappedScrollOffset());
 
   return page_rect;
 }

@@ -275,7 +275,8 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
       ratio_distance_top_to_visible_top;
 
   float ratio_distance_root_top =
-      (target.y() + root_frame_view->LayoutViewport()->ScrollOffsetInt().y()) /
+      (target.y() +
+       root_frame_view->LayoutViewport()->PixelSnappedScrollOffset().y()) /
       base_height;
   metrics->ratio_distance_root_top = ratio_distance_root_top;
 

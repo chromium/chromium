@@ -58,7 +58,7 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
     user_input_scrollable_y_ = y;
   }
 
-  gfx::Vector2d ScrollOffsetInt() const override {
+  gfx::Vector2d PixelSnappedScrollOffset() const override {
     return SnapScrollOffsetToPhysicalPixels(scroll_offset_);
   }
   ScrollOffset GetScrollOffset() const override { return scroll_offset_; }
