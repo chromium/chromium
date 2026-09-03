@@ -658,6 +658,27 @@ class EslintTsTest(unittest.TestCase):
         e in str(context.exception), f'Found unexpected error: {e}'
       )
 
+  def testWebUiEslintPlugin_LitElementTemplateStructure_InvalidReturn(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+        [
+          "with_webui_plugin_lit_element_template_structure_invalid_return_violations.html.ts"
+        ]
+      )
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-template-structure"
+    self.assertTrue(
+      _EXPECTED_STRING in str(context.exception),
+      f"Exception was: {context.exception}",
+    )
+
+    _INVALID_GET_HTML_RETURN_ERROR = "getHtml() function does not return a tagged template literal. Use the following format: 'return html`<all template and template logic goes here>`;'"
+
+    self.assertTrue(
+      _INVALID_GET_HTML_RETURN_ERROR in str(context.exception),
+      f"Didn't find expected error: {_INVALID_GET_HTML_RETURN_ERROR}",
+    )
+
   def testWebUiEslintPlugin_LitReactiveProperties(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test(

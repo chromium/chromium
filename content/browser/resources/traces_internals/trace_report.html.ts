@@ -10,7 +10,8 @@ import {ReportUploadState} from './traces_internals.mojom-webui.js';
 
 export function getHtml(this: TraceReportElement) {
   // clang-format off
-  return this.isHeader ? html`
+  return html`
+${this.isHeader ? html`
     <div class="info">Trace ID</div>
     <div class="info">Date created</div>
     <div class="info">Scenario</div>
@@ -68,6 +69,6 @@ export function getHtml(this: TraceReportElement) {
           ?disabled="${this.isLoading}">
       </cr-icon-button>
     </div>
-    ` : nothing);
+` : nothing)}`;
   // clang-format on
 }

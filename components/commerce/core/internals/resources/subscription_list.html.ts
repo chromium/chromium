@@ -8,7 +8,8 @@ import type {SubscriptionListElement} from './subscription_list.js';
 
 export function getHtml(this: SubscriptionListElement) {
   // clang-format off
-  return this.subscriptions_.length > 0 ? html`
+  return html`
+${this.subscriptions_.length > 0 ? html`
   <table class="list">
     <thead>
       <tr>
@@ -42,6 +43,7 @@ export function getHtml(this: SubscriptionListElement) {
             </td>
           </tr>`))}
     </tbody>
-  </table>` : html`<div>No subscriptions found.</div>`;
+  </table>
+` : html`<div>No subscriptions found.</div>`}`;
   // clang-format on
 }

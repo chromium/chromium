@@ -10,7 +10,8 @@ import type {TodoItemElement} from './todo_item.js';
 import {TodoItemVariant} from './todo_item.js';
 
 export function getHtml(this: TodoItemElement) {
-  return this.variant === TodoItemVariant.TAB ?
+  return html`
+${this.variant === TodoItemVariant.TAB ?
       html`
       <div class="todo-content tab-todo-content">
         ${
@@ -128,5 +129,5 @@ export function getHtml(this: TodoItemElement) {
       </div>
     ` :
                            ''}
-  `;
+  `}`;
 }

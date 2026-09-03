@@ -8,7 +8,7 @@ import type {CurrentTabChipElement} from './current_tab_chip.js';
 
 export function getHtml(this: CurrentTabChipElement) {
   // clang-format off
-  return this.currentTab ? html`<!--_html_template_start_-->
+  return html`${this.currentTab ? html`<!--_html_template_start_-->
   <cr-button id="currentTabButton"
       @click="${this.onCurrentTabButtonClick_}"
       title="${this.getCurrentTabChipTitle_()}"
@@ -18,6 +18,6 @@ export function getHtml(this: CurrentTabChipElement) {
       ${this.i18n('askAboutTab')}
     </span>
   </cr-button>
-<!--_html_template_end_-->` : '';
+<!--_html_template_end_-->` : ''}`;
   //clang-format on
 }

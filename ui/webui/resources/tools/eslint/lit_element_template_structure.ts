@@ -9,9 +9,9 @@ import assert from 'node:assert';
 import {dashCaseToCamelCase, isIdentifier, LIT_IMPORT_REGEX} from './query_utils.js';
 
 type Options = [];
-type MessageIds =
-    'ifStatementFound'|'forStatementFound'|'variableDeclarationFound'|
-    'functionDefinitionFound'|'incorrectEventListenerNameFound';
+type MessageIds = 'ifStatementFound'|'forStatementFound'|
+    'variableDeclarationFound'|'functionDefinitionFound'|
+    'incorrectEventListenerNameFound'|'invalidGetHtmlReturn';
 
 export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
     Options, MessageIds>({
@@ -32,6 +32,8 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
           'Extra function definition \'{{functionName}}\' found in the HTML template file. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element',
       incorrectEventListenerNameFound:
           'Incorrect event listener naming found for event \'{{eventName}}\'. Rename \'{{listenerName}}\' to follow the \'{{suggestedListenerName}}\' pattern',
+      invalidGetHtmlReturn:
+          'getHtml() function does not return a tagged template literal. Use the following format: \'return html`<all template and template logic goes here>`;\'',
     },
     schema: [],
   },
@@ -110,6 +112,24 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
               },
             });
           }
+        }
+      },
+      ['FunctionDeclaration[id.name="getHtml"]'](
+          node: TSESTree.FunctionDeclaration) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        const returnStatement = node.body.body.find(
+            (statement): statement is TSESTree.ReturnStatement =>
+                statement.type === Node.ReturnStatement);
+        const argument = returnStatement ? returnStatement.argument : null;
+
+        if (!argument || argument.type !== Node.TaggedTemplateExpression) {
+          context.report({
+            node: returnStatement ? returnStatement : node,
+            messageId: 'invalidGetHtmlReturn',
+          });
         }
       },
       ['FunctionDeclaration[id.name="getHtml"] ForStatement'](

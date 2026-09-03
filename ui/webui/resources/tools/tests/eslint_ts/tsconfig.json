@@ -23,6 +23,8 @@
     "with_webui_plugin_lit_element_invalid_interface_violations.ts",
     "with_webui_plugin_lit_element_structure_html_import_violations.ts",
     "with_webui_plugin_lit_element_structure_violations.ts",
+    "with_webui_plugin_lit_element_template_structure_invalid_return_violations.html.ts",
+    "with_webui_plugin_lit_element_template_structure_invalid_return_violations.ts",
     "with_webui_plugin_lit_element_template_structure_violations.html.ts",
     "with_webui_plugin_lit_element_template_structure_violations.ts",
     "with_webui_plugin_lit_violations.ts",
