@@ -173,6 +173,7 @@ static_library("chrome_test_launcher") {
     "chrome_test_launcher.h",
   ]
   deps = [
+    ":chrome_test_suite",
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:main_extra_parts",
@@ -527,11 +528,8 @@ source_set("chrome_unit_test_suite") {
     "chrome_unit_test_suite.cc",
     "chrome_unit_test_suite.h",
   ]
-  public_deps = [
-    ":chrome_test_suite",
-    "//base/test:test_support",
-  ]
   deps = [
+    ":chrome_test_suite",
     ":testing_browser_process",
     "//base",
     "//chrome/browser:browser_process",
