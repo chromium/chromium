@@ -439,5 +439,45 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.inputKeywordModel !== null);
     assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
     assertEquals('youtube.com', manager.inputKeywordModel?.keyword);
+
+    // Instant keyword match -> enters keyword mode immediately.
+    const instantMatchBookmarks = createSearchMatchForTesting({
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kInstant,
+        keyword: '@bookmarks',
+        chipHint: 'Bookmarks',
+      }),
+    });
+    manager.onSelectedMatchChanged(instantMatchBookmarks);
+    assertTrue(manager.isInKeywordMode);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
+    assertEquals('@bookmarks', manager.inputKeywordModel?.keyword);
+    assertEquals('Bookmarks', manager.inputKeywordModel?.displayText);
+
+    // Selecting another instant keyword match -> updates keyword mode.
+    const instantMatchHistory = createSearchMatchForTesting({
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kInstant,
+        keyword: '@history',
+        chipHint: 'History',
+      }),
+    });
+    manager.onSelectedMatchChanged(instantMatchHistory);
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('@history', manager.inputKeywordModel?.keyword);
+    assertEquals('History', manager.inputKeywordModel?.displayText);
+
+    // Navigating away to a match without keyword model -> exits keyword mode.
+    manager.onSelectedMatchChanged(matchWithoutKeyword);
+    assertFalse(manager.isInKeywordMode);
+    assertEquals(null, manager.inputKeywordModel);
+  });
+
+  test('formatMatchFillIntoEdit for exact keyword', () => {
+    manager.enter('@bookmarks', 'Bookmarks', KeywordModeEntryMethod.TAB);
+    const match = createSearchMatchForTesting({
+      fillIntoEdit: '@bookmarks',
+    });
+    assertEquals('', manager.formatMatchFillIntoEdit(match, /*matchIndex=*/ 1));
   });
 });
