@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
@@ -36,15 +35,29 @@ class APISignature {
     std::optional<std::vector<std::unique_ptr<ArgumentSpec>>> signature;
     // Indicates if passing the callback when calling the API is optional for
     // APIs which do not support promises (passing the callback is always
-    // inheriently optional if promises are supported).
+    // inherently optional if promises are supported).
     bool optional = false;
     // Indicates if this API supports allowing promises for the asynchronous
     // return.
     binding::APIPromiseSupport promise_support =
         binding::APIPromiseSupport::kUnsupported;
+
+    // Determines the response type based on whether a callback function was
+    // provided. Assumes arguments have already been validated to match the API
+    // signature.
+    [[nodiscard]] binding::AsyncResponseType GetAsyncResponseType(
+        bool has_callback) const {
+      if (has_callback) {
+        return binding::AsyncResponseType::kCallback;
+      }
+      if (promise_support == binding::APIPromiseSupport::kSupported) {
+        return binding::AsyncResponseType::kPromise;
+      }
+      return binding::AsyncResponseType::kNone;
+    }
   };
 
-  APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature,
+  APISignature(std::vector<std::unique_ptr<ArgumentSpec>> expected_arguments,
                std::unique_ptr<APISignature::ReturnsAsync> returns_async);
 
   APISignature(const APISignature&) = delete;
@@ -134,9 +147,9 @@ class APISignature {
                         std::string* error) const;
 
   // Same as `ValidateResponse`, but verifies the given `arguments` against the
-  // `signature_` instead of the `returns_async_` types. This can be used when
-  // validating that APIs return proper values to an event (which has a
-  // signature, but no return).
+  // `expected_arguments_` instead of the `returns_async_` types. This can be
+  // used when validating that APIs return proper values to an event (which has
+  // a signature, but no return).
   bool ValidateCall(v8::Local<v8::Context> context,
                     const v8::LocalVector<v8::Value>& arguments,
                     const APITypeReferenceMap& type_refs,
@@ -147,30 +160,27 @@ class APISignature {
   // 'someInt', this would return "string someStr, optional integer someInt".
   std::string GetExpectedSignature() const;
 
+  const std::vector<std::unique_ptr<ArgumentSpec>>& expected_arguments() const {
+    return expected_arguments_;
+  }
+  const ReturnsAsync* returns_async() const { return returns_async_.get(); }
   bool has_async_return() const { return returns_async_ != nullptr; }
   bool has_async_return_signature() const {
     return has_async_return() && returns_async_->signature.has_value();
   }
 
  private:
-  // The list of expected arguments for the API signature.
-  std::vector<std::unique_ptr<ArgumentSpec>> signature_;
+  // The list of expected positional input arguments for the API signature
+  // (excluding any trailing callback for asynchronous responses, which is
+  // represented in returns_async_).
+  std::vector<std::unique_ptr<ArgumentSpec>> expected_arguments_;
 
   // The details of any asynchronous return an API method may have. This will be
-  // nullptr if the the API doesn't have an asynchronous return.
+  // nullptr if the API doesn't have an asynchronous return.
   std::unique_ptr<APISignature::ReturnsAsync> returns_async_;
 
   // A developer-readable method signature string, lazily set.
   mutable std::string expected_signature_;
-
-  // Returns whether this API has a async return that supports promise based
-  // calls.
-  binding::APIPromiseSupport api_promise_support() const {
-    if (has_async_return()) {
-      return returns_async_->promise_support;
-    }
-    return binding::APIPromiseSupport::kUnsupported;
-  }
 };
 
 }  // namespace extensions

@@ -373,6 +373,8 @@ TEST_F(APISignatureTest, BasicSignatureParsing) {
                binding::AsyncResponseType::kCallback);
     ExpectFailure(*signature, "[function() {}]", NoMatchingSignature());
     ExpectFailure(*signature, "[1]", NoMatchingSignature());
+    ExpectFailure(*signature, "[1, null]", NoMatchingSignature());
+    ExpectFailure(*signature, "[1, undefined]", NoMatchingSignature());
   }
 
   {
@@ -382,7 +384,15 @@ TEST_F(APISignatureTest, BasicSignatureParsing) {
                binding::AsyncResponseType::kCallback);
     ExpectPass(*signature, "[function() {}]", "[null]",
                binding::AsyncResponseType::kCallback);
+    ExpectPass(*signature, "[null, function() {}]", "[null]",
+               binding::AsyncResponseType::kCallback);
+    ExpectPass(*signature, "[undefined, function() {}]", "[null]",
+               binding::AsyncResponseType::kCallback);
     ExpectFailure(*signature, "[1]", NoMatchingSignature());
+    ExpectFailure(*signature, "[1, null]", NoMatchingSignature());
+    ExpectFailure(*signature, "[1, undefined]", NoMatchingSignature());
+    ExpectFailure(*signature, "[null]", NoMatchingSignature());
+    ExpectFailure(*signature, "[undefined]", NoMatchingSignature());
   }
 
   {
@@ -391,6 +401,7 @@ TEST_F(APISignatureTest, BasicSignatureParsing) {
     ExpectPass(*signature, "[function() {}]", "[]",
                binding::AsyncResponseType::kCallback);
     ExpectPass(*signature, "[]", "[]", binding::AsyncResponseType::kNone);
+    ExpectPass(*signature, "[null]", "[]", binding::AsyncResponseType::kNone);
     ExpectPass(*signature, "[undefined]", "[]",
                binding::AsyncResponseType::kNone);
     ExpectFailure(*signature, "[0]", NoMatchingSignature());
@@ -756,6 +767,10 @@ TEST_F(APISignatureTest, PromisesSupport) {
         SpecVector(), ReturnsAsyncBuilder().Build());
     ExpectPass(*default_signature, "[]", "[]",
                binding::AsyncResponseType::kPromise);
+    ExpectPass(*default_signature, "[null]", "[]",
+               binding::AsyncResponseType::kPromise);
+    ExpectPass(*default_signature, "[undefined]", "[]",
+               binding::AsyncResponseType::kPromise);
 
     // Ensure that the promise support allowing the final argument to be
     // optional doesn't mean we can ignore it entirely if it doesn't match the
@@ -770,6 +785,10 @@ TEST_F(APISignatureTest, PromisesSupport) {
         SpecVector(),
         ReturnsAsyncBuilder().DoesNotSupportPromises().MakeRequired().Build());
     ExpectFailure(*required_callback_signature, "[]", NoMatchingSignature());
+    ExpectFailure(*required_callback_signature, "[null]",
+                  NoMatchingSignature());
+    ExpectFailure(*required_callback_signature, "[undefined]",
+                  NoMatchingSignature());
   }
 
   {
@@ -778,6 +797,10 @@ TEST_F(APISignatureTest, PromisesSupport) {
     auto optional_callback_signature = std::make_unique<APISignature>(
         SpecVector(), ReturnsAsyncBuilder().DoesNotSupportPromises().Build());
     ExpectPass(*optional_callback_signature, "[]", "[]",
+               binding::AsyncResponseType::kNone);
+    ExpectPass(*optional_callback_signature, "[null]", "[]",
+               binding::AsyncResponseType::kNone);
+    ExpectPass(*optional_callback_signature, "[undefined]", "[]",
                binding::AsyncResponseType::kNone);
   }
 
