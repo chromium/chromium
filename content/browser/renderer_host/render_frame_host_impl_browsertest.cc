@@ -38,6 +38,7 @@
 #include "components/viz/common/features.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/renderer_host/initiator_navigation_state_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -10850,16 +10851,16 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   )",
                                              cross_origin_url)));
 
-  RenderFrameHost* openee_rfh =
+  RenderFrameHostImpl* openee_rfh = static_cast<RenderFrameHostImpl*>(
       static_cast<WebContentsImpl*>(openee_shell->web_contents())
-          ->GetPrimaryMainFrame();
+          ->GetPrimaryMainFrame());
 
   // 5. Issue a KeepAlive for the navigation state so that the
   //    PolicyContainerHost will still exist after the initiator RenderFrameHost
   //    is gone.
   mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle> keep_alive;
-  static_cast<RenderFrameHostImpl*>(openee_rfh)
-      ->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver());
+  openee_rfh->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver(),
+                                   openee_rfh->current_initiator_state_token());
 
   // 6. Watch for the navigation in the opener.
   TestNavigationObserver navigation_observer(web_contents());
@@ -10910,16 +10911,16 @@ IN_PROC_BROWSER_TEST_F(
   )",
                                              GURL(url::kAboutBlankURL))));
 
-  RenderFrameHost* openee_rfh =
+  RenderFrameHostImpl* openee_rfh = static_cast<RenderFrameHostImpl*>(
       static_cast<WebContentsImpl*>(openee_shell->web_contents())
-          ->GetPrimaryMainFrame();
+          ->GetPrimaryMainFrame());
 
   // 5. Issue a KeepAlive for the navigation state so that the
   //    PolicyContainerHost will still exist after the initiator RenderFrameHost
   //    is gone.
   mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle> keep_alive;
-  static_cast<RenderFrameHostImpl*>(openee_rfh)
-      ->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver());
+  openee_rfh->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver(),
+                                   openee_rfh->current_initiator_state_token());
 
   // 6. Watch for the navigation in the opener.
   TestNavigationObserver navigation_observer(web_contents());

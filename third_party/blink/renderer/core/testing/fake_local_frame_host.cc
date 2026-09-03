@@ -289,7 +289,8 @@ void FakeLocalFrameHost::StartDragging(
 
 void FakeLocalFrameHost::IssueKeepAliveHandle(
     mojo::PendingReceiver<mojom::blink::NavigationStateKeepAliveHandle>
-        receiver) {}
+        receiver,
+    const blink::InitiatorStateToken& initiator_state_token) {}
 
 void FakeLocalFrameHost::NotifyStorageAccessed(
     blink::mojom::StorageTypeAccessed storageType,

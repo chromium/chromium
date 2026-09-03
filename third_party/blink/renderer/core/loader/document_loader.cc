@@ -779,7 +779,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->service_worker_network_provider =
       std::move(service_worker_network_provider_);
   params->devtools_navigation_token = devtools_navigation_token_;
-  params->initiator_state_token = initiator_state_token_;
+  params->initiator_state_token = frame_->DomWindow()->GetInitiatorStateToken();
   params->base_auction_nonce = base_auction_nonce_;
   params->is_user_activated = had_sticky_activation_;
   params->had_transient_user_activation =
@@ -4063,6 +4063,13 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         parsed_embedder_policies = ParseContentSecurityPolicies(
             header.header_value, header.type, header.source, Url());
+    // TODO(crbug.com/510258191): Consider setting the InitiatorStateToken on
+    // the window at this point, instead on relying on the fact that this
+    // function is called from InitializeWindow which will set the
+    // InitiatorStateToken on the window after calling this function. Also
+    // consider refactoring the function so that we do not call
+    // PolicyContainer::AddContentSecurityPolicies if the policies passed by the
+    // browser process have not been modified.
     initiator_state_token_ = InitiatorStateToken();
     policy_container_->AddContentSecurityPolicies(
         mojo::Clone(parsed_embedder_policies), initiator_state_token_);

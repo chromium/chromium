@@ -410,6 +410,7 @@ enum BadMessageReason {
   RFH_COMMIT_NAVIGATION_TRANSITION_FRAME_TYPE_MISMATCH = 382,
   RFH_COMMIT_NAVIGATION_DISALLOWED_QUALIFIER = 383,
   RFH_COMMIT_NAVIGATION_BROWSER_INITIATED_TRANSITION_MISMATCH = 384,
+  RFH_ISSUE_KEEP_ALIVE_HANDLE_INVALID_INITIATOR_TOKEN = 385,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

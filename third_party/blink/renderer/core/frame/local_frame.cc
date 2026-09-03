@@ -4497,7 +4497,8 @@ LocalFrame::IssueKeepAliveHandle() {
   mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
       keep_alive_remote;
   GetLocalFrameHostRemote().IssueKeepAliveHandle(
-      keep_alive_remote.InitWithNewPipeAndPassReceiver());
+      keep_alive_remote.InitWithNewPipeAndPassReceiver(),
+      GetInitiatorStateToken());
   return keep_alive_remote;
 }
 

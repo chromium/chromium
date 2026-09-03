@@ -11384,7 +11384,17 @@ void RenderFrameHostImpl::StartDragging(
 
 void RenderFrameHostImpl::IssueKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
-        receiver) {
+        receiver,
+    const blink::InitiatorStateToken& initiator_state_token) {
+  // A well-behaving renderer process should only request a keep-alive for the
+  // current initiator state. Terminate those that attempt to extend the
+  // lifetime of other initiator states.
+  if (initiator_state_token != current_initiator_state_token_) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_ISSUE_KEEP_ALIVE_HANDLE_INVALID_INITIATOR_TOKEN);
+    return;
+  }
   BrowserContextImpl* browser_context =
       BrowserContextImpl::From(GetBrowserContext());
   browser_context->RegisterKeepAliveHandle(

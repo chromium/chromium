@@ -209,7 +209,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
                      mojom::blink::DragEventSourceInfoPtr event_info) override;
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<mojom::blink::NavigationStateKeepAliveHandle>
-          receiver) override;
+          receiver,
+      const blink::InitiatorStateToken& initiator_state_token) override;
   void NotifyStorageAccessed(blink::mojom::StorageTypeAccessed storageType,
                              bool blocked) override;
   void RecordWindowProxyUsageMetrics(

@@ -781,9 +781,10 @@ interface LocalFrameHost {
                 DragEventSourceInfo event_info);
 
   // Register the remote corresponding to |receiver| as a keep alive handle for
-  // browser-process navigation state associated with this LocalFrameHost.
+  // browser-process navigation state associated with the `initiator_state_token`.
   IssueKeepAliveHandle(
-      pending_receiver<NavigationStateKeepAliveHandle> receiver);
+      pending_receiver<NavigationStateKeepAliveHandle> receiver,
+      blink.mojom.InitiatorStateToken initiator_state_token);
 
   // Used to tell the browser that storage access was requested and whether it
   // was allowed.

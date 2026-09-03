@@ -381,6 +381,34 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, JavascriptURL) {
   EXPECT_EQ(token, GetBrowserSideToken(web_contents()));
 }
 
+IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest,
+                       JavascriptURLNavigationAfterCSPUpdate) {
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const blink::InitiatorStateToken initial_token =
+      GetBrowserSideToken(web_contents());
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "let meta = document.createElement('meta');"
+                     "meta.httpEquiv = 'content-security-policy';"
+                     "meta.content = \"script-src 'self' 'unsafe-inline'\";"
+                     "document.head.appendChild(meta);"));
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const blink::InitiatorStateToken updated_token =
+      GetBrowserSideToken(web_contents());
+  EXPECT_NE(initial_token, updated_token);
+
+  // A javascript: navigation that replaces the document should not change the
+  // initiator state token. This does not use the normal Navigate*() helpers
+  // since it does not commit a normal cross-document navigation.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace("location = $1", "javascript:'Hello world!'")));
+  EXPECT_EQ("Hello world!", EvalJs(web_contents(), "document.body.innerText"));
+  EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  EXPECT_EQ(updated_token, GetBrowserSideToken(web_contents()));
+}
+
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, FailedNavigation) {
   std::vector<blink::InitiatorStateToken> seen_tokens;
 
