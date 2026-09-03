@@ -133,9 +133,9 @@ TEST_F(EventTargetTest, EventTargetWithAbortSignalDestroyed) {
     EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
     auto* options = AddEventListenerOptions::Create();
     options->setSignal(controller->signal());
-    event_target->addEventListener(
-        AtomicString("test"), listener.Get(),
-        MakeGarbageCollected<AddEventListenerOptionsResolved>(options));
+    AddEventListenerOptionsResolved resolved_options(options);
+    event_target->addEventListener(AtomicString("test"), listener.Get(),
+                                   resolved_options);
     event_target = nullptr;
   }
   ThreadState::Current()->CollectAllGarbageForTesting();

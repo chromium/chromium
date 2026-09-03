@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
-#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -56,23 +56,22 @@ EventHandlerRegistry::~EventHandlerRegistry() {
   }
 }
 
-bool EventHandlerRegistry::EventTypeToClass(
-    const AtomicString& event_type,
-    const AddEventListenerOptions* options,
-    EventHandlerClass* result) {
+bool EventHandlerRegistry::EventTypeToClass(const AtomicString& event_type,
+                                            bool passive,
+                                            EventHandlerClass* result) {
   if (event_type == event_type_names::kScroll) {
     *result = kScrollEvent;
   } else if (event_type == event_type_names::kWheel ||
              event_type == event_type_names::kMousewheel) {
-    *result = options->passive() ? kWheelEventPassive : kWheelEventBlocking;
+    *result = passive ? kWheelEventPassive : kWheelEventBlocking;
   } else if (event_type == event_type_names::kTouchend ||
              event_type == event_type_names::kTouchcancel) {
-    *result = options->passive() ? kTouchEndOrCancelEventPassive
-                                 : kTouchEndOrCancelEventBlocking;
+    *result = passive ? kTouchEndOrCancelEventPassive
+                      : kTouchEndOrCancelEventBlocking;
   } else if (event_type == event_type_names::kTouchstart ||
              event_type == event_type_names::kTouchmove) {
-    *result = options->passive() ? kTouchStartOrMoveEventPassive
-                                 : kTouchStartOrMoveEventBlocking;
+    *result = passive ? kTouchStartOrMoveEventPassive
+                      : kTouchStartOrMoveEventBlocking;
   } else if (event_type == event_type_names::kPointerrawupdate) {
     // This will be used to avoid waking up the main thread to
     // process pointerrawupdate events and hit-test them when
@@ -143,11 +142,12 @@ bool EventHandlerRegistry::UpdateEventHandlerInternal(
 void EventHandlerRegistry::UpdateEventHandlerOfType(
     ChangeOperation op,
     const AtomicString& event_type,
-    const AddEventListenerOptions* options,
+    bool passive,
     EventTarget* target) {
   EventHandlerClass handler_class;
-  if (!EventTypeToClass(event_type, options, &handler_class))
+  if (!EventTypeToClass(event_type, passive, &handler_class)) {
     return;
+  }
   UpdateEventHandlerInternal(op, handler_class, target);
 }
 
@@ -155,14 +155,26 @@ void EventHandlerRegistry::DidAddEventHandler(
     EventTarget& target,
     const AtomicString& event_type,
     const AddEventListenerOptions* options) {
-  UpdateEventHandlerOfType(kAdd, event_type, options, &target);
+  DidAddEventHandler(target, event_type, options->passive());
+}
+
+void EventHandlerRegistry::DidAddEventHandler(EventTarget& target,
+                                              const AtomicString& event_type,
+                                              bool passive) {
+  UpdateEventHandlerOfType(kAdd, event_type, passive, &target);
 }
 
 void EventHandlerRegistry::DidRemoveEventHandler(
     EventTarget& target,
     const AtomicString& event_type,
     const AddEventListenerOptions* options) {
-  UpdateEventHandlerOfType(kRemove, event_type, options, &target);
+  DidRemoveEventHandler(target, event_type, options->passive());
+}
+
+void EventHandlerRegistry::DidRemoveEventHandler(EventTarget& target,
+                                                 const AtomicString& event_type,
+                                                 bool passive) {
+  UpdateEventHandlerOfType(kRemove, event_type, passive, &target);
 }
 
 void EventHandlerRegistry::DidAddEventHandler(EventTarget& target,
@@ -188,7 +200,7 @@ void EventHandlerRegistry::DidMoveIntoLocalRoot(EventTarget& target) {
       continue;
     for (wtf_size_t count = listeners->size(); count > 0; --count) {
       EventHandlerClass handler_class;
-      if (!EventTypeToClass(event_types[i], (*listeners)[count - 1]->Options(),
+      if (!EventTypeToClass(event_types[i], (*listeners)[count - 1]->Passive(),
                             &handler_class)) {
         continue;
       }

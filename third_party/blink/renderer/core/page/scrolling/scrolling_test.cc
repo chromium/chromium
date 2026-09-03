@@ -971,9 +971,8 @@ TEST_P(ScrollingTest, WindowTouchEventHandlerInvalidation) {
 
   // Adding a blocking window event handler should create a touch action region.
   auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
+  AddEventListenerOptionsResolved resolved_options;
+  resolved_options.SetPassive(false);
   GetFrame()->DomWindow()->addEventListener(event_type_names::kTouchstart,
                                             listener, resolved_options);
   ForceFullCompositingUpdate();
@@ -999,9 +998,8 @@ TEST_P(ScrollingTest, TouchActionChangeWithoutContent) {
 
   // Adding a blocking window event handler should create a touch action region.
   auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
+  AddEventListenerOptionsResolved resolved_options;
+  resolved_options.SetPassive(false);
   auto* target_element =
       GetFrame()->GetDocument()->getElementById(AtomicString("blocking"));
   target_element->addEventListener(event_type_names::kTouchstart, listener,
@@ -1084,9 +1082,8 @@ TEST_P(ScrollingTest, WheelEventHandlerInvalidation) {
 
   // Adding a blocking window event handler should create a wheel event region.
   auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
+  AddEventListenerOptionsResolved resolved_options;
+  resolved_options.SetPassive(false);
   GetFrame()
       ->GetDocument()
       ->getElementById(AtomicString("scrollable"))
@@ -1749,9 +1746,8 @@ TEST_P(ScrollingTest, WindowWheelEventHandlerInvalidation) {
 
   // Adding a blocking window event handler should create a wheel event region.
   auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
+  AddEventListenerOptionsResolved resolved_options;
+  resolved_options.SetPassive(false);
   GetFrame()->DomWindow()->addEventListener(event_type_names::kWheel, listener,
                                             resolved_options);
   ForceFullCompositingUpdate();
@@ -1774,9 +1770,8 @@ TEST_P(ScrollingTest, WheelEventHandlerChangeWithoutContent) {
 
   // Adding a blocking window event handler should create a wheel event region.
   auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
+  AddEventListenerOptionsResolved resolved_options;
+  resolved_options.SetPassive(false);
   auto* target_element =
       GetFrame()->GetDocument()->getElementById(AtomicString("blocking"));
   target_element->addEventListener(event_type_names::kWheel, listener,

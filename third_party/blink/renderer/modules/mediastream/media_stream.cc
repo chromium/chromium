@@ -452,7 +452,7 @@ void MediaStream::StreamEnded() {
 bool MediaStream::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
-    const AddEventListenerOptionsResolved* options) {
+    const AddEventListenerOptionsResolved& options) {
   if (event_type == event_type_names::kActive) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kMediaStreamOnActive);
   } else if (event_type == event_type_names::kInactive) {

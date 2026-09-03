@@ -3471,11 +3471,10 @@ void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
     base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback) {
   TouchStartEventListener* touch_start_event_listener =
       MakeGarbageCollected<TouchStartEventListener>(std::move(callback));
-  AddEventListenerOptionsResolved* options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  options->setPassive(true);
-  options->SetPassiveSpecified(true);
-  options->setCapture(true);
+  AddEventListenerOptionsResolved options;
+  options.SetPassive(true);
+  options.SetPassiveSpecified(true);
+  options.SetCapture(true);
   GetFrame()->DomWindow()->addEventListener(
       event_type_names::kTouchstart, touch_start_event_listener, options);
 }

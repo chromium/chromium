@@ -69,7 +69,7 @@ class CORE_EXPORT EventListenerMap final {
   // `RegisteredEventListener` stored in the map.
   bool Add(const AtomicString& event_type,
            EventListener*,
-           const AddEventListenerOptionsResolved*,
+           const AddEventListenerOptionsResolved&,
            RegisteredEventListener** registered_listener);
   // Remove an event listener. If the listener is found the result will be
   // true and `registered_listener` will be updated to the

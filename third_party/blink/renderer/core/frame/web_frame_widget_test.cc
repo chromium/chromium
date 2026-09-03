@@ -1697,9 +1697,8 @@ TEST_P(WebFrameWidgetInputEventsSimTest, DispatchBufferedTouchEvents) {
   auto* widget = WebView().MainFrameViewWidget();
 
   auto* listener = MakeGarbageCollected<TouchMoveEventListener>();
-  Window().addEventListener(
-      event_type_names::kTouchmove, listener,
-      MakeGarbageCollected<AddEventListenerOptionsResolved>());
+  AddEventListenerOptionsResolved options;
+  Window().addEventListener(event_type_names::kTouchmove, listener, options);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
   // Send a start.

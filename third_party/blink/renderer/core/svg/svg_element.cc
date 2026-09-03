@@ -630,7 +630,7 @@ void SVGElement::AddedEventListener(
   // Add event listener to all shadow tree DOM element instances
   HeapHashSet<WeakMember<SVGElement>> instances;
   CollectInstancesForSVGElement(this, instances);
-  AddEventListenerOptionsResolved* options = registered_listener.Options();
+  AddEventListenerOptionsResolved options = registered_listener.Options();
   EventListener* listener = registered_listener.Callback();
   for (SVGElement* element : instances) {
     bool result =
@@ -647,7 +647,8 @@ void SVGElement::RemovedEventListener(
   // Remove event listener from all shadow tree DOM element instances
   HeapHashSet<WeakMember<SVGElement>> instances;
   CollectInstancesForSVGElement(this, instances);
-  EventListenerOptions* options = registered_listener.Options();
+  RegisteredEventListener::OptionsForMatching options =
+      registered_listener.GetOptionsForMatching();
   const EventListener* listener = registered_listener.Callback();
   for (SVGElement* shadow_tree_element : instances) {
     DCHECK(shadow_tree_element);

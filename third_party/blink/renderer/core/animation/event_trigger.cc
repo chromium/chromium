@@ -69,8 +69,8 @@ void EventTrigger::Trace(Visitor* visitor) const {
 
 void EventTrigger::DidAddAnimation() {
   if (event_target_ && !event_listener_) {
-    auto* options = MakeGarbageCollected<AddEventListenerOptionsResolved>();
-    options->SetAnimationTrigger(true);
+    AddEventListenerOptionsResolved options;
+    options.SetAnimationTrigger(true);
     event_listener_ = MakeGarbageCollected<TriggerEventListener>(*this);
     event_target_->addEventListener(AtomicString(event_type_),
                                     event_listener_.Get(), options);

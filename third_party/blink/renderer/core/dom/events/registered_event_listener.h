@@ -41,14 +41,14 @@ class RegisteredEventListener final
  public:
   RegisteredEventListener();
   RegisteredEventListener(EventListener* listener,
-                          const AddEventListenerOptionsResolved* options);
+                          const AddEventListenerOptionsResolved& options);
   RegisteredEventListener(const RegisteredEventListener& that) = delete;
   RegisteredEventListener& operator=(const RegisteredEventListener& that) =
       delete;
 
   void Trace(Visitor* visitor) const;
 
-  AddEventListenerOptionsResolved* Options() const;
+  AddEventListenerOptionsResolved Options() const;
 
   const EventListener* Callback() const { return callback_.Get(); }
 

@@ -710,7 +710,7 @@ ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
 bool ServiceWorkerGlobalScope::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
-    const AddEventListenerOptionsResolved* options) {
+    const AddEventListenerOptionsResolved& options) {
   if (did_evaluate_script_) {
     String message = StrCat(
         {"Event handler of '", event_type,

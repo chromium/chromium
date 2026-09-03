@@ -170,7 +170,7 @@ class MODULES_EXPORT MediaStream final
   bool AddEventListenerInternal(
       const AtomicString& event_type,
       EventListener*,
-      const AddEventListenerOptionsResolved*) override;
+      const AddEventListenerOptionsResolved&) override;
 
  private:
   bool EmptyOrOnlyEndedTracks();

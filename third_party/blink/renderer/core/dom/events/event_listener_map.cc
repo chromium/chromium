@@ -111,10 +111,10 @@ Vector<AtomicString> EventListenerMap::EventTypes() const {
 
 static bool AddListenerToVector(EventListenerVector* listener_vector,
                                 EventListener* listener,
-                                const AddEventListenerOptionsResolved* options,
+                                const AddEventListenerOptionsResolved& options,
                                 RegisteredEventListener** registered_listener) {
   for (auto& item : *listener_vector) {
-    if (item->Matches(listener, {options->capture()})) {
+    if (item->Matches(listener, {options.Capture()})) {
       // Duplicate listener.
       return false;
     }
@@ -128,7 +128,7 @@ static bool AddListenerToVector(EventListenerVector* listener_vector,
 
 bool EventListenerMap::Add(const AtomicString& event_type,
                            EventListener* listener,
-                           const AddEventListenerOptionsResolved* options,
+                           const AddEventListenerOptionsResolved& options,
                            RegisteredEventListener** registered_listener) {
   for (const auto& entry : entries_) {
     if (entry.first == event_type) {
@@ -213,7 +213,7 @@ static void CopyListenersNotCreatedFromMarkupToTarget(
     if (event_listener->Callback()->IsEventHandlerForContentAttribute()) {
       continue;
     }
-    AddEventListenerOptionsResolved* options = event_listener->Options();
+    AddEventListenerOptionsResolved options = event_listener->Options();
     target->addEventListener(event_type, event_listener->Callback(), options);
   }
 }

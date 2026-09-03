@@ -142,9 +142,8 @@ class PaintControllerPaintTestBase : public RenderingTest {
   void SetWheelEventListener(const char* element_id) {
     auto* element = GetDocument().getElementById(AtomicString(element_id));
     auto* listener = MakeGarbageCollected<MockEventListener>();
-    auto* resolved_options =
-        MakeGarbageCollected<AddEventListenerOptionsResolved>();
-    resolved_options->setPassive(false);
+    AddEventListenerOptionsResolved resolved_options;
+    resolved_options.SetPassive(false);
     element->addEventListener(event_type_names::kWheel, listener,
                               resolved_options);
     UpdateAllLifecyclePhasesForTest();

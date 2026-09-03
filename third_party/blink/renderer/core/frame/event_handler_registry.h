@@ -69,10 +69,16 @@ class CORE_EXPORT EventHandlerRegistry final
   void DidAddEventHandler(EventTarget&,
                           const AtomicString& event_type,
                           const AddEventListenerOptions*);
+  void DidAddEventHandler(EventTarget&,
+                          const AtomicString& event_type,
+                          bool passive);
   void DidAddEventHandler(EventTarget&, EventHandlerClass);
   void DidRemoveEventHandler(EventTarget&,
                              const AtomicString& event_type,
                              const AddEventListenerOptions*);
+  void DidRemoveEventHandler(EventTarget&,
+                             const AtomicString& event_type,
+                             bool passive);
   void DidRemoveEventHandler(EventTarget&, EventHandlerClass);
   void DidRemoveAllEventHandlers(EventTarget&);
 
@@ -97,7 +103,7 @@ class CORE_EXPORT EventHandlerRegistry final
 
   // Returns true if |eventType| belongs to a class this registry tracks.
   static bool EventTypeToClass(const AtomicString& event_type,
-                               const AddEventListenerOptions*,
+                               bool passive,
                                EventHandlerClass* result);
 
   // Returns true if the operation actually added a new target or completely
@@ -118,7 +124,7 @@ class CORE_EXPORT EventHandlerRegistry final
   // parent registry and other clients accordingly.
   void UpdateEventHandlerOfType(ChangeOperation,
                                 const AtomicString& event_type,
-                                const AddEventListenerOptions*,
+                                bool passive,
                                 EventTarget*);
 
   bool UpdateEventHandlerInternal(ChangeOperation,

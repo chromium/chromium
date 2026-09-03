@@ -419,7 +419,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   bool AddEventListenerInternal(
       const AtomicString& event_type,
       EventListener*,
-      const AddEventListenerOptionsResolved*) override;
+      const AddEventListenerOptionsResolved&) override;
 
   // WorkerGlobalScope
   bool FetchClassicImportedScript(

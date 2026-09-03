@@ -4,29 +4,23 @@
 
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 
-namespace blink {
+#include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
 
-AddEventListenerOptionsResolved::AddEventListenerOptionsResolved() {}
+namespace blink {
 
 AddEventListenerOptionsResolved::AddEventListenerOptionsResolved(
     const AddEventListenerOptions* options) {
   DCHECK(options);
   // AddEventListenerOptions
   if (options->hasPassive())
-    setPassive(options->passive());
+    SetPassive(options->passive());
   if (options->hasOnce())
-    setOnce(options->once());
+    SetOnce(options->once());
   if (options->hasSignal())
-    setSignal(options->signal());
+    SetSignal(options->signal());
   // EventListenerOptions
   if (options->hasCapture())
-    setCapture(options->capture());
-}
-
-AddEventListenerOptionsResolved::~AddEventListenerOptionsResolved() = default;
-
-void AddEventListenerOptionsResolved::Trace(Visitor* visitor) const {
-  AddEventListenerOptions::Trace(visitor);
+    SetCapture(options->capture());
 }
 
 }  // namespace blink
