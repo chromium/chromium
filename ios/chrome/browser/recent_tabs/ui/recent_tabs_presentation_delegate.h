@@ -13,6 +13,7 @@
 
 namespace synced_sessions {
 struct DistantSession;
+struct DistantTab;
 }
 
 // Presentation commands that depend on the context from which they are
@@ -33,6 +34,8 @@ struct DistantSession;
 - (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session;
 // Tells the receiver to restore the tab with the given `sessionId`.
 - (void)openTabWithTabRestoreEntryId:(SessionID)sessionId;
+// Tells the receiver to open the given `distantTab`.
+- (void)openDistantTab:(const synced_sessions::DistantTab*)distantTab;
 // Asks the presenter to display the reauthenticate the primary account.
 // The primary should be available.
 - (void)showPrimaryAccountReauth;

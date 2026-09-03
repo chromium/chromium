@@ -39,14 +39,11 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
-#import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -55,8 +52,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -82,16 +77,12 @@
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
 
@@ -956,9 +947,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       }
       break;
     case ItemTypeSessionTabData:
-      [self
-          openTabWithContentOfDistantTab:[self
-                                             distantTabAtIndexPath:indexPath]];
+      if (!self.presentedViewController) {
+        // It is reasonable to ignore this request if a modal UI is already
+        // showing above recent tabs. This can happen when a user simultaneously
+        // taps a distant tab and "enable sync". The sync settings UI appears
+        // first and we should not dismiss it to show a distant tab.
+        [self.presentationDelegate
+            openDistantTab:[self distantTabAtIndexPath:indexPath]];
+      }
       break;
     case ItemTypeShowFullHistory:
       base::RecordAction(
@@ -1300,61 +1296,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   // This will return something similar to "H:MM mm/dd/yy"
   return [NSString stringWithFormat:@"%@ %@", timeString, dateString];
-}
-
-#pragma mark - Navigation helpers
-
-- (void)openTabWithContentOfDistantTab:
-    (synced_sessions::DistantTab const*)distantTab {
-  if (!self.browser) {
-    // Prevent interactions if the browser is nil, for example during dismissal.
-    return;
-  }
-
-  // Shouldn't reach this if in incognito.
-  DCHECK(!self.isIncognito);
-
-  // It is reasonable to ignore this request if a modal UI is already showing
-  // above recent tabs. This can happen when a user simultaneously taps a
-  // distant tab and "enable sync". The sync settings UI appears first and we
-  // should not dismiss it to show a distant tab.
-  if (self.presentedViewController) {
-    return;
-  }
-
-  sync_sessions::OpenTabsUIDelegate* openTabs =
-      SessionSyncServiceFactory::GetForProfile(self.profile)
-          ->GetOpenTabsUIDelegate();
-  const sessions::SessionTab* toLoad = nullptr;
-  if (openTabs->GetForeignTab(distantTab->session_tag, distantTab->tab_id,
-                              &toLoad)) {
-    base::TimeDelta time_since_last_use = base::Time::Now() - toLoad->timestamp;
-    base::UmaHistogramCustomTimes("IOS.DistantTab.TimeSinceLastUse",
-                                  time_since_last_use, base::Minutes(1),
-                                  base::Days(24), 50);
-
-    base::RecordAction(base::UserMetricsAction(
-        "MobileRecentTabManagerTabFromOtherDeviceOpened"));
-    web::WebState* currentWebState = self.webStateList->GetActiveWebState();
-    bool is_ntp = currentWebState &&
-                  currentWebState->GetVisibleURL() == kChromeUINewTabURL;
-    new_tab_page_uma::RecordNTPAction(
-        self.isIncognito, is_ntp,
-        new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
-    std::unique_ptr<web::WebState> web_state =
-        session_util::CreateWebStateWithNavigationEntries(
-            self.profile, toLoad->current_navigation_index,
-            toLoad->navigations);
-    if (IsNTPWithoutHistory(currentWebState)) {
-      self.webStateList->ReplaceWebStateAt(self.webStateList->active_index(),
-                                           std::move(web_state));
-    } else {
-      self.webStateList->InsertWebState(
-          std::move(web_state),
-          WebStateList::InsertionParams::Automatic().Activate());
-    }
-  }
-  [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
 #pragma mark - Collapse/Expand sections

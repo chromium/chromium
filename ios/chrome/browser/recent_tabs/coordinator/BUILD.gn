@@ -37,6 +37,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/recent_tabs/model",
     "//ios/chrome/browser/recent_tabs/ui",
     "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:session_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",

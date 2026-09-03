@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -59,6 +60,7 @@
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -270,6 +272,49 @@
           ? WindowOpenDisposition::CURRENT_TAB
           : WindowOpenDisposition::NEW_FOREGROUND_TAB;
   RestoreTab(sessionId, disposition, self.browser);
+  [self showActiveRegularTabFromRecentTabs];
+}
+
+- (void)openDistantTab:(const synced_sessions::DistantTab*)distantTab {
+  if (!self.browser) {
+    return;
+  }
+  // Shouldn't reach this if in incognito.
+  DCHECK(!self.profile->IsOffTheRecord());
+
+  sync_sessions::OpenTabsUIDelegate* openTabs =
+      SessionSyncServiceFactory::GetForProfile(self.profile)
+          ->GetOpenTabsUIDelegate();
+  const sessions::SessionTab* toLoad = nullptr;
+  if (openTabs->GetForeignTab(distantTab->session_tag, distantTab->tab_id,
+                              &toLoad)) {
+    base::TimeDelta time_since_last_use = base::Time::Now() - toLoad->timestamp;
+    base::UmaHistogramCustomTimes("IOS.DistantTab.TimeSinceLastUse",
+                                  time_since_last_use, base::Minutes(1),
+                                  base::Days(24), 50);
+
+    base::RecordAction(base::UserMetricsAction(
+        "MobileRecentTabManagerTabFromOtherDeviceOpened"));
+    WebStateList* webStateList = self.browser->GetWebStateList();
+    web::WebState* currentWebState = webStateList->GetActiveWebState();
+    bool is_ntp = currentWebState &&
+                  currentWebState->GetVisibleURL() == kChromeUINewTabURL;
+    new_tab_page_uma::RecordNTPAction(
+        self.profile->IsOffTheRecord(), is_ntp,
+        new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
+    std::unique_ptr<web::WebState> web_state =
+        session_util::CreateWebStateWithNavigationEntries(
+            self.profile, toLoad->current_navigation_index,
+            toLoad->navigations);
+    if (IsNTPWithoutHistory(currentWebState)) {
+      webStateList->ReplaceWebStateAt(webStateList->active_index(),
+                                      std::move(web_state));
+    } else {
+      webStateList->InsertWebState(
+          std::move(web_state),
+          WebStateList::InsertionParams::Automatic().Activate());
+    }
+  }
   [self showActiveRegularTabFromRecentTabs];
 }
 
