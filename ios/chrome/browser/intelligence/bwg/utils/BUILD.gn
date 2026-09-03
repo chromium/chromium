@@ -48,12 +48,14 @@ source_set("availability") {
     ":constants",
     ":feature_availability",
     ":prefs",
+    "//base",
     "//components/country_codes",
     "//components/prefs",
     "//components/regional_capabilities",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/variations/service",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
@@ -63,8 +65,10 @@ source_set("availability") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//net",
+    "//ui/base",
   ]
 }
 

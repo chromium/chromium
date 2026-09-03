@@ -591,11 +591,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // - Profile-level (`IsProfileEligibleForGemini`): Checks account-wide
   //   eligibility such as enterprise policies, workspace restrictions, and
   //   login state.
-  BOOL canShowGeminiElement =
+  // - Quota exhaustion: Disables the element while keeping it visible with a
+  //   refill reset subtitle.
+  gemini::GeminiAvailabilityResult geminiAvailability =
       gemini::IsGeminiAvailable(gemini::EntryPoint::ImageContextMenu,
-                                self.browser->GetProfile(), webState)
-          .enabled;
-  if (canShowGeminiElement) {
+                                self.browser->GetProfile(), webState);
+  if (geminiAvailability.visible) {
     RecordImageRemixContextMenuEntryPointShown();
 
     ProceduralBlock geminiElementCallback = ^{
@@ -603,8 +604,18 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                               referrer:referrer
                                 params:params];
     };
-    geminiElement = [actionFactory
+    UIAction* geminiAction = [actionFactory
         actionToOpenImageInGeminiWithBlock:geminiElementCallback];
+    if (!geminiAvailability.enabled) {
+      geminiAction.attributes = UIMenuElementAttributesDisabled;
+      // Add a quota specific subtitle when the entry point is disabled due to
+      // quota exhaustion.
+      if (geminiAvailability.disabled_reason ==
+          gemini::EntryPointDisabledReason::kQuotaExhausted) {
+        geminiAction.subtitle = geminiAvailability.disabled_reason_subtitle;
+      }
+    }
+    geminiElement = geminiAction;
     [imageMenuElements addObject:geminiElement];
   }
 

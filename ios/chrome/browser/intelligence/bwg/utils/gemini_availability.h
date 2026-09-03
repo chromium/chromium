@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_AVAILABILITY_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_AVAILABILITY_H_
 
+#import <Foundation/Foundation.h>
+
 #import <optional>
 
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -20,6 +22,11 @@ class WebState;
 
 namespace gemini {
 
+// Reason why a Gemini entry point is disabled.
+enum class EntryPointDisabledReason {
+  kQuotaExhausted,
+};
+
 // Result describing both the visibility and interactive state of Gemini for an
 // entry point.
 struct GeminiAvailabilityResult {
@@ -29,6 +36,14 @@ struct GeminiAvailabilityResult {
   // tappable). An entry point may be visible but disabled (such as for
   // signed-out users).
   bool enabled = false;
+  // The specific reason when the entry point is disabled. Will be
+  // `std::nullopt` when the entry point is not disabled or disabled due to
+  // general ineligibility.
+  std::optional<EntryPointDisabledReason> disabled_reason = std::nullopt;
+  // An optional subtitle explaining why the entry point is disabled, if
+  // applicable. Will be `nil` when the entry point is enabled or has no
+  // disabled subtitle.
+  NSString* disabled_reason_subtitle = nil;
   // The specific profile ineligibility reasons when Gemini is not available.
   // Will be `std::nullopt` when the profile is eligible.
   std::optional<IneligibilityReasons> ineligibility_reasons = std::nullopt;

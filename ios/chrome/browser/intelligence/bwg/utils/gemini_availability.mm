@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 
+#import "base/check.h"
 #import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/country_codes/country_codes.h"
 #import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
@@ -22,10 +24,16 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/network_change_notifier.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Date template for the refill reset time (month, day, and time without year).
+NSString* const kLimitResetDateFormatTemplate = @"MMMdjm";
 
 // Returns true if the device's stored permanent country is in the EEA or
 // Japan.
@@ -93,6 +101,36 @@ bool IsGeminiEligibleForBar(ProfileIOS* profile,
   }
 
   return true;
+}
+
+// Returns a localized string describing when the image remix limit resets.
+NSString* GetImageRemixLimitResetSubtitle() {
+  NSDate* refill_date = ios::provider::GetRefillDateForFeatureMode(
+      ios::provider::GeminiFeatureMode::kNanoBanana);
+  CHECK(refill_date);
+  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+  [formatter setLocalizedDateFormatFromTemplate:kLimitResetDateFormatTemplate];
+  NSString* formatted_date = [formatter stringFromDate:refill_date];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_GEMINI_IMAGE_REMIX_LIMIT_RESET_SUBTITLE,
+      base::SysNSStringToUTF16(formatted_date));
+}
+
+// Returns whether Image Remix is eligible for the profile and web state.
+bool IsImageRemixEligible(bool profile_eligible,
+                          bool web_state_eligible,
+                          ProfileIOS* profile,
+                          GeminiTabHelper* tab_helper) {
+  return profile_eligible && web_state_eligible &&
+         gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, profile) &&
+         tab_helper && tab_helper->IsContextualEntryPointAllowed();
+}
+
+// Returns whether the user's Image Remix quota has been reached.
+bool IsImageRemixQuotaReached() {
+  return IsGeminiAureusEnabled() &&
+         ios::provider::IsFeatureModeDisabledByQuota(
+             ios::provider::GeminiFeatureMode::kNanoBanana);
 }
 
 }  // namespace
@@ -176,13 +214,33 @@ GeminiAvailabilityResult IsGeminiAvailable(EntryPoint entry_point,
       break;
     }
 
-    case EntryPoint::ImageContextMenu:
-    case EntryPoint::ImageRemixIPH: {
-      bool eligible = profile_eligible && web_state_eligible &&
-                      IsFeatureAvailable(Feature::kImageRemix, profile) &&
-                      tab_helper->IsContextualEntryPointAllowed();
+    case EntryPoint::ImageContextMenu: {
+      bool eligible = IsImageRemixEligible(profile_eligible, web_state_eligible,
+                                           profile, tab_helper);
+      bool quota_reached = eligible && IsImageRemixQuotaReached();
+      // This entry point can be visible even if the feature is disabled.
       result.visible = eligible;
-      result.enabled = eligible;
+      result.enabled = eligible && !quota_reached;
+      if (quota_reached) {
+        result.disabled_reason =
+            gemini::EntryPointDisabledReason::kQuotaExhausted;
+        result.disabled_reason_subtitle = GetImageRemixLimitResetSubtitle();
+      }
+      break;
+    }
+
+    case EntryPoint::ImageRemixIPH: {
+      bool eligible = IsImageRemixEligible(profile_eligible, web_state_eligible,
+                                           profile, tab_helper);
+      bool quota_reached = eligible && IsImageRemixQuotaReached();
+      // IPH must not be shown if the feature is disabled.
+      result.visible = eligible && !quota_reached;
+      result.enabled = eligible && !quota_reached;
+      if (quota_reached) {
+        result.disabled_reason =
+            gemini::EntryPointDisabledReason::kQuotaExhausted;
+        result.disabled_reason_subtitle = GetImageRemixLimitResetSubtitle();
+      }
       break;
     }
 

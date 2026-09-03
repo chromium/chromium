@@ -64,6 +64,8 @@
 
 namespace ios::provider {
 void SetMockProtectedUrl(bool is_protected);
+void SetMockFeatureModeDisabledByQuota(bool disabled);
+void SetMockRefillDateForFeatureMode(NSDate* date);
 }
 
 namespace {
@@ -96,6 +98,9 @@ constexpr char kDownloadConnectorsAnalysisPref[] = R"([
     "block_large_files": true
   }
 ])";
+
+// Arbitrary timestamp used for mocking refill date.
+constexpr NSTimeInterval kArbitraryTimestamp = 1777998600;
 
 // Returns context menu params with `src_url` set to `image_url`.
 web::ContextMenuParams GetContextMenuParamsWithImageUrl(const char* image_url) {
@@ -197,6 +202,8 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
 
   void TearDown() final {
     ios::provider::SetMockProtectedUrl(false);
+    ios::provider::SetMockFeatureModeDisabledByQuota(false);
+    ios::provider::SetMockRefillDateForFeatureMode(nil);
     [configuration_provider_ stop];
     PlatformTest::TearDown();
   }
@@ -659,4 +666,62 @@ TEST_F(ContextMenuConfigurationProviderTest, GeminiImageRemix_ProtectedURL) {
         return [menuElement.title isEqualToString:expected_title];
       }];
   EXPECT_EQ(indexOfProtectedGeminiAction, (NSUInteger)NSNotFound);
+}
+
+// Tests that the "Edit Image with Gemini" action is disabled with a limit reset
+// subtitle when quota is exhausted.
+TEST_F(ContextMenuConfigurationProviderTest,
+       GeminiImageRemixActionDisabledWhenQuotaExhausted) {
+  // Enable feature flags.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu, kGeminiAureus}, {});
+
+  SignIn();
+
+  // Configure WebState to allow page context extraction.
+  web::FakeWebState* web_state = GetActiveWebState();
+  web_state->WasShown();
+  web_state->SetContentIsHTML(true);
+  web_state->SetContentsMimeType("text/html");
+
+  // Configure WebFramesManager and bind GeminiTabHelper to the WebState to
+  // satisfy Gemini availability checks for the active WebState.
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
+  frames_manager->AddWebFrame(std::move(main_frame));
+  web_state->SetWebFramesManager(std::move(frames_manager));
+
+  GeminiTabHelper::CreateForWebState(web_state);
+
+  // Configure the mock Gemini service to mark the profile as eligible.
+  FakeGeminiService* fake_gemini_service = static_cast<FakeGeminiService*>(
+      GeminiServiceFactory::GetForProfile(profile_.get()));
+  fake_gemini_service->SetIsEligible(true);
+
+  NSString* expected_title =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT);
+  web_state->SetCurrentURL(GURL("https://example.com"));
+
+  ios::provider::SetMockProtectedUrl(false);
+  ios::provider::SetMockFeatureModeDisabledByQuota(true);
+
+  NSDate* mock_date =
+      [NSDate dateWithTimeIntervalSince1970:kArbitraryTimestamp];
+  ios::provider::SetMockRefillDateForFeatureMode(mock_date);
+
+  web::ContextMenuParams params = GetContextMenuParamsWithImageUrl(kImageUrl);
+  UIMenu* menu = GetContextMenuForParams(params);
+
+  NSUInteger indexOfGeminiAction =
+      [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menuElement,
+                                                    NSUInteger, BOOL*) {
+        return [menuElement.title isEqualToString:expected_title];
+      }];
+  ASSERT_NE(indexOfGeminiAction, (NSUInteger)NSNotFound);
+  UIAction* action = static_cast<UIAction*>(menu.children[indexOfGeminiAction]);
+  // Verify that the action is disabled and displays the limit reset subtitle.
+  EXPECT_TRUE(action.attributes & UIMenuElementAttributesDisabled);
+  EXPECT_NE(action.subtitle, nil);
+  EXPECT_TRUE([action.subtitle
+      containsString:@"Images will be available again when your limit resets"]);
 }

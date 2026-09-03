@@ -3534,6 +3534,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can create an image with Gemini.">
         Create an image with Gemini
       </message>
+      <message name="IDS_IOS_GEMINI_IMAGE_REMIX_LIMIT_RESET_SUBTITLE" desc="Subtitle on the image context menu item when the image generation quota is reached. [iOS only]">
+        Images will be available again when your limit resets <ph name="RESET_TIME">$1<ex>May 4 at 4:30 PM</ex></ph>
+      </message>
       <message name="IDS_IOS_GEMINI_IMAGE_REMIX_TOOL_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can upload an image to remix with Nano Banana.">
         Upload an image to remix with Nano Banana
       </message>
@@ -6118,11 +6121,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY" desc="Button text to deny access to permissions. This should match the iOS built-in alert for permissions access.">
         Don't Allow
       </message>
-      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW" desc="Button text to never allow access to permissions for the current visit only. [iOS only]">
-        Never Allow
-      </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT" desc="Button text to allow access to permissions. This should match the iOS built-in alert for permissions access.">
         Allow
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW" desc="Button text to never allow access to permissions for the current visit only. [iOS only]">
+        Never Allow
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE" desc="Message shown in the alert asking users for access to permissions. This should match the iOS built-in alert for permissions access.">
         Allow "<ph name="SITE_NAME">$1<ex>permission.site</ex></ph>" to use your <ph name="PERMISSION">$2<ex>camera and microphone</ex></ph>?

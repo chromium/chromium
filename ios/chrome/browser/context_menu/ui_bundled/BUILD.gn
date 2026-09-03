@@ -147,6 +147,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/text_selection/model:model_utils",
     "//ios/chrome/test:test_support",
     "//ios/components/enterprise/analysis:features",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/test",

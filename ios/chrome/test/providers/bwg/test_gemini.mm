@@ -57,12 +57,17 @@ static std::optional<gemini::EntryPoint>
 static NSString* g_last_update_prompt_action_prompt = nil;
 static BOOL g_last_update_prompt_action_should_auto_submit = NO;
 
+static bool g_mock_feature_mode_disabled_by_quota = false;
+static NSDate* g_mock_refill_date = nil;
+
 void ResetGemini() {
   g_current_mode = GeminiViewMode::kUnknown;
   g_current_view_state = GeminiViewState::kUnknown;
   g_last_update_prompt_action_entry_point.reset();
   g_last_update_prompt_action_prompt = nil;
   g_last_update_prompt_action_should_auto_submit = NO;
+  g_mock_feature_mode_disabled_by_quota = false;
+  g_mock_refill_date = nil;
 }
 
 void UpdatePageAttachmentState(
@@ -188,12 +193,20 @@ UIViewController* GetFloatyViewControllerWithConfiguration(
   return viewController;
 }
 
+void SetMockFeatureModeDisabledByQuota(bool disabled) {
+  g_mock_feature_mode_disabled_by_quota = disabled;
+}
+
+void SetMockRefillDateForFeatureMode(NSDate* date) {
+  g_mock_refill_date = date;
+}
+
 bool IsFeatureModeDisabledByQuota(GeminiFeatureMode feature_mode) {
-  return false;
+  return g_mock_feature_mode_disabled_by_quota;
 }
 
 NSDate* GetRefillDateForFeatureMode(GeminiFeatureMode feature_mode) {
-  return nil;
+  return g_mock_refill_date;
 }
 
 }  // namespace ios::provider

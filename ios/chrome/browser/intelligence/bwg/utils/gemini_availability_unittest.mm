@@ -33,7 +33,17 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/mock_network_change_notifier.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+namespace ios::provider {
+void SetMockFeatureModeDisabledByQuota(bool disabled);
+void SetMockRefillDateForFeatureMode(NSDate* date);
+}  // namespace ios::provider
+
+namespace {
+constexpr NSTimeInterval kArbitraryTimestamp = 1777998600;
+}  // namespace
 
 namespace gemini {
 
@@ -87,6 +97,12 @@ class GeminiAvailabilityTest : public PlatformTest {
     auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
   }
 
+  void TearDown() override {
+    ios::provider::SetMockFeatureModeDisabledByQuota(false);
+    ios::provider::SetMockRefillDateForFeatureMode(nil);
+    PlatformTest::TearDown();
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -124,6 +140,49 @@ TEST_F(GeminiAvailabilityTest, ContextualEntryPointAllowed) {
       EntryPoint::ImageContextMenu, profile_.get(), &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
+  EXPECT_FALSE(result.disabled_reason.has_value());
+}
+
+TEST_F(GeminiAvailabilityTest, ImageContextMenuQuotaReached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kPageActionMenu, kGeminiAureus}, {});
+  fake_gemini_service_->SetIsEligible(true);
+  gemini::test::SetUpEligibleAccount(profile_.get());
+
+  NSDate* mock_date =
+      [NSDate dateWithTimeIntervalSince1970:kArbitraryTimestamp];
+  ios::provider::SetMockRefillDateForFeatureMode(mock_date);
+  ios::provider::SetMockFeatureModeDisabledByQuota(true);
+
+  GeminiAvailabilityResult result = IsGeminiAvailable(
+      EntryPoint::ImageContextMenu, profile_.get(), &web_state_);
+  EXPECT_TRUE(result.visible);
+  EXPECT_FALSE(result.enabled);
+  EXPECT_EQ(result.disabled_reason, EntryPointDisabledReason::kQuotaExhausted);
+  EXPECT_NE(result.disabled_reason_subtitle, nil);
+  EXPECT_TRUE([result.disabled_reason_subtitle
+      containsString:@"Images will be available again when your limit resets"]);
+}
+
+TEST_F(GeminiAvailabilityTest, ImageRemixIPHQuotaReached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kPageActionMenu, kGeminiAureus}, {});
+  fake_gemini_service_->SetIsEligible(true);
+  gemini::test::SetUpEligibleAccount(profile_.get());
+
+  NSDate* mock_date =
+      [NSDate dateWithTimeIntervalSince1970:kArbitraryTimestamp];
+  ios::provider::SetMockRefillDateForFeatureMode(mock_date);
+  ios::provider::SetMockFeatureModeDisabledByQuota(true);
+
+  GeminiAvailabilityResult result =
+      IsGeminiAvailable(EntryPoint::ImageRemixIPH, profile_.get(), &web_state_);
+  EXPECT_FALSE(result.visible);
+  EXPECT_FALSE(result.enabled);
+  EXPECT_EQ(result.disabled_reason, EntryPointDisabledReason::kQuotaExhausted);
+  EXPECT_NE(result.disabled_reason_subtitle, nil);
+  EXPECT_TRUE([result.disabled_reason_subtitle
+      containsString:@"Images will be available again when your limit resets"]);
 }
 
 TEST_F(GeminiAvailabilityTest, HighLevelFlagDisabled) {
