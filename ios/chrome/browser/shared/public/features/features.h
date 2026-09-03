@@ -727,12 +727,6 @@ bool IsChromeNextIaLensIconVisible();
 // Returns true if Share icon should be visible in ChromeNextIa.
 bool IsChromeNextIaShareIconVisible();
 
-// Enables the ComposeboxAIMDisabled feature.
-BASE_DECLARE_FEATURE(kComposeboxAIMDisabled);
-
-// Returns true if the ComposeboxAIMDisabled feature is enabled.
-bool IsComposeboxAIMDisabled();
-
 // Enables the EnableNewStartupFlow feature.
 BASE_DECLARE_FEATURE(kEnableNewStartupFlow);
 

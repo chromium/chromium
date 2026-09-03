@@ -410,10 +410,6 @@ inline constexpr char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
-inline constexpr char kComposeboxAIMDisabledName[] = "ComposeboxAIMDisabled";
-inline constexpr char kComposeboxAIMDisabledDescription[] =
-    "When enabled, AIM feature are disabled in the composebox.";
-
 inline constexpr char kComposeboxAIMNudgeName[] = "ComposeboxAIMNudge";
 inline constexpr char kComposeboxAIMNudgeDescription[] =
     "Enables the AIM nudge button in the composebox, tapping on the button "

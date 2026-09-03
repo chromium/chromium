@@ -80,8 +80,7 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
     PlatformTest::SetUp();
     contextual_search::ContextualSearchService::RegisterProfilePrefs(
         pref_service_.registry());
-    scoped_feature_list_.InitWithFeatures({kComposeboxServerSideState},
-                                          {kComposeboxAIMDisabled});
+    scoped_feature_list_.InitWithFeatures({kComposeboxServerSideState}, {});
 
     session_handle_ = std::make_unique<
         contextual_search::MockContextualSearchSessionHandle>();

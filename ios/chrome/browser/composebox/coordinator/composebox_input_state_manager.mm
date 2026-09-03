@@ -496,9 +496,6 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   if (experimental_flags::ShouldForceDisableComposeboxAIM()) {
     return NO;
   }
-  if (IsComposeboxAIMDisabled()) {
-    return NO;
-  }
   if (!_aimEligibilityService) {
     return NO;
   }

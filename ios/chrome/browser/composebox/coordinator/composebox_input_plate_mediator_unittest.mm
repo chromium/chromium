@@ -380,8 +380,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
       disabled_features.push_back(kComposeboxDeepSearch);
     }
 
-    disabled_features.push_back(kComposeboxAIMDisabled);
-
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

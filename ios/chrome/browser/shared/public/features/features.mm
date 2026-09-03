@@ -909,12 +909,6 @@ bool IsChromeNextIaShareIconVisible() {
   return IsChromeNextIaEnabled() && kChromeNextIaShareIconVisible.Get();
 }
 
-BASE_FEATURE(kComposeboxAIMDisabled, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsComposeboxAIMDisabled() {
-  return base::FeatureList::IsEnabled(kComposeboxAIMDisabled);
-}
-
 NSString* const kNewStartupFlowKey = @"IsEnableNewStartupFlowEnabled";
 
 BASE_FEATURE(kEnableNewStartupFlow, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1109,7 +1103,7 @@ BASE_FEATURE(kPlusButtonInFakebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns true if the plus button in NTP fakebox is enabled.
 bool IsPlusButtonInFakeboxEnabled() {
-  if (IsComposeboxAIMDisabled() || !IsComposeboxIOSEnabled()) {
+  if (!IsComposeboxIOSEnabled()) {
     return false;
   }
 

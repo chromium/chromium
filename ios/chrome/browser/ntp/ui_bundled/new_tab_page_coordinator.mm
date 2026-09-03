@@ -2208,7 +2208,7 @@
 - (void)openAIM {
   RecordHomeAction(IOSHomeActionType::kQuickActionAIM, [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMButtonTapped];
-  if (!IsDisableComposeboxFromAIMNTPEnabled() && !IsComposeboxAIMDisabled() &&
+  if (!IsDisableComposeboxFromAIMNTPEnabled() &&
       _aimEligibilityService->IsFuseboxEligible() &&
       MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
@@ -2258,8 +2258,7 @@
 
   // Fallback to opening AIM if eligibility changed in the meantime and the NTP
   // was not reloaded since.
-  if (IsComposeboxAIMDisabled() ||
-      !_aimEligibilityService->IsFuseboxEligible()) {
+  if (!_aimEligibilityService->IsFuseboxEligible()) {
     [self openAIMWeb];
   }
   [HandlerForProtocol(self.browser->GetCommandDispatcher(),

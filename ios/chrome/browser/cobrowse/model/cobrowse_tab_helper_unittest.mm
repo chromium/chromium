@@ -37,9 +37,8 @@
 class CobrowseTabHelperTest : public PlatformTest {
  public:
   CobrowseTabHelperTest() {
-    feature_list_.InitWithFeatures(
-        {kAimCobrowse, kAssistantContainer},
-        {kComposeboxAIMDisabled, kPreventCobrowseOnAimSrpTap});
+    feature_list_.InitWithFeatures({kAimCobrowse, kAssistantContainer},
+                                   {kPreventCobrowseOnAimSrpTap});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
