@@ -32,7 +32,7 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 NSString* const kKeyPathVideoRect = @"videoRect";
 // Delay to wait before checking if the app was restored from picture in
 // picture or manually (App switcher, App icon...).
-constexpr base::TimeDelta kAppRestoreDelay = base::Milliseconds(50);
+constexpr base::TimeDelta kAppRestoreDelay = base::Milliseconds(100);
 // Delay to wait before auto-hiding controls.
 constexpr base::TimeDelta kControlsHideDelay = base::Seconds(3);
 // Duration for controls fade animation.
@@ -86,6 +86,8 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   UIButton* _playPauseButton;
   // The closure to hide controls after a delay.
   base::CancelableOnceClosure _hideControlsClosure;
+  // The closure to handle manual app restore after a delay.
+  base::CancelableOnceClosure _appRestoreClosure;
 }
 
 - (instancetype)initWithTitle:(NSString*)title
@@ -126,17 +128,23 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
 #pragma mark - Public
 
 - (void)dismissIfNotPipRestore {
+  // If the view was already restored from the PiP fullscreen button, keep the
+  // UI alive and skip scheduling manual dismissal.
+  if (_restoredFromPictureInPicture) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   _appWasRestored = YES;
   // Delay execution by `kAppRestoreDelay` to allow
   // `restoreUserInterfaceForPictureInPictureStopWithCompletionHandler` to fire
   // first. This lets us distinguish a manual launch (which dismisses
-  // everything) from a PiP restore (which preserves the UI).
+  // everything) from a PiP restore (which cancels this closure and preserves
+  // the UI).
+  _appRestoreClosure.Reset(base::BindOnce(^{
+    [weakSelf handleAppRestore];
+  }));
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf handleAppRestore];
-      }),
-      kAppRestoreDelay);
+      FROM_HERE, _appRestoreClosure.callback(), kAppRestoreDelay);
 }
 
 #pragma mark - Private
@@ -324,8 +332,6 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
 - (void)handleAppRestore {
   if (_restoredFromPictureInPicture) {
     [self showControls];
-    [self recordAppRestoration:PictureInPictureAppRestoration::
-                                   kPictureInPictureFullscreenButton];
     return;
   }
 
@@ -513,6 +519,11 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
     restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:
         (void (^)(BOOL restored))completionHandler {
   _restoredFromPictureInPicture = YES;
+  // Cancel the pending manual restore closure to prevent tearing down the UI.
+  _appRestoreClosure.Cancel();
+  [self showControls];
+  [self recordAppRestoration:PictureInPictureAppRestoration::
+                                 kPictureInPictureFullscreenButton];
   completionHandler(YES);
 }
 
