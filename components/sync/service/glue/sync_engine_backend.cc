@@ -321,7 +321,10 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
-  if (base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
+  // Local sync communicates with a loopback server on disk and does not need
+  // an access token.
+  if (base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken) &&
+      !params.enable_local_sync_backend) {
     args.sync_access_token_fetcher = this;
   }
   args.account_email = params.authenticated_account_info.email;
