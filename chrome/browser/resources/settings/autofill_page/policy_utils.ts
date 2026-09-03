@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 // LINT.IfChange(AutofillPolicyDataCategory)
 export enum AutofillPolicyDataCategory {
@@ -28,6 +29,10 @@ export function isTypeGloballyBlocked(
     typesBlockedPref: chrome.settingsPrivate.PrefObject<TypesBlockedEntry[]>|
     undefined,
     category: AutofillPolicyDataCategory): boolean {
+  if (!loadTimeData.valueExists('AutofillSettingsEnterprisePolicyEnabled') ||
+      !loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled')) {
+    return false;
+  }
   if (!typesBlockedPref || !typesBlockedPref.value ||
       !Array.isArray(typesBlockedPref.value)) {
     return false;

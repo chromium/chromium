@@ -354,6 +354,29 @@ suite('IdentityDocsPage', function() {
         assertFalse(entriesList.allowNewEntitiesAdditionPref!.value);
       });
 
+  test(
+      'types_blocked policy is ignored when enterprise policy flag is disabled',
+      async function() {
+        loadTimeData.overrideValues({
+          AutofillSettingsEnterprisePolicyEnabled: false,
+          canEnableOrDisableAutofillAi: true,
+        });
+
+        settingsPrefs.set(
+            'prefs.autofill.autofill_ai.identity_entities_enabled.value', true);
+        settingsPrefs.set('prefs.autofill.types_blocked', {
+          value: [{url_pattern: '*', blocked_types: ['identity_docs']}],
+        });
+
+        const page = await setupPage();
+        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+            'cr-policy-pref-indicator');
+
+        assertFalse(!!policyIndicator);
+        assertFalse(page.$.optInToggle.controlDisabled());
+        assertTrue(page.$.optInToggle.checked);
+      });
+
   suite('SuggestionsFromGemini', function() {
     let metricsBrowserProxy: TestMetricsBrowserProxy;
 
