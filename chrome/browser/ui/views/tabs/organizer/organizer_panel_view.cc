@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -156,6 +157,7 @@ OrganizerPanelView::OrganizerPanelView(
   if (browser_ && browser_->GetProfile() &&
       !organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()) {
     auto web_view = std::make_unique<views::WebView>(browser_->GetProfile());
+    webui::SetBrowserWindowInterface(web_view->GetWebContents(), browser_);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
         web_view->GetWebContents(), SK_ColorTRANSPARENT);
     web_view->LoadInitialURL(GURL(chrome::kChromeUIOrganizerPanelURL));
