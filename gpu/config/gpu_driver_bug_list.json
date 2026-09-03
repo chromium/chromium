@@ -3898,6 +3898,23 @@
       "features": [
         "use_tex_sub_image_for_host_twiddled_npot_uploads"
       ]
+    },
+    {
+      "id": 495,
+      "cr_bugs": [41489840],
+      "description": "D3D12 device creation crashes in legacy Intel drivers during DX12 info collection.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "primary",
+      "driver_version": {
+        "op": "<",
+        "value": "20.20.1.1"
+      },
+      "features": [
+        "disable_dx12_info_collection"
+      ]
     }
   ]
 }

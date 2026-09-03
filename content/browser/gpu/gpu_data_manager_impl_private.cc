@@ -648,7 +648,9 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDirectXVersion(
         base::CommandLine* command_line =
             base::CommandLine::ForCurrentProcess();
         if (command_line->HasSwitch(
-                switches::kDisableGpuProcessForDX12InfoCollection)) {
+                switches::kDisableGpuProcessForDX12InfoCollection) ||
+            manager->GetGpuFeatureInfo().IsWorkaroundEnabled(
+                gpu::DISABLE_DX12_INFO_COLLECTION)) {
           manager->UpdateDirectXRequestStatus(false);
           return;
         }

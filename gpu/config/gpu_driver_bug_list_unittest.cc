@@ -74,6 +74,53 @@ TEST_F(GpuDriverBugListTest, AppendForceGPUWorkaround) {
   EXPECT_EQ(1u, workarounds.count(FORCE_HIGH_PERFORMANCE_GPU));
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(GpuDriverBugListTest, DisableDx12InfoCollection) {
+  std::unique_ptr<GpuDriverBugList> list = GpuDriverBugList::Create();
+  GPUInfo gpu_info;
+  gpu_info.gpu.vendor_id = 0x8086;
+
+  for (const std::string& driver_version :
+       {"10", "20.19.14.9999", "20.19.15.4326", "20.19.15.4531",
+        "20.19.15.4835", "20.19.16.0", "20.20.1.0"}) {
+    gpu_info.gpu.driver_version = driver_version;
+    std::set<int> workarounds =
+        list->MakeDecision(GpuControlList::kOsWin, "10.0.19045", gpu_info, {});
+    EXPECT_EQ(1u, workarounds.count(DISABLE_DX12_INFO_COLLECTION));
+  }
+
+  for (const std::string& driver_version : {"20.20.1.1", "20.20.1.2"}) {
+    gpu_info.gpu.driver_version = driver_version;
+    std::set<int> workarounds =
+        list->MakeDecision(GpuControlList::kOsWin, "10.0.19045", gpu_info, {});
+    EXPECT_EQ(0u, workarounds.count(DISABLE_DX12_INFO_COLLECTION));
+  }
+
+  GPUInfo hybrid_gpu_info;
+  hybrid_gpu_info.gpu.vendor_id = 0x8086;
+  hybrid_gpu_info.secondary_gpus.emplace_back();
+  hybrid_gpu_info.secondary_gpus.back().vendor_id = 0x10de;
+  hybrid_gpu_info.secondary_gpus.back().driver_version = "32.0.15.6094";
+  hybrid_gpu_info.secondary_gpus.back().active = true;
+  hybrid_gpu_info.gpu.driver_version = "20.19.15.4531";
+  std::set<int> hybrid_workarounds = list->MakeDecision(
+      GpuControlList::kOsWin, "10.0.19045", hybrid_gpu_info, {});
+  EXPECT_EQ(1u, hybrid_workarounds.count(DISABLE_DX12_INFO_COLLECTION));
+
+  GPUInfo discrete_primary_gpu_info;
+  discrete_primary_gpu_info.gpu.vendor_id = 0x10de;
+  discrete_primary_gpu_info.gpu.driver_version = "32.0.15.6094";
+  discrete_primary_gpu_info.secondary_gpus.emplace_back();
+  discrete_primary_gpu_info.secondary_gpus.back().vendor_id = 0x8086;
+  discrete_primary_gpu_info.secondary_gpus.back().driver_version =
+      "20.19.15.4531";
+  discrete_primary_gpu_info.secondary_gpus.back().active = true;
+  std::set<int> workarounds = list->MakeDecision(
+      GpuControlList::kOsWin, "10.0.19045", discrete_primary_gpu_info, {});
+  EXPECT_EQ(0u, workarounds.count(DISABLE_DX12_INFO_COLLECTION));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
 // It checks gpu_driver_bug_list.json
