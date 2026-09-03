@@ -982,6 +982,38 @@ public class AwContents implements SmartClipProvider {
             AwDrawFnImpl.DrawFnAccess drawFnAccess,
             AwContentsClientFactory clientFactory,
             DependencyFactory dependencyFactory) {
+        this(
+                browserContext,
+                containerView,
+                context,
+                internalAccessAdapter,
+                drawFnAccess,
+                clientFactory,
+                /* onSettingsCreated= */ null,
+                dependencyFactory);
+    }
+
+    /**
+     * @param browserContext the browsing context to associate this view contents with.
+     * @param containerView the view-hierarchy item this object will be bound to.
+     * @param context the context to use, usually containerView.getContext().
+     * @param internalAccessAdapter to access private methods on containerView.
+     * @param drawFnAccess to access the draw functor provided by the WebView.
+     * @param clientFactory will create the AwContentsClient which receives callbacks.
+     * @param onSettingsCreated optional callback invoked immediately after AwSettings is created,
+     *     before containerView is interacted with.
+     * @param dependencyFactory an instance of the DependencyFactory used to provide instances of
+     *     classes that this class depends on.
+     */
+    public AwContents(
+            AwBrowserContext browserContext,
+            ViewGroup containerView,
+            Context context,
+            InternalAccessDelegate internalAccessAdapter,
+            AwDrawFnImpl.DrawFnAccess drawFnAccess,
+            AwContentsClientFactory clientFactory,
+            @Nullable Callback<AwSettings> onSettingsCreated,
+            DependencyFactory dependencyFactory) {
         assert browserContext != null;
         long startTime = SystemClock.uptimeMillis();
         sLastId += 1;
@@ -1091,6 +1123,10 @@ public class AwContents implements SmartClipProvider {
                 // On KK and above, favicons are automatically downloaded as the method
                 // old apps use to enable that behavior is deprecated.
                 AwSettings.setShouldDownloadFaviconsGlobal();
+            }
+
+            if (onSettingsCreated != null) {
+                onSettingsCreated.onResult(mSettings);
             }
 
             updateDefaultLocale();
