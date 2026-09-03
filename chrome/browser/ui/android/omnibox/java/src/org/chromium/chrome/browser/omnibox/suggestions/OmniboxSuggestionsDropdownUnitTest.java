@@ -10,12 +10,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
@@ -36,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -57,7 +59,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class OmniboxSuggestionsDropdownUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private Runnable mDropdownScrollListener;
     @Mock private Runnable mDropdownScrollToTopListener;
     @Mock private OmniboxSuggestionsDropdownAdapter mAdapter;
@@ -78,9 +82,9 @@ public class OmniboxSuggestionsDropdownUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mListener = spy(new OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener(mContext));
-        when(mListener.getItemCount()).thenReturn(3);
-        when(mListener.findViewByPosition(anyInt())).thenReturn(mView);
-        when(mView.isFocusable()).thenReturn(true);
+        lenient().doReturn(3).when(mListener).getItemCount();
+        lenient().doReturn(mView).when(mListener).findViewByPosition(anyInt());
+        lenient().doReturn(true).when(mView).isFocusable();
         mDropdown = spy(new OmniboxSuggestionsDropdown(mContext, null, mListener));
         mDropdown.setId(R.id.omnibox_suggestions_dropdown);
         mDropdown.setAdapter(mAdapter);
@@ -283,7 +287,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void onKeyDown_beforeShownDoesNotHandleTabNavigation() {
-        when(mDropdown.isShown()).thenReturn(false);
+        doReturn(false).when(mDropdown).isShown();
         assertFalse(
                 mDropdown.onKeyDown(
                         KeyEvent.KEYCODE_TAB,
@@ -302,7 +306,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void onKeyDown_handlesTabNavigationEvents() {
-        when(mDropdown.isShown()).thenReturn(true);
+        doReturn(true).when(mDropdown).isShown();
 
         // Tab should be handled the first time to put focus on the first item.
         assertTrue(
@@ -385,7 +389,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     public void testNavigationListener_notifiedOnKeyDown() {
         mDropdown.setNavigationListener(mNavigationListener);
-        when(mDropdown.isShown()).thenReturn(true);
+        doReturn(true).when(mDropdown).isShown();
 
         mDropdown.onKeyDown(
                 KeyEvent.KEYCODE_TAB,

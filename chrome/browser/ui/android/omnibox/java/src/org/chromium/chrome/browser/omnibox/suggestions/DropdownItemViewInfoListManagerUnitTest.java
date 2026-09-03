@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -42,7 +43,8 @@ import java.util.List;
 /** Tests for {@link DropdownItemViewInfoListManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropdownItemViewInfoListManagerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Spy private SuggestionProcessor mBasicSuggestionProcessor;
     @Spy private SuggestionProcessor mEditUrlSuggestionProcessor;
@@ -56,8 +58,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
     @Before
     public void setUp() {
-        when(mBasicSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
-        when(mEditUrlSuggestionProcessor.getViewTypeId())
+        lenient()
+                .when(mBasicSuggestionProcessor.getViewTypeId())
+                .thenReturn(OmniboxSuggestionUiType.DEFAULT);
+        lenient()
+                .when(mEditUrlSuggestionProcessor.getViewTypeId())
                 .thenReturn(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION);
 
         mSuggestionModels = new ModelList();
