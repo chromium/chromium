@@ -15,9 +15,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -56,6 +56,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -125,7 +126,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
-import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -143,11 +143,13 @@ import java.util.function.Function;
 public class FuseboxMediatorUnitTest {
     private static final Bitmap BITMAP = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private FuseboxViewHolder mViewHolder;
     @Mock private FuseboxPopup mPopup;
     @Mock private Profile mProfile;
+    @Mock private FuseboxSessionState mSession;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private TabModelSelector mTabModelSelector;
@@ -224,21 +226,46 @@ public class FuseboxMediatorUnitTest {
         mAttachments = new FuseboxAttachmentModelList();
         mAttachments.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
-        doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
-        when(mComposeboxQueryControllerBridge.getInputStateSupplier())
+        lenient().doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
+        lenient()
+                .when(mComposeboxQueryControllerBridge.getInputStateSupplier())
                 .thenReturn(mInputStateSupplier);
-        when(mComposeboxQueryControllerBridge.getSuggestedTabsSupplier())
+        lenient()
+                .when(mComposeboxQueryControllerBridge.getSuggestedTabsSupplier())
                 .thenReturn(mSuggestedTabsSupplier);
-        when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(true);
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        lenient().when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(true);
+        lenient().when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         mTabMap.clear();
-        doAnswer(i -> new ArrayList<>(mTabMap.values()).get(i.getArgument(0)))
+        lenient()
+                .doAnswer(i -> new ArrayList<>(mTabMap.values()).get(i.getArgument(0)))
                 .when(mTabModel)
                 .getTabAt(anyInt());
-        doAnswer(i -> mTabMap.size()).when(mTabModel).getCount();
-        doAnswer(i -> mTabMap.get(i.getArgument(0))).when(mTabModelSelector).getTabById(anyInt());
+        lenient().doAnswer(i -> mTabMap.size()).when(mTabModel).getCount();
+        lenient()
+                .doAnswer(i -> mTabMap.get(i.getArgument(0)))
+                .when(mTabModelSelector)
+                .getTabById(anyInt());
 
         mInput.setPageClassification(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+
+        lenient().doReturn(mAutocompleteController).when(mSession).getAutocompleteController();
+        lenient().doReturn(mProfile).when(mSession).getProfile();
+        lenient().doAnswer(i -> mInput).when(mSession).getAutocompleteInput();
+        lenient()
+                .doReturn(mComposeboxQueryControllerBridge)
+                .when(mSession)
+                .getComposeboxQueryControllerBridge();
+        lenient().doAnswer(i -> mAttachments).when(mSession).getFuseboxAttachmentModelList();
+        lenient().doAnswer(i -> new FuseboxMetrics()).when(mSession).getMetrics();
+        lenient()
+                .when(mComposeboxQueryControllerBridge.addTabContext(any(), anyBoolean()))
+                .thenAnswer(i -> "token-" + ((Tab) i.getArgument(0)).getId());
+        lenient()
+                .when(
+                        mComposeboxQueryControllerBridge.addTabContextFromCache(
+                                anyLong(), anyBoolean()))
+                .thenAnswer(i -> "token-" + i.getArgument(0));
+
         recreateMediator();
 
         // Start with no init calls.
@@ -274,22 +301,7 @@ public class FuseboxMediatorUnitTest {
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
                         mHasAttachmentsSupplier);
-        mMediator.beginInput(createSession());
-    }
-
-    private FuseboxSessionState createSession() {
-        var session = mock(FuseboxSessionState.class);
-        var metrics = new FuseboxMetrics();
-        lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
-        lenient().doReturn(mProfile).when(session).getProfile();
-        lenient().doReturn(mInput).when(session).getAutocompleteInput();
-        lenient()
-                .doReturn(mComposeboxQueryControllerBridge)
-                .when(session)
-                .getComposeboxQueryControllerBridge();
-        lenient().doReturn(mAttachments).when(session).getFuseboxAttachmentModelList();
-        lenient().doReturn(metrics).when(session).getMetrics();
-        return session;
+        mMediator.beginInput(mSession);
     }
 
     private void clickToolButton(int protoId) {
@@ -346,9 +358,6 @@ public class FuseboxMediatorUnitTest {
             Tab mockTab = mock(Tab.class);
             when(mockTab.getTitle()).thenReturn(title);
             when(mockTab.getId()).thenReturn(0);
-            when(mockTab.getWebContents())
-                    .thenReturn(null); // This will trigger addTabContextFromCache path
-            when(mComposeboxQueryControllerBridge.addTabContext(mockTab, false)).thenReturn(token);
             when(mComposeboxQueryControllerBridge.addTabContextFromCache(0, false))
                     .thenReturn(token);
             attachment =
@@ -408,7 +417,15 @@ public class FuseboxMediatorUnitTest {
     }
 
     private Tab mockTab(int id) {
-        return mockTab(id, /* webContentsReady= */ true);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(id);
+        when(tab.getTitle()).thenReturn("Tab " + id);
+        mTabMap.put(id, tab);
+        return tab;
+    }
+
+    private Tab mockTab(int id, boolean webContentsReady) {
+        return mockTab(id);
     }
 
     private Tab mockTab(int id, GURL url) {
@@ -416,22 +433,8 @@ public class FuseboxMediatorUnitTest {
         when(t.getUrl()).thenReturn(url);
         when(t.isInitialized()).thenReturn(true);
         when(t.getTimestampMillis()).thenReturn(id * 100L);
-
-        mTabMap.put(id, t);
+        when(t.getWebContents()).thenReturn(mWebContents);
         return t;
-    }
-
-    private Tab mockTab(int id, boolean webContentsReady) {
-        Tab tab = mock(Tab.class);
-        String token = "token-" + id;
-        when(tab.getId()).thenReturn(id);
-        when(tab.getWebContents()).thenReturn(webContentsReady ? mWebContents : null);
-        when(tab.getTitle()).thenReturn("Tab " + id);
-        when(mTabModelSelector.getTabById(id)).thenReturn(tab);
-
-        when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn(token);
-        when(mComposeboxQueryControllerBridge.addTabContextFromCache(id, false)).thenReturn(token);
-        return tab;
     }
 
     private Intent createTabPickerResultIntent(List<Integer> tabIds) {
@@ -492,7 +495,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
 
         mMediator.endInput();
-        mMediator.beginInput(createSession());
+        mMediator.beginInput(mSession);
 
         assertNotEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
     }
@@ -792,7 +795,7 @@ public class FuseboxMediatorUnitTest {
         clearInvocations(mScrimManager);
 
         // Trigger second beginInput on the same mediator (simulating double tap from ntp fakebox).
-        mMediator.beginInput(createSession());
+        mMediator.beginInput(mSession);
 
         verify(mScrimManager, never()).hideScrim(any(), anyBoolean());
         verify(mScrimManager, never()).showScrim(any());
@@ -803,13 +806,14 @@ public class FuseboxMediatorUnitTest {
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
 
-        org.chromium.base.Callback<Integer> observer = MockitoHelper.mockCallback();
+        @SuppressWarnings("unchecked")
+        org.chromium.base.Callback<Integer> observer = mock(org.chromium.base.Callback.class);
         mPopupStateSupplier.addSyncObserverAndCallIfNonNull(observer);
         verify(observer).onResult(PopupState.FLOATING);
         clearInvocations(observer);
 
         // Trigger second beginInput on the same mediator.
-        mMediator.beginInput(createSession());
+        mMediator.beginInput(mSession);
 
         verify(observer, never()).onResult(any());
     }
@@ -899,17 +903,8 @@ public class FuseboxMediatorUnitTest {
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
-        doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
-        doReturn(false).when(mWebContents).isLoading();
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
-
-        doReturn("Title3").when(mTab2).getTitle();
-        doReturn(new GURL("chrome://flags")).when(mTab2).getUrl();
-        doReturn(true).when(mTab2).isInitialized();
-        doReturn(true).when(mTab2).isFrozen();
-        doReturn(89L).when(mTab2).getTimestampMillis();
-        doReturn(false).when(mPopup).isShowing();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
@@ -1084,12 +1079,9 @@ public class FuseboxMediatorUnitTest {
     public void onToolCreateImageGeneration_disablesNonImageInput() {
         doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
-        doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
-        doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
-        doReturn(false).when(mWebContents).isLoading();
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         recreateMediator();
@@ -1692,9 +1684,7 @@ public class FuseboxMediatorUnitTest {
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
         doReturn(false).when(mTab1).isFrozen();
-        doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
-        doReturn(false).when(mWebContents).isLoading();
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -2593,7 +2583,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testReconcileSuggestedTabs() {
-        mMediator.beginInput(createSession());
+        mMediator.beginInput(mSession);
         clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
 
         SuggestedTabInfo info =
@@ -2651,7 +2641,11 @@ public class FuseboxMediatorUnitTest {
         when(mTabModelSelector.getCurrentTab()).thenReturn(tab1);
 
         // Recent tabs.
-        mockTab(2, JUnitTestGURLs.NTP_URL);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        mTabMap.put(2, tab2);
+
         mockTab(3, JUnitTestGURLs.URL_1);
         mockTab(4, JUnitTestGURLs.URL_2);
 
@@ -2840,7 +2834,6 @@ public class FuseboxMediatorUnitTest {
                 mAttachments.get(0).model.get(FuseboxAttachmentProperties.REMOVE_BUTTON_SELECTED));
 
         // Test Activation
-        doReturn(false).when(mKeyEvent).hasModifiers(KeyEvent.META_SHIFT_ON);
         doReturn(KeyEvent.KEYCODE_ENTER).when(mKeyEvent).getKeyCode();
 
         // Setup ON_REMOVE runnable to verify activation
@@ -3248,11 +3241,8 @@ public class FuseboxMediatorUnitTest {
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
-        doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn(mWebContents).when(mTab1).getWebContents();
-        doReturn(false).when(mWebContents).isLoading();
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
-        doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
         doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -3285,7 +3275,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mMediator.wasPopupItemSelected());
 
         // Beginning a new input session resets it.
-        mMediator.beginInput(createSession());
+        mMediator.beginInput(mSession);
         assertFalse(mMediator.wasPopupItemSelected());
     }
 }

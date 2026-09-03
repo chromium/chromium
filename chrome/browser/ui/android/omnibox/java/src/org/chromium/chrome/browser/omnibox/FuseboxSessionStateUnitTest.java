@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -44,7 +46,8 @@ import org.chromium.url.GURL;
 public class FuseboxSessionStateUnitTest {
     private static final GURL SAMPLE_PAGE_URL = new GURL("https://www.google.com");
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private Profile mProfile;
@@ -57,7 +60,10 @@ public class FuseboxSessionStateUnitTest {
     @Before
     public void setUp() {
         mProfileSupplier = ObservableSuppliers.createMonotonic(mProfile);
-        doReturn(new FuseboxSessionState()).when(mLocationBarDataProvider).getFuseboxSessionState();
+        lenient()
+                .doReturn(new FuseboxSessionState())
+                .when(mLocationBarDataProvider)
+                .getFuseboxSessionState();
         ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
         AutocompleteController.setInstanceForTesting(mAutocompleteController);
     }

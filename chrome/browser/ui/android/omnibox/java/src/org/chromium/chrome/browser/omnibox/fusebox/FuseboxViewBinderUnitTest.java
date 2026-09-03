@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
@@ -82,7 +83,8 @@ public class FuseboxViewBinderUnitTest {
         int COMPACT = 1;
     }
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private AnchoredPopupWindow mPopupWindow;
     @Mock private DynamicRectProvider mDynamicRectProvider;
@@ -110,9 +112,9 @@ public class FuseboxViewBinderUnitTest {
                 (ViewGroup)
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.fusebox_context_popup, /* root= */ null);
-        doReturn(popupView).when(mPopupWindow).getContentView();
+        lenient().doReturn(popupView).when(mPopupWindow).getContentView();
 
-        doReturn(null).when(mWindowAndroid).getInsetObserver();
+        lenient().doReturn(null).when(mWindowAndroid).getInsetObserver();
         mPopup =
                 new FuseboxPopup(
                         activity,

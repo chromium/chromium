@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -98,11 +98,13 @@ import java.util.function.Function;
 @RunWith(BaseRobolectricTestRunner.class)
 @NullMarked
 public class FuseboxCoordinatorUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private ComposeboxQueryControllerBridge mComposebox;
     @Mock private FuseboxMediator mMediator;
+    @Mock private FuseboxSessionState mSession;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private Bitmap mBitmap;
@@ -156,13 +158,19 @@ public class FuseboxCoordinatorUnitTest {
 
         lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         lenient().doReturn(Collections.emptyIterator()).when(mTabModel).iterator();
-        doReturn(true).when(mComposebox).isFuseboxEligible();
-        doReturn(mSuggestedTabsSupplier).when(mComposebox).getSuggestedTabsSupplier();
+        lenient().doReturn(true).when(mComposebox).isFuseboxEligible();
+        lenient().doReturn(mSuggestedTabsSupplier).when(mComposebox).getSuggestedTabsSupplier();
 
         mAutocompleteInput =
                 new AutocompleteInput()
                         .setPageClassification(
                                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+
+        lenient().doReturn(mProfile).when(mSession).getProfile();
+        lenient().doReturn(mAutocompleteController).when(mSession).getAutocompleteController();
+        lenient().doReturn(mAutocompleteInput).when(mSession).getAutocompleteInput();
+        lenient().doReturn(mComposebox).when(mSession).getComposeboxQueryControllerBridge();
+        lenient().doReturn(mMetrics).when(mSession).getMetrics();
 
         mCoordinator = createCoordinator(/* isForcedPhoneStyleOmnibox= */ false);
     }
@@ -182,20 +190,6 @@ public class FuseboxCoordinatorUnitTest {
                 isForcedPhoneStyleOmnibox);
     }
 
-    private FuseboxSessionState createSession() {
-        return createSession(mProfile);
-    }
-
-    private FuseboxSessionState createSession(Profile profile) {
-        var session = mock(FuseboxSessionState.class);
-        lenient().doReturn(profile).when(session).getProfile();
-        lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
-        lenient().doReturn(mAutocompleteInput).when(session).getAutocompleteInput();
-        lenient().doReturn(mComposebox).when(session).getComposeboxQueryControllerBridge();
-        lenient().doReturn(mMetrics).when(session).getMetrics();
-        return session;
-    }
-
     @After
     public void tearDown() {
         mActivityController.close();
@@ -204,7 +198,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testBeginInput_initializesMediator() {
-        mCoordinator.beginInput(createSession(mProfile));
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
@@ -213,9 +207,8 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testBeginInput_featureEnabled_noBridge() {
-        var session = createSession();
-        doReturn(null).when(session).getComposeboxQueryControllerBridge();
-        mCoordinator.beginInput(session);
+        doReturn(null).when(mSession).getComposeboxQueryControllerBridge();
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMediator, never()).beginInput(any());
     }
@@ -223,7 +216,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testBeginInput_featureDisabled() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertNull(mCoordinator.getMediatorForTesting());
     }
@@ -233,7 +226,7 @@ public class FuseboxCoordinatorUnitTest {
     public void testToolbarVisibility_featureEnabled_mediatorInitialized() {
         mCoordinator.setMediatorForTesting(mMediator);
 
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMediator).beginInput(any());
 
@@ -247,7 +240,7 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(mMediator);
 
         doReturn(false).when(mComposebox).isFuseboxEligible();
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // We never activate the Fusebox in this scenario
         verify(mMediator, never()).beginInput(any());
@@ -265,7 +258,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // ViewHolder should be initialized as part of the init method.
         assertNotNull(mCoordinator.getViewHolderForTesting());
@@ -274,7 +267,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureDisabled() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // Nothing should get initialized.
         assertNull(mCoordinator.getViewHolderForTesting());
@@ -283,7 +276,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_basedOnPageClassification() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
         final Set<@PageClassification Integer> supportedPageClassifications =
@@ -298,7 +291,7 @@ public class FuseboxCoordinatorUnitTest {
             clearInvocations(mMediator);
             mAutocompleteInput.setPageClassification(pageClass);
 
-            mCoordinator.beginInput(createSession());
+            mCoordinator.beginInput(mSession);
 
             boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
             verify(mMediator, times(shouldBeVisible ? 1 : 0)).beginInput(any());
@@ -310,11 +303,11 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNonGoogleDse() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
@@ -324,12 +317,12 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         verify(mMediator).beginInput(any());
     }
 
@@ -358,7 +351,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNotifyOmniboxSessionEnded() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.notifyOmniboxSessionEnded(true);
 
@@ -367,7 +360,7 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.endInput();
         clearInvocations(mMetrics);
 
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         mCoordinator.notifyOmniboxSessionEnded(false);
 
         verify(mMetrics).notifyOmniboxSessionEnded(eq(false), anyInt(), anyInt());
@@ -376,7 +369,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testPopupDismissed_noPopupItemSelected_plusButtonFocused() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
         doReturn(false).when(mMediator).wasPopupItemSelected();
@@ -394,7 +387,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testPopupDismissed_popupItemSelected_plusButtonNotFocused() {
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
         doReturn(true).when(mMediator).wasPopupItemSelected();
@@ -423,7 +416,7 @@ public class FuseboxCoordinatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         mCoordinator.setMediatorForTesting(mMediator);
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Verify session is active (beginInput was called on mediator).
@@ -444,7 +437,7 @@ public class FuseboxCoordinatorUnitTest {
     public void testBeginInput_setsCompactStateEarlyIfEligible() {
         assertEquals(
                 FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         assertEquals(FuseboxState.COMPACT, mCoordinator.getFuseboxStateSupplier().get().intValue());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
@@ -454,7 +447,7 @@ public class FuseboxCoordinatorUnitTest {
     public void testBeginInput_remainsDisabledStateIfFeatureDisabled() {
         assertEquals(
                 FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
-        mCoordinator.beginInput(createSession());
+        mCoordinator.beginInput(mSession);
         assertEquals(
                 FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
     }
