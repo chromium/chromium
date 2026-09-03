@@ -59,9 +59,7 @@ import java.util.List;
 
 /** Robolectric tests for HttpNegotiateAuthenticator */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {HttpNegotiateAuthenticatorTest.ExtendedShadowAccountManager.class})
+@Config(shadows = {HttpNegotiateAuthenticatorTest.ExtendedShadowAccountManager.class})
 public class HttpNegotiateAuthenticatorTest {
     private static final long MOCK_NATIVE_POINTER = 42;
     private static final String MOCK_TOKEN_TYPE = "foo";
