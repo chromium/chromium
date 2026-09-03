@@ -21,7 +21,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @EnableFeatures("AndroidAutofillImprovedVisibilityDetection")
 public class PrefillRequestTest {
 

@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.annotation.Config;
 
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -28,7 +27,6 @@ import java.util.Collection;
  * correctly inside `AutofillProviderUMA`.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AutofillSessionUMATest {
     private static final String NO_SUGGESTION = "NO_SUGGESTION";
     private static final String USER_SELECT_SUGGESTION = "USER_SELECT_SUGGESTION";

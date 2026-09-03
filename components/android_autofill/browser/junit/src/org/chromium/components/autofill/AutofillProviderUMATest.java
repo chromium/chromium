@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
@@ -30,7 +29,6 @@ import org.chromium.components.autofill.AutofillProviderUMA.Provider;
 
 /** Tests for {@link AutofillProviderUMA} general metrics. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AutofillProviderUMATest {
 
     private AutofillProviderUMA mAutofillUMA;
