@@ -190,6 +190,14 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 
   if (auto* controller =
           tabs::VerticalTabStripStateController::From(browser())) {
+    const bool display_vertical_tabs = controller->ShouldDisplayVerticalTabs();
+
+    if (!display_vertical_tabs &&
+        base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+      model->AddItemWithStringId(IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
+                                 IDS_TAB_SCROLL_PIN_BUTTONS_SYSTEM_MENU);
+    }
+
     model->AddSeparator(ui::NORMAL_SEPARATOR);
 
     const int switch_to_horizontal_id =
@@ -205,7 +213,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 #else
         IDS_SWITCH_TO_VERTICAL_TAB;
 #endif
-    if (controller->ShouldDisplayVerticalTabs()) {
+    if (display_vertical_tabs) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  switch_to_horizontal_id);
 
@@ -217,11 +225,6 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
           model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE).value(),
           kToggleVerticalTabsCollapseElementId);
     } else {
-      if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
-        model->AddItemWithStringId(IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
-                                   IDS_TAB_SCROLL_PIN_BUTTONS_SYSTEM_MENU);
-      }
-
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  switch_to_vertical_id);
       const user_education::DisplayNewBadge show_badge =
