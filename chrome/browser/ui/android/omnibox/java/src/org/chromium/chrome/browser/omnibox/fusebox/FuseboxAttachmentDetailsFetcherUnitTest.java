@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -39,6 +40,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.AsyncTask;
@@ -75,7 +77,8 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     private static final Uri SAMPLE_URI = Uri.parse("content://media/external/1");
     private static final Uri SAMPLE_URI_NO_FINAL_PATH_SEGMENT = Uri.parse("content://media");
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private ContentResolver mContentResolver;
     @Mock private Callback<@Nullable FuseboxAttachment> mCallback;
@@ -85,11 +88,23 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     private Context mContext;
     private FuseboxAttachmentDetailsFetcher mFetcher;
     private HistogramWatcher mOomHistogramWatcher;
+    private byte[] mAttachmentData;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         mContext = ApplicationProvider.getApplicationContext();
         setIsNetworkMetered(false);
+        mAttachmentData = null;
+        lenient()
+                .when(mContentResolver.openInputStream(any()))
+                .thenAnswer(
+                        inv ->
+                                mAttachmentData == null
+                                        ? null
+                                        : new ByteArrayInputStream(mAttachmentData));
+        lenient()
+                .when(mContentResolver.loadThumbnail(any(), any(), any()))
+                .thenThrow(new IOException("No thumbnail"));
     }
 
     private void setIsNetworkMetered(boolean isMetered) {
@@ -143,20 +158,13 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         cursor.addRow(new Object[] {title, sizeBytes});
 
         when(mContentResolver.getType(attachmentUri)).thenReturn(mimeType);
-        try {
-            lenient()
-                    .when(mContentResolver.openInputStream(attachmentUri))
-                    .thenAnswer(inv -> data == null ? null : new ByteArrayInputStream(data));
-            if (thumbnail != null) {
-                when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
-            } else {
-                when(mContentResolver.loadThumbnail(any(), any(), any()))
-                        .thenThrow(new IOException("No thumbnail"));
+        mAttachmentData = data;
+        if (thumbnail != null) {
+            try {
+                doReturn(thumbnail).when(mContentResolver).loadThumbnail(any(), any(), any());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            // The compiler requires us to catch the exceptions thrown by the mocked methods, but
-            // we know they aren't actually called here, and so no exception should be thrown.
-            throw new RuntimeException(e);
         }
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
@@ -790,7 +798,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
         byte[] data = SAMPLE_DATA;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
-        setupFetcherWithAttachment(title, mimeType, data, SAMPLE_SMALL_BITMAP, buttonType);
+        setupFetcherWithAttachment(title, mimeType, data, /* thumbnail= */ null, buttonType);
         setupMockFileStreamReader(/* throwOom= */ true, /* throwIoException= */ false);
         setupOomHistogramWatcher(/* oomExpected= */ true, MimeTypeUtils.Type.IMAGE);
 
@@ -808,7 +816,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
         byte[] data = SAMPLE_DATA;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
-        setupFetcherWithAttachment(title, mimeType, data, SAMPLE_SMALL_BITMAP, buttonType);
+        setupFetcherWithAttachment(title, mimeType, data, /* thumbnail= */ null, buttonType);
         setupMockFileStreamReader(/* throwOom= */ false, /* throwIoException= */ true);
         setupOomHistogramWatcher(/* oomExpected= */ false, MimeTypeUtils.Type.IMAGE);
 

@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -30,7 +31,8 @@ import org.chromium.ui.widget.RectProvider;
 /** Unit tests for {@link DynamicRectProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DynamicRectProviderUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private RectProvider mFloatingDelegate;
     @Mock private RectProvider mBottomDelegate;

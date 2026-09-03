@@ -39,6 +39,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
@@ -62,7 +63,8 @@ import java.util.Locale;
 /** Unit tests for FuseboxPopup. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxPopupUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private AnchoredPopupWindow mPopupWindow;
     @Mock private DynamicRectProvider mDynamicRectProvider;
@@ -265,17 +267,6 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testUpdateInsets_ImeVisible() {
-        Insets imeInsets = Insets.of(0, 0, 0, 100);
-        Insets navBarInsets = Insets.of(0, 0, 0, 50);
-        Insets statusBarsInsets = Insets.of(0, 20, 0, 0);
-
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mWindowInsets);
-        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
-        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()))
-                .thenReturn(navBarInsets);
-        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.statusBars()))
-                .thenReturn(statusBarsInsets);
-
         doReturn(true).when(mPopupWindow).isShowing();
         mFuseboxPopup.setPopupState(PopupState.FLOATING);
 
@@ -284,31 +275,6 @@ public class FuseboxPopupUnitTest {
         assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
 
         // Second layout update to test idempotency.
-        mFuseboxPopup.updateLayout();
-        assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
-    }
-
-    @Test
-    public void testUpdateInsets_ImeHidden() {
-        Insets imeInsets = Insets.of(0, 0, 0, 0);
-        Insets navBarInsets = Insets.of(0, 0, 0, 50);
-        Insets statusBarsInsets = Insets.of(0, 20, 0, 0);
-
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mWindowInsets);
-        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
-        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()))
-                .thenReturn(navBarInsets);
-        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.statusBars()))
-                .thenReturn(statusBarsInsets);
-
-        doReturn(true).when(mPopupWindow).isShowing();
-        mFuseboxPopup.setPopupState(PopupState.FLOATING);
-
-        // First layout update
-        mFuseboxPopup.updateLayout();
-        assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
-
-        // Second layout update to test idempotency
         mFuseboxPopup.updateLayout();
         assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
     }

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +45,8 @@ public class FuseboxAttachmentUnitTest {
     private static final String CACHE_TOKEN = "cache_token";
     private static final int TAB_ID = 1;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Tab mTab;
     @Mock private ComposeboxQueryControllerBridge mBridge;
@@ -59,15 +62,15 @@ public class FuseboxAttachmentUnitTest {
         mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         OmniboxResourceProvider.setTabFaviconFactory((tab) -> mBitmap);
 
-        when(mTab.getTitle()).thenReturn("Tab Title");
-        when(mTab.getId()).thenReturn(TAB_ID);
+        lenient().when(mTab.getTitle()).thenReturn("Tab Title");
+        lenient().when(mTab.getId()).thenReturn(TAB_ID);
         // Default to not initialized/frozen/active to test load logic explicitly where needed.
-        when(mTab.isInitialized()).thenReturn(true);
-        when(mTab.isFrozen()).thenReturn(false);
+        lenient().when(mTab.isInitialized()).thenReturn(true);
+        lenient().when(mTab.isFrozen()).thenReturn(false);
         // By default tab has no WebContents (not active)
-        when(mTab.getWebContents()).thenReturn(null);
+        lenient().when(mTab.getWebContents()).thenReturn(null);
 
-        when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
+        lenient().when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
     }
 
     private void setTabActive(boolean active) {
