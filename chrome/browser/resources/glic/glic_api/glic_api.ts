@@ -1295,6 +1295,12 @@ export declare interface GlicBrowserHost {
   isOnboardingCompleted?(): ObservableValue<boolean>;
 
   /**
+   * Returns the set of tools available from Chrome for this session.
+   * Only available when `HostCapability.CHROME_TOOLS` is supported by the host.
+   */
+  tools?(): GlicToolsHost;
+
+  /**
    * Returns an observable that emits when a user interacts with the actor task
    * list bubble and clicks on a task row (the observable emits the
    * corresponding task id).
@@ -1365,6 +1371,104 @@ export declare interface ResizeWindowOptions {
  * The concepts of session and rating are less well defined. There are
  * intentionally no constraints on when or how often they are called.
  */
+
+/**
+ * Specifies whether a tool execution blocks the conversation or runs
+ * asynchronously.
+ */
+export enum ChromeToolBlockingBehavior {
+  UNSPECIFIED = 0,
+  BLOCKING = 1,
+  NON_BLOCKING = 2,
+}
+
+/**
+ * Reason for failure when executing a host tool.
+ */
+export enum ExecuteToolErrorReason {
+  UNKNOWN = 0,
+  TOOL_NOT_FOUND = 1,
+  INVALID_ARGUMENTS = 2,
+  EXECUTION_FAILED = 3,
+}
+
+/**
+ * Specifies whether the tool result should be announced verbally over TTS or
+ * handled silently.
+ */
+export enum ChromeToolResponseScheduling {
+  /** Default scheduling behavior. */
+  UNSPECIFIED = 0,
+  /**
+   * The tool result was handled (e.g. navigation performed) and does not need
+   * verbal speech output or interruption.
+   */
+  SILENT = 1,
+  /**
+   * The tool result requires immediate verbal notification and should interrupt
+   * current speech synthesis output.
+   */
+  INTERRUPT = 2,
+}
+
+/**
+ * Represents a tool provided by Chrome for use in an LLM session.
+ */
+export declare interface ChromeTool {
+  /** The unique name of the tool. */
+  name: string;
+  /** A description of what the tool does and when to use it. */
+  description: string;
+  /** A string containing the JSON schema for the tool's parameters. */
+  jsonSchemaParameters: string;
+  /**
+   * Specifies whether the tool execution blocks the conversation or runs
+   * asynchronously.
+   */
+  blockingBehavior: ChromeToolBlockingBehavior;
+}
+
+/**
+ * Result of executing a host tool.
+ */
+export declare interface ChromeToolExecutionResult {
+  /**
+   * The JSON string representation of the tool execution output. Defined only
+   * when execution is successful.
+   */
+  result?: string;
+  /** Response scheduling preference (e.g. silent or interrupt). */
+  scheduling?: ChromeToolResponseScheduling;
+  /**
+   * Reason for failure if execution failed. Undefined when execution succeeded.
+   */
+  errorReason?: ExecuteToolErrorReason;
+}
+
+/**
+ * Interface providing access to Chrome tools.
+ */
+export declare interface GlicToolsHost {
+  /**
+   * Returns the set of tools available from Chrome for this session.
+   *
+   * @return A Promise resolving to the list of available Chrome tools, or
+   *     undefined if tools are not supported.
+   */
+  getChromeTools?(): Promise<ChromeTool[]|undefined>;
+
+  /**
+   * Asks the host to execute a previously declared tool by name.
+   *
+   * @param toolName The name of the tool to invoke (matching a declared
+   *     ChromeTool).
+   * @param jsonArguments A JSON string containing the arguments for the tool.
+   * @return A Promise resolving to a ChromeToolExecutionResult containing the
+   *     result and scheduling.
+   */
+  executeTool?(toolName: string, jsonArguments: string):
+      Promise<ChromeToolExecutionResult>;
+}
 
 /**
  * Methods for managing and invoking skills.

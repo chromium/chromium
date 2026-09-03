@@ -105,6 +105,7 @@
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
+#include "chrome/browser/glic/host/glic_tools_desktop.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -997,6 +998,15 @@ class GlicWebClientHandler
         std::move(receiver));
   }
 
+  void CreateAiOverlayTools(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver)
+      override {
+#if !BUILDFLAG(IS_ANDROID)
+    ai_overlay_tools_ =
+        CreateAiOverlayToolsForGlic(profile_, std::move(receiver));
+#endif
+  }
+
   void ActivateTab(int32_t tab_id) override {
     tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
     if (!tab) {
@@ -1862,6 +1872,9 @@ class GlicWebClientHandler
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
   bool floating_panel_can_attach_ = false;
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<GlicToolsHolder> ai_overlay_tools_;
+#endif
 };
 
 std::unique_ptr<GlicWebClientAccess> MakeGlicWebClient(

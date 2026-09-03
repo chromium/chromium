@@ -52,6 +52,8 @@ base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites();
 
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 
+BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);
+
 BASE_DECLARE_FEATURE(kGlicLiveMode);
 
 BASE_DECLARE_FEATURE(kGlicDefaultToLastActiveConversation);

@@ -15,6 +15,7 @@ import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/
 import {createTabOptionsFromClient, getPinCandidatesOptionsFromClient, idFromClient, pinCandidateToClient, tabDataToClient, urlFromClient} from '../host/conversions.js';
 import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
+import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever} from '../transport/messaging.js';
 import type {createDirectMessagingPair, PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
@@ -298,6 +299,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   readonly actorClient: GlicBrowserHostActor;
   readonly annotationClient: GlicBrowserHostAnnotation;
   readonly skillsClient: GlicBrowserHostSkills;
+  readonly toolsClient: GlicBrowserHostTools;
   readonly experimentalTriggeringClient =
       new GlicBrowserHostExperimentalTriggering();
   readonly suggestionsClient: GlicBrowserHostZeroStateSuggestions;
@@ -374,6 +376,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.annotationClient = new GlicBrowserHostAnnotation(this);
     this.skillsClient = new GlicBrowserHostSkills();
     this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions(this);
+    this.toolsClient = new GlicBrowserHostTools();
 
     this.getTabByIdObservableSet =
         new ObservableSetByTabId<TabData, WebClientTabDataObserver>(
@@ -389,6 +392,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       this.annotationClient,
       this.skillsClient,
       this.suggestionsClient,
+      this.toolsClient,
     ]);
     type UnimplementedApis = Exclude<keyof GlicBrowserHost, keyof typeof proxy>;
     assertNever<UnimplementedApis>();
@@ -417,6 +421,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   destroy() {
     this.pinCandidates?.setObsolete();
     this.skillsClient.destroySkills();
+    this.toolsClient.destroyTools();
     this.router.destroy();
   }
 
@@ -433,6 +438,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         this.clientRemote);
     this.suggestionsClient.initialize(
         response.initialState, response.zeroStateSuggestionsRemote);
+    this.toolsClient.initialize(response.initialState, this.handler);
 
     const state = response.initialState;
     this.geminiEnterpriseSettings.assignAndSignal(

@@ -154,6 +154,7 @@ glic_api_ts_files = [
   "glic_api_impl/mojo_logging.ts",
   "glic_api_impl/request_types.ts",
   "glic_api_impl/skills/skills_client.ts",
+  "glic_api_impl/tools/tools_client.ts",
   "glic_api_impl/transport/messaging.ts",
   "glic_api_impl/transport/post_message_transport.ts",
   "glic_api_impl/zero_state_suggestions/zero_state_suggestions_client.ts",
@@ -165,17 +166,23 @@ copy("copy_glic_api_mojo") {
   deps = [
     "glic_api_impl/generate_impl:generate_enum_conversions",
     "//chrome/browser/glic:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/ai_overlay_dialog/tools:generate_tool_definitions",
+    "//chrome/browser/ui/webui/ai_overlay_dialog/tools:mojo_bindings_ts__generator",
     "//chrome/common:actor_webui_mojom_ts__generator",
     "//chrome/common:glic_enums_mojom_ts__generator",
     "//components/content_settings/core/common:content_settings_types_ts__generator",
+    "//third_party/blink/public/mojom:dom_node_id_ts__generator",
     "//third_party/blink/public/mojom/content_extraction:content_extraction_ts__generator",
   ]
   sources = [
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom-webui.ts",
     "$root_gen_dir/chrome/common/actor_webui.mojom-webui.ts",
     "$root_gen_dir/chrome/common/glic_enums.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
     "$root_gen_dir/third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-webui.ts",
+    "$root_gen_dir/third_party/blink/public/mojom/dom/dom_node_id.mojom-webui.ts",
     "$target_gen_dir/glic_api_impl/generate_impl/enum_conversions.ts",
   ]
   outputs = [ "$target_gen_dir/glic_api_tsc_input/{{source_file_part}}" ]
@@ -204,6 +211,9 @@ webui_ts_library("build_glic_api_ts") {
                "timer.ts",
                "enum_conversions.ts",
                "glic.mojom-webui.ts",
+               "tools.mojom-webui.ts",
+               "dom_node_id.mojom-webui.ts",
+               "generated_tool_definitions.ts",
                "actor_webui.mojom-webui.ts",
                "glic_enums.mojom-webui.ts",
                "content_settings_types.mojom-webui.ts",

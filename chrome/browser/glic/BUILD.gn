@@ -416,6 +416,7 @@ source_set("impl") {
     "host/glic_synthetic_trial_manager.h",
     "host/glic_theme_util.cc",
     "host/glic_theme_util.h",
+    "host/glic_tools_desktop.h",
     "host/glic_ui.cc",
     "host/glic_web_client_handler.cc",
     "host/glic_web_client_handler.h",
@@ -591,6 +592,7 @@ source_set("impl") {
       "host/context/glic_focused_tab_manager.h",
       "host/context/glic_screenshot_capturer_impl.cc",
       "host/context/glic_screenshot_capturer_impl.h",
+      "host/glic_tools_desktop.cc",
       "widget/glic_floating_ui.cc",
       "widget/glic_floating_ui.h",
       "widget/glic_inactive_side_panel_ui.cc",
@@ -629,6 +631,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/tabs/glic",
+      "//chrome/browser/ui/webui/ai_overlay_dialog",
       "//components/password_manager/core/browser/actor_login:common",
       "//components/web_modal",
       "//extensions/browser",
@@ -720,6 +723,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   public_deps = [
+    "//chrome/browser/ui/webui/ai_overlay_dialog/tools:mojo_bindings",
     "//chrome/common:actor_webui_mojom",
     "//chrome/common:glic_enums_mojom",
     "//components/content_settings/core/common:content_settings_types",
@@ -879,6 +883,7 @@ source_set("browser_tests") {
     "host/context/glic_delegating_sharing_manager_browsertest.cc",
     "host/context/glic_pinned_tab_manager_browsertest.cc",
     "host/glic_api_browsertest.cc",
+    "host/glic_chrome_tools_browsertest.cc",
     "host/glic_internals_browsertest.cc",
     "host/glic_no_webview_contents_manager_browsertest.cc",
     "host/glic_overlay_browsertest.cc",

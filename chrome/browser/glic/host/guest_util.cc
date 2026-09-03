@@ -739,6 +739,9 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(
         mojom::HostCapability::kAttemptOtpFilling);
   }
+  if (base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools)) {
+    state->host_capabilities.push_back(mojom::HostCapability::kChromeTools);
+  }
   state->enable_get_page_metadata =
       base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
   if (base::FeatureList::IsEnabled(

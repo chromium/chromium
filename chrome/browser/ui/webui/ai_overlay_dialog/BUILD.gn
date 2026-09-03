@@ -8,11 +8,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 mojom("mojo_bindings") {
-  sources = [
-    "ai_overlay_dialog.mojom",
-    "tools/tools.mojom",
-  ]
+  sources = [ "ai_overlay_dialog.mojom" ]
   public_deps = [
+    "//chrome/browser/ui/webui/ai_overlay_dialog/tools:mojo_bindings",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:dom_node_id",
     "//ui/gfx/geometry/mojom",
@@ -67,11 +65,11 @@ source_set("impl") {
     "//chrome/browser/translate",
     "//chrome/browser/ttc",
     "//chrome/browser/ttc/resources",
-    "//chrome/browser/ttc/resources:generate_tool_definitions",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ai_overlay_dialog/tools:generate_tool_definitions",
     "//chrome/common",
     "//components/bookmarks/browser",
     "//components/history/core/browser",

@@ -3320,6 +3320,10 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kImgWebDragDrop));
   }
+  if (base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kChromeTools));
+  }
 
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});

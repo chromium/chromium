@@ -19,6 +19,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
+import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -1167,6 +1168,12 @@ interface WebClientHandler {
   // Creates the zero state suggestions handler.
   CreateZeroStateSuggestionsHandler(
       pending_receiver<ZeroStateSuggestionsHandler> receiver);
+
+  // Creates the AI overlay tools handler. Only one handler can be bound at a
+  // time; calling this again replaces and terminates any previously bound
+  // handler.
+  CreateAiOverlayTools(
+      pending_receiver<ai_overlay_dialog.mojom.AiOverlayTools> receiver);
 
   // Creates a new tab. `url` must have a http or https protocol.
   // `tab_data` is null if the tab could not be created, which may happen if the
@@ -2380,6 +2387,8 @@ enum HostCapability {
   kEnforcesPasteEligibility = 14,
   // Indicates that the host supports autofilling OTPs.
   kAttemptOtpFilling = 15,
+  // Indicates that the host supports exposing Chrome-defined tools.
+  kChromeTools = 16,
 };
 
 // @generate glic_api

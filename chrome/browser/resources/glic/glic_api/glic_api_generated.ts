@@ -459,6 +459,8 @@ export enum HostCapability {
   ENFORCES_PASTE_ELIGIBILITY = 14,
   // Indicates that the host supports autofilling OTPs.
   ATTEMPT_OTP_FILLING = 15,
+  // Indicates that the host supports exposing Chrome-defined tools.
+  CHROME_TOOLS = 16,
 }
 
 // Lists capabilities that the glic web client may support.
