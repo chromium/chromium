@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.touch_to_fill.common;
 
+import static android.content.res.Resources.ID_NULL;
+
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.SUBTITLE_BOTTOM_MARGIN;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.SUBTITLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.TITLE_BOTTOM_MARGIN;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.TITLE_STRING;
 
@@ -64,6 +68,32 @@ public final class TouchToFillCommonViewBinder {
             sheetHeaderSubtitle.setText(view.getContext().getString(model.get(SUBTITLE_ID)));
         } else if (propertyKey == TITLE_STRING) {
             sheetHeaderTitle.setText(model.get(TITLE_STRING));
+        } else if (propertyKey == TITLE_BOTTOM_MARGIN) {
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) sheetHeaderTitle.getLayoutParams();
+            layoutParams.bottomMargin =
+                    view.getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    model.get(TITLE_BOTTOM_MARGIN) == ID_NULL
+                                            ? R.dimen.ttf_sheet_default_header_title_bottom_margin
+                                            : model.get(TITLE_BOTTOM_MARGIN));
+            sheetHeaderTitle.setLayoutParams(layoutParams);
+        } else if (propertyKey == SUBTITLE_BOTTOM_MARGIN) {
+            if (model.get(SUBTITLE_BOTTOM_MARGIN) == ID_NULL) {
+                return;
+            }
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) sheetHeaderSubtitle.getLayoutParams();
+            layoutParams.bottomMargin =
+                    view.getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    model.get(SUBTITLE_BOTTOM_MARGIN) == ID_NULL
+                                            ? R.dimen
+                                                    .ttf_sheet_default_header_subtitle_bottom_margin
+                                            : model.get(SUBTITLE_BOTTOM_MARGIN));
+            sheetHeaderSubtitle.setLayoutParams(layoutParams);
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

@@ -22,9 +22,18 @@ public final class TouchToFillCommonProperties {
                 new ReadableIntPropertyKey("subtitle_id");
         public static final ReadableObjectPropertyKey<String> TITLE_STRING =
                 new ReadableObjectPropertyKey<>("title_string");
+        public static final ReadableIntPropertyKey TITLE_BOTTOM_MARGIN =
+                new ReadableIntPropertyKey("header_title_bottom_margin");
+        public static final ReadableIntPropertyKey SUBTITLE_BOTTOM_MARGIN =
+                new ReadableIntPropertyKey("header_subtitle_bottom_margin");
 
         public static final PropertyKey[] ALL_KEYS = {
-            IMAGE_DRAWABLE_ID, TITLE_ID, SUBTITLE_ID, TITLE_STRING
+            IMAGE_DRAWABLE_ID,
+            TITLE_ID,
+            SUBTITLE_ID,
+            TITLE_STRING,
+            TITLE_BOTTOM_MARGIN,
+            SUBTITLE_BOTTOM_MARGIN
         };
 
         private HeaderProperties() {}

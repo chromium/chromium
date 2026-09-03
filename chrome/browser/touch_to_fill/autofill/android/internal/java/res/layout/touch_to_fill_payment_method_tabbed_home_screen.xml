@@ -19,12 +19,31 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include
+        <LinearLayout
             android:id="@+id/tabbed_header"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/ttf_tab_layout_margin_vertical"
-            layout="@layout/touch_to_fill_header_item" />
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/branding_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/ttf_header_product_icon_height"
+                android:layout_marginVertical="@dimen/ttf_header_product_icon_margin_vertical"
+                android:importantForAccessibility="no"
+                android:layout_gravity="center_horizontal"/>
+
+              <androidx.appcompat.widget.DialogTitle
+                  android:id="@+id/touch_to_fill_sheet_header_title"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center_horizontal"
+                  android:textAlignment="center"
+                  android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
+
+        </LinearLayout>
 
         <com.google.android.material.tabs.TabLayout
             style="@style/TabLayoutStyle"

@@ -43,4 +43,7 @@ found in the LICENSE file.
     <dimen name="ttf_tab_layout_corner_radius">12dp</dimen>
     <dimen name="ttf_tab_item_inset">4dp</dimen>
     <dimen name="ttf_tab_item_corner_radius">8dp</dimen>
+    <!-- Touch to Fill Loyalty Cards Dimensions -->
+    <dimen name="ttf_loyalty_card_first_time_use_title_bottom_margin">0dp</dimen>
+    <dimen name="ttf_loyalty_card_first_time_use_subtitle_bottom_margin">16dp</dimen>
 </resources>

@@ -10,7 +10,9 @@ import static org.chromium.chrome.browser.autofill.AutofillUiUtils.openLink;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.SUBTITLE_BOTTOM_MARGIN;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.SUBTITLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.TITLE_BOTTOM_MARGIN;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonProperties.HeaderProperties.TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.APPLY_ISSUER_DEACTIVATED_STYLE;
@@ -1670,9 +1672,16 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                                                 .autofill_loyalty_card_first_time_usage_bottom_sheet_title
                                         : R.string.autofill_loyalty_card_bottom_sheet_title);
         if (firstTimeUsage) {
-            headerBuilder.with(
-                    SUBTITLE_ID,
-                    R.string.autofill_loyalty_card_first_time_usage_bottom_sheet_subtitle);
+            headerBuilder
+                    .with(
+                            SUBTITLE_ID,
+                            R.string.autofill_loyalty_card_first_time_usage_bottom_sheet_subtitle)
+                    .with(
+                            TITLE_BOTTOM_MARGIN,
+                            R.dimen.ttf_loyalty_card_first_time_use_title_bottom_margin)
+                    .with(
+                            SUBTITLE_BOTTOM_MARGIN,
+                            R.dimen.ttf_loyalty_card_first_time_use_subtitle_bottom_margin);
         }
         return new ListItem(HEADER, headerBuilder.build());
     }
