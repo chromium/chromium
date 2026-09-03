@@ -11,10 +11,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,6 +24,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "ui/base/page_transition_types.h"
 
 using base::Bucket;
 using std::optional;

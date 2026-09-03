@@ -24,6 +24,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "google_apis/common/time_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"

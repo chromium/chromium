@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/base/window_open_disposition.h"
 
 class TestChromeColorsService : public InProcessBrowserTest {
  protected:

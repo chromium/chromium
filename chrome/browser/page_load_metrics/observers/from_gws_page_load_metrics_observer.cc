@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
+
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "ui/base/page_transition_types.h"
 
 using page_load_metrics::PageAbortReason;
 

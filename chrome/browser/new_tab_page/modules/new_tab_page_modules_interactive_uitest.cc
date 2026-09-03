@@ -26,9 +26,11 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 

@@ -41,6 +41,7 @@
 #else
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"

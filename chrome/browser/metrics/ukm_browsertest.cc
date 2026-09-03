@@ -62,6 +62,7 @@
 #include "services/network/test/test_network_quality_tracker.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
+#include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -11,6 +11,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/window_open_disposition.h"
 
 using testing::ElementsAre;
 

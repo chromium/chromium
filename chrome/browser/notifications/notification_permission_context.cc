@@ -28,6 +28,7 @@
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"

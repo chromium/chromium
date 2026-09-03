@@ -4,7 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/browser/render_frame_host.h"

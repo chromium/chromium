@@ -84,6 +84,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/crypto_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "net/cert/asn1_util.h"

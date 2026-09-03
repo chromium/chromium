@@ -5,7 +5,6 @@
 #import <AppKit/AppKit.h>
 
 #include "chrome/browser/notifications/notification_interactive_uitest_support.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"

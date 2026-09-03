@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -16,6 +17,7 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -25,6 +27,7 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "ui/base/page_transition_types.h"
 
 using AbandonReason = AbandonedPageLoadMetricsObserver::AbandonReason;
 using NavigationMilestone =

@@ -68,6 +68,7 @@
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/blink/blink_features.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

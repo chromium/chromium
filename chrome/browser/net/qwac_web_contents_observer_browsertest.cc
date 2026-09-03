@@ -15,6 +15,7 @@
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"

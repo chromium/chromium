@@ -12,6 +12,7 @@
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_permission_client.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
 

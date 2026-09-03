@@ -69,6 +69,7 @@
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+#include "ui/base/page_transition_types.h"
 
 using content::NavigationSimulator;
 using content::RenderFrameHost;

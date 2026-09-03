@@ -11,6 +11,7 @@
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/trace_event/trace_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"

@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
@@ -26,6 +27,7 @@
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -39,6 +41,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 

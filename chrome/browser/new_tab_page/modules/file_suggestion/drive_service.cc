@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 #if BUILDFLAG(IS_LINUX)

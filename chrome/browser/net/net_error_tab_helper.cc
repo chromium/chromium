@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

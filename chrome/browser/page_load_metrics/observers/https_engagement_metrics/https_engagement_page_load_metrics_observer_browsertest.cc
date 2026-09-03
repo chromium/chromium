@@ -23,6 +23,7 @@
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {

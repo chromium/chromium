@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)

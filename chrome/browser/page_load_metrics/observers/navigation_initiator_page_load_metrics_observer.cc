@@ -8,6 +8,7 @@
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"

@@ -38,7 +38,6 @@
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/elevation_service/elevator.h"

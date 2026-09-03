@@ -4,6 +4,7 @@
 
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"

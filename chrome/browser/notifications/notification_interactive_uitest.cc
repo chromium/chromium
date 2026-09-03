@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/message_center/public/cpp/notification.h"
+
 #include <string>
 
 #include "base/command_line.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,7 +53,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
-#include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)

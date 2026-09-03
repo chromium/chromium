@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"

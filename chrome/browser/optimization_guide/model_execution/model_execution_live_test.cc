@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace optimization_guide {
