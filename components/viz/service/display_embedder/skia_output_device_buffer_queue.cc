@@ -313,11 +313,12 @@ void SkiaOutputDeviceBufferQueue::Present(
     OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
+  const gfx::FrameData frame_data = frame.data;
   presenter_->Present(
       base::BindOnce(&SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
                      weak_ptr_.GetWeakPtr(), GetSwapBuffersSize(),
                      std::move(frame), std::move(committed_overlay_mailboxes_)),
-      std::move(feedback), frame.data);
+      std::move(feedback), frame_data);
   committed_overlay_mailboxes_.clear();
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
