@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -87,6 +88,11 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
   bool ShouldThrottleRetrieval(const GURL& current_url);
   void OnVisibilityChanged();
 
+#if !BUILDFLAG(IS_ANDROID)
+  bool UpdateTabStripModelObservation();
+  void OnBrowserWindowInterfaceChanged();
+#endif
+
   mojo::Receiver<action_chips::mojom::ActionChipsHandler> receiver_;
   mojo::Remote<action_chips::mojom::Page> page_;
   raw_ptr<Profile> profile_;
@@ -94,6 +100,10 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
   std::unique_ptr<ActionChipsGenerator> action_chips_generator_;
   GetSessionHandleCallback get_session_handle_callback_;
   PrefChangeRegistrar pref_change_registrar_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::CallbackListSubscription browser_window_interface_subscription_;
+#endif
 
   std::optional<GURL> last_processed_url_;
   bool has_recorded_any_shown_ = false;

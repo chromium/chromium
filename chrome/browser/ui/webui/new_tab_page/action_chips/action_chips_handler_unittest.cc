@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
@@ -760,6 +761,39 @@ TEST_F(ActionChipsHandlerTest, NullBrowserWindowInterface) {
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler>(),
       mojo::PendingRemote<Page>(), profile_.get(), web_ui_.get(),
       std::move(mock_action_chips_generator));
+}
+
+TEST_F(ActionChipsHandlerTest,
+       SwitchBrowserWindowInterfaceTriggersRetrievalWithoutTab) {
+  TabStripModelFixture second_tab_strip_fixture(profile_.get());
+
+  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+      .WillOnce(
+          [](base::optional_ref<const tabs::TabInterface> tab,
+             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
+            EXPECT_FALSE(tab.has_value());
+            std::move(callback).Run({});
+          });
+
+  webui::SetBrowserWindowInterface(
+      web_contents(), second_tab_strip_fixture.browser_window_interface());
+
+  EXPECT_EQ(1, TabStripModelObserver::CountObservedModels(&handler()));
+  testing::Mock::VerifyAndClearExpectations(mock_action_chips_generator_);
+
+  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+      .WillOnce(
+          [](base::optional_ref<const tabs::TabInterface> tab,
+             base::OnceCallback<void(std::vector<ActionChipPtr>)> callback) {
+            ASSERT_TRUE(tab.has_value());
+            EXPECT_EQ(GURL("https://www.example.com"),
+                      tab->GetContents()->GetLastCommittedURL());
+            std::move(callback).Run({});
+          });
+  second_tab_strip_fixture.AddTab(GURL("https://www.example.com"), u"Example");
+  testing::Mock::VerifyAndClearExpectations(mock_action_chips_generator_);
+
+  webui::SetBrowserWindowInterface(web_contents(), nullptr);
 }
 
 TEST_F(ActionChipsHandlerTest, NavigateToAimOpensCorrectUrl) {
