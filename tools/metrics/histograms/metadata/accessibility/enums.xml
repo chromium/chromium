@@ -1815,6 +1815,7 @@ Unknown properties are collapsed to zero. -->
   <int value="65" label="Focus on the app menu button in toolbar"/>
   <int value="66" label="Tab search start anchored side UI"/>
   <int value="67" label="Keyboard focus switch row of top elements reverse"/>
+  <int value="68" label="Open file"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->

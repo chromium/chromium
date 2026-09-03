@@ -940,6 +940,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_BOTTOM_BAR_AIM, false);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
+    public static final CachedFlag sAndroidKeyboardShortcutOpenFile =
+            newCachedFlag(ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE, false);
     public static final CachedFlag sAndroidNoCaptureWhenScrollingDisabledOnDesktop =
             newCachedFlag(ANDROID_NO_CAPTURE_WHEN_SCROLLING_DISABLED_ON_DESKTOP, false);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =
@@ -1483,6 +1485,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBar,
                     sAndroidBottomBarAim,
                     sAndroidElegantTextHeight,
+                    sAndroidKeyboardShortcutOpenFile,
                     sAndroidNoCaptureWhenScrollingDisabledOnDesktop,
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidOpenIncognitoAsWindowRestrictions,

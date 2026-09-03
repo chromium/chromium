@@ -141,6 +141,7 @@ public class KeyboardShortcuts {
         // KeyboardShortcutsSemanticMeaning.ZOOM_IN_LEGACY,
         // KeyboardShortcutsSemanticMeaning.ZOOM_OUT_LEGACY,
         KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON,
+        KeyboardShortcutsSemanticMeaning.OPEN_FILE,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -256,6 +257,9 @@ public class KeyboardShortcuts {
 
         // Top controls switch row reverse.
         int KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS_REVERSE = 67;
+
+        // Open file shortcut.
+        int OPEN_FILE = 68;
 
         // Max value.
         int MAX_VALUE = 68;
@@ -810,6 +814,9 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.OPEN_HOME_PAGE,
                 new KeyCombo(KeyEvent.KEYCODE_HOME, KeyEvent.META_ALT_ON));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.OPEN_FILE,
+                new KeyCombo(KeyEvent.KEYCODE_O, KeyEvent.META_CTRL_ON));
     }
 
     /**
@@ -1327,6 +1334,13 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
+                case KeyboardShortcutsSemanticMeaning.OPEN_FILE:
+                    if (ChromeFeatureList.sAndroidKeyboardShortcutOpenFile.isEnabled()) {
+                        menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.open_file_id, false);
+                        return true;
+                    }
+                    return false;
                 case KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON:
                     View menuButtonView = toolbarManager.getMenuButtonView();
                     if (menuButtonView != null) {
