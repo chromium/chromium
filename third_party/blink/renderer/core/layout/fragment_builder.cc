@@ -59,6 +59,32 @@ PhysicalAxes GetScrollSnapAlignAxes(const cc::ScrollSnapAlign& align,
   return axes;
 }
 
+PhysicalAxes GetSnapAxesForPropagatedSnapAreas(
+    const cc::ScrollSnapType& snap_type,
+    WritingDirectionMode writing_direction) {
+  if (snap_type.is_none) {
+    return kPhysicalAxesNone;
+  }
+  bool is_horizontal = writing_direction.IsHorizontal();
+  switch (snap_type.axis) {
+    case cc::SnapAxis::kBoth:
+      return kPhysicalAxesBoth;
+    case cc::SnapAxis::kX:
+      return kPhysicalAxesHorizontal;
+    case cc::SnapAxis::kY:
+      return kPhysicalAxesVertical;
+    case cc::SnapAxis::kInline:
+      return is_horizontal ? kPhysicalAxesHorizontal : kPhysicalAxesVertical;
+    case cc::SnapAxis::kBlock:
+      return is_horizontal ? kPhysicalAxesVertical : kPhysicalAxesHorizontal;
+    case cc::SnapAxis::kPair:
+      // A propagated snap area only provides a single axis (the other having
+      // been consumed by a descendant container), so it cannot satisfy the
+      // simultaneous 2D constraint required by 2D paired snapping.
+      return kPhysicalAxesNone;
+  }
+}
+
 }  // namespace
 
 AnchorMap::SetOptions FragmentBuilder::AnchorOptionsForChild(
@@ -453,6 +479,16 @@ SnapArea FragmentBuilder::ResolveSnapArea(const SnapArea& snap_area) const {
   }
 
   auto [consumed, pending] = PartitionAxes(scroll_snap_axes, pending_axes);
+  if (snap_area.Resolved()) {
+    PhysicalAxes snap_type_axes = GetSnapAxesForPropagatedSnapAreas(
+        Style().GetScrollSnapType(), GetWritingDirection());
+    if ((consumed & snap_type_axes) != kPhysicalAxesNone) {
+      // Count when an ancestor scroll container consumes a snap axis propagated
+      // from a descendant scroll container and can snap in that axis.
+      snap_area.GetElement()->GetDocument().CountUse(
+          WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+    }
+  }
   return {snap_area.GetElement(), consumed, pending, writing_direction_mode};
 }
 

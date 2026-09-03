@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -1022,6 +1023,119 @@ TEST_F(SnapCoordinatorTest, UseCounterCoveringSnapArea) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsUseCounted(WebFeature::kScrollSnapCoveringSnapArea));
+}
+
+TEST_F(SnapCoordinatorTest, UseCounterSingleAxisScrollerPropagateSnapAxis) {
+  ScopedSingleAxisScrollContainersForTest enable_single_axis(true);
+  ScopedSingleAxisScrollContainersForScrollSnapForTest enable_snap(true);
+
+  ClearUseCounter(WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  // Inner container consumes both snap axes; no axes propagate to the outer
+  // container: should not count.
+  SetHTML(R"HTML(
+    <style>
+      .outer { overflow: auto; scroll-snap-type: both mandatory; width: 500px; height: 500px; }
+      .inner { overflow: auto; scroll-snap-type: both mandatory; width: 400px; height: 400px; }
+      .snap { scroll-snap-align: start; width: 100px; height: 100px; }
+    </style>
+    <div class="outer">
+      <div class="inner">
+        <div class="snap"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kSingleAxisScrollerPropagateSnapAxis));
+
+  ClearUseCounter(WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  // Inner container consumes the X axis; outer container consumes the
+  // propagated Y axis: should count.
+  SetHTML(R"HTML(
+    <style>
+      .outer { overflow-x: clip; overflow-y: auto; scroll-snap-type: y mandatory; width: 500px; height: 500px; }
+      .inner { overflow-x: auto; overflow-y: clip; scroll-snap-type: x mandatory; width: 400px; height: 400px; }
+      .snap { scroll-snap-align: start; width: 100px; height: 100px; }
+    </style>
+    <div class="outer">
+      <div class="inner">
+        <div class="snap"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kSingleAxisScrollerPropagateSnapAxis));
+
+  ClearUseCounter(WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  // Snap area specifies only the X axis, which is consumed by the inner
+  // container; outer container has nothing to consume: should not count.
+  SetHTML(R"HTML(
+    <style>
+      .outer { overflow-x: clip; overflow-y: auto; scroll-snap-type: y mandatory; width: 500px; height: 500px; }
+      .inner { overflow-x: auto; overflow-y: clip; scroll-snap-type: x mandatory; width: 400px; height: 400px; }
+      .snap { scroll-snap-align: none start; width: 100px; height: 100px; }
+    </style>
+    <div class="outer">
+      <div class="inner">
+        <div class="snap"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kSingleAxisScrollerPropagateSnapAxis));
+
+  ClearUseCounter(WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  // Outer container consumes the propagated Y axis, but has scroll-snap-type:
+  // none: should not count.
+  SetHTML(R"HTML(
+    <style>
+      .outer { overflow-x: clip; overflow-y: auto; scroll-snap-type: none; width: 500px; height: 500px; }
+      .inner { overflow-x: auto; overflow-y: clip; scroll-snap-type: x mandatory; width: 400px; height: 400px; }
+      .snap { scroll-snap-align: start; width: 100px; height: 100px; }
+    </style>
+    <div class="outer">
+      <div class="inner">
+        <div class="snap"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kSingleAxisScrollerPropagateSnapAxis));
+
+  ClearUseCounter(WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  // Outer container consumes the propagated Y axis, but can only snap in the X
+  // axis: should not count.
+  SetHTML(R"HTML(
+    <style>
+      .outer { overflow-x: clip; overflow-y: auto; scroll-snap-type: x mandatory; width: 500px; height: 500px; }
+      .inner { overflow-x: auto; overflow-y: clip; scroll-snap-type: x mandatory; width: 400px; height: 400px; }
+      .snap { scroll-snap-align: start; width: 100px; height: 100px; }
+    </style>
+    <div class="outer">
+      <div class="inner">
+        <div class="snap"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kSingleAxisScrollerPropagateSnapAxis));
+
+  ClearUseCounter(WebFeature::kSingleAxisScrollerPropagateSnapAxis);
+  // Outer container consumes the propagated Y axis and can snap in both axes:
+  // should count.
+  SetHTML(R"HTML(
+    <style>
+      .outer { overflow-x: clip; overflow-y: auto; scroll-snap-type: both mandatory; width: 500px; height: 500px; }
+      .inner { overflow-x: auto; overflow-y: clip; scroll-snap-type: x mandatory; width: 400px; height: 400px; }
+      .snap { scroll-snap-align: start; width: 100px; height: 100px; }
+    </style>
+    <div class="outer">
+      <div class="inner">
+        <div class="snap"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kSingleAxisScrollerPropagateSnapAxis));
 }
 
 }  // namespace blink
