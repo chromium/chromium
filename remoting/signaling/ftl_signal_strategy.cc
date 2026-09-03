@@ -475,14 +475,7 @@ void FtlSignalStrategy::Core::OnMessageReceived(
   std::optional<SignalStrategy::Message> parsed_message;
   SignalingFormat incoming_format = SignalingFormat::XML;
 
-  // TODO: crbug.com/504910955 - Skip protobuf parsing for session-initiate
-  // messages for now and fall back to serialized XML parsing.
-  bool is_session_initiate =
-      message.xmpp().has_iq_stanza() &&
-      message.xmpp().iq_stanza().has_jingle() &&
-      message.xmpp().iq_stanza().jingle().has_session_initiate();
-
-  if (message.xmpp().has_iq_stanza() && !is_session_initiate) {
+  if (message.xmpp().has_iq_stanza()) {
     JingleMessage jingle_message;
     std::string error;
     if (JingleMessageFromProto(message.xmpp().iq_stanza(), &jingle_message,
@@ -560,8 +553,12 @@ void FtlSignalStrategy::Core::OnMessageReceived(
 
   if (const auto* jm = std::get_if<JingleMessage>(&*parsed_message)) {
     if (jm->action() == JingleMessage::ActionType::kSessionInitiate) {
-      // Record format chosen by the initiator.
-      session_formats_.Put(jm->sid, incoming_format);
+      // Record format chosen by the initiator. If the initiator sent BOTH,
+      // and we support Protobuf, we lock into PROTOBUF for the session.
+      SignalingFormat chosen_format = (incoming_format == SignalingFormat::BOTH)
+                                          ? SignalingFormat::PROTOBUF
+                                          : incoming_format;
+      session_formats_.Put(jm->sid, chosen_format);
     } else if (jm->action() == JingleMessage::ActionType::kSessionTerminate) {
       // Clean up session format on terminate.
       auto it = session_formats_.Peek(jm->sid);
@@ -570,14 +567,22 @@ void FtlSignalStrategy::Core::OnMessageReceived(
       }
     }
     // Track the format of the incoming request so we can match it in the reply.
-    incoming_request_formats_.Put(jm->message_id, incoming_format);
+    // If request was BOTH, respond with PROTOBUF to lock the session into
+    // Proto.
+    SignalingFormat reply_format = (incoming_format == SignalingFormat::BOTH)
+                                       ? SignalingFormat::PROTOBUF
+                                       : incoming_format;
+    incoming_request_formats_.Put(jm->message_id, reply_format);
   } else if (const auto* jmr =
                  std::get_if<JingleMessageReply>(&*parsed_message)) {
     // Correlate the reply to the outbound initiate request to set session
     // format.
     auto it = outbound_request_to_sid_.Peek(jmr->message_id);
     if (it != outbound_request_to_sid_.end()) {
-      session_formats_.Put(it->second, incoming_format);
+      SignalingFormat chosen_format = (incoming_format == SignalingFormat::BOTH)
+                                          ? SignalingFormat::PROTOBUF
+                                          : incoming_format;
+      session_formats_.Put(it->second, chosen_format);
       outbound_request_to_sid_.Erase(it);
     }
   }
@@ -683,7 +688,7 @@ void FtlSignalStrategy::Core::OnSendMessageResponse(
   ftl::ChromotingMessage crd_message;
   auto* xmpp = crd_message.mutable_xmpp();
   xmpp->set_stanza(error_reply.ToSerializedXml());
-  // TODO: crbug.com/504910955 - Re-enable iq_stanza once issues are fixed.
+  *xmpp->mutable_iq_stanza() = JingleMessageReplyToProto(error_reply);
   OnMessageReceived(receiver, crd_message);
 }
 
@@ -736,11 +741,12 @@ SignalingFormat FtlSignalStrategy::Core::GetFormatForMessage(
 
   if (IsSessionPending(message.sid)) {
     // If the session is pending negotiation, we don't know the format yet.
-    // Return BOTH if we initiated with BOTH, otherwise XML.
+    // Subsequent non-initiate messages must never be sent in BOTH format;
+    // default to PROTOBUF if we initiated with PROTOBUF/BOTH, otherwise XML.
     VLOG(1) << "Session " << message.sid
             << " is pending negotiation. Defaulting to "
-            << (send_protobuf_in_initiate_ ? "BOTH" : "XML");
-    return send_protobuf_in_initiate_ ? SignalingFormat::BOTH
+            << (send_protobuf_in_initiate_ ? "PROTOBUF" : "XML");
+    return send_protobuf_in_initiate_ ? SignalingFormat::PROTOBUF
                                       : SignalingFormat::XML;
   }
 

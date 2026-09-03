@@ -307,7 +307,7 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionAccept_CorpSessionAuthz) {
   JingleMessage message;
   message.from = from_address_;
   message.to = to_address_;
-  message.message_id = "msg_accept_003";
+  message.message_id = "msg_accept_003a";
   message.sid = "crd_sess_987654321";
 
   SessionAccept accept;
@@ -404,27 +404,22 @@ TEST_F(JingleMessageProtoConverterTest,
             auth.spake_message);
 }
 
-TEST_F(JingleMessageProtoConverterTest, ConvertSessionTerminate) {
+TEST_F(JingleMessageProtoConverterTest, ConvertSessionTerminate_CleanTeardown) {
   JingleMessage message;
   message.from = from_address_;
   message.to = to_address_;
-  message.message_id = kMessageId;
-  message.sid = kSid;
+  message.message_id = "msg_term_clean";
+  message.sid = "crd_sess_987654321";
   SessionTerminate terminate;
-  terminate.reason = SessionTerminate::Reason::kDecline;
-  terminate.error_code = "PEER_IS_OFFLINE";
-  terminate.error_details = "The peer is offline.";
+  terminate.reason = SessionTerminate::Reason::kSuccess;
   message.SetPayload(std::move(terminate));
 
   ftl::IqStanza stanza = message.ToFtlIqStanza();
 
   EXPECT_TRUE(stanza.jingle().has_session_terminate());
   EXPECT_EQ(stanza.jingle().session_terminate().reason(),
-            ftl::SessionTerminate::DECLINE);
-  EXPECT_EQ(stanza.jingle().session_terminate().error_code(),
-            "PEER_IS_OFFLINE");
-  EXPECT_EQ(stanza.jingle().session_terminate().error_details(),
-            "The peer is offline.");
+            ftl::SessionTerminate::SUCCESS);
+  EXPECT_FALSE(stanza.jingle().session_terminate().has_error_code());
 
   JingleMessage converted_message;
   std::string error;
@@ -433,9 +428,7 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionTerminate) {
   auto* converted_terminate =
       std::get_if<SessionTerminate>(&converted_message.payload());
   ASSERT_TRUE(converted_terminate);
-  EXPECT_EQ(converted_terminate->reason, SessionTerminate::Reason::kDecline);
-  EXPECT_EQ(converted_terminate->error_code, "PEER_IS_OFFLINE");
-  EXPECT_EQ(converted_terminate->error_details, "The peer is offline.");
+  EXPECT_EQ(converted_terminate->reason, SessionTerminate::Reason::kSuccess);
 }
 
 TEST_F(JingleMessageProtoConverterTest,
@@ -478,7 +471,7 @@ TEST_F(JingleMessageProtoConverterTest,
   JingleMessage message;
   message.from = from_address_;
   message.to = to_address_;
-  message.message_id = kMessageId;
+  message.message_id = "msg_term_direct";
   message.sid = kSid;
   message.reason = SessionTerminate::Reason::kGeneralError;
   message.error_code = ErrorCode::HOST_OVERLOAD;
@@ -521,12 +514,12 @@ TEST_F(JingleMessageProtoConverterTest, ConvertReplyResult) {
   JingleMessageReply reply;
   reply.from = from_address_;
   reply.to = to_address_;
-  reply.message_id = kMessageId;
+  reply.message_id = "msg_reply_008_res";
   reply.reply_type = JingleMessageReply::REPLY_RESULT;
 
   ftl::IqStanza stanza = reply.ToFtlIqStanza();
 
-  EXPECT_EQ(stanza.id(), kMessageId);
+  EXPECT_EQ(stanza.id(), "msg_reply_008_res");
   EXPECT_TRUE(stanza.has_reply());
   EXPECT_EQ(stanza.sender().local_part(), "from_user");
   EXPECT_EQ(stanza.sender().domain_part(), "gmail.com");
@@ -535,13 +528,14 @@ TEST_F(JingleMessageProtoConverterTest, ConvertReplyResult) {
 
   JingleMessageReply converted_reply;
   ASSERT_TRUE(JingleMessageReplyFromProto(stanza, &converted_reply));
-  EXPECT_EQ(converted_reply.message_id, kMessageId);
+  EXPECT_EQ(converted_reply.message_id, "msg_reply_008_res");
   EXPECT_EQ(converted_reply.from, from_address_);
   EXPECT_EQ(converted_reply.to, to_address_);
   EXPECT_EQ(converted_reply.reply_type, JingleMessageReply::REPLY_RESULT);
 }
 
 struct IqErrorTestCase {
+  const char* stanza_id;
   JingleMessageReply::ErrorType error_type;
   ftl::ErrorStanza::Condition proto_condition;
   const char* error_text;
@@ -556,19 +550,21 @@ TEST_P(JingleMessageProtoConverterIqErrorTest, ConvertReplyErrorAllConditions) {
   JingleMessageReply reply;
   reply.from = from_address_;
   reply.to = to_address_;
-  reply.message_id = kMessageId;
+  reply.message_id = tc.stanza_id;
   reply.reply_type = JingleMessageReply::REPLY_ERROR;
   reply.error_type = tc.error_type;
   reply.text = tc.error_text;
 
   ftl::IqStanza stanza = reply.ToFtlIqStanza();
 
+  EXPECT_EQ(stanza.id(), tc.stanza_id);
   EXPECT_TRUE(stanza.has_error());
   EXPECT_EQ(stanza.error().condition(), tc.proto_condition);
   EXPECT_EQ(stanza.error().text(), tc.error_text);
 
   JingleMessageReply converted_reply;
   ASSERT_TRUE(JingleMessageReplyFromProto(stanza, &converted_reply));
+  EXPECT_EQ(converted_reply.message_id, tc.stanza_id);
   EXPECT_EQ(converted_reply.reply_type, JingleMessageReply::REPLY_ERROR);
   EXPECT_EQ(converted_reply.error_type, tc.error_type);
   EXPECT_EQ(converted_reply.text, tc.error_text);
@@ -577,24 +573,26 @@ TEST_P(JingleMessageProtoConverterIqErrorTest, ConvertReplyErrorAllConditions) {
 INSTANTIATE_TEST_SUITE_P(
     AllConditions,
     JingleMessageProtoConverterIqErrorTest,
-    testing::Values(IqErrorTestCase{JingleMessageReply::BAD_REQUEST,
-                                    ftl::ErrorStanza::BAD_REQUEST,
-                                    "Bad request payload"},
-                    IqErrorTestCase{JingleMessageReply::NOT_IMPLEMENTED,
-                                    ftl::ErrorStanza::NOT_IMPLEMENTED,
-                                    "Feature not implemented"},
-                    IqErrorTestCase{JingleMessageReply::INVALID_SID,
-                                    ftl::ErrorStanza::INVALID_SID,
-                                    "Invalid session ID"},
-                    IqErrorTestCase{JingleMessageReply::UNEXPECTED_REQUEST,
-                                    ftl::ErrorStanza::UNEXPECTED_REQUEST,
-                                    "Unexpected request in current state"},
-                    IqErrorTestCase{JingleMessageReply::UNSUPPORTED_INFO,
-                                    ftl::ErrorStanza::UNSUPPORTED_INFO,
-                                    "Unsupported info element"},
-                    IqErrorTestCase{JingleMessageReply::UNSPECIFIED,
-                                    ftl::ErrorStanza::CONDITION_UNSPECIFIED,
-                                    "Unspecified error"}));
+    testing::Values(
+        IqErrorTestCase{"msg_reply_008_bad_req",
+                        JingleMessageReply::BAD_REQUEST,
+                        ftl::ErrorStanza::BAD_REQUEST, "Bad request payload"},
+        IqErrorTestCase{
+            "msg_reply_008_not_impl", JingleMessageReply::NOT_IMPLEMENTED,
+            ftl::ErrorStanza::NOT_IMPLEMENTED, "Feature not implemented"},
+        IqErrorTestCase{"msg_reply_008_invalid_sid",
+                        JingleMessageReply::INVALID_SID,
+                        ftl::ErrorStanza::INVALID_SID, "Invalid session ID"},
+        IqErrorTestCase{"msg_reply_008_unexp_req",
+                        JingleMessageReply::UNEXPECTED_REQUEST,
+                        ftl::ErrorStanza::UNEXPECTED_REQUEST,
+                        "Unexpected request in current state"},
+        IqErrorTestCase{
+            "msg_reply_008_unsupp_info", JingleMessageReply::UNSUPPORTED_INFO,
+            ftl::ErrorStanza::UNSUPPORTED_INFO, "Unsupported info element"},
+        IqErrorTestCase{"msg_reply_008_unspec", JingleMessageReply::UNSPECIFIED,
+                        ftl::ErrorStanza::CONDITION_UNSPECIFIED,
+                        "Unspecified error"}));
 
 TEST_F(JingleMessageProtoConverterTest, ConvertSessionInitiateWithAuth) {
   JingleMessage message;
@@ -715,6 +713,37 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionInfoWithAuth) {
   VerifyAuthentication(*converted_session_info->authentication, auth);
 }
 
+TEST_F(JingleMessageProtoConverterTest, ConvertSessionInfo_VerificationHash) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_info_004";
+  message.sid = "crd_sess_987654321";
+
+  SessionInfo session_info;
+  JingleAuthentication auth;
+  std::string hash_str = "01234567890123456789012345678901";
+  auth.verification_hash =
+      std::vector<uint8_t>(hash_str.begin(), hash_str.end());
+  session_info.authentication = auth;
+  message.SetPayload(std::move(session_info));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_session_info());
+  ASSERT_TRUE(stanza.jingle().session_info().has_authentication());
+  EXPECT_EQ(stanza.jingle().session_info().authentication().verification_hash(),
+            "01234567890123456789012345678901");
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  auto* converted_info = std::get_if<SessionInfo>(&converted.payload());
+  ASSERT_TRUE(converted_info);
+  ASSERT_TRUE(converted_info->authentication.has_value());
+  EXPECT_EQ(converted_info->authentication->verification_hash,
+            auth.verification_hash);
+}
+
 TEST_F(JingleMessageProtoConverterTest,
        ConvertTransportInfo_RealisticBundleSdpAndIceBatch) {
   JingleMessage message;
@@ -742,10 +771,10 @@ TEST_F(JingleMessageProtoConverterTest,
       {"0", 0,
        "candidate:1002 1 udp 2122260222 2607:f8b0:4005:805::200e 54322 typ "
        "host generation 0"},
-      {"0", 0,
+      {"1", 1,
        "candidate:1003 1 tcp 1518280447 192.168.1.150 9 typ host tcptype "
        "active generation 0"},
-      {"0", 0,
+      {"1", 1,
        "candidate:2001 1 udp 1686052607 74.125.250.1 54321 typ srflx raddr "
        "192.168.1.150 rport 54321 generation 0"},
       {"0", 0,
@@ -781,12 +810,125 @@ TEST_F(JingleMessageProtoConverterTest,
             SessionDescription::Type::kOffer);
   EXPECT_EQ(converted_transport->session_description->signature, sdp.signature);
   ASSERT_EQ(converted_transport->candidates.size(), 5u);
+  EXPECT_EQ(converted_transport->candidates[0].name, "0");
+  EXPECT_EQ(*converted_transport->candidates[0].sdp_m_line_index, 0);
   EXPECT_EQ(converted_transport->candidates[0].candidate.protocol(), "udp");
+  EXPECT_EQ(converted_transport->candidates[2].name, "1");
+  EXPECT_EQ(*converted_transport->candidates[2].sdp_m_line_index, 1);
   EXPECT_EQ(converted_transport->candidates[2].candidate.protocol(), "tcp");
+  EXPECT_EQ(converted_transport->candidates[3].name, "1");
+  EXPECT_EQ(*converted_transport->candidates[3].sdp_m_line_index, 1);
   EXPECT_EQ(converted_transport->candidates[3].candidate.type(),
             webrtc::IceCandidateType::kSrflx);
+  EXPECT_EQ(converted_transport->candidates[4].name, "0");
+  EXPECT_EQ(*converted_transport->candidates[4].sdp_m_line_index, 0);
   EXPECT_EQ(converted_transport->candidates[4].candidate.type(),
             webrtc::IceCandidateType::kRelay);
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertTransportInfo_InitialAnswerWithSignature) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_transport_006a";
+  message.sid = "crd_sess_987654321";
+
+  JingleTransportInfo transport;
+  SessionDescription sdp;
+  sdp.type = SessionDescription::Type::kAnswer;
+  sdp.sdp =
+      "v=0\r\no=- 5123456789012345 2 IN IP4 127.0.0.1\r\ns=-\r\n"
+      "t=0 0\r\na=group:BUNDLE 0 1 2\r\n"
+      "m=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\n"
+      "a=ice-ufrag:ClientUfrag123\r\n"
+      "a=ice-pwd:ClientPassword1234567890\r\n"
+      "a=fingerprint:sha-256 AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:"
+      "88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99\r\n"
+      "a=setup:active\r\na=mid:0\r\na=sendrecv\r\na=rtcp-mux\r\n"
+      "a=rtpmap:111 opus/48000/2\r\n";
+  std::string sig_str = "signature_hmac_example_1234567890";
+  sdp.signature = std::vector<uint8_t>(sig_str.begin(), sig_str.end());
+  transport.session_description = sdp;
+  message.SetPayload(std::move(transport));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_transport_info());
+  ASSERT_TRUE(stanza.jingle().transport_info().has_session_description());
+  EXPECT_EQ(stanza.jingle().transport_info().session_description().type(),
+            ftl::SessionDescription::ANSWER);
+  EXPECT_EQ(stanza.jingle().transport_info().session_description().signature(),
+            "signature_hmac_example_1234567890");
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  auto* converted_transport =
+      std::get_if<JingleTransportInfo>(&converted.payload());
+  ASSERT_TRUE(converted_transport);
+  ASSERT_TRUE(converted_transport->session_description.has_value());
+  EXPECT_EQ(converted_transport->session_description->type,
+            SessionDescription::Type::kAnswer);
+  EXPECT_EQ(converted_transport->session_description->sdp, sdp.sdp);
+  EXPECT_EQ(converted_transport->session_description->signature, sdp.signature);
+}
+
+TEST_F(JingleMessageProtoConverterTest, ConvertTransportInfo_IceRestartOffer) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_restart_006b";
+  message.sid = "crd_sess_987654321";
+
+  JingleTransportInfo transport;
+  SessionDescription sdp;
+  sdp.type = SessionDescription::Type::kOffer;
+  sdp.sdp =
+      "v=0\r\no=- 4123456789012345 3 IN IP4 127.0.0.1\r\ns=-\r\n"
+      "t=0 0\r\na=group:BUNDLE 0 1 2\r\n"
+      "m=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\n"
+      "a=ice-ufrag:NewClientUfrag\r\n"
+      "a=ice-pwd:NewClientPassword1234567890\r\n"
+      "a=fingerprint:sha-256 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:"
+      "EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF\r\n"
+      "a=setup:actpass\r\na=mid:0\r\na=sendrecv\r\na=rtcp-mux\r\n"
+      "a=rtpmap:111 opus/48000/2\r\n";
+  transport.session_description = sdp;
+
+  webrtc::SdpParseError parse_error;
+  std::unique_ptr<webrtc::IceCandidate> webrtc_candidate =
+      webrtc::IceCandidate::Create(
+          "0", 0,
+          "candidate:5001 1 udp 2122260223 10.0.0.5 54321 typ host "
+          "generation 1",
+          &parse_error);
+  ASSERT_TRUE(webrtc_candidate) << parse_error.description;
+  IceTransportInfo::NamedCandidate named_cand("0",
+                                              webrtc_candidate->candidate(), 0);
+  transport.candidates.push_back(std::move(named_cand));
+  message.SetPayload(std::move(transport));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_transport_info());
+  ASSERT_TRUE(stanza.jingle().transport_info().has_session_description());
+  EXPECT_EQ(stanza.jingle().transport_info().session_description().type(),
+            ftl::SessionDescription::OFFER);
+  ASSERT_EQ(stanza.jingle().transport_info().candidates_size(), 1);
+  EXPECT_EQ(stanza.jingle().transport_info().candidates(0).sdp_mid(), "0");
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  auto* converted_transport =
+      std::get_if<JingleTransportInfo>(&converted.payload());
+  ASSERT_TRUE(converted_transport);
+  ASSERT_TRUE(converted_transport->session_description.has_value());
+  EXPECT_EQ(converted_transport->session_description->type,
+            SessionDescription::Type::kOffer);
+  EXPECT_EQ(converted_transport->session_description->sdp, sdp.sdp);
+  ASSERT_EQ(converted_transport->candidates.size(), 1u);
+  EXPECT_EQ(converted_transport->candidates[0].name, "0");
+  EXPECT_EQ(*converted_transport->candidates[0].sdp_m_line_index, 0);
 }
 
 TEST_F(JingleMessageProtoConverterTest,

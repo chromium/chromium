@@ -1338,22 +1338,7 @@ TEST_F(FtlSignalStrategyTest,
   signal_strategy_->SendMessage(std::move(info_message));
 }
 
-// TODO: crbug.com/504910955 - Set to 1 to re-enable host-side protobuf
-// session-initiate parsing tests.
-#define ENABLE_HOST_SIDE_PROTOBUF_SESSION_INITIATE 0
-
-#if ENABLE_HOST_SIDE_PROTOBUF_SESSION_INITIATE
-#define MAYBE_Negotiation_HostSide_ReceiveBoth Negotiation_HostSide_ReceiveBoth
-#define MAYBE_Negotiation_HostSide_ReceiveProtoOnly \
-  Negotiation_HostSide_ReceiveProtoOnly
-#else
-#define MAYBE_Negotiation_HostSide_ReceiveBoth \
-  DISABLED_Negotiation_HostSide_ReceiveBoth
-#define MAYBE_Negotiation_HostSide_ReceiveProtoOnly \
-  DISABLED_Negotiation_HostSide_ReceiveProtoOnly
-#endif
-
-TEST_F(FtlSignalStrategyTest, MAYBE_Negotiation_HostSide_ReceiveBoth) {
+TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveBoth) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -1384,56 +1369,56 @@ TEST_F(FtlSignalStrategyTest, MAYBE_Negotiation_HostSide_ReceiveBoth) {
   messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
                                init_msg);
 
-  // 2. Host sends reply. Verify it is BOTH (XML + Proto).
+  // 2. Host sends reply. Verify it is PROTO-ONLY (locks into Proto).
   JingleMessageReply reply;
   reply.to = SignalingAddress(kFakeRemoteFtlId);
   reply.message_id = "req_initiate";
   reply.reply_type = JingleMessageReply::REPLY_RESULT;
 
-  EXPECT_CALL(
-      *messaging_client_,
-      SendMessage(
-          Property(&SignalingAddress::id, kFakeRemoteFtlId),
-          SignalingMessageMatchesBoth(kFakeRemoteFtlId, kFakeLocalFtlId), _, _))
+  EXPECT_CALL(*messaging_client_,
+              SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
+                          SignalingMessageMatchesProtoOnly(kFakeRemoteFtlId,
+                                                           kFakeLocalFtlId),
+                          _, _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
 
   signal_strategy_->SendReply(std::move(reply));
 
-  // 3. Host sends session-accept. Verify it is BOTH (XML + Proto).
+  // 3. Host sends session-accept. Verify it is PROTO-ONLY.
   JingleMessage accept_message(SignalingAddress(kFakeRemoteFtlId),
                                SessionAccept(), "sid123");
   accept_message.message_id = "req_accept";
 
-  EXPECT_CALL(
-      *messaging_client_,
-      SendMessage(
-          Property(&SignalingAddress::id, kFakeRemoteFtlId),
-          SignalingMessageMatchesBoth(kFakeRemoteFtlId, kFakeLocalFtlId), _, _))
+  EXPECT_CALL(*messaging_client_,
+              SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
+                          SignalingMessageMatchesProtoOnly(kFakeRemoteFtlId,
+                                                           kFakeLocalFtlId),
+                          _, _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
 
   signal_strategy_->SendMessage(std::move(accept_message));
 }
 
 TEST_F(FtlSignalStrategyTest,
-       Negotiation_HostSide_ReceiveBoth_RespondsWithXml) {
+       Negotiation_HostSide_ReceiveBoth_ProtoFails_FallsBackToXml) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
   messaging_client_->AcceptReceivingMessages();
 
-  // 1. Host receives session-initiate with BOTH (dual payload).
+  // 1. Host receives session-initiate with BOTH, but proto has missing sid.
   ftl::ChromotingMessage init_msg;
-  // Populate Proto
+  // Populate malformed Proto (missing session_id / jingle sid)
   auto* iq = init_msg.mutable_xmpp()->mutable_iq_stanza();
   iq->set_id("req_initiate");
   iq->mutable_sender()->set_local_part(kFakeRemoteUsername);
   iq->mutable_sender()->set_resource_part(kFakeRemoteRegistrationId);
   iq->mutable_receiver()->set_local_part(kFakeLocalUsername);
   iq->mutable_receiver()->set_resource_part(kFakeLocalRegistrationId);
+  // Missing session_id causes JingleMessageFromProto to fail.
   auto* jingle = iq->mutable_jingle();
-  jingle->set_session_id("sid123");
   jingle->mutable_session_initiate();
-  // Populate XML
+  // Populate valid XML
   std::string xml_init =
       CreateValidSessionInitiateXml("req_initiate", "sid123");
   init_msg.mutable_xmpp()->set_stanza(xml_init);
@@ -1446,7 +1431,7 @@ TEST_F(FtlSignalStrategyTest,
   messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
                                init_msg);
 
-  // 2. Host sends reply. Verify it is XML-ONLY.
+  // 2. Host sends reply. Verify it falls back to XML-ONLY.
   JingleMessageReply reply;
   reply.to = SignalingAddress(kFakeRemoteFtlId);
   reply.message_id = "req_initiate";
@@ -1461,7 +1446,7 @@ TEST_F(FtlSignalStrategyTest,
 
   signal_strategy_->SendReply(std::move(reply));
 
-  // 3. Host sends session-accept. Verify it is XML-ONLY.
+  // 3. Host sends session-accept. Verify it falls back to XML-ONLY.
   JingleMessage accept_message(SignalingAddress(kFakeRemoteFtlId),
                                SessionAccept(), "sid123");
   accept_message.message_id = "req_accept";
@@ -1526,7 +1511,7 @@ TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveXmlOnly) {
   signal_strategy_->SendMessage(std::move(accept_message));
 }
 
-TEST_F(FtlSignalStrategyTest, MAYBE_Negotiation_HostSide_ReceiveProtoOnly) {
+TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveProtoOnly) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
