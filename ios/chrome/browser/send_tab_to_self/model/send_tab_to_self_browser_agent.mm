@@ -10,10 +10,12 @@
 #import <string>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/containers/span.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -46,9 +48,9 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -377,8 +379,8 @@ void SendTabToSelfBrowserAgent::WasShown(web::WebState* web_state) {
     return;
   }
 
-  DCHECK(pending_entry_guid_.has_value());
-  DCHECK(pending_web_state_);
+  CHECK(pending_entry_guid_.has_value(), base::NotFatalUntil::M158);
+  CHECK(pending_web_state_, base::NotFatalUntil::M158);
 
   const send_tab_to_self::SendTabToSelfEntry* entry =
       model_->GetEntryByGUID(*pending_entry_guid_);
@@ -395,8 +397,8 @@ void SendTabToSelfBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
     return;
   }
 
-  DCHECK(pending_web_state_);
-  DCHECK(pending_web_state_ == web_state);
+  CHECK(pending_web_state_, base::NotFatalUntil::M158);
+  CHECK_EQ(pending_web_state_, web_state, base::NotFatalUntil::M158);
 
   web_state_observation_.Reset();
   pending_web_state_ = nullptr;

@@ -6,9 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
@@ -93,10 +95,10 @@ IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
       scene_handler_(scene_handler),
       web_state_list_(web_state_list),
       guid_(entry->GetGUID()) {
-  DCHECK(entry);
-  DCHECK(model);
-  DCHECK(scene_handler);
-  DCHECK(web_state_list_);
+  CHECK(entry, base::NotFatalUntil::M158);
+  CHECK(model, base::NotFatalUntil::M158);
+  CHECK(scene_handler, base::NotFatalUntil::M158);
+  CHECK(web_state_list_, base::NotFatalUntil::M158);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -187,7 +188,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M158);
   if (item.type == ItemTypeDevice) {
     SendTabToSelfImageDetailTextItem* imageDetailTextItem =
         base::apple::ObjCCastStrict<SendTabToSelfImageDetailTextItem>(item);

@@ -16,6 +16,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
+#import "base/not_fatal_until.h"
 #import "base/scoped_observation.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -44,7 +45,6 @@
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
-#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_bottom_sheet_view_controller.h"
@@ -208,7 +208,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 // Do not call directly, use `[self.delegate
 // sendTabToSelfCoordinatorWantsToBeStopped:self]` instead!
 - (void)stop {
-  DCHECK(!self.stopped) << "Already stopped";
+  CHECK(!self.stopped, base::NotFatalUntil::M158);
   self.stopped = YES;
   // Abort the waiting if it's still ongoing.
   _targetDeviceListWaiter.reset();
@@ -402,14 +402,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   // This modal should not be launched in incognito mode where syncService
   // is undefined.
-  DCHECK(syncService);
+  CHECK(syncService, base::NotFatalUntil::M158);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  DCHECK(accountManagerService);
+  CHECK(accountManagerService, base::NotFatalUntil::M158);
   id<SystemIdentity> account =
       AuthenticationServiceFactory::GetForProfile(profile)
           ->GetPrimaryIdentity();
-  DCHECK(account) << "The user must be signed in to share a tab";
+  CHECK(account, base::NotFatalUntil::M158);
 
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfEnhancedBottomsheet)) {

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_manage_devices_item.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
@@ -107,8 +109,8 @@ constexpr CGFloat kAvatarSize = 24;
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction {
-  DCHECK(self.delegate) << "Delegate not set";
-  DCHECK(self.showManageDevicesLink);
+  CHECK(self.delegate, base::NotFatalUntil::M158);
+  CHECK(self.showManageDevicesLink, base::NotFatalUntil::M158);
   [self.delegate openManageDevicesTab];
   return defaultAction;
 }
