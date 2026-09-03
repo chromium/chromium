@@ -194,7 +194,8 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
 
 // An end-to-end test of prerendering in a new tab and activating.
 // Disabled on Android due to failures: https://crbug.com/355255740.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/556255865): Flaky on Mac.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_PrerenderAndActivate_InNewTab \
   DISABLED_PrerenderAndActivate_InNewTab
 #else
@@ -206,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 }
 
 // Disabled on Android due to failures: https://crbug.com/355255740.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/556255865): Flaky on Mac.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_PrerenderAndActivate_InNewTab_Noopener \
   DISABLED_PrerenderAndActivate_InNewTab_Noopener
 #else
