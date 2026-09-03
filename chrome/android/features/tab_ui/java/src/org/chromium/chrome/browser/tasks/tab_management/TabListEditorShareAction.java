@@ -145,7 +145,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
         TabList tabList = getTabModel();
         List<Tab> sortedTabList = filterTabs(tabs, tabList);
 
-        if (sortedTabList.size() == 0) {
+        if (sortedTabList.isEmpty()) {
             TabUiMetricsHelper.recordShareStateHistogram(
                     TabListEditorShareActionState.ALL_TABS_FILTERED);
             return false;

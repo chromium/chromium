@@ -204,7 +204,7 @@ public class RecentlyClosedEntriesManager {
                     JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
         Set<RecentlyClosedEntriesManager> managers =
                 RecentlyClosedEntriesManagerTrackerImpl.getInstance().getManagers();
-        if (managers.size() == 0) {
+        if (managers.isEmpty()) {
             callback.onResult(null);
             return;
         }
@@ -221,7 +221,7 @@ public class RecentlyClosedEntriesManager {
             int instanceId, JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
         // Look up recently closed windows.
         List<RecentlyClosedWindow> windows = getRecentlyClosedWindows();
-        if (windows.size() == 0) {
+        if (windows.isEmpty()) {
             callback.onResult(null);
             return;
         }

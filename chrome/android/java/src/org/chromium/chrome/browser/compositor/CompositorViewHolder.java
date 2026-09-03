@@ -2220,7 +2220,7 @@ public class CompositorViewHolder extends FrameLayout
                                 mVirtualViews.clear();
                                 mLayoutManager.getVirtualViews(mVirtualViews);
                                 int importantForAccessibility =
-                                        mVirtualViews.size() == 0
+                                        mVirtualViews.isEmpty()
                                                 ? View.IMPORTANT_FOR_ACCESSIBILITY_NO
                                                 : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
                                 if (getImportantForAccessibility() != importantForAccessibility) {
