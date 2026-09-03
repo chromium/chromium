@@ -12,6 +12,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -201,7 +202,33 @@ TEST_F(CanvasNon2DResourceProviderTest, Texture) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-TEST_F(CanvasNon2DResourceProviderTest, EndExternalWrite) {
+class CanvasNon2DResourceProviderSyncTokenTest
+    : public CanvasNon2DResourceProviderTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CanvasNon2DResourceProviderSyncTokenTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kUseAutomaticSyncTokenManagement);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kUseAutomaticSyncTokenManagement);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CanvasNon2DResourceProviderSyncTokenTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AutomaticSyncTokens"
+                                             : "ManualSyncTokens";
+                         });
+
+TEST_P(CanvasNon2DResourceProviderSyncTokenTest, EndExternalWrite) {
   // Set up this test to use GPU rasterization to be able to verify
   // conditions against the test raster interface.
   SharedGpuContext::Reset();
@@ -232,15 +259,21 @@ TEST_F(CanvasNon2DResourceProviderTest, EndExternalWrite) {
 
   provider->EndExternalWrite(external_write_sync_token);
 
-  // EndExternalWrite() should have initiated a wait on
-  // `external_write_sync_token` on the raster interface.
-  EXPECT_EQ(raster_context_provider->GetTestRasterInterface()
-                ->last_waited_sync_token(),
-            external_write_sync_token);
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // The client-visible SyncToken becomes empty after EndAccess.
+    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
+  } else {
+    // EndExternalWrite() should have initiated a wait on
+    // `external_write_sync_token` on the raster interface.
+    EXPECT_EQ(raster_context_provider->GetTestRasterInterface()
+                  ->last_waited_sync_token(),
+              external_write_sync_token);
 
-  // In addition, it should have ensured that the resource generates a new
-  // compositor read sync token on the next request for that token.
-  EXPECT_NE(GetSyncToken(resource.get()), old_compositor_read_sync_token);
+    // In addition, it should have ensured that the resource generates a new
+    // compositor read sync token on the next request for that token.
+    EXPECT_NE(GetSyncToken(resource.get()), old_compositor_read_sync_token);
+  }
 }
 
 TEST_F(CanvasNon2DResourceProviderTest, SoftwareSharedImage_GPUCompositing) {
