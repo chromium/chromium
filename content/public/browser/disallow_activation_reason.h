@@ -70,6 +70,7 @@ enum DisallowActivationReasonId : uint64_t {
   kWindowPlacement = 46,
   kClipboard = 47,
   kShowCaptionSettings = 48,
+  kPictureInPictureService = 49,
   // New entries go above here. New entries should be added to
   // tools/metrics/histograms/enums.xml .
   kMinEmbedderDisallowActivationReason = 2 << 16,

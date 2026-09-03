@@ -5932,6 +5932,10 @@ shown properly on the user-facing crash UI.
     A request to open the caption settings arrived for a frame in BFCache or
     pending deletion.
   </int>
+  <int value="49" label="kPictureInPictureService">
+    A PictureInPictureService IPC arrived for a frame in BFCache or pending
+    deletion.
+  </int>
 </enum>
 
 <enum name="IncidentType">

@@ -9,12 +9,21 @@
 #include "base/functional/bind.h"
 #include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "media/base/video_spatial_format.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace content {
+namespace {
+
+bool IsFrameActive(RenderFrameHost& rfh) {
+  return !rfh.IsInactiveAndDisallowActivation(
+      DisallowActivationReasonId::kPictureInPictureService);
+}
+
+}  // namespace
 
 struct PictureInPictureServiceImpl::PendingSession {
   PendingSession(
@@ -94,6 +103,10 @@ void PictureInPictureServiceImpl::StartSessionInternal(
     std::unique_ptr<PictureInPictureServiceImpl::PendingSession>
         pending_session,
     std::optional<ImmersiveOptions> immersive_options) {
+  if (!IsFrameActive(render_frame_host())) {
+    return;
+  }
+
   gfx::Size window_size;
   mojo::PendingRemote<blink::mojom::PictureInPictureSession> session_remote;
 
@@ -122,6 +135,10 @@ void PictureInPictureServiceImpl::StartSessionInternal(
 void PictureInPictureServiceImpl::StartSessionImmersive(
     std::unique_ptr<PictureInPictureServiceImpl::PendingSession>
         pending_session) {
+  if (!IsFrameActive(render_frame_host())) {
+    return;
+  }
+
   // Immersive playback confirmation flow can only be requested in a
   // browser-native fullscreen state.
   auto* web_contents = WebContents::FromRenderFrameHost(&render_frame_host());
