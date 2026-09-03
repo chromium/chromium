@@ -27,6 +27,7 @@
 #include "components/personal_context/core/personal_context_key_manager.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/hybrid_encryption_key.pb.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/tink_key.pb.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -457,7 +458,15 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   ASSERT_EQ(keyset.key_size(), 1);
   ASSERT_EQ(keyset.key(0).key_data().type_url(),
             "type.googleapis.com/google.crypto.tink.HpkePublicKey");
-  ASSERT_FALSE(keyset.key(0).key_data().value().empty());
+
+  tink::HpkePublicKey hpke_public_key;
+  ASSERT_TRUE(hpke_public_key.ParseFromString(
+      keyset.key(0).key_data().value()));
+  EXPECT_EQ(hpke_public_key.version(), 0u);
+  EXPECT_EQ(hpke_public_key.params().kem(), tink::HpkeKem::ML_KEM768);
+  EXPECT_EQ(hpke_public_key.params().kdf(), tink::HpkeKdf::HKDF_SHA256);
+  EXPECT_EQ(hpke_public_key.params().aead(), tink::HpkeAead::AES_128_GCM);
+  EXPECT_EQ(hpke_public_key.public_key().size(), 1184u);
 
   sync_pb::PersonalContextSpecificFields expected_personal_context_fields;
   expected_personal_context_fields.set_serialized_tink_keyset(

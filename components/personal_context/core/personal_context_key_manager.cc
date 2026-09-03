@@ -14,6 +14,7 @@
 #include "base/strings/string_view_util.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/hybrid_encryption_key.pb.h"
 #include "components/signin/public/base/tink_key.pb.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
@@ -79,6 +80,14 @@ PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(PrefService* prefs) {
   crypto::keypair::PrivateKey priv = LoadOrGeneratePrivateKey(prefs);
   std::array<uint8_t, 1184> pub_bytes = priv.ToMlkem768PublicKey();
 
+  tink::HpkePublicKey hpke_public_key;
+  hpke_public_key.set_version(0);
+  tink::HpkeParams* params = hpke_public_key.mutable_params();
+  params->set_kem(tink::HpkeKem::ML_KEM768);
+  params->set_kdf(tink::HpkeKdf::HKDF_SHA256);
+  params->set_aead(tink::HpkeAead::AES_128_GCM);
+  hpke_public_key.set_public_key(base::as_string_view(pub_bytes));
+
   const uint32_t key_id = 1;
   tink::Keyset keyset;
   keyset.set_primary_key_id(key_id);
@@ -89,7 +98,7 @@ PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(PrefService* prefs) {
   tink::KeyData* key_data = keyset_key->mutable_key_data();
   key_data->set_type_url(
       "type.googleapis.com/google.crypto.tink.HpkePublicKey");
-  key_data->set_value(base::as_string_view(pub_bytes));
+  key_data->set_value(hpke_public_key.SerializeAsString());
   key_data->set_key_material_type(tink::KeyData::ASYMMETRIC_PUBLIC);
 
   std::string serialized = keyset.SerializeAsString();
