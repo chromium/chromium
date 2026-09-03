@@ -1,12 +1,12 @@
-<style include="cr-shared-style settings-shared md-select"></style>
 <settings-section page-title="$i18n{translatePageTitle}">
 <settings-toggle-button id="offerTranslateOtherLanguages"
     pref-key="translate.enabled"
     label="$i18n{offerToEnableTranslate}"
     sub-label="$i18n{offerToEnableTranslateSublabel}"
-    on-settings-boolean-control-change="onTranslateToggleChange_">
+    @settings-boolean-control-change="${
+        this.onOfferTranslateOtherLanguagesSettingsBooleanControlChange_}">
 </settings-toggle-button>
-<cr-collapse opened="[[translateEnabledPref_.value]]">
+<cr-collapse ?opened="${!!this.translateEnabledPref_?.value}">
   <div class="cr-row continuation">
     <div id="targetLanguageLabel" class="flex cr-padded-text"
         aria-hidden="true">
@@ -14,42 +14,41 @@
     </div>
     <select id="targetLanguage" class="md-select"
         aria-labelledby="targetLanguageLabel"
-        on-change="onTargetLanguageChange_">
-      <template is="dom-repeat" items="[[supportedLanguages_]]"
-          filter="isTranslateSupported_">
-        <option value="[[item.code]]"
-            selected="[[translateLanguageEqual_(
-                item.code, translateTarget_)]]">
-          [[getTargetLanguageDisplayOption_(item)]]
+        @change="${this.onTargetLanguageChange_}">
+      ${this.getSupportedLanguages_().map(item => html`
+        <option value="${item.code}"
+            ?selected="${this.translateLanguageEqual_(
+                item.code, this.translateTarget_)}">
+          ${this.getTargetLanguageDisplayOption_(item)}
         </option>
-      </template>
+      `)}
     </select>
   </div>
   <div class="cr-row continuation">
     <h2 class="flex">$i18n{automaticallyTranslateLanguages}</h2>
     <cr-button id="addAlwaysTranslate" class="header-aligned-button"
         aria-label="$i18n{addAutomaticallyTranslateLanguagesAriaLabel}"
-        on-click="onAddAlwaysTranslateLanguagesClick_">
+        @click="${this.onAddAlwaysTranslateLanguagesClick_}">
       $i18n{addLanguages}
     </cr-button>
   </div>
   <div class="list-frame">
     <div id="alwaysTranslateList" class="vertical-list" role="list">
-      <template is="dom-repeat" items="[[alwaysTranslateLanguages_]]"
-          sort="alphabeticalSort_" filter="hasDisplayName_">
+      ${this.getAlwaysTranslateLanguages_().map(item => html`
         <div class="list-item" role="listitem">
-          <div class="start cr-padded-text">[[item.displayName]]</div>
+          <div class="start cr-padded-text">${item.displayName}</div>
           <cr-icon-button class="icon-delete-gray"
-              aria-label="[[i18n('removeAutomaticLanguageAriaLabel',
-                            item.displayName)]]"
-              on-click="onRemoveAlwaysTranslateLanguageClick_"
+              aria-label="${this.i18n('removeAutomaticLanguageAriaLabel',
+                            item.displayName)}"
+              data-code="${item.code}"
+              @click="${this.onRemoveAlwaysTranslateLanguageClick_}"
               title="$i18n{delete}">
           </cr-icon-button>
         </div>
-      </template>
+      `)}
     </div>
     <div id="noAlwaysTranslateLabel" class="list-item" role="listitem"
-        hidden$="[[hasSome_(alwaysTranslateLanguages_)]]">
+        ?hidden="${this.hasSome_(this.alwaysTranslateLanguages_)}">
       $i18n{noLanguagesAdded}
     </div>
   </div>
@@ -57,44 +56,44 @@
     <h2 class="flex">$i18n{neverTranslateLanguages}</h2>
     <cr-button id="addNeverTranslate" class="header-aligned-button"
         aria-label="$i18n{addNeverTranslateLanguagesAriaLabel}"
-        on-click="onAddNeverTranslateLanguagesClick_">
+        @click="${this.onAddNeverTranslateLanguagesClick_}">
       $i18n{addLanguages}
     </cr-button>
   </div>
   <div class="list-frame">
     <div id="neverTranslateList" class="vertical-list" role="list">
-      <template is="dom-repeat" items="[[neverTranslateLanguages_]]"
-          sort="alphabeticalSort_" filter="hasDisplayName_">
+      ${this.getNeverTranslateLanguages_().map(item => html`
         <div class="list-item" role="listitem">
-          <div class="start cr-padded-text">[[item.displayName]]</div>
-          <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
-              disabled="[[hasLength_(neverTranslateLanguages_, 1)]]"
-              aria-label="[[i18n('removeNeverLanguageAriaLabel',
-                            item.displayName)]]"
-              on-click="onRemoveNeverTranslateLanguageClick_"
+          <div class="start cr-padded-text">${item.displayName}</div>
+          <cr-icon-button class="icon-delete-gray" value="${item.code}"
+              ?disabled="${this.shouldDisableDeleteNeverTranslateLanguage_()}"
+              aria-label="${this.i18n('removeNeverLanguageAriaLabel',
+                            item.displayName)}"
+              data-code="${item.code}"
+              @click="${this.onRemoveNeverTranslateLanguageClick_}"
               title="$i18n{delete}">
           </cr-icon-button>
         </div>
-      </template>
+      `)}
     </div>
     <div id="noNeverTranslateLabel" class="list-item" role="listitem"
-        hidden$="[[hasSome_(neverTranslateLanguages_)]]">
+        ?hidden="${this.hasSome_(this.neverTranslateLanguages_)}">
       $i18n{noLanguagesAdded}
     </div>
   </div>
 </cr-collapse>
-<template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
+${this.showAddAlwaysTranslateDialog_ ? html`
   <settings-add-languages-dialog id="alwaysTranslateDialog"
-      languages="[[addLanguagesDialogLanguages_]]"
-      on-close="onAlwaysTranslateDialogClose_"
-      on-languages-added="onAlwaysTranslateLanguagesAdded_">
+      .languages="${this.addLanguagesDialogLanguages_}"
+      @close="${this.onAlwaysTranslateDialogClose_}"
+      @languages-added="${this.onAlwaysTranslateLanguagesAdded_}">
   </settings-add-languages-dialog>
-</template>
-<template is="dom-if" if="[[showAddNeverTranslateDialog_]]" restamp>
+` : ''}
+${this.showAddNeverTranslateDialog_ ? html`
   <settings-add-languages-dialog id="neverTranslateDialog"
-      languages="[[addLanguagesDialogLanguages_]]"
-      on-close="onNeverTranslateDialogClose_"
-      on-languages-added="onNeverTranslateLanguagesAdded_">
+      .languages="${this.addLanguagesDialogLanguages_}"
+      @close="${this.onNeverTranslateDialogClose_}"
+      @languages-added="${this.onNeverTranslateLanguagesAdded_}">
   </settings-add-languages-dialog>
-</template>
+` : ''}
 </settings-section>

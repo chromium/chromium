@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
 import {getLanguageHelperInstance, LanguageHelperImpl, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -19,17 +18,18 @@ suite('TranslatePageMetricsBrowser', function() {
   let translatePage: SettingsTranslatePageElement;
   let browserProxy: TestLanguagesBrowserProxy;
   let languageSettingsMetricsProxy: TestLanguageSettingsMetricsProxy;
+  let prefService: PrefService;
 
   async function openAddLanguagesDialog(
       addButtonId: '#addAlwaysTranslate'|'#addNeverTranslate',
       dialogId: '#alwaysTranslateDialog'|
       '#neverTranslateDialog'): Promise<SettingsAddLanguagesDialogElement> {
     const whenDialogOpen = eventToPromise('cr-dialog-open', translatePage);
-    translatePage.shadowRoot!.querySelector<HTMLElement>(addButtonId)!.click();
+    translatePage.shadowRoot.querySelector<HTMLElement>(addButtonId)!.click();
     await whenDialogOpen;
 
     const dialog =
-        translatePage.shadowRoot!
+        translatePage.shadowRoot
             .querySelector<SettingsAddLanguagesDialogElement>(dialogId);
     assertTrue(!!dialog);
     return dialog;
@@ -44,7 +44,8 @@ suite('TranslatePageMetricsBrowser', function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     // Sets up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
@@ -60,11 +61,13 @@ suite('TranslatePageMetricsBrowser', function() {
 
     translatePage = document.createElement('settings-translate-page');
     document.body.appendChild(translatePage);
+    await microtasksFinished();
   });
 
   test('records when translate target is changed', async () => {
-    const targetLanguageSelector = translatePage.shadowRoot!.querySelector
-        <HTMLSelectElement>('#targetLanguage');
+    const targetLanguageSelector =
+        translatePage.shadowRoot.querySelector<HTMLSelectElement>(
+            '#targetLanguage');
     assertTrue(!!targetLanguageSelector);
 
     targetLanguageSelector.value = 'sw';
@@ -76,10 +79,10 @@ suite('TranslatePageMetricsBrowser', function() {
   });
 
   test('records when disabling translate.enable toggle', async () => {
-    PrefService.getInstance().setPrefValue('translate.enabled', true);
-    translatePage.shadowRoot!
+    prefService.setPrefValue('translate.enabled', true);
+    translatePage.shadowRoot
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
-    flush();
+    await microtasksFinished();
 
     assertEquals(
         LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY,
@@ -87,10 +90,10 @@ suite('TranslatePageMetricsBrowser', function() {
   });
 
   test('records when enabling translate.enable toggle', async () => {
-    PrefService.getInstance().setPrefValue('translate.enabled', false);
-    translatePage.shadowRoot!
+    prefService.setPrefValue('translate.enabled', false);
+    translatePage.shadowRoot
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
-    flush();
+    await microtasksFinished();
 
     assertEquals(
         LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY,
@@ -131,9 +134,9 @@ suite('TranslatePageMetricsBrowser', function() {
 
   test('records when removing always translate language', async () => {
     languageHelper.setLanguageAlwaysTranslateState('sw', true);
-    flush();
+    await microtasksFinished();
 
-    const removeButton = translatePage.shadowRoot!.querySelector<HTMLElement>(
+    const removeButton = translatePage.shadowRoot.querySelector<HTMLElement>(
         '#alwaysTranslateList .icon-delete-gray');
     assertTrue(!!removeButton);
     removeButton.click();
@@ -148,10 +151,10 @@ suite('TranslatePageMetricsBrowser', function() {
       async () => {
         languageHelper.setLanguageAlwaysTranslateState('sw', true);
         languageHelper.setLanguageAlwaysTranslateState('no', true);
-        flush();
+        await microtasksFinished();
 
         const alwaysTranslateList =
-            translatePage.shadowRoot!.querySelector<HTMLElement>(
+            translatePage.shadowRoot.querySelector<HTMLElement>(
                 '#alwaysTranslateList');
         assertTrue(!!alwaysTranslateList);
 
@@ -165,7 +168,7 @@ suite('TranslatePageMetricsBrowser', function() {
             LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE,
             await firstCall);
         languageSettingsMetricsProxy.resetResolver('recordSettingsMetric');
-        flush();
+        await microtasksFinished();
 
         removeButton =
             alwaysTranslateList.querySelector<HTMLElement>('.icon-delete-gray');
@@ -212,10 +215,10 @@ suite('TranslatePageMetricsBrowser', function() {
 
   test('records when removing never translate language', async () => {
     languageHelper.disableTranslateLanguage('sw');
-    flush();
+    await microtasksFinished();
 
     const neverTranslateList =
-        translatePage.shadowRoot!.querySelector<HTMLElement>(
+        translatePage.shadowRoot.querySelector<HTMLElement>(
             '#neverTranslateList');
     assertTrue(!!neverTranslateList);
     const removeButton = neverTranslateList.querySelector<HTMLElement>(
@@ -234,10 +237,10 @@ suite('TranslatePageMetricsBrowser', function() {
         // en-US is already on never-translate list by default in fake prefs.
         languageHelper.disableTranslateLanguage('sw');
         languageHelper.disableTranslateLanguage('no');
-        flush();
+        await microtasksFinished();
 
         const neverTranslateList =
-            translatePage.shadowRoot!.querySelector<HTMLElement>(
+            translatePage.shadowRoot.querySelector<HTMLElement>(
                 '#neverTranslateList');
         assertTrue(!!neverTranslateList);
 
@@ -251,7 +254,7 @@ suite('TranslatePageMetricsBrowser', function() {
             LanguageSettingsActionType.REMOVE_FROM_NEVER_TRANSLATE,
             await firstCall);
         languageSettingsMetricsProxy.resetResolver('recordSettingsMetric');
-        flush();
+        await microtasksFinished();
 
         removeButton = neverTranslateList.querySelector<HTMLElement>(
             '.icon-delete-gray:not([disabled])');

@@ -11,33 +11,37 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import './add_languages_dialog.js';
 import './languages.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getCss as getCrSharedStyleCss} from '//resources/cr_elements/cr_shared_style_lit.css.js';
+import {getCss as getMdSelectLitCss} from '//resources/cr_elements/md_select_lit.css.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import type {I18nMixinLitInterface} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 import {getLanguageHelperInstance} from './languages.js';
 import type {LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
 import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {convertLanguageCodeForChrome, getFullName, isTranslateBaseLanguage} from './languages_util.js';
-import {getTemplate} from './translate_page.html.js';
+import {getHtml} from './translate_page.html.js';
+
+export interface SettingsTranslatePageElement extends I18nMixinLitInterface {}
+
+export type TranslatePageElement = SettingsTranslatePageElement;
 
 const SettingsTranslatePageElementBase =
-    PrefServiceObserverMixin(I18nMixin(PolymerElement));
+    PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement));
 
 export class SettingsTranslatePageElement extends
     SettingsTranslatePageElementBase {
@@ -45,46 +49,45 @@ export class SettingsTranslatePageElement extends
     return 'settings-translate-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getCrSharedStyleCss(),
+      getSettingsSharedCss(),
+      getMdSelectLitCss(),
+    ];
   }
 
-  static get properties() {
-    return {
-      supportedLanguages_: {
-        type: Array,
-        value: () => [],
-      },
-      translateTarget_: String,
-      alwaysTranslateLanguages_: {
-        type: Array,
-        value: () => [],
-      },
-      neverTranslateLanguages_: {
-        type: Array,
-        value: () => [],
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      showAddAlwaysTranslateDialog_: Boolean,
-      showAddNeverTranslateDialog_: Boolean,
-      addLanguagesDialogLanguages_: Array,
-      translateEnabledPref_: Object,
+  static override get properties() {
+    return {
+      supportedLanguages_: {type: Array},
+      translateTarget_: {type: String},
+      alwaysTranslateLanguages_: {type: Array},
+      neverTranslateLanguages_: {type: Array},
+
+      showAddAlwaysTranslateDialog_: {type: Boolean},
+      showAddNeverTranslateDialog_: {type: Boolean},
+      addLanguagesDialogLanguages_: {type: Array},
+      translateEnabledPref_: {type: Object},
     };
   }
 
-  declare private supportedLanguages_:
-      chrome.languageSettingsPrivate.Language[];
-  declare private translateTarget_: string;
-  declare private alwaysTranslateLanguages_:
-      chrome.languageSettingsPrivate.Language[];
-  declare private neverTranslateLanguages_:
-      chrome.languageSettingsPrivate.Language[];
-  declare protected translateEnabledPref_:
+  protected accessor supportedLanguages_:
+      chrome.languageSettingsPrivate.Language[] = [];
+  protected accessor translateTarget_: string = '';
+  protected accessor alwaysTranslateLanguages_:
+      chrome.languageSettingsPrivate.Language[] = [];
+  protected accessor neverTranslateLanguages_:
+      chrome.languageSettingsPrivate.Language[] = [];
+  protected accessor translateEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  declare private showAddAlwaysTranslateDialog_: boolean;
-  declare private showAddNeverTranslateDialog_: boolean;
-  declare private addLanguagesDialogLanguages_:
-      chrome.languageSettingsPrivate.Language[]|null;
+  protected accessor showAddAlwaysTranslateDialog_: boolean = false;
+  protected accessor showAddNeverTranslateDialog_: boolean = false;
+  protected accessor addLanguagesDialogLanguages_:
+      chrome.languageSettingsPrivate.Language[] = [];
   private languageHelper_: LanguageHelper;
   private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
@@ -119,16 +122,16 @@ export class SettingsTranslatePageElement extends
   }
 
   private onLanguagesChanged_(languages: LanguagesModel) {
-    this.set('supportedLanguages_', languages.supported);
-    this.set('translateTarget_', languages.translateTarget);
-    this.set('alwaysTranslateLanguages_', languages.alwaysTranslate);
-    this.set('neverTranslateLanguages_', languages.neverTranslate);
+    this.supportedLanguages_ = languages.supported;
+    this.translateTarget_ = languages.translateTarget;
+    this.alwaysTranslateLanguages_ = languages.alwaysTranslate;
+    this.neverTranslateLanguages_ = languages.neverTranslate;
   }
 
-  private onTargetLanguageChange_() {
+  protected onTargetLanguageChange_() {
     this.languageHelper_.setTranslateTargetLanguage(
-        this.shadowRoot!.querySelector<HTMLSelectElement>(
-                            '#targetLanguage')!.value);
+        this.shadowRoot.querySelector<HTMLSelectElement>(
+                           '#targetLanguage')!.value);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.CHANGE_TRANSLATE_TARGET);
   }
@@ -138,7 +141,7 @@ export class SettingsTranslatePageElement extends
    * list. Returns the display name in the current UI language and the native
    * name of the language.
    */
-  private getTargetLanguageDisplayOption_(
+  protected getTargetLanguageDisplayOption_(
       item: chrome.languageSettingsPrivate.Language): string {
     return getFullName(item);
   }
@@ -148,9 +151,10 @@ export class SettingsTranslatePageElement extends
    * Used in the translate language selector. If the item matches the translate
    * target language, it will set that item as selected.
    */
-  private translateLanguageEqual_(
-      chromeItemCode: string, translateTarget: string): boolean {
-    return chromeItemCode === convertLanguageCodeForChrome(translateTarget);
+  protected translateLanguageEqual_(
+      chromeItemCode: string, translateTarget?: string): boolean {
+    return !!translateTarget &&
+        chromeItemCode === convertLanguageCodeForChrome(translateTarget);
   }
 
   /**
@@ -166,8 +170,8 @@ export class SettingsTranslatePageElement extends
    * A filter function to return true if language is not undefined and has a
    * displayName.
    */
-  private hasDisplayName_(language: chrome.languageSettingsPrivate.Language|
-                          undefined): boolean {
+  protected hasDisplayName_(
+      language: chrome.languageSettingsPrivate.Language|undefined): boolean {
     return !!language && !!language.displayName;
   }
 
@@ -175,7 +179,7 @@ export class SettingsTranslatePageElement extends
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
    */
-  private onAddAlwaysTranslateLanguagesClick_(e: Event) {
+  protected onAddAlwaysTranslateLanguagesClick_(e: Event) {
     e.preventDefault();
     const translatableLanguages = this.getTranslatableLanguages_();
     this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
@@ -183,11 +187,11 @@ export class SettingsTranslatePageElement extends
     this.showAddAlwaysTranslateDialog_ = true;
   }
 
-  private onAlwaysTranslateDialogClose_() {
+  protected onAlwaysTranslateDialogClose_() {
     this.showAddAlwaysTranslateDialog_ = false;
-    this.addLanguagesDialogLanguages_ = null;
+    this.addLanguagesDialogLanguages_ = [];
     const toFocus =
-        this.shadowRoot!.querySelector<HTMLElement>('#addAlwaysTranslate');
+        this.shadowRoot.querySelector<HTMLElement>('#addAlwaysTranslate');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
@@ -196,7 +200,7 @@ export class SettingsTranslatePageElement extends
    * Helper function fired by the add dialog's on-languages-added event. Adds
    * selected languages to the always-translate languages list.
    */
-  private onAlwaysTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
+  protected onAlwaysTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper_.setLanguageAlwaysTranslateState(languageCode, true);
@@ -208,9 +212,9 @@ export class SettingsTranslatePageElement extends
   /**
    * Removes a language from the always translate languages list.
    */
-  private onRemoveAlwaysTranslateLanguageClick_(
-      e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
-    const languageCode = e.model.item.code;
+  protected onRemoveAlwaysTranslateLanguageClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const languageCode = target.dataset['code']!;
     this.languageHelper_.setLanguageAlwaysTranslateState(languageCode, false);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE);
@@ -220,7 +224,7 @@ export class SettingsTranslatePageElement extends
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
    */
-  private onAddNeverTranslateLanguagesClick_(e: Event) {
+  protected onAddNeverTranslateLanguagesClick_(e: Event) {
     e.preventDefault();
     const translatableLanguages = this.getTranslatableLanguages_();
     this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
@@ -228,16 +232,19 @@ export class SettingsTranslatePageElement extends
     this.showAddNeverTranslateDialog_ = true;
   }
 
-  private onNeverTranslateDialogClose_() {
+  protected onNeverTranslateDialogClose_() {
     this.showAddNeverTranslateDialog_ = false;
-    this.addLanguagesDialogLanguages_ = null;
+    this.addLanguagesDialogLanguages_ = [];
     const toFocus =
-        this.shadowRoot!.querySelector<HTMLElement>('#addNeverTranslate');
+        this.shadowRoot.querySelector<HTMLElement>('#addNeverTranslate');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
-  private onNeverTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
+  /**
+   * Removes a language from the never translate languages list.
+   */
+  protected onNeverTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper_.disableTranslateLanguage(languageCode);
@@ -249,15 +256,16 @@ export class SettingsTranslatePageElement extends
   /**
    * Removes a language from the never translate languages list.
    */
-  private onRemoveNeverTranslateLanguageClick_(
-      e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
-    const languageCode = e.model.item.code;
+  protected onRemoveNeverTranslateLanguageClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const languageCode = target.dataset['code']!;
     this.languageHelper_.enableTranslateLanguage(languageCode);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.REMOVE_FROM_NEVER_TRANSLATE);
   }
 
-  private onTranslateToggleChange_(e: Event) {
+  protected onOfferTranslateOtherLanguagesSettingsBooleanControlChange_(
+      e: Event) {
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         (e.target as SettingsToggleButtonElement).checked ?
             LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY :
@@ -267,15 +275,38 @@ export class SettingsTranslatePageElement extends
   /**
    * @return Whether the list has any items.
    */
-  private hasSome_(list: unknown[]): boolean {
-    return !!list.length;
+  protected hasSome_(list?: unknown[]): boolean {
+    return !!list?.length;
   }
 
   /**
-   * @return Whether the list is has the given length.
+   * @return Whether the delete button for never translate languages should be
+   *     disabled.
    */
-  private hasLength_(list: unknown[], length: number): boolean {
-    return list.length === length;
+  protected shouldDisableDeleteNeverTranslateLanguage_(): boolean {
+    return this.neverTranslateLanguages_.length === 1;
+  }
+
+  protected getSupportedLanguages_():
+      chrome.languageSettingsPrivate.Language[] {
+    return this.supportedLanguages_.filter(
+        language => this.isTranslateSupported_(language));
+  }
+
+  protected getAlwaysTranslateLanguages_():
+      chrome.languageSettingsPrivate.Language[] {
+    return this.alwaysTranslateLanguages_
+        .filter(lang => this.hasDisplayName_(lang))
+        .slice()
+        .sort(this.alphabeticalSort_);
+  }
+
+  protected getNeverTranslateLanguages_():
+      chrome.languageSettingsPrivate.Language[] {
+    return this.neverTranslateLanguages_
+        .filter(lang => this.hasDisplayName_(lang))
+        .slice()
+        .sort(this.alphabeticalSort_);
   }
 
   /**
