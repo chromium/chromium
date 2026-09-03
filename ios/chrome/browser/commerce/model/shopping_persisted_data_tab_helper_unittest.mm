@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -78,7 +79,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
               return commerce::MockShoppingService::Build();
             }));
 
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     profile_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -86,13 +87,20 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
     auth_service_->SignIn(fake_identity_,
                           signin_metrics::AccessPoint::kStartPage);
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
-    web_state_.SetBrowserState(profile_.get());
+        commerce::ShoppingServiceFactory::GetForProfile(profile_));
+    web_state_.SetBrowserState(profile_);
     ShoppingPersistedDataTabHelper::CreateForWebState(&web_state_);
+  }
+
+  void TearDown() override {
+    auth_service_ = nullptr;
+    shopping_service_ = nullptr;
+    profile_ = nullptr;
+    PlatformTest::TearDown();
   }
 
   commerce::MockShoppingService* shopping_service() {
@@ -175,14 +183,15 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   web::FakeNavigationContext context_;
   id<SystemIdentity> fake_identity_ = nil;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
-  raw_ptr<commerce::MockShoppingService> shopping_service_;
+  raw_ptr<commerce::MockShoppingService> shopping_service_ = nullptr;
 };
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceDrop) {

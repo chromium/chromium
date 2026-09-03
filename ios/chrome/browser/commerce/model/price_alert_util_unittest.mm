@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -35,9 +36,16 @@ class PriceAlertUtilTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
+  }
+
+  void TearDown() override {
+    auth_service_ = nullptr;
+    fake_identity_ = nil;
+    profile_ = nullptr;
+    PlatformTest::TearDown();
   }
 
   void SetMSBB(bool enabled) {
@@ -66,7 +74,8 @@ class PriceAlertUtilTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   FakeSystemIdentity* fake_identity_ = nullptr;
 };
@@ -74,26 +83,26 @@ class PriceAlertUtilTest : public PlatformTest {
 TEST_F(PriceAlertUtilTest, TestMSBBOff) {
   SetMSBB(false);
   SignIn();
-  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_));
 }
 
 TEST_F(PriceAlertUtilTest, TestNotSignedIn) {
   SetMSBB(true);
-  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_));
 }
 
 TEST_F(PriceAlertUtilTest, TestPriceAlertsAllowed) {
   SignIn();
   SetMSBB(true);
-  EXPECT_TRUE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_TRUE(IsPriceAlertsEligible(profile_));
 }
 
 TEST_F(PriceAlertUtilTest, TestPriceAlertsEligibleThenSignOut) {
   SignIn();
   SetMSBB(true);
-  EXPECT_TRUE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_TRUE(IsPriceAlertsEligible(profile_));
   SignOut();
-  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_));
 }
 
 TEST_F(PriceAlertUtilTest, TestIncognito) {
@@ -106,12 +115,12 @@ TEST_F(PriceAlertUtilTest, TestUserSettingOn) {
   SignIn();
   SetMSBB(true);
   SetUserSetting(true);
-  EXPECT_TRUE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_TRUE(IsPriceAlertsEligible(profile_));
 }
 
 TEST_F(PriceAlertUtilTest, TestUserSettingOff) {
   SignIn();
   SetMSBB(true);
   SetUserSetting(false);
-  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_));
 }

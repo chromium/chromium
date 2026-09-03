@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -92,13 +93,13 @@ class SaveToDriveMediatorTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
 
     fake_system_identity_manager_->AddIdentity(kPrimaryIdentity);
     signin::MakeAccountAvailable(
@@ -110,7 +111,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
                                    signin_metrics::AccessPoint::kStartPage);
 
     web_state_ = std::make_unique<web::FakeWebState>();
-    web_state_->SetBrowserState(profile_.get());
+    web_state_->SetBrowserState(profile_);
     DriveTabHelper::CreateForWebState(web_state_.get());
     FakeDownloadManagerTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
@@ -128,18 +129,24 @@ class SaveToDriveMediatorTest : public PlatformTest {
                       prefService:profile_->GetPrefs()
             authenticationService:authentication_service
             accountManagerService:ChromeAccountManagerServiceFactory::
-                                      GetForProfile(profile_.get())
+                                      GetForProfile(profile_)
                   identityManager:IdentityManagerFactory::GetForProfile(
-                                      profile_.get())
+                                      profile_)
                      driveService:drive::DriveServiceFactory::GetForProfile(
-                                      profile_.get())];
+                                      profile_)];
   }
 
   void TearDown() final {
     [mediator_ disconnect];
     mediator_ = nil;
-    identity_manager_ = nil;
-    fake_system_identity_manager_ = nil;
+    identity_manager_ = nullptr;
+    fake_system_identity_manager_ = nullptr;
+    download_task_.reset();
+    web_state_.reset();
+    save_to_drive_commands_handler_ = nil;
+    manage_storage_alert_commands_handler_ = nil;
+    scene_handler_ = nil;
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -149,7 +156,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
 
   drive::TestDriveService* GetTestDriveService() {
     return static_cast<drive::TestDriveService*>(
-        drive::DriveServiceFactory::GetForProfile(profile_.get()));
+        drive::DriveServiceFactory::GetForProfile(profile_));
   }
 
   FakeDownloadManagerTabHelper* GetDownloadManagerTabHelper() const {
@@ -160,9 +167,10 @@ class SaveToDriveMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestProfileIOS> profile_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   id save_to_drive_commands_handler_;
