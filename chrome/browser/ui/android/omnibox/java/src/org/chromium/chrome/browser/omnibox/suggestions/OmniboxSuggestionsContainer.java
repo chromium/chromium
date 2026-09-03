@@ -103,6 +103,23 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
         return true;
     }
 
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (!OmniboxCapabilities.isDesktopPlatform()) return super.onGenericMotionEvent(event);
+        // On desktop, we have no scrim which means the ContentView underneath the LocationBar will
+        // eagerly handle ACTION_BUTTON_PRESS, gaining focus and unfocusing the omnibox. Stop it
+        // from doing so by returning true for these events.
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_BUTTON_PRESS:
+                if (event.getActionButton() != 0) {
+                    return true;
+                }
+                return super.onGenericMotionEvent(event);
+            default:
+                return super.onGenericMotionEvent(event);
+        }
+    }
+
     /**
      * Set whether the dropdown should be clipped to its outline.
      *
