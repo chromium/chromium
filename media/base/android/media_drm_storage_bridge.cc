@@ -155,19 +155,15 @@ void MediaDrmStorageBridge::OnInitialized(
     return;
   }
 
-  // Note: It's possible that |success| is true but |origin_id| is empty,
-  // to indicate per-device provisioning. If so, do not set |origin_id_|
-  // so that it remains the empty string.
+  // Note: It's possible that |success| is true but |origin_id| is empty.
+  // However, since per-application provisioning is always supported,
+  // the empty string is not allowed.
   if (origin_id && origin_id.value()) {
     origin_id_ = origin_id->ToString();
   } else {
-    // |origin_id| is empty. However, if per-application provisioning is
-    // supported, the empty string is not allowed.
     DCHECK(origin_id_.empty());
-    if (MediaDrmBridge::IsPerApplicationProvisioningSupported()) {
-      std::move(init_cb).Run(false);
-      return;
-    }
+    std::move(init_cb).Run(false);
+    return;
   }
 
   std::move(init_cb).Run(true);

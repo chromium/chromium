@@ -4340,17 +4340,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.MediaDrm.FirstApiLevel" enum="AndroidApiLevel"
-    expires_after="2027-02-07">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The Android Api level the device was released with, retrieved by obtaining
-    |ro.product.first_api_level| from the OS. We record this once at time of
-    checking the FirstApiLevel during the pre-provisioning flow.
-  </summary>
-</histogram>
-
 <histogram name="Media.EME.MediaDrm.GetOriginIdResult" enum="GetOriginIdResult"
     expires_after="2027-02-07">
   <owner>sangbaekpark@chromium.org</owner>
@@ -4359,17 +4348,6 @@ chromium-metrics-reviews@google.com.
     The status of every attempt to obtain a pre-provisioned origin ID to be used
     by MediaDrm. This will only be reported for applications that use
     MediaDrmOriginIdManager.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.MediaDrm.PreprovisionedOriginId.NonPerAppProvisioningDevice"
-    units="units" expires_after="2027-02-07">
-  <owner>sangbaekpark@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The number of pre-provisioned origin IDs available shortly after startup on
-    devices that do not support per-application provisioning.
   </summary>
 </histogram>
 

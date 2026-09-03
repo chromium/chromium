@@ -691,30 +691,25 @@ MediaDrmStorageImpl::MediaDrmStorageImpl(
     content::RenderFrameHost& render_frame_host,
     PrefService* pref_service,
     GetOriginIdCB get_origin_id_cb,
-    AllowEmptyOriginIdCB allow_empty_origin_id_cb,
     mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
       pref_service_(pref_service),
-      get_origin_id_cb_(get_origin_id_cb),
-      allow_empty_origin_id_cb_(allow_empty_origin_id_cb) {
+      get_origin_id_cb_(get_origin_id_cb) {
   DVLOG(1) << __func__ << ": origin = " << origin();
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(pref_service_);
   DCHECK(get_origin_id_cb_);
-  DCHECK(allow_empty_origin_id_cb_);
   DCHECK(!origin().opaque());
 }
 
 MediaDrmStorageImpl::MediaDrmStorageImpl(
     content::RenderFrameHost& render_frame_host,
     GetOriginIdCB get_origin_id_cb,
-    AllowEmptyOriginIdCB allow_empty_origin_id_cb,
     mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver)
     : MediaDrmStorageImpl(
           render_frame_host,
           user_prefs::UserPrefs::Get(render_frame_host.GetBrowserContext()),
           get_origin_id_cb,
-          allow_empty_origin_id_cb,
           std::move(receiver)) {}
 
 MediaDrmStorageImpl::~MediaDrmStorageImpl() {
@@ -753,20 +748,13 @@ void MediaDrmStorageImpl::OnOriginIdObtained(
   is_initialized_ = true;
 
   if (!success) {
-    // Unable to get a pre-provisioned origin ID, so call
-    // |allow_empty_origin_id_cb_| to see if the empty origin ID is allowed.
-    allow_empty_origin_id_cb_.Run(
-        base::BindOnce(&MediaDrmStorageImpl::OnEmptyOriginIdAllowed,
-                       weak_factory_.GetWeakPtr()));
+    // Unable to get an origin ID.
+    std::move(init_cb_).Run(false, std::nullopt);
     return;
   }
 
   origin_id_ = origin_id;
   std::move(init_cb_).Run(success, origin_id_);
-}
-
-void MediaDrmStorageImpl::OnEmptyOriginIdAllowed(bool allowed) {
-  std::move(init_cb_).Run(allowed, std::nullopt);
 }
 
 void MediaDrmStorageImpl::OnProvisioned(OnProvisionedCallback callback) {
@@ -779,7 +767,7 @@ void MediaDrmStorageImpl::OnProvisioned(OnProvisionedCallback callback) {
     return;
   }
 
-  // If this is using an empty origin ID, it should not be provisioned.
+  // An origin ID must be present to allow provisioning.
   if (!origin_id_) {
     DVLOG(1) << __func__ << ": Empty origin ID.";
     std::move(callback).Run(false);

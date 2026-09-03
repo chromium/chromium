@@ -23,14 +23,11 @@ struct SessionData {
 // service is the true source for the persistent license and origin
 // provisioning.
 interface MediaDrmStorage {
-  // Initializes |this| and if successful (|success| = true) returns an origin
-  // ID that can be used to identify the current origin. If |origin_id| is
-  // not empty, then it must be valid and unique among all origins. The
+  // Initializes |this| and if successful (|success| = true) returns a unique
+  // origin ID that can be used to identify the current origin. The
   // implementation will persist the information (e.g. origin ID, provision
-  // time) in the storage. If |origin_id| is empty, then device-wide
-  // provisioning is to be used. If Initialize() fails or returns an empty
-  // origin ID then the other methods below should not be called, and will
-  // fail if they are called.
+  // time) in the storage. If Initialize() fails, the other methods below
+  // should not be called, and will fail if they are called.
   Initialize() => (bool success, mojo_base.mojom.UnguessableToken? origin_id);
 
   // Saves origin information (e.g. origin ID, provision time) in the storage

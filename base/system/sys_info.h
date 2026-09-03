@@ -349,9 +349,6 @@ class BASE_EXPORT SysInfo {
   // devices with similar hardware components.
   static std::string GetAndroidHardwareClass();
 
-  // Returns the SDK API level that the device initially launched with.
-  static std::string GetAndroidFirstApiLevel();
-
   // Returns the android.os.Build.FINGERPRINT. This corresponds to the
   // ro.build.fingerprint system property.
   static std::string GetAndroidBuildFingerprint();

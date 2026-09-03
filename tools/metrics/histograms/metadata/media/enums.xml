@@ -1327,11 +1327,11 @@ chromium-metrics-reviews@google.com.
 <enum name="GetOriginIdResult">
   <int value="0" label="Success with pre-provisioned origin ID"/>
   <int value="1" label="Success with newly provisioned origin ID"/>
-  <int value="2" label="Success with unprovisioned origin ID"/>
+  <int value="2" label="(Obsolete) Success with unprovisioned origin ID"/>
   <int value="3"
       label="Failed on device that supports per-application provisioning"/>
   <int value="4"
-      label="Failed on device that doesn't support per-application
+      label="(Obsolete) Failed on device that doesn't support per-application
              provisioning"/>
   <int value="5"
       label="Failed as no factory associated with the profile found"/>

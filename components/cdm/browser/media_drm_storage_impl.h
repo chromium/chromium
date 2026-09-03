@@ -46,8 +46,7 @@ extern const char kMediaDrmStorage[];
 class MediaDrmStorageImpl final
     : public content::DocumentService<media::mojom::MediaDrmStorage> {
  public:
-  // When using per-origin provisioning, this is the ID for the origin.
-  // If not specified, the device specific origin ID is to be used.
+  // The unique ID for the current origin.
   using MediaDrmOriginId = std::optional<base::UnguessableToken>;
 
   // |success| is true if an origin ID was obtained and |origin_id| is
@@ -55,10 +54,6 @@ class MediaDrmStorageImpl final
   using OriginIdObtainedCB =
       base::OnceCallback<void(bool success, const MediaDrmOriginId& origin_id)>;
   using GetOriginIdCB = base::RepeatingCallback<void(OriginIdObtainedCB)>;
-
-  // |callback| returns true if an empty origin ID is allowed, false if not.
-  using AllowEmptyOriginIdCB =
-      base::RepeatingCallback<void(base::OnceCallback<void(bool)> callback)>;
 
   // |callback| returns true if Licenses matching the filter are cleared, false
   // if not.
@@ -100,14 +95,10 @@ class MediaDrmStorageImpl final
 #endif
 
   // |get_origin_id_cb| must be provided and is used to obtain an origin ID.
-  // |allow_empty_origin_id_cb| is used to determine if an empty origin ID is
-  // allowed or not. It is called if |get_origin_id_cb| is unable to return an
-  // origin ID.
   MediaDrmStorageImpl(
       content::RenderFrameHost& render_frame_host,
       PrefService* pref_service,
       GetOriginIdCB get_origin_id_cb,
-      AllowEmptyOriginIdCB allow_empty_origin_id_cb,
       mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);
 
   // As above, but derives the PrefService from |render_frame_host|.
@@ -115,7 +106,6 @@ class MediaDrmStorageImpl final
   MediaDrmStorageImpl(
       content::RenderFrameHost& render_frame_host,
       GetOriginIdCB get_origin_id_cb,
-      AllowEmptyOriginIdCB allow_empty_origin_id_cb,
       mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);
 
   // media::mojom::MediaDrmStorage implementation.
@@ -137,12 +127,8 @@ class MediaDrmStorageImpl final
   // of Initialize().
   void OnOriginIdObtained(bool success, const MediaDrmOriginId& origin_id);
 
-  // Called after checking if an empty origin ID is allowed.
-  void OnEmptyOriginIdAllowed(bool allowed);
-
   const raw_ptr<PrefService> pref_service_;
   GetOriginIdCB get_origin_id_cb_;
-  AllowEmptyOriginIdCB allow_empty_origin_id_cb_;
 
   // ID for the current origin. Per EME spec on individualization,
   // implementation should not expose application-specific information.

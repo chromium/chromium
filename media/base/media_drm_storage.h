@@ -27,8 +27,7 @@ namespace media {
 // for features like per-origin provisioning and persistent license support.
 class MEDIA_EXPORT MediaDrmStorage {
  public:
-  // When using per-origin provisioning, this is the ID for the origin.
-  // If not specified, the device specific origin ID is to be used.
+  // The unique ID for the current origin.
   using MediaDrmOriginId = std::optional<base::UnguessableToken>;
 
   struct MEDIA_EXPORT SessionData {

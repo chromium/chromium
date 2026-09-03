@@ -303,7 +303,6 @@ source_set("media") {
       "android/cdm/media_drm_origin_id_manager.h",
       "android/cdm/media_drm_origin_id_manager_factory.h",
       "android/cdm/media_drm_storage_factory.h",
-      "android/cdm/per_device_provisioning_permission.h",
       "android/router/chrome_media_router_client.h",
     ]
     public_deps += [
@@ -456,7 +455,6 @@ source_set("impl") {
       "android/cdm/media_drm_origin_id_manager.cc",
       "android/cdm/media_drm_origin_id_manager_factory.cc",
       "android/cdm/media_drm_storage_factory.cc",
-      "android/cdm/per_device_provisioning_permission.cc",
       "android/router/chrome_media_router_client.cc",
     ]
     deps += [

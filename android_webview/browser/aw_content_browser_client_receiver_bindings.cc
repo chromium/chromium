@@ -50,12 +50,6 @@ void CreateOriginId(cdm::MediaDrmStorageImpl::OriginIdObtainedCB callback) {
   std::move(callback).Run(true, base::UnguessableToken::Create());
 }
 
-void AllowEmptyOriginIdCB(base::OnceCallback<void(bool)> callback) {
-  // Since CreateOriginId() always returns a non-empty origin ID, we don't need
-  // to allow empty origin ID.
-  std::move(callback).Run(false);
-}
-
 void CreateMediaDrmStorage(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<::media::mojom::MediaDrmStorage> receiver) {
@@ -75,9 +69,9 @@ void CreateMediaDrmStorage(
 
   // The object will be deleted on connection error, or when the frame navigates
   // away.
-  new cdm::MediaDrmStorageImpl(
-      *render_frame_host, pref_service, base::BindRepeating(&CreateOriginId),
-      base::BindRepeating(&AllowEmptyOriginIdCB), std::move(receiver));
+  new cdm::MediaDrmStorageImpl(*render_frame_host, pref_service,
+                               base::BindRepeating(&CreateOriginId),
+                               std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 

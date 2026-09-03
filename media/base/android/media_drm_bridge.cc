@@ -324,33 +324,6 @@ bool MediaDrmBridge::IsKeySystemSupported(const std::string& key_system) {
 }
 
 // static
-bool MediaDrmBridge::IsPerApplicationProvisioningSupported() {
-  // Start by checking "ro.product.first_api_level", which may not exist.
-  // If it is non-zero, then it is the API level.
-  // Checking FirstApiLevel is known to be expensive (see crbug.com/1366106),
-  // and thus is cached.
-  static int first_api_level;
-  base::StringToInt(base::SysInfo::GetAndroidFirstApiLevel(), &first_api_level);
-  base::UmaHistogramSparse("Media.EME.MediaDrm.FirstApiLevel", first_api_level);
-  DVLOG(1) << "first_api_level = " << first_api_level;
-  if (first_api_level >= base::android::android_info::SDK_VERSION_OREO) {
-    return true;
-  }
-
-  if (first_api_level == 0) {
-    // If "ro.product.first_api_level" is 0, that means it is unset, and does
-    // not exist. We should then verify against the build number, as that is
-    // what seems to communicate the first api level on devices that were
-    // released before "ro.product.first_api_level" was introduced.
-    DVLOG(1) << "api_level = " << base::android::android_info::sdk_int();
-    return base::android::android_info::sdk_int() >=
-           base::android::android_info::SDK_VERSION_OREO;
-  }
-
-  return false;
-}
-
-// static
 bool MediaDrmBridge::IsPersistentLicenseTypeSupported(
     const std::string& /* key_system */) {
   // TODO(yucliu): Check |key_system| if persistent license is supported by

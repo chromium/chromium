@@ -166,12 +166,6 @@ std::string SysInfo::GetAndroidHardwareClass() {
   return std::string(os_hardware_id_str);
 }
 
-std::string SysInfo::GetAndroidFirstApiLevel() {
-  char os_first_api_level[PROP_VALUE_MAX];
-  __system_property_get("ro.product.first_api_level", os_first_api_level);
-  return std::string(os_first_api_level);
-}
-
 // static
 std::string SysInfo::HardwareManufacturer() {
   char device_model_str[PROP_VALUE_MAX];
