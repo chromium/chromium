@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
@@ -31,8 +34,7 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
   }
 
   getHeader(): string {
-    // TODO(b/549784710): Use localized string.
-    return 'Open Tabs';
+    return loadTimeData.getString('openTabs');
   }
 
   async getItems(): Promise<Array<OrganizerListSectionItem<Tab>>> {
@@ -42,9 +44,14 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
 
   onItemClick(item: OrganizerListSectionItem<Tab>) {
     const tab = item.data;
-    if (tab) {
-      this.browserProxy_.handler.switchToTab({tabId: tab.tabId});
-    }
+    assert(tab);
+    this.browserProxy_.handler.switchToTab({tabId: tab.tabId});
+  }
+
+  onItemActionButtonClicked(item: OrganizerListSectionItem<Tab>) {
+    const tab = item.data;
+    assert(tab);
+    this.browserProxy_.handler.closeTab(tab.tabId);
   }
 
   private async updateTabs_() {
@@ -114,6 +121,10 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
       description,
       prefixIcon: {
         urls: [tab.url],
+      },
+      hoveredActionButton: {
+        icon: 'cr:close',
+        ariaLabel: loadTimeData.getString('closeTab'),
       },
       data: tab,
     };

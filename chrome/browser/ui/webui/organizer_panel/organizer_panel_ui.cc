@@ -36,6 +36,8 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"clearSearch", IDS_CLEAR_SEARCH},
+      {"closeTab", IDS_TAB_SEARCH_CLOSE_TAB},
+      {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"title", IDS_ORGANIZER_PANEL},

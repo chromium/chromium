@@ -4,6 +4,7 @@
 
 import {browserProxyFactory, OpenTabsDelegate, PageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, Tab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -97,6 +98,10 @@ suite('OpenTabsDelegateTest', () => {
   };
 
   setup(() => {
+    loadTimeData.resetForTesting({
+      openTabs: 'Open Tabs',
+      closeTab: 'Close tab',
+    });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     const {instance, remote} =
         browserProxyFactory.createForTest(mockPageHandler);
@@ -123,6 +128,8 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals('www.youtube.com', items[0]!.description?.[0]);
     assertEquals(youtubeTab.lastActiveElapsedText, items[0]!.description?.[1]);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.urls?.[0]);
+    assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
+    assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
     assertEquals(youtubeTab, items[0]!.data);
 
     // Second most recent tab.
@@ -229,5 +236,19 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(1, mockPageHandler.getCallCount('switchToTab'));
     const args = mockPageHandler.getArgs('switchToTab')[0];
     assertEquals(chromiumTab.tabId, args.tabId);
+  });
+
+  test('closes tab when action button is clicked', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    const items = await delegate.getItems();
+    assertEquals(3, items.length);
+
+    delegate.onItemActionButtonClicked(items[1]!);
+
+    assertEquals(1, mockPageHandler.getCallCount('closeTab'));
+    const args = mockPageHandler.getArgs('closeTab')[0];
+    assertEquals(chromiumTab.tabId, args);
   });
 });

@@ -19,6 +19,8 @@ suite('OrganizerPanelAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       clearSearch: 'Clear search',
+      closeTab: 'Close tab',
+      openTabs: 'Open Tabs',
       recentlyClosed: 'Recently Closed',
       searchTabs: 'Search Tabs',
       shortcutText: 'Ctrl+Shift+A',
