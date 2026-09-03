@@ -31,6 +31,8 @@ message SummarizeRequest {
   string context = 2 [features = { field_presence: EXPLICIT }];
 
   SummarizeOptions options = 3 [features = { field_presence: EXPLICIT }];
+
+  string shared_context = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message SummarizeOptions {
