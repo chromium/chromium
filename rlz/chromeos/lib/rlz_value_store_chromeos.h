@@ -9,6 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -35,25 +39,24 @@ class RlzValueStoreChromeOS : public RlzValueStore {
   bool HasAccess(AccessType type) override;
 
   bool WritePingTime(Product product, int64_t time) override;
-  bool ReadPingTime(Product product, int64_t* time) override;
+  std::optional<int64_t> ReadPingTime(Product product) override;
   bool ClearPingTime(Product product) override;
 
   bool WriteAccessPointRlz(AccessPoint access_point,
-                           const char* new_rlz) override;
+                           std::string_view new_rlz) override;
   bool ReadAccessPointRlz(AccessPoint access_point,
                           char* rlz,
                           size_t rlz_size) override;
   bool ClearAccessPointRlz(AccessPoint access_point) override;
-  bool UpdateExistingAccessPointRlz(const std::string& brand) override;
+  bool UpdateExistingAccessPointRlz(std::string_view brand) override;
 
-  bool AddProductEvent(Product product, const char* event_rlz) override;
-  bool ReadProductEvents(Product product,
-                         std::vector<std::string>* events) override;
-  bool ClearProductEvent(Product product, const char* event_rlz) override;
+  bool AddProductEvent(Product product, std::string_view event_rlz) override;
+  std::vector<std::string> ReadProductEvents(Product product) override;
+  bool ClearProductEvent(Product product, std::string_view event_rlz) override;
   bool ClearAllProductEvents(Product product) override;
 
-  bool AddStatefulEvent(Product product, const char* event_rlz) override;
-  bool IsStatefulEvent(Product product, const char* event_rlz) override;
+  bool AddStatefulEvent(Product product, std::string_view event_rlz) override;
+  bool IsStatefulEvent(Product product, std::string_view event_rlz) override;
   bool ClearAllStatefulEvents(Product product) override;
 
   void CollectGarbage() override;

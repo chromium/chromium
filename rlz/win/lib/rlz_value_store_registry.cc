@@ -4,7 +4,11 @@
 
 #include "rlz/win/lib/rlz_value_store_registry.h"
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -57,9 +61,8 @@ void AppendBrandToString(std::string* str) {
 }
 
 // Function to get the specific registry keys.
-bool GetRegKey(const char* name, REGSAM access, base::win::RegKey* key) {
-  std::string key_location;
-  base::StringAppendF(&key_location, "%s\\%s", kLibKeyName, name);
+bool GetRegKey(std::string_view name, REGSAM access, base::win::RegKey* key) {
+  std::string key_location = base::StrCat({kLibKeyName, "\\", name});
   AppendBrandToString(&key_location);
   std::wstring key_locationw = base::ASCIIToWide(key_location);
 
@@ -75,21 +78,20 @@ bool GetPingTimesRegKey(REGSAM access, base::win::RegKey* key) {
   return GetRegKey(kPingTimesSubkeyName, access, key);
 }
 
-
-bool GetEventsRegKey(const char* event_type,
+bool GetEventsRegKey(std::string_view event_type,
                      const rlz_lib::Product* product,
-                     REGSAM access, base::win::RegKey* key) {
-  std::string key_location;
-  base::StringAppendF(&key_location, "%s\\%s", kLibKeyName,
-                      event_type);
+                     REGSAM access,
+                     base::win::RegKey* key) {
+  std::string key_location = base::StrCat({kLibKeyName, "\\", event_type});
   AppendBrandToString(&key_location);
 
   if (product != NULL) {
-    std::string product_name = GetProductName(*product);
-    if (product_name.empty())
+    const char* product_name = GetProductName(*product);
+    if (!product_name || product_name[0] == '\0') {
       return false;
+    }
 
-    base::StringAppendF(&key_location, "\\%s", product_name.c_str());
+    base::StrAppend(&key_location, {"\\", product_name});
   }
   std::wstring key_locationw = base::ASCIIToWide(key_location);
 
@@ -105,7 +107,8 @@ bool GetAccessPointRlzsRegKey(REGSAM access, base::win::RegKey* key) {
   return GetRegKey(kRlzsSubkeyName, access, key);
 }
 
-bool ClearAllProductEventValues(rlz_lib::Product product, const char* key) {
+bool ClearAllProductEventValues(rlz_lib::Product product,
+                                std::string_view key) {
   std::wstring product_name = GetWideProductName(product);
   if (product_name.empty())
     return false;
@@ -169,11 +172,15 @@ bool RlzValueStoreRegistry::WritePingTime(Product product, int64_t time) {
                      REG_QWORD) == ERROR_SUCCESS;
 }
 
-bool RlzValueStoreRegistry::ReadPingTime(Product product, int64_t* time) {
+std::optional<int64_t> RlzValueStoreRegistry::ReadPingTime(Product product) {
   base::win::RegKey key;
   std::wstring product_name = GetWideProductName(product);
-  return GetPingTimesRegKey(KEY_READ, &key) &&
-      key.ReadInt64(product_name.c_str(), time) == ERROR_SUCCESS;
+  int64_t time = 0;
+  if (GetPingTimesRegKey(KEY_READ, &key) &&
+      key.ReadInt64(product_name.c_str(), &time) == ERROR_SUCCESS) {
+    return time;
+  }
+  return std::nullopt;
 }
 
 bool RlzValueStoreRegistry::ClearPingTime(Product product) {
@@ -196,10 +203,11 @@ bool RlzValueStoreRegistry::ClearPingTime(Product product) {
 }
 
 bool RlzValueStoreRegistry::WriteAccessPointRlz(AccessPoint access_point,
-                                                const char* new_rlz) {
+                                                std::string_view new_rlz) {
   const char* access_point_name = GetAccessPointName(access_point);
-  if (!access_point_name)
+  if (!access_point_name) {
     return false;
+  }
 
   std::wstring access_point_namew(base::ASCIIToWide(access_point_name));
   base::win::RegKey key;
@@ -221,9 +229,12 @@ bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
     return false;
   }
 
+  rlz[0] = '\0';
+
   const char* access_point_name = GetAccessPointName(access_point);
-  if (!access_point_name)
+  if (!access_point_name) {
     return false;
+  }
 
   base::win::RegKey key;
   GetAccessPointRlzsRegKey(KEY_READ, &key);
@@ -231,11 +242,9 @@ bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
   std::optional<std::string> rlz_str =
       RegKeyReadValue(key, access_point_namew.c_str());
   if (!rlz_str) {
-    rlz[0] = 0;
     return true;
   }
   if (rlz_str->size() >= rlz_size) {
-    ASSERT_STRING("GetAccessPointRlz: Insufficient buffer size");
     return false;
   }
   base::strlcpy(rlz, rlz_str->c_str(), rlz_size);
@@ -244,8 +253,9 @@ bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
 
 bool RlzValueStoreRegistry::ClearAccessPointRlz(AccessPoint access_point) {
   const char* access_point_name = GetAccessPointName(access_point);
-  if (!access_point_name)
+  if (!access_point_name) {
     return false;
+  }
 
   std::wstring access_point_namew(base::ASCIIToWide(access_point_name));
   base::win::RegKey key;
@@ -263,14 +273,12 @@ bool RlzValueStoreRegistry::ClearAccessPointRlz(AccessPoint access_point) {
 }
 
 bool RlzValueStoreRegistry::UpdateExistingAccessPointRlz(
-    const std::string& brand) {
+    std::string_view brand) {
   return false;
 }
 
-// TODO(crbug.com/351564777): Modernize AddProductEvent to take
-// std::string_view instead of const char*.
 bool RlzValueStoreRegistry::AddProductEvent(Product product,
-                                            const char* event_rlz) {
+                                            std::string_view event_rlz) {
   std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
   base::win::RegKey reg_key;
   GetEventsRegKey(kEventsSubkeyName, &product, KEY_WRITE, &reg_key);
@@ -282,15 +290,14 @@ bool RlzValueStoreRegistry::AddProductEvent(Product product,
   return true;
 }
 
-// TODO(crbug.com/351564777): Modernize ReadProductEvents to return
-// std::vector<std::string> instead of taking an out-parameter.
-bool RlzValueStoreRegistry::ReadProductEvents(Product product,
-                                             std::vector<std::string>* events) {
+std::vector<std::string> RlzValueStoreRegistry::ReadProductEvents(
+    Product product) {
+  std::vector<std::string> events;
   // Open the events key.
   base::win::RegKey events_key;
   GetEventsRegKey(kEventsSubkeyName, &product, KEY_READ, &events_key);
   if (!events_key.Valid())
-    return false;
+    return events;
 
   // Append the events to the buffer.
   int num_values = 0;
@@ -302,16 +309,21 @@ bool RlzValueStoreRegistry::ReadProductEvents(Product product,
     DWORD size = std::size(buffer);
 
     result = RegEnumValueA(events_key.Handle(), num_values, buffer, &size,
-                           NULL, NULL, NULL, NULL);
+                           nullptr, nullptr, nullptr, nullptr);
     if (result == ERROR_SUCCESS)
-      events->push_back(std::string(buffer));
+      events.push_back(std::string(buffer));
   }
 
-  return result == ERROR_NO_MORE_ITEMS;
+  if (result != ERROR_NO_MORE_ITEMS) {
+    ASSERT_STRING("ReadProductEvents: Could not read all event values.");
+    return {};
+  }
+
+  return events;
 }
 
 bool RlzValueStoreRegistry::ClearProductEvent(Product product,
-                                              const char* event_rlz) {
+                                              std::string_view event_rlz) {
   std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
   base::win::RegKey key;
   GetEventsRegKey(kEventsSubkeyName, &product, KEY_WRITE, &key);
@@ -332,7 +344,7 @@ bool RlzValueStoreRegistry::ClearAllProductEvents(Product product) {
 }
 
 bool RlzValueStoreRegistry::AddStatefulEvent(Product product,
-                                             const char* event_rlz) {
+                                             std::string_view event_rlz) {
   base::win::RegKey key;
   std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
   if (!GetEventsRegKey(kStatefulEventsSubkeyName, &product, KEY_WRITE, &key) ||
@@ -346,7 +358,7 @@ bool RlzValueStoreRegistry::AddStatefulEvent(Product product,
 }
 
 bool RlzValueStoreRegistry::IsStatefulEvent(Product product,
-                                            const char* event_rlz) {
+                                            std::string_view event_rlz) {
   DWORD value;
   base::win::RegKey key;
   GetEventsRegKey(kStatefulEventsSubkeyName, &product, KEY_READ, &key);
@@ -367,10 +379,9 @@ void RlzValueStoreRegistry::CollectGarbage() {
     kPingTimesSubkeyName
   };
 
-  for (size_t i = 0; i < std::size(subkeys); i++) {
+  for (const char* subkey : subkeys) {
     std::string subkey_name;
-    base::StringAppendF(&subkey_name, "%s\\%s", kLibKeyName,
-                        UNSAFE_TODO(subkeys[i]));
+    base::StringAppendF(&subkey_name, "%s\\%s", kLibKeyName, subkey);
     AppendBrandToString(&subkey_name);
     std::wstring subkey_namew = base::ASCIIToWide(subkey_name);
 

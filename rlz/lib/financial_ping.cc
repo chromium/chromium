@@ -351,12 +351,13 @@ bool FinancialPing::IsPingTime(Product product, bool no_delay) {
   if (!store || !store->HasAccess(RlzValueStore::kReadAccess))
     return false;
 
-  int64_t last_ping = 0;
-  if (!store->ReadPingTime(product, &last_ping))
+  std::optional<int64_t> last_ping = store->ReadPingTime(product);
+  if (!last_ping) {
     return true;
+  }
 
   uint64_t now = GetSystemTimeAsInt64();
-  int64_t interval = now - last_ping;
+  int64_t interval = now - *last_ping;
 
   // If interval is negative, clock was probably reset. So ping.
   if (interval < 0)

@@ -240,8 +240,15 @@ TEST_F(RlzLibTest, ClearProductEvent) {
 TEST_F(RlzLibTest, GetProductEventsAsCgi) {
   char cgi_50[50];
   char cgi_1[1];
+  char cgi_exact[15];
+  char cgi_exact_minus_1[14];
 
   EXPECT_TRUE(rlz_lib::ClearAllProductEvents(rlz_lib::TOOLBAR_NOTIFIER));
+  // Zero events: should return false and set cgi to empty.
+  EXPECT_FALSE(
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER, cgi_50, 50));
+  EXPECT_STREQ("", cgi_50);
+
   EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::TOOLBAR_NOTIFIER,
       rlz_lib::IE_DEFAULT_SEARCH, rlz_lib::SET_TO_GOOGLE));
   EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER,
@@ -249,8 +256,15 @@ TEST_F(RlzLibTest, GetProductEventsAsCgi) {
   EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::TOOLBAR_NOTIFIER,
       rlz_lib::IE_HOME_PAGE, rlz_lib::INSTALL));
 
+  // "events=I7S,W1I" has length 14, requiring a buffer of at least 15 bytes.
   EXPECT_FALSE(rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER,
                                               cgi_1, 1));
+  EXPECT_FALSE(rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER,
+                                              cgi_exact_minus_1, 14));
+  EXPECT_TRUE(
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER, cgi_exact, 15));
+  EXPECT_STREQ("events=I7S,W1I", cgi_exact);
+
   EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER,
                                              cgi_50, 50));
   EXPECT_STREQ("events=I7S,W1I", cgi_50);
@@ -270,6 +284,30 @@ TEST_F(RlzLibTest, ClearAllAllProductEvents) {
   EXPECT_FALSE(rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER,
                                               cgi_50, 50));
   EXPECT_STREQ("", cgi_50);
+}
+
+TEST_F(RlzLibTest, ValueStoreReadPingTimeAndProductEvents) {
+  rlz_lib::ScopedRlzValueStoreLock lock;
+  rlz_lib::RlzValueStore* store = lock.GetStore();
+  ASSERT_TRUE(store);
+
+  EXPECT_TRUE(store->WritePingTime(rlz_lib::TOOLBAR_NOTIFIER, 123456789));
+  EXPECT_EQ(123456789, store->ReadPingTime(rlz_lib::TOOLBAR_NOTIFIER));
+  EXPECT_TRUE(store->ClearPingTime(rlz_lib::TOOLBAR_NOTIFIER));
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(std::nullopt, store->ReadPingTime(rlz_lib::TOOLBAR_NOTIFIER));
+#endif
+
+  EXPECT_TRUE(rlz_lib::ClearAllProductEvents(rlz_lib::TOOLBAR_NOTIFIER));
+  EXPECT_TRUE(store->ReadProductEvents(rlz_lib::TOOLBAR_NOTIFIER).empty());
+
+  EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::TOOLBAR_NOTIFIER,
+                                          rlz_lib::IE_DEFAULT_SEARCH,
+                                          rlz_lib::SET_TO_GOOGLE));
+  std::vector<std::string> events =
+      store->ReadProductEvents(rlz_lib::TOOLBAR_NOTIFIER);
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("I7S", events[0]);
 }
 
 TEST_F(RlzLibTest, SetAccessPointRlz) {

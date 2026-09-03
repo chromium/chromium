@@ -14,6 +14,7 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -182,47 +183,20 @@ bool RecordStatefulEvent(rlz_lib::Product product, rlz_lib::AccessPoint point,
   return store->AddStatefulEvent(product, new_event_value.c_str());
 }
 
-bool GetProductEventsAsCgiHelper(rlz_lib::Product product, char* cgi,
-                                 size_t cgi_size,
-                                 rlz_lib::RlzValueStore* store) {
-  // Prepend the CGI param key to the buffer.
-  std::string cgi_arg;
-  base::StringAppendF(&cgi_arg, "%s=", rlz_lib::kEventsCgiVariable);
-  if (cgi_size <= cgi_arg.size())
-    return false;
-
-  size_t index;
-  for (index = 0; index < cgi_arg.size(); ++index)
-    cgi[index] = cgi_arg[index];
-
+std::optional<std::string> GetProductEventsAsCgiHelper(
+    rlz_lib::Product product,
+    rlz_lib::RlzValueStore* store) {
   // Read stored events.
-  std::vector<std::string> events;
-  if (!store->ReadProductEvents(product, &events))
-    return false;
+  std::vector<std::string> events = store->ReadProductEvents(product);
+  if (events.empty()) {
+    return std::nullopt;
+  }
 
   std::ranges::sort(events);
 
-  // Append the events to the buffer.
-  size_t num_values = 0;
-
-  for (num_values = 0; num_values < events.size(); ++num_values) {
-    cgi[index] = '\0';
-
-    int divider = num_values > 0 ? 1 : 0;
-    int size = cgi_size - (index + divider);
-    if (size <= 0)
-      return cgi_size >= (rlz_lib::kMaxCgiLength + 1);
-
-    strncpy(cgi + index + divider, events[num_values].c_str(), size);
-    if (divider)
-      cgi[index] = rlz_lib::kEventsCgiSeparator;
-
-    index += std::min((int)events[num_values].length(), size) + divider;
-  }
-
-  cgi[index] = '\0';
-
-  return num_values > 0;
+  return base::StrCat(
+      {rlz_lib::kEventsCgiVariable, "=",
+       base::JoinString(events, std::string(1, rlz_lib::kEventsCgiSeparator))});
 }
 
 }  // namespace
@@ -233,6 +207,8 @@ bool SetURLLoaderFactory(network::mojom::URLLoaderFactory* factory) {
   return FinancialPing::SetURLLoaderFactory(factory);
 }
 
+// TODO(crbug.com/351564777): Modernize GetProductEventsAsCgi to return
+// std::optional<std::string> instead of writing to a raw char buffer.
 bool GetProductEventsAsCgi(Product product, char* cgi, size_t cgi_size) {
   if (!cgi || cgi_size <= 0) {
     ASSERT_STRING("GetProductEventsAsCgi: Invalid buffer");
@@ -243,19 +219,22 @@ bool GetProductEventsAsCgi(Product product, char* cgi, size_t cgi_size) {
 
   ScopedRlzValueStoreLock lock;
   RlzValueStore* store = lock.GetStore();
-  if (!store || !store->HasAccess(RlzValueStore::kReadAccess))
-    return false;
-
-  size_t size_local = std::min(
-      static_cast<size_t>(kMaxCgiLength + 1), cgi_size);
-  bool result = GetProductEventsAsCgiHelper(product, cgi, size_local, store);
-
-  if (!result) {
-    ASSERT_STRING("GetProductEventsAsCgi: Possibly insufficient buffer size");
-    cgi[0] = 0;
+  if (!store || !store->HasAccess(RlzValueStore::kReadAccess)) {
     return false;
   }
 
+  std::optional<std::string> events_cgi =
+      GetProductEventsAsCgiHelper(product, store);
+  if (!events_cgi) {
+    return false;
+  }
+
+  if (events_cgi->size() >= cgi_size) {
+    ASSERT_STRING("GetProductEventsAsCgi: Insufficient buffer size");
+    return false;
+  }
+
+  base::strlcpy(cgi, events_cgi->c_str(), cgi_size);
   return true;
 }
 

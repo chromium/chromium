@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/lib_values.h"
@@ -73,12 +74,11 @@ bool RlzValueStoreMac::WritePingTime(Product product, int64_t time) {
   return true;
 }
 
-bool RlzValueStoreMac::ReadPingTime(Product product, int64_t* time) {
+std::optional<int64_t> RlzValueStoreMac::ReadPingTime(Product product) {
   if (NSNumber* n = ObjCCast<NSNumber>(ProductDict(product)[kPingTimeKey])) {
-    *time = n.longLongValue;
-    return true;
+    return n.longLongValue;
   }
-  return false;
+  return std::nullopt;
 }
 
 bool RlzValueStoreMac::ClearPingTime(Product product) {
@@ -87,7 +87,7 @@ bool RlzValueStoreMac::ClearPingTime(Product product) {
 }
 
 bool RlzValueStoreMac::WriteAccessPointRlz(AccessPoint access_point,
-                                           const char* new_rlz) {
+                                           std::string_view new_rlz) {
   NSMutableDictionary* d = GetOrCreateDict(WorkingDict(), kAccessPointKey);
   d[GetNSAccessPointName(access_point)] = base::SysUTF8ToNSString(new_rlz);
   return true;
@@ -130,30 +130,30 @@ bool RlzValueStoreMac::ClearAccessPointRlz(AccessPoint access_point) {
   return true;
 }
 
-bool RlzValueStoreMac::UpdateExistingAccessPointRlz(const std::string& brand) {
+bool RlzValueStoreMac::UpdateExistingAccessPointRlz(std::string_view brand) {
   return false;
 }
 
-bool RlzValueStoreMac::AddProductEvent(Product product, const char* event_rlz) {
+bool RlzValueStoreMac::AddProductEvent(Product product,
+                                       std::string_view event_rlz) {
   GetOrCreateDict(ProductDict(product),
                   kProductEventKey)[base::SysUTF8ToNSString(event_rlz)] = @YES;
   return true;
 }
 
-bool RlzValueStoreMac::ReadProductEvents(Product product,
-                                         std::vector<std::string>* events) {
+std::vector<std::string> RlzValueStoreMac::ReadProductEvents(Product product) {
+  std::vector<std::string> events;
   if (NSDictionary* d =
           ObjCCast<NSDictionary>(ProductDict(product)[kProductEventKey])) {
     for (NSString* s in d) {
-      events->push_back(base::SysNSStringToUTF8(s));
+      events.push_back(base::SysNSStringToUTF8(s));
     }
-    return true;
   }
-  return true;
+  return events;
 }
 
 bool RlzValueStoreMac::ClearProductEvent(Product product,
-                                         const char* event_rlz) {
+                                         std::string_view event_rlz) {
   if (NSMutableDictionary* d = ObjCCast<NSMutableDictionary>(
           ProductDict(product)[kProductEventKey])) {
     [d removeObjectForKey:base::SysUTF8ToNSString(event_rlz)];
@@ -168,13 +168,14 @@ bool RlzValueStoreMac::ClearAllProductEvents(Product product) {
 }
 
 bool RlzValueStoreMac::AddStatefulEvent(Product product,
-                                        const char* event_rlz) {
+                                        std::string_view event_rlz) {
   GetOrCreateDict(ProductDict(product),
                   kStatefulEventKey)[base::SysUTF8ToNSString(event_rlz)] = @YES;
   return true;
 }
 
-bool RlzValueStoreMac::IsStatefulEvent(Product product, const char* event_rlz) {
+bool RlzValueStoreMac::IsStatefulEvent(Product product,
+                                       std::string_view event_rlz) {
   if (NSDictionary* d =
           ObjCCast<NSDictionary>(ProductDict(product)[kStatefulEventKey])) {
     return d[base::SysUTF8ToNSString(event_rlz)] != nil;

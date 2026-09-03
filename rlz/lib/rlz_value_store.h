@@ -9,7 +9,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "build/build_config.h"
@@ -41,34 +43,35 @@ class RlzValueStore {
 
   // Ping times.
   virtual bool WritePingTime(Product product, int64_t time) = 0;
-  virtual bool ReadPingTime(Product product, int64_t* time) = 0;
+  virtual std::optional<int64_t> ReadPingTime(Product product) = 0;
   virtual bool ClearPingTime(Product product) = 0;
 
   // Access point RLZs.
   virtual bool WriteAccessPointRlz(AccessPoint access_point,
-                                   const char* new_rlz) = 0;
+                                   std::string_view new_rlz) = 0;
   virtual bool ReadAccessPointRlz(AccessPoint access_point,
-                                  char* rlz,  // At most kMaxRlzLength + 1 bytes
+                                  char* rlz,
                                   size_t rlz_size) = 0;
   virtual bool ClearAccessPointRlz(AccessPoint access_point) = 0;
-  virtual bool UpdateExistingAccessPointRlz(const std::string& brand) = 0;
+  virtual bool UpdateExistingAccessPointRlz(std::string_view brand) = 0;
 
   // Product events.
   // Stores |event_rlz| for product |product| as product event.
-  virtual bool AddProductEvent(Product product, const char* event_rlz) = 0;
-  // Appends all events for |product| to |events|, in arbirtrary order.
-  virtual bool ReadProductEvents(Product product,
-                                 std::vector<std::string>* events) = 0;
+  virtual bool AddProductEvent(Product product, std::string_view event_rlz) = 0;
+  // Returns all events for |product|, in arbitrary order.
+  virtual std::vector<std::string> ReadProductEvents(Product product) = 0;
   // Removes the stored event |event_rlz| for |product| if it exists.
-  virtual bool ClearProductEvent(Product product, const char* event_rlz) = 0;
+  virtual bool ClearProductEvent(Product product,
+                                 std::string_view event_rlz) = 0;
   // Removes all stored product events for |product|.
   virtual bool ClearAllProductEvents(Product product) = 0;
 
   // Stateful events.
   // Stores |event_rlz| for product |product| as stateful event.
-  virtual bool AddStatefulEvent(Product product, const char* event_rlz) = 0;
+  virtual bool AddStatefulEvent(Product product,
+                                std::string_view event_rlz) = 0;
   // Checks if |event_rlz| has been stored as stateful event for |product|.
-  virtual bool IsStatefulEvent(Product product, const char* event_rlz) = 0;
+  virtual bool IsStatefulEvent(Product product, std::string_view event_rlz) = 0;
   // Removes all stored stateful events for |product|.
   virtual bool ClearAllStatefulEvents(Product product) = 0;
 

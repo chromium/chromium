@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -78,29 +79,31 @@ base::FilePath GetRlzStoreLockPath() {
 }
 
 // Returns the dictionary key for storing access point-related prefs.
-std::string GetKeyName(const std::string& key, AccessPoint access_point) {
+std::string GetKeyName(std::string_view key, AccessPoint access_point) {
   std::string brand = SupplementaryBranding::GetBrand();
   if (brand.empty())
     brand = kNoSupplementaryBrand;
-  return key + "." + GetAccessPointName(access_point) + "." + brand;
+  return base::StrCat({key, ".", GetAccessPointName(access_point), ".", brand});
 }
 
 // Returns the dictionary key for storing product-related prefs.
-std::string GetKeyName(const std::string& key, Product product) {
+std::string GetKeyName(std::string_view key, Product product) {
   std::string brand = SupplementaryBranding::GetBrand();
   if (brand.empty())
     brand = kNoSupplementaryBrand;
-  return key + "." + GetProductName(product) + "." + brand;
+  return base::StrCat({key, ".", GetProductName(product), ".", brand});
 }
 
+// TODO(crbug.com/351564777): Modernize ConvertToDynamicRlz to return
+// std::optional<std::string> instead of taking a std::string* in-out parameter.
 // Uses |brand| to replace the brand code contained in |rlz|. No-op if |rlz| is
 // in incorrect format or already contains |brand|. Returns whether the
 // replacement took place.
-bool ConvertToDynamicRlz(const std::string& brand,
+bool ConvertToDynamicRlz(std::string_view brand,
                          std::string* rlz,
                          AccessPoint access_point) {
   if (brand.size() != 4) {
-    LOG(ERROR) << "Invalid brand code format: " + brand;
+    LOG(ERROR) << "Invalid brand code format: " << brand;
     return false;
   }
   // Do a sanity check for the rlz string format. It must start with a
@@ -222,20 +225,27 @@ bool RlzValueStoreChromeOS::WritePingTime(Product product, int64_t time) {
   return true;
 }
 
-bool RlzValueStoreChromeOS::ReadPingTime(Product product, int64_t* time) {
+std::optional<int64_t> RlzValueStoreChromeOS::ReadPingTime(Product product) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(wzang): Make sure time is correct (check that npupdate has updated
   // successfully). See AutoEnrollmentController::SystemClockSyncWaiter for
   // potential refactor in the ping embargo class.
   if (!HasRlzEmbargoEndDatePassed()) {
-    *time = GetSystemTimeAsInt64();
-    return true;
+    return GetSystemTimeAsInt64();
   }
 
   const std::string* ping_time =
       rlz_store_.FindStringByDottedPath(GetKeyName(kPingTimeKey, product));
-  return ping_time ? base::StringToInt64(*ping_time, time) : false;
+  if (!ping_time) {
+    return std::nullopt;
+  }
+
+  int64_t time = 0;
+  if (base::StringToInt64(*ping_time, &time)) {
+    return time;
+  }
+  return std::nullopt;
 }
 
 bool RlzValueStoreChromeOS::ClearPingTime(Product product) {
@@ -245,7 +255,7 @@ bool RlzValueStoreChromeOS::ClearPingTime(Product product) {
 }
 
 bool RlzValueStoreChromeOS::WriteAccessPointRlz(AccessPoint access_point,
-                                                const char* new_rlz) {
+                                                std::string_view new_rlz) {
   // If an access point already exists, don't overwrite it.  This is to prevent
   // writing cohort data for first search which is not needed in Chrome OS.
   //
@@ -287,7 +297,7 @@ bool RlzValueStoreChromeOS::ClearAccessPointRlz(AccessPoint access_point) {
 }
 
 bool RlzValueStoreChromeOS::UpdateExistingAccessPointRlz(
-    const std::string& brand) {
+    std::string_view brand) {
   DCHECK(SupplementaryBranding::GetBrand().empty());
   bool updated = false;
   for (int i = NO_ACCESS_POINT + 1; i < LAST_ACCESS_POINT; ++i) {
@@ -308,22 +318,20 @@ bool RlzValueStoreChromeOS::UpdateExistingAccessPointRlz(
 }
 
 bool RlzValueStoreChromeOS::AddProductEvent(Product product,
-                                            const char* event_rlz) {
+                                            std::string_view event_rlz) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AddValueToList(GetKeyName(kProductEventKey, product),
                         base::Value(event_rlz));
 }
 
-bool RlzValueStoreChromeOS::ReadProductEvents(
-    Product product,
-    std::vector<std::string>* events) {
+std::vector<std::string> RlzValueStoreChromeOS::ReadProductEvents(
+    Product product) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> events;
   const base::ListValue* events_list =
       rlz_store_.FindListByDottedPath(GetKeyName(kProductEventKey, product));
   if (!events_list)
-    return false;
-
-  events->clear();
+    return events;
 
   bool remove_caf = false;
   for (const base::Value& item : *events_list) {
@@ -336,17 +344,17 @@ bool RlzValueStoreChromeOS::ReadProductEvents(
       continue;
     }
 
-    events->push_back(*event);
+    events.push_back(*event);
   }
 
   if (remove_caf)
     ClearProductEvent(product, "CAF");
 
-  return true;
+  return events;
 }
 
 bool RlzValueStoreChromeOS::ClearProductEvent(Product product,
-                                              const char* event_rlz) {
+                                              std::string_view event_rlz) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RemoveValueFromList(GetKeyName(kProductEventKey, product),
                              base::Value(event_rlz));
@@ -359,10 +367,10 @@ bool RlzValueStoreChromeOS::ClearAllProductEvents(Product product) {
 }
 
 bool RlzValueStoreChromeOS::AddStatefulEvent(Product product,
-                                             const char* event_rlz) {
+                                             std::string_view event_rlz) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (UNSAFE_TODO(strcmp(event_rlz, "CAF")) == 0) {
+  if (event_rlz == "CAF") {
     SetRlzPingSent(/*retry_count=*/0);
   }
 
@@ -371,13 +379,13 @@ bool RlzValueStoreChromeOS::AddStatefulEvent(Product product,
 }
 
 bool RlzValueStoreChromeOS::IsStatefulEvent(Product product,
-                                            const char* event_rlz) {
+                                            std::string_view event_rlz) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool event_exists = ListContainsValue(
       GetKeyName(kStatefulEventKey, product), base::Value(event_rlz));
 
-  if (UNSAFE_TODO(strcmp(event_rlz, "CAF")) == 0) {
+  if (event_rlz == "CAF") {
     ash::system::StatisticsProvider* stats =
         ash::system::StatisticsProvider::GetInstance();
     if (const std::optional<std::string_view> should_send_rlz_ping_value =
