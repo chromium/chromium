@@ -65,6 +65,18 @@ struct FuzzStruct {
   array<map<FuzzEnum, map<int8, array<FuzzStruct?>?>>>? fuzz_complex;
 };
 
+struct FuzzFixedSizeArrayStruct {
+  array<uint32, 2> fuzz_fixed_size_uint32_array;
+  array<int8, 2> fuzz_fixed_size_int8_array;
+  array<bool, 2> fuzz_fixed_size_bool_array;
+  array<FuzzEnum, 2> fuzz_fixed_size_enum_array;
+
+  array<uint32?, 2> fuzz_nullable_fixed_size_uint32_array;
+  array<int8?, 2> fuzz_nullable_fixed_size_int8_array;
+  array<bool?, 2> fuzz_nullable_fixed_size_bool_array;
+  array<FuzzEnum?, 2> fuzz_nullable_fixed_size_enum_array;
+};
+
 struct FuzzNullableValueArrayStruct {
   array<uint32?> fuzz_nullable_uint32_array;
   array<int8?> fuzz_nullable_int8_array;

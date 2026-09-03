@@ -115,7 +115,22 @@ bool ToProto(
   // Then, assign the element proto to the corresponding field in the
   // output proto.
 {% for i in range(kind.length) %}
-    ToProto(std::move(input[{{i}}]), *output.mutable_value_{{i}}());
+  auto* out_value_{{i}} = output.mutable_value_{{i}}();
+{%-   if kind.kind|is_nullable_kind %}
+  if ({{util.not_null(kind.kind, "input[" ~ i ~ "]")}}) {
+    {% if kind.kind|is_move_only_kind %}
+      ToProto(std::move({{util.value(kind.kind, "input[" ~ i ~ "]")}}), *out_value_{{i}});
+    {% else %}
+      ToProto({{util.value(kind.kind, "input[" ~ i ~ "]")}}, *out_value_{{i}});
+    {%endif%}
+  }
+{%-   else %}
+  {% if kind.kind|is_move_only_kind %}
+    ToProto(std::move(input[{{i}}]), *out_value_{{i}});
+  {% else %}
+    ToProto(input[{{i}}], *out_value_{{i}});
+{%-   endif %}
+{%- endif %}
 {% endfor %}
 {% endif %}
 
