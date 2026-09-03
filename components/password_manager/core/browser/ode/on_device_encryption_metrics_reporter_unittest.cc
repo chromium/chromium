@@ -5,6 +5,8 @@
 #include "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -161,6 +163,84 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest,
       OnDeviceEncryptionStateHistogramBucket::kPasswordAndPasskeySyncDisabled,
       1);
 }
+
+struct StateTransitionTestCase {
+  std::string test_name;
+  OnDeviceEncryptionState state;
+  std::optional<OnDeviceEncryptionStateHistogramBucket> expected_bucket;
+};
+
+class OnDeviceEncryptionMetricsReporterStateTransitionTest
+    : public OnDeviceEncryptionMetricsReporterTest,
+      public testing::WithParamInterface<StateTransitionTestCase> {};
+
+TEST_P(OnDeviceEncryptionMetricsReporterStateTransitionTest,
+       PublishesExpectedBucket) {
+  const StateTransitionTestCase& test_case = GetParam();
+
+  auto passkey_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+  OnDeviceEncryptionStateTracker* raw_passkey_tracker = passkey_tracker.get();
+
+  auto password_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+  OnDeviceEncryptionStateTracker* raw_password_tracker = password_tracker.get();
+
+  OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
+                                             std::move(password_tracker));
+
+  // Advance the time to start observations.
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+
+  // Transition trackers to the target state.
+  raw_passkey_tracker->SetStateForTesting(test_case.state);
+  raw_password_tracker->SetStateForTesting(test_case.state);
+
+  if (test_case.expected_bucket.has_value()) {
+    histogram_tester_.ExpectUniqueSample(
+        kPasskeyOnDeviceEncryptionStateHistogram, *test_case.expected_bucket,
+        1);
+    histogram_tester_.ExpectUniqueSample(
+        kPasswordOnDeviceEncryptionStateHistogram, *test_case.expected_bucket,
+        1);
+  } else {
+    histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
+                                       0);
+    histogram_tester_.ExpectTotalCount(
+        kPasswordOnDeviceEncryptionStateHistogram, 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OnDeviceEncryptionMetricsReporterStateTransitionTest,
+    testing::Values(
+        StateTransitionTestCase{
+            .test_name = "OnDeviceEncryptionStateNotAvailable",
+            .state =
+                OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
+            .expected_bucket = std::nullopt},
+        StateTransitionTestCase{
+            .test_name = "OnDeviceEncryptionNotEnabled",
+            .state = OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled,
+            .expected_bucket = OnDeviceEncryptionStateHistogramBucket::
+                kOnDeviceEncryptionNotEnabled},
+        StateTransitionTestCase{
+            .test_name = "DeviceNotReady",
+            .state = OnDeviceEncryptionState::kDeviceNotReady,
+            .expected_bucket =
+                OnDeviceEncryptionStateHistogramBucket::kDeviceNotReady},
+        StateTransitionTestCase{
+            .test_name = "DeviceReady",
+            .state = OnDeviceEncryptionState::kDeviceReady,
+            .expected_bucket =
+                OnDeviceEncryptionStateHistogramBucket::kDeviceReady},
+        StateTransitionTestCase{
+            .test_name = "PasswordAndPasskeySyncDisabled",
+            .state = OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled,
+            .expected_bucket = OnDeviceEncryptionStateHistogramBucket::
+                kPasswordAndPasskeySyncDisabled}),
+    [](const testing::TestParamInfo<StateTransitionTestCase>& info) {
+      return info.param.test_name;
+    });
 
 // Not all OnDeviceEncryptionState values are published to UMA (e.g.,
 // kOnDeviceEncryptionStateNotAvailable is omitted). In case of a state
