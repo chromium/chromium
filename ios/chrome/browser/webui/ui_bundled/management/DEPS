@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/device_signals/core/common",
   "+ios/chrome/browser/enterprise/connectors",
   # keep-sorted end
 ]

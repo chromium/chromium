@@ -24,6 +24,13 @@ function populateConnectorsSection() {
     getRequiredElement('profile-reporting-info').classList.remove('hidden');
   }
 
+  const deviceSignalsDisclosureEnabled =
+      loadTimeData.getBoolean('deviceSignalsDisclosureEnabled');
+  if (deviceSignalsDisclosureEnabled) {
+    getRequiredElement('browser-signals-disclosure').classList.remove('hidden');
+    getRequiredElement('profile-signals-disclosure').classList.remove('hidden');
+  }
+
   const pageVisitEnabled = loadTimeData.getBoolean('pageVisitEventEnabled');
   const securityEventEnabled = loadTimeData.getBoolean('securityEventEnabled');
   const fileDownloadEnabled =

@@ -463,7 +463,7 @@
   </if>
 
   <!-- Strings related to Chrome Enterprise Device Signals Sharing -->
-  <if expr="is_win or is_linux or is_macosx or is_android">
+  <if expr="not is_chromeos">
     <message name="IDS_MANAGEMENT_DEVICE_SIGNALS_DISCLOSURE" desc="Disclosure message explaining that device signals can be shared.">
       Information about your browser, OS, device, installed software, files, and IP addresses
     </message>
