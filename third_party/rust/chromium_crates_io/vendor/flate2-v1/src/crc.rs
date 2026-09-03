@@ -1,21 +1,53 @@
 //! Simple CRC bindings backed by miniz.c
 
-use std::io;
-use std::io::prelude::*;
+use crate::io;
+use crate::io::{BufRead, Read, Write};
+
+/// The CRC calculated by a [`CrcReader`].
+#[derive(Debug, Default)]
+pub struct Crc {
+    inner: inner::Crc,
+}
+
+impl Crc {
+    /// Create a new CRC.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Returns the current crc32 checksum.
+    pub fn sum(&self) -> u32 {
+        self.inner.sum()
+    }
+
+    /// The number of bytes that have been used to calculate the CRC.
+    /// This value is only accurate if the amount is lower than 2<sup>32</sup>.
+    pub fn amount(&self) -> u32 {
+        self.inner.amount()
+    }
+
+    /// Update the CRC with the bytes in `data`.
+    pub fn update(&mut self, data: &[u8]) {
+        self.inner.update(data);
+    }
+
+    /// Reset the CRC, to start a new hash.
+    ///
+    /// Do this in favor of creating a new `Crc` instance.
+    pub fn reset(&mut self) {
+        self.inner.reset();
+    }
+
+    /// Combine the CRC with the CRC for the subsequent block of bytes.
+    pub fn combine(&mut self, additional_crc: &Self) {
+        self.inner.combine(&additional_crc.inner);
+    }
+}
 
 #[cfg(not(feature = "zlib-rs"))]
-pub use impl_crc32fast::Crc;
-
-#[cfg(feature = "zlib-rs")]
-pub use impl_zlib_rs::Crc;
-
-#[cfg(not(feature = "zlib-rs"))]
-mod impl_crc32fast {
+mod inner {
     use crc32fast::Hasher;
 
-    /// The CRC calculated by a [`CrcReader`].
-    ///
-    /// [`CrcReader`]: struct.CrcReader.html
     #[derive(Debug, Default)]
     pub struct Crc {
         amt: u32,
@@ -23,35 +55,29 @@ mod impl_crc32fast {
     }
 
     impl Crc {
-        /// Create a new CRC.
-        pub fn new() -> Self {
-            Self::default()
-        }
-
-        /// Returns the current crc32 checksum.
+        #[inline]
         pub fn sum(&self) -> u32 {
             self.hasher.clone().finalize()
         }
 
-        /// The number of bytes that have been used to calculate the CRC.
-        /// This value is only accurate if the amount is lower than 2<sup>32</sup>.
+        #[inline]
         pub fn amount(&self) -> u32 {
             self.amt
         }
 
-        /// Update the CRC with the bytes in `data`.
+        #[inline]
         pub fn update(&mut self, data: &[u8]) {
             self.amt = self.amt.wrapping_add(data.len() as u32);
             self.hasher.update(data);
         }
 
-        /// Reset the CRC.
+        #[inline]
         pub fn reset(&mut self) {
             self.amt = 0;
             self.hasher.reset();
         }
 
-        /// Combine the CRC with the CRC for the subsequent block of bytes.
+        #[inline]
         pub fn combine(&mut self, additional_crc: &Self) {
             self.amt = self.amt.wrapping_add(additional_crc.amt);
             self.hasher.combine(&additional_crc.hasher);
@@ -60,10 +86,7 @@ mod impl_crc32fast {
 }
 
 #[cfg(feature = "zlib-rs")]
-mod impl_zlib_rs {
-    /// The CRC calculated by a [`CrcReader`].
-    ///
-    /// [`CrcReader`]: struct.CrcReader.html
+mod inner {
     #[derive(Debug, Default)]
     pub struct Crc {
         consumed: u64,
@@ -71,35 +94,29 @@ mod impl_zlib_rs {
     }
 
     impl Crc {
-        /// Create a new CRC.
-        pub fn new() -> Self {
-            Self::default()
-        }
-
-        /// Returns the current crc32 checksum.
+        #[inline]
         pub fn sum(&self) -> u32 {
             self.state
         }
 
-        /// The number of bytes that have been used to calculate the CRC.
-        /// This value is only accurate if the amount is lower than 2<sup>32</sup>.
+        #[inline]
         pub fn amount(&self) -> u32 {
             self.consumed as u32
         }
 
-        /// Update the CRC with the bytes in `data`.
+        #[inline]
         pub fn update(&mut self, data: &[u8]) {
             self.consumed = self.consumed.wrapping_add(data.len() as u64);
             self.state = zlib_rs::crc32::crc32(self.state, data);
         }
 
-        /// Reset the CRC.
+        #[inline]
         pub fn reset(&mut self) {
             self.consumed = 0;
             self.state = 0
         }
 
-        /// Combine the CRC with the CRC for the subsequent block of bytes.
+        #[inline]
         pub fn combine(&mut self, additional_crc: &Self) {
             self.consumed = self.consumed.wrapping_add(additional_crc.consumed);
             self.state = zlib_rs::crc32::crc32_combine(
@@ -123,10 +140,7 @@ pub struct CrcReader<R> {
 impl<R: Read> CrcReader<R> {
     /// Create a new `CrcReader`.
     pub fn new(r: R) -> CrcReader<R> {
-        CrcReader {
-            inner: r,
-            crc: Crc::new(),
-        }
+        CrcReader { inner: r, crc: Crc::new() }
     }
 }
 
@@ -146,7 +160,8 @@ impl<R> CrcReader<R> {
         &self.inner
     }
 
-    /// Get a mutable reference to the reader that is wrapped by this `CrcReader`.
+    /// Get a mutable reference to the reader that is wrapped by this
+    /// `CrcReader`.
     pub fn get_mut(&mut self) -> &mut R {
         &mut self.inner
     }
@@ -202,7 +217,8 @@ impl<W> CrcWriter<W> {
         &self.inner
     }
 
-    /// Get a mutable reference to the writer that is wrapped by this `CrcWriter`.
+    /// Get a mutable reference to the writer that is wrapped by this
+    /// `CrcWriter`.
     pub fn get_mut(&mut self) -> &mut W {
         &mut self.inner
     }
@@ -216,10 +232,7 @@ impl<W> CrcWriter<W> {
 impl<W: Write> CrcWriter<W> {
     /// Create a new `CrcWriter`.
     pub fn new(w: W) -> CrcWriter<W> {
-        CrcWriter {
-            inner: w,
-            crc: Crc::new(),
-        }
+        CrcWriter { inner: w, crc: Crc::new() }
     }
 }
 
@@ -263,10 +276,7 @@ mod tests {
 
     #[test]
     fn known_vector_quick_brown_fox() {
-        assert_eq!(
-            sum_of(b"The quick brown fox jumps over the lazy dog"),
-            0x414F_A339
-        );
+        assert_eq!(sum_of(b"The quick brown fox jumps over the lazy dog"), 0x414F_A339);
     }
 
     #[test]
@@ -301,8 +311,6 @@ mod tests {
         let cb = crc_of(b);
 
         ca.combine(&cb);
-
-        dbg!(&ca);
 
         assert_eq!(ca.amount(), 11);
         assert_eq!(ca.sum(), sum_of(b"hello world"));

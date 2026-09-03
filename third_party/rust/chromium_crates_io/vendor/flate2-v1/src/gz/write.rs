@@ -1,11 +1,24 @@
-use std::cmp;
-use std::io;
-use std::io::prelude::*;
+use crate::io;
+use crate::io::{Read, Write};
+use alloc::vec::Vec;
+use core::cmp;
 
 use super::{corrupt, GzBuilder, GzHeader, GzHeaderParser};
 use crate::crc::{Crc, CrcWriter};
 use crate::zio;
 use crate::{Compress, Compression, Decompress, Status};
+
+// Non-gzip writer paths flush through zio::Writer::dump, which converts
+// Ok(0) on a non-empty buffer into WriteZero. Gzip writes its header and footer
+// directly, so keep the same progress rule here.
+fn write_nonzero<W: Write>(writer: &mut W, buf: &[u8]) -> io::Result<usize> {
+    let n = writer.write(buf)?;
+    if n == 0 && !buf.is_empty() {
+        Err(io::ErrorKind::WriteZero.into())
+    } else {
+        Ok(n)
+    }
+}
 
 /// A gzip streaming encoder
 ///
@@ -65,8 +78,19 @@ impl<W: Write> GzEncoder<W> {
 
     /// Acquires a mutable reference to the underlying writer.
     ///
-    /// Note that mutation of the writer may result in surprising results if
-    /// this encoder is continued to be used.
+    /// The underlying writer may be mutated or replaced as long as this
+    /// preserves the bytes and ordering of the logical output stream.
+    /// Concatenate output from each writer to reconstruct the complete stream.
+    ///
+    /// Replacing the writer does not require [`flush`](Write::flush). Call it
+    /// first when all input accepted so far must be decodable without output
+    /// from later writes. This inserts a sync-flush point and changes the
+    /// output bitstream. This is useful before applying [`std::mem::take`]
+    /// to [`get_mut`](Self::get_mut) when forwarding the stream
+    /// incrementally.
+    ///
+    /// To start a new stream, call [`finish`](Self::finish) and create a new
+    /// encoder; replacing the writer does not reset it.
     pub fn get_mut(&mut self) -> &mut W {
         self.inner.get_mut()
     }
@@ -103,7 +127,7 @@ impl<W: Write> GzEncoder<W> {
                 (amt >> 24) as u8,
             ];
             let inner = self.inner.get_mut();
-            let n = inner.write(&buf[self.crc_bytes_written..])?;
+            let n = write_nonzero(inner, &buf[self.crc_bytes_written..])?;
             self.crc_bytes_written += n;
         }
         Ok(())
@@ -129,7 +153,7 @@ impl<W: Write> GzEncoder<W> {
 
     fn write_header(&mut self) -> io::Result<()> {
         while !self.header.is_empty() {
-            let n = self.inner.get_mut().write(&self.header)?;
+            let n = write_nonzero(self.inner.get_mut(), &self.header)?;
             self.header.drain(..n);
         }
         Ok(())
@@ -171,9 +195,10 @@ impl<W: Write> Drop for GzEncoder<W> {
 /// This structure exposes a [`Write`] interface, receiving compressed data and
 /// writing uncompressed data to the underlying writer.
 ///
-/// After decoding a single member of the gzip data this writer will return the number of bytes up to
-/// to the end of the gzip member and subsequent writes will return Ok(0) allowing the caller to
-/// handle any data following the gzip member.
+/// After decoding a single member of the gzip data this writer will return the
+/// number of bytes up to to the end of the gzip member and subsequent writes
+/// will return Ok(0) allowing the caller to handle any data following the gzip
+/// member.
 ///
 /// To handle gzip files that may have multiple members, see [`MultiGzDecoder`]
 /// or read more
@@ -241,8 +266,17 @@ impl<W: Write> GzDecoder<W> {
 
     /// Acquires a mutable reference to the underlying writer.
     ///
-    /// Note that mutating the output/input state of the stream may corrupt this
-    /// object, so care must be taken when using this method.
+    /// The underlying writer may be mutated or replaced as long as this
+    /// preserves the bytes and ordering of the logical output stream.
+    /// Concatenate output from each writer to reconstruct the complete stream.
+    ///
+    /// Replacing the writer does not require [`flush`](Write::flush). Call it
+    /// first to write all decompressed output currently available to the
+    /// current writer. This is useful before applying [`std::mem::take`] to
+    /// [`get_mut`](Self::get_mut) when forwarding output incrementally.
+    ///
+    /// To start a new stream, call [`finish`](Self::finish) and create a new
+    /// decoder; replacing the writer does not reset it.
     pub fn get_mut(&mut self) -> &mut W {
         self.inner.get_mut().get_mut()
     }
@@ -358,12 +392,12 @@ impl<W: Read + Write> Read for GzDecoder<W> {
 
 /// A gzip streaming decoder that decodes a [gzip file] with multiple members.
 ///
-/// This structure exposes a [`Write`] interface that will consume compressed data and
-/// write uncompressed data to the underlying writer.
+/// This structure exposes a [`Write`] interface that will consume compressed
+/// data and write uncompressed data to the underlying writer.
 ///
-/// A gzip file consists of a series of *members* concatenated one after another.
-/// `MultiGzDecoder` decodes all members of a file and writes them to the
-/// underlying writer one after another.
+/// A gzip file consists of a series of *members* concatenated one after
+/// another. `MultiGzDecoder` decodes all members of a file and writes them to
+/// the underlying writer one after another.
 ///
 /// To handle members separately, see [GzDecoder] or read more
 /// [in the introduction](../index.html#about-multi-member-gzip-files).
@@ -378,9 +412,7 @@ impl<W: Write> MultiGzDecoder<W> {
     /// Creates a new decoder which will write uncompressed data to the stream.
     /// If the gzip stream contains multiple members all will be decoded.
     pub fn new(w: W) -> MultiGzDecoder<W> {
-        MultiGzDecoder {
-            inner: GzDecoder::new(w),
-        }
+        MultiGzDecoder { inner: GzDecoder::new(w) }
     }
 
     /// Returns the header associated with the current member.
@@ -395,8 +427,17 @@ impl<W: Write> MultiGzDecoder<W> {
 
     /// Acquires a mutable reference to the underlying writer.
     ///
-    /// Note that mutating the output/input state of the stream may corrupt this
-    /// object, so care must be taken when using this method.
+    /// The underlying writer may be mutated or replaced as long as this
+    /// preserves the bytes and ordering of the logical output stream.
+    /// Concatenate output from each writer to reconstruct the complete stream.
+    ///
+    /// Replacing the writer does not require [`flush`](Write::flush). Call it
+    /// first to write all decompressed output currently available to the
+    /// current writer. This is useful before applying [`std::mem::take`] to
+    /// [`get_mut`](Self::get_mut) when forwarding output incrementally.
+    ///
+    /// To start a new stream, call [`finish`](Self::finish) and create a new
+    /// decoder; replacing the writer does not reset it.
     pub fn get_mut(&mut self) -> &mut W {
         self.inner.get_mut()
     }
@@ -467,6 +508,7 @@ impl<W: Write> Write for MultiGzDecoder<W> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::string::String;
 
     const STR: &str = "Hello World Hello World Hello World Hello World Hello World \
                                Hello World Hello World Hello World Hello World Hello World \
@@ -511,9 +553,8 @@ mod tests {
     #[test]
     fn decode_writer_partial_header_filename() {
         let filename = "test.txt";
-        let mut e = GzBuilder::new()
-            .filename(filename)
-            .read(STR.as_bytes(), Compression::default());
+        let mut e =
+            GzBuilder::new().filename(filename).read(STR.as_bytes(), Compression::default());
         let mut bytes = Vec::new();
         e.read_to_end(&mut bytes).unwrap();
 
@@ -524,10 +565,7 @@ mod tests {
         if n < bytes.len() - 12 {
             decoder.write_all(&bytes[n + 12..]).unwrap();
         }
-        assert_eq!(
-            decoder.header().unwrap().filename().unwrap(),
-            filename.as_bytes()
-        );
+        assert_eq!(decoder.header().unwrap().filename().unwrap(), filename.as_bytes());
         writer = decoder.finish().unwrap();
         let return_string = String::from_utf8(writer).expect("String parsing error");
         assert_eq!(return_string, STR);
@@ -536,9 +574,7 @@ mod tests {
     #[test]
     fn decode_writer_partial_header_comment() {
         let comment = "test comment";
-        let mut e = GzBuilder::new()
-            .comment(comment)
-            .read(STR.as_bytes(), Compression::default());
+        let mut e = GzBuilder::new().comment(comment).read(STR.as_bytes(), Compression::default());
         let mut bytes = Vec::new();
         e.read_to_end(&mut bytes).unwrap();
 
@@ -549,10 +585,7 @@ mod tests {
         if n < bytes.len() - 12 {
             decoder.write_all(&bytes[n + 12..]).unwrap();
         }
-        assert_eq!(
-            decoder.header().unwrap().comment().unwrap(),
-            comment.as_bytes()
-        );
+        assert_eq!(decoder.header().unwrap().comment().unwrap(), comment.as_bytes());
         writer = decoder.finish().unwrap();
         let return_string = String::from_utf8(writer).expect("String parsing error");
         assert_eq!(return_string, STR);
@@ -589,8 +622,8 @@ mod tests {
         assert_eq!(return_string, STR);
     }
 
-    // Two or more gzip files concatenated form a multi-member gzip file. MultiGzDecoder will
-    // concatenate the decoded contents of all members.
+    // Two or more gzip files concatenated form a multi-member gzip file.
+    // MultiGzDecoder will concatenate the decoded contents of all members.
     #[test]
     fn decode_multi_writer() {
         let mut e = GzEncoder::new(Vec::new(), Compression::default());
@@ -611,8 +644,8 @@ mod tests {
         assert_eq!(return_string, expected);
     }
 
-    // GzDecoder consumes one gzip member and then returns 0 for subsequent writes, allowing any
-    // additional data to be consumed by the caller.
+    // GzDecoder consumes one gzip member and then returns 0 for subsequent writes,
+    // allowing any additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let compressed = {

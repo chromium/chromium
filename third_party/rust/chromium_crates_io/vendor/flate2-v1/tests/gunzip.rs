@@ -1,5 +1,7 @@
 use flate2::read::GzDecoder;
 use flate2::read::MultiGzDecoder;
+use flate2::write::GzEncoder;
+use flate2::Compression;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
@@ -10,10 +12,7 @@ use std::path::Path;
 fn test_extract_success() {
     let content = extract_file(Path::new("tests/good-file.gz")).unwrap();
     let mut expected = Vec::new();
-    File::open("tests/good-file.txt")
-        .unwrap()
-        .read_to_end(&mut expected)
-        .unwrap();
+    File::open("tests/good-file.txt").unwrap().read_to_end(&mut expected).unwrap();
     assert_eq!(content, expected);
 }
 //
@@ -22,16 +21,22 @@ fn test_extract_success() {
 fn test_extract_success_partial_multi() {
     let content = extract_file(Path::new("tests/multi.gz")).unwrap();
     let mut expected = String::new();
-    BufReader::new(File::open("tests/multi.txt").unwrap())
-        .read_line(&mut expected)
-        .unwrap();
+    BufReader::new(File::open("tests/multi.txt").unwrap()).read_line(&mut expected).unwrap();
     assert_eq!(content, expected.as_bytes());
 }
 
 // test extraction fails on a corrupt file
 #[test]
 fn test_extract_failure() {
-    let result = extract_file(Path::new("tests/corrupt-gz-file.bin"));
+    let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+    encoder.write_all(b"corrupt me").unwrap();
+    let mut gzip = encoder.finish().unwrap();
+    // The gzip footer stores CRC32 followed by ISIZE; corrupt a CRC byte.
+    let crc_offset = gzip.len() - 8;
+    gzip[crc_offset] ^= 0xff;
+
+    let mut output = Vec::new();
+    let result = GzDecoder::new(&gzip[..]).read_to_end(&mut output);
     assert_eq!(result.err().unwrap().kind(), io::ErrorKind::InvalidInput);
 }
 
@@ -40,10 +45,7 @@ fn test_extract_failure() {
 fn test_extract_success_multi() {
     let content = extract_file_multi(Path::new("tests/multi.gz")).unwrap();
     let mut expected = Vec::new();
-    File::open("tests/multi.txt")
-        .unwrap()
-        .read_to_end(&mut expected)
-        .unwrap();
+    File::open("tests/multi.txt").unwrap().read_to_end(&mut expected).unwrap();
     assert_eq!(content, expected);
 }
 

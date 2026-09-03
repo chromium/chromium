@@ -114,15 +114,6 @@ See [the libz-sys
 README](https://github.com/rust-lang/libz-sys/blob/main/README.md) for details.
 To avoid that, use the `"zlib-ng"` feature instead.
 
-For compatibility with previous versions of `flate2`, the Cloudflare optimized
-version of zlib is available, via the `cloudflare_zlib` feature. It's not as
-fast as zlib-ng, but it's faster than stock zlib. It requires an x86-64 CPU with
-SSE 4.2 or ARM64 with NEON & CRC. It does not support 32-bit CPUs at all and is
-incompatible with mingw. For more information check the [crate
-documentation](https://crates.io/crates/cloudflare-zlib-sys). Note that
-`cloudflare_zlib` will cause breakage if any other crate in your crate graph
-uses another version of zlib/libz.
-
 # License
 
 This project is licensed under either of

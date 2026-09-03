@@ -4,8 +4,10 @@ pub mod write;
 
 #[cfg(test)]
 mod tests {
-    use std::io;
-    use std::io::prelude::*;
+    use crate::io;
+    use crate::io::{Read, Write};
+    use alloc::string::ToString;
+    use alloc::vec::Vec;
 
     use rand::{rng, Rng};
 
@@ -32,9 +34,7 @@ mod tests {
     #[test]
     fn drop_writes() {
         let mut data = Vec::new();
-        write::ZlibEncoder::new(&mut data, Compression::default())
-            .write_all(b"foo")
-            .unwrap();
+        write::ZlibEncoder::new(&mut data, Compression::default()).write_all(b"foo").unwrap();
         let mut r = read::ZlibDecoder::new(&data[..]);
         let mut ret = Vec::new();
         r.read_to_end(&mut ret).unwrap();
@@ -127,6 +127,20 @@ mod tests {
         match w.write_all(&data[..]) {
             Ok(_) => panic!("Expected an error to be returned!"),
             Err(e) => assert_eq!(e.kind(), io::ErrorKind::InvalidInput),
+        }
+    }
+
+    #[test]
+    fn rejects_incomplete_stream() {
+        let mut encoder = write::ZlibEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(b"hello").unwrap();
+        let compressed = encoder.finish().unwrap();
+
+        for end in compressed.len() - 4..compressed.len() {
+            let mut decoder = read::ZlibDecoder::new(&compressed[..end]);
+            let error = crate::io::copy(&mut decoder, &mut crate::io::sink()).unwrap_err();
+            assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
+            assert_eq!(error.to_string(), "incomplete deflate stream");
         }
     }
 

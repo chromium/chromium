@@ -1,7 +1,8 @@
 //! Implementation for `miniz_oxide` rust backend.
 
-use std::convert::TryInto;
-use std::fmt;
+use alloc::boxed::Box;
+use core::convert::TryInto;
+use core::fmt;
 
 use ::miniz_oxide::deflate::core::CompressorOxide;
 use ::miniz_oxide::inflate::stream::InflateState;
@@ -64,11 +65,7 @@ impl InflateBackend for Inflate {
     fn make(zlib_header: bool, _window_bits: u8) -> Self {
         let format = format_from_bool(zlib_header);
 
-        Inflate {
-            inner: InflateState::new_boxed(format),
-            total_in: 0,
-            total_out: 0,
-        }
+        Inflate { inner: InflateState::new_boxed(format), total_in: 0, total_out: 0 }
     }
 
     fn decompress(
@@ -136,7 +133,8 @@ impl From<FlushCompress> for MZFlush {
     fn from(value: FlushCompress) -> Self {
         match value {
             FlushCompress::None => Self::None,
-            FlushCompress::Partial | FlushCompress::Sync => Self::Sync,
+            FlushCompress::Partial => Self::Partial,
+            FlushCompress::Sync => Self::Sync,
             FlushCompress::Full => Self::Full,
             FlushCompress::Finish => Self::Finish,
         }
@@ -153,11 +151,7 @@ impl DeflateBackend for Deflate {
         let format = format_from_bool(zlib_header);
         inner.set_format_and_level(format, level.level().try_into().unwrap_or(1));
 
-        Deflate {
-            inner,
-            total_in: 0,
-            total_out: 0,
-        }
+        Deflate { inner, total_in: 0, total_out: 0 }
     }
 
     fn compress(

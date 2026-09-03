@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.67.0"
 name = "flate2"
-version = "1.1.9"
+version = "1.1.10"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -58,17 +58,20 @@ rustdoc-args = [
 any_c_zlib = ["any_zlib"]
 any_impl = []
 any_zlib = ["any_impl"]
-cloudflare_zlib = [
-    "any_c_zlib",
-    "cloudflare-zlib-sys",
-    "dep:crc32fast",
+cloudflare_zlib = ["zlib"]
+default = [
+    "rust_backend",
+    "runtime_detection",
 ]
-default = ["rust_backend"]
 miniz-sys = ["rust_backend"]
 miniz_oxide = [
     "any_impl",
     "dep:miniz_oxide",
     "dep:crc32fast",
+]
+runtime_detection = [
+    "zlib-rs?/std",
+    "crc32fast?/std",
 ]
 rust_backend = [
     "miniz_oxide",
@@ -215,13 +218,10 @@ path = "tests/gunzip.rs"
 name = "zero-write"
 path = "tests/zero-write.rs"
 
-[dependencies.cloudflare-zlib-sys]
-version = "0.3.6"
-optional = true
-
 [dependencies.crc32fast]
 version = "1.2.0"
 optional = true
+default-features = false
 
 [dependencies.document-features]
 version = "0.2"
@@ -237,20 +237,13 @@ optional = true
 default-features = false
 
 [dependencies.miniz_oxide]
-version = "0.8.5"
-features = [
-    "with-alloc",
-    "simd",
-]
+version = "0.9.0"
+features = ["simd"]
 optional = true
-default-features = false
 
 [dependencies.zlib-rs]
 version = "0.6.0"
-features = [
-    "std",
-    "rust-allocator",
-]
+features = ["rust-allocator"]
 optional = true
 default-features = false
 
@@ -265,10 +258,7 @@ default-features = false
 [dev-dependencies.rand]
 version = "0.9"
 
-[target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies.miniz_oxide]
-version = "0.8.5"
-features = [
-    "with-alloc",
-    "simd",
-]
-default-features = false
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = ["cfg(flate2_unstable_nightly_alloc_io)"]

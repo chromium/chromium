@@ -1,6 +1,6 @@
-use std::io;
-use std::io::prelude::*;
-use std::mem;
+use crate::io;
+use crate::io::{BufRead, Read, Write};
+use core::mem;
 
 use crate::zio;
 use crate::{Compress, Decompress};
@@ -8,7 +8,8 @@ use crate::{Compress, Decompress};
 /// A ZLIB encoder, or compressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`BufRead`] and provides the compressed data.
+/// uncompressed data from the underlying [`BufRead`] and provides the
+/// compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 /// [`BufRead`]: https://doc.rust-lang.org/std/io/trait.BufRead.html
@@ -43,19 +44,14 @@ impl<R: BufRead> ZlibEncoder<R> {
     /// Creates a new encoder which will read uncompressed data from the given
     /// stream and emit the compressed stream.
     pub fn new(r: R, level: crate::Compression) -> ZlibEncoder<R> {
-        ZlibEncoder {
-            obj: r,
-            data: Compress::new(level, true),
-        }
+        ZlibEncoder { obj: r, data: Compress::new(level, true) }
     }
 
     /// Creates a new encoder with the given `compression` settings which will
-    /// read uncompressed data from the given stream `r` and emit the compressed stream.
+    /// read uncompressed data from the given stream `r` and emit the compressed
+    /// stream.
     pub fn new_with_compress(r: R, compression: Compress) -> ZlibEncoder<R> {
-        ZlibEncoder {
-            obj: r,
-            data: compression,
-        }
+        ZlibEncoder { obj: r, data: compression }
     }
 }
 
@@ -83,8 +79,11 @@ impl<R> ZlibEncoder<R> {
 
     /// Acquires a mutable reference to the underlying stream
     ///
-    /// Note that mutation of the stream may result in surprising results if
-    /// this encoder is continued to be used.
+    /// The underlying reader may be mutated as long as its unread input and
+    /// current position are preserved for subsequent reads by this encoder.
+    ///
+    /// To process a new stream, wait for this encoder to reach EOF and use
+    /// [`reset`](Self::reset); replacing the reader directly does not reset it.
     pub fn get_mut(&mut self) -> &mut R {
         &mut self.obj
     }
@@ -130,7 +129,8 @@ impl<R: BufRead + Write> Write for ZlibEncoder<R> {
 /// A ZLIB decoder, or decompressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the
+/// uncompressed data.
 ///
 /// After reading a single member of the ZLIB data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -176,24 +176,18 @@ impl<R: BufRead> ZlibDecoder<R> {
     /// Creates a new decoder which will decompress data read from the given
     /// stream.
     pub fn new(r: R) -> ZlibDecoder<R> {
-        ZlibDecoder {
-            obj: r,
-            data: Decompress::new(true),
-        }
+        ZlibDecoder { obj: r, data: Decompress::new(true) }
     }
 
     /// Creates a new decoder which will decompress data read from the given
     /// stream, using the given `decompression` settings.
     pub fn new_with_decompress(r: R, decompression: Decompress) -> ZlibDecoder<R> {
-        ZlibDecoder {
-            obj: r,
-            data: decompression,
-        }
+        ZlibDecoder { obj: r, data: decompression }
     }
 }
 
 pub fn reset_decoder_data<R>(zlib: &mut ZlibDecoder<R>) {
-    zlib.data = Decompress::new(true);
+    zlib.data.reset(true);
 }
 
 impl<R> ZlibDecoder<R> {
@@ -216,8 +210,11 @@ impl<R> ZlibDecoder<R> {
 
     /// Acquires a mutable reference to the underlying stream
     ///
-    /// Note that mutation of the stream may result in surprising results if
-    /// this decoder is continued to be used.
+    /// The underlying reader may be mutated as long as its unread input and
+    /// current position are preserved for subsequent reads by this decoder.
+    ///
+    /// To process a new stream, wait for this decoder to reach EOF and use
+    /// [`reset`](Self::reset); replacing the reader directly does not reset it.
     pub fn get_mut(&mut self) -> &mut R {
         &mut self.obj
     }
@@ -260,12 +257,13 @@ impl<R: BufRead + Write> Write for ZlibDecoder<R> {
 #[cfg(test)]
 mod test {
     use crate::bufread::ZlibDecoder;
+    use crate::io::{Read, Write};
     use crate::zlib::write;
     use crate::Compression;
-    use std::io::{Read, Write};
+    use alloc::vec::Vec;
 
-    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent reads, allowing any
-    // additional data to be consumed by the caller.
+    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent
+    // reads, allowing any additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let expected = "Hello World";
@@ -282,11 +280,8 @@ mod test {
         let mut decoder = ZlibDecoder::new(compressed.as_slice());
         let decoded_bytes = decoder.read_to_end(&mut output).unwrap();
         assert_eq!(decoded_bytes, output.len());
-        let actual = std::str::from_utf8(&output).expect("String parsing error");
-        assert_eq!(
-            actual, expected,
-            "after decompression we obtain the original input"
-        );
+        let actual = core::str::from_utf8(&output).expect("String parsing error");
+        assert_eq!(actual, expected, "after decompression we obtain the original input");
 
         output.clear();
         assert_eq!(

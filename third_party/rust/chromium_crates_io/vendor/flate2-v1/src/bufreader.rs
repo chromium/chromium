@@ -8,10 +8,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::cmp;
-use std::io;
-use std::io::prelude::*;
-use std::mem;
+use crate::io;
+use crate::io::{BufRead, Read};
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use core::cmp;
+use core::mem;
 
 pub struct BufReader<R> {
     inner: R,
@@ -20,17 +22,14 @@ pub struct BufReader<R> {
     cap: usize,
 }
 
-impl<R> ::std::fmt::Debug for BufReader<R>
+impl<R> ::core::fmt::Debug for BufReader<R>
 where
-    R: ::std::fmt::Debug,
+    R: ::core::fmt::Debug,
 {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> Result<(), ::core::fmt::Error> {
         fmt.debug_struct("BufReader")
             .field("reader", &self.inner)
-            .field(
-                "buffer",
-                &format_args!("{}/{}", self.cap - self.pos, self.buf.len()),
-            )
+            .field("buffer", &format_args!("{}/{}", self.cap - self.pos, self.buf.len()))
             .finish()
     }
 }
@@ -41,12 +40,7 @@ impl<R: Read> BufReader<R> {
     }
 
     pub fn with_buf(buf: Vec<u8>, inner: R) -> BufReader<R> {
-        BufReader {
-            inner,
-            buf: buf.into_boxed_slice(),
-            pos: 0,
-            cap: 0,
-        }
+        BufReader { inner, buf: buf.into_boxed_slice(), pos: 0, cap: 0 }
     }
 }
 

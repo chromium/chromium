@@ -1,7 +1,8 @@
-use std::cmp;
-use std::io;
-use std::io::prelude::*;
-use std::mem;
+use crate::io;
+use crate::io::{BufRead, Read, Write};
+use alloc::vec::Vec;
+use core::cmp;
+use core::mem;
 
 use super::{corrupt, read_into, GzBuilder, GzHeader, GzHeaderParser};
 use crate::crc::CrcReader;
@@ -18,7 +19,8 @@ fn copy(into: &mut [u8], from: &[u8], pos: &mut usize) -> usize {
 /// A gzip streaming encoder
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`BufRead`] and provides the compressed data.
+/// uncompressed data from the underlying [`BufRead`] and provides the
+/// compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 /// [`BufRead`]: https://doc.rust-lang.org/std/io/trait.BufRead.html
@@ -55,12 +57,7 @@ pub struct GzEncoder<R> {
 
 pub fn gz_encoder<R: BufRead>(header: Vec<u8>, r: R, lvl: Compression) -> GzEncoder<R> {
     let crc = CrcReader::new(r);
-    GzEncoder {
-        inner: deflate::bufread::DeflateEncoder::new(crc, lvl),
-        header,
-        pos: 0,
-        eof: false,
-    }
+    GzEncoder { inner: deflate::bufread::DeflateEncoder::new(crc, lvl), header, pos: 0, eof: false }
 }
 
 impl<R: BufRead> GzEncoder<R> {
@@ -103,8 +100,11 @@ impl<R> GzEncoder<R> {
 
     /// Acquires a mutable reference to the underlying reader.
     ///
-    /// Note that mutation of the reader may result in surprising results if
-    /// this encoder is continued to be used.
+    /// The underlying reader may be mutated as long as its unread input and
+    /// current position are preserved for subsequent reads by this encoder.
+    ///
+    /// To process a new stream, wait for this encoder to reach EOF and create a
+    /// new encoder; replacing the reader directly does not reset it.
     pub fn get_mut(&mut self) -> &mut R {
         self.inner.get_mut().get_mut()
     }
@@ -165,7 +165,8 @@ impl<R: BufRead + Write> Write for GzEncoder<R> {
 /// A decoder for a single member of a [gzip file].
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the
+/// uncompressed data.
 ///
 /// After reading a single member of the gzip data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -222,6 +223,12 @@ enum GzState {
     End(Option<GzHeader>),
 }
 
+pub fn reset_decoder_data<R>(decoder: &mut GzDecoder<R>) {
+    decoder.state = GzState::Header(GzHeaderParser::new());
+    decoder.reader.reset(); // reset CrcReader
+    decoder.reader.get_mut().reset_data(); // reset DeflateDecoder
+}
+
 impl<R: BufRead> GzDecoder<R> {
     /// Creates a new decoder from the given reader, immediately parsing the
     /// gzip header.
@@ -266,8 +273,11 @@ impl<R> GzDecoder<R> {
 
     /// Acquires a mutable reference to the underlying stream.
     ///
-    /// Note that mutation of the stream may result in surprising results if
-    /// this decoder is continued to be used.
+    /// The underlying reader may be mutated as long as its unread input and
+    /// current position are preserved for subsequent reads by this decoder.
+    ///
+    /// To process a new stream, wait for this decoder to reach EOF and use
+    /// [`reset`](Self::reset); replacing the reader directly does not reset it.
     pub fn get_mut(&mut self) -> &mut R {
         self.reader.get_mut().get_mut()
     }
@@ -275,6 +285,18 @@ impl<R> GzDecoder<R> {
     /// Consumes this decoder, returning the underlying reader.
     pub fn into_inner(self) -> R {
         self.reader.into_inner().into_inner()
+    }
+
+    /// Resets the state of this decoder entirely, swapping out the input
+    /// stream for another.
+    ///
+    /// This will reset the internal state of this decoder and replace the
+    /// input stream with the one provided, returning the previous input
+    /// stream. Future data read from this decoder will be the decompressed
+    /// version of `r`'s data.
+    pub fn reset(&mut self, r: R) -> R {
+        reset_decoder_data(self);
+        self.reader.get_mut().reset(r)
     }
 }
 
@@ -349,14 +371,17 @@ impl<R: BufRead + Write> Write for GzDecoder<R> {
     }
 }
 
-/// A gzip streaming decoder that decodes a [gzip file] that may have multiple members.
+/// A gzip streaming decoder that decodes a [gzip file] that may have multiple
+/// members.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the
+/// uncompressed data.
 ///
-/// A gzip file consists of a series of *members* concatenated one after another.
-/// MultiGzDecoder decodes all members from the data and only returns Ok(0) when the
-/// underlying reader does. For a file, this reads to the end of the file.
+/// A gzip file consists of a series of *members* concatenated one after
+/// another. MultiGzDecoder decodes all members from the data and only returns
+/// Ok(0) when the underlying reader does. For a file, this reads to the end of
+/// the file.
 ///
 /// To handle members separately, see [GzDecoder] or read more
 /// [in the introduction](../index.html#about-multi-member-gzip-files).
@@ -396,8 +421,8 @@ pub struct MultiGzDecoder<R>(GzDecoder<R>);
 
 impl<R: BufRead> MultiGzDecoder<R> {
     /// Creates a new decoder from the given reader, immediately parsing the
-    /// (first) gzip header. If the gzip stream contains multiple members all will
-    /// be decoded.
+    /// (first) gzip header. If the gzip stream contains multiple members all
+    /// will be decoded.
     pub fn new(r: R) -> MultiGzDecoder<R> {
         MultiGzDecoder(GzDecoder::new(r).multi(true))
     }
@@ -416,8 +441,11 @@ impl<R> MultiGzDecoder<R> {
 
     /// Acquires a mutable reference to the underlying stream.
     ///
-    /// Note that mutation of the stream may result in surprising results if
-    /// this decoder is continued to be used.
+    /// The underlying reader may be mutated as long as its unread input and
+    /// current position are preserved for subsequent reads by this decoder.
+    ///
+    /// To process a new stream, wait for this decoder to reach EOF and create a
+    /// new decoder; replacing the reader directly does not reset it.
     pub fn get_mut(&mut self) -> &mut R {
         self.0.get_mut()
     }
@@ -438,11 +466,12 @@ impl<R: BufRead> Read for MultiGzDecoder<R> {
 mod test {
     use crate::bufread::GzDecoder;
     use crate::gz::write;
+    use crate::io::{Read, Write};
     use crate::Compression;
-    use std::io::{Read, Write};
+    use alloc::vec::Vec;
 
-    // GzDecoder consumes one gzip member and then returns 0 for subsequent reads, allowing any
-    // additional data to be consumed by the caller.
+    // GzDecoder consumes one gzip member and then returns 0 for subsequent reads,
+    // allowing any additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let expected = "Hello World";
@@ -459,11 +488,8 @@ mod test {
         let mut decoder = GzDecoder::new(compressed.as_slice());
         let decoded_bytes = decoder.read_to_end(&mut output).unwrap();
         assert_eq!(decoded_bytes, output.len());
-        let actual = std::str::from_utf8(&output).expect("String parsing error");
-        assert_eq!(
-            actual, expected,
-            "after decompression we obtain the original input"
-        );
+        let actual = core::str::from_utf8(&output).expect("String parsing error");
+        assert_eq!(actual, expected, "after decompression we obtain the original input");
 
         output.clear();
         assert_eq!(
@@ -478,5 +504,56 @@ mod test {
             "extra data is accessible in underlying buf-read"
         );
         assert_eq!(output, b"x");
+    }
+
+    fn compress_data(data: &[u8]) -> Vec<u8> {
+        use crate::write::GzEncoder;
+        use crate::Compression;
+
+        let mut e = GzEncoder::new(Vec::new(), Compression::default());
+        e.write_all(data).unwrap();
+        e.finish().unwrap()
+    }
+
+    #[test]
+    fn decode_with_reset() {
+        let data1 = b"Hello World";
+        let data2 = b"Goodbye World";
+
+        let compressed1 = compress_data(data1);
+        let compressed2 = compress_data(data2);
+
+        let mut output = Vec::new();
+        let mut decoder = GzDecoder::new(compressed1.as_slice());
+        decoder.read_to_end(&mut output).unwrap();
+        assert_eq!(output, data1);
+
+        output.clear();
+        decoder.reset(compressed2.as_slice());
+        decoder.read_to_end(&mut output).unwrap();
+        assert_eq!(output, data2);
+    }
+
+    #[test]
+    fn decode_with_reset_after_corruption() {
+        let valid_data = b"Hello World";
+        let valid_compressed = compress_data(valid_data);
+
+        // Create a corrupted payload (valid gzip header but corrupted body)
+        let mut corrupted = valid_compressed.clone();
+        assert!(corrupted.len() >= 14);
+        corrupted[12] ^= 0xFF;
+        corrupted[13] ^= 0xFF;
+
+        // Try to decode corrupted data
+        let mut decoder = GzDecoder::new(corrupted.as_slice());
+        let mut output = Vec::new();
+        let _ = decoder.read_to_end(&mut output).unwrap_err();
+
+        // Reset with valid payload and decode
+        decoder.reset(valid_compressed.as_slice());
+        output.clear();
+        decoder.read_to_end(&mut output).unwrap();
+        assert_eq!(output, valid_data);
     }
 }

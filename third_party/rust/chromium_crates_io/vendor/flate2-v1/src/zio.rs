@@ -1,6 +1,7 @@
-use std::io;
-use std::io::prelude::*;
-use std::mem;
+use crate::io;
+use crate::io::{BufRead, Write};
+use alloc::vec::Vec;
+use core::mem;
 
 use crate::{
     Compress, CompressError, Decompress, DecompressError, FlushCompress, FlushDecompress, Status,
@@ -132,11 +133,7 @@ where
             eof = input.is_empty();
             let before_out = data.total_out();
             let before_in = data.total_in();
-            let flush = if eof {
-                D::Flush::finish()
-            } else {
-                D::Flush::none()
-            };
+            let flush = if eof { D::Flush::finish() } else { D::Flush::none() };
             ret = data.run(input, dst, flush);
             read = (data.total_out() - before_out) as usize;
             consumed = (data.total_in() - before_in) as usize;
@@ -144,18 +141,23 @@ where
         obj.consume(consumed);
 
         match ret {
-            // If we haven't ready any data and we haven't hit EOF yet,
+            // If we haven't read any data and we haven't hit EOF yet,
             // then we need to keep asking for more data because if we
             // return that 0 bytes of data have been read then it will
             // be interpreted as EOF.
             Ok(Status::Ok | Status::BufError) if read == 0 && !eof && !dst.is_empty() => continue,
+            // If we haven't read any data and we have hit EOF, then the
+            // deflate stream is incomplete.
+            Ok(Status::Ok | Status::BufError) if read == 0 && eof && !dst.is_empty() => {
+                return Err(io::Error::new(
+                    io::ErrorKind::UnexpectedEof,
+                    "incomplete deflate stream",
+                ));
+            }
             Ok(Status::Ok | Status::BufError | Status::StreamEnd) => return Ok(read),
 
             Err(..) => {
-                return Err(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    "corrupt deflate stream",
-                ))
+                return Err(io::Error::new(io::ErrorKind::InvalidInput, "corrupt deflate stream"))
             }
         }
     }
@@ -163,11 +165,7 @@ where
 
 impl<W: Write, D: Ops> Writer<W, D> {
     pub fn new(w: W, d: D) -> Writer<W, D> {
-        Writer {
-            obj: Some(w),
-            data: d,
-            buf: Vec::with_capacity(32 * 1024),
-        }
+        Writer { obj: Some(w), data: d, buf: Vec::with_capacity(32 * 1024) }
     }
 
     pub fn finish(&mut self) -> io::Result<()> {
@@ -175,9 +173,7 @@ impl<W: Write, D: Ops> Writer<W, D> {
             self.dump()?;
 
             let before = self.data.total_out();
-            self.data
-                .run_vec(&[], &mut self.buf, Flush::finish())
-                .map_err(Into::into)?;
+            self.data.run_vec(&[], &mut self.buf, Flush::finish()).map_err(Into::into)?;
             if before == self.data.total_out() {
                 return Ok(());
             }
@@ -185,7 +181,7 @@ impl<W: Write, D: Ops> Writer<W, D> {
     }
 
     pub fn replace(&mut self, w: W) -> W {
-        self.buf.truncate(0);
+        self.buf.clear();
         mem::replace(self.get_mut(), w)
     }
 
@@ -232,10 +228,9 @@ impl<W: Write, D: Ops> Writer<W, D> {
                 Ok(st) => match st {
                     Status::Ok | Status::BufError | Status::StreamEnd => Ok((written, st)),
                 },
-                Err(..) => Err(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    "corrupt deflate stream",
-                )),
+                Err(..) => {
+                    Err(io::Error::new(io::ErrorKind::InvalidInput, "corrupt deflate stream"))
+                }
             };
         }
     }
@@ -260,9 +255,7 @@ impl<W: Write, D: Ops> Write for Writer<W, D> {
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        self.data
-            .run_vec(&[], &mut self.buf, Flush::sync())
-            .map_err(Into::into)?;
+        self.data.run_vec(&[], &mut self.buf, Flush::sync()).map_err(Into::into)?;
 
         // Unfortunately miniz doesn't actually tell us when we're done with
         // pulling out all the data from the internal stream. To remedy this we
@@ -272,9 +265,7 @@ impl<W: Write, D: Ops> Write for Writer<W, D> {
         loop {
             self.dump()?;
             let before = self.data.total_out();
-            self.data
-                .run_vec(&[], &mut self.buf, Flush::none())
-                .map_err(Into::into)?;
+            self.data.run_vec(&[], &mut self.buf, Flush::none()).map_err(Into::into)?;
             if before == self.data.total_out() {
                 break;
             }
