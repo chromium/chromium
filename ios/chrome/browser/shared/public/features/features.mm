@@ -354,12 +354,6 @@ BASE_FEATURE(kSeparateProfilesForManagedAccounts,
 BASE_FEATURE(kAuthenticationFlowReauthFirstKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSeparateProfilesForManagedAccountsImmediateForceMigration,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSReactivationNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -871,7 +865,6 @@ NSInteger GetAssistantMediumDetentPercentage() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kAssistantContainer, kAssistantContainerMediumDetentPercentParam, 0);
 }
-
 
 BASE_FEATURE(kComposeboxPlusButtonBottomSheet,
              base::FEATURE_DISABLED_BY_DEFAULT);

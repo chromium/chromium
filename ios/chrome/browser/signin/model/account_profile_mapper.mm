@@ -65,8 +65,6 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 constexpr char kPersonalProfileNameForTesting[] =
     "bf09f5cf-94cc-4336-9cc2-26a5e1b8c358";
 
-constexpr base::TimeDelta kForceMigrationGracePeriod = base::Days(90);
-
 using ProfileNameToGaiaIds =
     std::map<std::string, std::set<GaiaId, std::less<>>, std::less<>>;
 
@@ -464,8 +462,6 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
 
   if (migrating_primary_managed_account) {
     // At this point, the migration is done.
-    local_pref_service_->ClearPref(
-        prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
     local_pref_service_->SetBoolean(prefs::kMultiProfileForcedMigrationDone,
                                     true);
     base::RecordAction(base::UserMetricsAction(
@@ -688,16 +684,6 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
   processed_gaia_ids.insert(identity.gaiaId);
 
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    if (!local_pref_service_) {
-      CHECK_IS_TEST();
-    } else if (local_pref_service_->GetTime(
-                   prefs::kWaitingForMultiProfileForcedMigrationTimestamp) !=
-               base::Time()) {
-      // Clear `kWaitingForMultiProfileForcedMigrationTimestamp` if the feature
-      // gets disabled.
-      local_pref_service_->ClearPref(
-          prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
-    }
     // With the feature flag disabled, no actual assignment is necessary.
     return SystemIdentityManager::IteratorResult::kContinueIteration;
   }
@@ -898,35 +884,6 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
 void AccountProfileMapper::Assigner::MaybeMigratePrimaryManagedAccount(
     const GaiaId gaia_id) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-
-  base::Time recorded_at = local_pref_service_->GetTime(
-      prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
-  if (recorded_at == base::Time()) {
-    // Record force migration pref for managed accounts in personal profile if
-    // not recorded yet.
-    local_pref_service_->SetTime(
-        prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
-        base::Time::Now());
-    // If the *immediate* migration is not enabled (i.e. there's a non-zero
-    // grace period), there's nothing else to do for now. Otherwise, continue
-    // so that the force-migration may run now.
-    if (!base::FeatureList::IsEnabled(
-            kSeparateProfilesForManagedAccountsImmediateForceMigration)) {
-      return;
-    }
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          kSeparateProfilesForManagedAccountsForceMigration)) {
-    return;
-  }
-
-  // If the grace period should be observed but is not over yet, do nothing.
-  if (!base::FeatureList::IsEnabled(
-          kSeparateProfilesForManagedAccountsImmediateForceMigration) &&
-      base::Time::Now() - recorded_at < kForceMigrationGracePeriod) {
-    return;
-  }
 
   MakePersonalProfileManagedWithGaiaID(
       gaia_id, /* migrating_primary_managed_account= */ true);

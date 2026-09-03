@@ -242,6 +242,10 @@ constexpr char kMetricsReportingMigrationDone[] =
 constexpr char kMetricsConsentRestructureFeatureState[] =
     "user_experience_metrics.consent_restructure_feature_state";
 
+// Deprecated 08/2026.
+inline constexpr char kWaitingForMultiProfileForcedMigrationTimestamp[] =
+    "ios.waiting_for_multi_profile_forced_migration_timestamp";
+
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -460,9 +464,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kHasSwitchedAccountsViaWebFlow, false);
 
-  // Prefs used to force multi-profile migration.
-  registry->RegisterTimePref(
-      prefs::kWaitingForMultiProfileForcedMigrationTimestamp, base::Time());
+  // Pref used to force multi-profile migration.
   registry->RegisterBooleanPref(prefs::kMultiProfileForcedMigrationDone, false);
 
   // Deprecated 05/2026.
@@ -505,6 +507,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kMetricsReportingMigrationDone, false);
   registry->RegisterBooleanPref(kMetricsConsentRestructureFeatureState, false);
   registry->RegisterTimePref(kObsoleteManagementPlatformLastLogTime,
+                             base::Time());
+
+  // Deprecated 08/2026.
+  registry->RegisterTimePref(kWaitingForMultiProfileForcedMigrationTimestamp,
                              base::Time());
 }
 
@@ -1030,6 +1036,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 07/2026.
   prefs->ClearPref(kObsoleteManagementPlatformLastLogTime);
+
+  // Added 08/2026.
+  prefs->ClearPref(kWaitingForMultiProfileForcedMigrationTimestamp);
 }
 
 // This method should be periodically pruned of year+ old migrations.

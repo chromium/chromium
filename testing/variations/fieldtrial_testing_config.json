@@ -17690,21 +17690,6 @@
             ]
         }
     ],
-    "SeparateProfilesForManagedAccountsImmediateForceMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SeparateProfilesForManagedAccountsImmediateForceMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerBackgroundUpdate": [
         {
             "platforms": [
