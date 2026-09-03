@@ -1433,6 +1433,14 @@ public class AutocompleteEditTextUnitTest {
         assertEquals("google.com", mAutocomplete.getText().toString());
     }
 
+    @Test
+    public void testPerformEditorAction_swallowNextAndPrevious() {
+        // IME_ACTION_NEXT and IME_ACTION_PREVIOUS should be swallowed without delegating to
+        // TextView, which would trigger an unwanted focusSearch. See crbug.com/553939053.
+        assertTrue(mInputConnection.performEditorAction(EditorInfo.IME_ACTION_NEXT));
+        assertTrue(mInputConnection.performEditorAction(EditorInfo.IME_ACTION_PREVIOUS));
+    }
+
     // crbug.com/40537418
 
     @Test
