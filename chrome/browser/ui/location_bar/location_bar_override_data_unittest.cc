@@ -8,18 +8,18 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "url/gurl.h"
 
 namespace location_bar {
 namespace {
@@ -189,25 +189,34 @@ TEST_F(LocationBarOverrideDataTest,
   EXPECT_EQ(GetLocationBarForWebContents(web_contents()), nullptr);
 }
 
-using LocationBarOverrideDataTabTest = BrowserWithTestWindowTest;
+TEST_F(LocationBarOverrideDataTest, FallbackToTabLocationBar) {
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
 
-TEST_F(LocationBarOverrideDataTabTest, FallbackToTabLocationBar) {
-  AddTab(browser(), GURL("http://example.com"));
-  content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(tab_contents, nullptr);
+  // Without a browser window interface on the tab,
+  // GetLocationBarForWebContents() returns nullptr.
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(nullptr));
+  EXPECT_EQ(GetLocationBarForWebContents(web_contents()), nullptr);
 
-  // Without override, GetLocationBarForWebContents() should fall back to the
-  // hosting BrowserWindow's LocationBar for the tab.
-  LocationBar* expected_location_bar = window()->GetLocationBar();
-  ASSERT_NE(expected_location_bar, nullptr);
-  EXPECT_EQ(GetLocationBarForWebContents(tab_contents), expected_location_bar);
+  // When the tab has an associated browser window interface,
+  // GetLocationBarForWebContents() queries the browser window features for the
+  // tab's location bar.
+  MockBrowserWindowInterface mock_browser;
+  BrowserWindowFeatures features;
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_browser));
+  EXPECT_CALL(mock_browser, GetFeatures())
+      .WillRepeatedly(testing::ReturnRef(features));
+  EXPECT_EQ(GetLocationBarForWebContents(web_contents()),
+            features.location_bar());
 
   // Attaching LocationBarOverrideData should take precedence over the fallback.
   FakeLocationBar fake_location_bar;
-  LocationBarOverrideData::CreateForWebContents(tab_contents,
+  LocationBarOverrideData::CreateForWebContents(web_contents(),
                                                 &fake_location_bar);
-  EXPECT_EQ(GetLocationBarForWebContents(tab_contents), &fake_location_bar);
+  EXPECT_EQ(GetLocationBarForWebContents(web_contents()), &fake_location_bar);
 }
 
 }  // namespace

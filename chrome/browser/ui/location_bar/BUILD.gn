@@ -34,10 +34,14 @@ source_set("unit_tests") {
   sources = [ "location_bar_override_data_unittest.cc" ]
   deps = [
     ":location_bar",
+    "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/views:bubble_anchor_util_views",
     "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//content/public/browser",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/geometry",
   ]
