@@ -5286,7 +5286,8 @@ void BrowserView::CreateJumpList() {
 #endif
 
 bool BrowserView::ShouldShowAvatarToolbarIPH() {
-  if (GetGuestSession() || GetIncognito()) {
+  if (GetGuestSession() || GetIncognito() ||
+      GetProfile()->IsEnterpriseIsolatedModeProfile()) {
     return false;
   }
   AvatarToolbarButtonInterface* avatar_button =
