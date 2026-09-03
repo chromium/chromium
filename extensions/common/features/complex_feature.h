@@ -5,11 +5,9 @@
 #ifndef EXTENSIONS_COMMON_FEATURES_COMPLEX_FEATURE_H_
 #define EXTENSIONS_COMMON_FEATURES_COMPLEX_FEATURE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
@@ -80,14 +78,22 @@ class ComplexFeature : public Feature {
   FRIEND_TEST_ALL_PREFIXES(ComplexFeatureTest,
                            RequiresDelegatedAvailabilityCheck);
 
-  bool VisitFeatures(base::FunctionRef<bool(Feature&)> visitor) const;
-
-  std::vector<std::unique_ptr<Feature>> features_;
+  // Returns false if `visitor` stops iteration by returning false. Descriptor
+  // children are temporary and must not be retained by the visitor.
+  bool VisitFeatures(base::FunctionRef<bool(const Feature&)> visitor) const;
+  // Returns the first available child result, or the first child's failure if
+  // no child is available.
+  Availability FindFirstAvailability(
+      base::FunctionRef<Availability(const Feature&)> get_availability) const;
+  // Safe to exclude because StaticFeatureData requires static storage.
+  RAW_PTR_EXCLUSION const ComplexFeatureData* complex_feature_data_ = nullptr;
 
   // If any of the Features comprising this class requires a delegated
   // availability check, then this flag is set to true.
   bool requires_delegated_availability_check_{false};
-  bool has_delegated_availability_check_handler_{false};
+  // Descriptor children are temporary, so their handler is reapplied on each
+  // visit.
+  DelegatedAvailabilityCheckHandler delegated_availability_check_handler_;
 };
 
 }  // namespace extensions

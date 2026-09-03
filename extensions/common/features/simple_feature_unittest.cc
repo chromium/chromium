@@ -1741,6 +1741,29 @@ TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
   // platform-test restrictions?
 }
 
+TEST(SimpleFeatureUnitTest, AvailableToEnvironmentChecksDependencies) {
+  static constexpr auto kPresentDependency =
+      std::to_array<std::string_view>({"manifest:content_security_policy"});
+  static constexpr auto kMissingDependency =
+      std::to_array<std::string_view>({"manifest:missing"});
+  static constexpr SimpleFeatureData kPresentData = {
+      .config = {.dependencies = StaticSpan(kPresentDependency)}};
+  static constexpr SimpleFeatureData kMissingData = {
+      .config = {.dependencies = StaticSpan(kMissingDependency)}};
+  SimpleFeature present_feature{StaticFeatureData(kPresentData)};
+  SimpleFeature missing_feature{StaticFeatureData(kMissingData)};
+
+  // An available dependency preserves environment availability.
+  EXPECT_EQ(
+      Feature::AvailabilityResult::kIsAvailable,
+      present_feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
+
+  // A missing dependency makes an otherwise unrestricted feature unavailable.
+  EXPECT_EQ(
+      Feature::AvailabilityResult::kNotPresent,
+      missing_feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
+}
+
 TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
   ScopedCurrentChannel current_channel(Channel::STABLE);
 

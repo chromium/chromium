@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -45,6 +46,7 @@ class StaticFeatureData {
   }
 
   constexpr const T* get() const { return data_; }
+  constexpr const T* operator->() const { return data_; }
 
  private:
   // Safe because construction requires static storage.
@@ -164,8 +166,8 @@ class Feature {
   // message in cases where the feature is not available.
   class Availability {
    public:
-    Availability(AvailabilityResult result, const std::string& message)
-        : result_(result), message_(message) {}
+    Availability(AvailabilityResult result, std::string message)
+        : result_(result), message_(std::move(message)) {}
 
     AvailabilityResult result() const { return result_; }
     // Used by V8ContextNativeHandler::GetAvailability().
@@ -179,8 +181,15 @@ class Feature {
     friend class SimpleFeature;
     friend class Feature;
 
-    const AvailabilityResult result_;
-    const std::string message_;
+    // Deliberately non-const. A const `message_` cannot transfer its buffer
+    // during move construction, and either const member would delete the
+    // assignment operators. Availability values are returned, stored, and
+    // propagated, so const would force copies or prevent moves. constexpr is
+    // not an alternative because the values are produced at runtime. The class
+    // is still effectively immutable, since the members are private and
+    // exposed only through const accessors.
+    AvailabilityResult result_;
+    std::string message_;
   };
 
   virtual ~Feature();

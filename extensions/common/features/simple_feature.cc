@@ -660,7 +660,7 @@ void SimpleFeature::SetDelegatedAvailabilityCheckHandler(
     DelegatedAvailabilityCheckHandler handler) {
   DCHECK(RequiresDelegatedAvailabilityCheck());
   DCHECK(!HasDelegatedAvailabilityCheckHandler());
-  delegated_availability_check_handler_ = handler;
+  delegated_availability_check_handler_ = std::move(handler);
 }
 
 Feature::Availability SimpleFeature::CheckDependencies(

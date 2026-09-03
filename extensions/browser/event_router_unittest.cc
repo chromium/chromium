@@ -1065,7 +1065,7 @@ class EventRouterDispatchTest : public ExtensionsTest {
  protected:
   void RegisterTestApiFeature(StaticFeatureData<SimpleFeatureData> data) {
     auto feature = std::make_unique<SimpleFeature>(data);
-    provider_.AddFeature(data.get()->feature.name, std::move(feature));
+    provider_.AddFeature(data->feature.name, std::move(feature));
     api_.RegisterDependencyProvider("api", &provider_);
     api_scope_ =
         std::make_unique<ExtensionAPI::OverrideSharedInstanceForTest>(&api_);
