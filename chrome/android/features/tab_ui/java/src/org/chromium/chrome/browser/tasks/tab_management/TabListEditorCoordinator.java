@@ -335,7 +335,7 @@ public class TabListEditorCoordinator {
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
 
     private final @TabListMode int mTabListMode;
-    private final boolean mDisplayGroups;
+    private final @TabListLayoutType int mLayoutType;
     private final TabContentManager mTabContentManager;
     private final @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider;
     private final ModalDialogManager mModalDialogManager;
@@ -365,7 +365,7 @@ public class TabListEditorCoordinator {
      * @param tabContentManager Provides thumbnails for tabs.
      * @param clientTabListRecyclerViewPositionSetter Allows setting the recycler view position.
      * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
-     * @param displayGroups Whether groups should be displayed.
+     * @param layoutType The {@link TabListLayoutType} of the tab list editor.
      * @param snackbarManager Used to display snackbar messages.
      * @param bottomSheetController Used to display bottom sheets.
      * @param initialTabActionState The initial TabActionState to use.
@@ -395,7 +395,7 @@ public class TabListEditorCoordinator {
             TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
             @TabListMode int mode,
-            boolean displayGroups,
+            @TabListLayoutType int layoutType,
             SnackbarManager snackbarManager,
             @Nullable BottomSheetController bottomSheetController,
             @TabActionState int initialTabActionState,
@@ -417,7 +417,7 @@ public class TabListEditorCoordinator {
             mCurrentTabModelSupplier = currentTabModelSupplier;
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
             mTabListMode = mode;
-            mDisplayGroups = displayGroups;
+            mLayoutType = layoutType;
             mSnackbarManager = snackbarManager;
             mTabActionState = initialTabActionState;
             mTabContentManager = tabContentManager;
@@ -446,7 +446,7 @@ public class TabListEditorCoordinator {
                             mCurrentTabModelSupplier,
                             mModel,
                             mSelectionDelegate,
-                            displayGroups,
+                            layoutType,
                             snackbarManager,
                             bottomSheetController,
                             mTabListEditorLayout,
@@ -623,7 +623,7 @@ public class TabListEditorCoordinator {
                 };
 
         ThumbnailProvider thumbnailProvider =
-                initMultiThumbnailCardProvider(mDisplayGroups, mTabContentManager);
+                initMultiThumbnailCardProvider(mLayoutType, mTabContentManager);
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.initWithNative(regularProfile);
         }
@@ -643,7 +643,7 @@ public class TabListEditorCoordinator {
                         mModalDialogManager,
                         mCurrentTabModelSupplier,
                         thumbnailProvider,
-                        mDisplayGroups ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT,
+                        mLayoutType,
                         /* dataSharingTabManager= */ null,
                         mTabListItemOnClickListenerProvider,
                         /* ungroupBarStatusHandler= */ null,
@@ -698,7 +698,7 @@ public class TabListEditorCoordinator {
                 PropertyModelChangeProcessor.create(
                         mModel, mTabListEditorLayout, TabListEditorLayoutBinder::bind);
 
-        if (mEdgeToEdgeSupplier != null && mDisplayGroups) {
+        if (mEdgeToEdgeSupplier != null && mLayoutType == TabListLayoutType.GROUPED) {
             assert mTabListMode != TabListMode.BOTTOM_STRIP
                     : "STRIP tab lists should not be padded for edge-to-edge.";
             mEdgeToEdgePadAdjuster =
@@ -718,8 +718,8 @@ public class TabListEditorCoordinator {
     }
 
     private ThumbnailProvider initMultiThumbnailCardProvider(
-            boolean displayGroups, TabContentManager tabContentManager) {
-        if (displayGroups) {
+            @TabListLayoutType int layoutType, TabContentManager tabContentManager) {
+        if (layoutType == TabListLayoutType.GROUPED) {
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
                             mActivity,

@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ResetHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -147,7 +148,7 @@ public final class TabListEditorMediatorUnitTest {
                         mTabModelSupplier,
                         mModel,
                         mSelectionDelegate,
-                        /* actionOnRelatedTabs= */ false,
+                        TabListLayoutType.FLAT,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         mTabListEditorLayout,

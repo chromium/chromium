@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,6 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -826,7 +828,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         /* clientTabListRecyclerViewPositionSetter= */ CallbackUtils
                                 .emptyCallback(),
                         mMode,
-                        /* displayGroups= */ true,
+                        TabListLayoutType.GROUPED,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.CLOSABLE,
@@ -879,12 +881,12 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 R.plurals.archive_dialog_close_all_inactive_tabs_confirmation_title,
                                 tabCount,
                                 tabCount);
+        @StringRes
+        int descResId = R.string.archive_dialog_close_all_inactive_tabs_confirmation_description;
         mActionConfirmationDialog.show(
                 new ConfirmationDialogParams.Builder(mActivity)
                         .withTitle(title)
-                        .withDescription(
-                                R.string
-                                        .archive_dialog_close_all_inactive_tabs_confirmation_description)
+                        .withDescription(descResId)
                         .withPositiveButton(
                                 R.string.archive_dialog_close_all_inactive_tabs_confirmation)
                         .withNegativeButton(R.string.cancel)

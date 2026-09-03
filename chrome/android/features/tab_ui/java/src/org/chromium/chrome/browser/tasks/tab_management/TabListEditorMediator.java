@@ -72,7 +72,7 @@ class TabListEditorMediator
             new ValueChangedCallback<>(this::onTabModelChanged);
     private final PropertyModel mModel;
     private final SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
-    private final boolean mActionOnRelatedTabs;
+    private final @TabListLayoutType int mLayoutType;
     private final TabModelObserver mTabModelObserver;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -121,7 +121,7 @@ class TabListEditorMediator
             NullableObservableSupplier<TabModel> currentTabModelSupplier,
             PropertyModel model,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
-            boolean actionOnRelatedTabs,
+            @TabListLayoutType int layoutType,
             SnackbarManager snackbarManager,
             @Nullable BottomSheetController bottomSheetController,
             TabListEditorLayout tabListEditorLayout,
@@ -133,7 +133,7 @@ class TabListEditorMediator
         mCurrentTabModelSupplier = currentTabModelSupplier;
         mModel = model;
         mSelectionDelegate = selectionDelegate;
-        mActionOnRelatedTabs = actionOnRelatedTabs;
+        mLayoutType = layoutType;
         mSnackbarManager = snackbarManager;
         mBottomSheetController = bottomSheetController;
         mTabListEditorLayout = tabListEditorLayout;
@@ -364,11 +364,7 @@ class TabListEditorMediator
         runListDestroyables();
         mActionListModel.clear();
         for (TabListEditorAction action : actions) {
-            action.configure(
-                    mCurrentTabModelSupplier,
-                    mSelectionDelegate,
-                    this,
-                    mActionOnRelatedTabs ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT);
+            action.configure(mCurrentTabModelSupplier, mSelectionDelegate, this, mLayoutType);
             mActionListModel.add(action.getPropertyModel());
         }
 

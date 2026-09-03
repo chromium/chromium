@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -623,7 +624,6 @@ public class TabItemPickerCoordinator {
             }
         }
 
-        @VisibleForTesting
         public TabItemPickerOffscreenRenderer getOffscreenRendererForTesting() {
             return mOffscreenRenderer;
         }
@@ -711,7 +711,7 @@ public class TabItemPickerCoordinator {
                         tabContentManager,
                         CallbackUtils.emptyCallback(),
                         TabListMode.GRID,
-                        /* displayGroups= */ false,
+                        TabListLayoutType.FLAT,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.SELECTABLE,
