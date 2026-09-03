@@ -45,12 +45,6 @@
   --icon-menu-spacing: 6px;
   --icon-menu-icon-size: 24px;
   --icon-menu-button-size: 40px;
-  /* TODO(crbug.com/467758241): Change
-   * pdf icon to one without outline just for contextual tasks.
-   * Border-radius is temporary fix to hide
-   * most of outline.
-   */
-  --pdf-icon-border-radius: 12px;
   --pdf-icon-size: 16px;
   --document-icon-size: 16px;
   --injected-input-icon-size: 24px;
@@ -62,6 +56,10 @@
   --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
   --standard-accelerate-curve: cubic-bezier(0.3, 0, 1, 1);
   --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
+}
+
+:host-context([webui-rounded-icons]) {
+  --pdf-icon-size: 24px;
 }
 
 :host([energy-effect-enabled_]) {
