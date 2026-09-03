@@ -96,8 +96,8 @@ public class SessionDataHolder {
      */
     public @Nullable Class<? extends Activity> getActiveHandlerClassInCurrentTask(
             Intent intent, Context context) {
-        if (!(context instanceof Activity)) return null;
-        int taskId = ((Activity) context).getTaskId();
+        if (!(context instanceof Activity activity)) return null;
+        int taskId = activity.getTaskId();
         SessionData handlerDataInCurrentTask = mTaskIdToSessionData.get(taskId);
         if (handlerDataInCurrentTask == null
                 || !handlerDataInCurrentTask.session.equals(

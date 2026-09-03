@@ -262,8 +262,8 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
         GlobalNightModeStateProviderHolder.getInstance().removeObserver(this);
         if (mView != null) {
             ViewParent parent = mView.getParent();
-            if (parent instanceof ViewGroup) {
-                ((ViewGroup) parent).removeView(mView);
+            if (parent instanceof ViewGroup viewGroup) {
+                viewGroup.removeView(mView);
             }
             mView = null;
         }

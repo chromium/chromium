@@ -163,7 +163,8 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
                     Log.w(TAG, "onServiceConnected");
-                    if (!(service instanceof DownloadForegroundServiceImpl.LocalBinder)) {
+                    if (!(service
+                            instanceof DownloadForegroundServiceImpl.LocalBinder localBinder)) {
                         Log.w(
                                 TAG,
                                 "Not from DownloadNotificationService, do not connect."
@@ -171,8 +172,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
                                         + className);
                         return;
                     }
-                    mBoundService =
-                            ((DownloadForegroundServiceImpl.LocalBinder) service).getService();
+                    mBoundService = localBinder.getService();
                     DownloadForegroundServiceObservers.addObserver(
                             DownloadNotificationServiceObserver.class);
                     processDownloadUpdateQueue(/* isProcessingPending= */ true);

@@ -189,8 +189,8 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
         }
 
         TabCreator tabCreator = null;
-        if (activity instanceof TabCreatorManager) {
-            tabCreator = ((TabCreatorManager) activity).getTabCreator(/* incognito= */ false);
+        if (activity instanceof TabCreatorManager tabCreatorManager) {
+            tabCreator = tabCreatorManager.getTabCreator(/* incognito= */ false);
         }
 
         PageInfoController.show(

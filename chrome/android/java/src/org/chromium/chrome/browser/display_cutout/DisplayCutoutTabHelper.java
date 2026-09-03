@@ -133,12 +133,10 @@ public class DisplayCutoutTabHelper implements UserData {
         @Override
         public @DisplayMode.EnumType int getDisplayMode() {
             Activity activity = getAttachedActivity();
-            if (!(activity instanceof BaseCustomTabActivity)) {
+            if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) {
                 return DisplayMode.BROWSER;
             }
-            return ((BaseCustomTabActivity) activity)
-                    .getIntentDataProvider()
-                    .getResolvedDisplayMode();
+            return baseCustomTabActivity.getIntentDataProvider().getResolvedDisplayMode();
         }
 
         @Override
@@ -157,8 +155,8 @@ public class DisplayCutoutTabHelper implements UserData {
          */
         private @Nullable EdgeToEdgeManager getEdgeToEdgeManagerOrNull() {
             Activity activity = getAttachedActivity();
-            if (!(activity instanceof BaseCustomTabActivity)) return null;
-            return ((BaseCustomTabActivity) activity).getEdgeToEdgeManager();
+            if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) return null;
+            return baseCustomTabActivity.getEdgeToEdgeManager();
         }
 
         @Override

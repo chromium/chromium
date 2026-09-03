@@ -1677,7 +1677,7 @@ public class IntentHandler {
         if (tab == null) return null;
 
         Context tabContext = tab.getContext();
-        return (tabContext instanceof Activity) ? (Activity) tabContext : null;
+        return (tabContext instanceof Activity activity) ? activity : null;
     }
 
     /**
