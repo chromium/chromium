@@ -697,6 +697,9 @@
     'borealis': {
       'filepath': 'borealis/',
     },
+    'bottom_sheet': {
+      'filepath': 'components/browser_ui/bottomsheet/',
+    },
     'bounce_tracking_mitigations': {
       'filepath': 'chrome/browser/btm/' \
                   '|content/browser/btm/' \
@@ -2847,6 +2850,10 @@
     'blink_wtf': ['blink-reviews-wtf@chromium.org'],
     'blink_xml': ['dominicc+watchlist@chromium.org'],
     'borealis': ['borealis-reviews+watch@google.com'],
+    'bottom_sheet': ['adelm@google.com',
+                     'hitarthkothari@google.com',
+                     'mfiaz@google.com',
+                     'sinansahin@google.com'],
     'bounce_tracking_mitigations': ['amaliev+watch-btm@chromium.org',
                                     'jdh+watch-btm@chromium.org',
                                     'liu+watch-btm@chromium.org',
