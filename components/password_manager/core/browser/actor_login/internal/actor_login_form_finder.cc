@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/browser/actor_login/actor_login_frame_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
@@ -66,6 +65,45 @@ GetFieldType(const autofill::FormFieldData& field,
       UNKNOWN;
 }
 
+bool IsFormOriginSupported(const url::Origin& form_origin,
+                           const url::Origin& main_frame_origin) {
+  return net::registry_controlled_domains::SameDomainOrHost(
+      form_origin, main_frame_origin,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+bool IsValidFrameAndOriginToFill(
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    const url::Origin& main_frame_origin) {
+  if (driver->IsNestedWithinFencedFrame()) {
+    // Fenced frames should not be filled.
+    return false;
+  }
+
+  if (!IsFormOriginSupported(driver->GetLastCommittedOrigin(),
+                             main_frame_origin)) {
+    return false;
+  }
+
+  // TODO(crbug.com/539923959): The following is done to provide a close-enough
+  // value for iOS. Remove the flag guard once iOS has implemented
+  // `IOSPasswordManagerDriver::HasCrossOriginAncestor()`; this relies on the
+  // ancestors of a web frame being trackable.
+#if BUILDFLAG(IS_IOS)
+  bool has_cross_origin_ancestor =
+      !driver->GetLastCommittedOrigin().IsSameOriginWith(main_frame_origin);
+#else
+  bool has_cross_origin_ancestor = driver->HasCrossOriginAncestor();
+#endif
+
+  // We can fill a form if its frame context is considered safe and not overly
+  // nested. A "fillable context" is either the primary main frame itself,
+  // a direct child of the primary main frame that is not a fenced frame, or
+  // a nested frame that is same-origin with the main frame and has no
+  // cross-origin ancestors.
+  return !has_cross_origin_ancestor || driver->IsInPrimaryMainFrame() ||
+         driver->IsDirectChildOfPrimaryMainFrame();
+}
 
 void OnIsLoginFormAsyncFinished(
     DriverFormKey key,
@@ -169,7 +207,7 @@ void ActorLoginFormFinder::GetEligibleLoginFormManagersAsync(
       continue;
     }
 
-    if (!IsValidFrameAndOriginToFill(manager->GetDriver().get(), origin)) {
+    if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
       ParsedFormDetails form_details;
       SetFormData(*form_details.mutable_form_data(),
                   *manager->GetParsedObservedForm());
