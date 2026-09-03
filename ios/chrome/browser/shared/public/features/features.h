@@ -502,12 +502,6 @@ BASE_DECLARE_FEATURE(kIOSProvidesAppNotificationSettings);
 // enabled.
 BASE_DECLARE_FEATURE(kRunDefaultStatusCheck);
 
-// Feature flag to enable the custom color slider on the NTP.
-BASE_DECLARE_FEATURE(kNTPBackgroundColorSlider);
-
-// Checks if the custom color slider is enabled on the NTP.
-bool IsNTPBackgroundColorSliderEnabled();
-
 // Feature flag to enable downsampling user-uploaded NTP background images to
 // screen size. When disabled (default), images are loaded at full resolution.
 BASE_DECLARE_FEATURE(kNTPBackgroundDownsampleImage);

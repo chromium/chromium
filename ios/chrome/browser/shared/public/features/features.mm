@@ -574,12 +574,6 @@ BASE_FEATURE(kNotificationCollisionManagement,
 BASE_FEATURE(kIOSProvidesAppNotificationSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNTPBackgroundColorSlider, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsNTPBackgroundColorSliderEnabled() {
-  return base::FeatureList::IsEnabled(kNTPBackgroundColorSlider);
-}
-
 BASE_FEATURE(kNTPBackgroundDownsampleImage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunDefaultStatusCheck, base::FEATURE_ENABLED_BY_DEFAULT);

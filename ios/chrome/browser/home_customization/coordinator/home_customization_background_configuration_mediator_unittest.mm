@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -267,10 +266,9 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   BackgroundCollectionConfiguration* collection = consumer_.configurations[0];
 
-  // First element is the default background. Last element may be the custom
-  // color option. So expected size is number of colors + 1 or 2.
-  std::size_t expected_size =
-      kSeedColors.size() + 1 + (IsNTPBackgroundColorSliderEnabled() ? 1 : 0);
+  // First element is the default background. Last element is the custom color
+  // option. So expected size is number of colors + 2.
+  std::size_t expected_size = kSeedColors.size() + 2;
   EXPECT_EQ(expected_size, collection.configurationOrder.count);
   EXPECT_EQ(expected_size, collection.configurations.count);
 

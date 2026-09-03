@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/home_customization/ui/rainbow_slider.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -143,36 +142,34 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                    atIndexPath:indexPath];
            }];
 
-  if (IsNTPBackgroundColorSliderEnabled()) {
-    layout.footerReferenceSize = CGSizeMake(self.view.frame.size.width, 50.0);
+  layout.footerReferenceSize = CGSizeMake(self.view.frame.size.width, 50.0);
 
-    _customColorSlider = [[RainbowSlider alloc] init];
-    _customColorSlider.translatesAutoresizingMaskIntoConstraints = NO;
-    _customColorSlider.accessibilityIdentifier =
-        kRainbowSliderAccessibilityIdentifier;
-    _customColorSlider.color = _customColorConfiguration.backgroundColor;
-    [_customColorSlider addTarget:self
-                           action:@selector(customColorChanged:)
-                 forControlEvents:UIControlEventValueChanged];
+  _customColorSlider = [[RainbowSlider alloc] init];
+  _customColorSlider.translatesAutoresizingMaskIntoConstraints = NO;
+  _customColorSlider.accessibilityIdentifier =
+      kRainbowSliderAccessibilityIdentifier;
+  _customColorSlider.color = _customColorConfiguration.backgroundColor;
+  [_customColorSlider addTarget:self
+                         action:@selector(customColorChanged:)
+               forControlEvents:UIControlEventValueChanged];
 
-    _customColorCellRegistration = [UICollectionViewCellRegistration
-        registrationWithCellClass:[HomeCustomizationCustomColorCell class]
-             configurationHandler:^(HomeCustomizationCustomColorCell* cell,
-                                    NSIndexPath* indexPath,
-                                    id<BackgroundCustomizationConfiguration>
-                                        backgroundConfiguration) {
-               [weakSelf configureCustomColorCell:cell];
-             }];
+  _customColorCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[HomeCustomizationCustomColorCell class]
+           configurationHandler:^(HomeCustomizationCustomColorCell* cell,
+                                  NSIndexPath* indexPath,
+                                  id<BackgroundCustomizationConfiguration>
+                                      backgroundConfiguration) {
+             [weakSelf configureCustomColorCell:cell];
+           }];
 
-    _footerRegistration = [UICollectionViewSupplementaryRegistration
-        registrationWithSupplementaryClass:[UICollectionReusableView class]
-                               elementKind:UICollectionElementKindSectionFooter
-                      configurationHandler:^(UICollectionReusableView* footer,
-                                             NSString* elementKind,
-                                             NSIndexPath* indexPath) {
-                        [weakSelf configureFooterView:footer];
-                      }];
-  }
+  _footerRegistration = [UICollectionViewSupplementaryRegistration
+      registrationWithSupplementaryClass:[UICollectionReusableView class]
+                             elementKind:UICollectionElementKindSectionFooter
+                    configurationHandler:^(UICollectionReusableView* footer,
+                                           NSString* elementKind,
+                                           NSIndexPath* indexPath) {
+                      [weakSelf configureFooterView:footer];
+                    }];
 
   _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                        collectionViewLayout:layout];
@@ -261,17 +258,15 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[selectedID];
 
-  if (IsNTPBackgroundColorSliderEnabled()) {
-    BOOL isCustomColorCell = [backgroundConfiguration.configurationID
-        isEqualToString:_customColorConfiguration.configurationID];
+  BOOL isCustomColorCell = [backgroundConfiguration.configurationID
+      isEqualToString:_customColorConfiguration.configurationID];
 
-    [self setFooterVisible:isCustomColorCell];
+  [self setFooterVisible:isCustomColorCell];
 
-    if (isCustomColorCell && !backgroundConfiguration.isCustomColor) {
-      // If the custom color cell hasn't even been set, don't actually apply the
-      // background color until later, when the user drags the slider.
-      return;
-    }
+  if (isCustomColorCell && !backgroundConfiguration.isCustomColor) {
+    // If the custom color cell hasn't even been set, don't actually apply the
+    // background color until later, when the user drags the slider.
+    return;
   }
 
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
@@ -292,8 +287,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     id<BackgroundCustomizationConfiguration> backgroundConfiguration =
         _backgroundCollectionConfiguration.configurations[itemID];
 
-    if (IsNTPBackgroundColorSliderEnabled() &&
-        [backgroundConfiguration.configurationID
+    if ([backgroundConfiguration.configurationID
             isEqualToString:_customColorConfiguration.configurationID]) {
       return [collectionView
           dequeueConfiguredReusableCellWithRegistration:
@@ -317,8 +311,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 - (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
           viewForSupplementaryElementOfKind:(NSString*)kind
                                 atIndexPath:(NSIndexPath*)indexPath {
-  if (IsNTPBackgroundColorSliderEnabled() &&
-      kind == UICollectionElementKindSectionFooter) {
+  if (kind == UICollectionElementKindSectionFooter) {
     return [collectionView
         dequeueConfiguredReusableSupplementaryViewWithRegistration:
             _footerRegistration
@@ -332,54 +325,52 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 // Shows or hides the footer with an animation.
 - (void)setFooterVisible:(BOOL)visible {
-  if (IsNTPBackgroundColorSliderEnabled()) {
-    UICollectionReusableView* footerView = [self footerView];
+  UICollectionReusableView* footerView = [self footerView];
 
-    if (visible) {
-      // First scroll to the custom color slider, show the color slider and
-      // animate the footer if the custom color cell is selected.
-      NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+  if (visible) {
+    // First scroll to the custom color slider, show the color slider and
+    // animate the footer if the custom color cell is selected.
+    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
 
-      // We use UICollectionViewLayoutAttributes instead of the footer view
-      // itself because the footer may not yet exist when it's offscreen. Layout
-      // attributes are always available, allowing us to determine the footer's
-      // position even before the footer is created.
-      UICollectionViewLayoutAttributes* footerAttributes =
-          [_collectionView.collectionViewLayout
-              layoutAttributesForSupplementaryViewOfKind:
-                  UICollectionElementKindSectionFooter
-                                             atIndexPath:indexPath];
+    // We use UICollectionViewLayoutAttributes instead of the footer view
+    // itself because the footer may not yet exist when it's offscreen. Layout
+    // attributes are always available, allowing us to determine the footer's
+    // position even before the footer is created.
+    UICollectionViewLayoutAttributes* footerAttributes =
+        [_collectionView.collectionViewLayout
+            layoutAttributesForSupplementaryViewOfKind:
+                UICollectionElementKindSectionFooter
+                                           atIndexPath:indexPath];
 
-      [_collectionView scrollRectToVisible:footerAttributes.frame animated:YES];
-      footerView.hidden = NO;
-      footerView.transform =
-          CGAffineTransformMakeTranslation(0, footerView.bounds.size.height);
-      [UIView animateWithDuration:kFooterSlideInDuration
-                            delay:0
-           usingSpringWithDamping:kFooterSlideInDamping
-            initialSpringVelocity:kFooterSlideInVelocity
-                          options:UIViewAnimationOptionCurveEaseInOut
-                       animations:^{
-                         footerView.transform = CGAffineTransformIdentity;
-                       }
-                       completion:nil];
-    } else if (!footerView.hidden) {
-      // The footer is only visible if the custom color cell is selected.
-      [UIView animateWithDuration:kFooterSlideInDuration
-          delay:0
-          usingSpringWithDamping:kFooterSlideInDamping
+    [_collectionView scrollRectToVisible:footerAttributes.frame animated:YES];
+    footerView.hidden = NO;
+    footerView.transform =
+        CGAffineTransformMakeTranslation(0, footerView.bounds.size.height);
+    [UIView animateWithDuration:kFooterSlideInDuration
+                          delay:0
+         usingSpringWithDamping:kFooterSlideInDamping
           initialSpringVelocity:kFooterSlideInVelocity
-          options:UIViewAnimationOptionCurveEaseInOut
-          animations:^{
-            footerView.transform = CGAffineTransformMakeTranslation(
-                0, footerView.bounds.size.height +
-                       20.0);  // 20px is added to hide the footer completely.
-          }
-          completion:^(BOOL finished) {
-            footerView.hidden = YES;
-            footerView.transform = CGAffineTransformIdentity;
-          }];
-    }
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                       footerView.transform = CGAffineTransformIdentity;
+                     }
+                     completion:nil];
+  } else if (!footerView.hidden) {
+    // The footer is only visible if the custom color cell is selected.
+    [UIView animateWithDuration:kFooterSlideInDuration
+        delay:0
+        usingSpringWithDamping:kFooterSlideInDamping
+        initialSpringVelocity:kFooterSlideInVelocity
+        options:UIViewAnimationOptionCurveEaseInOut
+        animations:^{
+          footerView.transform = CGAffineTransformMakeTranslation(
+              0, footerView.bounds.size.height +
+                     20.0);  // 20px is added to hide the footer completely.
+        }
+        completion:^(BOOL finished) {
+          footerView.hidden = YES;
+          footerView.transform = CGAffineTransformIdentity;
+        }];
   }
 }
 

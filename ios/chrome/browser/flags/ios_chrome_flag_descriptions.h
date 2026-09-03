@@ -1414,13 +1414,6 @@ inline constexpr char kMostVisitedTilesHorizontalRenderGroupName[] =
 inline constexpr char kMostVisitedTilesHorizontalRenderGroupDescription[] =
     "When enabled, the MV tiles are represented as individual matches";
 
-inline constexpr char kNTPBackgroundColorSliderName[] =
-    "Enable the background color slider in the background customization color "
-    "picker";
-inline constexpr char kNTPBackgroundColorSliderDescription[] =
-    "When enabled, the color slider is available in the background "
-    "customization color picker.";
-
 inline constexpr char kNTPBackgroundDownsampleImageName[] =
     "NTP Background Downsample Image";
 inline constexpr char kNTPBackgroundDownsampleImageDescription[] =
