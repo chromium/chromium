@@ -833,37 +833,4 @@ public class DisplayUtilTest {
                 DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
                         LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
     }
-
-    @Test
-    public void testIsContextInInternalDisplay_testingOverride() {
-        DisplayUtil.setIsInInternalDisplayForTesting(true);
-        assertTrue(
-                "Should return true when test override is true.",
-                DisplayUtil.isContextInInternalDisplay(ContextUtils.getApplicationContext()));
-
-        DisplayUtil.setIsInInternalDisplayForTesting(false);
-        assertFalse(
-                "Should return false when test override is false.",
-                DisplayUtil.isContextInInternalDisplay(ContextUtils.getApplicationContext()));
-    }
-
-    @Test
-    public void testIsContextInInternalDisplay_internalDisplay() {
-        DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
-        when(mDisplayAndroid.isInternal()).thenReturn(true);
-
-        assertTrue(
-                "Should return true when display is internal.",
-                DisplayUtil.isContextInInternalDisplay(ContextUtils.getApplicationContext()));
-    }
-
-    @Test
-    public void testIsContextInInternalDisplay_externalDisplay() {
-        DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
-        when(mDisplayAndroid.isInternal()).thenReturn(false);
-
-        assertFalse(
-                "Should return false when display is external (not internal).",
-                DisplayUtil.isContextInInternalDisplay(ContextUtils.getApplicationContext()));
-    }
 }

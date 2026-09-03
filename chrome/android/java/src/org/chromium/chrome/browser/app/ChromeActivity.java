@@ -2348,7 +2348,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // regardless of whether or not there is an external monitor. We use an int for
             // the scaling factor FeatureParam, e.g. 109 = 109% scaling, but the underlying
             // code expects a float of 1.09f in that case.
-            if (!DisplayUtil.isContextInInternalDisplay(this)
+            if (!DisplayUtil.isContextInDefaultDisplay(this)
                     && DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
                 HostZoomMap.setTransparentZoomAdjustment(
                         (float) ContentFeatureList.sAndroidMonitorZoomScalingFactor.getValue()

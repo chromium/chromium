@@ -613,8 +613,14 @@ public class WindowAndroid
         }
     }
 
+    private static boolean isInternalDisplay(Context context) {
+        // TODO(b/521980379): Evaluate migrating to DisplayAndroid#isInternal for external display
+        // check.
+        return DisplayUtil.isContextInDefaultDisplay(context);
+    }
+
     private static boolean computeAllowChangeRefreshRate(Context context) {
-        return !DeviceInfo.isTV() && DisplayUtil.isContextInInternalDisplay(context);
+        return !DeviceInfo.isTV() && isInternalDisplay(context);
     }
 
     @CalledByNativeForTesting

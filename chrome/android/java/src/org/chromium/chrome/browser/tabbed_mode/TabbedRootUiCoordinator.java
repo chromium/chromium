@@ -2136,7 +2136,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable MultiInstanceManager multiInstanceManager) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         if (!ToolbarFeatures.isAppHeaderCustomizationSupported(
-                isTablet, DisplayUtil.isContextInInternalDisplay(activity))) {
+                isTablet, DisplayUtil.isContextInDefaultDisplay(activity))) {
             return null;
         }
 

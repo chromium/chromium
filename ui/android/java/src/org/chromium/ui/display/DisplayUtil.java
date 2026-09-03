@@ -18,6 +18,7 @@ import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
@@ -49,7 +50,7 @@ public abstract class DisplayUtil {
     private static @Nullable Double sGlobalDefaultDisplaySizeInInches;
     private static @Nullable Boolean sIsDisplayCompatAppForTesting;
     private static @Nullable Integer sSmallestScreenWidthForTesting;
-    private static @Nullable Boolean sIsInInternalDisplayForTesting;
+    private static @Nullable Boolean sIsOnDefaultDisplayForTesting;
     private static @Nullable Float sUiScalingFactorForAutomotiveForTesting;
     // For XR environment.
     private static @Nullable Float sUiScalingFactorForXrForTesting;
@@ -70,9 +71,9 @@ public abstract class DisplayUtil {
         ResettersForTesting.register(() -> sSmallestScreenWidthForTesting = null);
     }
 
-    public static void setIsInInternalDisplayForTesting(boolean value) {
-        sIsInInternalDisplayForTesting = value;
-        ResettersForTesting.register(() -> sIsInInternalDisplayForTesting = null);
+    public static void setIsOnDefaultDisplayForTesting(boolean value) {
+        sIsOnDefaultDisplayForTesting = value;
+        ResettersForTesting.register(() -> sIsOnDefaultDisplayForTesting = null);
     }
 
     /**
@@ -562,18 +563,18 @@ public abstract class DisplayUtil {
     }
 
     /**
-     * Determine whether the given context is associated with the internal display.
+     * Determine whether the given context is associated with the default display.
      *
      * @param context The context to determine display state.
-     * @return {@code true} if the context is associated with the internal display, {@code false}
+     * @return {@code true} if the context is associated with the default display, {@code false}
      *     otherwise.
      */
-    public static boolean isContextInInternalDisplay(Context context) {
-        if (sIsInInternalDisplayForTesting != null) {
-            return sIsInInternalDisplayForTesting;
+    public static boolean isContextInDefaultDisplay(Context context) {
+        if (sIsOnDefaultDisplayForTesting != null) {
+            return sIsOnDefaultDisplayForTesting;
         }
-        DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
-        return displayAndroid.isInternal();
+        Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
+        return display.getDisplayId() == Display.DEFAULT_DISPLAY;
     }
 
     /**

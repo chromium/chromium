@@ -45,14 +45,14 @@ public final class ToolbarFeatures {
      * strip in the caption bar when applicable.
      */
     public static boolean isAppHeaderCustomizationSupported(
-            boolean isTablet, boolean isInternalDisplay) {
+            boolean isTablet, boolean isDefaultDisplay) {
         if (DeviceInfo.isAutomotive()) {
             return false;
         }
 
         // Determine if app header customization will be supported on an external display.
-        if (!AppHeaderUtils.shouldAllowHeaderCustomizationOnExternalDisplay()
-                && !isInternalDisplay) {
+        if (!AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
+                && !isDefaultDisplay) {
             return false;
         }
 
