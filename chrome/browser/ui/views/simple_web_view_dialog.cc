@@ -185,9 +185,6 @@ content::WebContents* SimpleWebViewDialog::GetWebViewWebContents() {
 
 void SimpleWebViewDialog::Init() {
   // Create the security state model that the location bar model needs.
-  content::WebContents* web_contents = GetWebViewWebContents();
-  if (web_contents) {
-  }
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);
 
