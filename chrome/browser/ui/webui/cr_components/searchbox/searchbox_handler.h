@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/common/input_state.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -263,7 +264,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
+  PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
+
+  void OnKeywordSpaceTriggeringPrefChanged();
 
   void OpenMatch(OmniboxPopupSelection selection,
                  AutocompleteMatch match,

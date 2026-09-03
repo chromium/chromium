@@ -96,6 +96,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
                const std::string&,
                const GURL&));
   MOCK_METHOD(void, SetInputText, (const std::string& input_text));
+  MOCK_METHOD(void, SetKeywordSpaceTriggeringEnabled, (bool));
   MOCK_METHOD(void,
               SetThumbnail,
               (const std::string& thumbnail_url, bool is_deletable));

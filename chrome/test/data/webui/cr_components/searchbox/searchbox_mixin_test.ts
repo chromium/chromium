@@ -2989,4 +2989,16 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('youtube.com', element.inputKeywordModel?.keyword);
         assertEquals('', mockInput.inputElement.value);
       });
+
+  test('dynamic keyword space triggering pref change', async () => {
+    assertTrue(element.keywordModeManager.keywordSpaceTriggeringEnabled);
+
+    testProxy.callbackRouterRemote.setKeywordSpaceTriggeringEnabled(false);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertFalse(element.keywordModeManager.keywordSpaceTriggeringEnabled);
+
+    testProxy.callbackRouterRemote.setKeywordSpaceTriggeringEnabled(true);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(element.keywordModeManager.keywordSpaceTriggeringEnabled);
+  });
 });

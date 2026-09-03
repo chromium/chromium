@@ -46,6 +46,7 @@
 #include "components/omnibox/browser/fusebox_action.mojom.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -212,6 +213,58 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
     EXPECT_TRUE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
   }
+}
+
+TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictKeywordSpaceTriggering) {
+  profile()->GetPrefs()->SetBoolean(omnibox::kKeywordSpaceTriggeringEnabled,
+                                    false);
+  base::DictValue strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
+  EXPECT_FALSE(*strings.FindBool("keywordSpaceTriggeringEnabled"));
+
+  profile()->GetPrefs()->SetBoolean(omnibox::kKeywordSpaceTriggeringEnabled,
+                                    true);
+  strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
+  EXPECT_TRUE(*strings.FindBool("keywordSpaceTriggeringEnabled"));
+}
+
+TEST_F(SearchboxHandlerTest, KeywordSpaceTriggeringDynamicPrefChange) {
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface;
+  ui::UnownedUserDataHost unowned_user_data_host;
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowFeatures browser_window_features;
+  SetupMockBrowserWindowInterface(browser_window_interface, profile(),
+                                  browser_window_features,
+                                  unowned_user_data_host);
+#else
+  ON_CALL(browser_window_interface, GetProfile())
+      .WillByDefault(testing::Return(profile()));
+  ON_CALL(browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+#endif
+  webui::SetBrowserWindowInterface(web_contents.get(),
+                                   &browser_window_interface);
+
+  EXPECT_CALL(page_, SetKeywordSpaceTriggeringEnabled(true));
+  auto handler = std::make_unique<RealboxHandlerPublic>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      page_.BindAndGetRemote(), profile(), web_contents.get(),
+      base::BindLambdaForTesting(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }));
+  page_.FlushForTesting();
+
+  EXPECT_CALL(page_, SetKeywordSpaceTriggeringEnabled(false));
+  profile()->GetPrefs()->SetBoolean(omnibox::kKeywordSpaceTriggeringEnabled,
+                                    false);
+  page_.FlushForTesting();
+
+  EXPECT_CALL(page_, SetKeywordSpaceTriggeringEnabled(true));
+  profile()->GetPrefs()->SetBoolean(omnibox::kKeywordSpaceTriggeringEnabled,
+                                    true);
+  page_.FlushForTesting();
 }
 
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictLensSearchHint) {

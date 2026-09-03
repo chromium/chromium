@@ -10,10 +10,11 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, InputKeywordModel, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, InputKeywordModel, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputMethod, SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {KeywordModeManager} from './keyword_mode_manager.js';
+import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxInputElement} from './searchbox_input.js';
 import {kDefaultSelection} from './searchbox_match.js';
@@ -163,9 +164,19 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     private controlKeyState_: ControlKeyState = ControlKeyState.UP;
     private lastIgnoredEnterEvent_: KeyboardEvent|null = null;
     private searchboxEventTracker_: EventTracker = new EventTracker();
+    private callbackRouter_: PageCallbackRouter =
+        SearchboxBrowserProxy.getInstance().callbackRouter;
+    private keywordSpaceTriggeringListenerId_: number|null = null;
 
     override connectedCallback() {
       super.connectedCallback();
+
+      this.keywordSpaceTriggeringListenerId_ =
+          this.callbackRouter_.setKeywordSpaceTriggeringEnabled.addListener(
+              (enabled: boolean) => {
+                this.keywordModeManager_.keywordSpaceTriggeringEnabled =
+                    enabled;
+              });
 
       // On user interaction, freeze the current results to avoid result updates
       // potentially erasing user changes like cursor position.
@@ -190,6 +201,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     override disconnectedCallback() {
       super.disconnectedCallback();
       this.searchboxEventTracker_.removeAll();
+      if (this.keywordSpaceTriggeringListenerId_ !== null) {
+        this.callbackRouter_.removeListener(
+            this.keywordSpaceTriggeringListenerId_);
+        this.keywordSpaceTriggeringListenerId_ = null;
+      }
     }
 
     override willUpdate(changedProperties: PropertyValues<this>) {
