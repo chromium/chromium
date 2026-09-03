@@ -121,13 +121,13 @@ WidgetAXManager::WidgetAXManager(Widget* widget)
     widget_created_ = widget_->IsNativeWidgetInitialized();
     widget_observation_.Observe(widget_);
   }
-  ui::AXPlatform::GetInstance().AddModeObserver(this);
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 
 WidgetAXManager::~WidgetAXManager() {
   ClearAXTreeHost();
   DetachFromParentTree();
-  ui::AXPlatform::GetInstance().RemoveModeObserver(this);
+  ax_mode_observation_.Reset();
   ax_tree_manager_.reset();
 }
 

@@ -33,6 +33,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
+class AXPlatform;
 class BrowserAccessibilityManager;
 struct AXUpdatesAndEvents;
 }  // namespace ui
@@ -265,6 +266,9 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
                      /*check_empty=*/true,
                      base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_;
+
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
 
   // Ensure posted tasks don’t run after we’re destroyed.
   base::WeakPtrFactory<WidgetAXManager> weak_factory_{this};
