@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -22,7 +23,7 @@ namespace blink {
 class ExceptionState;
 class ReadableStream;
 
-class Translator final : public ScriptWrappable {
+class MODULES_EXPORT Translator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

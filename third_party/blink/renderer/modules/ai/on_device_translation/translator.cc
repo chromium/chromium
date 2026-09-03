@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
@@ -201,6 +202,10 @@ ScriptPromise<IDLString> Translator::translate(
     return EmptyPromise();
   }
 
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kTranslator),
+                             static_cast<int>(input.CharactersSizeInBytes()));
+
   CHECK(options);
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
@@ -243,6 +248,10 @@ ReadableStream* Translator::translateStreaming(
   if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return nullptr;
   }
+
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kTranslator),
+                             static_cast<int>(input.length()));
 
   // Pass persistent refs to keep this instance alive during the response.
   auto [readable_stream, pending_remote] =

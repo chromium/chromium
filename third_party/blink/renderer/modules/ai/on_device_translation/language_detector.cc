@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
@@ -365,6 +366,10 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
   if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();
   }
+
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kLanguageDetector),
+                             static_cast<int>(input.length()));
 
   auto* resolver = MakeGarbageCollected<
       ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>>(

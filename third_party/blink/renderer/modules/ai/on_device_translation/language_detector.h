@@ -13,12 +13,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector_detect_options.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/resolver_with_abort_signal.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 
-class LanguageDetector final : public ScriptWrappable {
+class MODULES_EXPORT LanguageDetector final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
