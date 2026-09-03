@@ -26,13 +26,14 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
 namespace {
 
-const char kGPUBlendComponentPartiallySpecifiedMessage[] =
-    "fragment.targets[%u].blend.%s has a mix of explicit and defaulted "
+constexpr char kGPUBlendComponentPartiallySpecifiedMessage[] =
+    "fragment.targets[{}].blend.{} has a mix of explicit and defaulted "
     "members, which is unusual. Did you mean to specify other members?";
 
 wgpu::BlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc) {
@@ -304,12 +305,12 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
     if (color_target->hasBlend()) {
       const GPUBlendState* blend_state = color_target->blend();
       if (IsGPUBlendComponentPartiallySpecified(blend_state->color())) {
-        device->AddConsoleWarning(UNSAFE_TODO(String::Format(
-            kGPUBlendComponentPartiallySpecifiedMessage, i, "color")));
+        device->AddConsoleWarning(
+            Format(kGPUBlendComponentPartiallySpecifiedMessage, i, "color"));
       }
       if (IsGPUBlendComponentPartiallySpecified(blend_state->alpha())) {
-        device->AddConsoleWarning(UNSAFE_TODO(String::Format(
-            kGPUBlendComponentPartiallySpecifiedMessage, i, "alpha")));
+        device->AddConsoleWarning(
+            Format(kGPUBlendComponentPartiallySpecifiedMessage, i, "alpha"));
       }
 
       if (!ValidateBlendComponent(device, blend_state->color(),

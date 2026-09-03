@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
@@ -110,9 +111,9 @@ ScriptPromise<IDLUndefined> SetShape::setShape(
 
   if (!rects.empty() && !has_minimum_size_rect) {
     exception_state.ThrowTypeError(
-        String::Format("At least one rectangle must be %dx%d or larger.",
-                       mojom::blink::kMinimumIwaSetShapeSize,
-                       mojom::blink::kMinimumIwaSetShapeSize));
+        Format("At least one rectangle must be {}x{} or larger.",
+               mojom::blink::kMinimumIwaSetShapeSize,
+               mojom::blink::kMinimumIwaSetShapeSize));
     return EmptyPromise();
   }
 

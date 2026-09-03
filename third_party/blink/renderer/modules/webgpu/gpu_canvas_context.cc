@@ -422,9 +422,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   if (!IsContextFormatSupported(descriptor->format().AsEnum())) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(
-        String::Format("Unsupported canvas context format '%s'.",
-                       V8GPUTextureFormat(descriptor->format()).AsCStr())));
+    exception_state.ThrowTypeError(StrCat(
+        {"Unsupported canvas context format '",
+         V8GPUTextureFormat(descriptor->format()).AsStringView(), "'."}));
     return;
   }
 
@@ -432,7 +432,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       AsDawnFlags<wgpu::TextureUsage>(descriptor->usage());
   if (usage & wgpu::TextureUsage::TransientAttachment) {
     exception_state.ThrowTypeError(
-        String::Format("Unsupported TransientAttachment texture usage"));
+        "Unsupported TransientAttachment texture usage");
     return;
   }
 

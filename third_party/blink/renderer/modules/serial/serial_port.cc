@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -171,17 +172,17 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
   }
 
   if (options->bufferSize() == 0) {
-    exception_state.ThrowTypeError(String::Format(
-        "Requested buffer size (%d bytes) must be greater than zero.",
-        options->bufferSize()));
+    exception_state.ThrowTypeError(
+        Format("Requested buffer size ({} bytes) must be greater than zero.",
+               options->bufferSize()));
     return EmptyPromise();
   }
 
   if (options->bufferSize() > kMaxBufferSize) {
     exception_state.ThrowTypeError(
-        String::Format("Requested buffer size (%d bytes) is greater than "
-                       "the maximum allowed (%d bytes).",
-                       options->bufferSize(), kMaxBufferSize));
+        Format("Requested buffer size ({} bytes) is greater than the maximum "
+               "allowed ({} bytes).",
+               options->bufferSize(), kMaxBufferSize));
     return EmptyPromise();
   }
   buffer_size_ = options->bufferSize();

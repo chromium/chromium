@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/webusb/usb_out_transfer_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 using device::mojom::blink::UsbClaimInterfaceResult;
 using device::mojom::blink::UsbControlTransferParamsPtr;
@@ -142,9 +143,8 @@ bool ShouldRejectUsbTransferLength(size_t length,
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kDataError,
-      String::Format(
-          "The data buffer exceeded supported maximum size of %d bytes",
-          kUsbTransferLengthLimit));
+      Format("The data buffer exceeded supported maximum size of {} bytes",
+             kUsbTransferLengthLimit));
   return true;
 }
 
