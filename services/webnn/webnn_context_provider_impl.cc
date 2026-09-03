@@ -503,7 +503,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       WebNNContextImplPtr context_impl = coreml::ContextImplCoreml::Create(
           std::move(receiver), AsWeakPtr(), std::move(options),
           std::move(gpu_task_scheduler), memory_tracker, owning_task_runner,
-          shared_image_manager_, main_thread_task_runner_);
+          shared_image_manager_, main_thread_task_runner_,
+          /*model_loader_receiver=*/mojo::NullReceiver());
       // Using mojo data pipe is not yet implemented in CoreML backend.
       OnCreateWebNNContextImpl(std::move(callback), std::move(remote),
                                mojo::ScopedDataPipeProducerHandle(),
@@ -640,6 +641,34 @@ void WebNNContextProviderImpl::CreateLiteRtContext(
                      command_buffer_id));
 }
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+void WebNNContextProviderImpl::ReconnectCompilerContext(
+    mojom::CreateContextOptionsPtr options,
+    ContextProperties properties,
+#if BUILDFLAG(IS_WIN)
+    EpDeviceInfo target_device,
+#endif  // BUILDFLAG(IS_WIN)
+    mojo::PendingReceiver<mojom::WebNNCompilerContext>
+        compiler_context_receiver,
+    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  // This is a reconnect for an already-created context, so it cannot fall back
+  // to another backend at this point.
+  // TODO(crbug.com/524263705): Enable for IS_APPLE once implemented in
+  // WebNNBrowserHostImpl.
+#if BUILDFLAG(IS_WIN)
+  webnn_browser_host_->RequestCompilerContext(
+      std::move(options), properties, target_device,
+      std::move(compiler_context_receiver), std::move(model_loader_remote),
+      base::BindOnce([](bool success) {
+        LOG_IF(ERROR, !success)
+            << "[WebNN] Compiler context failed to reconnect.";
+      }));
+#endif  // BUILDFLAG(IS_WIN)
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)
 void WebNNContextProviderImpl::OnOrtEnvCreated(
@@ -830,26 +859,6 @@ void WebNNContextProviderImpl::OnDispatchContextCreated(
 
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(context_success)));
-}
-
-void WebNNContextProviderImpl::ReconnectCompilerContext(
-    mojom::CreateContextOptionsPtr options,
-    ContextProperties properties,
-    EpDeviceInfo target_device,
-    mojo::PendingReceiver<mojom::WebNNCompilerContext>
-        compiler_context_receiver,
-    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
-  // This is a reconnect for an already-created context, so it cannot fall back
-  // to another backend at this point.
-  webnn_browser_host_->RequestCompilerContext(
-      std::move(options), properties, target_device,
-      std::move(compiler_context_receiver), std::move(model_loader_remote),
-      base::BindOnce([](bool success) {
-        LOG_IF(ERROR, !success)
-            << "[WebNN] Compiler context failed to reconnect.";
-      }));
 }
 
 void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(

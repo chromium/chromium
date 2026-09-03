@@ -30,6 +30,10 @@ namespace ort {
 class GraphImplOrt;
 }  // namespace ort
 
+namespace coreml {
+class GraphImplCoreml;
+}  // namespace coreml
+
 // GPU process implementation of the `MLGraph` interface. While this class is
 // reference-counted a `WebNNGraphImpl` is guaranteed not to outlive the
 // `WebNNContextImpl` that created it because references are only held by the
@@ -62,6 +66,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
                         base::flat_map<std::string, OperandDescriptor>
                             output_names_to_descriptors,
                         base::PassKey<ort::GraphImplOrt> pass_key);
+
+    ComputeResourceInfo(base::flat_map<std::string, OperandDescriptor>
+                            input_names_to_descriptors,
+                        base::flat_map<std::string, OperandDescriptor>
+                            output_names_to_descriptors,
+                        base::PassKey<coreml::GraphImplCoreml> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;

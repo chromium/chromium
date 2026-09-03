@@ -36,16 +36,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) API_AVAILABLE(macos(14.4))
     CompilerContextImplCoreml final : public GraphBuilderContext,
                                       public mojom::WebNNCompilerContext {
  public:
-  static std::unique_ptr<CompilerContextImplCoreml> Create(
-      mojom::CreateContextOptionsPtr options,
-      ContextProperties properties,
-      mojo::PendingRemote<mojom::WebNNModelLoader> model_loader);
-
   CompilerContextImplCoreml(
       mojom::CreateContextOptionsPtr options,
       ContextProperties properties,
-      mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
-      base::PassKey<CompilerContextImplCoreml> pass_key);
+      mojo::PendingRemote<mojom::WebNNModelLoader> model_loader);
 
   CompilerContextImplCoreml(const CompilerContextImplCoreml&) = delete;
   CompilerContextImplCoreml& operator=(const CompilerContextImplCoreml&) =

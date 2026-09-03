@@ -25,21 +25,10 @@
 
 namespace webnn::coreml {
 
-// static
-std::unique_ptr<CompilerContextImplCoreml> CompilerContextImplCoreml::Create(
-    mojom::CreateContextOptionsPtr options,
-    ContextProperties properties,
-    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader) {
-  return std::make_unique<CompilerContextImplCoreml>(
-      std::move(options), std::move(properties), std::move(model_loader),
-      base::PassKey<CompilerContextImplCoreml>());
-}
-
 CompilerContextImplCoreml::CompilerContextImplCoreml(
     mojom::CreateContextOptionsPtr options,
     ContextProperties properties,
-    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
-    base::PassKey<CompilerContextImplCoreml> pass_key)
+    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader)
     : properties_(std::move(properties)),
       options_(std::move(options)),
       model_loader_(std::move(model_loader)) {}
@@ -68,7 +57,6 @@ void CompilerContextImplCoreml::BuildGraph(
   auto did_compile_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CompilerContextImplCoreml::DidCompile,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
@@ -239,7 +227,7 @@ void CompilerContextImplCoreml::DidCompile(
   std::unique_ptr<CompilationResult> compilation = std::move(result.value());
 
   auto compiled_graph = mojom::CompiledGraph::New(
-      compilation->compiled_model_dir.GetPath(),
+      compilation->compiled_model_dir.GetPath().AppendASCII("model.mlmodelc"),
       std::move(compilation->input_name_to_coreml_name),
       std::move(compilation->output_name_to_coreml_name));
 

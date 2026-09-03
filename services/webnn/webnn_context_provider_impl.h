@@ -35,6 +35,10 @@
 #include "services/webnn/public/cpp/ep_device_info.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
+#endif
+
 namespace gpu {
 class Scheduler;
 }  // namespace gpu
@@ -96,6 +100,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void BindWebNNServiceIntrospection(
       mojo::PendingReceiver<mojom::WebNNServiceIntrospection> receiver);
 
+  mojo::Remote<mojom::WebNNBrowserHost>& webnn_browser_host() {
+    return webnn_browser_host_;
+  }
+
   enum class WebNNStatus {
     kWebNNGpuDisabled = 0,
     kWebNNGpuFeatureStatusDisabled = 2,
@@ -138,17 +146,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // Called when a renderer requests a new CompilerContext for an existing
   // context (e.g. after a Compiler process crash or idle shutdown).
   void ReconnectCompilerContext(
       mojom::CreateContextOptionsPtr options,
       ContextProperties properties,
+#if BUILDFLAG(IS_WIN)
       EpDeviceInfo target_device,
+#endif  // BUILDFLAG(IS_WIN)
       mojo::PendingReceiver<mojom::WebNNCompilerContext>
           compiler_context_receiver,
       mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
   static bool HasBackendForTesting();

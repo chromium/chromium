@@ -47,6 +47,13 @@ WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
       output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
+    base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
+    base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
+    base::PassKey<coreml::GraphImplCoreml> pass_key)
+    : input_names_to_descriptors(std::move(input_names_to_descriptors)),
+      output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
+
+WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     ComputeResourceInfo&&) = default;
 WebNNGraphImpl::ComputeResourceInfo&
 WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;

@@ -6,7 +6,8 @@
 #define SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 
 #include "base/memory/weak_ptr.h"
-#include "services/webnn/public/cpp/webnn_types.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
@@ -20,7 +21,8 @@ namespace coreml {
 // `ContextImplCoreml` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplCoreml` for the CoreML backend on macOS.
 class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
-    : public WebNNContextImpl {
+    : public WebNNContextImpl,
+      public mojom::WebNNModelLoader {
  public:
   // Constructs a new `ContextImplCoreml`.
   static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
@@ -31,7 +33,8 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver);
 
   ContextImplCoreml(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -41,13 +44,17 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
+
+  void RequestCompilerContext(mojo::PendingReceiver<mojom::WebNNCompilerContext>
+                                  compiler_context_receiver) override;
 
  private:
   ~ContextImplCoreml() override;
@@ -73,6 +80,19 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
 
   std::vector<mojom::WebNNExecutionProviderDetailsPtr>
   GetExecutionProvidersInfo() const override;
+
+  // mojom::WebNNModelLoader:
+  void LoadCompiledGraph(mojom::CompiledGraphPtr compiled_graph,
+                         LoadCompiledGraphCallback callback) override;
+
+  void OnCompiledModelCopied(
+      mojom::CompiledGraphPtr compiled_graph,
+      LoadCompiledGraphCallback callback,
+      const std::optional<base::FilePath>& gpu_model_path);
+
+ private:
+  // Receiver end of the Compiler->GPU channel.
+  mojo::Receiver<mojom::WebNNModelLoader> model_loader_receiver_{this};
 
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };

@@ -7,6 +7,8 @@
 
 #import <CoreML/CoreML.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,7 +22,6 @@
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -50,6 +51,12 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
           constant_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
+      WebNNContextImpl::CreateGraphImplCallback callback);
+
+  static void CreateAndLoadCompiledModel(
+      ContextImplCoreml& context,
+      base::ScopedTempDir compiled_model_dir,
+      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   struct Params;
@@ -103,14 +110,36 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
           base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback);
 
   static void LoadCompiledModelOnBackgroundThread(
-      base::ElapsedTimer compilation_timer,
-      base::ScopedTempDir model_file_dir,
+      base::ScopedTempDir compiled_model_dir,
       mojom::CreateContextOptionsPtr context_options,
-      std::unique_ptr<Params> params,
+      ContextProperties context_properties,
+      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+      base::OnceCallback<void(
+          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback);
+
+  // Completion handler for [MLModel compileModelAtURL:completionHandler:].
+  static void OnModelCompiledOnBackgroundThread(
+      base::ElapsedTimer compilation_timer,
+      base::ScopedTempDir mlpackage_dir,
+      mojom::CreateContextOptionsPtr context_options,
+      ComputeResourceInfo compute_resource_info,
+      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
       base::OnceCallback<void(
           base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
       NSURL* compiled_model_url,
       NSError* error);
+
+  // Common helper to load MLModel from a compiled model URL and read compute
+  // plan.
+  static void LoadModelAndReadComputePlan(
+      NSURL* compiled_model_url,
+      ScopedModelPath scoped_compiled_model_dir,
+      mojom::CreateContextOptionsPtr context_options,
+      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+      base::OnceCallback<void(
+          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
+      std::optional<ComputeResourceInfo> compute_resource_info = std::nullopt,
+      std::optional<ContextProperties> context_properties = std::nullopt);
 
   static void ReadComputePlan(
       std::unique_ptr<Params> params,
