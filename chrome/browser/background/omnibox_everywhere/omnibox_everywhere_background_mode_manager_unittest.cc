@@ -89,7 +89,6 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
     TestingBrowserProcess::GetGlobal()->SetStatusTray(
         std::make_unique<MockStatusTray>());
-    profile_ = std::make_unique<TestingProfile>();
     if (PrefService* local_state =
             TestingBrowserProcess::GetGlobal()->local_state()) {
       local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
@@ -122,7 +121,12 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
   }
 #endif
 
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() {
+    if (!profile_) {
+      profile_ = std::make_unique<TestingProfile>();
+    }
+    return profile_.get();
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
@@ -288,6 +292,10 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
             return std::make_unique<TestStartupLaunchManager>(&browser_process);
           }));
 
+  // Reset any profile before replacing GlobalFeatures so keyed services (such
+  // as NtpBackgroundService) do not retain dangling raw_refs to
+  // GlobalFeatures components like ApplicationLocaleStorage.
+  profile_.reset();
   TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
       /*profile_manager=*/false);
 
@@ -325,6 +333,7 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
   VerifyAndClearStartupRegistrationExpectations();
 
+  profile_.reset();
   TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 }
 #endif
