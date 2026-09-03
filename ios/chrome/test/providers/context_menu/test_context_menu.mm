@@ -13,16 +13,6 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
   return nil;
 }
 
-ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    web::WebState* web_state,
-    web::ContextMenuParams params,
-    UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler,
-    id<UnitConversionCommands> unit_conversion_handler,
-    id<EnhancedCalendarCommands> enhanced_calendar_handler) {
-  return nil;
-}
-
 UIContextMenuConfiguration* GetDefaultContextMenuConfiguration() {
   return nil;
 }
