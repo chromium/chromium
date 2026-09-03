@@ -606,27 +606,27 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         'processCounterAbuseVerdict', {tabId, verdict});
   }
 
-  closePanel(): Promise<void> {
-    return this.clientRemote.requestWithResponse('closePanel', undefined);
+  async closePanel(): Promise<void> {
+    this.handler.closePanel();
   }
 
   closePanelAndShutdown(): void {
-    this.clientRemote.requestNoResponse('closePanelAndShutdown', undefined);
+    this.handler.closePanelAndShutdown();
   }
 
   attachPanel?(): void {
-    this.clientRemote.requestNoResponse('attachPanel', undefined);
+    this.handler.attachPanel();
   }
 
   detachPanel?(): void {
     if (this.hostCapabilities.has(HostCapability.NO_LIVE_MODE)) {
       throw new Error('NO_LIVE_MODE: detachPanel not supported');
     }
-    this.clientRemote.requestNoResponse('detachPanel', undefined);
+    this.handler.detachPanel();
   }
 
   showProfilePicker(): void {
-    this.clientRemote.requestNoResponse('showProfilePicker', undefined);
+    this.handler.showProfilePicker();
   }
 
   async getModelQualityClientId?(): Promise<string> {

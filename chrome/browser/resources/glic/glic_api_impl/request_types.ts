@@ -70,18 +70,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 98},
     },
     {
-      name: 'closePanel',
-      histogram: {id: 5},
-    },
-    {
-      name: 'closePanelAndShutdown',
-      histogram: {id: 6},
-    },
-    {
-      name: 'showProfilePicker',
-      histogram: {id: 7},
-    },
-    {
       name: 'getModelQualityClientId',
       response: defMessage<{
         modelQualityClientId: string,
@@ -246,14 +234,6 @@ export const WebClientHostDef = defInterface({
         success: boolean,
       }>(),
       histogram: {id: 26},
-    },
-    {
-      name: 'attachPanel',
-      histogram: {id: 27},
-    },
-    {
-      name: 'detachPanel',
-      histogram: {id: 28},
     },
     {
       name: 'setAudioDucking',
@@ -746,9 +726,9 @@ export const RECORDED_REQUEST_IDS = {
   WebClientInitialized: 2,
   // Do not reuse deleted request ID: 3,
   // Do not reuse deleted request ID: 4,
-  ClosePanel: 5,
-  ClosePanelAndShutdown: 6,
-  ShowProfilePicker: 7,
+  // Do not reuse deleted request ID: 5,
+  // Do not reuse deleted request ID: 6,
+  // Do not reuse deleted request ID: 7,
   GetModelQualityClientId: 8,
   GetContextFromFocusedTab: 9,
   GetContextFromTab: 10,
@@ -768,8 +748,8 @@ export const RECORDED_REQUEST_IDS = {
   SetContextAccessIndicator: 24,
   GetUserProfileInfo: 25,
   RefreshSignInCookies: 26,
-  AttachPanel: 27,
-  DetachPanel: 28,
+  // Do not reuse deleted request ID: 27,
+  // Do not reuse deleted request ID: 28,
   SetAudioDucking: 29,
   LogBeginAsyncEvent: 30,
   LogEndAsyncEvent: 31,

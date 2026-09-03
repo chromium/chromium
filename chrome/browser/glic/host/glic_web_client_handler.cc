@@ -764,15 +764,28 @@ class GlicWebClientHandler
     ::glic::OpenPasswordManagerSettingsPage(profile_);
   }
 
-  void ClosePanel() override { host().ClosePanel(); }
+  void ClosePanel() override {
+    LogApiRequestCount(GlicHostApiRequestId::kClosePanel);
+    host().ClosePanel();
+  }
 
-  void ClosePanelAndShutdown() override { ClosePanel(); }
+  void ClosePanelAndShutdown() override {
+    LogApiRequestCount(GlicHostApiRequestId::kClosePanelAndShutdown);
+    host().ClosePanel();
+  }
 
-  void AttachPanel() override { host().AttachPanel(); }
+  void AttachPanel() override {
+    LogApiRequestCount(GlicHostApiRequestId::kAttachPanel);
+    host().AttachPanel();
+  }
 
-  void DetachPanel() override { host().DetachPanel(); }
+  void DetachPanel() override {
+    LogApiRequestCount(GlicHostApiRequestId::kDetachPanel);
+    host().DetachPanel();
+  }
 
   void ShowProfilePicker() override {
+    LogApiRequestCount(GlicHostApiRequestId::kShowProfilePicker);
     glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
   }
 

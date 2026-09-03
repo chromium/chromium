@@ -1001,6 +1001,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testClosePanel) {
   ASSERT_OK(WaitForGlicClose());
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testClosePanelAndShutdown) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(WaitForGlicClose());
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testShowProfilePicker) {
   base::test::TestFuture<void> profile_picker_opened;

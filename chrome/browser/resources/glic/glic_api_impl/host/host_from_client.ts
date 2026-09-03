@@ -183,25 +183,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
         idFromClient(request.tabId), mojoVerdict);
   }
 
-  closePanel(): void {
-    return this.handler.closePanel();
-  }
-
-  closePanelAndShutdown(): void {
-    this.handler.closePanelAndShutdown();
-  }
-
-  attachPanel(): void {
-    this.handler.attachPanel();
-  }
-
-  detachPanel(): void {
-    this.handler.detachPanel();
-  }
-
-  showProfilePicker(): void {
-    this.handler.showProfilePicker();
-  }
 
   getModelQualityClientId(): Promise<{modelQualityClientId: string}> {
     return this.handler.getModelQualityClientId();

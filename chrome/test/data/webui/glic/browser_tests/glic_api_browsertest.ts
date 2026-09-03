@@ -2197,6 +2197,16 @@ class ApiTests extends ApiTestFixtureBase {
     await waitFor(closedPromise.promise);
   }
 
+  async testClosePanelAndShutdown() {
+    assertDefined(this.host.closePanelAndShutdown);
+
+    // Close the panel, and verify notifyPanelWasClosed is called.
+    const closedPromise = Promise.withResolvers<void>();
+    this.client.onNotifyPanelWasClosed = closedPromise.resolve;
+    this.host.closePanelAndShutdown();
+    await waitFor(closedPromise.promise);
+  }
+
   async testShowProfilePicker() {
     assertDefined(this.host.showProfilePicker);
     this.host.showProfilePicker();
