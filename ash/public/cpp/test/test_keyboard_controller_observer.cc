@@ -9,9 +9,8 @@
 namespace ash {
 
 TestKeyboardControllerObserver::TestKeyboardControllerObserver(
-    KeyboardController* controller)
-    : controller_(controller) {
-  controller_->AddObserver(this);
+    KeyboardController* controller) {
+  observation_.Observe(controller);
 }
 
 TestKeyboardControllerObserver::~TestKeyboardControllerObserver() = default;

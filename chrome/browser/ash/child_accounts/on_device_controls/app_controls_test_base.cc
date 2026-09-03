@@ -25,13 +25,13 @@ AppControlsTestBase::AppControlsTestBase() = default;
 AppControlsTestBase::~AppControlsTestBase() = default;
 
 void AppControlsTestBase::SetUp() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::chrome_switches::kDisableDefaultApps);
+
   arc_app_test_.PreProfileSetUp();
   profile_ = std::make_unique<TestingProfile>();
 
   ChromeViewsTestBase::SetUp();
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::chrome_switches::kDisableDefaultApps);
 
   app_service_test_.SetUp(profile_.get());
   arc_app_test_.PostProfileSetUp(profile_.get());

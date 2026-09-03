@@ -130,66 +130,17 @@ class AshTestHelper::PowerPolicyControllerInitializer {
 };
 
 AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
-    : AuraTestHelper(context_factory),
-      system_monitor_(std::make_unique<base::SystemMonitor>()),
-      session_manager_(
-          !session_manager::SessionManager::Get()
-              ? std::make_unique<session_manager::SessionManager>(
-                    std::make_unique<
-                        session_manager::FakeSessionManagerDelegate>())
-              : nullptr) {
+    : AuraTestHelper(context_factory) {
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
       &MakeTestViewsDelegate);
-
-  // TODO(jamescook): Can we do this without changing command line?
-  // Use the origin (1,1) so that it doesn't overlap with the native mouse
-  // cursor.
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      !command_line_->GetProcessCommandLine()->HasSwitch(
-          ::switches::kHostWindowBounds)) {
-    // TODO(oshima): Disable native events instead of adding offset.
-    command_line_->GetProcessCommandLine()->AppendSwitchASCII(
-        ::switches::kHostWindowBounds, "10+10-800x600");
-  }
-
-  TabletModeController::SetUseScreenshotForTest(false);
-
-  display::ResetDisplayIdForTest();
-  display::SetInternalDisplayIds({});
-
-  // Reset the global state for the cursor manager. This includes the
-  // last cursor visibility state, etc.
-  wm::CursorManager::ResetCursorVisibilityStateForTest();
-
-  // Clears the saved state so that test doesn't use on the wrong
-  // default state.
-  shell::ToplevelWindow::ClearSavedStateForTest();
-
-  // SystemLocationProvider has to be initialized before
-  // GeolocationController, which is constructed during Shell::Init().
-  if (::chromeos::features::IsCachedLocationProviderEnabled()) {
-    auto cached_location_provider = std::make_unique<CachedLocationProvider>(
-        std::make_unique<LocationFetcher>(
-            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
-    // Disable rate limiting in tests so that mock location updates propagate
-    // immediately.
-    cached_location_provider->SetRateLimitForTesting(base::TimeDelta::Min());
-    SystemLocationProvider::Initialize(std::move(cached_location_provider));
-  } else {
-    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
-        std::make_unique<LocationFetcher>(
-            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
-  }
 }
 
 AshTestHelper::~AshTestHelper() {
   CHECK(!is_set_up_);
 
-  SystemLocationProvider::DestroyForTesting();
-
   if (destroy_screen_) {
     // Ensure the next test starts with a null display::Screen.  This must be
-    // done here instead of in TearDown() since some tests test access to the
+    // done here instead of in TearDown() since some code test access to the
     // Screen after the shell shuts down (which they use TearDown() to trigger).
     ScreenAsh::DeleteScreenForShutdown();
   }
@@ -198,8 +149,6 @@ AshTestHelper::~AshTestHelper() {
   // ViewsTestHelperAura instance or the instance is currently in its
   // destructor.
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(nullptr);
-
-  NotificationGroupingController::ResetGroupIdMapForTesting();
 }
 
 void AshTestHelper::SetUp() {
@@ -210,29 +159,90 @@ void AshTestHelper::TearDown() {
   CHECK(is_set_up_);
   is_set_up_ = false;
 
+  // --------------------------------------------------------------------------
+  // Phase 1: Pre-Shell Teardown: Disconnect Clients and Observers from Shell
+  // Corresponds to ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun()
+  // before ash_shell_init_.reset().
+  // --------------------------------------------------------------------------
   fwupd_download_client_.reset();
-  saved_desk_test_helper_->Shutdown();
 
-  ambient_ash_test_helper_.reset();
+  // SavedDeskTestHelper must be shut down before Shell is deleted so that it
+  // can unregister its models from the Shell's TestSavedDeskDelegate.
+  // Note on non-reverse order: While saved_desk_test_helper_ was constructed
+  // in Phase 4 of SetUp, we call Shutdown() here before Shell::DeleteInstance()
+  // but defer destruction of the helper instance itself until Phase 3 below,
+  // matching production where DesksClient outlives AshShellInit.
+  // TODO(crbug.com/332481586): Revisit teardown ordering.
+  if (saved_desk_test_helper_) {
+    saved_desk_test_helper_->Shutdown();
+  }
 
-  // The AppListTestHelper holds a pointer to the AppListController the Shell
-  // owns, so shut the test helper down first.
+  // AppListTestHelper, AmbientAshTestHelper, clients and observers hold
+  // references/observers to controllers owned by Shell and must be reset before
+  // Shell is destroyed.
+  // Note on non-reverse order: Objects like ambient_ash_test_helper_ and
+  // new_window_delegate_ were created in Phase 2 before Shell, but are reset
+  // before Shell destruction to prevent dangling references during
+  // Shell::DeleteInstance().
+  // TODO(crbug.com/332481586): Revisit teardown ordering.
   app_list_test_helper_.reset();
+  ambient_ash_test_helper_.reset();
+  if (Shell::HasInstance()) {
+    if (Shell::Get()->wallpaper_controller()) {
+      Shell::Get()->wallpaper_controller()->SetClient(nullptr);
+    }
+    if (Shell::Get()->system_tray_model()) {
+      Shell::Get()->system_tray_model()->SetClient(nullptr);
+    }
+  }
+
+  system_tray_client_.reset();
+  session_controller_client_.reset();
+  wallpaper_controller_client_.reset();
+  notifier_settings_controller_.reset();
+  new_window_delegate_.reset();
+  test_keyboard_controller_observer_.reset();
 
   // Stop event dispatch like we do in ChromeBrowserMainExtraPartsAsh.
   Shell::Get()->ShutdownEventDispatch();
 
+  // --------------------------------------------------------------------------
+  // Phase 2: Shell Destruction
+  // Corresponds to ash_shell_init_.reset() in
+  // ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun().
+  // --------------------------------------------------------------------------
+  // Shell::DeleteInstance() invokes Shell::~Shell(), which destroys all
+  // controllers and replaces ScreenAsh with ScreenForShutdown.
   Shell::DeleteInstance();
+
   // Suspend the tear down until all resources are returned via
   // CompositorFrameSinkClient::ReclaimResources()
   base::RunLoop().RunUntilIdle();
 
+  // --------------------------------------------------------------------------
+  // Phase 3: Post-Shell Subsystems & DBus Teardown
+  // Corresponds to PostMainMessageLoopRun() / PostDestroyThreads() in
+  // ChromeBrowserMainPartsAsh and BrowserProcessPlatformPart.
+  // --------------------------------------------------------------------------
+  saved_desk_test_helper_.reset();
+  quick_pair_browser_delegate_.reset();
+  // Note on non-reverse order: prefs_provider_ was created in Phase 4 after
+  // Shell, but is destroyed here in Phase 3 after Shell because Shell and its
+  // sub-controllers may access PrefService during their destruction.
+  // TODO(crbug.com/332481586): Revisit teardown ordering.
+  prefs_provider_.reset();
+
   // Uninstall the SyncServiceProvider now that no //ash consumer remains, and
   // while any SyncService a test registered with it is still alive.
+  // TODO(crbug.com/332481586): Revisit teardown ordering.
   sync_service_provider_.reset();
 
-  LoginState::Shutdown();
+  cros_hotspot_config_test_helper_.reset();
+  scoped_bluetooth_config_test_helper_.reset();
+  test_views_delegate_.reset();
+  dlc_service_client_.reset();
 
+  LoginState::Shutdown();
   TypecdClient::Shutdown();
 
   if (create_global_cras_audio_handler_) {
@@ -246,25 +256,34 @@ void AshTestHelper::TearDown() {
   chromeos::PowerManagerClient::Shutdown();
   RgbkbdClient::Shutdown();
 
+  floss_dbus_manager_initializer_.reset();
+  bluez_dbus_manager_initializer_.reset();
+
+  SystemLocationProvider::DestroyForTesting();
+
   TabletModeController::SetUseScreenshotForTest(true);
 
-  // Destroy all owned objects to prevent tests from depending on their state
-  // after this returns.
-  cros_hotspot_config_test_helper_.reset();
-  test_keyboard_controller_observer_.reset();
-  session_controller_client_.reset();
-  dlc_service_client_.reset();
-  test_views_delegate_.reset();
-  new_window_delegate_.reset();
-  bluez_dbus_manager_initializer_.reset();
-  floss_dbus_manager_initializer_.reset();
-  system_tray_client_.reset();
-  notifier_settings_controller_.reset();
-  prefs_provider_.reset();
+  if (post_subsystems_teardown_callback_) {
+    std::move(post_subsystems_teardown_callback_).Run();
+  }
+
+  // --------------------------------------------------------------------------
+  // Phase 4: Low-Level / Environment Teardown
+  // Corresponds to ChromeBrowserMainPartsAsh::PostDestroyThreads().
+  // --------------------------------------------------------------------------
+  // In production, SessionManager is destroyed in PostDestroyThreads() after
+  // ProfileManager and Profiles are destroyed in
+  // BrowserProcessImpl::StartTearDown().
+  // By invoking `post_subsystems_teardown_callback_` at the end of Phase 3
+  // above, test harnesses are able to destroy ProfileManager / Profiles before
+  // session_manager_ is reset here, preserving production destruction order.
+  // TODO(crbug.com/332481586): Revisit teardown ordering.
+  session_manager_.reset();
+  system_monitor_.reset();
   statistics_provider_.reset();
   command_line_.reset();
-  quick_pair_browser_delegate_.reset();
-  saved_desk_test_helper_.reset();
+
+  NotificationGroupingController::ResetGroupIdMapForTesting();
 
   // Purge ColorProviderManager between tests so that we don't accumulate
   // ColorProviderInitializers. crbug.com/1349232.
@@ -276,6 +295,9 @@ void AshTestHelper::TearDown() {
   // it was setup by this test helper. This allows tests to implement
   // their own override, and in that case we shouldn't call Shutdown
   // otherwise the global state will be deleted twice.
+  // Note on non-reverse order: Kept alive through AuraTestHelper::TearDown()
+  // because window/Aura teardown may trigger IME-related cleanups.
+  // TODO(crbug.com/332481586): Revisit teardown ordering.
   if (input_method_manager_) {
     input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
@@ -317,10 +339,74 @@ void AshTestHelper::SetUp(InitParams init_params) {
   CHECK(!is_set_up_);
   is_set_up_ = true;
 
+  // --------------------------------------------------------------------------
+  // Phase 1: Low-Level / Environment Setup
+  // Corresponds to ChromeBrowserMainPartsAsh::PreEarlyInitialization() and
+  // general test environment setup.
+  // --------------------------------------------------------------------------
+  command_line_ = std::make_unique<base::test::ScopedCommandLine>();
+  statistics_provider_ =
+      std::make_unique<system::ScopedFakeStatisticsProvider>();
+  system_monitor_ = std::make_unique<base::SystemMonitor>();
+
+  // TODO(jamescook): Can we do this without changing command line?
+  // Use the origin (1,1) so that it doesn't overlap with the native mouse
+  // cursor.
+  if (!base::SysInfo::IsRunningOnChromeOS() &&
+      !command_line_->GetProcessCommandLine()->HasSwitch(
+          ::switches::kHostWindowBounds)) {
+    // TODO(oshima): Disable native events instead of adding offset.
+    command_line_->GetProcessCommandLine()->AppendSwitchASCII(
+        ::switches::kHostWindowBounds, "10+10-800x600");
+  }
+
+  TabletModeController::SetUseScreenshotForTest(false);
+
+  display::ResetDisplayIdForTest();
+  display::SetInternalDisplayIds({});
+
+  // Reset the global state for the cursor manager. This includes the
+  // last cursor visibility state, etc.
+  wm::CursorManager::ResetCursorVisibilityStateForTest();
+
+  // Clears the saved state so that test doesn't use on the wrong default state.
+  shell::ToplevelWindow::ClearSavedStateForTest();
+
+  // --------------------------------------------------------------------------
+  // Phase 2: Pre-Create Main Message Loop & Early Services
+  // Corresponds to ChromeBrowserMainPartsAsh::PreCreateMainMessageLoop(),
+  // PostCreateMainMessageLoop(), and PreCreateThreads().
+  // --------------------------------------------------------------------------
+  // In production, SessionManager is initialized in PreCreateMainMessageLoop
+  // (BrowserProcessPlatformPart::InitializeSessionManager) so that other
+  // components can observe it early.
+  if (!session_manager::SessionManager::Get()) {
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+  }
+
+  // SystemLocationProvider has to be initialized before GeolocationController,
+  // which is constructed during Shell::Init().
+  if (::chromeos::features::IsCachedLocationProviderEnabled()) {
+    auto cached_location_provider = std::make_unique<CachedLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
+    // Disable rate limiting in tests so that mock location updates propagate
+    // immediately.
+    cached_location_provider->SetRateLimitForTesting(base::TimeDelta::Min());
+    SystemLocationProvider::Initialize(std::move(cached_location_provider));
+  } else {
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+  }
+
   create_global_cras_audio_handler_ =
       init_params.create_global_cras_audio_handler;
   create_quick_pair_mediator_ = init_params.create_quick_pair_mediator;
   destroy_screen_ = init_params.destroy_screen;
+  post_subsystems_teardown_callback_ =
+      std::move(init_params.post_subsystems_teardown_callback);
 
   // Install a SyncServiceProvider so //ash code that resolves a user's
   // SyncService (e.g. wallpaper sync) does not crash on the missing
@@ -384,12 +470,19 @@ void AshTestHelper::SetUp(InitParams init_params) {
       std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
           /*use_fake_implementation=*/true);
 
+  scoped_bluetooth_config_test_helper_.emplace();
+
   LoginState::Initialize();
 
   ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
   quick_pair_browser_delegate_ =
       std::make_unique<quick_pair::FakeQuickPairBrowserDelegate>();
 
+  // --------------------------------------------------------------------------
+  // Phase 3: Shell Initialization
+  // Corresponds to ChromeBrowserMainExtraPartsAsh::PreProfileInit()
+  // creating AshShellInit and initializing Shell.
+  // --------------------------------------------------------------------------
   ShellInitParams shell_init_params;
   shell_init_params.delegate = std::move(init_params.delegate);
   if (!shell_init_params.delegate) {
@@ -410,6 +503,11 @@ void AshTestHelper::SetUp(InitParams init_params) {
 
   chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
 
+  // --------------------------------------------------------------------------
+  // Phase 4: Post-Shell Clients & Controllers Setup
+  // Corresponds to ChromeBrowserMainExtraPartsAsh::PreProfileInit()
+  // initializing clients that connect to Ash Shell controllers.
+  // --------------------------------------------------------------------------
   // Set up a test wallpaper controller client before signing in any users. At
   // the time a user logs in, Wallpaper controller relies on
   // WallpaperControllerClient to check if user data should be synced.
@@ -426,7 +524,10 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // Cursor is visible by default in tests.
   shell->cursor_manager()->ShowCursor();
 
+  system_tray_client_ = std::make_unique<TestSystemTrayClient>();
   shell->system_tray_model()->SetClient(system_tray_client_.get());
+  notifier_settings_controller_ =
+      std::make_unique<TestNotifierSettingsController>();
   prefs_provider_ = std::make_unique<TestPrefServiceProvider>();
 
   // Requires the AppListController the Shell creates.

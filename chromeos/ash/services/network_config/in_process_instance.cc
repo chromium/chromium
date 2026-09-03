@@ -15,7 +15,8 @@ namespace {
 
 namespace mojom = ::chromeos::network_config::mojom;
 
-mojom::CrosNetworkConfig* g_network_config_override;
+mojom::CrosNetworkConfig* g_network_config_override = nullptr;
+CrosNetworkConfig* g_instance = nullptr;
 
 mojo::ReceiverSet<mojom::CrosNetworkConfig>& GetOverrideReceivers() {
   static base::NoDestructor<mojo::ReceiverSet<mojom::CrosNetworkConfig>>
@@ -38,8 +39,10 @@ void BindToInProcessInstance(
     return;
   }
 
-  static base::NoDestructor<CrosNetworkConfig> instance;
-  instance->BindReceiver(std::move(receiver));
+  if (!g_instance) {
+    g_instance = new CrosNetworkConfig();
+  }
+  g_instance->BindReceiver(std::move(receiver));
 }
 
 void OverrideInProcessInstanceForTesting(
@@ -48,6 +51,10 @@ void OverrideInProcessInstanceForTesting(
 
   // Wipe out the set of override receivers any time a new override is set.
   GetOverrideReceivers().Clear();
+  if (g_instance) {
+    delete g_instance;
+    g_instance = nullptr;
+  }
 }
 
 }  // namespace ash::network_config

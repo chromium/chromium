@@ -41,7 +41,9 @@ TestSessionControllerClient::TestSessionControllerClient(
   }
 }
 
-TestSessionControllerClient::~TestSessionControllerClient() = default;
+TestSessionControllerClient::~TestSessionControllerClient() {
+  controller_->SetClient(nullptr);
+}
 
 void TestSessionControllerClient::InitializeAndSetClient() {
   session_info_.can_lock_screen = controller_->CanLockScreen();

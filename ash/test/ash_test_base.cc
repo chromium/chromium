@@ -190,6 +190,10 @@ void AshTestBase::SetUp() {
   test_context_factories_ = std::make_unique<ui::TestContextFactories>(
       /*enable_pixel_output=*/enable_pixel_output,
       /*output_to_window=*/enable_pixel_output);
+  if (!init_params_->post_subsystems_teardown_callback) {
+    init_params_->post_subsystems_teardown_callback = base::BindOnce(
+        &AshTestBase::OnSubsystemsTornDown, base::Unretained(this));
+  }
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
   ash_test_helper_->SetUp(std::move(*init_params_));
@@ -236,7 +240,6 @@ void AshTestBase::TearDown() {
   pixel_test_helper_.reset();
 
   ash_test_helper_->TearDown();
-  OnHelperWillBeDestroyed();
   ash_test_helper_.reset();
 
   event_generator_.reset();

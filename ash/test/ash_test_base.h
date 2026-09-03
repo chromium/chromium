@@ -234,8 +234,9 @@ class AshTestBase : public testing::Test {
       std::list<base::OnceClosure>* tasks,
       bool is_touch);
 
-  // Called when AshTestHelper will be soon destroyed.
-  virtual void OnHelperWillBeDestroyed() {}
+  // Called during AshTestHelper::TearDown() after Ash subsystems are torn down,
+  // before low-level environment (e.g. SessionManager) is torn down.
+  virtual void OnSubsystemsTornDown() {}
 
  protected:
   enum UserSessionBlockReason {

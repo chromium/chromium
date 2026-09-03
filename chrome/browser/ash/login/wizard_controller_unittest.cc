@@ -275,10 +275,12 @@ class WizardControllerTestBase : public ::testing::Test {
     chrome_keyboard_controller_client_ =
         ChromeKeyboardControllerClient::CreateForTest();
 
+    kiosk_cryptohome_remover_ = std::make_unique<KioskCryptohomeRemover>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     kiosk_chrome_app_manager_ = std::make_unique<KioskChromeAppManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
-        &kiosk_cryptohome_remover_);
+        kiosk_cryptohome_remover_.get());
 
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
@@ -342,15 +344,16 @@ class WizardControllerTestBase : public ::testing::Test {
 
     auth_events_recorder_.reset();
     kiosk_chrome_app_manager_.reset();
+    kiosk_cryptohome_remover_.reset();
     wallpaper_controller_client_.reset();
     chrome_keyboard_controller_client_.reset();
-    ash_test_helper_->TearDown();
 
-    // Need to call `StartTearDown` here because `TimeZoneResolverManager`
-    // depends on the profile PrefService and `SystemLocationProvider`.
-    // Note that the latter is destroyed in ~AshTestHelper.
+    // Need to call `StartTearDown` before `AshTestHelper::TearDown` because
+    // `TimeZoneResolverManager` depends on the profile PrefService and
+    // `SystemLocationProvider` which is destroyed in `AshTestHelper::TearDown`.
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
 
+    ash_test_helper_->TearDown();
     ash_test_helper_.reset();
     test_context_factories_.reset();
     input_method::Shutdown();
@@ -440,8 +443,7 @@ class WizardControllerTestBase : public ::testing::Test {
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_{&delegate_};
   OobeConfiguration oobe_configuration_;
-  KioskCryptohomeRemover kiosk_cryptohome_remover_{
-      TestingBrowserProcess::GetGlobal()->local_state()};
+  std::unique_ptr<KioskCryptohomeRemover> kiosk_cryptohome_remover_;
 
   // Note: StatisticsProvider is created with base::Singleton in production.
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;

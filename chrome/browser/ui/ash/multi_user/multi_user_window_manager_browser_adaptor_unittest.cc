@@ -156,7 +156,7 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
   // ChromeAshTestBase:
   void SetUp() override;
   void TearDown() override;
-  void OnHelperWillBeDestroyed() override;
+  void OnSubsystemsTornDown() override;
 
  protected:
   void SwitchActiveUser(const AccountId& account_id) {
@@ -452,7 +452,7 @@ void MultiUserWindowManagerBrowserAdaptorTest::TearDown() {
   browser_controller_.reset();
 
   ChromeAshTestBase::TearDown();
-  // ProfileManager instance is destroyed in OnHelperWillBeDestroyed()
+  // ProfileManager instance is destroyed in OnSubsystemsTornDown()
   // invoked inside ChromeAshTestBase::TearDown().
   EXPECT_FALSE(profile_manager_.get());
   user_manager_.Reset();
@@ -461,8 +461,8 @@ void MultiUserWindowManagerBrowserAdaptorTest::TearDown() {
   ash::DeviceSettingsService::Shutdown();
 }
 
-void MultiUserWindowManagerBrowserAdaptorTest::OnHelperWillBeDestroyed() {
-  ChromeAshTestBase::OnHelperWillBeDestroyed();
+void MultiUserWindowManagerBrowserAdaptorTest::OnSubsystemsTornDown() {
+  ChromeAshTestBase::OnSubsystemsTornDown();
   profile_manager_.reset();
 }
 
