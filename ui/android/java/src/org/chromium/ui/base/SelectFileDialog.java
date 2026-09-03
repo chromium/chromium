@@ -377,8 +377,21 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 }
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-            } else if (Intent.ACTION_CREATE_DOCUMENT.equals(intentAction)) {
-                intent.setType(!mMimeTypes.isEmpty() ? mMimeTypes.get(0) : ALL_TYPES);
+            } else if (Intent.ACTION_CREATE_DOCUMENT.equals(mIntentAction)) {
+                String mimeType = !mMimeTypes.isEmpty() ? mMimeTypes.get(0) : null;
+                String extension =
+                        !TextUtils.isEmpty(suggestedName)
+                                ? FileUtils.getExtension(suggestedName)
+                                : "";
+                if ((mimeType == null || GENERIC_TYPE.equals(mimeType)) && !extension.isEmpty()) {
+                    String suggestedMimeType =
+                            MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                    mimeType =
+                            !TextUtils.isEmpty(suggestedMimeType)
+                                    ? suggestedMimeType
+                                    : GENERIC_TYPE;
+                }
+                intent.setType(!TextUtils.isEmpty(mimeType) ? mimeType : ALL_TYPES);
                 if (!TextUtils.isEmpty(suggestedName)) {
                     intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
                 }

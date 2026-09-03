@@ -147,8 +147,32 @@ void SelectFileDialogImpl::SelectFileImpl(Type type,
   ScopedJavaLocalRef<jstring> intent_action =
       base::android::ConvertUTF8ToJavaString(
           env, IntentActionFromType(type, open_writable_));
+
+  std::vector<std::u16string> accept_types = accept_types_;
+  if (type == SelectFileDialog::SELECT_SAVEAS_FILE && accept_types.empty()) {
+    auto add_extension = [&accept_types](std::string_view extension) {
+      if (extension.empty() || extension == ".") {
+        return;
+      }
+      std::string formatted = extension.starts_with('.')
+                                  ? std::string(extension)
+                                  : "." + std::string(extension);
+      accept_types.push_back(base::UTF8ToUTF16(formatted));
+    };
+
+    if (file_types) {
+      for (const auto& extension_group : file_types->extensions) {
+        for (const auto& extension : extension_group) {
+          add_extension(extension);
+        }
+      }
+    }
+    if (accept_types.empty() && !default_extension.empty()) {
+      add_extension(default_extension);
+    }
+  }
   ScopedJavaLocalRef<jobjectArray> accept_types_java =
-      base::android::ToJavaArrayOfStrings(env, accept_types_);
+      base::android::ToJavaArrayOfStrings(env, accept_types);
 
   bool accept_multiple_files = SelectFileDialog::SELECT_OPEN_MULTI_FILE == type;
 

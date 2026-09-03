@@ -339,6 +339,60 @@ public class SelectFileDialogTest {
         verifyFileSystemAccessIntent(Intent.ACTION_CREATE_DOCUMENT);
     }
 
+    private void verifyCreateDocumentIntent(
+            String[] fileTypes,
+            String suggestedName,
+            String expectedMimeType,
+            String expectedTitle) {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        IntentArgumentMatcher intentArgumentMatcher =
+                new IntentArgumentMatcher(Intent.ACTION_CREATE_DOCUMENT);
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent intent = (Intent) invocation.getArguments()[0];
+                            assertEquals(expectedMimeType, intent.getType());
+                            assertEquals(expectedTitle, intent.getExtra(Intent.EXTRA_TITLE));
+                            assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(intentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        selectFileDialog.selectFile(
+                Intent.ACTION_CREATE_DOCUMENT,
+                fileTypes,
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                suggestedName,
+                windowAndroid);
+    }
+
+    @Test
+    public void testCreateDocumentInfersMimeTypeFromSuggestedName() throws Exception {
+        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("webp", "image/webp");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gz", "application/gzip");
+
+        verifyCreateDocumentIntent(new String[] {}, "images.webp", "image/webp", "images.webp");
+        verifyCreateDocumentIntent(new String[] {}, "my photo.webp", "image/webp", "my photo.webp");
+        verifyCreateDocumentIntent(
+                new String[] {}, "archive.tar.gz", "application/gzip", "archive.tar.gz");
+        verifyCreateDocumentIntent(
+                new String[] {".tar.gz"}, "archive.tar.gz", "application/gzip", "archive.tar.gz");
+        verifyCreateDocumentIntent(
+                new String[] {},
+                "archive.this_is_not_a_real_extension",
+                "application/octet-stream",
+                "archive.this_is_not_a_real_extension");
+        verifyCreateDocumentIntent(new String[] {}, "Makefile", "*/*", "Makefile");
+    }
+
     @Test
     public void testFileSystemAccessOpenDocumentTree() throws Exception {
         verifyFileSystemAccessIntent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -899,10 +953,12 @@ public class SelectFileDialogTest {
         shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
         shadowMimeTypeMap.addExtensionMimeTypeMapping("txt", "text/plain");
         shadowMimeTypeMap.addExtensionMimeTypeMapping("mpg", "video/mpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gz", "application/gzip");
 
         assertEquals("", SelectFileDialog.ensureMimeType(""));
         assertEquals("image/jpeg", SelectFileDialog.ensureMimeType(".jpg"));
         assertEquals("image/jpeg", SelectFileDialog.ensureMimeType("image/jpeg"));
+        assertEquals("application/gzip", SelectFileDialog.ensureMimeType(".tar.gz"));
         // Unknown extension, expect default response:
         assertEquals(
                 "application/octet-stream",
@@ -1269,6 +1325,11 @@ public class SelectFileDialogTest {
         assertEquals(
                 SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList("image/gif", ".", "")),
                 Arrays.asList("image/gif"));
+
+        // Compound extension (.tar.gz) resolves to application/gzip.
+        assertEquals(
+                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList(".tar.gz")),
+                Arrays.asList("application/gzip"));
     }
 
     ContentResolver getMockContentResolver(String mimeType) {
