@@ -4,6 +4,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -136,9 +138,26 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
             .Set("frameID", frame_id));
   }
 
+  std::unique_ptr<web::ScriptMessageValue> ValidFormScriptMessageValue(
+      std::string frame_id) {
+    return std::make_unique<web::ScriptMessageValue>(@{
+      @"formName" : @"test_form",
+      @"formRendererID" : @"1234",
+      @"fieldIdentifier" : @"new_password",
+      @"fieldRendererID" : @"0",
+      @"fieldType" : @"new_password",
+      @"type" : @"new_password",
+      @"value" : @"new_password",
+      @"hasUserGesture" : @"YES",
+      @"frameID" : base::SysUTF8ToNSString(frame_id)
+    });
+  }
+
   // Returns a script message that represents a form.
-  web::ScriptMessage ScriptMessageForForm(std::unique_ptr<base::Value> body) {
-    return web::ScriptMessage(std::move(body),
+  web::ScriptMessage ScriptMessageForForm(
+      std::unique_ptr<base::Value> body,
+      std::unique_ptr<web::ScriptMessageValue> value) {
+    return web::ScriptMessage(std::move(body), std::move(value),
                               /*is_user_interacting=*/true,
                               /*is_main_frame=*/true,
                               /*request_url=*/std::nullopt, url::Origin());
@@ -343,7 +362,8 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   helper_->SetAutofillBottomSheetHandler(commands_handler);
 
   web::ScriptMessage form_message =
-      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()));
+      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()),
+                           ValidFormScriptMessageValue(frame->GetFrameId()));
   // Using OnFormMessageReceived to emulate receiving a signal from the
   // proactive password generation listeners. This emulates the trigger (the
   // focus on the listened field), so the bottom sheet should show.
@@ -608,7 +628,8 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 
   // Simulate focus trigger event message.
   web::ScriptMessage form_message =
-      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()));
+      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()),
+                           ValidFormScriptMessageValue(frame->GetFrameId()));
   helper_->OnFormMessageReceived(form_message);
 
   // Verify that showAmbientAutofillNotice: is triggered.

@@ -6,10 +6,12 @@
 
 #import "base/base64.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -148,6 +150,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromChildFrameIgnored) {
   // Create a script message with is_main_frame = false.
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : base::SysUTF8ToNSString(base64_message)}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/false,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -176,6 +180,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoTabHelperIgnored) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : base::SysUTF8ToNSString(base64_message)}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -202,7 +208,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoBodyIgnored) {
 
   // Create a script message with a null body.
   web::ScriptMessage script_message(
-      /*body=*/nullptr,
+      /*legacy_body=*/nullptr, /*body=*/nullptr,
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -231,6 +237,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageBodyNotDictIgnored) {
   base::Value body("invalid_body_type");
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : @"invalid_body_type"}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -262,6 +270,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageMissingKeyIgnored) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(@{@"message" : @"some_value"}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -293,6 +302,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidBase64Ignored) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      // "!!!" is not a valid base64 string.
+      std::make_unique<web::ScriptMessageValue>(@{@"message" : @"!!!"}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -326,6 +337,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidProtobufIgnored) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : base::SysUTF8ToNSString(base64_message)}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -368,6 +381,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessagePropagatedSuccessfully) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : base::SysUTF8ToNSString(base64_message)}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
@@ -406,6 +421,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromInvalidUrlIgnored) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : base::SysUTF8ToNSString(base64_message)}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://www.google.com"),
@@ -442,6 +459,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromAmpUrlIgnored) {
 
   web::ScriptMessage script_message(
       std::make_unique<base::Value>(std::move(body)),
+      std::make_unique<web::ScriptMessageValue>(
+          @{@"message" : base::SysUTF8ToNSString(base64_message)}),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
       /*request_url=*/GURL("https://amp.google.com/search?udm=50&q=test"),

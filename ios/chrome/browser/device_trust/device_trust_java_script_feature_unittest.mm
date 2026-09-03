@@ -13,9 +13,11 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "url/origin.h"
@@ -24,10 +26,15 @@ namespace {
 
 constexpr char kChallenge[] = "my_challenge";
 
-std::unique_ptr<base::Value> MakeMessageBody(base::Value challenge) {
+std::unique_ptr<base::Value> MakeMessageLegacyBody(base::Value challenge) {
   base::DictValue body;
   body.Set("challengeRequest", std::move(challenge));
   return std::make_unique<base::Value>(std::move(body));
+}
+
+std::unique_ptr<web::ScriptMessageValue> MakeMessageBody(NSObject* challenge) {
+  NSDictionary* body = @{@"challengeRequest" : challenge};
+  return std::make_unique<web::ScriptMessageValue>(std::move(body));
 }
 
 // Subclass to intercept calls to HandleAttestationRequest in tests.
@@ -78,9 +85,10 @@ class DeviceTrustJavaScriptFeatureTest : public IOSChromeTestWithWebState {
         base::Unretained(this));
   }
 
-  void SendMessage(std::unique_ptr<base::Value> body,
+  void SendMessage(std::unique_ptr<base::Value> legacy_body,
+                   std::unique_ptr<web::ScriptMessageValue> body,
                    bool is_main_frame = true) {
-    web::ScriptMessage message(std::move(body),
+    web::ScriptMessage message(std::move(legacy_body), std::move(body),
                                /*is_user_interacting=*/false, is_main_frame,
                                /*request_url=*/std::nullopt,
                                /*security_origin=*/url::Origin());
@@ -88,8 +96,9 @@ class DeviceTrustJavaScriptFeatureTest : public IOSChromeTestWithWebState {
                                             CaptureReplyCallback());
   }
 
-  void SendChallenge(base::Value challenge) {
-    SendMessage(MakeMessageBody(std::move(challenge)));
+  void SendChallenge(base::Value legacy_challenge, NSObject* challenge) {
+    SendMessage(MakeMessageLegacyBody(std::move(legacy_challenge)),
+                MakeMessageBody(std::move(challenge)));
   }
 
   void ExpectErrorReply(std::string_view error_code) {
@@ -112,7 +121,7 @@ class DeviceTrustJavaScriptFeatureTest : public IOSChromeTestWithWebState {
 // Verifies that a well-formed message is forwarded to HandleAttestationRequest
 // with the challenge string intact.
 TEST_F(DeviceTrustJavaScriptFeatureTest, ValidRequestIsForwarded) {
-  SendChallenge(base::Value(kChallenge));
+  SendChallenge(base::Value(kChallenge), base::SysUTF8ToNSString(kChallenge));
 
   ASSERT_TRUE(feature_.attestation_request_received());
   EXPECT_EQ(feature_.last_challenge(), kChallenge);
@@ -120,7 +129,8 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, ValidRequestIsForwarded) {
 
 // Verifies that messages originating from non-main frames are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonMainFrameMessage) {
-  SendMessage(MakeMessageBody(base::Value(kChallenge)),
+  SendMessage(MakeMessageLegacyBody(base::Value(kChallenge)),
+              MakeMessageBody(base::SysUTF8ToNSString(kChallenge)),
               /*is_main_frame=*/false);
 
   EXPECT_FALSE(feature_.attestation_request_received());
@@ -129,7 +139,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonMainFrameMessage) {
 
 // Verifies that messages with null bodies are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectMissingBody) {
-  SendMessage(nullptr);
+  SendMessage(nullptr, nullptr);
 
   EXPECT_FALSE(feature_.attestation_request_received());
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
@@ -137,7 +147,8 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectMissingBody) {
 
 // Verifies that non-dictionary message bodies are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonDictionaryBody) {
-  SendMessage(std::make_unique<base::Value>("invalid"));
+  SendMessage(std::make_unique<base::Value>("invalid"),
+              std::make_unique<web::ScriptMessageValue>(@"invalid"));
 
   EXPECT_FALSE(feature_.attestation_request_received());
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
@@ -145,7 +156,8 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonDictionaryBody) {
 
 // Verifies that messages missing the 'challengeRequest' key are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectMissingChallenge) {
-  SendMessage(std::make_unique<base::Value>(base::DictValue()));
+  SendMessage(std::make_unique<base::Value>(base::DictValue()),
+              std::make_unique<web::ScriptMessageValue>(@{}));
 
   EXPECT_FALSE(feature_.attestation_request_received());
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
@@ -153,7 +165,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectMissingChallenge) {
 
 // Verifies that challenges of non-string types (e.g. integers) are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectWrongChallengeType) {
-  SendChallenge(base::Value(42));
+  SendChallenge(base::Value(42), @42);
 
   EXPECT_FALSE(feature_.attestation_request_received());
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
@@ -161,7 +173,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectWrongChallengeType) {
 
 // Verifies that empty challenge strings are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectEmptyChallenge) {
-  SendChallenge(base::Value(""));
+  SendChallenge(base::Value(""), @"");
 
   EXPECT_FALSE(feature_.attestation_request_received());
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
@@ -169,7 +181,8 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectEmptyChallenge) {
 
 // Verifies that challenges exceeding the maximum allowed size are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectOversizedChallenge) {
-  SendChallenge(base::Value(std::string(1025, 'a')));
+  std::string challenge = std::string(1025, 'a');
+  SendChallenge(base::Value(challenge), base::SysUTF8ToNSString(challenge));
 
   EXPECT_FALSE(feature_.attestation_request_received());
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
