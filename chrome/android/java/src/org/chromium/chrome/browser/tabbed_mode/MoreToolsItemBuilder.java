@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -17,7 +15,6 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemUtils;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -164,7 +161,7 @@ public class MoreToolsItemBuilder {
     }
 
     /** Builds the "Toggle tab layout" menu item. */
-    public ListItem buildTabLayoutToggleItem(@Nullable Profile profile, boolean showIcon) {
+    public ListItem buildTabLayoutToggleItem(boolean showIcon) {
         boolean isVerticalActive = VerticalTabUtils.isVerticalTabsEnabled(mContext);
         int stringRes =
                 isVerticalActive
@@ -189,11 +186,10 @@ public class MoreToolsItemBuilder {
                         mIsMenuIconAtStart);
 
         boolean showNewBadge =
-                !isVerticalActive
-                        && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(
-                                mContext, assumeNonNull(profile));
+                !isVerticalActive && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(mContext);
 
         if (showNewBadge) {
+            VerticalTabUtils.incrementNewBadgeViewCount();
             CharSequence title = VerticalTabUtils.getTitleWithNewBadge(mContext, stringRes);
             model.set(AppMenuItemProperties.TITLE, title);
         }

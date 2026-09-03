@@ -352,7 +352,7 @@ public class VerticalTabUtilsUnitTest {
     public void testShouldShowNewBadgeForVerticalTabs_NullContext() {
         FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
         DeviceInfo.setIsDesktopForTesting(false);
-        assertFalse(VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(null, null));
+        assertFalse(VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(null));
     }
 
     @Test

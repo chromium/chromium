@@ -1124,6 +1124,13 @@ public final class ChromePreferenceKeys {
     public static final String VERTICAL_TABS_ENABLED_TIMESTAMP =
             "Chrome.VerticalTabs.EnabledTimestamp";
 
+    /**
+     * Stores the impression count for displaying the "New" badge on the "Show tabs vertically" menu
+     * item.
+     */
+    public static final String VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT =
+            "Chrome.VerticalTabs.LayoutToggleViewCount";
+
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";
 
@@ -1390,6 +1397,7 @@ public final class ChromePreferenceKeys {
                 VERTICAL_TABS_COLLAPSED,
                 VERTICAL_TABS_ENABLED,
                 VERTICAL_TABS_ENABLED_TIMESTAMP,
+                VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT,
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);
     }

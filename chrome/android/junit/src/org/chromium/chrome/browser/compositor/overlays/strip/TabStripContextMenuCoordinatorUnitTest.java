@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +37,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
@@ -57,8 +55,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -91,7 +87,6 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Mock private Runnable mOnNewTabClick;
     @Mock private RectProvider mRectProvider;
     @Mock private Profile mProfile;
-    @Mock private Tracker mTracker;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private TaskManager mTaskManager;
@@ -104,7 +99,6 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        TrackerFactory.setTrackerForTests(mTracker);
         GlicEnabling.setEnabledForTesting(ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC));
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -142,7 +136,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @After
     public void tearDown() {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
-        DeviceInfo.resetIsDesktopForTesting();
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT);
     }
 
     private void runToggleLayoutMenuTest(boolean isVerticalTabsEnabled, int expectedTitleRes) {
@@ -227,8 +222,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
     public void showMenu_verifyVerticalTabsEntryPoint_showsNewBadge() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         VerticalTabUtils.setVerticalTabsEnabled(false);
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL))
-                .thenReturn(true);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
@@ -245,31 +240,37 @@ public class TabStripContextMenuCoordinatorUnitTest {
         Object[] spans = spannableTitle.getSpans(0, spannableTitle.length(), Object.class);
         assertTrue("Spannable title should contain badge styling spans.", spans.length > 0);
 
-        verify(mTracker).shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
-        verify(mTracker).dismissed(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
+        // Verify view count incremented from 0 to 1 upon showing.
+        assertEquals(1, VerticalTabUtils.getNewBadgeViewCount());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
-    public void showMenu_suppressesBadgeWhenTrackerReturnsFalse() {
+    public void showMenu_clickVerticalTabsEntryPoint_dismissesBadge() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        // Start with the horizontal tab.
         VerticalTabUtils.setVerticalTabsEnabled(false);
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL))
-                .thenReturn(false);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
-        verifyMenuState(/* expectedNumItems= */ 6);
+        verifyMenuState(6);
 
         PropertyModel toggleLayoutItemModel = getItemModelAtPosition(5);
-        CharSequence title = toggleLayoutItemModel.get(ListMenuItemProperties.TITLE);
-        assertNotNull(title);
-        assertTrue(title.toString().contains(mActivity.getString(R.string.show_tabs_vertically)));
-        assertFalse("Title should not contain New text", title.toString().contains("New"));
-        assertFalse("Title should not carry badge spans", title instanceof Spannable);
-        verify(mTracker).shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
-        verify(mTracker, never()).dismissed(any());
+
+        // Act: Select the toggle option.
+        mCoordinator
+                .getListMenuDelegate(mContentView)
+                .onItemSelected(toggleLayoutItemModel, mListView);
+
+        // Simulate enabling vertical tabs as a result of the user selection.
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+
+        // Verify view count was set to Max count (3), permanently suppressing the badge.
+        assertEquals(
+                VerticalTabUtils.NEW_BADGE_MAX_VIEW_COUNT, VerticalTabUtils.getNewBadgeViewCount());
     }
 
     @Test
@@ -278,6 +279,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
     public void showMenu_desktopDevice_suppressesNewBadge() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         VerticalTabUtils.setVerticalTabsEnabled(false);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
 
         // Mock device form factor as Desktop.
         DeviceInfo.setIsDesktopForTesting(true);
@@ -285,22 +288,9 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
         verifyMenuState(/* expectedNumItems= */ 8);
 
-        PropertyModel toggleLayoutItemModel = null;
-        for (int i = 0; i < mListView.getAdapter().getCount(); i++) {
-            ListItem item = (ListItem) mListView.getAdapter().getItem(i);
-            if (item.model.containsKey(ListMenuItemProperties.MENU_ITEM_ID)
-                    && item.model.get(ListMenuItemProperties.MENU_ITEM_ID)
-                            == R.id.toggle_tab_layout_menu_id) {
-                toggleLayoutItemModel = item.model;
-                break;
-            }
-        }
-        assertNotNull(toggleLayoutItemModel);
-        CharSequence title = toggleLayoutItemModel.get(ListMenuItemProperties.TITLE);
-        assertNotNull(title);
-        assertTrue(title.toString().contains(mActivity.getString(R.string.show_tabs_vertically)));
-        assertFalse("Title should not carry badge spans on desktop", title instanceof Spannable);
-        verify(mTracker, never()).shouldTriggerHelpUi(any());
+        // View count should remain 0 because Desktop suppresses the badge. This feature is only for
+        // tablets.
+        assertEquals(0, VerticalTabUtils.getNewBadgeViewCount());
     }
 
     @Test
