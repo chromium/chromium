@@ -172,12 +172,6 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
-      // After the user selects a region of the screen, we do a hit test at
-      // the center of that box using the automation API. The result of the
-      // hit test is a MOUSE_RELEASED accessibility event.
-      desktop.addEventListener(
-          EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
-          true);
       // Chrome PDF Viewer with PDF OCR sends a layout complete event when
       // finishing extracting text from inaccessible PDF pages. The same for
       // Backlight (AKA Gallery on ChromeOS).
@@ -289,18 +283,20 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   }
 
   /**
-   * Called in response to our hit test after the mouse is released,
-   * when the user is in a mode where Select-to-speak is capturing
-   * mouse events (for example holding down Search).
-   * @param evt The automation event from the hit test.
+   * Called in response to hitTestWithReply after mouse selection completes.
+   *
+   * @param hitNode The automation node resolved from the hit test reply.
    */
-  private onAutomationHitTest_(evt: AutomationEvent): void {
+  private onAutomationHitTest_(hitNode: AutomationNode): void {
+    if (!hitNode) {
+      return;
+    }
     // Walk up to the nearest window, web area, document, graphics document,
     // toolbar, or dialog that the hit node is contained inside. Only speak
     // objects within that container. In the future we might include other
     // root-like roles here. (Consider harmonizing with the `ui::IsRootLike`
     // method.)
-    let root = evt.target;
+    let root = hitNode;
 
     // In Chrome PDF Viewer, PDF content for a large PDF might still be loading
     // into a PDF accessibility tree when the user selects text on a PDF page.
@@ -833,12 +829,13 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
           this.desktop_!.hitTest(x, y, EventType.MOUSE_PRESSED);
         } else {
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
-          // Do a hit test at the center of the area the user dragged over.
-          // This will give us some context when searching the accessibility
-          // tree. The hit test will result in a EventType.MOUSE_RELEASED
-          // event being fired on the result of that hit test, which will
-          // trigger onAutomationHitTest_.
-          this.desktop_!.hitTest(x, y, EventType.MOUSE_RELEASED);
+          // Do a hit test at the center of the area the user dragged over,
+          // which will trigger onAutomationHitTest_.
+          this.desktop_!.hitTestWithReply(x, y, (target: AutomationNode) => {
+            if (target) {
+              this.onAutomationHitTest_(target);
+            }
+          });
         }
       },
       // onSelectionChanged: Mouse selection rect changed.
