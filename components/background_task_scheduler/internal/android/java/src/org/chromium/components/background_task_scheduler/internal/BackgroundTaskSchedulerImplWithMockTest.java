@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -20,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link BackgroundTaskSchedulerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BackgroundTaskSchedulerImplWithMockTest {
     private static final int TEST_MINUTES = 10;
 

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TaskInfo}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TaskInfoTest {
     private static final long TEST_START_MS = TimeUnit.MINUTES.toMillis(5);
     private static final long TEST_END_MS = TimeUnit.MINUTES.toMillis(10);
