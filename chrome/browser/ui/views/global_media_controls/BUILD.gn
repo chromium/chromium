@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/test:test_support",
+    "//chrome/test/base:menu_model_test",
     "//components/global_media_controls",
     "//components/global_media_controls:test_support",
     "//components/media_message_center",

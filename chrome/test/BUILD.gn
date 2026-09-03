@@ -172,7 +172,6 @@ static_library("test_support") {
     "//chrome/test/base:chrome_render_view_test",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:chrome_test_utils",
-    "//chrome/test/base:menu_model_test",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:test_launcher_utils",
     "//chrome/test/base:test_switches",
