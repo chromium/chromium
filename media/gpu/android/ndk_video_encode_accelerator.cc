@@ -882,6 +882,17 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
   encoder_info_.implementation_name =
       base::StringPrintf("NdkVideoEncodeAccelerator(%s) input: %s",
                          codec_name.c_str(), input_type_str);
+
+  if (config_.HasSpatialLayer() || config_.HasTemporalLayer()) {
+    DCHECK(!config_.spatial_layers.empty());
+    for (size_t i = 0; i < config_.spatial_layers.size(); ++i) {
+      encoder_info_.fps_allocation[i] =
+          GetFpsAllocation(config_.spatial_layers[i].num_of_temporal_layers);
+    }
+  } else {
+    constexpr uint8_t kFullFramerate = 255;
+    encoder_info_.fps_allocation[0] = {kFullFramerate};
+  }
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
