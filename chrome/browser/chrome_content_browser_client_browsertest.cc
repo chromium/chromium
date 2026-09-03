@@ -94,6 +94,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/frame_test_utils.h"
+#include "content/public/test/scoped_page_focus_override.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1971,6 +1972,66 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
   rfh->GetRenderWidgetHost()->Focus();
   EXPECT_TRUE(rfh->IsFocused());
   EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
+                       PasteAllowedByPermission_FocusEmulation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/iframe.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* parent_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_rfh = content::ChildFrameAt(parent_rfh, 0);
+  ASSERT_TRUE(child_rfh);
+
+  SetPermission(test_url, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                CONTENT_SETTING_ALLOW);
+  parent_rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(parent_rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(parent_rfh));
+
+  {
+    content::ScopedPageFocusOverride focus_override(web_contents);
+    EXPECT_TRUE(parent_rfh->IsFocused());
+    EXPECT_TRUE(IsClipboardPasteAllowed(parent_rfh));
+    EXPECT_FALSE(child_rfh->IsFocused());
+  }
+
+  EXPECT_FALSE(parent_rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(parent_rfh));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
+                       FocusEmulationDoesNotPropagateToCrossProcessFrame) {
+  content::RenderFrameHost* parent_rfh = nullptr;
+  content::RenderFrameHost* child_rfh = nullptr;
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToPageWithCrossOriginIframe(&parent_rfh, &child_rfh));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  parent_rfh->GetRenderWidgetHost()->Focus();
+  ASSERT_TRUE(content::ExecJs(parent_rfh,
+                              "document.querySelector('iframe').focus();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_NE(parent_rfh->GetRenderWidgetHost(),
+            child_rfh->GetRenderWidgetHost());
+  ASSERT_TRUE(child_rfh->IsFocused());
+
+  parent_rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(parent_rfh->IsFocused());
+  EXPECT_FALSE(child_rfh->IsFocused());
+
+  {
+    content::ScopedPageFocusOverride focus_override(web_contents);
+    EXPECT_TRUE(parent_rfh->IsFocused());
+    EXPECT_FALSE(child_rfh->IsFocused());
+  }
+
+  EXPECT_FALSE(parent_rfh->IsFocused());
+  EXPECT_FALSE(child_rfh->IsFocused());
 }
 
 // Verifies that IsClipboardPasteAllowed mirrors Blink's Document::hasFocus()

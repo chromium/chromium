@@ -26,6 +26,7 @@
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -144,6 +145,19 @@ void EmulationHandler::SetRenderer(int process_host_id,
                                    RenderFrameHostImpl* frame_host) {
   if (host_ == frame_host)
     return;
+  RenderWidgetHostImpl* old_render_widget_host =
+      host_ ? host_->render_view_host()->GetWidget() : nullptr;
+  RenderWidgetHostImpl* new_render_widget_host =
+      frame_host ? frame_host->render_view_host()->GetWidget() : nullptr;
+  if (focus_emulation_enabled_) {
+    if (old_render_widget_host &&
+        old_render_widget_host != new_render_widget_host) {
+      old_render_widget_host->SetFocusEmulationEnabled(false);
+    }
+    if (new_render_widget_host) {
+      new_render_widget_host->SetFocusEmulationEnabled(true);
+    }
+  }
   if (!frame_host) {
     sensor_overrides_.clear();
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
@@ -1019,6 +1033,9 @@ Response EmulationHandler::SetUserAgentOverride(
 }
 
 Response EmulationHandler::SetFocusEmulationEnabled(bool enabled) {
+  if (host_) {
+    host_->render_view_host()->GetWidget()->SetFocusEmulationEnabled(enabled);
+  }
   if (enabled == focus_emulation_enabled_)
     return Response::FallThrough();
   focus_emulation_enabled_ = enabled;

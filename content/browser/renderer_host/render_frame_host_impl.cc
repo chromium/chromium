@@ -13846,7 +13846,9 @@ void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
 }
 
 bool RenderFrameHostImpl::IsFocused() {
-  if (!GetMainFrame()->GetRenderWidgetHost()->is_focused()) {
+  const bool focus_emulated =
+      render_view_host_->GetWidget()->IsFocusEmulationEnabled();
+  if (!focus_emulated && !GetMainFrame()->GetRenderWidgetHost()->is_focused()) {
     return false;
   }
 
@@ -13854,7 +13856,8 @@ bool RenderFrameHostImpl::IsFocused() {
   // focused subframe, treat the main frame as focused by default.
   FrameTreeNode* focused_frame = frame_tree_->GetFocusedFrame();
   if (!focused_frame) {
-    if (base::FeatureList::IsEnabled(
+    if (focus_emulated ||
+        base::FeatureList::IsEnabled(
             features::kDefaultToMainFrameFocusWhenNoSubframeFocused)) {
       return this == GetMainFrame();
     }
