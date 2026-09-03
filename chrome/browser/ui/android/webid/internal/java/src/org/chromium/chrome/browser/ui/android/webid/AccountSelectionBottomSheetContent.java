@@ -250,6 +250,17 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         if (mRpMode == RpMode.PASSIVE && !mIsMultipleIdps) {
             computeAndUpdateAccountListHeightForPassiveSingleIdp();
         }
+
+        if (mBottomSheetController.isLargeFormFactorUiEnabled(this)) {
+            int maxHeight = mBottomSheetController.getMaxSheetHeight();
+            int availableHeight =
+                    maxHeight > 0 ? maxHeight : mBottomSheetController.getContainerHeight();
+            return availableHeight <= 0
+                    ? 0f
+                    : Math.min(getMaximumSheetHeightPx(), availableHeight)
+                            / (float) availableHeight;
+        }
+
         // WRAP_CONTENT would be the right fit but this disables the HALF state and this does not
         // work properly when we transition from a multi IDP UI to a single IDP UI, for unknown
         // reasons.
@@ -259,6 +270,24 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
+        if (mBottomSheetController.isLargeFormFactorUiEnabled(this)) {
+            int maxHeight = mBottomSheetController.getMaxSheetHeight();
+            int availableHeight =
+                    maxHeight > 0 ? maxHeight : mBottomSheetController.getContainerHeight();
+            if (availableHeight <= 0) {
+                return HeightMode.DISABLED;
+            }
+            if (mRpMode == RpMode.PASSIVE) {
+                if (!mIsMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
+                    return HeightMode.DISABLED;
+                }
+                return Math.min(getDesiredPassiveModeMultiIdpSheetHeightPx(), availableHeight)
+                        / (float) availableHeight;
+            }
+            return Math.min(getDesiredActiveModeSheetHeightPx(), availableHeight)
+                    / (float) availableHeight;
+        }
+
         if (mRpMode == RpMode.PASSIVE) {
             if (!mIsMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
                 return HeightMode.DISABLED;

@@ -62,11 +62,28 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
         mBottomActionsBlock = getContentView().findViewById(R.id.bottom_actions_block);
         mManageDevicesBlock = getContentView().findViewById(R.id.manage_devices_block);
         mManageDevicesLink = getContentView().findViewById(R.id.manage_devices_link);
+        if (bottomSheetController.isLargeFormFactorUiEnabled(this)) {
+            updateManageDevicesVisibility(true);
+        }
 
         setSheetItemListView(getContentView().findViewById(R.id.sheet_item_list));
         getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
 
         getContentView().addOnAttachStateChangeListener(new ClipLayoutHelper());
+        if (bottomSheetController.isLargeFormFactorUiEnabled(this)) {
+            getContentView()
+                    .addOnLayoutChangeListener(
+                            (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                                if (bottom - top != oldBottom - oldTop) {
+                                    int state = getBottomSheetController().getSheetState();
+                                    if (state == SheetState.HALF) {
+                                        handleHalfStateOverflow(getSheetItemListView());
+                                    } else if (state == SheetState.FULL) {
+                                        handleFullStateOverflow(getSheetItemListView());
+                                    }
+                                }
+                            });
+        }
     }
 
     @Override
@@ -120,7 +137,8 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
         int paddingBottom = mBottomActionsBlock.getPaddingBottom();
         int sendButtonHeight = getHeightWithMarginsPx(mSendButton);
         height += paddingTop + sendButtonHeight + paddingBottom;
-        if (!forHalfState) {
+        boolean isDesktop = getBottomSheetController().isLargeFormFactorUiEnabled(this);
+        if (!forHalfState || isDesktop) {
             height += getHeightWithMarginsPx(mManageDevicesBlock);
         }
         return height;
@@ -131,7 +149,18 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
     }
 
     private @Px int getInitialListHeight() {
-        return Math.max(0, super.getDesiredSheetHeightPx() - getHeaderAndHandlebarHeightPx());
+        int initialHeight = super.getDesiredSheetHeightPx() - getHeaderAndHandlebarHeightPx();
+        if (initialHeight <= 0 && getBottomSheetController().isLargeFormFactorUiEnabled(this)) {
+            RecyclerView listView = getSheetItemListView();
+            if (listView.getAdapter() == null || listView.getAdapter().getItemCount() == 0) {
+                return 0;
+            }
+            int itemCount = listView.getAdapter().getItemCount();
+            int defaultItemHeight = getDefaultListHeightPx(listView, 1);
+            float visibleItemCount = Math.min(itemCount, MAX_FULLY_VISIBLE_LIST_ITEM_COUNT + 0.5f);
+            initialHeight = (int) (defaultItemHeight * visibleItemCount);
+        }
+        return Math.max(0, initialHeight);
     }
 
     private @Px int calculateListHeight() {
@@ -192,8 +221,11 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
 
     private void onSheetStateChange(@SheetState int newState) {
         boolean inHalfState = newState == SheetState.HALF;
-        updateManageDevicesVisibility(!inHalfState);
-        remeasure();
+        boolean isDesktop = getBottomSheetController().isLargeFormFactorUiEnabled(this);
+        updateManageDevicesVisibility(!inHalfState || isDesktop);
+        if (!isDesktop) {
+            remeasure();
+        }
         RecyclerView sheetItemListView = getSheetItemListView();
         if (inHalfState) {
             handleHalfStateOverflow(sheetItemListView);
@@ -232,8 +264,7 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
     }
 
     private void limitListHeightForFullState(int maxContainerHeight, int nonListHeight) {
-        int maxListHeight = Math.max(0, maxContainerHeight - nonListHeight);
-        setSheetItemListHeightPx(maxListHeight);
+        setSheetItemListHeightPx(Math.max(0, maxContainerHeight - nonListHeight));
     }
 
     private void updateManageDevicesVisibility(boolean visible) {
@@ -243,6 +274,10 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
     }
 
     private @Px int getMaxAvailableHeightPx() {
+        if (getBottomSheetController().isLargeFormFactorUiEnabled(this)) {
+            int maxHeight = getBottomSheetController().getMaxSheetHeight();
+            return maxHeight > 0 ? maxHeight : getBottomSheetController().getContainerHeight();
+        }
         return getBottomSheetController().getContainerHeight() - getSystemWindowInsetBottomPx();
     }
 

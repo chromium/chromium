@@ -219,8 +219,7 @@ public class NtpCustomizationCoordinator {
     NtpCustomizationBottomSheetContent initBottomSheetContent(View contentView) {
         return new NtpCustomizationBottomSheetContent(
                 contentView,
-                () -> mBottomSheetController.getContainerHeight(),
-                () -> mBottomSheetController.getMaxSheetWidth(),
+                mBottomSheetController,
                 mBottomSheetType == MAIN || mBottomSheetType == THEME_TIP
                         ? () -> mMediator.backPressOnCurrentBottomSheet()
                         : () -> mMediator.dismissBottomSheet(/* animate= */ true),
