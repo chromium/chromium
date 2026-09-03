@@ -40,6 +40,7 @@ class ChromeSecurityDelegate : public exo::SecurityDelegate {
   SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
   bool CanAccessRemoteShell() const override;
   bool CanSetRestoreInfo() const override;
+  bool CanSetSystemModal() const override;
   std::vector<ui::FileInfo> GetFilenames(
       ui::EndpointType source,
       const std::vector<uint8_t>& data) const override;

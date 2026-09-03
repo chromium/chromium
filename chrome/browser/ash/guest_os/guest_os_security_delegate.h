@@ -39,6 +39,7 @@ class GuestOsSecurityDelegate : public ash::ChromeSecurityDelegate {
   // ash::ChromeSecurityDelegate:
   bool CanAccessRemoteShell() const override;
   bool CanSetRestoreInfo() const override;
+  bool CanSetSystemModal() const override;
   std::string GetVmName(ui::EndpointType target) const override;
 
  private:
