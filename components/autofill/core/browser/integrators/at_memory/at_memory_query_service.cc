@@ -319,7 +319,8 @@ MetadataAttributeKey GetMetadataAttributeKey(const EntryMetadata& metadata) {
 // attributes are identified by their `MemoryDataType`, while schemaless
 // attributes (`MemoryDataType::kUnknown`) are identified by their `type_name`.
 // Ties preserve their original relative order.
-void ReorderMetadataByUniqueness(std::vector<MemorySearchResult>& results) {
+void ReorderMetadataByUniqueness(std::vector<MemorySearchResult>& results,
+                                 LogManager& log_manager) {
   absl::flat_hash_map<MetadataAttributeKey, size_t> frequency_map;
   for (const MemorySearchResult& result : results) {
     for (const EntryMetadata& metadata : result.metadata_list) {
@@ -327,13 +328,21 @@ void ReorderMetadataByUniqueness(std::vector<MemorySearchResult>& results) {
     }
   }
 
+  auto proj = [&frequency_map](const EntryMetadata& m) {
+    return frequency_map.at(GetMetadataAttributeKey(m));
+  };
+
   for (MemorySearchResult& result : results) {
-    std::ranges::stable_sort(
-        result.metadata_list,
-        /*comp=*/{},
-        /*proj=*/[&frequency_map](const EntryMetadata& m) {
-          return frequency_map.at(GetMetadataAttributeKey(m));
-        });
+    if (log_manager.IsLoggingActive()) {
+      const bool is_reordered =
+          !std::ranges::is_sorted(result.metadata_list, /*comp=*/{}, proj);
+      if (is_reordered) {
+        LOG_AF(log_manager)
+            << LoggingScope::kAtMemory << LogMessage::kAtMemory
+            << "Reordering disambiguation metadata:" << Br{} << result;
+      }
+    }
+    std::ranges::stable_sort(result.metadata_list, /*comp=*/{}, proj);
   }
 }
 
@@ -390,6 +399,21 @@ std::vector<MemorySearchResult> RankResults(
   return ranked_results;
 }
 
+// Combines local and remote results, deduplicates them, and reorders secondary
+// metadata attributes by uniqueness.
+std::vector<MemorySearchResult> CombineAndProcessResults(
+    std::vector<MemorySearchResult> local_results,
+    std::vector<MemorySearchResult> remote_results,
+    LogManager& log_manager) {
+  std::vector<MemorySearchResult> combined_results =
+      RankResults(std::move(local_results), std::move(remote_results));
+  DeduplicateResults(combined_results, log_manager);
+  ReorderMetadataByUniqueness(combined_results, log_manager);
+  LOG_AF(log_manager) << LoggingScope::kAtMemory << LogMessage::kAtMemory
+                      << "Combined results:" << Br{} << combined_results;
+  return combined_results;
+}
+
 // For debugging purposes only. Runs a debug query that directly retrieves
 // local suggestions via `data_provider`, bypassing query classification and
 // remote resolution.
@@ -409,10 +433,10 @@ void QueryPersonalContextDebug(
       base::BindOnce(
           [](base::RepeatingCallback<void(MemorySearchResults)> update_cb,
              LogManager& log_mgr, std::vector<MemorySearchResult> results) {
-            DeduplicateResults(results, log_mgr);
-            ReorderMetadataByUniqueness(results);
             update_cb.Run(MemorySearchResults(
-                MemorySearchStatus::kFinalResponseSuccess, std::move(results)));
+                MemorySearchStatus::kFinalResponseSuccess,
+                CombineAndProcessResults(std::move(results),
+                                         /*remote_results=*/{}, log_mgr)));
           },
           std::move(update_callback), std::ref(log_manager)));
 }
@@ -863,12 +887,10 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   }
 
   if (local_data_types.empty() || !data_provider_) {
-    std::vector<MemorySearchResult> ranked_results =
-        RankResults(/*local_results=*/{}, std::move(remote_results));
-    DeduplicateResults(ranked_results, *log_manager_);
-    ReorderMetadataByUniqueness(ranked_results);
+    std::vector<MemorySearchResult> combined_results = CombineAndProcessResults(
+        /*local_results=*/{}, std::move(remote_results), *log_manager_);
     run_callback(MemorySearchStatus::kFinalResponseSuccess,
-                 std::move(ranked_results));
+                 std::move(combined_results));
     return;
   }
 
@@ -902,13 +924,11 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
   LOG_AF(*log_manager_) << LoggingScope::kAtMemory << LogMessage::kAtMemory
                         << "Filtered local data results:" << Br{}
                         << filtered_local_results;
-  std::vector<MemorySearchResult> ranked_results =
-      RankResults(std::move(filtered_local_results), std::move(remote_results));
-  DeduplicateResults(ranked_results, *log_manager_);
-  ReorderMetadataByUniqueness(ranked_results);
-
+  std::vector<MemorySearchResult> combined_results =
+      CombineAndProcessResults(std::move(filtered_local_results),
+                               std::move(remote_results), *log_manager_);
   MemorySearchResults search_results(MemorySearchStatus::kFinalResponseSuccess,
-                                     std::move(ranked_results));
+                                     std::move(combined_results));
   search_results.server_request_id = std::move(server_request_id);
   callback.Run(std::move(search_results));
 }

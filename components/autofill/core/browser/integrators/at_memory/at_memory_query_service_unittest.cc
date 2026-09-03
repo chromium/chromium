@@ -74,6 +74,7 @@ using TypedValueFilter =
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ByMove;
+using ::testing::ContainsRegex;
 using ::testing::DoubleEq;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -2459,6 +2460,11 @@ TEST_F(AtMemoryQueryServiceTest, LogsLocalResultsWhenRetrieved) {
     EXPECT_THAT(entry.DebugString(), HasSubstr("VehiclePlateNumber"));
     EXPECT_THAT(entry.DebugString(), HasSubstr("12345"));
   });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Combined results:"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("VehiclePlateNumber"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("12345"));
+  });
 
   TestFuture<MemorySearchResults> future;
   service->Query(u"query", GURL("https://example.com"), u"Title",
@@ -2525,6 +2531,9 @@ TEST_F(AtMemoryQueryServiceTest, LogsDiscardedDuplicatesWhenFound) {
     EXPECT_THAT(log_str, HasSubstr("GMAIL (URL: https://gmail.com/123)"));
     EXPECT_THAT(log_str, HasSubstr("Is locally stored:"));
   });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Combined results:"));
+  });
 
   TestFuture<MemorySearchResults> future;
   service->Query(u"query", GURL("https://example.com"), u"Title",
@@ -2582,6 +2591,93 @@ TEST_F(AtMemoryQueryServiceTest,
     EXPECT_THAT(log_str, HasSubstr("Discarded duplicate result"));
     EXPECT_THAT(log_str, HasSubstr("\"data-pii\": \"true\""));
     EXPECT_THAT(log_str, HasSubstr("\"value\": \"PASS123\""));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Combined results:"));
+  });
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"query", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+  EXPECT_TRUE(future.Wait());
+
+  log_router.UnregisterReceiver(&receiver);
+}
+
+// Tests that disambiguation metadata reordering is logged when the original
+// metadata attribute order is changed.
+TEST_F(AtMemoryQueryServiceTest,
+       LogsDisambiguationReorderingWhenMetadataOrderChanged) {
+  LogRouter log_router;
+  MockLogReceiver receiver;
+  log_router.RegisterReceiver(&receiver);
+
+  std::unique_ptr<FakeMemoryDataProvider> provider =
+      std::make_unique<FakeMemoryDataProvider>();
+  MemorySearchResult local_result(MemoryDataType::kVehiclePlateNumber, u"Plate",
+                                  u"CX100");
+  local_result.is_local = true;
+  // "Country" (shared) comes before "City" (unique).
+  local_result.metadata_list = {
+      EntryMetadata(MemoryDataType::kUnknown, u"Country", u"US"),
+      EntryMetadata(MemoryDataType::kUnknown, u"City", u"NYC")};
+  provider->SetResults({local_result});
+
+  std::unique_ptr<AtMemoryQueryService> service =
+      CreateQueryService(std::move(provider), &log_router);
+
+  AtMemoryQueryResponse response;
+  response.set_query_classification(
+      AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
+  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+  AutofillFetchSpecification* spec = plan->add_fetch_specifications();
+  spec->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER);
+
+  AtMemorySearchResult* remote_result = response.add_results();
+  Attribute* primary = remote_result->mutable_primary_attribute();
+  primary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER);
+  primary->set_value("CX200");
+  Attribute* meta1 = remote_result->add_secondary_attributes();
+  meta1->set_schemaless_key("Country");
+  meta1->set_value("US");
+  Attribute* meta2 = remote_result->add_secondary_attributes();
+  meta2->set_schemaless_key("City");
+  meta2->set_value("LA");
+
+  StubFetchContextResponse(std::move(response));
+
+  InSequence seq;
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Evaluating Autofill fetch plan"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Retrieved local data results (unfiltered)"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Filtered local data results"));
+  });
+  // Disambiguation reorders metadata so "City" (freq 1) comes before "Country"
+  // (freq 2). Both suggestions should log the reordering with their former
+  // order before the final combined results are logged.
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(
+        entry.DebugString(),
+        ContainsRegex(
+            R"(Reordering disambiguation metadata:[\s\S]*CX100[\s\S]*Country[\s\S]*City)"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(
+        entry.DebugString(),
+        ContainsRegex(
+            R"(Reordering disambiguation metadata:[\s\S]*CX200[\s\S]*Country[\s\S]*City)"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                ContainsRegex(R"(Combined results:[\s\S]*CX100[\s\S]*CX200)"));
   });
 
   TestFuture<MemorySearchResults> future;

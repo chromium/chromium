@@ -19,6 +19,9 @@ struct MemorySearchResult;
 LogBuffer& operator<<(LogBuffer& buffer,
                       const personal_context::proto::AutofillFetchPlan& plan);
 
+// Serializes `result` into `buffer`.
+LogBuffer& operator<<(LogBuffer& buffer, const MemorySearchResult& result);
+
 // Serializes `results` into `buffer`.
 LogBuffer& operator<<(LogBuffer& buffer,
                       const std::vector<MemorySearchResult>& results);
