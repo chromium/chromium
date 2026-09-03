@@ -1271,6 +1271,14 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         mBasePageTargetY = calculateBasePageTargetY();
     }
 
+    /** Returns whether the top controls are locked in place and cannot scroll off-screen. */
+    private boolean areTopControlsLocked() {
+        return mBrowserControlsStateProvider.isVisibilityForced()
+                || (mBrowserControlsStateProvider.getTopControlsHeight() > 0
+                        && mBrowserControlsStateProvider.getTopControlsMinHeight()
+                                == mBrowserControlsStateProvider.getTopControlsHeight());
+    }
+
     /**
      * Calculates the target offset of the Base Page in order to achieve the desired offset
      * specified by {@link #calculateBasePageDesiredOffset} while assuring that the Base Page will
@@ -1286,7 +1294,10 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         // base page.
         // A small panel should always return zero to ensure the Base Page remains in the same
         // position.
-        if (!isFullWidthSizePanel() || mAppHeaderHeightDp > 0) return 0.f;
+        // If top controls are locked, do not offset the base page.
+        if (!isFullWidthSizePanel() || mAppHeaderHeightDp > 0 || areTopControlsLocked()) {
+            return 0.f;
+        }
 
         // Start with the desired offset taking viewport offset into consideration and make sure
         // the result is <= 0 so the page moves up and not down.
@@ -1303,7 +1314,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The Y coordinate to apply to the Base Page in order to keep the selection in view
      *     when the Overlay Panel is in EXPANDED state.
      */
-    private float getBasePageTargetY() {
+    @VisibleForTesting
+    float getBasePageTargetY() {
         return mBasePageTargetY;
     }
 
