@@ -70,4 +70,10 @@ BASE_FEATURE(kContextHubDatabaseStorage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextHubTabContextSyncStorage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSmartSearchTimeout,
+                   &browser::context_hub::mojom::kSmartSearch,
+                   "smart_search_timeout",
+                   base::Seconds(15));
+
 }  // namespace context_hub::features

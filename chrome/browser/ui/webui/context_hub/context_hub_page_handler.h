@@ -123,6 +123,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                               CloseConfirmedTabGroupCallback callback) override;
   void RemoveAllConfirmedTabGroups(
       RemoveAllConfirmedTabGroupsCallback callback) override;
+  void ExecuteSmartSearch(const std::string& query,
+                          ExecuteSmartSearchCallback callback) override;
 
  private:
   mojo::Remote<browser::context_hub::mojom::Page> page_;

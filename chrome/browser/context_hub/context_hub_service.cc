@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -42,6 +42,7 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "components/personal_context/proto/features/smart_search.pb.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -1265,6 +1266,51 @@ void ContextHubService::GroupTabs(std::vector<TabData> tabs,
                                   const std::string& user_command,
                                   GroupTabsCallback callback) {
   GenerateTabGroups(std::move(tabs), user_command, std::move(callback));
+}
+
+void ContextHubService::ExecuteSmartSearch(const std::string& query,
+                                           SmartSearchCallback callback) {
+  personal_context::proto::SmartSearchRequest request_metadata;
+  request_metadata.set_input_query(query);
+
+  personal_context::ContextMemoryRequestOptions options;
+  options.request_timeout = features::kSmartSearchTimeout.Get();
+
+  personal_context_service_->FetchContext(
+      personal_context::proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH,
+      request_metadata, options,
+      base::BindOnce(&ContextHubService::OnSmartSearchFetched,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextHubService::OnSmartSearchFetched(
+    SmartSearchCallback callback,
+    personal_context::FetchContextResult result) {
+  if (!result.response.has_value()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  personal_context::proto::SmartSearchResponse response;
+  if (!response.ParseFromString(result.response.value().value())) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<personal_context::proto::SmartSearchItem> results;
+  results.reserve(response.items_size());
+  for (auto& item : *response.mutable_items()) {
+    personal_context::proto::SmartSearchItem sanitized_item;
+    sanitized_item.set_description(item.description());
+    for (auto& ref : *item.mutable_source_references()) {
+      if (ref.has_drive() || ref.has_gmail() || ref.has_photos()) {
+        *sanitized_item.add_source_references() = std::move(ref);
+      }
+    }
+    results.push_back(std::move(sanitized_item));
+  }
+
+  std::move(callback).Run(results);
 }
 
 }  // namespace context_hub

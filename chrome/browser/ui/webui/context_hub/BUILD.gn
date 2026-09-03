@@ -46,12 +46,17 @@ mojom("mojo_bindings") {
           mojom = "browser.context_hub.mojom.AutoTodoItem"
           cpp = "::context_hub::AutoTodoEntry"
         },
+        {
+          mojom = "browser.context_hub.mojom.SmartSearchResult"
+          cpp = "::personal_context::proto::SmartSearchItem"
+        },
       ]
       traits_headers = [ "context_hub_mojom_traits.h" ]
       traits_sources = [ "context_hub_mojom_traits.cc" ]
       traits_deps = [
         "//base",
         "//chrome/browser/context_hub/auto_todos",
+        "//components/personal_context/proto:personal_context_proto",
         "//mojo/public/mojom/base",
         "//third_party/abseil-cpp:absl",
         "//url",

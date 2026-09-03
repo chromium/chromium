@@ -30,6 +30,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/personal_context/proto/features/smart_search.pb.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
@@ -276,6 +277,13 @@ class ContextHubService : public KeyedService,
                              const std::string& user_command,
                              MemoryBankChatCallback callback);
 
+  using SmartSearchCallback = base::OnceCallback<void(
+      const std::vector<personal_context::proto::SmartSearchItem>& results)>;
+  // Executes the provided natural language query to search across Drive
+  // artifacts.
+  void ExecuteSmartSearch(const std::string& query,
+                          SmartSearchCallback callback);
+
   using ConfirmAllTabGroupsCallback =
       base::OnceCallback<void(bool success,
                               std::vector<base::Uuid> added_group_guids)>;
@@ -347,6 +355,10 @@ class ContextHubService : public KeyedService,
   // Handles the async response from the AutoTodos fetch.
   void OnFirstPartyAutoTodosFetched(
       personal_context::FetchContextResult result);
+
+  // Handles the async response from the SmartSearch fetch.
+  void OnSmartSearchFetched(SmartSearchCallback callback,
+                            personal_context::FetchContextResult result);
 
   // Cleans up First Party Auto Todos generation state, notifies observers, and
   // invokes any pending completion callbacks.

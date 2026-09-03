@@ -31,6 +31,8 @@
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "components/personal_context/proto/features/common_data.pb.h"
+#include "components/personal_context/proto/features/smart_search.pb.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -183,6 +185,7 @@ class ContextHubPageHandlerTest : public testing::Test {
         {features::kContextHub, features::kMemoryBanks,
          browser::context_hub::mojom::kAutoTabGroups,
          browser::context_hub::mojom::kAutoTodos,
+         browser::context_hub::mojom::kSmartSearch,
          optimization_guide::features::kOptimizationHints},
         {});
     return feature_list;
@@ -453,6 +456,65 @@ TEST(ContextHubMojomTraitsTest, SourceReferenceSerialization) {
               browser::context_hub::mojom::SourceReference>(input, output));
   EXPECT_EQ(output.url, GURL("https://mail.google.com/mail/u/0/#inbox/123"));
   EXPECT_EQ(output.subject, "Test Subject");
+}
+
+TEST(ContextHubMojomTraitsTest, SmartSearchResultSerialization) {
+  personal_context::proto::SmartSearchItem input;
+  input.set_description("Document discussing project plan.");
+  personal_context::proto::DriveFile* drive_ref =
+      input.add_source_references()->mutable_drive();
+  drive_ref->set_name("Project Plan 2026");
+  drive_ref->set_url("https://docs.google.com/document/d/123");
+
+  personal_context::proto::SmartSearchItem output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SmartSearchResult>(input, output));
+  EXPECT_EQ(output.description(), "Document discussing project plan.");
+  ASSERT_EQ(output.source_references_size(), 1);
+  EXPECT_TRUE(output.source_references(0).has_drive());
+  EXPECT_EQ(output.source_references(0).drive().name(), "Project Plan 2026");
+  EXPECT_EQ(output.source_references(0).drive().url(),
+            "https://docs.google.com/document/d/123");
+}
+
+TEST(ContextHubMojomTraitsTest, SmartSearchResultSerialization_GmailAndPhotos) {
+  personal_context::proto::SmartSearchItem input;
+  input.set_description("Results with multiple sources.");
+
+  personal_context::proto::DriveFile* drive_ref =
+      input.add_source_references()->mutable_drive();
+  drive_ref->set_name("Project Plan 2026");
+  drive_ref->set_url("https://docs.google.com/document/d/123");
+
+  personal_context::proto::GmailReference* gmail_ref =
+      input.add_source_references()->mutable_gmail();
+  gmail_ref->set_message_url("https://mail.google.com/mail/u/0/#inbox/456");
+  gmail_ref->set_subject("Project Discussion");
+
+  personal_context::proto::PhotosReference* photos_ref =
+      input.add_source_references()->mutable_photos();
+  photos_ref->set_photos_url("https://photos.google.com/photo/789");
+
+  personal_context::proto::SmartSearchItem output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SmartSearchResult>(input, output));
+  EXPECT_EQ(output.description(), "Results with multiple sources.");
+  ASSERT_EQ(output.source_references_size(), 3);
+
+  EXPECT_TRUE(output.source_references(0).has_drive());
+  EXPECT_EQ(output.source_references(0).drive().name(), "Project Plan 2026");
+  EXPECT_EQ(output.source_references(0).drive().url(),
+            "https://docs.google.com/document/d/123");
+
+  EXPECT_TRUE(output.source_references(1).has_gmail());
+  EXPECT_EQ(output.source_references(1).gmail().message_url(),
+            "https://mail.google.com/mail/u/0/#inbox/456");
+  EXPECT_EQ(output.source_references(1).gmail().subject(),
+            "Project Discussion");
+
+  EXPECT_TRUE(output.source_references(2).has_photos());
+  EXPECT_EQ(output.source_references(2).photos().photos_url(),
+            "https://photos.google.com/photo/789");
 }
 
 TEST(ContextHubMojomTraitsTest, FirstPartyDataSerialization) {
@@ -2018,6 +2080,85 @@ TEST_F(ContextHubPageHandlerTest, UpdateMemoryBankEntryAnnotations_NotFound) {
   handler_->UpdateMemoryBankEntryAnnotations(999999, std::move(new_annotations),
                                              update_future.GetCallback());
   EXPECT_FALSE(update_future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest, ExecuteSmartSearch_Success) {
+  personal_context::proto::SmartSearchResponse expected_response;
+
+  personal_context::proto::SmartSearchItem* item =
+      expected_response.add_items();
+  item->set_description("Document discussing project plan.");
+  personal_context::proto::SourceReference* ref =
+      item->add_source_references();
+  ref->mutable_drive()->set_name("Project Plan 2026");
+  ref->mutable_drive()->set_url("https://docs.google.com/document/d/123");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH, _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  base::test::TestFuture<
+      const std::vector<personal_context::proto::SmartSearchItem>&>
+      future;
+  handler_->ExecuteSmartSearch("project", future.GetCallback());
+
+  const auto& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+
+  EXPECT_EQ("Document discussing project plan.", results[0].description());
+  ASSERT_EQ(1, results[0].source_references_size());
+  EXPECT_TRUE(results[0].source_references(0).has_drive());
+  EXPECT_EQ("Project Plan 2026",
+            results[0].source_references(0).drive().name());
+  EXPECT_EQ("https://docs.google.com/document/d/123",
+            results[0].source_references(0).drive().url());
+}
+
+TEST_F(ContextHubPageHandlerTest, ExecuteSmartSearch_Failure) {
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH, _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::unexpected(
+              personal_context::ContextMemoryError::FromExecutionError(
+                  personal_context::ContextMemoryError::ExecutionError::
+                      kUnknown)))));
+
+  base::test::TestFuture<
+      const std::vector<personal_context::proto::SmartSearchItem>&>
+      future;
+  handler_->ExecuteSmartSearch("project", future.GetCallback());
+
+  const auto& results = future.Get();
+  EXPECT_TRUE(results.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, ExecuteSmartSearch_EmptyResults) {
+  personal_context::proto::SmartSearchResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH, _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  base::test::TestFuture<
+      const std::vector<personal_context::proto::SmartSearchItem>&>
+      future;
+  handler_->ExecuteSmartSearch("nonexistent", future.GetCallback());
+
+  const auto& results = future.Get();
+  EXPECT_TRUE(results.empty());
 }
 
 }  // namespace

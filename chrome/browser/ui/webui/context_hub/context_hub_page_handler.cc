@@ -727,3 +727,16 @@ void ContextHubPageHandler::RemoveAllConfirmedTabGroups(
   service->RemoveAllConfirmedTabGroups();
   std::move(callback).Run();
 }
+
+void ContextHubPageHandler::ExecuteSmartSearch(
+    const std::string& query,
+    ExecuteSmartSearchCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  service->ExecuteSmartSearch(query, std::move(callback));
+}

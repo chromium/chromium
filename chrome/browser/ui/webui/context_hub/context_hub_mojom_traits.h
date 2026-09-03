@@ -7,14 +7,17 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
+#include "components/personal_context/proto/features/common_data.pb.h"
+#include "components/personal_context/proto/features/smart_search.pb.h"
+#include "mojo/public/cpp/bindings/array_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
@@ -70,6 +73,9 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
   }
 
   static browser::context_hub::mojom::PhotosReferencePtr photos(
+      const context_hub::SourceReference& ref);
+
+  static browser::context_hub::mojom::DriveFilePtr drive(
       const context_hub::SourceReference& ref);
 
   static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
@@ -175,6 +181,62 @@ struct StructTraits<browser::context_hub::mojom::AutoTodoItemDataView,
 
   static bool Read(browser::context_hub::mojom::AutoTodoItemDataView data,
                    context_hub::AutoTodoEntry* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::DriveFileDataView,
+                    personal_context::proto::DriveFile> {
+  static GURL url(const personal_context::proto::DriveFile& drive_file) {
+    return GURL(drive_file.url());
+  }
+
+  static std::string_view name(
+      const personal_context::proto::DriveFile& drive_file) {
+    return drive_file.name();
+  }
+
+  static bool Read(browser::context_hub::mojom::DriveFileDataView data,
+                   personal_context::proto::DriveFile* out);
+};
+
+template <>
+struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+                   personal_context::proto::SourceReference> {
+  static browser::context_hub::mojom::SourceReferenceDataView::Tag GetTag(
+      const personal_context::proto::SourceReference& ref);
+
+  static context_hub::SourceReference gmail(
+      const personal_context::proto::SourceReference& ref);
+
+  static browser::context_hub::mojom::PhotosReferencePtr photos(
+      const personal_context::proto::SourceReference& ref);
+
+  static const personal_context::proto::DriveFile& drive(
+      const personal_context::proto::SourceReference& ref) {
+    return ref.drive();
+  }
+
+  static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
+                   personal_context::proto::SourceReference* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::SmartSearchResultDataView,
+                    personal_context::proto::SmartSearchItem> {
+  static std::string_view description(
+      const personal_context::proto::SmartSearchItem& item) {
+    return item.description();
+  }
+
+  static const google::protobuf::RepeatedPtrField<
+      personal_context::proto::SourceReference>&
+  source_references(const personal_context::proto::SmartSearchItem& item) {
+    return item.source_references();
+  }
+
+  static bool Read(
+      browser::context_hub::mojom::SmartSearchResultDataView data,
+      personal_context::proto::SmartSearchItem* out);
 };
 
 }  // namespace mojo

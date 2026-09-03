@@ -18,6 +18,11 @@ feature kAutoTodos {
   const bool default_state = false;
 };
 
+feature kSmartSearch {
+  const string name = "SmartSearch";
+  const bool default_state = false;
+};
+
 enum AutoTodoStatus {
   kActive,
   kCompleted,
@@ -41,9 +46,15 @@ struct PhotosReference {
   url.mojom.Url photos_url;
 };
 
+struct DriveFile {
+  url.mojom.Url url;
+  string name;
+};
+
 union SourceReference {
   GmailReference gmail;
   PhotosReference photos;
+  DriveFile drive;
 };
 
 // Data for Gmail-based AutoTodos.
@@ -161,6 +172,12 @@ struct AutoTodoItemFeedback {
   bool liked;
 };
 
+// Represents a search result returned by the Smart Search feature.
+struct SmartSearchResult {
+  string description;
+  array<SourceReference> source_references;
+};
+
 // Interface for the browser process to push updates to the WebUI page.
 // Implemented in the renderer process (the Context Hub WebUI).
 interface Page {
@@ -208,7 +225,8 @@ interface PageHandler {
   [RuntimeFeature=kAutoTodos]
   UpdateAutoTodo(AutoTodoItem todo) => (bool success);
 
-  // Generates Tab-based Todos and stores them in the cache. Gated by kAutoTodos flag.
+  // Generates Tab-based Todos and stores them in the cache. Gated by kAutoTodos
+  // flag.
   [RuntimeFeature=kAutoTodos]
   GenerateTabBasedTodos() => (bool success);
 
@@ -246,7 +264,8 @@ interface PageHandler {
   DeleteMemoryBankEntries(array<int64> ids) => ();
 
   // Saves the current context entry to the memory bank with user annotations.
-  SaveMemoryBankEntry(MemoryBankEntryAnnotations annotations) => (bool success);
+  SaveMemoryBankEntry(MemoryBankEntryAnnotations annotations)
+      => (bool success);
 
   // Returns all unique tags stored in the memory bank.
   GetAllMemoryBankTags() => (array<string> tags);
@@ -326,4 +345,9 @@ interface PageHandler {
   // their open tabs in the browser window.
   [RuntimeFeature=kAutoTabGroups]
   RemoveAllConfirmedTabGroups() => ();
+
+  // Executes the provided natural language query to search across Drive
+  // artifacts.
+  [RuntimeFeature=kSmartSearch]
+  ExecuteSmartSearch(string query) => (array<SmartSearchResult> results);
 };

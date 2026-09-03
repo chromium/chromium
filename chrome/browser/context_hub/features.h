@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kContextHubDatabaseStorage);
 // the impl will proceed to check the kContextHubDatabaseStorage flag above.
 BASE_DECLARE_FEATURE(kContextHubTabContextSyncStorage);
 
+// Overrides the timeout of the Context Memory Service FetchContext call for
+// smart search.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSmartSearchTimeout);
+
 }  // namespace context_hub::features
 
 #endif  // CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_

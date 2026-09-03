@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/context_hub/context_hub_mojom_traits.h"
 
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -105,6 +106,14 @@ browser::context_hub::mojom::PhotosReferencePtr UnionTraits<
 }
 
 // static
+browser::context_hub::mojom::DriveFilePtr UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    context_hub::SourceReference>::drive(const context_hub::SourceReference&
+                                             ref) {
+  NOTREACHED();
+}
+
+// static
 bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
                  context_hub::SourceReference>::
     Read(browser::context_hub::mojom::SourceReferenceDataView data,
@@ -113,6 +122,7 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail:
       return data.ReadGmail(out);
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos:
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kDrive:
       return false;
   }
   return false;
@@ -177,6 +187,105 @@ bool StructTraits<browser::context_hub::mojom::AutoTodoItemDataView,
   }
   out->importance_score = data.score();
   return true;
+}
+
+// static
+browser::context_hub::mojom::SourceReferenceDataView::Tag
+UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+            personal_context::proto::SourceReference>::
+    GetTag(const personal_context::proto::SourceReference& ref) {
+  switch (ref.source_reference_case()) {
+    case personal_context::proto::SourceReference::kDrive:
+      return browser::context_hub::mojom::SourceReferenceDataView::Tag::kDrive;
+    case personal_context::proto::SourceReference::kGmail:
+      return browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail;
+    case personal_context::proto::SourceReference::kPhotos:
+      return browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos;
+    case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
+      NOTREACHED();
+  }
+}
+
+// static
+context_hub::SourceReference UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    personal_context::proto::SourceReference>::
+    gmail(const personal_context::proto::SourceReference& ref) {
+  return context_hub::SourceReference{
+      .url = GURL(ref.gmail().message_url()),
+      .subject = std::string(ref.gmail().subject()),
+  };
+}
+
+// static
+browser::context_hub::mojom::PhotosReferencePtr UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    personal_context::proto::SourceReference>::
+    photos(const personal_context::proto::SourceReference& ref) {
+  auto photos = browser::context_hub::mojom::PhotosReference::New();
+  photos->photos_url = GURL(ref.photos().photos_url());
+  return photos;
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::DriveFileDataView,
+                  personal_context::proto::DriveFile>::
+    Read(browser::context_hub::mojom::DriveFileDataView data,
+         personal_context::proto::DriveFile* out) {
+  GURL url;
+  if (!data.ReadUrl(&url)) {
+    return false;
+  }
+  out->set_url(url.spec());
+
+  std::string_view name;
+  if (!data.ReadName(&name)) {
+    return false;
+  }
+  out->set_name(name);
+  return true;
+}
+
+// static
+bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+                 personal_context::proto::SourceReference>::
+    Read(browser::context_hub::mojom::SourceReferenceDataView data,
+         personal_context::proto::SourceReference* out) {
+  switch (data.tag()) {
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kDrive:
+      return data.ReadDrive(out->mutable_drive());
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail: {
+      context_hub::SourceReference gmail_ref;
+      if (!data.ReadGmail(&gmail_ref)) {
+        return false;
+      }
+      out->mutable_gmail()->set_message_url(gmail_ref.url.spec());
+      out->mutable_gmail()->set_subject(gmail_ref.subject);
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos: {
+      browser::context_hub::mojom::PhotosReferencePtr photos_ref;
+      if (!data.ReadPhotos(&photos_ref)) {
+        return false;
+      }
+      out->mutable_photos()->set_photos_url(photos_ref->photos_url.spec());
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::SmartSearchResultDataView,
+                  personal_context::proto::SmartSearchItem>::
+    Read(browser::context_hub::mojom::SmartSearchResultDataView data,
+         personal_context::proto::SmartSearchItem* out) {
+  std::string_view description;
+  if (!data.ReadDescription(&description)) {
+    return false;
+  }
+  out->set_description(description);
+  return data.ReadSourceReferences(out->mutable_source_references());
 }
 
 }  // namespace mojo
