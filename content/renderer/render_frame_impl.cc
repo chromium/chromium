@@ -6141,6 +6141,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       std::move(info->initiator_navigation_state_keep_alive_handle);
 
   params->initiator_frame_token = info->initiator_frame_token;
+  params->initiator_state_token = info->initiator_state_token;
+  params->initiator_document_token = info->initiator_document_token;
 
   // TODO(antoniosartori): Consider plumbing in the source location also for
   // navigations performed via OpenURL.

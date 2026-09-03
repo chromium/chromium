@@ -49,12 +49,16 @@ const char kAddIframeScript[] =
 
 const char kAdditionalScheme[] = "test-webui-scheme";
 
-blink::mojom::OpenURLParamsPtr CreateOpenURLParams(const GURL& url) {
+blink::mojom::OpenURLParamsPtr CreateOpenURLParams(
+    const GURL& url,
+    const RenderFrameHostImpl* rfh) {
   auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
   params->disposition = WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry = false;
   params->user_gesture = true;
+  params->initiator_state_token = rfh->current_initiator_state_token();
+  params->initiator_document_token = rfh->GetDocumentToken();
   return params;
 }
 
@@ -436,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // navigation.
   TestNavigationObserver observer(shell()->web_contents());
   static_cast<mojom::FrameHost*>(child)->OpenURL(
-      CreateOpenURLParams(GetWebUIURL("web-ui/title1.html?noxfo=true")));
+      CreateOpenURLParams(GetWebUIURL("web-ui/title1.html?noxfo=true"), child));
   observer.Wait();
 
   child = root->child_at(0)->current_frame_host();
@@ -474,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(
   // URL.
   TestNavigationObserver observer(shell()->web_contents());
   static_cast<mojom::FrameHost*>(child)->OpenURL(CreateOpenURLParams(
-      GetChromeUntrustedUIURL("test-iframe-host/title1.html")));
+      GetChromeUntrustedUIURL("test-iframe-host/title1.html"), child));
   observer.Wait();
 
   child = root->child_at(0)->current_frame_host();

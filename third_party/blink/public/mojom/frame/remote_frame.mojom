@@ -92,6 +92,8 @@ struct OpenURLParams {
   // The main URL to open.
   url.mojom.Url url;
   url.mojom.Origin initiator_origin;
+  blink.mojom.InitiatorStateToken initiator_state_token;
+  blink.mojom.DocumentToken initiator_document_token;
   // While `initiator_origin` is always required, `initiator_base_url` should
   // only be sent for about:blank and about:srcdoc navigations, and be nullopt
   // otherwise.

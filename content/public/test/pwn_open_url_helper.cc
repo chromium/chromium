@@ -31,6 +31,11 @@ void PwnOpenURLWithDisposition(RenderFrameHost* render_frame_host,
   params->user_gesture = user_gesture;
   params->triggering_event_info =
       blink::mojom::TriggeringEventInfo::kNotFromEvent;
+  params->initiator_state_token =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)
+          ->current_initiator_state_token();
+  params->initiator_document_token =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->GetDocumentToken();
   // Direct C++ dispatch into the FrameHost mojom impl - identical entry point
   // to the renderer-sent IPC (RenderFrameHostImpl::OpenURL).
   static_cast<mojom::FrameHost*>(
