@@ -3644,6 +3644,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.CrossDeviceSettingImport.NonNtp.ObservationOnly"
+    not_user_triggered="true">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user is eligible for cross-device setting import on a
+    non-NTP page based on a theme change, but the snackbar was not shown because
+    the XplatSyncedSetupThemes feature is in observation-only mode.
+  </description>
+</action>
+
 <action name="Android.CrossDeviceSettingImport.NonNtp.Redo">
   <owner>clank-app-team@google.com</owner>
   <owner>jhimawan@google.com</owner>
@@ -3661,6 +3672,17 @@ should be able to be added at any place in this file.
     Recorded when the user taps on the &quot;Undo&quot; button in the
     cross-device settings import snackbar, to undo applying settings that affect
     non-NTP pages (e.g. omnibox position and theme).
+  </description>
+</action>
+
+<action name="Android.CrossDeviceSettingImport.ObservationOnly"
+    not_user_triggered="true">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user is eligible for cross-device setting import based on
+    a theme change, but the snackbar was not shown because the
+    XplatSyncedSetupThemes feature is in observation-only mode.
   </description>
 </action>
 
