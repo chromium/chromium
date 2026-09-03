@@ -3796,32 +3796,90 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "ask_google_for_suggestions_dialog_browsertest.cc",
+      "breadcrumb_manager_browser_agent_browsertest.cc",
+      "browser_actions_browsertest.cc",
+      "browser_browsertest.cc",
+      "browser_close_browsertest.cc",
+      "browser_command_controller_browsertest.cc",
+      "browser_commands_browsertest.cc",
       "browser_commands_core_browsertest.cc",
+      "browser_finder_browsertest.cc",
+      "browser_instant_controller_browsertest.cc",
       "browser_manager_service_browsertest.cc",
+      "browser_tab_strip_model_delegate_browsertest.cc",
+      "browser_tabrestore_browsertest.cc",
+      "collected_cookies_browsertest.cc",
+      "managed_ui_browsertest.cc",
+      "native_window_tracker_browsertest.cc",
+      "renderer_event_injection_browsertest.cc",
+      "tab_modal_confirm_dialog_browsertest.cc",
+      "tab_modal_confirm_dialog_browsertest.h",
+      "tab_ui_helper_browsertest.cc",
+      "unload_controller_browsertest.cc",
+      "update_chrome_dialog_browsertest.cc",
     ]
+
+    # Some of these tests have pre-existing size_t-vs-int comparisons that
+    # only compiled in //chrome/test because it transitively depends on
+    # //third_party/fuzztest, whose public config propagates
+    # -Wno-sign-compare. Depend on it here to inherit that suppression.
+    # Remove once crbug.com/527094632 is fixed.
     deps = [
+      ":breadcrumb_manager_browser_agent",
+      ":browser_actions",
+      ":browser_instant_controller",
+      ":browser_ui_prefs",
+      ":confirm_bubble",
+      ":managed_ui",
+      ":tab_ui_helper",
       "//base",
+      "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/browser",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/download:test_support",
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/prefs",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/resource_coordinator:utils",
+      "//chrome/browser/search:test_support",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_active_state_manager",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/fullscreen",
+      "//chrome/browser/ui/performance_controls/test_support",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/startup",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
+      "//chrome/browser/ui/webui/management",
+      "//chrome/browser/ui/window_feature_controller",
+      "//chrome/browser/ui/window_metadata",
       "//chrome/browser/ui/zoom",
+      "//chrome/browser/web_applications:prevent_close_test_support",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
+      "//components/breadcrumbs/core",
+      "//components/breadcrumbs/core:status",
+      "//components/commerce/core:pref_names",
+      "//components/embedder_support",
+      "//components/javascript_dialogs",
       "//components/prefs",
       "//components/saved_tab_groups/public",
       "//components/sessions",
+      "//components/user_manager",
       "//components/zoom",
       "//content/public/browser",
       "//content/public/common",
@@ -3830,7 +3888,45 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public/common:headers",
+      "//third_party/fuzztest",
+      "//ui/native_window_tracker",
     ]
+
+    if (use_aura) {
+      sources += [ "overscroll_pref_manager_browsertest.cc" ]
+    }
+
+    if (is_chromeos) {
+      sources += [
+        "browser_finder_chromeos_browsertest.cc",
+        "browser_tabstrip_browsertest_chromeos.cc",
+        "settings_window_manager_browsertest_chromeos.cc",
+      ]
+      deps += [
+        ":chrome_pages",
+        "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ash/policy/core:test_support",
+        "//chrome/browser/ui/ash/session",
+        "//chrome/browser/ui/ash/system_web_apps",
+        "//chrome/browser/ui/chromeos/locked_state",
+        "//components/account_id:test_support",
+        "//ui/chromeos",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [ "fullscreen_util_mac_browsertest.cc" ]
+      deps += [
+        ":fullscreen_util_mac",
+        "//chrome/browser/ui/cocoa/test:test_support",
+        "//ui/accelerated_widget_mac",
+        "//ui/base:test_support",
+      ]
+    }
+
+    if (toolkit_views && !is_chromeos) {
+      sources += [ "screen_capture_notification_ui_browsertest.cc" ]
+    }
   }
 
   source_set("uma_browsing_activity_observer") {
@@ -3858,7 +3954,7 @@ if (!is_android) {
 static_library("test_support") {
   testonly = true
 
-  sources = []
+  sources = [ "chooser_bubble_testapi.h" ]
 
   public_deps = [
     ":ui",
@@ -3959,6 +4055,111 @@ static_library("test_support") {
       "//services/metrics/public/mojom",
     ]
     public_deps += [ "//chrome/browser/ui/exclusive_access" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = [
+    "incognito_allowed_url_unittest.cc",
+    "recently_audible_helper_unittest.cc",
+    "url_identity_unittest.cc",
+  ]
+
+  deps = [
+    ":incognito_allowed_url",
+    ":recently_audible_helper",
+    ":test_support",
+    ":ui",
+    ":url_identity",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/prefs",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//components/web_package",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "accelerator_table_unittest.cc",
+      "browser_manager_service_factory_unittest.cc",
+      "browser_unittest.cc",
+      "browser_window_state_unittest.cc",
+      "intent_picker_tab_helper_unittest.cc",
+    ]
+    deps += [
+      ":accelerator_table",
+      ":browser_window_state",
+      "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
+      "//chrome/browser/apps/link_capturing:test_support",
+      "//components/apps/link_capturing",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "accelerator_table_unittest_mac.mm" ]
+    deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/apps/link_capturing",
+      "//components/session_manager/core:test_support",
+    ]
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    sources = [
+      "browser_command_controller_interactive_uitest.cc",
+      "browser_focus_interactive_uitest.cc",
+      "fullscreen_keyboard_browsertest_base.cc",
+      "fullscreen_keyboard_browsertest_base.h",
+      "keyboard_lock_interactive_uitest.cc",
+    ]
+
+    deps = [
+      ":chrome_pages",
+      ":test_support",
+      ":ui",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/sharing_hub",
+      "//chrome/browser/ui/frame",
+      "//chrome/browser/ui/views/frame:contents_web_view",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
+    if (is_mac) {
+      deps += [ "//ui/base:test_support" ]
+    }
+
+    if (is_win) {
+      sources += [ "send_mouse_move_uitest_win.cc" ]
+    }
   }
 }
 
