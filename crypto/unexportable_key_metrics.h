@@ -56,10 +56,6 @@ CRYPTO_EXPORT std::string OperationToString(TPMOperation operation);
 CRYPTO_EXPORT std::string AlgorithmToString(
     SignatureVerifier::SignatureAlgorithm algorithm);
 
-// Converts the given `algorithm` to a `sign::SignatureKind`.
-CRYPTO_EXPORT sign::SignatureKind ToSignatureKind(
-    SignatureVerifier::SignatureAlgorithm algorithm);
-
 // Records UMA metrics of TPM availability, latency and successful usage.
 // Does the work on a new background task.
 CRYPTO_EXPORT void MaybeMeasureTpmOperations(

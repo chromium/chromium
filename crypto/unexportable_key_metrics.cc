@@ -115,7 +115,7 @@ bool VerifySignature(SignatureVerifier::SignatureAlgorithm alg,
   std::optional<keypair::PublicKey> public_key =
       keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
   return public_key.has_value() &&
-         sign::Verify(ToSignatureKind(alg), *public_key, data, signature);
+         sign::Verify(alg, *public_key, data, signature);
 }
 
 internal::TPMSupport MeasureVirtualTpmOperations() {
@@ -137,7 +137,18 @@ internal::TPMSupport MeasureVirtualTpmOperations() {
         supported_virtual_algo = internal::TPMSupport::kRSA;
         break;
       case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
       case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+      case SignatureVerifier::SignatureAlgorithm::ED25519:
+      case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+      case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+      case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
         // Not supported for this metric.
         break;
     }
@@ -208,7 +219,18 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
         supported_algo = internal::TPMSupport::kRSA;
         break;
       case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
       case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+      case SignatureVerifier::SignatureAlgorithm::ED25519:
+      case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+      case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+      case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
         // Not supported for this metric.
         break;
     }
@@ -365,27 +387,24 @@ std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
   switch (algorithm) {
     case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
     case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
     case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
       return "RSA";
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
     case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
       return "ECDSA";
+    case SignatureVerifier::SignatureAlgorithm::ED25519:
+      return "ED25519";
+    case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+    case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+    case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+      return "MLDSA";
   }
-}
-
-sign::SignatureKind ToSignatureKind(
-    SignatureVerifier::SignatureAlgorithm algorithm) {
-  switch (algorithm) {
-    case SignatureVerifier::RSA_PKCS1_SHA1:
-      return sign::RSA_PKCS1_SHA1;
-    case SignatureVerifier::RSA_PKCS1_SHA256:
-      return sign::RSA_PKCS1_SHA256;
-    case SignatureVerifier::ECDSA_SHA256:
-      return sign::ECDSA_SHA256;
-    case SignatureVerifier::RSA_PSS_SHA256:
-      return sign::RSA_PSS_SHA256;
-  }
-
-  NOTREACHED();
 }
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {

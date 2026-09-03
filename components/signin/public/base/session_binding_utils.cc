@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "crypto/ecdsa_utils.h"
@@ -34,18 +35,42 @@ namespace signin {
 namespace {
 
 // Source: JSON Web Signature and Encryption Algorithms
-// https://www.iana.org/assignments/jose/jose.xhtml
-std::string SignatureAlgorithmToString(
+// https://www.iana.org/assignments/jose/jose.xhtml,
+// RFC 8037 (EdDSA in JOSE), and RFC 9964 (ML-DSA in JOSE).
+std::optional<std::string_view> SignatureAlgorithmToString(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::ECDSA_SHA256:
-      return "ES256";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
-      return "RS256";
-    case crypto::SignatureVerifier::RSA_PSS_SHA256:
-      return "PS256";
     case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
       return "RS1";
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+      return "RS256";
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
+      return "RS384";
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
+      return "RS512";
+    case crypto::SignatureVerifier::RSA_PSS_SHA256:
+      return "PS256";
+    case crypto::SignatureVerifier::RSA_PSS_SHA384:
+      return "PS384";
+    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+      return "PS512";
+    case crypto::SignatureVerifier::ECDSA_SHA1:
+      // SHA-1 with ECDSA has no standard JWA representation.
+      return std::nullopt;
+    case crypto::SignatureVerifier::ECDSA_SHA256:
+      return "ES256";
+    case crypto::SignatureVerifier::ECDSA_SHA384:
+      return "ES384";
+    case crypto::SignatureVerifier::ECDSA_SHA512:
+      return "ES512";
+    case crypto::SignatureVerifier::ED25519:
+      return "EdDSA";
+    case crypto::SignatureVerifier::MLDSA_44:
+      return "ML-DSA-44";
+    case crypto::SignatureVerifier::MLDSA_65:
+      return "ML-DSA-65";
+    case crypto::SignatureVerifier::MLDSA_87:
+      return "ML-DSA-87";
   }
 }
 
@@ -83,9 +108,8 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     std::string_view schema,
     const base::DictValue& payload) {
-  auto header = base::DictValue()
-                    .Set("alg", SignatureAlgorithmToString(algorithm))
-                    .Set("typ", "jwt");
+  ASSIGN_OR_RETURN(std::string_view alg, SignatureAlgorithmToString(algorithm));
+  auto header = base::DictValue().Set("alg", alg).Set("typ", "jwt");
   if (!schema.empty()) {
     header.Set("schema", schema);
   }

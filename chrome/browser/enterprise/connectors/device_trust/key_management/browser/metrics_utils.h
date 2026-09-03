@@ -32,7 +32,8 @@ enum class DTKeyTrustLevel {
 enum class DTKeyType {
   kRsa = 0,
   kEc = 1,
-  kMaxValue = kEc,
+  kUnknown = 2,
+  kMaxValue = kUnknown,
 };
 
 // Possible outcomes of the key rotation process. These

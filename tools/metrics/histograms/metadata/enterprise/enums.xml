@@ -393,6 +393,7 @@ chromium-metrics-reviews@google.com.
 <enum name="DTKeyType">
   <int value="0" label="RSA"/>
   <int value="1" label="EC"/>
+  <int value="2" label="Unknown"/>
 </enum>
 
 <enum name="DTLoadPersistedKeyResult">

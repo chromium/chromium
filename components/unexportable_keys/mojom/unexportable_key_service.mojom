@@ -13,16 +13,27 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // in mojom and in cpp.
 
 // The possible signing algorithms for which a key can be generated.
-// This reflects the enum crypto::SignatureVerifier::SignatureAlgorithm.
+// This reflects the enum crypto::sign::SignatureKind.
 // LINT.IfChange
 enum SignatureAlgorithm {
-  RSA_PKCS1_SHA1,
-  RSA_PKCS1_SHA256,
-  ECDSA_SHA256,
-  RSA_PSS_SHA256,
+  RSA_PKCS1_SHA1 = 0,
+  RSA_PKCS1_SHA256 = 1,
+  ECDSA_SHA256 = 2,
+  RSA_PSS_SHA256 = 3,
+  RSA_PKCS1_SHA384,
+  RSA_PKCS1_SHA512,
+  RSA_PSS_SHA384,
+  RSA_PSS_SHA512,
+  ECDSA_SHA1,
+  ECDSA_SHA384,
+  ECDSA_SHA512,
+  ED25519,
+  MLDSA_44,
+  MLDSA_65,
+  MLDSA_87,
 };
 
-// LINT.ThenChange(/crypto/signature_verifier.h)
+// LINT.ThenChange(//crypto/sign.h:SignatureKind)
 
 // All the possible errors the unexportable key service can return.
 // See components/unexportable_keys/service_error.h for more details.

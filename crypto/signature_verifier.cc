@@ -8,8 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -45,6 +45,18 @@ bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
       pkey_type = EVP_PKEY_EC;
       digest = EVP_sha256();
       break;
+    case RSA_PKCS1_SHA384:
+    case RSA_PKCS1_SHA512:
+    case RSA_PSS_SHA384:
+    case RSA_PSS_SHA512:
+    case ECDSA_SHA1:
+    case ECDSA_SHA384:
+    case ECDSA_SHA512:
+    case ED25519:
+    case MLDSA_44:
+    case MLDSA_65:
+    case MLDSA_87:
+      return false;
   }
   DCHECK_NE(EVP_PKEY_NONE, pkey_type);
   DCHECK(digest);
@@ -56,11 +68,16 @@ bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
   signature_.assign(signature.data(),
                     UNSAFE_TODO(signature.data() + signature.size()));
 
-  CBS cbs;
-  CBS_init(&cbs, public_key_info.data(), public_key_info.size());
-  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
-  if (!public_key || CBS_len(&cbs) != 0 ||
-      EVP_PKEY_id(public_key.get()) != pkey_type) {
+  bssl::UniquePtr<EVP_PKEY> public_key =
+      evp::PublicKeyFromBytes(public_key_info);
+  if (!public_key) {
+    return false;
+  }
+
+  const int key_id = EVP_PKEY_id(public_key.get());
+  const bool is_rsa_pss = signature_algorithm == RSA_PSS_SHA256;
+  if (is_rsa_pss ? (key_id != EVP_PKEY_RSA && key_id != EVP_PKEY_RSA_PSS)
+                 : (key_id != pkey_type)) {
     return false;
   }
 
@@ -70,7 +87,7 @@ bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
     return false;
   }
 
-  if (signature_algorithm == RSA_PSS_SHA256) {
+  if (is_rsa_pss) {
     if (!EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING) ||
         !EVP_PKEY_CTX_set_rsa_mgf1_md(pkey_ctx, digest) ||
         !EVP_PKEY_CTX_set_rsa_pss_saltlen(

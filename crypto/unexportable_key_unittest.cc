@@ -134,18 +134,7 @@ class UnexportableKeyTest
     return provider->SelectAlgorithm(algorithms) == algorithm();
   }
 
-  crypto::sign::SignatureKind signature_kind() {
-    switch (algorithm()) {
-      case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-        return crypto::sign::SignatureKind::ECDSA_SHA256;
-      case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
-        return crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
-      case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-        return crypto::sign::SignatureKind::RSA_PKCS1_SHA1;
-      case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-        return crypto::sign::SignatureKind::RSA_PSS_SHA256;
-    }
-  }
+  crypto::sign::SignatureKind signature_kind() { return algorithm(); }
 
  private:
 #if BUILDFLAG(IS_MAC)

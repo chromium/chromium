@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
+#include "crypto/sign.h"
 
 namespace crypto {
 
@@ -24,15 +25,11 @@ namespace crypto {
 // TODO(https://crbug.com/406190025): Delete this.
 class CRYPTO_EXPORT SignatureVerifier {
  public:
-  // The set of supported signature algorithms. Extend as required.
-  enum SignatureAlgorithm {
-    RSA_PKCS1_SHA1,
-    RSA_PKCS1_SHA256,
-    ECDSA_SHA256,
-    // This is RSA-PSS with SHA-256 as both signing hash and MGF-1 hash, and the
-    // salt length matching the hash length.
-    RSA_PSS_SHA256,
-  };
+  // Many of the values representable by SignatureKind are not usable with
+  // SignatureVerifier; callers requiring newer signature algorithms should
+  // use crypto::sign::Verifier instead.
+  using SignatureAlgorithm = sign::SignatureKind;
+  using enum sign::SignatureKind;
 
   SignatureVerifier();
   ~SignatureVerifier();

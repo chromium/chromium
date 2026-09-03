@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_upload_request.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/unexportable_key.h"
@@ -22,10 +23,22 @@ BPKUR::KeyType AlgorithmToType(
   switch (algorithm) {
     case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
     case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
     case crypto::SignatureVerifier::RSA_PSS_SHA256:
+    case crypto::SignatureVerifier::RSA_PSS_SHA384:
+    case crypto::SignatureVerifier::RSA_PSS_SHA512:
       return BPKUR::RSA_KEY;
+    case crypto::SignatureVerifier::ECDSA_SHA1:
     case crypto::SignatureVerifier::ECDSA_SHA256:
+    case crypto::SignatureVerifier::ECDSA_SHA384:
+    case crypto::SignatureVerifier::ECDSA_SHA512:
       return BPKUR::EC_KEY;
+    case crypto::SignatureVerifier::ED25519:
+    case crypto::SignatureVerifier::MLDSA_44:
+    case crypto::SignatureVerifier::MLDSA_65:
+    case crypto::SignatureVerifier::MLDSA_87:
+      NOTREACHED();
   }
 }
 

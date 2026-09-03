@@ -233,12 +233,23 @@ WindowsSrkHandle GetSrkHandleFor(SignatureVerifier::SignatureAlgorithm algo) {
   switch (algo) {
     case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
     case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
     case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
       return WindowsSrkHandle::kRsa;
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
     case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
       return WindowsSrkHandle::kEcc;
+    case SignatureVerifier::SignatureAlgorithm::ED25519:
+    case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+    case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+    case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+      NOTREACHED();
   }
-  NOTREACHED();
 }
 
 // GetBestSupported returns the first element of |acceptable_algorithms| that
@@ -834,17 +845,30 @@ struct HashResult {
 
 // Extracts the hash algorithm (`crypto::hash::HashKind`) from a
 // `SignatureVerifier::SignatureAlgorithm`.
-constexpr hash::HashKind ToHashKind(
+constexpr std::optional<hash::HashKind> ToHashKind(
     SignatureVerifier::SignatureAlgorithm algorithm) {
   switch (algorithm) {
     case SignatureVerifier::RSA_PKCS1_SHA1:
+    case SignatureVerifier::ECDSA_SHA1:
       return hash::kSha1;
     case SignatureVerifier::RSA_PKCS1_SHA256:
     case SignatureVerifier::ECDSA_SHA256:
     case SignatureVerifier::RSA_PSS_SHA256:
       return hash::kSha256;
+    case SignatureVerifier::RSA_PKCS1_SHA384:
+    case SignatureVerifier::ECDSA_SHA384:
+    case SignatureVerifier::RSA_PSS_SHA384:
+      return hash::kSha384;
+    case SignatureVerifier::RSA_PKCS1_SHA512:
+    case SignatureVerifier::ECDSA_SHA512:
+    case SignatureVerifier::RSA_PSS_SHA512:
+      return hash::kSha512;
+    case SignatureVerifier::ED25519:
+    case SignatureVerifier::MLDSA_44:
+    case SignatureVerifier::MLDSA_65:
+    case SignatureVerifier::MLDSA_87:
+      return std::nullopt;
   }
-  NOTREACHED();
 }
 
 // Hashes data using either single-shot TPM2_Hash (if data <= 1024 bytes) or
@@ -854,7 +878,7 @@ std::optional<HashResult> HashDataSlowly(
     TBS_HCONTEXT h_context,
     base::span<const uint8_t> data,
     SignatureVerifier::SignatureAlgorithm algorithm) {
-  const hash::HashKind hash_kind = ToHashKind(algorithm);
+  ASSIGN_OR_RETURN(const hash::HashKind hash_kind, ToHashKind(algorithm));
   if (data.size() <= kMaxTpmHashBufferSize) {
     std::vector<uint8_t> hash_cmd = tpm::BuildHashCommand(data, hash_kind);
 
@@ -1255,15 +1279,15 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
 
     // 3. Construct and submit the TPM2_Create command to generate the AIK under
     // the Storage Root Key (SRK).
-    ASSIGN_OR_RETURN(
-        std::vector<uint8_t> create_cmd,
-        tpm::BuildCreateAikCommand(std::to_underlying(GetSrkHandleFor(algo)),
-                                   ToSignatureKind(algo)),
-        [&] {
-          LogTPMOperationError(TPMOperation::kNewAttestationKeyCreation,
-                               NTE_NOT_SUPPORTED, algo);
-          return nullptr;
-        });
+    ASSIGN_OR_RETURN(std::vector<uint8_t> create_cmd,
+                     tpm::BuildCreateAikCommand(
+                         std::to_underlying(GetSrkHandleFor(algo)), algo),
+                     [&] {
+                       LogTPMOperationError(
+                           TPMOperation::kNewAttestationKeyCreation,
+                           NTE_NOT_SUPPORTED, algo);
+                       return nullptr;
+                     });
 
     ASSIGN_OR_RETURN(std::vector<uint8_t> create_resp,
                      SubmitTbsCommand(h_context, tpm::TpmCommand::kCreate,

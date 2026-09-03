@@ -153,14 +153,7 @@ class SoftwareKeyImpl : public BaseInterface {
       : key_(std::move(key)) {}
 
   SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    switch (GetSignatureKind()) {
-      case sign::RSA_PKCS1_SHA256:
-        return SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
-      case sign::ECDSA_SHA256:
-        return SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-      default:
-        NOTREACHED();
-    }
+    return GetSignatureKind();
   }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
@@ -173,7 +166,19 @@ class SoftwareKeyImpl : public BaseInterface {
         return key_.ToRSAPrivateKey();
       case sign::ECDSA_SHA256:
         return key_.ToEcP256PrivateKey();
-      default:
+      case sign::RSA_PKCS1_SHA1:
+      case sign::RSA_PKCS1_SHA384:
+      case sign::RSA_PKCS1_SHA512:
+      case sign::RSA_PSS_SHA256:
+      case sign::RSA_PSS_SHA384:
+      case sign::RSA_PSS_SHA512:
+      case sign::ECDSA_SHA1:
+      case sign::ECDSA_SHA384:
+      case sign::ECDSA_SHA512:
+      case sign::ED25519:
+      case sign::MLDSA_44:
+      case sign::MLDSA_65:
+      case sign::MLDSA_87:
         NOTREACHED();
     }
   }
@@ -268,7 +273,19 @@ class SoftwareAttestationKey
             .statement = std::move(attestation_statement),
             .signature = CreateTpmRsaSignature(der_signature),
         };
-      default:
+      case sign::RSA_PKCS1_SHA1:
+      case sign::RSA_PKCS1_SHA384:
+      case sign::RSA_PKCS1_SHA512:
+      case sign::RSA_PSS_SHA256:
+      case sign::RSA_PSS_SHA384:
+      case sign::RSA_PSS_SHA512:
+      case sign::ECDSA_SHA1:
+      case sign::ECDSA_SHA384:
+      case sign::ECDSA_SHA512:
+      case sign::ED25519:
+      case sign::MLDSA_44:
+      case sign::MLDSA_65:
+      case sign::MLDSA_87:
         NOTREACHED();
     }
   }
@@ -287,7 +304,18 @@ class SoftwareProvider : public UnexportableKeyProvider {
         case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
           return algo;
         case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
         case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+        case SignatureVerifier::SignatureAlgorithm::ED25519:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
           continue;  // Not supported
       }
     }
@@ -314,7 +342,18 @@ class SoftwareProvider : public UnexportableKeyProvider {
               crypto::keypair::PrivateKey::GenerateRsa2048());
         }
         case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
         case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+        case SignatureVerifier::SignatureAlgorithm::ED25519:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
           continue;  // Not supported
       }
     }
@@ -356,7 +395,18 @@ class SoftwareProvider : public UnexportableKeyProvider {
               crypto::keypair::PrivateKey::GenerateRsa2048());
         }
         case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
         case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
+        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+        case SignatureVerifier::SignatureAlgorithm::ED25519:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
+        case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
           continue;  // Not supported
       }
     }

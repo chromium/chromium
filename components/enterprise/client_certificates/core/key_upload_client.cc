@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -54,10 +55,22 @@ BPKUR::KeyType AlgorithmToType(
   switch (algorithm) {
     case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
     case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
     case crypto::SignatureVerifier::RSA_PSS_SHA256:
+    case crypto::SignatureVerifier::RSA_PSS_SHA384:
+    case crypto::SignatureVerifier::RSA_PSS_SHA512:
       return BPKUR::RSA_KEY;
+    case crypto::SignatureVerifier::ECDSA_SHA1:
     case crypto::SignatureVerifier::ECDSA_SHA256:
+    case crypto::SignatureVerifier::ECDSA_SHA384:
+    case crypto::SignatureVerifier::ECDSA_SHA512:
       return BPKUR::EC_KEY;
+    case crypto::SignatureVerifier::ED25519:
+    case crypto::SignatureVerifier::MLDSA_44:
+    case crypto::SignatureVerifier::MLDSA_65:
+    case crypto::SignatureVerifier::MLDSA_87:
+      NOTREACHED();
   }
 }
 

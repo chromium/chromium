@@ -24,14 +24,36 @@ namespace {
 std::string_view GetAlgorithmName(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
       return "RSA_PKCS1_SHA1";
-    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
       return "RSA_PKCS1_SHA256";
-    case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-      return "ECDSA_SHA256";
-    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
+      return "RSA_PKCS1_SHA384";
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
+      return "RSA_PKCS1_SHA512";
+    case crypto::SignatureVerifier::RSA_PSS_SHA256:
       return "RSA_PSS_SHA256";
+    case crypto::SignatureVerifier::RSA_PSS_SHA384:
+      return "RSA_PSS_SHA384";
+    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+      return "RSA_PSS_SHA512";
+    case crypto::SignatureVerifier::ECDSA_SHA1:
+      return "ECDSA_SHA1";
+    case crypto::SignatureVerifier::ECDSA_SHA256:
+      return "ECDSA_SHA256";
+    case crypto::SignatureVerifier::ECDSA_SHA384:
+      return "ECDSA_SHA384";
+    case crypto::SignatureVerifier::ECDSA_SHA512:
+      return "ECDSA_SHA512";
+    case crypto::SignatureVerifier::ED25519:
+      return "ED25519";
+    case crypto::SignatureVerifier::MLDSA_44:
+      return "MLDSA_44";
+    case crypto::SignatureVerifier::MLDSA_65:
+      return "MLDSA_65";
+    case crypto::SignatureVerifier::MLDSA_87:
+      return "MLDSA_87";
   }
 }
 
