@@ -195,7 +195,11 @@ enum class ResponseSegmentation {
   kWebContinuityAttachedAudio = 170,
   kWebContinuityDetachedText = 171,
   kWebContinuityDetachedAudio = 172,
-  kMaxValue = kWebContinuityDetachedAudio,
+  kHistoryPageChatLinkoutAttachedText = 173,
+  kHistoryPageChatLinkoutAttachedAudio = 174,
+  kHistoryPageChatLinkoutDetachedText = 175,
+  kHistoryPageChatLinkoutDetachedAudio = 176,
+  kMaxValue = kHistoryPageChatLinkoutDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

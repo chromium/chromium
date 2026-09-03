@@ -146,6 +146,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "TabContextMenu";
     case mojom::InvocationSource::kWebContinuity:
       return "WebContinuity";
+    case mojom::InvocationSource::kHistoryPageChatLinkout:
+      return "HistoryPageChatLinkout";
   }
 }
 

@@ -613,9 +613,10 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Reshow inactive"/>
   <int value="41" label="Tab context menu"/>
   <int value="42" label="Web Continuity"/>
+  <int value="43" label="History page chat linkout"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
+<!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
 
 <!-- LINT.IfChange(GlicInvokeResult) -->
 
@@ -1084,6 +1085,10 @@ chromium-metrics-reviews@google.com.
   <int value="170" label="Web Continuity, attached, audio mode."/>
   <int value="171" label="Web Continuity, detached, text mode."/>
   <int value="172" label="Web Continuity, detached, audio mode."/>
+  <int value="173" label="History page chat linkout, attached, text mode."/>
+  <int value="174" label="History page chat linkout, attached, audio mode."/>
+  <int value="175" label="History page chat linkout, detached, text mode."/>
+  <int value="176" label="History page chat linkout, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

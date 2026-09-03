@@ -42,9 +42,12 @@ ShowOptions CreateShowOptions(
     const GlicInvokeOptions& options) {
   ShowOptions show_options = std::visit(
       absl::Overload{[&](const GlicInvokeHandler::TabSurface& tab_surface) {
-                       return ShowOptions::ForSidePanel(
-                           *tab_surface.tab, GlicPinTrigger::kInstanceCreation,
-                           options.GetInvocationSource());
+                       SidePanelShowOptions side_panel_options{
+                           *tab_surface.tab};
+                       side_panel_options.pin_trigger =
+                           GlicPinTrigger::kInstanceCreation;
+                       side_panel_options.pin_on_bind = options.pin_on_bind;
+                       return ShowOptions(side_panel_options);
                      },
                      [&](Floating) {
                        return ShowOptions::ForFloating(

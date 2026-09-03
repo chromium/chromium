@@ -271,11 +271,13 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kTabContextMenu";
     case glic::mojom::InvocationSource::kWebContinuity:
       return "kWebContinuity";
+    case glic::mojom::InvocationSource::kHistoryPageChatLinkout:
+      return "kHistoryPageChatLinkout";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);
   return "Unknown";
-  // LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource)
+  // LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource)
 }
 
 std::string FeatureModeToString(glic::mojom::FeatureMode mode) {

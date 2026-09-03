@@ -168,6 +168,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ExperimentalTriggering"/>
   <variant name="Fre"/>
   <variant name="HandoffButton"/>
+  <variant name="HistoryPageChatLinkout"/>
   <variant name="IndigoPageAction"/>
   <variant name="Iph"/>
   <variant name="NavigationCapture"/>
@@ -199,7 +200,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ZeroStateAutoSummarize"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
+<!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
 
 <variants name="MemoryTriggerEvent">
   <variant name="CriticalPressure"

@@ -646,6 +646,8 @@ export enum InvocationSource {
   TAB_CONTEXT_MENU = 41,
   // From Web Continuity.
   WEB_CONTINUITY = 42,
+  // From the history page chat linkout.
+  HISTORY_PAGE_CHAT_LINKOUT = 43,
 }
 
 // Target for actuation.

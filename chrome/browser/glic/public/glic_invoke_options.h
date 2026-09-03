@@ -269,6 +269,10 @@ struct GlicInvokeOptions {
   // Tabs to pin as part of invocation.
   TabSharingOptions tab_sharing;
 
+  // Whether to automatically pin the target tab when the side panel is bound
+  // to it. Defaults to true.
+  bool pin_on_bind = true;
+
   // Defines the target for the invocation (surface and conversation).
   Target target;
 

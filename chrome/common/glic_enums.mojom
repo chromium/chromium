@@ -164,6 +164,8 @@ enum InvocationSource {
   [MinVersion=27] kTabContextMenu = 41,
   // From Web Continuity.
   [MinVersion=28] kWebContinuity = 42,
+  // From the history page chat linkout.
+  [MinVersion=29] kHistoryPageChatLinkout = 43,
 };
 
 // LINT.ThenChange(
