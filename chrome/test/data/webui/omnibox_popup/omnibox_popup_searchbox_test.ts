@@ -2270,6 +2270,14 @@ suite('OmniboxPopupSearchboxTest', function() {
      assertEquals('', searchbox.$.input.pageUrl);
      assertEquals(null, searchbox.$.input.selectedMatch);
    });
+
+   test('HandlesSetDefaultSearchProvider', async () => {
+     const customIcon =
+         'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com%2Ffavicon.ico';
+     callbackRouter.setDefaultSearchProvider(customIcon);
+     await microtasksFinished();
+     assertEquals(customIcon, searchbox.$.input.searchboxIcon);
+   });
  });
 
  test('TabKeyAcceptsInlineAutocomplete', async () => {
