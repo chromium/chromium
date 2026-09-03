@@ -260,6 +260,10 @@ void CastComponent::MaybeConnectPortConnector(
   }
 
   url::Origin committed_origin = url::Origin::Create(GURL(current_url_));
+  if (api_bindings_client_) {
+    api_bindings_client_->SetOrigin(committed_origin);
+  }
+
   if (committed_origin.opaque()) {
     return;
   }

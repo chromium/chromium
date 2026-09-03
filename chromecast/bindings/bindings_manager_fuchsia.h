@@ -33,7 +33,6 @@ class BindingsManagerFuchsia : public chromium::cast::ApiBindings,
   void AddBinding(std::string_view binding_name,
                   std::string_view binding_script) override;
 
- protected:
   // chromium::cast::ApiBindings implementation:
   void GetAll(GetAllCallback callback) override;
   void Connect(

@@ -32,6 +32,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -57,6 +58,7 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -642,6 +644,112 @@ TEST_F(CastRunnerIntegrationTest, BindingsManagerFuchsia_OrderedBindings) {
 
   receiver.RunUntilMessageCountEqual(1);
   EXPECT_EQ(receiver.buffer()[0].first, "hello world");
+}
+
+TEST_F(CastRunnerIntegrationTest,
+       BindingsManagerFuchsia_Origin_AvailableOnConnect) {
+  TestCastComponent component(test_realm_services());
+
+  ScopedPortHandler connect_handler(component.bindings_manager(), "echo");
+
+  const GURL app_url = test_server().GetURL("/connector.html");
+  app_config_manager().AddApp(kTestAppId, app_url);
+
+  component.StartCastComponent(base::StrCat({"cast:", kTestAppId}));
+
+  std::unique_ptr<cast_api_bindings::MessagePort> message_port =
+      connect_handler.RunUntilPortConnected();
+  ASSERT_TRUE(message_port);
+
+  // Verify that the caller origin was received and matches the loaded page.
+  EXPECT_EQ(component.bindings_manager().origin(),
+            url::Origin::Create(app_url).Serialize());
+
+  cast_api_bindings::TestMessagePortReceiver receiver;
+  message_port->SetReceiver(&receiver);
+  message_port->PostMessage("ping");
+
+  receiver.RunUntilMessageCountEqual(3);
+  EXPECT_EQ(receiver.buffer()[0].first, "early 1");
+  EXPECT_EQ(receiver.buffer()[1].first, "early 2");
+  EXPECT_EQ(receiver.buffer()[2].first, "ack ping");
+}
+
+TEST_F(CastRunnerIntegrationTest,
+       BindingsManagerFuchsia_Origin_OpaqueOriginEmpty) {
+  TestCastComponent component(test_realm_services());
+  component.bindings_manager().SetOrigin("https://example.com");
+
+  const GURL kOpaqueAppUrl(
+      "data:text/html,<!DOCTYPE html><title>opaque</title>");
+  app_config_manager().AddApp(kTestAppId, kOpaqueAppUrl);
+
+  component.StartCastComponent(base::StrCat({"cast:", kTestAppId}));
+  component.application_context().WaitForSetApplicationController();
+
+  // Verify that the reported origin is cleared for an opaque origin.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return component.bindings_manager().origin().empty(); }));
+}
+
+TEST_F(CastRunnerIntegrationTest,
+       BindingsManagerFuchsia_Origin_TrackedOnRenavigation) {
+  TestCastComponent component(test_realm_services());
+
+  // Add a binding enabling navigation instructions from native test code.
+  component.bindings_manager().AddBinding(
+      "navigator",
+      "window.addEventListener('DOMContentLoaded', () => {"
+      "  var port = cast.__platform__.PortConnector.bind('nav');"
+      "  port.onmessage = (msg) => {"
+      "    window.location.href = msg.data;"
+      "  };"
+      "});");
+
+  net::EmbeddedTestServer second_test_server;
+  second_test_server.ServeFilesFromSourceDirectory(
+      "fuchsia_web/runners/cast/testdata");
+  ASSERT_TRUE(second_test_server.Start());
+
+  const GURL first_url = test_server().GetURL("/connector.html");
+  const GURL second_url = second_test_server.GetURL("/connector.html");
+
+  app_config_manager().AddApp(kTestAppId, first_url);
+
+  cast_api_bindings::TestMessagePortReceiver nav_receiver;
+  std::unique_ptr<cast_api_bindings::MessagePort> nav_port;
+  {
+    ScopedPortHandler echo_handler(component.bindings_manager(), "echo");
+    ScopedPortHandler nav_handler(component.bindings_manager(), "nav");
+
+    component.StartCastComponent(base::StrCat({"cast:", kTestAppId}));
+
+    std::unique_ptr<cast_api_bindings::MessagePort> echo_port =
+        echo_handler.RunUntilPortConnected();
+    ASSERT_TRUE(echo_port);
+    EXPECT_EQ(component.bindings_manager().origin(),
+              url::Origin::Create(first_url).Serialize());
+
+    nav_port = nav_handler.RunUntilPortConnected();
+    ASSERT_TRUE(nav_port);
+    nav_port->SetReceiver(&nav_receiver);
+  }
+
+  // Register a new handler to receive the "echo" port from the new document.
+  ScopedPortHandler echo_handler2(component.bindings_manager(), "echo");
+
+  // Instruct the first page to navigate to the second origin.
+  nav_port->PostMessage(second_url.spec());
+
+  // Wait for the re-navigated document to connect to "echo".
+  std::unique_ptr<cast_api_bindings::MessagePort> echo_port2 =
+      echo_handler2.RunUntilPortConnected();
+  ASSERT_TRUE(echo_port2);
+
+  // Verify that the origin tracked by BindingsManagerFuchsia was updated to the
+  // second origin.
+  EXPECT_EQ(component.bindings_manager().origin(),
+            url::Origin::Create(second_url).Serialize());
 }
 
 TEST_F(CastRunnerIntegrationTest, UnknownCastAppId_Fails) {

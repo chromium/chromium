@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
+#include "url/origin.h"
 
 // Injects scripts received from the ApiBindings service, and provides connected
 // ports to the Agent.
@@ -34,8 +35,14 @@ class ApiBindingsClient {
 
   ~ApiBindingsClient();
 
+  // Informs the Agent of the origin of the document currently connected to
+  // this ApiBindings session. Must be called upon main document
+  // load/navigation, prior to establishing the NamedMessagePortConnector
+  // handshake with the frame.
+  void SetOrigin(const url::Origin& origin);
+
   // Injects APIs and handles channel connections on |frame|.
-  // |on_error_callback| is invoked asynchronusly in the event of an
+  // |on_error_callback| is invoked asynchronously in the event of an
   // unrecoverable error (e.g. lost connection to the Agent). The callback must
   // remain valid for the entire lifetime of |this|.
   void AttachToFrame(fuchsia::web::Frame* frame,
@@ -68,6 +75,7 @@ class ApiBindingsClient {
   raw_ptr<cast_api_bindings::NamedMessagePortConnector> connector_ = nullptr;
   chromium::cast::ApiBindingsPtr bindings_service_;
   base::OnceClosure on_initialization_complete_;
+  std::optional<url::Origin> origin_;
 
   base::WeakPtrFactory<ApiBindingsClient> weak_ptr_factory_{this};
 };

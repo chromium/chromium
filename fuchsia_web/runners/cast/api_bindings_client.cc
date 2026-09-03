@@ -45,6 +45,22 @@ ApiBindingsClient::~ApiBindingsClient() {
   }
 }
 
+void ApiBindingsClient::SetOrigin(const url::Origin& origin) {
+  if (origin_.has_value()) {
+    if (origin.opaque() && origin_->opaque()) {
+      return;
+    }
+    if (origin == *origin_) {
+      return;
+    }
+  }
+  origin_ = origin;
+
+  if (bindings_service_) {
+    bindings_service_->SetOrigin(origin.opaque() ? "" : origin.Serialize());
+  }
+}
+
 void ApiBindingsClient::AttachToFrame(
     fuchsia::web::Frame* frame,
     cast_api_bindings::NamedMessagePortConnector* connector,

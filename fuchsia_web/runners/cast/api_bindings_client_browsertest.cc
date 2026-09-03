@@ -14,6 +14,7 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromecast/bindings/bindings_manager_fuchsia.h"
@@ -29,6 +30,7 @@
 #include "fuchsia_web/runners/cast/test/scoped_port_handler.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -133,9 +135,19 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   cast_api_bindings::TestMessagePortReceiver receiver;
   echo_port->SetReceiver(&receiver);
   echo_port->PostMessage("ping");
-
   receiver.RunUntilMessageCountEqual(1);
   EXPECT_EQ(receiver.buffer()[0].first, "ack ping");
+
+  // Verify SetOrigin updates the backend.
+  client_->SetOrigin(url::Origin::Create(test_url));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return api_service_.origin() == url::Origin::Create(test_url).Serialize();
+  }));
+
+  // Verify SetOrigin clears the origin for opaque origins.
+  client_->SetOrigin(url::Origin());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return api_service_.origin().empty(); }));
 
   // Ensure that we've received ack for the handshake post message.
   EXPECT_TRUE(post_frame_message_future.Get().is_response());
