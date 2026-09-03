@@ -19,6 +19,7 @@ group("providers") {
     "//ios/chrome/test/providers/cobalt",
     "//ios/chrome/test/providers/content_notification",
     "//ios/chrome/test/providers/context_menu",
+    "//ios/chrome/test/providers/device_attestation",
     "//ios/chrome/test/providers/discover_feed",
     "//ios/chrome/test/providers/drive",
     "//ios/chrome/test/providers/font",

@@ -20,10 +20,12 @@ static_library("device_attestation") {
     "device_attestation_service_factory.cc",
   ]
 
-  public_deps = [ ":common" ]
+  public_deps = [
+    ":common",
+    "//base",
+  ]
 
   deps = [
-    "//base",
     "//components/device_signals/core/common:features",
     "//components/policy/proto",
   ]

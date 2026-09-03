@@ -15,6 +15,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/cobalt:cobalt_api",
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
+    "//ios/public/provider/chrome/browser/device_attestation:device_attestation_api",
     "//ios/public/provider/chrome/browser/device_resources:device_resources_api",
     "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
     "//ios/public/provider/chrome/browser/drive:drive_api",
