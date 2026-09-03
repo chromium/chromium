@@ -176,9 +176,12 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
         controller->CreateActionItemSubscription(action_item_.get());
     OnPageActionModelChanged(*observation_.GetSource());
   } else {
-    SetIsChipShowingChangedCallback(base::NullCallback());
-    SetAnchoredMessageCloseCallback(base::NullCallback());
-    SetClickCallback(base::NullCallback());
+    SetIsChipShowingChangedCallback(base::DoNothing());
+    SetImageAnimationStartedCallback(base::DoNothing());
+    SetAnchoredMessageCloseCallback(base::DoNothing());
+    SetClickCallback(base::DoNothing());
+    SetAnchoredMessageExpandCallback(base::DoNothing());
+    SetAnchoredMessageCollapseCallback(base::DoNothing());
     SetVisible(false);
   }
 }

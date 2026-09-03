@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -303,6 +304,29 @@ TEST_F(PageActionViewWithControllerTest, NoActiveController) {
 
   view->OnNewActiveController(nullptr);
   EXPECT_FALSE(view->GetVisible());
+}
+
+// Verifies that if an animation ends after the active controller has
+// been reset to nullptr, the deferred task does not crash.
+TEST_F(PageActionViewTest, AnimationEndedAfterControllerResetDoesNotCrash) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
+
+  page_action_view()->OnNewActiveController(nullptr);
+  EXPECT_FALSE(page_action_view()->GetVisible());
+
+  page_action_view()->AnimationEnded(nullptr);
+
+  // Post a callback to the same sequence.
+  base::test::TestFuture<void> future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(PageActionViewTest, Visibility) {
