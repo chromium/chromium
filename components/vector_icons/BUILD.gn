@@ -8,6 +8,7 @@ _icons_gen_dir = "$root_build_dir/gen/components/vector_icons"
 
 if (current_toolchain == default_toolchain) {
   import("//build/util/branding.gni")
+
   aggregate_vector_icons("components_vector_icons") {
     icon_directory = "."
 
@@ -521,6 +522,7 @@ if (current_toolchain == default_toolchain) {
       "warning_off.icon",
       "warning_old.icon",
       "warning_outline_old.icon",
+      "wb_incandescent.icon",
       "work.icon",
       "work_old.icon",
     ]
