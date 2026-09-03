@@ -23,6 +23,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/actor/tools/model",
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
+  "+ios/chrome/browser/intelligence/page_classification/education_java_script_feature.h",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h",
   "+ios/chrome/browser/lens/model/lens_browser_agent.h",
   "+ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h",
