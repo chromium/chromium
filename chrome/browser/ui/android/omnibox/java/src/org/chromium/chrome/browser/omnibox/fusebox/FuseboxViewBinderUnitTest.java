@@ -349,7 +349,7 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void reanchorViewsForCompactFusebox_deduplicatesWhenOptimizationsEnabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);
@@ -521,12 +521,12 @@ public class FuseboxViewBinderUnitTest {
     public void modelButtonEnabled_setsEnabled() {
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
-                List.of(new PopupButtonDataBuilder().withEnabled(true).build()));
+                List.of(new PopupButtonDataBuilder().withEnabled(/* enabled= */ true).build()));
         assertTrue(getDynamicButton(0).isEnabled());
 
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
-                List.of(new PopupButtonDataBuilder().withEnabled(false).build()));
+                List.of(new PopupButtonDataBuilder().withEnabled(/* enabled= */ false).build()));
         assertFalse(getDynamicButton(0).isEnabled());
     }
 
@@ -539,7 +539,7 @@ public class FuseboxViewBinderUnitTest {
                         new PopupButtonDataBuilder()
                                 .withText("custom model")
                                 .withType(PopupButtonType.MODEL)
-                                .withSelected(true)
+                                .withSelected(/* selected= */ true)
                                 .build()));
         assertEquals(
                 res.getString(R.string.acc_fusebox_popup_button_selected, "custom model"),
@@ -551,7 +551,7 @@ public class FuseboxViewBinderUnitTest {
                         new PopupButtonDataBuilder()
                                 .withText("custom model")
                                 .withType(PopupButtonType.MODEL)
-                                .withSelected(false)
+                                .withSelected(/* selected= */ false)
                                 .build()));
         assertEquals("custom model", getDynamicButton(0).getContentDescription());
     }
@@ -588,25 +588,27 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void modelSelectionDrawables() {
-        PopupButtonData selectedData = new PopupButtonDataBuilder().withSelected(true).build();
-        PopupButtonData notSelectedData = new PopupButtonDataBuilder().withSelected(false).build();
+        PopupButtonData selectedData =
+                new PopupButtonDataBuilder().withSelected(/* selected= */ true).build();
+        PopupButtonData notSelectedData =
+                new PopupButtonDataBuilder().withSelected(/* selected= */ false).build();
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(notSelectedData, notSelectedData));
-        assertEndIconSelected(getDynamicButton(0), false);
-        assertEndIconSelected(getDynamicButton(1), false);
+        assertEndIconSelected(getDynamicButton(0), /* selected= */ false);
+        assertEndIconSelected(getDynamicButton(1), /* selected= */ false);
 
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(selectedData, notSelectedData));
-        assertEndIconSelected(getDynamicButton(0), true);
-        assertEndIconSelected(getDynamicButton(1), false);
+        assertEndIconSelected(getDynamicButton(0), /* selected= */ true);
+        assertEndIconSelected(getDynamicButton(1), /* selected= */ false);
 
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(notSelectedData, selectedData));
-        assertEndIconSelected(getDynamicButton(0), false);
-        assertEndIconSelected(getDynamicButton(1), true);
+        assertEndIconSelected(getDynamicButton(0), /* selected= */ false);
+        assertEndIconSelected(getDynamicButton(1), /* selected= */ true);
     }
 
     @Test
@@ -710,25 +712,25 @@ public class FuseboxViewBinderUnitTest {
     public void toolSelectionDrawables() {
         PopupButtonData selectedData =
                 new PopupButtonDataBuilder()
-                        .withSelected(true)
+                        .withSelected(/* selected= */ true)
                         .withType(PopupButtonType.TOOL)
                         .build();
         PopupButtonData notSelectedData =
                 new PopupButtonDataBuilder()
-                        .withSelected(false)
+                        .withSelected(/* selected= */ false)
                         .withType(PopupButtonType.TOOL)
                         .build();
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
                 List.of(notSelectedData, notSelectedData));
-        assertEndIconSelected(getDynamicToolButton(0), false);
-        assertEndIconSelected(getDynamicToolButton(1), false);
+        assertEndIconSelected(getDynamicToolButton(0), /* selected= */ false);
+        assertEndIconSelected(getDynamicToolButton(1), /* selected= */ false);
 
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
                 List.of(selectedData, notSelectedData));
-        assertEndIconSelected(getDynamicToolButton(0), true);
-        assertEndIconSelected(getDynamicToolButton(1), false);
+        assertEndIconSelected(getDynamicToolButton(0), /* selected= */ true);
+        assertEndIconSelected(getDynamicToolButton(1), /* selected= */ false);
     }
 
     @Test
@@ -740,7 +742,7 @@ public class FuseboxViewBinderUnitTest {
                         new PopupButtonDataBuilder()
                                 .withText("custom tool")
                                 .withType(PopupButtonType.TOOL)
-                                .withSelected(true)
+                                .withSelected(/* selected= */ true)
                                 .build()));
         assertEquals(
                 res.getString(R.string.acc_fusebox_popup_button_selected, "custom tool"),
@@ -752,7 +754,7 @@ public class FuseboxViewBinderUnitTest {
                         new PopupButtonDataBuilder()
                                 .withText("custom tool")
                                 .withType(PopupButtonType.TOOL)
-                                .withSelected(false)
+                                .withSelected(/* selected= */ false)
                                 .build()));
         assertEquals("custom tool", getDynamicToolButton(0).getContentDescription());
     }
@@ -898,8 +900,8 @@ public class FuseboxViewBinderUnitTest {
                         (data) -> mOnClicked.run(),
                         mText,
                         mCustomIcon,
-                        mEnabled,
-                        mSelected,
+                        /* enabled= */ mEnabled,
+                        /* selected= */ mSelected,
                         mType,
                         /* protoId= */ 0,
                         /* hasColor= */ mCustomIcon != null);
@@ -908,8 +910,8 @@ public class FuseboxViewBinderUnitTest {
                         (data) -> mOnClicked.run(),
                         mText,
                         mIconId,
-                        mEnabled,
-                        mSelected,
+                        /* enabled= */ mEnabled,
+                        /* selected= */ mSelected,
                         mType,
                         /* protoId= */ 0,
                         /* hasColor= */ false);
