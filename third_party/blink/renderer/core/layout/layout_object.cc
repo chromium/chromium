@@ -3278,8 +3278,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
     if (PaintLayer* layer = EnclosingLayer()) {
       layer->DirtyVisibleContentStatus();
     }
-    GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
-        *this);
   }
 }
 
@@ -3467,6 +3465,11 @@ void LayoutObject::StyleDidChange(
        old_style->EffectiveZIndex() != new_style.EffectiveZIndex() ||
        IsStackingContext(*old_style) != IsStackingContext(new_style))) {
     GetDocument().SetDraggableRegionsDirty(true);
+  }
+
+  if (old_style && old_style->Visibility() != new_style.Visibility()) {
+    GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
+        *this);
   }
 
   if (new_style.AnchorName()) {
