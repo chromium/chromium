@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -30,6 +31,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-mojolpm.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -58,6 +60,8 @@ class IdbFuzzerEnvironment : public content::mojolpm::FuzzerEnvironment {
             base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+
+  void AdvanceTime() { task_environment_.FastForwardBy(base::Seconds(5)); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -128,6 +132,8 @@ class IdbFactoryTestcase
 
   // These are called from the UI thread.
   void FlushBucketSequence(base::OnceClosure done_closure);
+  void EnableSqliteMigration(base::OnceClosure done_closure);
+  void AdvanceTime(base::OnceClosure done_closure);
   void BindIndexedDB(
       storage::BucketClientInfo client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -179,6 +185,10 @@ void IdbFactoryTestcase::SetUp(base::OnceClosure done_closure) {
 }
 
 void IdbFactoryTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
+  static storage::QuotaSettings quota_settings =
+      storage::GetHardCodedSettings(100 * 1024 * 1024);
+  content::StoragePartition::SetDefaultQuotaSettingsForTesting(&quota_settings);
+
   browser_context_ = std::make_unique<content::TestBrowserContext>();
   browser_context_->set_is_off_the_record(in_memory_);
   browser_context_->GetDefaultStoragePartition()
@@ -293,6 +303,24 @@ void IdbFactoryTestcase::RunAction(const ProtoAction& action,
                              std::move(done_closure));
       return;
 
+    case ProtoAction::kEnableSqliteMigrationAction:
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&IdbFactoryTestcase::EnableSqliteMigration,
+                         base::Unretained(this),
+                         base::BindPostTask(GetFuzzerTaskRunner(),
+                                            std::move(done_closure))));
+      return;
+
+    case ProtoAction::kAdvanceTime:
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&IdbFactoryTestcase::AdvanceTime,
+                         base::Unretained(this),
+                         base::BindPostTask(GetFuzzerTaskRunner(),
+                                            std::move(done_closure))));
+      return;
+
     case ProtoAction::kNewBlob:
       CreateAndAddBlob(action.new_blob().id(), action.new_blob().content(),
                        std::move(done_closure));
@@ -331,6 +359,16 @@ void IdbFactoryTestcase::RunAction(const ProtoAction& action,
 void IdbFactoryTestcase::FlushBucketSequence(base::OnceClosure done_closure) {
   indexed_db_control_test_->FlushBucketSequenceForTesting(
       bucket_locator_, std::move(done_closure));
+}
+
+void IdbFactoryTestcase::EnableSqliteMigration(base::OnceClosure done_closure) {
+  indexed_db_control_test_->PerformAndVerifySqliteMigrationForTesting(
+      bucket_locator_, std::move(done_closure));
+}
+
+void IdbFactoryTestcase::AdvanceTime(base::OnceClosure done_closure) {
+  GetEnvironment().AdvanceTime();
+  std::move(done_closure).Run();
 }
 
 void IdbFactoryTestcase::BindIndexedDB(

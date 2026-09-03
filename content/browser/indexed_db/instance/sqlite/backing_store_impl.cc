@@ -339,7 +339,7 @@ void BackingStoreImpl::OnCleanupComplete(const std::u16string& name,
   }
 }
 
-Status BackingStoreImpl::MigrateFrom(BackingStore& source) {
+Status BackingStoreImpl::MigrateFrom(BackingStore& source, bool verify) {
   CHECK(!in_memory());
 
   bool clean_start = true;
@@ -371,6 +371,14 @@ Status BackingStoreImpl::MigrateFrom(BackingStore& source) {
     CHECK(target_connection->IsZygotic());
 
     IDB_RETURN_IF_ERROR(MigrateDatabase(*source_db, *target_db));
+
+    if (verify) {
+      StatusOr<base::DictValue> before = SnapshotDatabase(*source_db);
+      CHECK(before.has_value());
+      StatusOr<base::DictValue> after = SnapshotDatabase(*target_db);
+      CHECK(after.has_value());
+      CHECK_EQ(before.value(), after.value());
+    }
 
     auto& files_to_move = target_connection->legacy_blob_files_to_move();
     if (!files_to_move.empty() &&

@@ -70,7 +70,10 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   //
   // If there are any pre-existing SQLite databases in `directory_`, this will
   // attempt to delete them, and refuse to proceed unless that succeeds.
-  Status MigrateFrom(BackingStore& source);
+  //
+  // `verify` hard-CHECKs that migration succeeded, or at least that it looks
+  // successful. This does extra work; use with caution.
+  Status MigrateFrom(BackingStore& source, bool verify = false);
 
   // BackingStore:
   bool CanOpportunisticallyClose() const override;

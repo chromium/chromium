@@ -182,6 +182,7 @@ content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
     "fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_put_get.textproto",
     "fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto",
     "fuzzer_corpus/idb_factory_mojolpm_fuzzer/index_cursor.textproto",
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/migration.textproto",
     "fuzzer_corpus/idb_factory_mojolpm_fuzzer/object_store_cursor.textproto",
   ]
 }

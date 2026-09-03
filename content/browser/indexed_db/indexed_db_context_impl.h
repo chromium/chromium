@@ -127,6 +127,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void FlushBucketSequenceForTesting(
       const storage::BucketLocator& bucket_locator,
       base::OnceClosure callback) override;
+  void PerformAndVerifySqliteMigrationForTesting(
+      const storage::BucketLocator& bucket_locator,
+      PerformAndVerifySqliteMigrationForTestingCallback callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)

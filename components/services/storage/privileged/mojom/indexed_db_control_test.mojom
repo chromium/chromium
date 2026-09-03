@@ -62,6 +62,13 @@ interface IndexedDBControlTest {
   FlushBucketSequenceForTesting(storage.mojom.BucketLocator bucket_locator)
       => ();
 
+  // Enables "gentle" migration to SQLite for the store in the bucket specified.
+  // The `BucketContext` must already exist, and it should have already created
+  // a LevelDB backing store. The `BucketContext` will also do its best to
+  // verify the migration succeeded.
+  PerformAndVerifySqliteMigrationForTesting(
+      storage.mojom.BucketLocator bucket_locator) => ();
+
   // Gets the total usage in bytes across all buckets.
   GetUsageForTesting() => (int64 total_usage);
 

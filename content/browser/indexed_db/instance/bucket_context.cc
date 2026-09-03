@@ -1074,6 +1074,12 @@ void BucketContext::SetSqliteRolloutStageForTesting(SqliteRolloutStage stage) {
   const_cast<SqliteRolloutStage&>(sqlite_rollout_stage_) = stage;
 }
 
+void BucketContext::PerformAndVerifySqliteMigrationForTesting() {
+  const_cast<SqliteRolloutStage&>(sqlite_rollout_stage_) =
+      SqliteRolloutStage::kMigrateDataToSqliteGentle;
+  verify_migration_for_testing_ = true;
+}
+
 // static
 void BucketContext::InsertTeardownStepForTesting(
     base::OnceClosure on_teardown) {
@@ -1417,7 +1423,8 @@ void BucketContext::ResetBackingStore(bool migrate) {
             base::BindRepeating(&LockSqliteDatabase, std::ref(lock_manager)),
             /*on_blob_activity=*/base::DoNothing(),
             /*on_can_close=*/base::DoNothing());
-        Status status = sqlite_backing_store->MigrateFrom(*backing_store());
+        Status status = sqlite_backing_store->MigrateFrom(
+            *backing_store(), verify_migration_for_testing_);
         status.Log("IndexedDB.SqliteMigration.Status");
         if (!status.ok()) {
           sqlite_backing_store->OnForceClosing();

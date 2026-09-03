@@ -732,6 +732,20 @@ void IndexedDBContextImpl::FlushBucketSequenceForTesting(
       std::move(callback), idb_task_runner()));
 }
 
+void IndexedDBContextImpl::PerformAndVerifySqliteMigrationForTesting(
+    const storage::BucketLocator& bucket_locator,
+    PerformAndVerifySqliteMigrationForTestingCallback callback) {
+  base::SequenceBound<BucketContext>* bucket_context =
+      GetBucketContextForTesting(bucket_locator);
+  if (!bucket_context) {
+    std::move(callback).Run();
+    return;
+  }
+  bucket_context
+      ->AsyncCall(&BucketContext::PerformAndVerifySqliteMigrationForTesting)
+      .Then(std::move(callback));
+}
+
 void IndexedDBContextImpl::GetUsageForTesting(
     GetUsageForTestingCallback callback) {
   auto barrier = base::BarrierCallback<int64_t>(

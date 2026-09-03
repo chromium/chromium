@@ -313,6 +313,7 @@ class CONTENT_EXPORT BucketContext
   void FlushBackingStoreForTesting();
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver);
+  void PerformAndVerifySqliteMigrationForTesting();
 
   // Called when a fatal error has occurred that should result in tearing down
   // the backing store. `BucketContext` *may* be synchronously destroyed after
@@ -445,6 +446,8 @@ class CONTENT_EXPORT BucketContext
   // Set at construction. Can be overridden by
   // `SetSqliteRolloutStageForTesting()`.
   const SqliteRolloutStage sqlite_rollout_stage_;
+
+  bool verify_migration_for_testing_ = false;
 
   bool running_tasks_ = false;
 

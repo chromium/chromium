@@ -22,6 +22,13 @@ message NewBlobAction {
   required string content = 2;
 }
 
+// Configure the bucket to migrate its LevelDB backing store to SQLite when it
+// is next closed.
+message EnableSqliteMigrationAction {}
+
+// Advance mock time by five seconds.
+message AdvanceTimeAction {}
+
 // Post a task on the specified thread's task runner, continuing when complete.
 // This is not intended to create a specific ordering but to allow the fuzzer to
 // delay a later task until previous tasks have completed.
@@ -48,6 +55,8 @@ message Action {
     mojolpm.blink.mojom.IDBCursor.AssociatedRemoteAction
         idb_cursor_associated_remote_action = 6;
     mojolpm.blink.mojom.Blob.RemoteAction blob_remote_action = 8;
+    EnableSqliteMigrationAction enable_sqlite_migration_action = 9;
+    AdvanceTimeAction advance_time = 10;
   }
 }
 
