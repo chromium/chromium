@@ -907,6 +907,14 @@ export const ComposeboxEmbedderMixin =
             this.errorMessage = errorMessage;
             this.pendingUploads.delete(token);
             this.fileUploadsComplete = this.pendingUploads.size === 0;
+            // Clear autocomplete matches and refresh zero state suggestions if
+            // there are no attached files and no user input after a file upload
+            // error.
+            this.getSearchboxHandler().deleteContext(
+                token, /*fromAutoSuggestedChip=*/ false);
+            if (this.attachedContext.size === 0 && !this.input.trim()) {
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
           } else if (file) {
             // Treat `kUploadReplaced` like an error upload state
             // (like `kUploadFailed`. `kValidationFailed`,
@@ -1893,9 +1901,8 @@ export const ComposeboxEmbedderMixin =
           // to `undeletableFiles` does nothing to prevent deletion from
           // `this.attachedContext`. Adding files to `undeletableFiles` does
           // prevent deletion.
-          const undeletableFiles =
-              Array.from(this.attachedContext.values())
-                  .filter(file => !file.isDeletable);
+          const undeletableFiles = Array.from(this.attachedContext.values())
+                                       .filter(file => !file.isDeletable);
           if (undeletableFiles.length !== this.attachedContext.size) {
             this.attachedContext =
                 new Map(undeletableFiles.map(file => [file.uuid, file]));
@@ -1912,16 +1919,17 @@ export const ComposeboxEmbedderMixin =
           this.smartComposeInlineHint = '';
           this.resetSmartComposeStats();
           // Ask the searchbox handler to clear its own state when the clear all
-          // button is clicked. Otherwise, it will clear its own state when mojo submit
-          // query is sent.
+          // button is clicked. Otherwise, it will clear its own state when mojo
+          // submit query is sent.
           // TODO(crbug.com/532712756): Browser process should fully own
           // clearing logic, and frontend should listen and follow which files
           // browser process says to keep. This is better than having to
           // maintain and align two different hard coded logic for clearing
           // files across composebox (here) and browser process code (session
-          // handle). `restoredTabs` is the server telling the frontend which tabs
-          // are persistent, but the logic for clearing context on submit/clear all
-          // should still be handled by browser process, not frontend and browser process.
+          // handle). `restoredTabs` is the server telling the frontend which
+          // tabs are persistent, but the logic for clearing context on
+          // submit/clear all should still be handled by browser process, not
+          // frontend and browser process.
           if (!querySubmitted) {
             this.getSearchboxHandler().clearFiles(shouldBlockAutoSuggestedTabs);
           }

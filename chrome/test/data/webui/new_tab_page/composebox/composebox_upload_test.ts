@@ -261,9 +261,12 @@ suite(`NewTabPageComposeboxUploadFileTest`, () => {
                   id, fileUploadStatus as ContextUploadStatus,
                   fileUploadErrorType as ContextUploadErrorType | null);
           await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
 
           // Assert no files in the carousel.
           assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+          // Assert submit button is hidden when no files or input text remain.
+          assertFalse(testProxy.element.submitEnabled);
 
           if (fileUploadErrorType !== null) {
             assertEquals(
@@ -272,6 +275,60 @@ suite(`NewTabPageComposeboxUploadFileTest`, () => {
           }
         });
   });
+
+  test(
+      'autocomplete matches and submit button are cleared when file upload ' +
+          'expires',
+      async () => {
+        testSupport.createComposeboxElement(testProxy);
+        const id = testSupport.generateZeroId();
+        const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
+        await testSupport.uploadFileAndVerify(testProxy, id, file);
+
+        // Simulate autocomplete returning zero-state matches during upload.
+        const matches = [createSearchMatchForTesting({
+          allowedToBeDefaultMatch: false,
+        })];
+        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: testProxy.element.activeQueryId,
+              input: '',
+              matches,
+            }));
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(testProxy.element.submitEnabled);
+        assertEquals(-1, testProxy.element.selectedMatchIndex);
+
+        const initialStopAcCalls =
+            testProxy.searchboxHandler.getCallCount('stopAutocomplete');
+        const initialQueryAcCalls =
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete');
+
+        // Trigger upload expiration.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            id, ContextUploadStatus.kUploadExpired, null);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Verify matches are purged, selection reset, and submit button hidden.
+        assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+        assertFalse(testProxy.element.submitEnabled);
+        assertEquals(-1, testProxy.element.selectedMatchIndex);
+        assertEquals(null, testProxy.element.result);
+        assertEquals(
+            1, testProxy.searchboxHandler.getCallCount('deleteContext'));
+        assertEquals(
+            id, testProxy.searchboxHandler.getArgs('deleteContext')[0][0]);
+        assertEquals(
+            initialStopAcCalls + 1,
+            testProxy.searchboxHandler.getCallCount('stopAutocomplete'));
+        // Fresh zero-state suggestions are queried upon file upload expiration.
+        assertEquals(
+            initialQueryAcCalls + 1,
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'));
+      });
 
   test('upload pdf', async () => {
     testSupport.createComposeboxElement(testProxy);
@@ -799,7 +856,8 @@ suite(`NewTabPageComposeboxUploadPasteTest`, () => {
             testSupport.ADD_FILE_CONTEXT_FN));
   });
 
-    test('pasting only text does not call addFiles or prevent default',
+  test(
+      'pasting only text does not call addFiles or prevent default',
       async () => {
         // Arrange.
         testSupport.createComposeboxElement(testProxy);
@@ -1215,7 +1273,8 @@ suite(`NewTabPageComposeboxUploadContextTest`, () => {
     await testProxy.element.updateComplete;
     await microtasksFinished();
 
-    assertEquals(1, testProxy.element.attachedContext.size, 'Tab should be added');
+    assertEquals(
+        1, testProxy.element.attachedContext.size, 'Tab should be added');
 
     const bad_token = testSupport.FAKE_TOKEN_STRING_2;
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
