@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -334,6 +337,70 @@ public class ActorForegroundServiceControllerImplTest {
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
 
         assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testResolveActorIntentTabId() {
+        assertEquals(
+                "Null intent should return INVALID_TAB_ID.",
+                Tab.INVALID_TAB_ID,
+                ActorForegroundServiceController.resolveActorIntentTabId(null));
+
+        Intent nonActorIntent = new Intent(Intent.ACTION_VIEW);
+        assertEquals(
+                "Non-actor intent with invalid tab ID should return INVALID_TAB_ID.",
+                Tab.INVALID_TAB_ID,
+                ActorForegroundServiceController.resolveActorIntentTabId(nonActorIntent));
+
+        Intent invalidTaskIntent = new Intent(Intent.ACTION_VIEW);
+        invalidTaskIntent.putExtra(
+                NotificationConstants.EXTRA_ACTOR_TASK_ID, ActorTask.INVALID_TASK_ID);
+        assertEquals(
+                "Intent with INVALID_TASK_ID should return INVALID_TAB_ID.",
+                Tab.INVALID_TAB_ID,
+                ActorForegroundServiceController.resolveActorIntentTabId(invalidTaskIntent));
+
+        Intent actorIntent = new Intent(Intent.ACTION_VIEW);
+        actorIntent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, 123);
+
+        Profile profile = mock(Profile.class);
+        ProfileManager.setLastUsedProfileForTesting(profile);
+        ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(actorKeyedService);
+
+        // When task does not exist, should return INVALID_TAB_ID.
+        assertEquals(
+                "Non-existent task should return INVALID_TAB_ID.",
+                Tab.INVALID_TAB_ID,
+                ActorForegroundServiceController.resolveActorIntentTabId(actorIntent));
+
+        ActorTask task = mock(ActorTask.class);
+        when(actorKeyedService.getTask(123)).thenReturn(task);
+        when(task.getTargetTabId()).thenReturn(789);
+
+        assertEquals(
+                "Should resolve tab ID from task.getTargetTabId().",
+                789,
+                ActorForegroundServiceController.resolveActorIntentTabId(actorIntent));
+
+        ActorKeyedServiceFactory.setForTesting(null);
+    }
+
+    @Test
+    public void testActorTask_getTargetTabId() {
+        ActorTask task = mock(ActorTask.class);
+        when(task.getTargetTabId()).thenCallRealMethod();
+
+        when(task.getLastActuatedTabId()).thenReturn(789);
+        when(task.getTabs()).thenReturn(Collections.singleton(456));
+        assertEquals(789, task.getTargetTabId());
+
+        // Fall back to any associated tab when last actuated tab ID is invalid.
+        when(task.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
+        assertEquals(456, task.getTargetTabId());
+
+        when(task.getTabs()).thenReturn(Collections.emptySet());
+        assertEquals(Tab.INVALID_TAB_ID, task.getTargetTabId());
     }
 
     public ServiceConnection getServiceConnectionForTesting() {

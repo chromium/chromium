@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
@@ -22,6 +23,8 @@ import java.util.Set;
 @JNINamespace("actor")
 @NullMarked
 public class ActorTask {
+    public static final int INVALID_TASK_ID = -1;
+
     private long mNativeTask;
     private final int mId;
     private final String mTitle;
@@ -128,6 +131,23 @@ public class ActorTask {
     public int getLastActuatedTabId() {
         if (mNativeTask == 0) return Tab.INVALID_TAB_ID;
         return ActorTaskJni.get().getLastActuatedTabId(mNativeTask);
+    }
+
+    /**
+     * Returns the target tab ID for bringing to the front, preferring the most recently actuated
+     * tab, or falling back to any tab associated with the task. Returns {@link Tab#INVALID_TAB_ID}
+     * if none exists.
+     */
+    public @TabId int getTargetTabId() {
+        @TabId int lastActuatedTabId = getLastActuatedTabId();
+        if (lastActuatedTabId != Tab.INVALID_TAB_ID) {
+            return lastActuatedTabId;
+        }
+        Set<Integer> tabs = getTabs();
+        if (!tabs.isEmpty()) {
+            return tabs.iterator().next();
+        }
+        return Tab.INVALID_TAB_ID;
     }
 
     /**

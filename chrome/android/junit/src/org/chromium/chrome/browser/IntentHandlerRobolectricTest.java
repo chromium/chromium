@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
@@ -53,12 +55,17 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorNotificationFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
@@ -939,5 +946,47 @@ public class IntentHandlerRobolectricTest {
         intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, 123);
         assertTrue(IntentHandler.isActorNotificationIntent(intent));
+    }
+
+    @Test
+    public void testGetBringTabToFrontId_ActorNotification() {
+        Intent actorIntent = new Intent(Intent.ACTION_VIEW);
+        actorIntent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        actorIntent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, 123);
+
+        // Untrusted intent should return INVALID_TAB_ID.
+        assertEquals(
+                "Untrusted intent should return INVALID_TAB_ID.",
+                Tab.INVALID_TAB_ID,
+                IntentHandler.getBringTabToFrontId(actorIntent));
+
+        actorIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+
+        // Trusted intent should resolve dynamically when explicit tab ID is invalid.
+        IntentUtils.addTrustedIntentExtras(actorIntent);
+
+        Profile profile = mock(Profile.class);
+        ProfileManager.setLastUsedProfileForTesting(profile);
+        ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(actorKeyedService);
+
+        ActorTask task = mock(ActorTask.class);
+        when(actorKeyedService.getTask(123)).thenReturn(task);
+        when(task.getTargetTabId()).thenReturn(789);
+
+        assertEquals(
+                "Should resolve tab ID dynamically for trusted actor notification intent.",
+                789,
+                IntentHandler.getBringTabToFrontId(actorIntent));
+
+        // Explicit valid tab ID should take precedence.
+        actorIntent.putExtra(IntentHandler.BRING_TAB_TO_FRONT_EXTRA, 42);
+        IntentUtils.addTrustedIntentExtras(actorIntent);
+        assertEquals(
+                "Explicit tab ID should take precedence.",
+                42,
+                IntentHandler.getBringTabToFrontId(actorIntent));
+
+        ActorKeyedServiceFactory.setForTesting(null);
     }
 }
