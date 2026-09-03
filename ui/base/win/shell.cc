@@ -14,28 +14,21 @@
 #include <wrl/client.h>
 
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_co_mem.h"
-#include "base/win/shell_util.h"
 #include "base/win/win_util.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace ui::win {
 
 namespace {
-
-// If this feature is enabled, then the COM interface on explorer will be used
-// to ShellExecute, rather than calling it directly.
-BASE_FEATURE(kLaunchShellExecuteViaExplorer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default ShellExecuteEx flags used with "openas", "explore", and default
 // verbs.
@@ -46,12 +39,21 @@ BASE_FEATURE(kLaunchShellExecuteViaExplorer, base::FEATURE_DISABLED_BY_DEFAULT);
 // causes ShellExecuteEx() to block until these tasks complete.
 const DWORD kDefaultShellExecuteFlags = SEE_MASK_NOASYNC;
 
-bool InvokeShellExecuteDirectly(const std::wstring& path,
-                                const std::wstring& working_directory,
-                                const std::wstring& args,
-                                const std::wstring& verb,
-                                const std::wstring& class_name,
-                                DWORD mask) {
+// Invokes ShellExecuteExW() with the given parameters.
+bool InvokeShellExecute(const std::wstring& path,
+                        const std::wstring& working_directory,
+                        const std::wstring& args,
+                        const std::wstring& verb,
+                        const std::wstring& class_name,
+                        DWORD mask) {
+  // This can marshal to shell extensions or out-of-process handlers (e.g.,
+  // a hand-off via the Windows DDE protocol) that require the calling
+  // thread to be a COM Single-Threaded Apartment.
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
   SHELLEXECUTEINFO sei = {};
   sei.cbSize = sizeof(sei);
 
@@ -86,72 +88,6 @@ bool InvokeShellExecuteDirectly(const std::wstring& path,
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
   return ::ShellExecuteExW(&sei);
-}
-
-// Invokes ShellExecuteExW() with the given parameters.
-bool InvokeShellExecute(const std::wstring& path,
-                        const std::wstring& working_directory,
-                        const std::wstring& args,
-                        const std::wstring& verb,
-                        const std::wstring& class_name,
-                        DWORD mask) {
-  // This can marshal to shell extensions or out-of-process handlers (e.g.,
-  // a hand-off via the Windows DDE protocol) that require the calling
-  // thread to be a COM Single-Threaded Apartment.
-  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
-
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  // If the feature is disabled, or if complex parameters like class_name or
-  // non-default masks are provided that RunShellExecuteViaExplorer doesn't
-  // currently support, then call ShellExecute directly.
-  if (!base::FeatureList::IsEnabled(kLaunchShellExecuteViaExplorer) ||
-      !class_name.empty() || (mask & ~kDefaultShellExecuteFlags) != 0) {
-    return InvokeShellExecuteDirectly(path, working_directory, args, verb,
-                                      class_name, mask);
-  }
-
-  // ShellExecuteEx will perform legacy resolution of a path if it can't detect
-  // an extension from a given path, appending .pif, .com, .exe, .bat, .lnk,
-  // and .cmd with an assumption the file is a truncated invocable path
-  // (Example: "chrome" referring to "chrome.exe"). ShellExecute will perform
-  // this resolution even if the path refers to a valid file. Chromium
-  // expects paths to be fully qualified and does not need this resolution.
-  base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
-  if (FAILED(::SHParseDisplayName(path.c_str(), nullptr, &path_id_list,
-                                  SFGAO_FILESYSTEM, nullptr))) {
-    return false;
-  }
-
-  wchar_t path_buffer[MAX_PATH];
-  if (!::SHGetPathFromIDList(path_id_list, path_buffer)) {
-    return false;
-  }
-
-  // The \\?\ prefix (the Win32 File Namespace) is used to tell the Windows
-  // APIs to "disable all string parsing and to send the string that follows
-  // it directly to the file system.". See
-  // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#win32-file-namespace.
-  std::wstring resolved_path;
-  std::wstring path_str = path_buffer;
-  if (base::StartsWith(path_str, L"\\\\?\\", base::CompareCase::SENSITIVE)) {
-    resolved_path = path_str;
-  } else if (base::StartsWith(path_str, L"\\\\",
-                              base::CompareCase::SENSITIVE)) {
-    resolved_path = base::StrCat({L"\\\\?\\UNC\\", path_str.substr(2)});
-  } else {
-    resolved_path = base::StrCat({L"\\\\?\\", path_str});
-  }
-
-  // Mitigate the issues caused by loading DLLs on a background thread
-  // (http://crbug/973868).
-  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-
-  base::win::ShellExecuteOptions options{
-      .verb = verb, .current_directory = working_directory};
-  return SUCCEEDED(
-      base::win::RunShellExecuteViaExplorer(resolved_path, args, options));
 }
 
 }  // namespace
