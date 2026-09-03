@@ -5,9 +5,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -17,7 +19,9 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/lens/lens_features.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
@@ -72,7 +76,8 @@ class NavigationInitiatorPageLoadMetricsBrowserTest
         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
         // is enabled and then remove these two Features.
         {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+         omnibox::internal::kWebUIOmniboxAimPopup,
+         lens::features::kLensOverlay});
   }
 
   void SetUp() override {
@@ -544,6 +549,224 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   // navigations.
   histogram_tester.ExpectTotalCount("Navigation.InitiatorType.All", 2);
   histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 1);
+}
+
+// Tests that searching selected text via the context menu records
+// kContextMenuSearch in Navigation.InitiatorType.All, and does not record it in
+// Navigation.InitiatorType.SRP for a non-Google search provider.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuSearchNavigation) {
+  auto* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  TemplateURLData data;
+  data.SetShortName(u"test");
+  data.SetKeyword(u"test");
+  data.SetURL(embedded_test_server()
+                  ->GetURL("www.example.com", "/search?q={searchTerms}")
+                  .spec());
+  TemplateURL* t_url = model->Add(std::make_unique<TemplateURL>(data));
+  model->SetUserSelectedDefaultSearchProvider(t_url);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      GURL("data:text/html,<html><body>SearchMe</body></html>")));
+
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      "window.getSelection().selectAllChildren(document.body);"));
+
+  // Register an observer to intercept the context menu and execute the search
+  // command programmatically once shown.
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // Simulate a right-click on the WebContents to trigger the context menu.
+  // When the menu is shown, `menu_observer` automatically executes the search
+  // command (IDC_CONTENT_CONTEXT_SEARCHWEBFOR), avoiding the need to simulate a
+  // UI-layer mouse click on the native context menu.
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight,
+                                gfx::Point(15, 15));
+
+  content::WebContents* search_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(search_tab));
+
+  EXPECT_EQ(
+      search_tab->GetLastCommittedURL(),
+      embedded_test_server()->GetURL("www.example.com", "/search?q=SearchMe"));
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      0);
+}
+
+// Tests that searching selected text via the context menu records
+// kContextMenuSearch in both Navigation.InitiatorType.All and
+// Navigation.InitiatorType.SRP when navigating to Google Search.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuSearchNavigationSRP) {
+  auto* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  TemplateURLData data;
+  data.SetShortName(u"test");
+  data.SetKeyword(u"test");
+  data.SetURL(embedded_test_server()
+                  ->GetURL("www.google.com", "/search?q={searchTerms}")
+                  .spec());
+  TemplateURL* t_url = model->Add(std::make_unique<TemplateURL>(data));
+  model->SetUserSelectedDefaultSearchProvider(t_url);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      GURL("data:text/html,<html><body>SearchMe</body></html>")));
+
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      "window.getSelection().selectAllChildren(document.body);"));
+
+  // Register an observer to intercept the context menu and execute the search
+  // command programmatically once shown.
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // Simulate a right-click on the WebContents to trigger the context menu.
+  // When the menu is shown, `menu_observer` automatically executes the search
+  // command (IDC_CONTENT_CONTEXT_SEARCHWEBFOR), avoiding the need to simulate a
+  // UI-layer mouse click on the native context menu.
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight,
+                                gfx::Point(15, 15));
+
+  content::WebContents* search_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(search_tab));
+
+  EXPECT_EQ(search_tab->GetLastCommittedURL(),
+            embedded_test_server()->GetURL(
+                "www.google.com", "/search?q=SearchMe&source=chrome.ctxt"));
+  EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(
+      search_tab->GetLastCommittedURL()));
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      1);
+}
+
+// Tests that opening a link in a new tab via the context menu records kOther
+// (and not kContextMenuSearch) in Navigation.InitiatorType.All, and does not
+// record it in Navigation.InitiatorType.SRP for a non-Google URL.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuOpenLinkInNewTab) {
+  base::HistogramTester histogram_tester;
+
+  GURL link_url =
+      embedded_test_server()->GetURL("www.example.com", "/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL("data:text/html,<a id='link' href='" +
+                                          link_url.spec() + "'>ClickMe</a>")));
+
+  // Register an observer to intercept the context menu and execute the open
+  // link command programmatically once shown.
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  gfx::Point center =
+      gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+          GetActiveWebContents(), "link"));
+  // Simulate a right-click on the link to trigger the context menu. When the
+  // menu is shown, `menu_observer` automatically executes the open link in new
+  // tab command (IDC_CONTENT_CONTEXT_OPENLINKNEWTAB), avoiding the need to
+  // simulate a UI-layer mouse click on the native context menu.
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight, center);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), link_url);
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      0);
+}
+
+// Tests that opening a link to Google Search in a new tab via the context menu
+// records kOther (and not kContextMenuSearch) in both
+// Navigation.InitiatorType.All and Navigation.InitiatorType.SRP.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuOpenLinkInNewTabSRP) {
+  base::HistogramTester histogram_tester;
+
+  GURL link_url =
+      embedded_test_server()->GetURL("www.google.com", "/search?q=test");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL("data:text/html,<a id='link' href='" +
+                                          link_url.spec() + "'>ClickMe</a>")));
+
+  // Register an observer to intercept the context menu and execute the open
+  // link command programmatically once shown.
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  gfx::Point center =
+      gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+          GetActiveWebContents(), "link"));
+  // Simulate a right-click on the link to trigger the context menu. When the
+  // menu is shown, `menu_observer` automatically executes the open link in new
+  // tab command (IDC_CONTENT_CONTEXT_OPENLINKNEWTAB), avoiding the need to
+  // simulate a UI-layer mouse click on the native context menu.
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight, center);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), link_url);
+  EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(
+      new_tab->GetLastCommittedURL()));
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      0);
 }
 
 class NavigationInitiatorPageLoadMetricsBFCacheBrowserTest

@@ -76,6 +76,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
@@ -4198,8 +4199,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
                 if (!web_contents) {
                   return;
                 }
-                web_contents->OpenURL(params,
-                                      /*navigation_handle_callback=*/{});
+                web_contents->OpenURL(
+                    params,
+                    base::BindOnce(
+                        &AttachContextMenuSearchNavigationHandleUserData));
               },
               source_web_contents_->GetWeakPtr(), std::move(open_url_params)));
       break;
