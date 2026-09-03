@@ -103,6 +103,7 @@ BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
 BASE_DECLARE_FEATURE(kBookmarksBarContextMenu);
 BASE_DECLARE_FEATURE(kBookmarksBarNTP);
+BASE_DECLARE_FEATURE(kBottomControlsJankImprovement);
 BASE_DECLARE_FEATURE(kBottomSheetAsBrowserControls);
 BASE_DECLARE_FEATURE(kBottomSheetOnDesktopWindowing);
 BASE_DECLARE_FEATURE(kBrowserControlsDebugging);

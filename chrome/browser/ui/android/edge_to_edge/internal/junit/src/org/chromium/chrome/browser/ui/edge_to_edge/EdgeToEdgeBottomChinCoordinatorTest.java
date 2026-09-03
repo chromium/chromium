@@ -1,9 +1,11 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
@@ -47,7 +49,10 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                         mEdgeToEdgeBottomChinSceneLayer,
                         mFullscreenManager,
                         false);
-        verify(mLayoutManager).addSceneOverlay(any());
+        verify(mLayoutManager)
+                .createCompositorMCPWithExclusions(
+                        any(), eq(mEdgeToEdgeBottomChinSceneLayer), any(), any());
+        verify(mLayoutManager).addSceneOverlay(eq(mEdgeToEdgeBottomChinSceneLayer));
 
         coordinator.destroy();
         verify(mEdgeToEdgeBottomChinSceneLayer).destroy();

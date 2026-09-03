@@ -24,6 +24,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -42,7 +43,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.widget.Toast;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -127,8 +127,15 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mSceneLayer = new ScrollingBottomViewSceneLayer(root, root.getTopShadowHeight());
         PropertyModelChangeProcessor.create(
                 model, new ViewHolder(root, mSceneLayer), BottomControlsViewBinder::bind);
-        Set<PropertyKey> exclusions = new HashSet<>();
-        exclusions.add(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
+        Set<PropertyKey> exclusions =
+                ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                        ? Set.of(
+                                BottomControlsProperties.ANDROID_VIEW_VISIBLE,
+                                BottomControlsProperties.Y_OFFSET,
+                                BottomControlsProperties.OFFSET_TAG,
+                                BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
+                                BottomControlsProperties.SHOW_SHADOW)
+                        : Set.of(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
         layoutManager.createCompositorMCPWithExclusions(
                 model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP, exclusions);
 

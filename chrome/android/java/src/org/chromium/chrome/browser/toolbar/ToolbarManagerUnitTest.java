@@ -399,6 +399,8 @@ public class ToolbarManagerUnitTest {
         when(mLayoutManager.getOverlayPanelManager()).thenReturn(mOverlayPanelManager);
         when(mLayoutManager.createCompositorMCP(any(), any(), any()))
                 .thenReturn(mCompositorModelChangeProcessor);
+        when(mLayoutManager.createCompositorMCPWithExclusions(any(), any(), any(), any()))
+                .thenReturn(mCompositorModelChangeProcessor);
 
         UnownedUserDataHost unownedUserDataHost = new UnownedUserDataHost();
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(unownedUserDataHost);

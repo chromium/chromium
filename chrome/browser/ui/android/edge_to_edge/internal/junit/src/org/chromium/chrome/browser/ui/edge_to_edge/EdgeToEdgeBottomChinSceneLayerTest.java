@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -12,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Color;
 import android.graphics.RectF;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,13 +25,16 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class EdgeToEdgeBottomChinSceneLayerTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
-    @Mock private Runnable mRequestRenderRunnable;
     @Mock private EdgeToEdgeBottomChinSceneLayerJni mSceneLayerJni;
+    @Mock private Runnable mRequestRenderRunnable;
     private EdgeToEdgeBottomChinSceneLayer mSceneLayer;
 
     @Before
@@ -38,19 +44,9 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
         mSceneLayer = new EdgeToEdgeBottomChinSceneLayer(mRequestRenderRunnable);
     }
 
-    @Test
-    public void testUpdatesRequestRender() {
-        mSceneLayer.setIsVisible(true);
-        verify(mRequestRenderRunnable).run();
-
-        mSceneLayer.setHeight(30);
-        verify(mRequestRenderRunnable, times(2)).run();
-
-        mSceneLayer.setColor(Color.RED);
-        verify(mRequestRenderRunnable, times(3)).run();
-
-        mSceneLayer.setDividerColor(Color.RED);
-        verify(mRequestRenderRunnable, times(4)).run();
+    @After
+    public void tearDown() {
+        EdgeToEdgeBottomChinSceneLayerJni.setInstanceForTesting(null);
     }
 
     @Test
@@ -75,5 +71,51 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
                         viewport.height() + 12,
                         false,
                         offsetTag);
+    }
+
+    @Test
+    public void testRequestRenderRunnable_NonNull() {
+        mSceneLayer.setIsVisible(true);
+        verify(mRequestRenderRunnable).run();
+
+        mSceneLayer.setHeight(30);
+        verify(mRequestRenderRunnable, times(2)).run();
+
+        mSceneLayer.setColor(Color.RED);
+        verify(mRequestRenderRunnable, times(3)).run();
+
+        mSceneLayer.setDividerColor(Color.BLACK);
+        verify(mRequestRenderRunnable, times(4)).run();
+    }
+
+    @Test
+    public void testRequestRenderRunnable_Null() {
+        EdgeToEdgeBottomChinSceneLayer sceneLayer = new EdgeToEdgeBottomChinSceneLayer(null);
+        sceneLayer.setIsVisible(true);
+        sceneLayer.setHeight(30);
+        sceneLayer.setColor(Color.RED);
+        sceneLayer.setDividerColor(Color.BLACK);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testIsSceneOverlayTreeShowing_FeatureEnabled() {
+        mSceneLayer.setIsVisible(false);
+        mSceneLayer.setCanShow(true);
+        assertTrue(mSceneLayer.isSceneOverlayTreeShowing());
+
+        mSceneLayer.setCanShow(false);
+        assertFalse(mSceneLayer.isSceneOverlayTreeShowing());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testIsSceneOverlayTreeShowing_FeatureDisabled() {
+        mSceneLayer.setIsVisible(true);
+        mSceneLayer.setCanShow(false);
+        assertTrue(mSceneLayer.isSceneOverlayTreeShowing());
+
+        mSceneLayer.setIsVisible(false);
+        assertFalse(mSceneLayer.isSceneOverlayTreeShowing());
     }
 }

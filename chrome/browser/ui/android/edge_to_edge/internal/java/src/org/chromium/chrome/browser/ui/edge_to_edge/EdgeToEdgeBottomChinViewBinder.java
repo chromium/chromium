@@ -59,6 +59,7 @@ class EdgeToEdgeBottomChinViewBinder {
             updateVisibility(model, viewHolder);
         } else if (CAN_SHOW == propertyKey) {
             updateVisibility(model, viewHolder);
+            viewHolder.mSceneLayer.setCanShow(model.get(CAN_SHOW));
         } else if (COLOR == propertyKey) {
             viewHolder.mSceneLayer.setColor(model.get(COLOR));
         } else if (DIVIDER_COLOR == propertyKey) {

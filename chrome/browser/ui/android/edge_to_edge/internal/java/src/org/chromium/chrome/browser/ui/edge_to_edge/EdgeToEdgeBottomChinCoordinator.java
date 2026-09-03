@@ -11,13 +11,18 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * The bottom chin is a compositor layer that visually imitates the device's bottom OS navbar when
@@ -64,7 +69,10 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
                 layoutManager,
                 edgeToEdgeController,
                 bottomControlsStacker,
-                new EdgeToEdgeBottomChinSceneLayer(requestRenderRunnable),
+                new EdgeToEdgeBottomChinSceneLayer(
+                        ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                                ? null
+                                : requestRenderRunnable),
                 fullscreenManager,
                 defaultVisibility);
     }
@@ -94,8 +102,15 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
                 model,
                 new EdgeToEdgeBottomChinViewBinder.ViewHolder(androidView, sceneLayer),
                 EdgeToEdgeBottomChinViewBinder::bind);
-        mLayoutManager.createCompositorMCP(
-                model, sceneLayer, EdgeToEdgeBottomChinViewBinder::bindCompositorMCP);
+        Set<PropertyKey> exclusions =
+                ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                        ? Set.of(
+                                EdgeToEdgeBottomChinProperties.Y_OFFSET,
+                                EdgeToEdgeBottomChinProperties.OFFSET_TAG,
+                                EdgeToEdgeBottomChinProperties.IS_VISIBLE)
+                        : Collections.emptySet();
+        mLayoutManager.createCompositorMCPWithExclusions(
+                model, sceneLayer, EdgeToEdgeBottomChinViewBinder::bindCompositorMCP, exclusions);
 
         mMediator =
                 new EdgeToEdgeBottomChinMediator(

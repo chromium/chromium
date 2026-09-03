@@ -57,6 +57,7 @@ public class EdgeToEdgeBottomChinViewBinderTest {
                 new EdgeToEdgeBottomChinViewBinder.ViewHolder(mAndroidView, mSceneLayer),
                 EdgeToEdgeBottomChinViewBinder::bind);
 
+        verify(mSceneLayer, atLeastOnce()).setCanShow(eq(true));
         verify(mSceneLayer, atLeastOnce()).setIsVisible(eq(true));
         verify(mAndroidView, atLeastOnce()).setVisibility(eq(View.VISIBLE));
         clearInvocations(mSceneLayer, mAndroidView);
@@ -95,9 +96,11 @@ public class EdgeToEdgeBottomChinViewBinderTest {
     public void testUpdate_CanShow() {
         mModel.set(CAN_SHOW, false);
         verify(mAndroidView, atLeastOnce()).setVisibility(eq(View.GONE));
+        verify(mSceneLayer).setCanShow(eq(false));
 
         mModel.set(CAN_SHOW, true);
         verify(mAndroidView, atLeastOnce()).setVisibility(eq(View.VISIBLE));
+        verify(mSceneLayer).setCanShow(eq(true));
     }
 
     @Test

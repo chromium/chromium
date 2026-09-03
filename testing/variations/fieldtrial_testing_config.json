@@ -3462,6 +3462,21 @@
             ]
         }
     ],
+    "BottomControlsJankImprovement": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BottomControlsJankImprovement"
+                    ]
+                }
+            ]
+        }
+    ],
     "BottomSheetOnDesktopWindowing": [
         {
             "platforms": [

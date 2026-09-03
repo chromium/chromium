@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
@@ -33,6 +34,8 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** Whether the {@link SceneLayer} is visible. */
     private boolean mIsVisible;
 
+    private boolean mCanShow;
+
     /** The color used for the bottom chin. */
     private int mColor;
 
@@ -51,12 +54,15 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** Whether the bottom chin has constraint applied that changes its scrollability. */
     private boolean mHasConstraint;
 
-    // TODO(peilinwang) This can probably be removed, as updates to the property model will already
-    // trigger a new renderer frame via the CompositorModelChangeProcessor.
-    private final Runnable mRequestRenderRunnable;
+    private final @Nullable Runnable mRequestRenderRunnable;
 
-    /** Build a bottom chin scene layer. */
-    public EdgeToEdgeBottomChinSceneLayer(Runnable requestRenderRunnable) {
+    /**
+     * Build a bottom chin scene layer.
+     *
+     * @param requestRenderRunnable Optional runnable that requests a re-render of the scene
+     *     overlay.
+     */
+    public EdgeToEdgeBottomChinSceneLayer(@Nullable Runnable requestRenderRunnable) {
         mRequestRenderRunnable = requestRenderRunnable;
     }
 
@@ -75,7 +81,13 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
      */
     public void setIsVisible(boolean visible) {
         mIsVisible = visible;
-        mRequestRenderRunnable.run();
+        if (mRequestRenderRunnable != null) {
+            mRequestRenderRunnable.run();
+        }
+    }
+
+    public void setCanShow(boolean canShow) {
+        mCanShow = canShow;
     }
 
     /**
@@ -84,7 +96,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
      */
     public void setHeight(int height) {
         mHeight = height;
-        mRequestRenderRunnable.run();
+        if (mRequestRenderRunnable != null) {
+            mRequestRenderRunnable.run();
+        }
     }
 
     /**
@@ -93,7 +107,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
      */
     public void setColor(@ColorInt int color) {
         mColor = color;
-        mRequestRenderRunnable.run();
+        if (mRequestRenderRunnable != null) {
+            mRequestRenderRunnable.run();
+        }
     }
 
     /**
@@ -104,7 +120,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
      */
     public void setDividerColor(@ColorInt int dividerColor) {
         mDividerColor = dividerColor;
-        mRequestRenderRunnable.run();
+        if (mRequestRenderRunnable != null) {
+            mRequestRenderRunnable.run();
+        }
     }
 
     /** Whether there are safe area constraint for the bottom chin. */
@@ -151,6 +169,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
 
     @Override
     public boolean isSceneOverlayTreeShowing() {
+        if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            return mCanShow;
+        }
         return mIsVisible;
     }
 
