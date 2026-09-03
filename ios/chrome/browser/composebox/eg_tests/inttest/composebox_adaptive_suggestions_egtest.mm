@@ -55,7 +55,6 @@ const int kNumberOfFakeSuggestions = kNumberOfSearchSuggestions + 2;
   // keyboard. To workaround this, use bottom composebox where suggestions
   // covered by it will be detected a not visible.
   config.features_disabled.push_back(kComposeboxForceTop);
-  config.features_disabled.push_back(kComposeboxCompactMode);
 
   return config;
 }

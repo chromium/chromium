@@ -1943,10 +1943,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return !_isMultiline;
   }
 
-  if (!IsComposeboxCompactModeEnabled()) {
-    return NO;
-  }
-
   BOOL forceExpansionOnFocus = self.isCobrowse && _omniboxFocused;
   if (forceExpansionOnFocus) {
     return NO;

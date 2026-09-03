@@ -57,8 +57,6 @@ bool ShowComposeboxAdditionalAdvancedTools() {
   return base::FeatureList::IsEnabled(kComposeboxAdditionalAdvancedTools);
 }
 
-BASE_FEATURE(kComposeboxCompactMode, base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool ShowDeepSearchTool() {
   return base::FeatureList::IsEnabled(kComposeboxDeepSearch);
 }
@@ -78,9 +76,6 @@ bool IsComposeboxVerbatimSuggestionInAIMEnabled() {
 BASE_FEATURE(kComposeboxVerbatimSuggestionInAIM,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsComposeboxCompactModeEnabled() {
-  return base::FeatureList::IsEnabled(kComposeboxCompactMode);
-}
 
 BASE_FEATURE(kComposeboxForceTop, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -250,7 +250,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
 
  protected:
   struct InputPlateFeatures {
-    bool compactMode;
     bool aimNudge;
     bool advancedTools;
     bool deepSearch;
@@ -350,12 +349,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (features.compactMode) {
-      enabled_features.push_back(kComposeboxCompactMode);
-    } else {
-      disabled_features.push_back(kComposeboxCompactMode);
-    }
-
     if (features.aimNudge) {
       enabled_features.push_back(kComposeboxAIMNudge);
     } else {
@@ -450,13 +443,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
-// Tests that the send button is shown when there is text in the omnibox.
-TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithText) {
-  SetOmniboxText(u"some text");
-  SetAIMEligible(true);
-  SetDSEGoogle(true);
-  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
-}
 
 // Tests that the send button is hidden when there is no text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, HidesSendButtonWithoutText) {
@@ -469,10 +455,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, HidesSendButtonWithoutText) {
 // Tests that the leading image is hidden when in compact mode with Google DSE.
 TEST_F(ComposeboxInputPlateMediatorTest,
        HidesLeadingImageForCompactModeWithGoogleDSE) {
-  EnableInputPlateFeatures({
-      .compactMode = true,
-  });
-
   SetAIMEligible(true);
   SetDSEGoogle(true);
   // A text short enough it does not wrap and leds to compact mode.
@@ -483,28 +465,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
-//
-TEST_F(ComposeboxInputPlateMediatorTest, TestsAIMNudgeShownWithGoogleDSE) {
-  EnableInputPlateFeatures({.aimNudge = true});
-
-  SetAIMEligible(true);
-  SetDSEGoogle(true);
-  SetOmniboxText(u"some text");
-
-  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kAIM]);
-}
-
-//
-TEST_F(ComposeboxInputPlateMediatorTest,
-       TestsAIMNudgeNotShownWithDifferentDSE) {
-  EnableInputPlateFeatures({.aimNudge = true});
-
-  SetAIMEligible(true);
-  SetDSEGoogle(false);
-  SetOmniboxText(u"some text");
-
-  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kAIM]);
-}
 
 // Tests that QR code button is shown with non Google DSE.
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsQRScannerButtonWithNonGoogleDSE) {
@@ -519,7 +479,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, ShowsQRScannerButtonWithNonGoogleDSE) {
 TEST_F(ComposeboxInputPlateMediatorTest,
        CreateImageOptionHiddenWhenNotEligible) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .serverSideState = true,
   });
 
@@ -533,7 +492,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 // Tests create image shown when eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, CreateImageOptionShownWhenEligible) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .serverSideState = true,
   });
 
@@ -547,7 +505,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CreateImageOptionShownWhenEligible) {
 // Tests canvas not shown when not eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionHiddenWhenNotEligible) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .advancedTools = true,
       .serverSideState = true,
   });
@@ -562,7 +519,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionHiddenWhenNotEligible) {
 // Tests canvas shown when eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionShownWhenEligible) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .advancedTools = true,
       .serverSideState = true,
   });
@@ -578,7 +534,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, CanvasOptionShownWhenEligible) {
 TEST_F(ComposeboxInputPlateMediatorTest,
        DeepSearchOptionHiddenWhenNotEligible) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .advancedTools = true,
       .deepSearch = true,
       .serverSideState = true,
@@ -594,7 +549,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 // Tests deep search shown when eligible.
 TEST_F(ComposeboxInputPlateMediatorTest, DeepSearchOptionShownWhenEligible) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .advancedTools = true,
       .deepSearch = true,
       .serverSideState = true,
@@ -610,7 +564,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, DeepSearchOptionShownWhenEligible) {
 // Tests tools without rule in config are marked as disabled
 TEST_F(ComposeboxInputPlateMediatorTest, ToolWithoutRuleIsMarkedDisabled) {
   EnableInputPlateFeatures({
-      .compactMode = true,
       .serverSideState = true,
   });
 
@@ -626,7 +579,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, ToolWithoutRuleIsMarkedDisabled) {
 // Tests that the plus button is hidden in compact mode for URL queries.
 TEST_F(ComposeboxInputPlateMediatorTest,
        HidePlusButtonInCompactModeForURLQuery) {
-  EnableInputPlateFeatures({.compactMode = true});
   SetAIMEligible(true);
   SetDSEGoogle(true);
 
@@ -641,7 +593,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 // by default (when variant is not HideInPreEdit).
 TEST_F(ComposeboxInputPlateMediatorTest,
        ShowPlusButtonInCompactModeForPreEdit) {
-  EnableInputPlateFeatures({.compactMode = true});
   SetAIMEligible(true);
   SetDSEGoogle(true);
 

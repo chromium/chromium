@@ -439,11 +439,6 @@ inline constexpr char kComposeboxCloseButtonTopAlignDescription[] =
     "compose box close button with the top edge of the input plate instead of "
     "centering.";
 
-inline constexpr char kComposeboxCompactModeName[] = "ComposeboxCompactMode";
-inline constexpr char kComposeboxCompactModeDescription[] =
-    "Enables the compact composebox, adding attachment or enabling AIM will "
-    "expand it to the regular size.";
-
 inline constexpr char kComposeboxConditionalPlusButtonName[] =
     "Composebox Conditional Plus Button";
 inline constexpr char kComposeboxConditionalPlusButtonDescription[] =
