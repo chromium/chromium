@@ -33,6 +33,24 @@ inline GURL GetOneTimeTokenServiceUrl(const std::string& path) {
   return GURL(url_str + path);
 }
 
+inline constexpr char kTickleArrivalHistogram[] =
+    "Autofill.OneTimeTokens.Tickle.Arrival";
+
+// Represents the arrival order and timing of push notifications (tickles)
+// relative to OTP form detection on a web page.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(OneTimeTokensTickleArrival)
+enum class TickleArrival {
+  kAfterFieldDetection = 0,
+  kBeforeFieldDetection = 1,
+  kWithoutFieldDetection = 2,
+  kExpiredOnArrival = 3,
+  kMaxValue = kExpiredOnArrival,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:OneTimeTokensTickleArrival)
+
 }  // namespace one_time_tokens
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_CONSTANTS_H_

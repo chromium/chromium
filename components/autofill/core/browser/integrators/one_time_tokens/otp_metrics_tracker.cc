@@ -19,9 +19,12 @@ namespace autofill {
 
 namespace {
 
-void TryRecordLatency(std::optional<base::TimeTicks>& previous_event_time,
-                      std::optional<base::TimeTicks>& current_event_time,
-                      std::string_view histogram_name) {
+// Returns true if a correlated previous event was found and metrics were
+// recorded.
+bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
+                            std::optional<base::TimeTicks>& current_event_time,
+                            std::string_view latency_histogram_name,
+                            one_time_tokens::TickleArrival arrival_type) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (previous_event_time.has_value()) {
     base::TimeDelta latency = now - *previous_event_time;
@@ -31,14 +34,17 @@ void TryRecordLatency(std::optional<base::TimeTicks>& previous_event_time,
       // `kFieldDetectionTimeout`, but `std::min` is used in case either value
       // changes in the future.
       base::UmaHistogramCustomTimes(
-          histogram_name, latency, base::Milliseconds(10),
+          latency_histogram_name, latency, base::Milliseconds(10),
           std::min(OtpMetricsTracker::kFieldDetectionTimeout,
                    one_time_tokens::kNotificationExpirationDuration),
           50);
-      return;
+      base::UmaHistogramEnumeration(one_time_tokens::kTickleArrivalHistogram,
+                                    arrival_type);
+      return true;
     }
   }
   current_event_time = now;
+  return false;
 }
 
 }  // namespace
@@ -60,8 +66,10 @@ void OtpMetricsTracker::OnOtpFieldDetected() {
   if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
     return;
   }
-  TryRecordLatency(tickle_time_, field_detection_time_,
-                   kTickleToFieldDetectionLatencyHistogram);
+  tickle_timeout_timer_.Stop();
+  TryRecordTickleMetrics(tickle_time_, field_detection_time_,
+                         kTickleToFieldDetectionLatencyHistogram,
+                         one_time_tokens::TickleArrival::kBeforeFieldDetection);
 }
 
 void OtpMetricsTracker::OnTickleReceived(
@@ -69,8 +77,27 @@ void OtpMetricsTracker::OnTickleReceived(
   if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
     return;
   }
-  TryRecordLatency(field_detection_time_, tickle_time_,
-                   kFieldDetectionToTickleLatencyHistogram);
+  bool matched_existing_field = TryRecordTickleMetrics(
+      field_detection_time_, tickle_time_,
+      kFieldDetectionToTickleLatencyHistogram,
+      one_time_tokens::TickleArrival::kAfterFieldDetection);
+
+  // If no OTP field was detected yet (or the previous field timed out), start a
+  // timer to record `kWithoutFieldDetection` if no field appears before
+  // expiration.
+  if (!matched_existing_field) {
+    tickle_timeout_timer_.Start(
+        FROM_HERE, one_time_tokens::kNotificationExpirationDuration,
+        base::BindOnce(&OtpMetricsTracker::OnTickleTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void OtpMetricsTracker::OnTickleTimeout() {
+  base::UmaHistogramEnumeration(
+      one_time_tokens::kTickleArrivalHistogram,
+      one_time_tokens::TickleArrival::kWithoutFieldDetection);
+  tickle_time_.reset();
 }
 
 }  // namespace autofill

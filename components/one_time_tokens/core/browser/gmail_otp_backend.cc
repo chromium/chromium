@@ -8,14 +8,17 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_fetcher.h"
 #include "components/one_time_tokens/core/browser/util/expiring_cache.h"
+#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -105,13 +108,17 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
 
   LOG_OTT(log_sink_) << "Tickle received";
 
-  tickle_subscription_manager_.Notify();
-
   if (base::TimeTicks::Now() - notification.notification_received_timeticks >
       kNotificationExpirationDuration) {
     LOG_OTT(log_sink_) << "Incoming tickle ignored: expired";
+    if (base::FeatureList::IsEnabled(features::kGmailOtpRetrievalService)) {
+      base::UmaHistogramEnumeration(kTickleArrivalHistogram,
+                                    TickleArrival::kExpiredOnArrival);
+    }
     return;
   }
+
+  tickle_subscription_manager_.Notify();
 
   if (active_fetchers_.contains(notification.encrypted_message_reference) ||
       !notification_cache_.PurgeExpiredAndAdd(notification)) {

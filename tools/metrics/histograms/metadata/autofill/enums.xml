@@ -5708,6 +5708,21 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Not Phishing"/>
 </enum>
 
+<!-- LINT.IfChange(OneTimeTokensTickleArrival) -->
+
+<enum name="OneTimeTokensTickleArrival">
+  <summary>
+    The arrival order and timing of push notifications (tickles) relative to OTP
+    form detection on a web page.
+  </summary>
+  <int value="0" label="After OTP field detection"/>
+  <int value="1" label="Before OTP field detection (pre-arrival)"/>
+  <int value="2" label="Without OTP field detection (orphan/expired in cache)"/>
+  <int value="3" label="Expired on arrival (from push service)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/one_time_token_service_constants.h:TickleArrival) -->
+
 <!-- LINT.IfChange(OtpFillingSafeBrowsingCheckResult) -->
 
 <enum name="OtpFillingSafeBrowsingCheckResult">

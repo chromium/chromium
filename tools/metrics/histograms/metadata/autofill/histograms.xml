@@ -6472,6 +6472,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Tickle.Arrival"
+    enum="OneTimeTokensTickleArrival" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Measures push notification delivery dynamics relative to form
+    classification. Records the arrival order and timing of push notifications
+    relative to OTP form detection on a web page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.TickleToFieldDetectionLatency"
     units="ms" expires_after="2027-08-01">
   <owner>kazinova@google.com</owner>

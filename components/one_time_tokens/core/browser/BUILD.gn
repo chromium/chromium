@@ -46,7 +46,6 @@ static_library("browser") {
     ":fetch_user_data_processing_consent_response_proto",
     "//base",
     "//components/affiliations/core/browser/domain_matching",
-    "//components/autofill/core/common:features",
     "//components/keyed_service/core",
     "//components/one_time_tokens/core/common:features",
     "//components/signin/public/identity_manager",
