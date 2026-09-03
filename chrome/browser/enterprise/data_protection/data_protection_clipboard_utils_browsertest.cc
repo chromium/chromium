@@ -686,6 +686,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteBlockedByDataControls_SourceRule) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
   // By making a new profile for this test, we ensure we can prevent pasting to
   // it by having the rule set in the source profile only.
   Profile* source_profile = CreateAdditionalProfile();
@@ -713,6 +715,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   if (machine_scope()) {
     event_validator.SetDoneClosure(report_run_loop.QuitClosure());
     chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
     expected_event.set_url(test_url_1());
     expected_event.set_tab_url(test_url_1());
     expected_event.set_source("OTHER_PROFILE");
@@ -776,6 +781,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteWarnedByDataControls_BypassedSourceRule) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
   // By making a new profile for this test, we ensure we can prevent pasting to
   // it by having the rule set in the source profile only.
   Profile* source_profile = CreateAdditionalProfile();
@@ -803,6 +810,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   if (machine_scope()) {
     event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
     chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
     expected_event.set_url(test_url_1());
     expected_event.set_tab_url(test_url_1());
     expected_event.set_source("OTHER_PROFILE");
@@ -852,6 +862,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                          MakeClipboardPasteData("text", "image", {}),
                          future.GetCallback());
 
+  helper.WaitForDialogToInitialize();
+
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());
@@ -866,6 +878,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     event_validator = event_report_validator_helper_->CreateValidator();
     event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
     chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
     expected_event.set_url(test_url_1());
     expected_event.set_tab_url(test_url_1());
     expected_event.set_source("OTHER_PROFILE");
@@ -906,6 +921,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteWarnedByDataControls_CanceledSourceRule) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
   // By making a new profile for this test, we ensure we can prevent pasting to
   // it by having the rule set in the source profile only.
   Profile* source_profile = CreateAdditionalProfile();
@@ -933,6 +950,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   if (machine_scope()) {
     event_validator.SetDoneClosure(report_run_loop.QuitClosure());
     chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
     expected_event.set_url(test_url_1());
     expected_event.set_tab_url(test_url_1());
     expected_event.set_source("OTHER_PROFILE");
@@ -981,6 +1001,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   PasteIfAllowedByPolicy(source, destination, metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          future.GetCallback());
+
+  helper.WaitForDialogToInitialize();
 
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
@@ -1073,6 +1095,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteReportedByDataControls_SourceRule) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
   // By making a new profile for this test, we ensure we can prevent pasting to
   // it by having the rule set in the source profile only.
   Profile* source_profile = CreateAdditionalProfile();
@@ -1100,6 +1124,9 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   if (machine_scope()) {
     event_validator.SetDoneClosure(report_run_loop.QuitClosure());
     chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser1);
+    }
     expected_event.set_url(test_url_1());
     expected_event.set_tab_url(test_url_1());
     expected_event.set_source("OTHER_PROFILE");
