@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/uuid.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -39,7 +38,6 @@ class ActionAppMenuManager {
   static const ui::ClassProperty<ui::ColorId>* const kContainerColorKey;
   static const ui::ClassProperty<std::u16string*>* const kTextOverrideKey;
   static const ui::ClassProperty<ui::ImageModel*>* const kIconOverrideKey;
-  static const ui::ClassProperty<base::Uuid*>* const kSavedTabGroupGuidKey;
 
   static std::unique_ptr<actions::IndirectActionItem> CreateIndirectActionItem(
       actions::ActionId action_id,
@@ -86,6 +84,5 @@ class ActionAppMenuManager {
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
-DECLARE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_

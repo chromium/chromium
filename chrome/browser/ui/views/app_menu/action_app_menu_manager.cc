@@ -64,7 +64,6 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
-DEFINE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(ActionAppMenuManager::DisplayType,
                              kAppMenuDisplayTypeInternal,
@@ -76,8 +75,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::ColorId,
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::Uuid,
-                                   kAppMenuSavedTabGroupGuidInternal)
 
 const ui::ClassProperty<ActionAppMenuManager::DisplayType>* const
     ActionAppMenuManager::kDisplayTypeKey = kAppMenuDisplayTypeInternal;
@@ -229,10 +226,6 @@ class AppMenuBuilder {
 };
 
 }  // namespace
-
-const ui::ClassProperty<base::Uuid*>* const
-    ActionAppMenuManager::kSavedTabGroupGuidKey =
-        kAppMenuSavedTabGroupGuidInternal;
 
 // Creates the Indirect Action Item which is the basis for the app menu in
 // order to preserve hierarchy in action items

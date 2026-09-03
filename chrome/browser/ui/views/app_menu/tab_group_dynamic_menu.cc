@@ -34,11 +34,15 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tabs/public/tab_group.h"
 #include "ui/actions/actions.h"
+#include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::Uuid, kSavedTabGroupGuidKey)
 
 TabGroupDynamicMenu::TabGroupDynamicMenu(BrowserWindowInterface* bwi)
     : browser_window_interface_(bwi) {}
@@ -116,7 +120,7 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
                        ActionAppMenuManager::DisplayType::kRow)
           .Build();
 
-  open_in_browser_item->SetProperty(ActionAppMenuManager::kSavedTabGroupGuidKey,
+  open_in_browser_item->SetProperty(kSavedTabGroupGuidKey,
                                     std::make_unique<base::Uuid>(uuid));
   open_in_browser_item->SetEnabled(!group->local_group_id().has_value());
   parent_item->AddChild(std::move(open_in_browser_item));
@@ -163,7 +167,7 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
                        ActionAppMenuManager::DisplayType::kRow)
           .Build();
 
-  move_or_open_item->SetProperty(ActionAppMenuManager::kSavedTabGroupGuidKey,
+  move_or_open_item->SetProperty(kSavedTabGroupGuidKey,
                                  std::make_unique<base::Uuid>(uuid));
   if (move_text_override.has_value()) {
     move_or_open_item->SetProperty(
@@ -201,7 +205,7 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
                        ActionAppMenuManager::DisplayType::kRow)
           .Build();
 
-  pin_item->SetProperty(ActionAppMenuManager::kSavedTabGroupGuidKey,
+  pin_item->SetProperty(kSavedTabGroupGuidKey,
                         std::make_unique<base::Uuid>(uuid));
   if (pin_text_override.has_value()) {
     pin_item->SetProperty(
@@ -240,7 +244,7 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
                        ActionAppMenuManager::DisplayType::kRow)
           .Build();
 
-  delete_or_leave_item->SetProperty(ActionAppMenuManager::kSavedTabGroupGuidKey,
+  delete_or_leave_item->SetProperty(kSavedTabGroupGuidKey,
                                     std::make_unique<base::Uuid>(uuid));
   if (delete_text_override.has_value()) {
     delete_or_leave_item->SetProperty(
@@ -304,8 +308,7 @@ void TabGroupDynamicMenu::PerformTabGroupAction(
   if (!bwi || !item) {
     return;
   }
-  base::Uuid* guid =
-      item->GetProperty(ActionAppMenuManager::kSavedTabGroupGuidKey);
+  base::Uuid* guid = item->GetProperty(kSavedTabGroupGuidKey);
   if (!guid || !guid->is_valid()) {
     return;
   }
