@@ -54,9 +54,8 @@ export function processTemplate(filePath) {
     // template literal.
     const jsEnd = node.getStart(sourceFile) + (isTemplate ? 1 : 0);
     let jsText = code.substring(jsStart, jsEnd);
-    if (prefix === FALSE_TEMPLATE_PREFIX && !isTemplate &&
-        /^\n\s*/.test(jsText)) {
-      jsText = jsText.replace(/^\n\s*/, ' ');
+    if (prefix === FALSE_TEMPLATE_PREFIX && !isTemplate) {
+      jsText = jsText.replace(/\s*:\s*/, ' : ');
     }
 
     map.set(tagName, {code: jsText, isTemplate});

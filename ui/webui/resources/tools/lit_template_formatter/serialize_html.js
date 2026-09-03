@@ -312,14 +312,15 @@ export function serializeNode(
   // characters).
   // For templates (e.g. html`...`), wrap non-empty template contents across
   // lines if the template exceeds 80 characters, but keep empty templates
-  // (html``) on a single line. For regular HTML elements, only wrap if there
-  // are child elements or if the element is empty.
+  // (html``) on a single line. For regular HTML elements, wrap if the opening
+  // tag is multiline, or if the full element exceeds 80 characters and has
+  // child elements or is empty.
   const tagIsMultiline = startTag.includes('\n');
   const exceedsLineLimit = fullLength > LINE_LENGTH_LIMIT;
   const shouldWrap = isTemplateNode ?
       childrenHtml.trim() !== '' && (tagIsMultiline || exceedsLineLimit) :
-      (tagIsMultiline || exceedsLineLimit) &&
-          (hasChildElement || childrenHtml.trim() === '');
+      tagIsMultiline ||
+          (exceedsLineLimit && (hasChildElement || childrenHtml.trim() === ''));
 
   if (shouldWrap) {
     if (lastChildSuppressesWhitespace) {
@@ -332,6 +333,9 @@ export function serializeNode(
     // and indent if they're not already on one.
     if (!childrenHtml.startsWith('\n') && childrenHtml.trim() !== '') {
       if (firstChildSuppressesWhitespace) {
+        if (!/\n\s*$/.test(childrenHtml)) {
+          return `${startTag}${childrenHtml}${endTag}`;
+        }
         return `${startTag}${childrenHtml.trimEnd()}${endTagIndent}${endTag}`;
       }
       const childIndentSize = nextDepth > 0 ? (nextDepth - 1) * INDENT_SIZE : 0;

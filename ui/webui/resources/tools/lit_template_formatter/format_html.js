@@ -148,11 +148,15 @@ function format(node, depth, placeholderMap, rawHtml = '') {
             recordMetadata(placeholderMap, match, depth);
           }
         }
-        // If the child node has a leading newline and whitespace, replace it
-        // with the appropriate indentation whitespace.
-        if (/^\n[ \t]*/.test(child.value)) {
+        // If the child node has leading newlines and whitespace, replace them
+        // with the appropriate blank lines and indentation whitespace.
+        const leadingWhitespaceMatch = child.value.match(/^(\n[ \t]*)+/);
+        if (leadingWhitespaceMatch) {
+          const newlineCount =
+              (leadingWhitespaceMatch[0].match(/\n/g) || []).length;
+          const indentStr = ' '.repeat(depth * INDENT_SIZE);
           child.value = child.value.replace(
-              /^\n[ \t]*/, getIndentationPrefix(depth * INDENT_SIZE));
+              /^(\n[ \t]*)+/, '\n'.repeat(newlineCount) + indentStr);
         }
         // If the child node has trailing whitespace, initially set it to the
         // parent's indentation (for the closing tag). If it has a subsequent

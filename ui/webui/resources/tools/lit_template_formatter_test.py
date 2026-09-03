@@ -152,6 +152,17 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def testRetainNewlines(self):
     self._run_test("retain_newlines.html.ts", "retain_newlines.html.ts")
 
+  def testSingleLineTemplate(self):
+    self._run_test(
+      "test_single_line_template.html.ts", "test_single_line_template.html.ts"
+    )
+
+  def testMultilineTagWithTextChild(self):
+    self._run_test(
+      "test_multiline_tag_with_text_child.html.ts",
+      "test_multiline_tag_with_text_child.html.ts",
+    )
+
   def testDryRunModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
     expected_path = os.path.join(

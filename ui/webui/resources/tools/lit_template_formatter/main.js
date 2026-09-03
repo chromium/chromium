@@ -103,7 +103,23 @@ async function formatFile(filePath, sortAttributes, quiet = false) {
       parts.length === 2,
       'Placeholder not found or found multiple times after formatting');
 
-  const finalContent = parts[0] + formattedHtml + parts[1];
+  let templateHtml = formattedHtml;
+  // If the entire formatted template is on a single line, check if it can fit
+  // on the same line as the surrounding TypeScript code (e.g. `return
+  // html\`...\`;`). If the line length including the prefix and suffix is <= 80
+  // characters, keep the whole template and return statement on a single line.
+  const singleLineHtml = formattedHtml.trim();
+  if (!singleLineHtml.includes('\n')) {
+    const lastLineOfPart0 = parts[0].split('\n').at(-1) || '';
+    const firstLineOfPart1 = parts[1].split('\n')[0] || '';
+    if (lastLineOfPart0.length + singleLineHtml.length +
+            firstLineOfPart1.length <=
+        80) {
+      templateHtml = singleLineHtml;
+    }
+  }
+
+  const finalContent = parts[0] + templateHtml + parts[1];
 
   // Clean up temp file if it exists
   await unlink(tempFilePath);

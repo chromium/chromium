@@ -17,5 +17,6 @@ export function getHtml(this: DummyTestElement) {
 
     <div class="another child with too much indent"></div>
 
+  Some text content: ${this.title}
 </div>`;
 }
