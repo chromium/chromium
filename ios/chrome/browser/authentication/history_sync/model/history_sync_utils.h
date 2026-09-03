@@ -45,10 +45,6 @@ void ResetDeclinePrefs(PrefService* pref_service);
 // Records that History Sync has been declined in prefs.
 void RecordDeclinePrefs(PrefService* pref_service);
 
-// Whether the History Sync was declined too often, and that the Opt-In screen
-// should be skipped because of this, if it is optional.
-bool IsDeclinedTooOften(PrefService* pref_service);
-
 }  // namespace history_sync
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_HISTORY_SYNC_MODEL_HISTORY_SYNC_UTILS_H_

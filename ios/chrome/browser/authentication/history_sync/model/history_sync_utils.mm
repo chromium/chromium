@@ -23,6 +23,24 @@ constexpr int kMaxSuccessiveDeclineCount = 2;
 // Delay before reshowing an optional History Sync Opt-In prompt to the user.
 constexpr base::TimeDelta kDelayBeforeReshowPrompt = base::Days(14);
 
+// Whether the History Sync was declined too often, and that the Opt-In screen
+// should be skipped because of this, if it is optional.
+bool IsDeclinedTooOften(PrefService* pref_service) {
+  if (experimental_flags::ShouldIgnoreHistorySyncDeclineLimits()) {
+    return false;
+  }
+
+  const int decline_count = pref_service->GetInteger(
+      history_sync_prefs::kHistorySyncSuccessiveDeclineCount);
+  if (decline_count >= kMaxSuccessiveDeclineCount) {
+    return true;
+  }
+
+  const base::Time last_declined = pref_service->GetTime(
+      history_sync_prefs::kHistorySyncLastDeclinedTimestamp);
+  return (base::Time::Now() - last_declined) < kDelayBeforeReshowPrompt;
+}
+
 }  // namespace
 
 namespace history_sync {
@@ -55,7 +73,7 @@ HistorySyncSkipReason GetSkipReason(
     return history_sync::HistorySyncSkipReason::kAlreadyOptedIn;
   }
 
-  if (history_sync::IsDeclinedTooOften(prefService) && isOptional) {
+  if (IsDeclinedTooOften(prefService) && isOptional) {
     return history_sync::HistorySyncSkipReason::kDeclinedTooOften;
   }
 
@@ -83,22 +101,6 @@ void RecordDeclinePrefs(PrefService* pref_service) {
       history_sync_prefs::kHistorySyncSuccessiveDeclineCount);
   pref_service->SetInteger(
       history_sync_prefs::kHistorySyncSuccessiveDeclineCount, old_count + 1);
-}
-
-bool IsDeclinedTooOften(PrefService* pref_service) {
-  if (experimental_flags::ShouldIgnoreHistorySyncDeclineLimits()) {
-    return false;
-  }
-
-  const int decline_count = pref_service->GetInteger(
-      history_sync_prefs::kHistorySyncSuccessiveDeclineCount);
-  if (decline_count >= kMaxSuccessiveDeclineCount) {
-    return true;
-  }
-
-  const base::Time last_declined = pref_service->GetTime(
-      history_sync_prefs::kHistorySyncLastDeclinedTimestamp);
-  return (base::Time::Now() - last_declined) < kDelayBeforeReshowPrompt;
 }
 
 }  // namespace history_sync
