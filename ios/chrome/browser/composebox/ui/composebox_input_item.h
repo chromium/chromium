@@ -67,6 +67,8 @@ enum class ComposeboxInputItemType {
 // Whether or not an animation was performed for this item. Only applied for tab
 // items when composebox is presented in the assistant sheet.
 @property(nonatomic, assign) BOOL performedAnimation;
+// Whether the item was added automatically.
+@property(nonatomic, assign) BOOL isAutoAdded;
 // The image provider for this item. Only set for image types.
 @property(nonatomic, strong) NSItemProvider* imageProvider;
 // The file URL for this item. Only set for PDF and raw file types.

@@ -212,6 +212,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 @interface ComposeboxInputPlateMediator () <
     ComposeboxInputItemCollectionDelegate,
     ComposeboxQueryContextualizerDelegate,
+    CRWWebStateObserver,
     SearchEngineObserving,
     WebStateDeferredExecutorDelegate,
     WebStateListObserving>
@@ -238,6 +239,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   raw_ptr<WebStateList> _webStateList;
   // The observer bridge for the WebStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  // The observer bridge for the active WebState.
+  std::unique_ptr<web::WebStateObserverBridge> _activeWebStateObserverBridge;
+  // The currently observed active WebState.
+  raw_ptr<web::WebState> _activeWebState;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
   // A browser agent for retrieving APC from the cache.
@@ -367,6 +372,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       _webStateListObserver =
           std::make_unique<WebStateListObserverBridge>(self);
       _webStateList->AddObserver(_webStateListObserver.get());
+      [self updateActiveWebStateObserver];
     }
     _faviconLoader = faviconLoader;
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
@@ -447,6 +453,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _webStateListObserver.reset();
   }
   _webStateList = nullptr;
+  [self stopObservingActiveWebState];
   _items = nil;
   _URLLoader = nil;
   _consumer = nil;
@@ -713,11 +720,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:
                             (std::set<web::WebStateID>)cachedWebStateIDs {
-  [self
-      attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
-                      cachedWebStateIDs:cachedWebStateIDs
-                   fromExternalWebState:nullptr
-                                 source:ComposeboxInputItemSource::kTabPicker];
+  [self attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
+                        cachedWebStateIDs:cachedWebStateIDs
+                     fromExternalWebState:nullptr
+                                   source:ComposeboxInputItemSource::kTabPicker
+                                autoAdded:NO];
 }
 
 #pragma mark - ComposeboxInputPlateMutator
@@ -819,15 +826,16 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   CHECK(webState);
   std::set<web::WebStateID> tabs = [self allAttachedWebStateIDs];
   tabs.insert(webStateID);
-  [self attachSelectedTabsWithWebStateIDs:tabs
-                        cachedWebStateIDs:tabs
-                     fromExternalWebState:(_webStateList->GetIndexOfWebState(
-                                               webState) ==
-                                           WebStateList::kInvalidIndex)
-                                              ? webState
-                                              : nullptr
-                                   source:ComposeboxInputItemSource::
-                                              kDragAndDrop];
+  [self
+      attachSelectedTabsWithWebStateIDs:tabs
+                      cachedWebStateIDs:tabs
+                   fromExternalWebState:(_webStateList->GetIndexOfWebState(
+                                             webState) ==
+                                         WebStateList::kInvalidIndex)
+                                            ? webState
+                                            : nullptr
+                                 source:ComposeboxInputItemSource::kDragAndDrop
+                              autoAdded:NO];
 }
 
 - (void)processText:(NSString*)text {
@@ -1020,32 +1028,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self requestUIRefresh];
 
   if (_omniboxFocused && _entrypoint == ComposeboxEntrypoint::kCobrowse) {
-    [self attachCurrentTabContent];
+    [self attachCurrentTabContentWithAutoAdded:YES];
   }
 }
 
 - (void)attachCurrentTabContent {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (![_stateManager canAddMoreAttachments]) {
-    [self.delegate showAttachmentLimitError];
-    return;
-  }
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (!webState) {
-    return;
-  }
-
-  [self.metricsRecorder
-      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
-
-  std::set<web::WebStateID> webStateIDs =
-      [self attachedWebStateIDsInCurrentContext];
-  webStateIDs.insert(webState->GetUniqueIdentifier());
-  [self
-      attachSelectedTabsWithWebStateIDs:webStateIDs
-                      cachedWebStateIDs:{}
-                   fromExternalWebState:nullptr
-                                 source:ComposeboxInputItemSource::kCurrentTab];
+  [self attachCurrentTabContentWithAutoAdded:NO];
 }
 
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
@@ -1329,6 +1317,100 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self commitUIUpdates];
 }
 
+// Attaches the active WebState's tab content to the input plate. When
+// `autoAdded` is YES, any existing auto-attached tab is removed first so that
+// only the latest active tab is tracked dynamically.
+- (void)attachCurrentTabContentWithAutoAdded:(BOOL)autoAdded {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (![_stateManager canAddMoreAttachments]) {
+    [self.delegate showAttachmentLimitError];
+    return;
+  }
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (!webState) {
+    return;
+  }
+
+  if (autoAdded) {
+    // Only the currently active tab should be automatically tracked. Remove
+    // any previously auto-attached item so that active tab navigations cleanly
+    // replace the dynamic slot without polluting the input plate with stale
+    // tabs or erasing user-attached tabs.
+    [self removeAutoAddedItems];
+  }
+
+  [self.metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
+
+  std::set<web::WebStateID> webStateIDs =
+      [self attachedWebStateIDsInCurrentContext];
+  webStateIDs.insert(webState->GetUniqueIdentifier());
+  [self attachSelectedTabsWithWebStateIDs:webStateIDs
+                        cachedWebStateIDs:{}
+                     fromExternalWebState:nullptr
+                                   source:ComposeboxInputItemSource::kCurrentTab
+                                autoAdded:autoAdded];
+}
+
+// Removes all automatically added tab items and cleans up their tracking from
+// `_latestTabSelectionMapping`.
+- (void)removeAutoAddedItems {
+  NSArray<ComposeboxInputItem*>* items = [_items.containedItems copy];
+  for (ComposeboxInputItem* item in items) {
+    if (item.isAutoAdded) {
+      [self removeItem:item];
+      _latestTabSelectionMapping.erase(item.identifier);
+    }
+  }
+}
+
+// Updates the automatically attached tab for the active WebState if the current
+// entrypoint is Co-browse.
+- (void)updateAutoAttachedCurrentTabIfNeeded {
+  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    return;
+  }
+  [self attachCurrentTabContentWithAutoAdded:YES];
+}
+
+// Stops observing the active WebState and resets the observer bridge.
+- (void)stopObservingActiveWebState {
+  if (_activeWebState && _activeWebStateObserverBridge) {
+    _activeWebState->RemoveObserver(_activeWebStateObserverBridge.get());
+    _activeWebStateObserverBridge.reset();
+  }
+  _activeWebState = nullptr;
+}
+
+// Updates active WebState observation to track `_webStateList`'s active
+// WebState. If the active WebState has changed or `_webStateList` is null,
+// unobserves the previous WebState and starts observing the new one if valid.
+- (void)updateActiveWebStateObserver {
+  web::WebState* newActiveWebState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (_activeWebState == newActiveWebState) {
+    return;
+  }
+  [self stopObservingActiveWebState];
+  _activeWebState = newActiveWebState;
+  if (_activeWebState) {
+    _activeWebStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _activeWebState->AddObserver(_activeWebStateObserverBridge.get());
+  }
+}
+
+// Promotes all currently auto-added items to user attachments once the user
+// interacts with them by sending a query.
+- (void)promoteAutoAddedItems {
+  for (ComposeboxInputItem* item in _items.containedItems) {
+    if (item.isAutoAdded) {
+      item.isAutoAdded = NO;
+    }
+  }
+}
+
 // Whether the current instance is associated with cobrowse.
 - (BOOL)isCobrowse {
   return _entrypoint == ComposeboxEntrypoint::kCobrowse;
@@ -1337,6 +1419,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 // Sends a Cobrowse text followup.
 - (void)sendAIMFollowup:(NSString*)text {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self promoteAutoAddedItems];
   if (!_contextualSearchSession) {
     return;
   }
@@ -1471,7 +1554,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                         cachedWebStateIDs:
                             (std::set<web::WebStateID>)cachedWebStateIDs
                      fromExternalWebState:(web::WebState*)externalWebState
-                                   source:(ComposeboxInputItemSource)source {
+                                   source:(ComposeboxInputItemSource)source
+                                autoAdded:(BOOL)autoAdded {
   _pageContextWrappers.clear();
 
   // Remove tabs from context that were deselected in the tab picker.
@@ -1486,6 +1570,18 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   std::set<web::WebStateID> alreadyProcessedIDs = [self allAttachedWebStateIDs];
   composebox::TabDiff allDiff =
       composebox::ComputeTabDiff(alreadyProcessedIDs, selectedWebStateIDs);
+
+  // If the user explicitly selects or attaches a tab that was originally
+  // auto-attached, promote it to a user attachment (`isAutoAdded = NO`). This
+  // ensures the tab is preserved when subsequent active tab navigations occur.
+  if (!autoAdded) {
+    for (ComposeboxInputItem* item in _items.containedItems) {
+      web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
+      if (webStateID.valid() && selectedWebStateIDs.contains(webStateID)) {
+        item.isAutoAdded = NO;
+      }
+    }
+  }
 
   if (allDiff.added.empty()) {
     return;
@@ -1507,6 +1603,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
     base::UnguessableToken identifier =
         [self createInputItemForWebState:candidateWebState source:source];
+    ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
+    if (item) {
+      item.isAutoAdded = autoAdded;
+    }
     [self attachWebState:candidateWebState
               identifier:identifier
                 isCached:cachedWebStateIDs.contains(candidateID)];
@@ -2395,6 +2495,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
+  if (status.active_web_state_change()) {
+    [self updateActiveWebStateObserver];
+    [self updateAutoAttachedCurrentTabIfNeeded];
+  }
+
   switch (change.type()) {
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detachChange =
@@ -2418,6 +2523,28 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _webStateListObserver.reset();
   }
   _webStateList = nullptr;
+  [self updateActiveWebStateObserver];
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigationContext {
+  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    return;
+  }
+  [self updateAutoAttachedCurrentTabIfNeeded];
+}
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    return;
+  }
+  [self updateAutoAttachedCurrentTabIfNeeded];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self updateActiveWebStateObserver];
 }
 
 @end
