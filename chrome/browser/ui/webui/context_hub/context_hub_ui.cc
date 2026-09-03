@@ -45,6 +45,9 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(browser::context_hub::mojom::kAutoTodos));
   source->AddInteger("kMaxTabGroupChatHistoryTurns",
                      context_hub::features::kMaxTabGroupChatHistoryTurns.Get());
+  source->AddInteger(
+      "kMaxMemoryBankChatHistoryTurns",
+      context_hub::features::kMaxMemoryBankChatHistoryTurns.Get());
 
 #if !BUILDFLAG(IS_ANDROID)
   content::URLDataSource::Add(

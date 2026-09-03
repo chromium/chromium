@@ -594,6 +594,29 @@ void ContextHubPageHandler::AskGeminiWithContext(
           std::move(callback)));
 }
 
+void ContextHubPageHandler::GetMemoryBankChatHistory(
+    GetMemoryBankChatHistoryCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::move(callback).Run(
+      ToMojoChatHistory(service->GetMemoryBankChatHistory()));
+}
+
+void ContextHubPageHandler::ClearMemoryBankChatHistory(
+    ClearMemoryBankChatHistoryCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->ClearMemoryBankChatHistory();
+  }
+  std::move(callback).Run();
+}
+
 void ContextHubPageHandler::ConfirmAllTabGroups(
     ConfirmAllTabGroupsCallback callback) {
   context_hub::ContextHubService* service =

@@ -211,6 +211,17 @@ class ContextHubService : public KeyedService,
   // Clears all tab group chat history turns from the LRU cache.
   void ClearTabGroupChatHistory();
 
+  // Adds a memory bank chat history turn to the cache.
+  void AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::Role role,
+      std::string_view message_content);
+  // Returns all memory bank chat history turns stored in the LRU cache in
+  // chronological order (oldest to newest).
+  std::vector<optimization_guide::proto::ChatHistoryTurn>
+  GetMemoryBankChatHistory() const;
+  // Clears all memory bank chat history turns from the LRU cache.
+  void ClearMemoryBankChatHistory();
+
   // Sets the pending memory bank entry waiting to be saved by the user.
   void SetPendingMemoryBankEntry(MemoryBankEntry entry);
 
@@ -268,8 +279,8 @@ class ContextHubService : public KeyedService,
   using ConfirmAllTabGroupsCallback =
       base::OnceCallback<void(bool success,
                               std::vector<base::Uuid> added_group_guids)>;
-  // Commits all unconfirmed tab groups to Chrome's native TabGroupSyncService as
-  // confirmed groups and clears in-memory storage.
+  // Commits all unconfirmed tab groups to Chrome's native TabGroupSyncService
+  // as confirmed groups and clears in-memory storage.
   void ConfirmAllTabGroups(ConfirmAllTabGroupsCallback callback);
   // Returns all confirmed tab groups for the current profile.
   std::vector<TabGroupEntry> GetConfirmedTabGroups() const;
@@ -429,9 +440,19 @@ class ContextHubService : public KeyedService,
 
   using TabGroupChatHistoryTurnId =
       base::IdType64<class TabGroupChatHistoryTurnIdTag>;
+  TabGroupChatHistoryTurnId::Generator
+      tab_group_chat_history_turn_id_generator_;
   base::LRUCache<TabGroupChatHistoryTurnId,
                  optimization_guide::proto::ChatHistoryTurn>
       tab_group_chat_history_cache_;
+
+  using MemoryBankChatHistoryTurnId =
+      base::IdType64<class MemoryBankChatHistoryTurnIdTag>;
+  MemoryBankChatHistoryTurnId::Generator
+      memory_bank_chat_history_turn_id_generator_;
+  base::LRUCache<MemoryBankChatHistoryTurnId,
+                 optimization_guide::proto::ChatHistoryTurn>
+      memory_bank_chat_history_cache_;
 
   // In-memory storage for feedback on Auto Todo items. The key is the ID of the
   // Auto Todo item in question and the value is whether the item was liked or

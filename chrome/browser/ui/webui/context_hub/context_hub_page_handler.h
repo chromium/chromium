@@ -110,6 +110,10 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void AskGeminiWithContext(const std::string& user_command,
                             const std::vector<int64_t>& memory_bank_entry_ids,
                             AskGeminiWithContextCallback callback) override;
+  void GetMemoryBankChatHistory(
+      GetMemoryBankChatHistoryCallback callback) override;
+  void ClearMemoryBankChatHistory(
+      ClearMemoryBankChatHistoryCallback callback) override;
   void ConfirmAllTabGroups(ConfirmAllTabGroupsCallback callback) override;
   void GetConfirmedTabGroups(GetConfirmedTabGroupsCallback callback) override;
   void RemoveConfirmedTabGroup(

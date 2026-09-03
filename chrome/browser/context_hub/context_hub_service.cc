@@ -222,6 +222,8 @@ ContextHubService::ContextHubService(
           CHECK_DEREF(page_content_extraction_service)),
       tab_group_chat_history_cache_(
           features::kMaxTabGroupChatHistoryTurns.Get()),
+      memory_bank_chat_history_cache_(
+          features::kMaxMemoryBankChatHistoryTurns.Get()),
       todo_feedback_cache_(features::kMaxTodoFeedbackCacheSize.Get()),
       context_hub_backend_(std::move(context_hub_backend)),
       memory_bank_(std::move(memory_bank)),
@@ -814,7 +816,7 @@ void ContextHubService::AddTabGroupChatHistoryTurn(
   turn.set_message_content(message_content);
   turn.set_timestamp_ms(base::Time::Now().InMillisecondsSinceUnixEpoch());
   TabGroupChatHistoryTurnId id =
-      TabGroupChatHistoryTurnId::FromUnsafeValue(turn.timestamp_ms());
+      tab_group_chat_history_turn_id_generator_.GenerateNextId();
   tab_group_chat_history_cache_.Put(id, std::move(turn));
 }
 
@@ -830,6 +832,33 @@ ContextHubService::GetTabGroupChatHistory() const {
 
 void ContextHubService::ClearTabGroupChatHistory() {
   tab_group_chat_history_cache_.Clear();
+}
+
+void ContextHubService::AddMemoryBankChatHistoryTurn(
+    optimization_guide::proto::ChatHistoryTurn::Role role,
+    std::string_view message_content) {
+  optimization_guide::proto::ChatHistoryTurn turn;
+  turn.set_role(role);
+  turn.set_message_content(message_content);
+  turn.set_timestamp_ms(base::Time::Now().InMillisecondsSinceUnixEpoch());
+  MemoryBankChatHistoryTurnId id =
+      memory_bank_chat_history_turn_id_generator_.GenerateNextId();
+  memory_bank_chat_history_cache_.Put(id, std::move(turn));
+}
+
+std::vector<optimization_guide::proto::ChatHistoryTurn>
+ContextHubService::GetMemoryBankChatHistory() const {
+  std::vector<optimization_guide::proto::ChatHistoryTurn> history;
+  history.reserve(memory_bank_chat_history_cache_.size());
+  for (const auto& [id, turn] :
+       base::Reversed(memory_bank_chat_history_cache_)) {
+    history.push_back(turn);
+  }
+  return history;
+}
+
+void ContextHubService::ClearMemoryBankChatHistory() {
+  memory_bank_chat_history_cache_.Clear();
 }
 
 void ContextHubService::SetPendingMemoryBankEntry(MemoryBankEntry entry) {
@@ -1112,7 +1141,13 @@ void ContextHubService::OnMemoryBankEntriesFetched(
         ToMemoryBankEntryProto(entry);
   }
 
+  for (const auto& turn : GetMemoryBankChatHistory()) {
+    *request.add_chat_history() = turn;
+  }
+
   request.set_user_command(user_command);
+  AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
 
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
@@ -1136,8 +1171,15 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
     return;
   }
 
-  std::move(callback).Run(
-      response->memory_bank_chat_response().text_response());
+  std::string text_response =
+      response->memory_bank_chat_response().text_response();
+  if (!text_response.empty()) {
+    AddMemoryBankChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
+        text_response);
+  }
+
+  std::move(callback).Run(std::move(text_response));
 }
 
 void ContextHubService::HandleTabGroupModelExecutionResult(

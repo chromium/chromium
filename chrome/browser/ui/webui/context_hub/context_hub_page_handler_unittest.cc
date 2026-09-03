@@ -1543,6 +1543,36 @@ TEST_F(ContextHubPageHandlerTest, ClearTabGroupChatHistory) {
   EXPECT_TRUE(service->GetTabGroupChatHistory().empty());
 }
 
+TEST_F(ContextHubPageHandlerTest, GetAndClearMemoryBankChatHistory) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  service->AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "User query");
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  service->AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
+      "Assistant response");
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::ChatMessagePtr>>
+      get_future;
+  handler_->GetMemoryBankChatHistory(get_future.GetCallback());
+  auto history = get_future.Take();
+  ASSERT_EQ(history.size(), 2u);
+  EXPECT_EQ(history[0]->role, browser::context_hub::mojom::ChatRole::kUser);
+  EXPECT_EQ(history[0]->content, "User query");
+  EXPECT_EQ(history[1]->role,
+            browser::context_hub::mojom::ChatRole::kAssistant);
+  EXPECT_EQ(history[1]->content, "Assistant response");
+
+  base::test::TestFuture<void> clear_future;
+  handler_->ClearMemoryBankChatHistory(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Wait());
+  EXPECT_TRUE(service->GetMemoryBankChatHistory().empty());
+}
+
 TEST_F(ContextHubPageHandlerTest, ClearTabGroups) {
   ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(&profile_);

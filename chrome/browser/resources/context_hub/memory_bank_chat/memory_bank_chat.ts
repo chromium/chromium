@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -40,6 +41,42 @@ export class MemoryBankChatElement extends CrLitElement {
   protected accessor chatHistory_: ChatMessage[] = [];
   protected accessor inputValue_: string = '';
   protected accessor isLoading_: boolean = false;
+  protected maxChatHistoryTurns_: number =
+      loadTimeData.getInteger('kMaxMemoryBankChatHistoryTurns');
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.fetchChatHistory_();
+  }
+
+  private trimChatHistory_(history: ChatMessage[]): ChatMessage[] {
+    if (this.maxChatHistoryTurns_ > 0 &&
+        history.length > this.maxChatHistoryTurns_) {
+      return history.slice(-this.maxChatHistoryTurns_);
+    }
+    return history;
+  }
+
+  private appendChatTurn_(role: ChatRole, content: string) {
+    this.chatHistory_ = this.trimChatHistory_([
+      ...this.chatHistory_,
+      {role, content},
+    ]);
+    this.scrollToBottom_();
+  }
+
+  private async fetchChatHistory_() {
+    try {
+      const {history} = await browserProxyFactory.getInstance()
+                            .handler.getMemoryBankChatHistory();
+      if (history && history.length > 0) {
+        this.chatHistory_ = this.trimChatHistory_(history);
+        this.scrollToBottom_();
+      }
+    } catch (e) {
+      console.error('Failed to load memory bank chat history:', e);
+    }
+  }
 
   protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
     this.inputValue_ = e.detail.value;
@@ -63,12 +100,7 @@ export class MemoryBankChatElement extends CrLitElement {
 
     this.isLoading_ = true;
     this.inputValue_ = '';
-
-    this.chatHistory_ = [
-      ...this.chatHistory_,
-      {role: ChatRole.kUser, content: command},
-    ];
-    this.scrollToBottom_();
+    this.appendChatTurn_(ChatRole.kUser, command);
 
     try {
       const {response} =
@@ -77,41 +109,33 @@ export class MemoryBankChatElement extends CrLitElement {
 
       const assistantContent =
           response?.content.trim() || 'No response from Gemini.';
-      this.chatHistory_ = [
-        ...this.chatHistory_,
-        {role: ChatRole.kAssistant, content: assistantContent},
-      ];
+      this.appendChatTurn_(ChatRole.kAssistant, assistantContent);
     } catch (e) {
       console.error('Failed to process request with Gemini:', e);
-      this.chatHistory_ = [
-        ...this.chatHistory_,
-        {
-          role: ChatRole.kAssistant,
-          content: 'Failed to process request with Gemini.',
-        },
-      ];
+      this.appendChatTurn_(
+          ChatRole.kAssistant, 'Failed to process request with Gemini.');
     } finally {
       this.isLoading_ = false;
-      this.scrollToBottom_();
     }
   }
 
-  protected onClearChatHistoryClick_() {
+  protected async onClearChatHistoryClick_() {
     if (this.isLoading_) {
       return;
     }
+    await browserProxyFactory.getInstance()
+        .handler.clearMemoryBankChatHistory();
     this.chatHistory_ = [];
     this.inputValue_ = '';
   }
 
-  private scrollToBottom_() {
-    this.updateComplete.then(() => {
-      const chatMessages =
-          this.shadowRoot?.querySelector<HTMLElement>('#chat-messages');
-      if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-    });
+  private async scrollToBottom_() {
+    await this.updateComplete;
+    const chatMessages =
+        this.shadowRoot?.querySelector<HTMLElement>('#chat-messages');
+    if (chatMessages) {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   }
 }
 

@@ -1726,6 +1726,33 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {
   EXPECT_FALSE(future.Get().has_value());
 }
 
+TEST_F(ContextHubServiceTest, AddAndGetMemoryBankChatHistory) {
+  service_.AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "User query");
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  service_.AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
+      "Assistant memory answer");
+
+  auto history = service_.GetMemoryBankChatHistory();
+  ASSERT_EQ(history.size(), 2u);
+  EXPECT_EQ(history[0].role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(history[0].message_content(), "User query");
+  EXPECT_EQ(history[1].role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(history[1].message_content(), "Assistant memory answer");
+}
+
+TEST_F(ContextHubServiceTest, MemoryBankChatHistory_Clear) {
+  service_.AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "Query");
+  EXPECT_EQ(service_.GetMemoryBankChatHistory().size(), 1u);
+
+  service_.ClearMemoryBankChatHistory();
+  EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
+}
+
 TEST_F(ContextHubServiceTest, UpdateAutoTodo) {
   MockServiceObserver observer;
   base::ScopedObservation<ContextHubService, ContextHubService::Observer>

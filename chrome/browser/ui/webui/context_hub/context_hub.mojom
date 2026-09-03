@@ -297,6 +297,12 @@ interface PageHandler {
       string user_command, array<int64> memory_bank_entry_ids)
       => (ChatMessage response);
 
+  // Returns stored memory bank chat history.
+  GetMemoryBankChatHistory() => (array<ChatMessage> history);
+
+  // Clears stored memory bank chat history.
+  ClearMemoryBankChatHistory() => ();
+
   // Confirms all suggested tab groups to the browser window and saves them
   // to TabGroupSyncService.
   [RuntimeFeature=kAutoTabGroups]
