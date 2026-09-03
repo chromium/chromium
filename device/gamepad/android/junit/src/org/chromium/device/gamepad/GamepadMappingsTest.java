@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -29,7 +28,6 @@ import java.util.BitSet;
 
 /** Verify no regressions in gamepad mappings. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(DeviceFeatureList.ANDROID_UNKNOWN_GAMEPAD_EXTRA_AXES)
 public class GamepadMappingsTest {
     private static final float ERROR_TOLERANCE = 0.000001f;

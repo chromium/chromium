@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowPackageManager;
 
@@ -23,7 +22,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link XrFeatureStatus} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class XrFeatureStatusTest {
     private ShadowPackageManager mShadowPackageManager;
 
