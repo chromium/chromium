@@ -353,23 +353,11 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
 
   // Create the test realm and connect to the root component's exposed services,
   // for use by tests.
-  realm_root_ = realm_builder.Build();
+  realm_root_.emplace(std::move(realm_builder));
   exposed_services_ = std::make_unique<sys::ServiceDirectory>(
-      realm_root_->component().CloneExposedDir());
+      (*realm_root_)->component().CloneExposedDir());
 }
 
-CastRunnerLauncher::~CastRunnerLauncher() {
-  Teardown();
-}
-
-void CastRunnerLauncher::Teardown() {
-  if (realm_root_.has_value()) {
-    base::RunLoop run_loop;
-    realm_root_.value().Teardown(
-        [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
-    run_loop.Run();
-    realm_root_.reset();
-  }
-}
+CastRunnerLauncher::~CastRunnerLauncher() = default;
 
 }  // namespace test

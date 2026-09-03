@@ -725,7 +725,7 @@ test("web_engine_integration_tests") {
     "//build/config/fuchsia/test/fonts.shard.test-cml",
     "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
-    "//fuchsia_web/common/test/component_crash_observer.shard.test-cml",
+    "//fuchsia_web/common/test/test_realm_root.shard.test-cml",
     "//fuchsia_web/webengine/web_engine_integration_tests.shard.test-cml",
     "//fuchsia_web/webinstance_host/web_instance_host_with_svc_directory.shard.cml",
     "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",

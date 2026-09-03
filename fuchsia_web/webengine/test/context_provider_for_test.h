@@ -10,6 +10,7 @@
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 
 #include "base/command_line.h"
+#include "fuchsia_web/common/test/test_realm_root.h"
 
 // Starts a WebEngine and connects a ContextProvider instance for tests.
 // WebEngine logs will be included in the test output but not in the Fuchsia
@@ -24,13 +25,13 @@ class ContextProviderForTest {
 
   ::fuchsia::web::ContextProviderPtr& ptr() { return context_provider_; }
   ::fuchsia::web::ContextProvider* get() { return context_provider_.get(); }
-  ::component_testing::RealmRoot& realm_root() { return realm_root_; }
+  test::TestRealmRoot& realm_root() { return *realm_root_; }
 
  private:
-  ContextProviderForTest(::component_testing::RealmRoot realm_root,
+  ContextProviderForTest(std::unique_ptr<test::TestRealmRoot> realm_root,
                          ::fuchsia::web::ContextProviderPtr context_provider);
 
-  ::component_testing::RealmRoot realm_root_;
+  std::unique_ptr<test::TestRealmRoot> realm_root_;
   ::fuchsia::web::ContextProviderPtr context_provider_;
 };
 

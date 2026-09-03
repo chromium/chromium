@@ -45,7 +45,6 @@
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
-#include "fuchsia_web/common/test/test_component_crash_observer.h"
 #include "fuchsia_web/common/test/test_debug_listener.h"
 #include "fuchsia_web/common/test/test_devtools_list_fetcher.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
@@ -436,7 +435,7 @@ class CastRunnerIntegrationTest : public testing::Test {
   CastRunnerIntegrationTest()
       : CastRunnerIntegrationTest(test::kCastRunnerFeaturesNone) {}
   explicit CastRunnerIntegrationTest(test::CastRunnerFeatures runner_features)
-      : cast_runner_(runner_features) {}
+      : runner_features_(runner_features) {}
 
   ~CastRunnerIntegrationTest() override = default;
 
@@ -451,32 +450,29 @@ class CastRunnerIntegrationTest : public testing::Test {
     test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
     net::test_server::RegisterDefaultHandlers(&test_server_);
     ASSERT_TRUE(test_server_.Start());
+    cast_runner_.emplace(runner_features_);
   }
 
-  void TearDown() override {
-    cast_runner_.Teardown();
-    crash_observer_.VerifyNoCrashes();
-  }
+  void TearDown() override { cast_runner_.reset(); }
 
   // Returns the services exposed by the `CastRunnerLauncher` test Realm,
   // including those exposed by the `cast_runner` component under test.
   const sys::ServiceDirectory& test_realm_services() {
-    return cast_runner_.exposed_services();
+    return cast_runner_->exposed_services();
   }
 
-  test::CastRunnerLauncher& cast_runner_launcher() { return cast_runner_; }
+  test::CastRunnerLauncher& cast_runner_launcher() { return *cast_runner_; }
 
   // Returns the HTTP server used to serve fake content for Cast components.
   net::EmbeddedTestServer& test_server() { return test_server_; }
 
   // Convenience accessors for elements managed by the launcher.
   FakeApplicationConfigManager& app_config_manager() {
-    return cast_runner_.fake_cast_agent().app_config_manager();
+    return cast_runner_->fake_cast_agent().app_config_manager();
   }
 
   void ExpectAbnormalTermination(std::string_view component_name) {
-    crash_observer_.ExpectAbnormalTermination(
-        base::StrCat({cast_runner_.realm_prefix(), component_name}));
+    cast_runner_->ExpectAbnormalTermination(component_name);
   }
 
  private:
@@ -489,8 +485,8 @@ class CastRunnerIntegrationTest : public testing::Test {
   const base::test::ScopedRunLoopTimeout scoped_timeout_{
       FROM_HERE, TestTimeouts::action_max_timeout()};
 
-  test::TestComponentCrashObserver crash_observer_;
-  test::CastRunnerLauncher cast_runner_;
+  const test::CastRunnerFeatures runner_features_;
+  std::optional<test::CastRunnerLauncher> cast_runner_;
   net::EmbeddedTestServer test_server_;
 };
 

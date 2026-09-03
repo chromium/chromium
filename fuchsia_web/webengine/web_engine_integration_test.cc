@@ -61,7 +61,6 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
     frame_.Unbind();
     context_.Unbind();
     context_provider_.reset();
-    WebEngineIntegrationTestBase::TearDown();
   }
 
   void StartWebEngine(base::CommandLine command_line) override {

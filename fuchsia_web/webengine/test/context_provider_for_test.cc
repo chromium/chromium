@@ -16,7 +16,8 @@
 
 namespace {
 
-::component_testing::RealmRoot BuildRealm(base::CommandLine command_line) {
+::component_testing::RealmBuilder MakeRealmBuilder(
+    base::CommandLine command_line) {
   DCHECK(command_line.argv()[0].empty()) << "Must use NO_PROGRAM.";
 
   auto realm_builder = ::component_testing::RealmBuilder::Create();
@@ -73,7 +74,7 @@ namespace {
           .source = ::component_testing::ChildRef{kContextProviderService},
           .targets = {::component_testing::ParentRef{}}});
 
-  return realm_builder.Build();
+  return realm_builder;
 }
 
 }  // namespace
@@ -81,10 +82,12 @@ namespace {
 // static
 ContextProviderForTest ContextProviderForTest::Create(
     const base::CommandLine& command_line) {
-  auto realm_root = BuildRealm(command_line);
+  auto realm_builder = MakeRealmBuilder(command_line);
+  auto realm_root =
+      std::make_unique<test::TestRealmRoot>(std::move(realm_builder));
   ::fuchsia::web::ContextProviderPtr context_provider;
   zx_status_t status =
-      realm_root.component().Connect(context_provider.NewRequest());
+      (*realm_root)->component().Connect(context_provider.NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "Connect to ContextProvider";
   return ContextProviderForTest(std::move(realm_root),
                                 std::move(context_provider));
@@ -94,18 +97,13 @@ ContextProviderForTest::ContextProviderForTest(
     ContextProviderForTest&&) noexcept = default;
 ContextProviderForTest& ContextProviderForTest::operator=(
     ContextProviderForTest&&) noexcept = default;
-
 ContextProviderForTest::~ContextProviderForTest() {
   // We're about to shut down the realm; unbind to unhook the error handler.
   context_provider_.Unbind();
-  base::RunLoop run_loop;
-  realm_root_.Teardown(
-      [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
-  run_loop.Run();
 }
 
 ContextProviderForTest::ContextProviderForTest(
-    ::component_testing::RealmRoot realm_root,
+    std::unique_ptr<test::TestRealmRoot> realm_root,
     ::fuchsia::web::ContextProviderPtr context_provider)
     : realm_root_(std::move(realm_root)),
       context_provider_(std::move(context_provider)) {}
@@ -125,7 +123,7 @@ ContextProviderForDebugTest::~ContextProviderForDebugTest() = default;
 
 void ContextProviderForDebugTest::ConnectToDebug(
     ::fidl::InterfaceRequest<::fuchsia::web::Debug> debug_request) {
-  zx_status_t status = context_provider_.realm_root().component().Connect(
+  zx_status_t status = context_provider_.realm_root()->component().Connect(
       std::move(debug_request));
   ZX_CHECK(status == ZX_OK, status) << "Connect to Debug";
 }

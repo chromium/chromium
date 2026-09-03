@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/common/test/test_component_crash_observer.h"
+#include "fuchsia_web/common/test/test_realm_root.h"
 
 #include <lib/sys/cpp/component_context.h>
 #include <zircon/status.h>
@@ -20,6 +20,8 @@
 #include "base/fuchsia/process_context.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/rand_util.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -31,15 +33,6 @@
 
 namespace test {
 namespace {
-
-// Returns true if `moniker` refers to a dynamic component or a descendant of
-// one. Dynamic components are created within collections, so their top-level
-// moniker segment contains a collection prefix separated by a colon
-// (e.g. "collection:child_name").
-bool IsDynamicComponent(std::string_view moniker) {
-  return moniker.substr(0, moniker.find('/')).find(':') !=
-         std::string_view::npos;
-}
 
 std::string DescribeStopped(const fuchsia::component::StoppedPayload& stopped) {
   std::string status_str = stopped.has_status()
@@ -81,21 +74,27 @@ bool IsNormalTermination(const fuchsia::component::StoppedPayload& stopped) {
 
 }  // namespace
 
-TestComponentCrashObserver::TestComponentCrashObserver() {
+TestRealmRoot::TestRealmRoot(::component_testing::RealmBuilder realm_builder) {
+  const std::string child_name =
+      base::StrCat({"auto-", base::NumberToString(base::RandUint64())});
+  realm_builder.SetRealmName(child_name);
+  realm_prefix_ = base::StrCat({"realm_builder:", child_name, "/"});
+
   Connect();
+  realm_root_ = realm_builder.Build();
 }
 
-TestComponentCrashObserver::~TestComponentCrashObserver() {
-  VerifyNoCrashes();
+TestRealmRoot::~TestRealmRoot() {
+  Teardown();
 }
 
-void TestComponentCrashObserver::Connect() {
+void TestRealmRoot::Connect() {
   auto* const context = base::ComponentContextForProcess();
   CHECK(context);
 
   // Connect synchronously and block on WaitForReady() to ensure that the
   // EventStream subscription has been processed by Component Manager before
-  // any dynamic components can be started by tests.
+  // any components in the realm are started.
   fuchsia::component::EventStreamSyncPtr sync_event_stream;
   const zx_status_t status =
       context->svc()->Connect(sync_event_stream.NewRequest());
@@ -114,7 +113,7 @@ void TestComponentCrashObserver::Connect() {
   ListenNext();
 }
 
-void TestComponentCrashObserver::ListenNext() {
+void TestRealmRoot::ListenNext() {
   if (!event_stream_) {
     return;
   }
@@ -124,14 +123,13 @@ void TestComponentCrashObserver::ListenNext() {
   });
 }
 
-void TestComponentCrashObserver::ExpectAbnormalTermination(
-    std::string moniker) {
-  CHECK(IsDynamicComponent(moniker));
-  expected_abnormal_terminations_.insert(std::move(moniker));
+void TestRealmRoot::ExpectAbnormalTermination(
+    std::string_view relative_moniker) {
+  expected_abnormal_terminations_.insert(
+      base::StrCat({realm_prefix_, relative_moniker}));
 }
 
-void TestComponentCrashObserver::OnEvents(
-    std::vector<fuchsia::component::Event> events) {
+void TestRealmRoot::OnEvents(std::vector<fuchsia::component::Event> events) {
   for (const auto& event : events) {
     CHECK(event.has_header());
     CHECK(event.header().has_moniker());
@@ -140,14 +138,8 @@ void TestComponentCrashObserver::OnEvents(
     const std::string& moniker = event.header().moniker();
     const auto event_type = event.header().event_type();
 
-    if (!IsDynamicComponent(moniker)) {
-      if (event_type == fuchsia::component::EventType::STOPPED) {
-        CHECK(event.has_payload() && event.payload().is_stopped());
-        const auto& stopped = event.payload().stopped();
-        CHECK(IsNormalTermination(stopped))
-            << "Static component '" << moniker
-            << "' terminated unexpectedly: " << DescribeStopped(stopped);
-      }
+    // Ignore events that do not belong to components inside this realm.
+    if (realm_prefix_.empty() || !base::StartsWith(moniker, realm_prefix_)) {
       continue;
     }
 
@@ -180,7 +172,17 @@ void TestComponentCrashObserver::OnEvents(
   ListenNext();
 }
 
-void TestComponentCrashObserver::VerifyNoCrashes() {
+void TestRealmRoot::Teardown() {
+  if (!realm_root_.has_value()) {
+    return;
+  }
+
+  base::RunLoop teardown_loop;
+  realm_root_->Teardown(
+      [quit = teardown_loop.QuitClosure()](auto result) { quit.Run(); });
+  teardown_loop.Run();
+  realm_root_.reset();
+
   DCHECK(base::test::ScopedRunLoopTimeout::ExistsForCurrentThread());
   base::test::ScopedRunLoopTimeout timeout(
       FROM_HERE, std::nullopt, base::BindLambdaForTesting([this]() {
