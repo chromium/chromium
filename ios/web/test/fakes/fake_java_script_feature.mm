@@ -5,7 +5,6 @@
 #import "ios/web/test/fakes/fake_java_script_feature.h"
 
 #import "base/time/time.h"
-#import "ios/web/public/js_messaging/script_message_value.h"
 
 namespace web {
 
@@ -158,7 +157,6 @@ void FakeJavaScriptFeature::SetLastReceivedMessage(
     const ScriptMessage& message) {
   last_received_message_ = std::make_unique<const ScriptMessage>(
       std::make_unique<base::Value>(message.legacy_body()->Clone()),
-      std::make_unique<ScriptMessageValue>(std::move(message.body())),
       message.is_user_interacting(), message.is_main_frame(),
       message.request_url(), message.security_origin());
 }

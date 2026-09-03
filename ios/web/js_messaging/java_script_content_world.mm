@@ -14,13 +14,11 @@
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
 #import "ios/web/javascript_flags.h"
-#import "ios/web/js_messaging/script_message_value_util.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/util/wk_security_origin_util.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -90,8 +88,6 @@ std::optional<ScriptMessage> GetMessage(WKScriptMessage* script_message,
   const base::TimeTicks start_time = base::TimeTicks::Now();
   std::optional<ScriptMessage> message = ScriptMessage(
       web::ValueResultFromWKResult(script_message.body),
-      std::make_unique<ScriptMessageValue>(
-          web::CreateScriptMessageValue(script_message.body)),
       web_controller.isUserInteracting, script_message.frameInfo.mainFrame, url,
       web::OriginWithWKSecurityOrigin(script_message.frameInfo.securityOrigin));
   if (base::FeatureList::IsEnabled(

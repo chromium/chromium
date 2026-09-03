@@ -13,13 +13,11 @@
 #include "url/origin.h"
 
 namespace web {
-class ScriptMessageValue;
 
 // Represents a script message sent from JavaScript.
 class ScriptMessage {
  public:
   explicit ScriptMessage(std::unique_ptr<base::Value> legacy_body,
-                         std::unique_ptr<ScriptMessageValue> body,
                          bool is_user_interacting,
                          bool is_main_frame,
                          std::optional<GURL> request_url,
@@ -39,8 +37,6 @@ class ScriptMessage {
   // Returns the message body.
   base::Value* legacy_body() const { return legacy_body_.get(); }
 
-  ScriptMessageValue& body() const { return *body_; }
-
   // Whether or not the user was interacting with the page when this message
   // was sent.
   bool is_user_interacting() const { return is_user_interacting_; }
@@ -58,7 +54,6 @@ class ScriptMessage {
 
  private:
   std::unique_ptr<base::Value> legacy_body_;
-  std::unique_ptr<ScriptMessageValue> body_;
   bool is_user_interacting_;
   bool is_main_frame_;
   std::optional<GURL> request_url_;

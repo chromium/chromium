@@ -37,7 +37,6 @@
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -165,25 +164,9 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
             .Set("host_frame", frame_id));
   }
 
-  // Returns a valid form submitted message body.
-  std::unique_ptr<web::ScriptMessageValue> ValidFormSubmittedScriptMessageValue(
-      std::string frame_id) {
-    NSArray* fields =
-        @[ @{@"name" : @"test_field", @"form_control_type" : @"password"} ];
-    NSDictionary* dict = @{
-      @"name" : @"test_form",
-      @"origin" : base::SysUTF8ToNSString(BaseUrl()),
-      @"fields" : fields,
-      @"host_frame" : base::SysUTF8ToNSString(frame_id)
-    };
-    return std::make_unique<web::ScriptMessageValue>(dict);
-  }
-
   // Returns a script message that can represent a form submission.
-  web::ScriptMessage ScriptMessageForSubmit(
-      std::unique_ptr<base::Value> body,
-      std::unique_ptr<web::ScriptMessageValue> value) {
-    return web::ScriptMessage(std::move(body), std::move(value),
+  web::ScriptMessage ScriptMessageForSubmit(std::unique_ptr<base::Value> body) {
+    return web::ScriptMessage(std::move(body),
                               /*is_user_interacting=*/true,
                               /*is_main_frame=*/true,
                               /*request_url=*/std::nullopt, url::Origin());
@@ -952,8 +935,7 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage) {
   // Set a message with the minimal viable body to succeed in form data
   // extraction.
   web::ScriptMessage submit_message = ScriptMessageForSubmit(
-      ValidFormSubmittedMessageBody(GetMainFrame()->GetFrameId()),
-      ValidFormSubmittedScriptMessageValue(GetMainFrame()->GetFrameId()));
+      ValidFormSubmittedMessageBody(GetMainFrame()->GetFrameId()));
 
   HandleSubmittedFormStatus status =
       [helper_ handleFormSubmittedMessage:submit_message];
@@ -978,9 +960,8 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_InvalidFormat) {
   auto invalid_body =
       std::make_unique<base::Value>(base::Value("invalid_because_expect_dict"));
 
-  web::ScriptMessage submit_message = ScriptMessageForSubmit(
-      std::move(invalid_body), std::make_unique<web::ScriptMessageValue>(
-                                   @"invalid_because_expect_dict"));
+  web::ScriptMessage submit_message =
+      ScriptMessageForSubmit(std::move(invalid_body));
 
   HandleSubmittedFormStatus status =
       [helper_ handleFormSubmittedMessage:submit_message];
@@ -1005,9 +986,8 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_NoTrustedUrl) {
   helper.delegate = delegate;
 
   // Set a dummy message.
-  web::ScriptMessage submit_message = ScriptMessageForSubmit(
-      std::make_unique<base::Value>("whatever"),
-      std::make_unique<web::ScriptMessageValue>(@"whatever"));
+  web::ScriptMessage submit_message =
+      ScriptMessageForSubmit(std::make_unique<base::Value>("whatever"));
 
   HandleSubmittedFormStatus status =
       [helper handleFormSubmittedMessage:submit_message];
@@ -1027,9 +1007,8 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_NoWebState) {
   helper_.delegate = delegate;
 
   // Set a dummy message.
-  web::ScriptMessage submit_message = ScriptMessageForSubmit(
-      std::make_unique<base::Value>("whatever"),
-      std::make_unique<web::ScriptMessageValue>(@"whatever"));
+  web::ScriptMessage submit_message =
+      ScriptMessageForSubmit(std::make_unique<base::Value>("whatever"));
 
   // Destroying the webstate will nullify the webstate pointer in the helper.
   DestroyWebState();
@@ -1054,8 +1033,7 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_NoFormMatchingId) {
 
   // Set a message with an nonexisting frame id.
   web::ScriptMessage submit_message = ScriptMessageForSubmit(
-      ValidFormSubmittedMessageBody("nonexisting_frame_id"),
-      ValidFormSubmittedScriptMessageValue("nonexisting_frame_id"));
+      ValidFormSubmittedMessageBody("nonexisting_frame_id"));
 
   HandleSubmittedFormStatus status =
       [helper_ handleFormSubmittedMessage:submit_message];
@@ -1073,16 +1051,13 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_CantExtractFormData) {
 
   LoadHtml(@"<p>");
 
-  auto incomplete_message_body_legacy = std::make_unique<base::Value>(
+  auto incomplete_message_body = std::make_unique<base::Value>(
       base::DictValue().Set("host_frame", GetMainFrame()->GetFrameId()));
-  NSDictionary* incomplete_message_body =
-      @{@"host_frame" : base::SysUTF8ToNSString(GetMainFrame()->GetFrameId())};
 
   // Set a message with an incomplete body that misses the required keys to be
   // parsed to form data.
-  web::ScriptMessage submit_message = ScriptMessageForSubmit(
-      std::move(incomplete_message_body_legacy),
-      std::make_unique<web::ScriptMessageValue>(incomplete_message_body));
+  web::ScriptMessage submit_message =
+      ScriptMessageForSubmit(std::move(incomplete_message_body));
 
   HandleSubmittedFormStatus status =
       [helper_ handleFormSubmittedMessage:submit_message];
@@ -1102,7 +1077,6 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_NoUserInteraction) {
 
   web::ScriptMessage submit_message(
       ValidFormSubmittedMessageBody(GetMainFrame()->GetFrameId()),
-      ValidFormSubmittedScriptMessageValue(GetMainFrame()->GetFrameId()),
       /*is_user_interacting=*/false,
       /*is_main_frame=*/true,
       /*request_url=*/std::nullopt, url::Origin());

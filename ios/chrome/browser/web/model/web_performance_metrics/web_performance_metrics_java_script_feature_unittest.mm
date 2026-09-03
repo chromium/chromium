@@ -6,13 +6,11 @@
 
 #import <memory>
 
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/values.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -33,28 +31,17 @@ TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
   WebPerformanceMetricsTabHelper* tab_helper =
       WebPerformanceMetricsTabHelper::FromWebState(&fake_web_state);
 
-  base::DictValue main_frame_dict_legacy;
-  main_frame_dict_legacy.Set(
-      web_performance_metrics::kMetricKey,
-      web_performance_metrics::kInteractionToNextPaintMetric);
+  base::DictValue main_frame_dict;
+  main_frame_dict.Set(web_performance_metrics::kMetricKey,
+                      web_performance_metrics::kInteractionToNextPaintMetric);
   base::ListValue main_durations;
   main_durations.Append(85.0);
-  main_frame_dict_legacy.Set(web_performance_metrics::kDurationsKey,
-                             std::move(main_durations));
-  main_frame_dict_legacy.Set(web_performance_metrics::kInteractionCountKey, 1);
-  main_frame_dict_legacy.Set(web_performance_metrics::kFrameIdKey, "main_1");
-  NSDictionary* main_frame_dict = @{
-    base::SysUTF8ToNSString(web_performance_metrics::kMetricKey) :
-        base::SysUTF8ToNSString(
-            web_performance_metrics::kInteractionToNextPaintMetric),
-    base::SysUTF8ToNSString(web_performance_metrics::kDurationsKey) :
-        @[ @85.0 ],
-    base::SysUTF8ToNSString(web_performance_metrics::kInteractionCountKey) : @1,
-    base::SysUTF8ToNSString(web_performance_metrics::kFrameIdKey) : @"main_1",
-  };
+  main_frame_dict.Set(web_performance_metrics::kDurationsKey,
+                      std::move(main_durations));
+  main_frame_dict.Set(web_performance_metrics::kInteractionCountKey, 1);
+  main_frame_dict.Set(web_performance_metrics::kFrameIdKey, "main_1");
   web::ScriptMessage main_frame_message(
-      std::make_unique<base::Value>(std::move(main_frame_dict_legacy)),
-      std::make_unique<web::ScriptMessageValue>(std::move(main_frame_dict)),
+      std::make_unique<base::Value>(std::move(main_frame_dict)),
       /*is_user_interacting=*/true, /*is_main_frame=*/true,
       /*request_url=*/GURL("https://chromium.org"),
       url::Origin::Create(GURL("https://chromium.org")));

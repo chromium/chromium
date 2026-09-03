@@ -19,7 +19,6 @@
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/annotations/annotations_text_observer.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -1065,40 +1064,24 @@ TEST_F(AnnotationTextManagerViewportTest,
   std::unique_ptr<AnnotationsJavaScriptFeature> trusted_feature =
       CreateFeatureWithTrustedCheck(/*trusted_event_check_enabled=*/true);
 
-  base::DictValue rect_dict_legacy;
-  rect_dict_legacy.Set("x", 0.0);
-  rect_dict_legacy.Set("y", 0.0);
-  rect_dict_legacy.Set("width", 10.0);
-  rect_dict_legacy.Set("height", 10.0);
+  base::DictValue rect_dict;
+  rect_dict.Set("x", 0.0);
+  rect_dict.Set("y", 0.0);
+  rect_dict.Set("width", 10.0);
+  rect_dict.Set("height", 10.0);
 
-  base::DictValue dict_legacy;
-  dict_legacy.Set("command", "annotations.onClick");
-  dict_legacy.Set("data", "some_data");
-  dict_legacy.Set("rect", std::move(rect_dict_legacy));
-  dict_legacy.Set("text", "some_text");
-  dict_legacy.Set("cancel", false);
+  base::DictValue dict;
+  dict.Set("command", "annotations.onClick");
+  dict.Set("data", "some_data");
+  dict.Set("rect", std::move(rect_dict));
+  dict.Set("text", "some_text");
+  dict.Set("cancel", false);
 
-  NSDictionary* rect_dict = @{
-    @"x" : @0.0,
-    @"y" : @0.0,
-    @"width" : @10.0,
-    @"height" : @10.0,
-  };
-  NSDictionary* dict = @{
-    @"command" : @"annotations.onClick",
-    @"data" : @"some_data",
-    @"rect" : std::move(rect_dict),
-    @"text" : @"some_text",
-    @"cancel" : @false
-  };
-
-  ScriptMessage message(
-      std::make_unique<base::Value>(std::move(dict_legacy)),
-      std::make_unique<web::ScriptMessageValue>(std::move(dict)),
-      /*is_user_interacting=*/false,
-      /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://chromium.test"),
-      /*security_origin=*/url::Origin());
+  ScriptMessage message(std::make_unique<base::Value>(std::move(dict)),
+                        /*is_user_interacting=*/false,
+                        /*is_main_frame=*/true,
+                        /*request_url=*/GURL("https://chromium.test"),
+                        /*security_origin=*/url::Origin());
 
   DispatchScriptMessage(trusted_feature.get(), message);
   EXPECT_EQ(0, observer()->clicks() - clicks);
@@ -1117,40 +1100,24 @@ TEST_F(AnnotationTextManagerViewportTest,
   std::unique_ptr<AnnotationsJavaScriptFeature> trusted_feature =
       CreateFeatureWithTrustedCheck(/*trusted_event_check_enabled=*/true);
 
-  base::DictValue rect_dict_legacy;
-  rect_dict_legacy.Set("x", 0.0);
-  rect_dict_legacy.Set("y", 0.0);
-  rect_dict_legacy.Set("width", 10.0);
-  rect_dict_legacy.Set("height", 10.0);
+  base::DictValue rect_dict;
+  rect_dict.Set("x", 0.0);
+  rect_dict.Set("y", 0.0);
+  rect_dict.Set("width", 10.0);
+  rect_dict.Set("height", 10.0);
 
-  base::DictValue dict_legacy;
-  dict_legacy.Set("command", "annotations.onClick");
-  dict_legacy.Set("data", "some_data");
-  dict_legacy.Set("rect", std::move(rect_dict_legacy));
-  dict_legacy.Set("text", "some_text");
-  dict_legacy.Set("cancel", false);
+  base::DictValue dict;
+  dict.Set("command", "annotations.onClick");
+  dict.Set("data", "some_data");
+  dict.Set("rect", std::move(rect_dict));
+  dict.Set("text", "some_text");
+  dict.Set("cancel", false);
 
-  NSDictionary* rect_dict = @{
-    @"x" : @0.0,
-    @"y" : @0.0,
-    @"width" : @10.0,
-    @"height" : @10.0,
-  };
-  NSDictionary* dict = @{
-    @"command" : @"annotations.onClick",
-    @"data" : @"some_data",
-    @"rect" : std::move(rect_dict),
-    @"text" : @"some_text",
-    @"cancel" : @false
-  };
-
-  ScriptMessage message(
-      std::make_unique<base::Value>(std::move(dict_legacy)),
-      std::make_unique<web::ScriptMessageValue>(std::move(dict)),
-      /*is_user_interacting=*/true,
-      /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://chromium.test"),
-      /*security_origin=*/url::Origin());
+  ScriptMessage message(std::make_unique<base::Value>(std::move(dict)),
+                        /*is_user_interacting=*/true,
+                        /*is_main_frame=*/true,
+                        /*request_url=*/GURL("https://chromium.test"),
+                        /*security_origin=*/url::Origin());
 
   DispatchScriptMessage(trusted_feature.get(), message);
   EXPECT_EQ(1, observer()->clicks() - clicks);

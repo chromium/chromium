@@ -8,13 +8,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions_apple.mm"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/components/enterprise/data_controls/clipboard_enums.h"
 #import "ios/web/js_features/clipboard/clipboard_constants.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
@@ -98,26 +96,18 @@ class ClipboardJavaScriptFeatureTest : public WebTestWithWebState {
   // Simulates a script message from the web page.
   void SimulateScriptMessage(const std::string& command,
                              std::optional<int> request_id = std::nullopt) {
-    base::DictValue body_legacy;
-    NSMutableDictionary* body = [[NSMutableDictionary alloc] init];
-    body[base::SysUTF8ToNSString(kCommandKey)] =
-        base::SysUTF8ToNSString(command);
-    body_legacy.Set(kCommandKey, command);
+    base::DictValue body;
+    body.Set(kCommandKey, command);
     if (request_id) {
-      body_legacy.Set(kRequestIdKey, *request_id);
-      body[base::SysUTF8ToNSString(kRequestIdKey)] =
-          [NSNumber numberWithInt:*request_id];
+      body.Set(kRequestIdKey, *request_id);
     }
     web::WebFrame* main_frame = WaitForMainFrame();
-    body_legacy.Set(kFrameIdKey, main_frame->GetFrameId());
-    body[base::SysUTF8ToNSString(kFrameIdKey)] =
-        base::SysUTF8ToNSString(main_frame->GetFrameId());
+    body.Set(kFrameIdKey, main_frame->GetFrameId());
 
-    web::ScriptMessage message(
-        std::make_unique<base::Value>(std::move(body_legacy)),
-        std::make_unique<web::ScriptMessageValue>(std::move(body)),
-        /*is_user_interacting=*/true,
-        /*is_main_frame=*/true, GURL::EmptyGURL(), url::Origin());
+    web::ScriptMessage message(std::make_unique<base::Value>(std::move(body)),
+                               /*is_user_interacting=*/true,
+                               /*is_main_frame=*/true, GURL::EmptyGURL(),
+                               url::Origin());
     feature_->ScriptMessageReceived(web_state(), message);
   }
 
