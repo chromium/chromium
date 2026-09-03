@@ -184,7 +184,7 @@ class SegmentResultProviderTest : public testing::Test {
     // and score from model score returns model rank.
     float mapping[][2] = {{kTestScore + 0.1, kTestRank},
                           {kDatabaseScore - 0.1, kDatabaseRank}};
-    segment_database_->AddDiscreteMapping(segment_id, mapping, 2, "test_key",
+    segment_database_->AddDiscreteMapping(segment_id, mapping, "test_key",
                                           model_source);
   }
 

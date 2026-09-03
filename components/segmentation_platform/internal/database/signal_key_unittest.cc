@@ -5,9 +5,7 @@
 #include "components/segmentation_platform/internal/database/signal_key.h"
 
 #include <cmath>
-#include <cstring>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -21,7 +19,7 @@ int CompareBinaryKeys(const SignalKey& a, const SignalKey& b) {
   std::string a_key = a.ToBinary();
   std::string b_key = b.ToBinary();
   CHECK_EQ(a_key.size(), b_key.size());
-  return UNSAFE_TODO(std::memcmp(a_key.data(), b_key.data(), a_key.size()));
+  return a_key.compare(b_key);
 }
 
 bool Equal(const SignalKey& k1, const SignalKey& k2) {

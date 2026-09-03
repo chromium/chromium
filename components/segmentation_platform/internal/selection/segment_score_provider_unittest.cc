@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/segment_score_provider.h"
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -33,8 +34,7 @@ class SegmentScoreProviderTest : public testing::Test {
   }
 
   void InitializeMetadataForSegment(SegmentId segment_id,
-                                    float mapping[][2],
-                                    int num_mapping_pairs) {
+                                    base::span<const float[2]> mapping) {
     auto* metadata = segment_database_->FindOrCreateSegment(segment_id)
                          ->mutable_model_metadata();
     metadata->set_result_time_to_live(7);
@@ -42,8 +42,8 @@ class SegmentScoreProviderTest : public testing::Test {
 
     std::string default_mapping_key = "some_key";
     metadata->set_default_discrete_mapping(default_mapping_key);
-    segment_database_->AddDiscreteMapping(
-        segment_id, mapping, num_mapping_pairs, default_mapping_key);
+    segment_database_->AddDiscreteMapping(segment_id, mapping,
+                                          default_mapping_key);
   }
 
   void GetSegmentScore(SegmentId segment_id, const SegmentScore& expected) {
@@ -69,7 +69,7 @@ class SegmentScoreProviderTest : public testing::Test {
 
 TEST_F(SegmentScoreProviderTest, GetSegmentScore) {
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
-  InitializeMetadataForSegment(kSegmentId, mapping1, 3);
+  InitializeMetadataForSegment(kSegmentId, mapping1);
   segment_database_->AddPredictionResult(kSegmentId, 0.6, base::Time::Now());
 
   base::RunLoop loop;

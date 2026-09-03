@@ -4,8 +4,9 @@
 
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 
+#include <array>
+
 #include "base/bit_cast.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -24,7 +25,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 #define CALL_MEMBER_FN(obj, func) ((obj).*(func))
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x)[0])
 
 using segmentation_platform::SegmentationUkmHelper;
 using segmentation_platform::proto::SegmentId;
@@ -36,71 +36,73 @@ namespace {
 using UkmMemberFn =
     Segmentation_ModelExecution& (Segmentation_ModelExecution::*)(int64_t);
 
-const UkmMemberFn kSegmentationUkmInputMethods[] = {
-    &Segmentation_ModelExecution::SetInput0,
-    &Segmentation_ModelExecution::SetInput1,
-    &Segmentation_ModelExecution::SetInput2,
-    &Segmentation_ModelExecution::SetInput3,
-    &Segmentation_ModelExecution::SetInput4,
-    &Segmentation_ModelExecution::SetInput5,
-    &Segmentation_ModelExecution::SetInput6,
-    &Segmentation_ModelExecution::SetInput7,
-    &Segmentation_ModelExecution::SetInput8,
-    &Segmentation_ModelExecution::SetInput9,
-    &Segmentation_ModelExecution::SetInput10,
-    &Segmentation_ModelExecution::SetInput11,
-    &Segmentation_ModelExecution::SetInput12,
-    &Segmentation_ModelExecution::SetInput13,
-    &Segmentation_ModelExecution::SetInput14,
-    &Segmentation_ModelExecution::SetInput15,
-    &Segmentation_ModelExecution::SetInput16,
-    &Segmentation_ModelExecution::SetInput17,
-    &Segmentation_ModelExecution::SetInput18,
-    &Segmentation_ModelExecution::SetInput19,
-    &Segmentation_ModelExecution::SetInput20,
-    &Segmentation_ModelExecution::SetInput21,
-    &Segmentation_ModelExecution::SetInput22,
-    &Segmentation_ModelExecution::SetInput23,
-    &Segmentation_ModelExecution::SetInput24,
-    &Segmentation_ModelExecution::SetInput25,
-    &Segmentation_ModelExecution::SetInput26,
-    &Segmentation_ModelExecution::SetInput27,
-    &Segmentation_ModelExecution::SetInput28,
-    &Segmentation_ModelExecution::SetInput29,
-    &Segmentation_ModelExecution::SetInput30,
-    &Segmentation_ModelExecution::SetInput31,
-    &Segmentation_ModelExecution::SetInput32,
-    &Segmentation_ModelExecution::SetInput33,
-    &Segmentation_ModelExecution::SetInput34,
-    &Segmentation_ModelExecution::SetInput35,
-    &Segmentation_ModelExecution::SetInput36,
-    &Segmentation_ModelExecution::SetInput37,
-    &Segmentation_ModelExecution::SetInput38,
-    &Segmentation_ModelExecution::SetInput39,
-    &Segmentation_ModelExecution::SetInput40,
-    &Segmentation_ModelExecution::SetInput41,
-    &Segmentation_ModelExecution::SetInput42,
-    &Segmentation_ModelExecution::SetInput43,
-    &Segmentation_ModelExecution::SetInput44,
-    &Segmentation_ModelExecution::SetInput45,
-    &Segmentation_ModelExecution::SetInput46,
-    &Segmentation_ModelExecution::SetInput47,
-    &Segmentation_ModelExecution::SetInput48,
-    &Segmentation_ModelExecution::SetInput49};
+constexpr auto kSegmentationUkmInputMethods =
+    std::to_array<UkmMemberFn>({&Segmentation_ModelExecution::SetInput0,
+                                &Segmentation_ModelExecution::SetInput1,
+                                &Segmentation_ModelExecution::SetInput2,
+                                &Segmentation_ModelExecution::SetInput3,
+                                &Segmentation_ModelExecution::SetInput4,
+                                &Segmentation_ModelExecution::SetInput5,
+                                &Segmentation_ModelExecution::SetInput6,
+                                &Segmentation_ModelExecution::SetInput7,
+                                &Segmentation_ModelExecution::SetInput8,
+                                &Segmentation_ModelExecution::SetInput9,
+                                &Segmentation_ModelExecution::SetInput10,
+                                &Segmentation_ModelExecution::SetInput11,
+                                &Segmentation_ModelExecution::SetInput12,
+                                &Segmentation_ModelExecution::SetInput13,
+                                &Segmentation_ModelExecution::SetInput14,
+                                &Segmentation_ModelExecution::SetInput15,
+                                &Segmentation_ModelExecution::SetInput16,
+                                &Segmentation_ModelExecution::SetInput17,
+                                &Segmentation_ModelExecution::SetInput18,
+                                &Segmentation_ModelExecution::SetInput19,
+                                &Segmentation_ModelExecution::SetInput20,
+                                &Segmentation_ModelExecution::SetInput21,
+                                &Segmentation_ModelExecution::SetInput22,
+                                &Segmentation_ModelExecution::SetInput23,
+                                &Segmentation_ModelExecution::SetInput24,
+                                &Segmentation_ModelExecution::SetInput25,
+                                &Segmentation_ModelExecution::SetInput26,
+                                &Segmentation_ModelExecution::SetInput27,
+                                &Segmentation_ModelExecution::SetInput28,
+                                &Segmentation_ModelExecution::SetInput29,
+                                &Segmentation_ModelExecution::SetInput30,
+                                &Segmentation_ModelExecution::SetInput31,
+                                &Segmentation_ModelExecution::SetInput32,
+                                &Segmentation_ModelExecution::SetInput33,
+                                &Segmentation_ModelExecution::SetInput34,
+                                &Segmentation_ModelExecution::SetInput35,
+                                &Segmentation_ModelExecution::SetInput36,
+                                &Segmentation_ModelExecution::SetInput37,
+                                &Segmentation_ModelExecution::SetInput38,
+                                &Segmentation_ModelExecution::SetInput39,
+                                &Segmentation_ModelExecution::SetInput40,
+                                &Segmentation_ModelExecution::SetInput41,
+                                &Segmentation_ModelExecution::SetInput42,
+                                &Segmentation_ModelExecution::SetInput43,
+                                &Segmentation_ModelExecution::SetInput44,
+                                &Segmentation_ModelExecution::SetInput45,
+                                &Segmentation_ModelExecution::SetInput46,
+                                &Segmentation_ModelExecution::SetInput47,
+                                &Segmentation_ModelExecution::SetInput48,
+                                &Segmentation_ModelExecution::SetInput49});
 
-const UkmMemberFn kSegmentationUkmPredictionResultMethods[] = {
-    &Segmentation_ModelExecution::SetPredictionResult1,
-    &Segmentation_ModelExecution::SetPredictionResult2,
-    &Segmentation_ModelExecution::SetPredictionResult3,
-    &Segmentation_ModelExecution::SetPredictionResult4,
-    &Segmentation_ModelExecution::SetPredictionResult5,
-    &Segmentation_ModelExecution::SetPredictionResult6,
-    &Segmentation_ModelExecution::SetPredictionResult7,
-    &Segmentation_ModelExecution::SetPredictionResult8,
-    &Segmentation_ModelExecution::SetPredictionResult9,
-    &Segmentation_ModelExecution::SetPredictionResult10};
+constexpr auto kSegmentationUkmPredictionResultMethods =
+    std::to_array<UkmMemberFn>({
+        &Segmentation_ModelExecution::SetPredictionResult1,
+        &Segmentation_ModelExecution::SetPredictionResult2,
+        &Segmentation_ModelExecution::SetPredictionResult3,
+        &Segmentation_ModelExecution::SetPredictionResult4,
+        &Segmentation_ModelExecution::SetPredictionResult5,
+        &Segmentation_ModelExecution::SetPredictionResult6,
+        &Segmentation_ModelExecution::SetPredictionResult7,
+        &Segmentation_ModelExecution::SetPredictionResult8,
+        &Segmentation_ModelExecution::SetPredictionResult9,
+        &Segmentation_ModelExecution::SetPredictionResult10,
+    });
 
-const UkmMemberFn kSegmentationUkmOutputMethods[] = {
+constexpr auto kSegmentationUkmOutputMethods = std::to_array<UkmMemberFn>({
     &Segmentation_ModelExecution::SetActualResult,
     &Segmentation_ModelExecution::SetActualResult2,
     &Segmentation_ModelExecution::SetActualResult3,
@@ -110,7 +112,8 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult7,
     &Segmentation_ModelExecution::SetActualResult8,
     &Segmentation_ModelExecution::SetActualResult9,
-    &Segmentation_ModelExecution::SetActualResult10};
+    &Segmentation_ModelExecution::SetActualResult10,
+});
 
 // 1 out of 100 model execution will be reported.
 const int kDefaultModelExecutionSamplingRate = 100;
@@ -127,10 +130,9 @@ int GetModelExecutionSamplingRate() {
 void AddPredictionResultToUkmModelExecution(
     ukm::builders::Segmentation_ModelExecution* model_execution,
     const std::vector<float>& results) {
-  CHECK_LE(results.size(), ARRAY_SIZE(kSegmentationUkmPredictionResultMethods));
+  CHECK_LE(results.size(), kSegmentationUkmPredictionResultMethods.size());
   for (size_t i = 0; i < results.size(); ++i) {
-    UNSAFE_TODO(CALL_MEMBER_FN(*model_execution,
-                               kSegmentationUkmPredictionResultMethods[i]))
+    CALL_MEMBER_FN(*model_execution, kSegmentationUkmPredictionResultMethods[i])
     (SegmentationUkmHelper::FloatToInt64(results[i]));
   }
 }
@@ -257,7 +259,7 @@ bool SegmentationUkmHelper::AddInputsToUkm(
     SegmentId segment_id,
     int64_t model_version,
     const ModelProvider::Request& input_tensor) {
-  if (input_tensor.size() > ARRAY_SIZE(kSegmentationUkmInputMethods)) {
+  if (input_tensor.size() > kSegmentationUkmInputMethods.size()) {
     // Don't record UKM if there are too many tensors.
     stats::RecordTooManyInputTensors(input_tensor.size());
     return false;
@@ -265,7 +267,7 @@ bool SegmentationUkmHelper::AddInputsToUkm(
 
   ukm_builder->SetOptimizationTarget(segment_id).SetModelVersion(model_version);
   for (size_t i = 0; i < input_tensor.size(); ++i) {
-    UNSAFE_TODO(CALL_MEMBER_FN(*ukm_builder, kSegmentationUkmInputMethods[i]))
+    CALL_MEMBER_FN(*ukm_builder, kSegmentationUkmInputMethods[i])
     (FloatToInt64(input_tensor[i]));
   }
   return true;
@@ -279,15 +281,16 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
   if (outputs.size() != output_indexes.size())
     return false;
 
-  const int output_methods_size = ARRAY_SIZE(kSegmentationUkmOutputMethods);
+  const size_t output_methods_size = kSegmentationUkmOutputMethods.size();
   if (outputs.size() > output_methods_size)
     return false;
 
   for (size_t i = 0; i < outputs.size(); ++i) {
-    if (output_indexes[i] >= output_methods_size)
+    if (static_cast<size_t>(output_indexes[i]) >= output_methods_size) {
       return false;
-    UNSAFE_TODO(CALL_MEMBER_FN(
-        *ukm_builder, kSegmentationUkmOutputMethods[output_indexes[i]]))
+    }
+    CALL_MEMBER_FN(*ukm_builder,
+                   kSegmentationUkmOutputMethods[output_indexes[i]])
     (FloatToInt64(outputs[i]));
   }
 

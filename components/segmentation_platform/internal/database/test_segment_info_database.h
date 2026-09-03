@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -87,8 +88,7 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
       ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
   void AddDiscreteMapping(
       SegmentId segment_id,
-      const float mappings[][2],
-      int num_pairs,
+      base::span<const float[2]> mappings,
       const std::string& discrete_mapping_key,
       ModelSource model_source = ModelSource::SERVER_MODEL_SOURCE);
   void SetBucketDuration(
