@@ -79,7 +79,7 @@ class ContextualSearchWebContentsHelper
   // This will update the task ID to be `task_id` if it was previously empty.
   contextual_search::ContextualSearchSessionHandle* GetSessionForTask(
       const base::Uuid& task_id) {
-    if (!task_id_) {
+    if (!task_id_ && session_handle_) {
       task_id_ = std::make_optional(task_id);
     }
     return (session_handle_ && task_id_ == task_id) ? session_handle_.get()
@@ -88,7 +88,7 @@ class ContextualSearchWebContentsHelper
 
   std::unique_ptr<contextual_search::InputStateModel>
   TakeInputStateModelForTask(const base::Uuid& task_id) {
-    if (!task_id_) {
+    if (!task_id_ && input_state_model_) {
       task_id_ = std::make_optional(task_id);
     }
     // Return and transfer ownership of the model if it matches the task.
@@ -100,7 +100,7 @@ class ContextualSearchWebContentsHelper
 
   const std::vector<int32_t>& GetSelectedTabIdsForTask(
       const base::Uuid& task_id) {
-    if (!task_id_) {
+    if (!task_id_ && !selected_tab_ids_.empty()) {
       task_id_ = std::make_optional(task_id);
     }
 
