@@ -42,7 +42,7 @@ GinJavaBridgeDispatcherHost::GinJavaBridgeDispatcherHost(
           base::FeatureList::IsEnabled(
               features::
                   kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady)) {
-  DCHECK(!retained_object_set.is_null());
+  CHECK(!retained_object_set.is_null(), base::NotFatalUntil::M159);
 }
 
 GinJavaBridgeDispatcherHost::~GinJavaBridgeDispatcherHost() {
@@ -51,12 +51,12 @@ GinJavaBridgeDispatcherHost::~GinJavaBridgeDispatcherHost() {
 void GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread(
     GlobalRenderFrameHostId routing_id,
     mojo::PendingReceiver<mojom::GinJavaBridgeHost> host) {
-  DCHECK(JavaBridgeThread::CurrentlyOn());
+  CHECK(JavaBridgeThread::CurrentlyOn(), base::NotFatalUntil::M159);
   receivers_.Add(this, std::move(host), routing_id);
 }
 
 void GinJavaBridgeDispatcherHost::ClearAllReceivers() {
-  DCHECK(JavaBridgeThread::CurrentlyOn());
+  CHECK(JavaBridgeThread::CurrentlyOn(), base::NotFatalUntil::M159);
   receivers_.set_disconnect_handler({});
   receivers_.Clear();
   object_receivers_.set_disconnect_handler({});
@@ -66,7 +66,7 @@ void GinJavaBridgeDispatcherHost::ClearAllReceivers() {
 mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
     RenderFrameHost* frame_host,
     bool should_create) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto routing_id = frame_host->GetGlobalId();
   auto it = remotes_.find(routing_id);
@@ -119,7 +119,7 @@ WebContentsImpl* GinJavaBridgeDispatcherHost::web_contents() const {
 
 void GinJavaBridgeDispatcherHost::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (named_objects_.empty()) {
     return;
   }
@@ -162,8 +162,8 @@ GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
 #if DCHECK_IS_ON()
   {
     GinJavaBoundObject::ObjectID added_object_id;
-    DCHECK(FindObjectId(object, &added_object_id));
-    DCHECK_EQ(object_id, added_object_id);
+    CHECK(FindObjectId(object, &added_object_id), base::NotFatalUntil::M159);
+    CHECK_EQ(object_id, added_object_id, base::NotFatalUntil::M159);
   }
 #endif  // DCHECK_IS_ON()
   base::android::ScopedJavaLocalRef<jobject> retained_object_set =
@@ -233,7 +233,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
     const base::android::JavaRef<jobject>& object,
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
     origin_matcher::OriginMatcher matcher) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   GinJavaBoundObject::ObjectID object_id;
   NamedObjectMap::iterator iter = named_objects_.find(name);
   bool existing_object = FindObjectId(object, &object_id);
@@ -275,7 +275,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
 
 void GinJavaBridgeDispatcherHost::RemoveNamedObject(
     const std::string& name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   NamedObjectMap::iterator iter = named_objects_.find(name);
   if (iter == named_objects_.end())
     return;
@@ -320,7 +320,7 @@ void GinJavaBridgeDispatcherHost::SetAllowObjectContentsInspection(bool allow) {
 }
 
 void GinJavaBridgeDispatcherHost::PrimaryMainDocumentElementAvailable() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // If we are skipping clearing on main document return early.
   if (mojo_skip_clear_on_main_document_) {
@@ -368,8 +368,8 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     const base::ListValue& arguments,
     base::ListValue* wrapped_result,
     content::mojom::GinJavaBridgeError* error_code) {
-  DCHECK(JavaBridgeThread::CurrentlyOn());
-  DCHECK(routing_id);
+  CHECK(JavaBridgeThread::CurrentlyOn(), base::NotFatalUntil::M159);
+  CHECK(routing_id, base::NotFatalUntil::M159);
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
   if (!object.get()) {
     wrapped_result->Append(base::Value());
@@ -419,7 +419,7 @@ void GinJavaBridgeDispatcherHost::OnObjectWrapperDeleted(
     const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id) {
   CHECK(JavaBridgeThread::CurrentlyOn());
-  DCHECK(routing_id);
+  CHECK(routing_id, base::NotFatalUntil::M159);
   base::AutoLock locker(objects_lock_);
   DeleteObjectForRouteLocked(routing_id, object_id);
 }

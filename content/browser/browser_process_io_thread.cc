@@ -45,15 +45,15 @@ BrowserProcessIOThread::~BrowserProcessIOThread() {
 }
 
 void BrowserProcessIOThread::RegisterAsBrowserThread() {
-  DCHECK(IsRunning());
+  CHECK(IsRunning(), base::NotFatalUntil::M159);
 
-  DCHECK(!browser_thread_);
+  CHECK(!browser_thread_, base::NotFatalUntil::M159);
   browser_thread_.reset(
       new BrowserThreadImpl(BrowserThread::IO, task_runner()));
 }
 
 void BrowserProcessIOThread::AllowBlockingForTesting() {
-  DCHECK(!IsRunning());
+  CHECK(!IsRunning(), base::NotFatalUntil::M159);
   is_blocking_allowed_for_testing_ = true;
 }
 

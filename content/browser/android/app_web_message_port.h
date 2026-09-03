@@ -71,7 +71,7 @@ class CONTENT_EXPORT AppWebMessagePort : public mojo::MessageReceiver {
   // it's strong referenced again by PostTask.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObj(JNIEnv* env) {
     auto java_ref = j_obj_.get(env);
-    DCHECK(java_ref);
+    CHECK(java_ref, base::NotFatalUntil::M159);
     return java_ref;
   }
 

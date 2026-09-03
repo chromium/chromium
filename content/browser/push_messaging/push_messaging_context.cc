@@ -17,19 +17,19 @@ PushMessagingContext::PushMessagingContext(
     const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context)
     : browser_context_(browser_context),
       service_worker_context_(service_worker_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   service_worker_context_->AddObserver(this);
 }
 
 PushMessagingContext::~PushMessagingContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   service_worker_context_->RemoveObserver(this);
 }
 
 void PushMessagingContext::OnRegistrationDeleted(int64_t registration_id,
                                                  const GURL& pattern,
                                                  const blink::StorageKey& key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PushMessagingService* push_service =
       browser_context_->GetPushMessagingService();
   if (push_service) {
@@ -39,7 +39,7 @@ void PushMessagingContext::OnRegistrationDeleted(int64_t registration_id,
 }
 
 void PushMessagingContext::OnStorageWiped() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PushMessagingService* push_service =
       browser_context_->GetPushMessagingService();
   if (push_service)

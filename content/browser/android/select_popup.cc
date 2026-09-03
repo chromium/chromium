@@ -153,7 +153,8 @@ void SelectPopup::SelectMenuItems(JNIEnv* env,
                                   const JavaRef<jintArray>& indices) {
   blink::mojom::PopupMenuClient* popup_client_raw_ptr =
       reinterpret_cast<blink::mojom::PopupMenuClient*>(selectPopupDelegate);
-  DCHECK(popup_client_raw_ptr && popup_client_.get() == popup_client_raw_ptr);
+  CHECK(popup_client_raw_ptr && popup_client_.get() == popup_client_raw_ptr,
+        base::NotFatalUntil::M159);
 
   if (indices.is_null()) {
     popup_client_->DidCancel();

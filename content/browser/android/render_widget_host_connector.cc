@@ -63,7 +63,7 @@ RenderWidgetHostConnector::Observer::Observer(
 }
 
 RenderWidgetHostConnector::Observer::~Observer() {
-  DCHECK(!active_rwhva_);
+  CHECK(!active_rwhva_, base::NotFatalUntil::M159);
 }
 
 void RenderWidgetHostConnector::Observer::RenderViewReady() {
@@ -98,7 +98,8 @@ void RenderWidgetHostConnector::Observer::DestroyEarly() {
 void RenderWidgetHostConnector::Observer::DoDestroy(
     WebContentsAndroid* web_contents_android) {
   web_contents_android->RemoveDestructionObserver(this);
-  DCHECK(!active_rwhva_ || active_rwhva_ == GetRenderWidgetHostViewAndroid());
+  CHECK(!active_rwhva_ || active_rwhva_ == GetRenderWidgetHostViewAndroid(),
+        base::NotFatalUntil::M159);
   UpdateRenderWidgetHostView(nullptr);
   delete connector_;
 }

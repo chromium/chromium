@@ -46,7 +46,7 @@ DevToolsBackgroundServicesContextImpl* GetDevTools(
 void RunPushEventCallback(
     PushMessagingRouter::PushEventCallback deliver_message_callback,
     blink::mojom::PushEventStatus push_event_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // PostTask() to ensure the callback is called asynchronously.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -61,7 +61,7 @@ void DidFindServiceWorkerRegistration(
     ServiceWorkerStartCallback callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(nullptr /* service_worker_version */,
@@ -70,7 +70,7 @@ void DidFindServiceWorkerRegistration(
     return;
   }
   ServiceWorkerVersion* version = service_worker_registration->active_version();
-  DCHECK(version);
+  CHECK(version, base::NotFatalUntil::M159);
 
   if (base::FeatureList::IsEnabled(
           features::kServiceWorkerSoftUpdateOnFunctionalEvent)) {
@@ -93,7 +93,7 @@ void FindServiceWorkerRegistration(
     const url::Origin& origin,
     int64_t service_worker_registration_id,
     ServiceWorkerStartCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Try to acquire the registration from storage. If it's already live we'll
   // receive it right away. If not, it will be revived from storage.
   service_worker_context->FindReadyRegistrationForId(
@@ -110,7 +110,7 @@ void StartServiceWorkerForDispatch(ServiceWorkerMetrics::EventType event_type,
                                    const GURL& origin,
                                    int64_t service_worker_registration_id,
                                    ServiceWorkerStartCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   StoragePartition* partition =
       browser_context->GetStoragePartitionForUrl(origin);
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
@@ -133,7 +133,7 @@ void PushMessagingRouter::DeliverMessage(
     std::optional<std::string> payload,
     bool record_network_requests,
     PushEventCallback deliver_message_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   StartServiceWorkerForDispatch(
       ServiceWorkerMetrics::EventType::PUSH, browser_context, origin,
       service_worker_registration_id,
@@ -151,10 +151,11 @@ void PushMessagingRouter::DeliverMessageToWorker(
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Service worker registration was not found, run callback immediately
   if (!service_worker) {
-    DCHECK_NE(blink::ServiceWorkerStatusCode::kOk, status);
+    CHECK_NE(blink::ServiceWorkerStatusCode::kOk, status,
+             base::NotFatalUntil::M159);
     RunPushEventCallback(
         std::move(deliver_message_callback),
         status == blink::ServiceWorkerStatusCode::kErrorNotFound
@@ -222,7 +223,7 @@ void PushMessagingRouter::DeliverMessageEnd(
     const std::string& message_id,
     PushEventCallback deliver_message_callback,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::mojom::PushEventStatus push_event_status =
       blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR;
   std::string status_description;
@@ -289,7 +290,7 @@ void PushMessagingRouter::FireSubscriptionChangeEvent(
     blink::mojom::PushSubscriptionPtr new_subscription,
     blink::mojom::PushSubscriptionPtr old_subscription,
     PushEventCallback subscription_change_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(features::IsPushSubscriptionChangeEventEnabled());
 
   StartServiceWorkerForDispatch(
@@ -308,11 +309,12 @@ void PushMessagingRouter::FireSubscriptionChangeEventToWorker(
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(features::IsPushSubscriptionChangeEventEnabled());
 
   if (!service_worker) {
-    DCHECK_NE(blink::ServiceWorkerStatusCode::kOk, status);
+    CHECK_NE(blink::ServiceWorkerStatusCode::kOk, status,
+             base::NotFatalUntil::M159);
     RunPushEventCallback(
         std::move(subscription_change_callback),
         status == blink::ServiceWorkerStatusCode::kErrorNotFound
@@ -360,7 +362,7 @@ void PushMessagingRouter::FireSubscriptionChangeEventEnd(
     scoped_refptr<ServiceWorkerVersion> service_worker,
     PushEventCallback subscription_change_callback,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::mojom::PushEventStatus push_event_status =
       blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR;
   switch (service_worker_status) {

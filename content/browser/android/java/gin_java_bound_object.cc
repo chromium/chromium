@@ -137,7 +137,7 @@ void GinJavaBoundObject::EnsureMethodsAreSetUp() {
   ScopedJavaLocalRef<jobjectArray> class_methods = GetClassMethods(env, clazz);
   jni_zero::JArrayView<jobject> methods = class_methods.CreateView(env);
   // Java objects always have public methods.
-  DCHECK_GT(methods.length(), 0);
+  CHECK_GT(methods.length(), 0, base::NotFatalUntil::M159);
 
   for (auto java_method : methods) {
     if (!safe_annotation_clazz_.is_null()) {

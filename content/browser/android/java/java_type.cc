@@ -18,7 +18,7 @@ namespace {
 std::unique_ptr<JavaType> CreateFromArrayComponentTypeName(
     const std::string& type_name) {
   std::unique_ptr<JavaType> result(new JavaType());
-  DCHECK(!type_name.empty());
+  CHECK(!type_name.empty(), base::NotFatalUntil::M159);
   switch (type_name[0]) {
     case 'Z':
       result->type = JavaType::TypeBoolean;
@@ -84,7 +84,7 @@ JavaType& JavaType::operator=(const JavaType& other) {
     return *this;
   type = other.type;
   if (other.inner_type) {
-    DCHECK_EQ(JavaType::TypeArray, type);
+    CHECK_EQ(JavaType::TypeArray, type, base::NotFatalUntil::M159);
     inner_type = std::make_unique<JavaType>(*other.inner_type);
   } else {
     inner_type.reset();
@@ -96,7 +96,7 @@ JavaType& JavaType::operator=(const JavaType& other) {
 // static
 JavaType JavaType::CreateFromBinaryName(const std::string& binary_name) {
   JavaType result;
-  DCHECK(!binary_name.empty());
+  CHECK(!binary_name.empty(), base::NotFatalUntil::M159);
   if (binary_name == "boolean") {
     result.type = JavaType::TypeBoolean;
   } else if (binary_name == "byte") {

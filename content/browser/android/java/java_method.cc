@@ -17,7 +17,7 @@ namespace {
 
 std::string BinaryNameToJNISignature(const std::string& binary_name,
                                      JavaType* type) {
-  DCHECK(type);
+  CHECK(type, base::NotFatalUntil::M159);
   *type = JavaType::CreateFromBinaryName(binary_name);
   return type->JNISignature();
 }
@@ -88,8 +88,9 @@ void JavaMethod::EnsureTypesAndIDAreSetUp() const {
       GetMethodParameterTypes(env, java_method_));
   // Usually, this will already have been called.
   EnsureNumParametersIsSetUp();
-  DCHECK_EQ(num_parameters_,
-            static_cast<size_t>(env->GetArrayLength(parameters.obj())));
+  CHECK_EQ(num_parameters_,
+           static_cast<size_t>(env->GetArrayLength(parameters.obj())),
+           base::NotFatalUntil::M159);
 
   // Java gives us the argument type using an extended version of the 'binary
   // name'. See

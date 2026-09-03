@@ -49,7 +49,7 @@ int64_t RoundDoubleToLong(const double& x) {
   // between double values in the the range 2^62 to 2^63 is 2^10. The cast is
   // required to silence a spurious gcc warning for integer overflow.
   const int64_t kLimit = (INT64_C(1) << 63) - static_cast<uint64_t>(1 << 10);
-  DCHECK(kLimit > 0);
+  CHECK(kLimit > 0, base::NotFatalUntil::M159);
   const double kLargestDoubleLessThanInt64Max = kLimit;
   const double kSmallestDoubleGreaterThanInt64Min = -kLimit;
   if (intermediate > kLargestDoubleLessThanInt64Max) {
@@ -472,7 +472,7 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
                                     const JavaType& target_type,
                                     const ObjectRefs& object_refs,
                                     mojom::GinJavaBridgeError* error) {
-  DCHECK_EQ(JavaType::TypeArray, target_type.type);
+  CHECK_EQ(JavaType::TypeArray, target_type.type, base::NotFatalUntil::M159);
   const JavaType& target_inner_type = *target_type.inner_type.get();
   // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for
   // multi-dimensional arrays. Spec requires handling multi-demensional arrays.
@@ -507,8 +507,10 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
     // strings, objects and arrays. Of these, only strings can occur here.
     // SetArrayElement() causes the array to take its own reference to the
     // string, so we can now release the local reference.
-    DCHECK_NE(JavaType::TypeObject, target_inner_type.type);
-    DCHECK_NE(JavaType::TypeArray, target_inner_type.type);
+    CHECK_NE(JavaType::TypeObject, target_inner_type.type,
+             base::NotFatalUntil::M159);
+    CHECK_NE(JavaType::TypeArray, target_inner_type.type,
+             base::NotFatalUntil::M159);
     ReleaseJavaValueIfRequired(env, &element, target_inner_type);
   }
 
@@ -520,7 +522,7 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
                                           const JavaType& target_type,
                                           const ObjectRefs& object_refs,
                                           mojom::GinJavaBridgeError* error) {
-  DCHECK_EQ(JavaType::TypeArray, target_type.type);
+  CHECK_EQ(JavaType::TypeArray, target_type.type, base::NotFatalUntil::M159);
 
   const JavaType& target_inner_type = *target_type.inner_type.get();
   // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for
@@ -577,8 +579,10 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
     // strings, objects and arrays. Of these, only strings can occur here.
     // SetArrayElement() causes the array to take its own reference to the
     // string, so we can now release the local reference.
-    DCHECK_NE(JavaType::TypeObject, target_inner_type.type);
-    DCHECK_NE(JavaType::TypeArray, target_inner_type.type);
+    CHECK_NE(JavaType::TypeObject, target_inner_type.type,
+             base::NotFatalUntil::M159);
+    CHECK_NE(JavaType::TypeArray, target_inner_type.type,
+             base::NotFatalUntil::M159);
     ReleaseJavaValueIfRequired(env, &element, target_inner_type);
   }
 
@@ -601,8 +605,9 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
       if (GinJavaBridgeValue::ContainsGinJavaBridgeValue(&value)) {
         std::unique_ptr<const GinJavaBridgeValue> gin_value(
             GinJavaBridgeValue::FromValue(&value));
-        DCHECK(gin_value);
-        DCHECK(gin_value->IsType(GinJavaBridgeValue::TYPE_OBJECT_ID));
+        CHECK(gin_value, base::NotFatalUntil::M159);
+        CHECK(gin_value->IsType(GinJavaBridgeValue::TYPE_OBJECT_ID),
+              base::NotFatalUntil::M159);
         ScopedJavaLocalRef<jobject> obj;
         GinJavaBoundObject::ObjectID object_id;
         if (gin_value->GetAsObjectID(&object_id)) {
@@ -611,8 +616,8 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
             obj.Reset(iter->second.get(env));
           }
         }
-        DCHECK(!target_type.class_ref.is_null());
-        DCHECK(!obj.is_null());
+        CHECK(!target_type.class_ref.is_null(), base::NotFatalUntil::M159);
+        CHECK(!obj.is_null(), base::NotFatalUntil::M159);
         if (env->IsInstanceOf(obj.obj(), target_type.class_ref.obj()) ==
             JNI_TRUE) {
           result.l = obj.Release();

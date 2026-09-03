@@ -161,7 +161,7 @@ class ContentURLLoader : public network::mojom::URLLoader {
     mojo::Remote<network::mojom::URLLoaderClient> client(
         std::move(client_remote));
 
-    DCHECK(request.url.SchemeIs("content"));
+    CHECK(request.url.SchemeIs("content"), base::NotFatalUntil::M159);
     base::FilePath path = base::FilePath(request.url.spec());
 
     // Get the file length.

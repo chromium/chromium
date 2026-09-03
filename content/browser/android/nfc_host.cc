@@ -29,7 +29,7 @@ base::AtomicSequenceNumber g_unique_id;
 
 NFCHost::NFCHost(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
 
   permission_controller_ =
       web_contents->GetBrowserContext()->GetPermissionController();

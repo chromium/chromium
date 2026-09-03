@@ -207,7 +207,7 @@ void GinJavaMethodInvocationHelper::InvokeMethod(jobject object,
                                                  const JavaType& return_type,
                                                  jmethodID id,
                                                  jvalue* parameters) {
-  DCHECK(object || clazz);
+  CHECK(object || clazz, base::NotFatalUntil::M159);
   JNIEnv* env = AttachCurrentThread();
   base::ListValue result_wrapper;
   switch (return_type.type) {

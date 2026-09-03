@@ -374,7 +374,7 @@ ScopedJavaLocalRef<jobject> WebContentsObserverProxy::GetJavaObjectChecked(
   CHECK(web_contents());
   auto obj =
       Java_WebContentsObserverProxy_getFromWebContents(env, web_contents());
-  DCHECK(!obj.is_null());
+  CHECK(!obj.is_null(), base::NotFatalUntil::M159);
   return obj;
 }
 

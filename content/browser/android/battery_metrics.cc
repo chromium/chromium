@@ -252,8 +252,8 @@ void ReportDarkModeDrains(int capacity_consumed_avg,
     exclusive_dark_mode_histogram =
         GetAvgBatteryDrainHistogram(".Exclusive.MixedMode");
   }
-  DCHECK(dark_mode_histogram);
-  DCHECK(exclusive_dark_mode_histogram);
+  CHECK(dark_mode_histogram, base::NotFatalUntil::M159);
+  CHECK(exclusive_dark_mode_histogram, base::NotFatalUntil::M159);
 
   dark_mode_histogram->AddCount(capacity_consumed_avg, num_sampling_periods);
   if (is_exclusive_measurement) {

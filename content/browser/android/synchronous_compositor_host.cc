@@ -99,7 +99,7 @@ class SynchronousCompositorControlHost
           receiver,
       scoped_refptr<SynchronousCompositorSyncCallBridge> bridge,
       int process_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&CreateOnIOThread, std::move(receiver),
                                   std::move(bridge), process_id));
@@ -110,7 +110,7 @@ class SynchronousCompositorControlHost
           receiver,
       scoped_refptr<SynchronousCompositorSyncCallBridge> bridge,
       int process_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
     auto host_control_receiver = mojo::MakeSelfOwnedReceiver(
         std::make_unique<SynchronousCompositorControlHost>(bridge, process_id),
         std::move(receiver));
@@ -213,7 +213,7 @@ void SynchronousCompositorHost::InitMojo() {
 
 bool SynchronousCompositorHost::IsReadyForSynchronousCall() {
   bool res = bridge_->IsRemoteReadyOnUIThread();
-  DCHECK(!res || GetSynchronousCompositor());
+  CHECK(!res || GetSynchronousCompositor(), base::NotFatalUntil::M159);
   return res;
 }
 
@@ -254,7 +254,7 @@ SynchronousCompositorHost::DemandDrawHwAsync(
   if (!bridge_->SetFrameFutureOnUIThread(frame_future)) {
     frame_future->SetFrame(nullptr);
   } else {
-    DCHECK(compositor);
+    CHECK(compositor, base::NotFatalUntil::M159);
     compositor->DemandDrawHwAsync(std::move(params));
     was_evicted_ = false;
   }
@@ -405,7 +405,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
 
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(params->size.width(), params->size.height());
-  DCHECK_EQ(kRGBA_8888_SkColorType, info.colorType());
+  CHECK_EQ(kRGBA_8888_SkColorType, info.colorType(), base::NotFatalUntil::M159);
   size_t stride = info.minRowBytes();
   size_t buffer_size = info.computeByteSize(stride);
   if (SkImageInfo::ByteSizeOverflowed(buffer_size))
@@ -516,7 +516,7 @@ void SynchronousCompositorHost::SendZeroMemory() {
 void SynchronousCompositorHost::ReturnResources(
     uint32_t layer_tree_frame_sink_id,
     std::vector<viz::ReturnedResource> resources) {
-  DCHECK(!resources.empty());
+  CHECK(!resources.empty(), base::NotFatalUntil::M159);
   if (blink::mojom::SynchronousCompositor* compositor =
           GetSynchronousCompositor())
     compositor->ReclaimResources(layer_tree_frame_sink_id,
@@ -620,7 +620,7 @@ void SynchronousCompositorHost::LayerTreeFrameSinkCreated() {
   // New LayerTreeFrameSink is not aware of state from Browser side. So need to
   // re-send all browser side state here.
   blink::mojom::SynchronousCompositor* compositor = GetSynchronousCompositor();
-  DCHECK(compositor);
+  CHECK(compositor, base::NotFatalUntil::M159);
   compositor->SetMemoryPolicy(bytes_limit_);
 
   SendBeginFramePaused();
@@ -784,7 +784,7 @@ void SynchronousCompositorHost::SendBeginFrame(viz::BeginFrameArgs args) {
     return;
 
   blink::mojom::SynchronousCompositor* compositor = GetSynchronousCompositor();
-  DCHECK(compositor);
+  CHECK(compositor, base::NotFatalUntil::M159);
   compositor->BeginFrame(args, timing_details_);
   timing_details_.clear();
 }
@@ -813,8 +813,8 @@ void SynchronousCompositorHost::BeginFrameComplete(
 
 void SynchronousCompositorHost::SetBeginFrameSource(
     viz::BeginFrameSource* begin_frame_source) {
-  DCHECK(!begin_frame_source_);
-  DCHECK(!outstanding_begin_frame_requests_);
+  CHECK(!begin_frame_source_, base::NotFatalUntil::M159);
+  CHECK(!outstanding_begin_frame_requests_, base::NotFatalUntil::M159);
   begin_frame_source_ = begin_frame_source;
 }
 

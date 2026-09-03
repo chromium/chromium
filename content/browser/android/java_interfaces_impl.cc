@@ -47,7 +47,7 @@ class JavaInterfaceProviderHolder {
   }
 
   static JavaInterfaceProviderHolder* GetInstance() {
-    DCHECK_CURRENTLY_ON(thread);
+    CHECK_CURRENTLY_ON(thread, base::NotFatalUntil::M159);
     return base::Singleton<JavaInterfaceProviderHolder<thread>>::get();
   }
 

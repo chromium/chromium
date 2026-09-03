@@ -69,7 +69,7 @@ class SuspendedProcessWatcher : public content::RenderProcessHostObserver {
   void ResumeWebkitSharedTimers() {
     for (auto id : suspended_processes_) {
       content::RenderProcessHost* host = content::RenderProcessHost::FromID(id);
-      DCHECK(host);
+      CHECK(host, base::NotFatalUntil::M159);
       host->RemoveObserver(this);
       host->GetRendererInterface()->SetWebKitSharedTimersSuspended(false);
     }

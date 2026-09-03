@@ -631,7 +631,7 @@ void PushMessagingManager::DidUnregister(
 void PushMessagingManager::GetSubscription(
     int64_t service_worker_registration_id,
     GetSubscriptionCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (IsRequestFromFencedFrame()) {
     bad_message::ReceivedBadMessage(
@@ -668,12 +668,13 @@ void PushMessagingManager::DidGetSubscription(
     const std::vector<std::string>&
         push_subscription_id_and_application_server_key,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::mojom::PushGetRegistrationStatus get_status =
       blink::mojom::PushGetRegistrationStatus::STORAGE_ERROR;
   switch (service_worker_status) {
     case blink::ServiceWorkerStatusCode::kOk: {
-      DCHECK_EQ(2u, push_subscription_id_and_application_server_key.size());
+      CHECK_EQ(2u, push_subscription_id_and_application_server_key.size(),
+               base::NotFatalUntil::M159);
       const std::string& push_subscription_id =
           push_subscription_id_and_application_server_key[0];
       const std::string& application_server_key =
@@ -772,7 +773,7 @@ void PushMessagingManager::GetSubscriptionDidGetInfo(
     const std::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (is_valid) {
     auto options = blink::mojom::PushSubscriptionOptions::New();
     options->user_visible_only = user_visible_only;
@@ -821,7 +822,7 @@ void PushMessagingManager::GetSubscriptionDidUnsubscribe(
     GetSubscriptionCallback callback,
     blink::mojom::PushGetRegistrationStatus get_status,
     blink::mojom::PushUnregistrationStatus unsubscribe_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::move(callback).Run(get_status, nullptr /* subscription */);
 }
 
@@ -831,7 +832,7 @@ void PushMessagingManager::GetSubscriptionInfo(
     const std::string& sender_id,
     const std::string& push_subscription_id,
     PushMessagingService::SubscriptionInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PushMessagingService* push_service = GetService();
   if (!push_service) {
     std::move(callback).Run(
