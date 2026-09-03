@@ -1458,7 +1458,7 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
     return;
   }
 
-  ResourceResponse response;
+  ResourceResponse response(initial_url);
   response.SetAlpnNegotiatedProtocol(AtomicString(alpn_negotiated_protocol));
   response.SetConnectionInfo(connection_info);
   response.SetConnectionReused(load_timing_info->socket_reused);

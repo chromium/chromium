@@ -50,7 +50,7 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
   info->start_time = start_time;
   info->name = initial_url;
   info->response_end = base::TimeTicks::Now();
-  if (!response) {
+  if (!response || response->IsNull()) {
     return info;
   }
 
