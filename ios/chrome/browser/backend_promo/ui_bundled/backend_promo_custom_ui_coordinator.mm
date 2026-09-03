@@ -6,19 +6,21 @@
 
 #import "ios/chrome/browser/backend_promo/ui_bundled/backend_promo_custom_ui_coordinator_delegate.h"
 #import "ios/chrome/browser/backend_promo/ui_bundled/backend_promo_custom_ui_params.h"
+#import "ios/chrome/browser/backend_promo/ui_bundled/backend_promo_custom_ui_view_controller.h"
 #import "ios/chrome/browser/backend_promo/ui_bundled/backend_promo_user_action.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 @interface BackendPromoCustomUICoordinator () <ConfirmationAlertActionHandler>
 @end
 
 @implementation BackendPromoCustomUICoordinator {
   BackendPromoCustomUIParams* _params;
-  ConfirmationAlertViewController* _viewController;
+  UIViewController* _viewController;
 }
+
+#pragma mark - ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -31,15 +33,16 @@
 }
 
 - (void)start {
-  ButtonStackConfiguration* config = [[ButtonStackConfiguration alloc] init];
-  config.primaryActionString = _params.primaryActionTitle;
-  config.secondaryActionString = _params.secondaryActionTitle;
+  if (!IsIOSBackendPromoCustomUIEnabled()) {
+    [self.delegate
+        backendPromoCustomUICoordinator:self
+                   didDismissWithAction:BackendPromoUserActionCancelled];
+    return;
+  }
 
   _viewController =
-      [[ConfirmationAlertViewController alloc] initWithConfiguration:config];
-  _viewController.titleString = _params.title;
-  _viewController.subtitleString = _params.body;
-  _viewController.actionHandler = self;
+      [BackendPromoCustomUIViewController viewControllerWithParams:_params
+                                                     actionHandler:self];
 
   [self.baseViewController presentViewController:_viewController
                                         animated:NO
