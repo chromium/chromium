@@ -297,6 +297,10 @@ public class ManageSyncSettingsTest {
         }
 
         onView(withText(R.string.account_section_header)).check(matches(isDisplayed()));
+        Preference accountSectionHeader =
+                fragment.findPreference(ManageSyncSettings.PREF_ACCOUNT_SECTION_HEADER);
+        Assert.assertNotNull(accountSectionHeader);
+        Assert.assertFalse(accountSectionHeader.isIconSpaceReserved());
 
         scrollToAndVerifyPresence(R.string.account_section_history_toggle);
 
@@ -325,6 +329,10 @@ public class ManageSyncSettingsTest {
         onView(withText(R.string.account_advanced_header)).check(matches(isDisplayed()));
         onView(withText(R.string.sign_in_personalize_google_services_summary))
                 .check(matches(isDisplayed()));
+        Preference accountAdvancedHeader =
+                fragment.findPreference(ManageSyncSettings.PREF_ACCOUNT_ADVANCED_HEADER);
+        Assert.assertNotNull(accountAdvancedHeader);
+        Assert.assertFalse(accountAdvancedHeader.isIconSpaceReserved());
 
         scrollToAndVerifyPresence(R.string.sync_encryption);
 

@@ -9,7 +9,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="keyboard_shortcut_section"
         android:title="@string/site_search_keyboard_shortcut_header"
         app:allowDividerAbove="true">
@@ -23,6 +23,6 @@ found in the LICENSE file.
             android:key="keyboard_shortcut_radio_group"
             app:allowDividerAbove="false" />
 
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

@@ -9,7 +9,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="custom_search_engine_section"
         android:title="@string/site_search_search_engines_header"
         app:allowDividerAbove="true">
@@ -24,6 +24,6 @@ found in the LICENSE file.
             android:layout="@layout/preference_list_recycler_view"
             app:allowDividerAbove="false" />
 
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

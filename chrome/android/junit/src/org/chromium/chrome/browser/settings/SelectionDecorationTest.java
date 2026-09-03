@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
@@ -27,6 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory;
 
 /** Unit test for {@link SelectionDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,7 +44,7 @@ public class SelectionDecorationTest {
         PreferenceManager preferenceManager = new PreferenceManager(mContext);
         PreferenceScreen preferenceScreen = preferenceManager.createPreferenceScreen(mContext);
 
-        PreferenceCategory category = new PreferenceCategory(mContext);
+        var category = new ChromeBasePreferenceCategory(mContext);
         category.setKey("category_key");
         category.setTitle("Category Header");
         preferenceScreen.addPreference(category);
@@ -60,7 +60,7 @@ public class SelectionDecorationTest {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setAdapter(adapter);
 
-        // View for PreferenceCategory
+        // View for ChromeBasePreferenceCategory
         FrameLayout categoryView = new FrameLayout(mContext);
         TextView categoryTitle = new TextView(mContext);
         categoryTitle.setId(android.R.id.title);

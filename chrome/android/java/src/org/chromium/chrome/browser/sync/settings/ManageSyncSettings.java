@@ -129,6 +129,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_BATCH_UPLOAD_CARD_PREFERENCE = "batch_upload_card";
 
     @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_HEADER = "account_section_header";
+
+    @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_HISTORY_TOGGLE =
             "account_section_history_toggle";
 
@@ -162,6 +165,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_THEMES_TOGGLE = "account_section_themes_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_ADVANCED_HEADER = "account_advanced_header";
 
     @VisibleForTesting
     public static final String PREF_GOOGLE_ACTIVITY_CONTROLS = "google_activity_controls";

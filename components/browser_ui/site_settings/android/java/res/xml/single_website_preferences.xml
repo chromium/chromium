@@ -30,12 +30,12 @@ found in the LICENSE file.
         android:selectable="false"
         android:key="intrusive_ads_info_divider"
         android:layout="@layout/horizontal_divider" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="site_heading"
         android:title="@string/website_settings_site_category" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="site_title" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="site_usage"
         android:title="@string/website_settings_usage_category" />
     <org.chromium.components.browser_ui.site_settings.ClearWebsiteStorage
@@ -44,13 +44,13 @@ found in the LICENSE file.
         android:positiveButtonText="@string/webstorage_delete_data_dialog_ok_button"
         android:negativeButtonText="@string/cancel"
         android:widgetLayout="@layout/clear_storage" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="related_sites_header"
         android:title="@string/website_settings_related_sites" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="site_permissions"
         android:title="@string/website_settings_permissions_category" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="file_editing_grants"
         android:title="@string/website_settings_file_editing_grants_category" />
 

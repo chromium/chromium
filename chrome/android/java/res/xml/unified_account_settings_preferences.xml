@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:key="batch_upload_card"
         app:isPreferenceVisible="false"/>
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="account_section_header"
         android:title="@string/account_section_header"/>
 
@@ -82,7 +82,7 @@ found in the LICENSE file.
         android:summary="@string/account_section_footer"
         android:selectable="false"/>
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="account_advanced_header"
         android:title="@string/account_advanced_header"/>
 

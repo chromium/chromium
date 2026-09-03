@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:orderingFromXml="false">
 
    <!-- TODO(crbug.com/476754486): Nest the radio buttons and text message inside the preference category -->
-   <PreferenceCategory
+   <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:id="@+id/autofill_service_provider_category"
         android:key="autofill_service_provider_category"
         android:order="0"
@@ -25,7 +25,7 @@ found in the LICENSE file.
         android:order="2"
         app:allowDividerBelow="false" />
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:id="@+id/autofill_personal_context_category"
         android:key="autofill_personal_context_category"
         android:order="3"
@@ -53,9 +53,9 @@ found in the LICENSE file.
             android:summary="@string/personal_context_autofill_settings_helping_improve_notice_android_summary"
             app:backgroundStyle="card"
             app:expandedContentLayout="@layout/autofill_personal_context_expandable_notice" />
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:id="@+id/autofill_ai_category"
         android:key="autofill_ai_category"
         android:order="4"
@@ -75,5 +75,5 @@ found in the LICENSE file.
             android:order="1"
             android:title="@string/settings_autofill_ai_authentication_toggle_title"
             android:summary="@string/settings_autofill_ai_authentication_toggle_subtitle" />
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 </PreferenceScreen>

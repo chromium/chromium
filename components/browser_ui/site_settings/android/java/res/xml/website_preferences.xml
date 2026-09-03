@@ -80,7 +80,7 @@ found in the LICENSE file.
 
     <!-- Text messages describing the anti abuse features.
          Only shown for the AntiAbuse category. -->
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="anti_abuse_when_on_header"
         android:title="@string/anti_abuse_when_on_header"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference
@@ -98,7 +98,7 @@ found in the LICENSE file.
         android:summary="@string/anti_abuse_when_on_section_three"
         android:icon="@drawable/ic_timer"
         app:allowDividerBelow="false" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="anti_abuse_things_to_consider_header"
         android:title="@string/anti_abuse_things_to_consider_header"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference

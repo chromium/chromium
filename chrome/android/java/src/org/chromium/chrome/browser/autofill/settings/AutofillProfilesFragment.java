@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -53,6 +52,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -224,7 +224,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     /** Adds the "Save and fill addresses" toggle. */
     private void addAutofillSwitch(PreferenceScreen screen) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
-            PreferenceCategory category = new PreferenceCategory(getStyledContext());
+            var category = new ChromeBasePreferenceCategory(getStyledContext());
             category.setTitle(R.string.autofill_addresses_section_title);
             category.setKey("autofill_section_title");
             screen.addPreference(category);
@@ -347,7 +347,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         screen.addPreference(emailVerificationSwitch);
 
         if (personalDataManager.isEmailVerificationEnabled()) {
-            PreferenceCategory category = new PreferenceCategory(getStyledContext());
+            var category = new ChromeBasePreferenceCategory(getStyledContext());
             category.setKey("autofill_email_verification_list");
             category.setTitle(R.string.autofill_settings_email_verification_section_title);
             screen.addPreference(category);

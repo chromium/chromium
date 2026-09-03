@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +24,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
             // The results are grouped by the top level setting categories. Build the category
             // header above the group.
             if (!TextUtils.equals(group, prevGroup)) {
-                PreferenceCategory prefGroup = new PreferenceCategory(requireContext());
+                var prefGroup = new ChromeBasePreferenceCategory(requireContext());
                 prefGroup.setTitle(group);
                 prefGroup.setIconSpaceReserved(false);
                 screen.addPreference(prefGroup);

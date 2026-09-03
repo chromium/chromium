@@ -8,12 +8,12 @@ found in the LICENSE file.
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="site_heading"
         android:title="@string/website_settings_site_category" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="site_title" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="site_usage"
         android:title="@string/website_settings_usage_category" />
     <org.chromium.components.browser_ui.site_settings.ClearWebsiteStorage
@@ -22,10 +22,10 @@ found in the LICENSE file.
         android:positiveButtonText="@string/webstorage_delete_data_dialog_ok_button"
         android:negativeButtonText="@string/cancel"
         android:widgetLayout="@layout/clear_storage" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="related_sites"
         android:title="@string/website_settings_related_sites" />
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="sites_in_group" />
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="reset_group_button"
