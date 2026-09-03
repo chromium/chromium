@@ -25,11 +25,6 @@ enum class SyncErrorInfoBarTrigger {
   kPasswordFormParsed,
 };
 
-// Gets the top-level description message associated with the sync error state
-// of `syncService`. Returns nil if there is no sync error.
-NSString* GetSyncErrorDescriptionForSyncService(
-    syncer::SyncService* syncService);
-
 // Gets the title of the Sync error info bar.
 std::u16string GetSyncErrorInfoBarTitleForProfile(ProfileIOS* profile);
 

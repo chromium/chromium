@@ -221,8 +221,6 @@ std::string GetSyncErrorInfobarHistogramSuffix(
   NOTREACHED();
 }
 
-}  // namespace
-
 NSString* GetSyncErrorDescriptionForSyncService(
     syncer::SyncService* syncService) {
   DCHECK(syncService);
@@ -262,6 +260,8 @@ NSString* GetSyncErrorDescriptionForSyncService(
       return nil;
   }
 }
+
+}  // namespace
 
 std::u16string GetSyncErrorInfoBarTitleForProfile(ProfileIOS* profile) {
   DCHECK(profile);
