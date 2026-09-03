@@ -29,7 +29,7 @@ struct MEDIA_EXPORT AudioDeviceName {
   std::string unique_id;    // Unique identifier for the device.
 };
 
-typedef std::list<AudioDeviceName> AudioDeviceNames;
+using AudioDeviceNames = std::list<AudioDeviceName>;
 
 }  // namespace media
 

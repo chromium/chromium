@@ -140,7 +140,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
                                    // (only relevant on Windows).
 };
 
-typedef std::vector<AudioDeviceDescription> AudioDeviceDescriptions;
+using AudioDeviceDescriptions = std::vector<AudioDeviceDescription>;
 
 }  // namespace media
 

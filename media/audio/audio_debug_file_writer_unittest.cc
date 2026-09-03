@@ -85,8 +85,8 @@ class MockAudioBusPool : public AudioBusPool {
 }  // namespace
 
 // <channel layout, sample rate, frames per buffer, number of buffer writes
-typedef std::tuple<ChannelLayoutConfig, int, int, int>
-    AudioDebugFileWriterTestData;
+using AudioDebugFileWriterTestData =
+    std::tuple<ChannelLayoutConfig, int, int, int>;
 
 class AudioDebugFileWriterTest
     : public testing::TestWithParam<AudioDebugFileWriterTestData> {

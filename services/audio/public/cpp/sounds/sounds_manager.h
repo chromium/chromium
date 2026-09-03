@@ -23,7 +23,7 @@ namespace audio {
 // should be accessed from the Audio thread.
 class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
  public:
-  typedef int SoundKey;
+  using SoundKey = int;
 
   // Creates a singleton instance of the SoundsManager.
   using StreamFactoryBinder = base::RepeatingCallback<void(
