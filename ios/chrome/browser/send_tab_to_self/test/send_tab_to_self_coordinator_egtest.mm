@@ -554,9 +554,7 @@ void TapSendTabToSelfInActivitySheet() {
   // Wait for the new tab to load.
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
-  // Verify that the page has NOT scrolled down. Wait for a short duration to
-  // ensure any pending async scrolls do not occur.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  // Verify that the page has not scrolled down.
   NSString* checkScrollJS = @"window.scrollY === 0;";
   BOOL hasNotScrolled =
       [ChromeEarlGrey evaluateJavaScript:checkScrollJS].GetBool();
@@ -611,9 +609,7 @@ void TapSendTabToSelfInActivitySheet() {
   // Wait for the new tab to load.
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
-  // Verify that the page has NOT scrolled down. Wait for a short duration to
-  // ensure any pending async scrolls do not occur.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  // Verify that the page has not scrolled down for empty fragment.
   NSString* checkScrollJS = @"window.scrollY === 0;";
   BOOL hasNotScrolled =
       [ChromeEarlGrey evaluateJavaScript:checkScrollJS].GetBool();
