@@ -9355,3 +9355,7 @@ crbug.com/552768634 external/wpt/html/canvas/element/manual/wide-gamut-canvas/ca
 crbug.com/552768634 external/wpt/preload/subresource-integrity.html [ Failure Pass ]
 crbug.com/552768634 external/wpt/resource-timing/response-status-code.no-cors.html [ Failure Pass ]
 crbug.com/552768634 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security-replacestate.sub.html [ Failure Pass ]
+
+# Gardener 2026-09-03
+crbug.com/531033724 [ Linux ] external/wpt/webdriver/tests/bidi/storage/get_cookies/filter.py [ Failure Pass ]
+crbug.com/543994288 [ Linux ] external/wpt/webdriver/tests/classic/get_title/user_prompts.py [ Failure Pass ]
