@@ -9345,7 +9345,6 @@ crbug.com/552043107 [ Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/med
 # Gardener 2026-08-26
 crbug.com/552768634 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Failure Pass ]
 crbug.com/552768634 external/wpt/preload/subresource-integrity.html [ Failure Pass ]
-crbug.com/552768634 external/wpt/resource-timing/response-status-code.no-cors.html [ Failure Pass ]
 crbug.com/552768634 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security-replacestate.sub.html [ Failure Pass ]
 
 # Gardener 2026-09-03
