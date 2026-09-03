@@ -539,7 +539,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @Override
     public void prepareDialog() {
-        mTabListCoordinator.prepareTabGridView();
+        mTabListCoordinator.prepareTabListView();
     }
 
     @Override

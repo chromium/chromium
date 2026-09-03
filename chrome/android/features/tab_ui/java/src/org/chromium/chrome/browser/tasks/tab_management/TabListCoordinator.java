@@ -753,11 +753,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         }
     }
 
-    void prepareTabSwitcherPaneView() {
-        registerLayoutChangeListener();
-        mRecyclerView.setupCustomItemAnimator();
-    }
-
     private void initializeEmptyStateView() {
         if (mIsEmptyViewInitialized) {
             return;
@@ -771,23 +766,23 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         }
     }
 
-    public void prepareTabGridView() {
-        registerLayoutChangeListener();
-        mRecyclerView.setupCustomItemAnimator();
-    }
-
-    public void cleanupTabGridView() {
-        unregisterLayoutChangeListener();
-    }
-
-    public void destroyEmptyView() {
+    private void destroyEmptyView() {
         if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.destroyEmptyView();
             mIsEmptyViewInitialized = false;
         }
     }
 
-    public void attachEmptyView() {
+    void prepareTabListView() {
+        registerLayoutChangeListener();
+        mRecyclerView.setupCustomItemAnimator();
+    }
+
+    void cleanupTabListView() {
+        unregisterLayoutChangeListener();
+    }
+
+    void attachEmptyView() {
         if (!mIsEmptyViewInitialized) {
             initializeEmptyStateView();
         }
@@ -797,7 +792,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /** Returns the handler for showing notifications. */
-    public TabListNotificationHandler getTabListNotificationHandler() {
+    TabListNotificationHandler getTabListNotificationHandler() {
         return mMediator;
     }
 
@@ -915,7 +910,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *
      * @param tabIds A list of tab IDs to convert.
      */
-    public List<Integer> getCardIndexesFromTabIds(List<@TabId Integer> tabIds) {
+    List<Integer> getCardIndexesFromTabIds(List<@TabId Integer> tabIds) {
         Set<@TabId Integer> tabIdSet = new HashSet<>(tabIds);
         List<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < mModelList.size(); i++) {
@@ -969,7 +964,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /** Returns the index for the tab with related tabs. */
-    public int getIndexForTabIdWithRelatedTabs(int tabId) {
+    int getIndexForTabIdWithRelatedTabs(int tabId) {
         return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
     }
 
@@ -1046,7 +1041,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *     tab.
      * @param onAnimationEnd Executed after the merge animation has finished.
      */
-    public void triggerMergeAnimation(
+    void triggerMergeAnimation(
             int targetIndex, List<Integer> visibleTabIndexes, Runnable onAnimationEnd) {
         Runnable wrappedOnAnimationEnd =
                 () -> {
@@ -1058,7 +1053,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /** Returns the coordinator that manages the overflow menu for tab group cards in the GTS. */
-    public @Nullable TabListGroupMenuCoordinator getTabListGroupMenuCoordinator() {
+    @Nullable TabListGroupMenuCoordinator getTabListGroupMenuCoordinator() {
         return mMediator.getTabListGroupMenuCoordinator();
     }
 
@@ -1067,7 +1062,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *
      * @param cardIndex The card index to scroll to.
      */
-    public void scrollToPosition(int cardIndex) {
+    void scrollToPosition(int cardIndex) {
         mRecyclerView.setSmoothScrolling(true);
         smoothScrollToPosition(
                 mRecyclerView, cardIndex, () -> mRecyclerView.setSmoothScrolling(false));
@@ -1076,7 +1071,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     /**
      * Maps a tab ID to an index. For use with {@link #addSpecialListItem(int, int, PropertyModel)}.
      */
-    /* package */ int getIndexFromTabId(@TabId int tabId) {
+    int getIndexFromTabId(@TabId int tabId) {
         return mModelList.indexFromTabId(tabId);
     }
 
@@ -1121,7 +1116,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         }
     }
 
-    public TabListHighlighter getTabListHighlighter() {
+    TabListHighlighter getTabListHighlighter() {
         return mTabListHighlighter;
     }
 

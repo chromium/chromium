@@ -323,9 +323,7 @@ class TabListEditorMediator
         // Records to a histogram the time since an instance of TabListEditor was last opened
         // within an activity lifespan.
         TabUiMetricsHelper.recordEditorTimeSinceLastShownHistogram();
-        // We don't call TabListCoordinator#prepareTabSwitcherView, since not all the logic (e.g.
-        // requiring one tab to be selected) is applicable here.
-        mTabListCoordinator.prepareTabGridView();
+        mTabListCoordinator.prepareTabListView();
         mTabListCoordinator.attachEmptyView();
         mVisibleTabs.clear();
         mVisibleTabs.addAll(tabs);
@@ -425,7 +423,7 @@ class TabListEditorMediator
         if (!hiddenByAction) {
             syncRecyclerViewPosition();
         }
-        mTabListCoordinator.cleanupTabGridView();
+        mTabListCoordinator.cleanupTabListView();
         mVisibleTabs.clear();
         mVisibleTabGroups.clear();
 

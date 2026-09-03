@@ -190,10 +190,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
                     mTabListCoordinator.getContainerView().removeOnLayoutChangeListener(this);
                     view.post(
-                            () -> {
-                                updatePinnedTabsStripOnScroll(
-                                        /* shouldShowSearchBox= */ true, /* forced= */ true);
-                            });
+                            () ->
+                                    updatePinnedTabsStripOnScroll(
+                                            /* shouldShowSearchBox= */ true, /* forced= */ true));
                 }
             };
 
@@ -1063,7 +1062,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 priceWelcomeMessageController.addObserver(mPriceMessageUpdateObserver);
             }
             updateBottomPadding();
-            mTabListCoordinator.prepareTabSwitcherPaneView();
+            mTabListCoordinator.prepareTabListView();
         } else {
             mMessageManager.removeObserver(mMessageUpdateObserver);
             if (priceWelcomeMessageController != null) {
@@ -1199,10 +1198,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         TabListRecyclerView containerView = mTabListCoordinator.getContainerView();
         containerView.addOnLayoutChangeListener(mOnLayoutChangedAfterInitialScrollListener);
         containerView.post(
-                () -> {
-                    updatePinnedTabsStripOnScroll(
-                            /* shouldShowSearchBox= */ true, /* forced= */ true);
-                });
+                () ->
+                        updatePinnedTabsStripOnScroll(
+                                /* shouldShowSearchBox= */ true, /* forced= */ true));
     }
 
     private void updatePinnedTabsStripOnScroll(boolean shouldShowSearchBox, boolean forced) {
