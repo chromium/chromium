@@ -143,6 +143,12 @@ TEST_F(PolicyDseNtpOverrideMetricsReporterTest,
 
   // 4. Verify logging.
   histograms.ExpectUniqueSample("Extensions.DseOverride.LowTrust.Forced", 1, 1);
+  histograms.ExpectUniqueSample(
+      "Extensions.SettingsOverrideV2.Dse.LowTrust.Forced", 1, 1);
+  EXPECT_TRUE(
+      histograms
+          .GetAllSamples("Extensions.SettingsOverrideV2.Ntp.LowTrust.Forced")
+          .empty());
 }
 
 TEST_F(PolicyDseNtpOverrideMetricsReporterTest,
@@ -172,6 +178,12 @@ TEST_F(PolicyDseNtpOverrideMetricsReporterTest,
   // 4. Verify logging.
   histograms.ExpectUniqueSample("Extensions.NtpOverride.HighTrust.Recommended",
                                 0, 1);
+  histograms.ExpectUniqueSample(
+      "Extensions.SettingsOverrideV2.Ntp.HighTrust.Recommended", 0, 1);
+  EXPECT_TRUE(histograms
+                  .GetAllSamples(
+                      "Extensions.SettingsOverrideV2.Dse.HighTrust.Recommended")
+                  .empty());
 }
 
 TEST_F(PolicyDseNtpOverrideMetricsReporterTest, LogBothOverrideEnabled) {
@@ -194,6 +206,10 @@ TEST_F(PolicyDseNtpOverrideMetricsReporterTest, LogBothOverrideEnabled) {
 
   histograms.ExpectUniqueSample("Extensions.BothOverride.LowTrust.Forced", 1,
                                 1);
+  histograms.ExpectUniqueSample(
+      "Extensions.SettingsOverrideV2.Dse.LowTrust.Forced", 1, 1);
+  histograms.ExpectUniqueSample(
+      "Extensions.SettingsOverrideV2.Ntp.LowTrust.Forced", 1, 1);
 }
 
 TEST_F(PolicyDseNtpOverrideMetricsReporterTest, IgnoreNonPolicyExtensions) {
@@ -221,6 +237,14 @@ TEST_F(PolicyDseNtpOverrideMetricsReporterTest, IgnoreNonPolicyExtensions) {
   EXPECT_TRUE(
       histograms.GetAllSamples("Extensions.DseOverride.LowTrust.Recommended")
           .empty());
+  EXPECT_TRUE(
+      histograms
+          .GetAllSamples("Extensions.SettingsOverrideV2.Dse.LowTrust.Forced")
+          .empty());
+  EXPECT_TRUE(histograms
+                  .GetAllSamples(
+                      "Extensions.SettingsOverrideV2.Dse.LowTrust.Recommended")
+                  .empty());
 }
 
 TEST_F(PolicyDseNtpOverrideMetricsReporterTest,
@@ -248,6 +272,14 @@ TEST_F(PolicyDseNtpOverrideMetricsReporterTest,
                   .empty());
   EXPECT_TRUE(
       histograms.GetAllSamples("Extensions.BothOverride.LowTrust.Forced")
+          .empty());
+  EXPECT_TRUE(
+      histograms
+          .GetAllSamples("Extensions.SettingsOverrideV2.Dse.LowTrust.Forced")
+          .empty());
+  EXPECT_TRUE(
+      histograms
+          .GetAllSamples("Extensions.SettingsOverrideV2.Ntp.LowTrust.Forced")
           .empty());
 }
 

@@ -38,8 +38,17 @@ void PolicyDseNtpOverrideMetricsReporter::ReportMetrics(Profile* profile) {
     return;
   }
 
-  bool is_low_trust = GetHigherManagementAuthorityTrustworthiness(profile) <
-                      policy::ManagementAuthorityTrustworthiness::TRUSTED;
+  // TODO(crbug.com/536913423): Remove legacy histograms once migration to
+  // Extensions.SettingsOverrideV2 is complete.
+  bool legacy_is_low_trust =
+      GetHigherManagementAuthorityTrustworthiness(profile) <
+      policy::ManagementAuthorityTrustworthiness::TRUSTED;
+  std::string_view legacy_trust_string =
+      legacy_is_low_trust ? "LowTrust" : "HighTrust";
+
+  bool is_low_trust =
+      GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile) <
+      policy::ManagementAuthorityTrustworthiness::TRUSTED;
   std::string_view trust_string = is_low_trust ? "LowTrust" : "HighTrust";
 
   auto installed_extensions = registry->GenerateInstalledExtensionsSet();
@@ -56,16 +65,16 @@ void PolicyDseNtpOverrideMetricsReporter::ReportMetrics(Profile* profile) {
     }
 
     util::DseNtpOverrideType type = util::GetDseNtpOverrideType(*extension);
-    std::string_view override_type_string;
+    std::string_view legacy_override_type_string;
     switch (type) {
       case util::DseNtpOverrideType::kDse:
-        override_type_string = "DseOverride";
+        legacy_override_type_string = "DseOverride";
         break;
       case util::DseNtpOverrideType::kNtp:
-        override_type_string = "NtpOverride";
+        legacy_override_type_string = "NtpOverride";
         break;
       case util::DseNtpOverrideType::kBoth:
-        override_type_string = "BothOverride";
+        legacy_override_type_string = "BothOverride";
         break;
       case util::DseNtpOverrideType::kNone:
         continue;  // Skip if no override
@@ -75,10 +84,28 @@ void PolicyDseNtpOverrideMetricsReporter::ReportMetrics(Profile* profile) {
     PolicyExtensionStatus status = enabled ? PolicyExtensionStatus::kEnabled
                                            : PolicyExtensionStatus::kDisabled;
 
+    // Report legacy histograms.
     base::UmaHistogramEnumeration(
-        base::StrCat({"Extensions.", override_type_string, ".", trust_string,
-                      ".", mode_string}),
+        base::StrCat({"Extensions.", legacy_override_type_string, ".",
+                      legacy_trust_string, ".", mode_string}),
         status);
+
+    // Report V2 histograms. Extensions overriding both DSE and NTP are reported
+    // to both Dse and Ntp histograms.
+    if (type == util::DseNtpOverrideType::kDse ||
+        type == util::DseNtpOverrideType::kBoth) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Extensions.SettingsOverrideV2.Dse.", trust_string, ".",
+                        mode_string}),
+          status);
+    }
+    if (type == util::DseNtpOverrideType::kNtp ||
+        type == util::DseNtpOverrideType::kBoth) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Extensions.SettingsOverrideV2.Ntp.", trust_string, ".",
+                        mode_string}),
+          status);
+    }
   }
 }
 

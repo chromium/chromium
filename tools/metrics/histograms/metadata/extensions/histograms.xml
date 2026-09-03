@@ -4571,6 +4571,40 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.SettingsOverrideV2.{OverrideType}.{TrustLevel}.{InstallMode}"
+    enum="PolicyExtensionStatus" expires_after="2027-08-31">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Reports the status (Enabled or Disabled) of policy-installed extensions that
+    perform a {OverrideType} override on {TrustLevel} devices where the
+    extension is {InstallMode}.
+
+    This supersedes Extensions.{OverrideType}.{TrustLevel}.{InstallMode}, using
+    policy-loading-specific management authority trustworthiness to determine
+    the trust level. Extensions that override both DSE and NTP are recorded to
+    both Dse and Ntp histograms.
+
+    Logged once at startup during ExtensionService initialization.
+
+    Note: This is only recorded on Windows and Mac. This is only emitted for
+    regular user profiles, and is skipped for guest and incognito profiles.
+  </summary>
+  <token key="OverrideType">
+    <variant name="Dse" summary="Default Search Engine"/>
+    <variant name="Ntp" summary="New Tab Page"/>
+  </token>
+  <token key="TrustLevel">
+    <variant name="HighTrust" summary="high trust management environment"/>
+    <variant name="LowTrust" summary="low trust management environment"/>
+  </token>
+  <token key="InstallMode">
+    <variant name="Forced" summary="forced"/>
+    <variant name="Recommended" summary="recommended"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.Startup.DefaultPinnedExtensionState"
     enum="DefaultPinnedExtensionState" expires_after="2027-01-01">
   <owner>evasu@chromium.org</owner>
@@ -5174,6 +5208,10 @@ This is emitted for two scenarios when a worker may be unregistered:
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
+    WARNING: This histogram is pending deprecation and will be removed once
+    dashboards migrate to
+    Extensions.SettingsOverrideV2.{OverrideType}.{TrustLevel}.{InstallMode}.
+
     Reports the status (Enabled or Disabled) of policy-installed extensions that
     perform a {OverrideType} on {TrustLevel} devices where the extension is
     {InstallMode}.
