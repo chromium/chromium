@@ -4,6 +4,31 @@
 
 assert(!is_android)
 
+if (is_win || is_mac) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "omnibox_everywhere_handler_unittest.cc" ]
+    deps = [
+      ":omnibox_everywhere",
+      "//base/test:test_support",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere",
+      "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/test",
+      "//components/omnibox/browser",
+      "//components/prefs",
+      "//components/search_engines",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}
+
 source_set("omnibox_everywhere") {
   sources = [
     "composebox_everywhere_handler.cc",

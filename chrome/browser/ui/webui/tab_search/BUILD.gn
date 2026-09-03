@@ -86,6 +86,17 @@ source_set("tab_search") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_handler_unittest.cc" ]
+  deps = [
+    ":tab_search",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

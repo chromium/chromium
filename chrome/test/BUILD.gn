@@ -3270,7 +3270,6 @@ if (!is_android) {
 
     if (is_win) {
       sources += [
-        "../browser/ui/color/win/native_chrome_color_mixer_win_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/ui/views/uninstall_view_browsertest.cc",
         "../test/delayload/delayload_hook_browsertest.cc",
@@ -3284,6 +3283,7 @@ if (!is_android) {
         "//chrome/app:command_ids",
         "//chrome/browser:font_prewarmer_tab_helper",
         "//chrome/browser/ui:uninstall_browser_prompt",
+        "//chrome/browser/ui/color:browser_tests",
         "//chrome/browser/ui/views:critical_notification_bubble_view",
         "//chrome/browser/ui/views:uninstall_browser_prompt",
         "//chrome/browser/win/isolated_browser:browser_tests",
@@ -5802,12 +5802,12 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac) {
-    sources += [ "../browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler_unittest.cc" ]
     deps += [
       "//chrome/browser/enterprise/platform_auth:test_utils",
       "//chrome/browser/ui/omnibox/omnibox_everywhere:unit_tests",
       "//chrome/browser/ui/pdf/infobar:unit_tests",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:unit_tests",
+      "//chrome/browser/ui/webui/omnibox_everywhere:unit_tests",
     ]
   }
 
@@ -6265,10 +6265,6 @@ test("unit_tests") {
       "../browser/ui/browser_manager_service_factory_unittest.cc",
       "../browser/ui/browser_unittest.cc",
       "../browser/ui/browser_window_state_unittest.cc",
-      "../browser/ui/color/chrome_color_provider_utils_unittest.cc",
-      "../browser/ui/color/material_new_tab_page_color_mixer_unittest.cc",
-      "../browser/ui/color/material_tab_strip_color_mixer_unittest.cc",
-      "../browser/ui/color/new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/incognito_allowed_url_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
@@ -6283,7 +6279,6 @@ test("unit_tests") {
       "../browser/ui/views/frame/safe_invoke/safe_invoke_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
-      "../browser/ui/webui/tab_search/search_handler_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/dependency_parser_model_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/dependency_tree_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/phrase_segmenter_unittest.cc",
@@ -6449,6 +6444,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/skills:unit_tests",
       "//chrome/browser/ui/webui/support_tool:unit_tests",
       "//chrome/browser/ui/webui/tab_search",
+      "//chrome/browser/ui/webui/tab_search:unit_tests",
       "//chrome/browser/ui/webui/user_education:unit_tests",
       "//chrome/browser/ui/webui/util:unit_tests",
       "//chrome/browser/ui/webui/version",
@@ -6606,6 +6602,7 @@ test("unit_tests") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/color:unit_tests",
       "//chrome/browser/ui/commerce:unit_tests",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:unit_tests",
@@ -7235,9 +7232,6 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources +=
-        [ "../browser/ui/extensions/settings_overridden_dialog_unittest.cc" ]
-
     deps += [
       "//chrome/browser/sharing_hub:unit_tests",
       "//chrome/browser/ui/views/sharing_hub:unit_tests",
@@ -8327,8 +8321,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/surface_embed_background_tab_capture_interactive_uitest.cc",
       "../browser/ui/browser_command_controller_interactive_uitest.cc",
       "../browser/ui/browser_focus_interactive_uitest.cc",
-      "../browser/ui/extensions/controlled_home_dialog_interactive_uitest.cc",
-      "../browser/ui/extensions/download_danger_dialog_interactive_uitest.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.h",
       "../browser/ui/keyboard_lock_interactive_uitest.cc",
@@ -8509,6 +8501,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:interactive_ui_tests",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/extensions:interactive_ui_tests",
       "//chrome/browser/ui/find_bar:interactive_ui_tests",
       "//chrome/browser/ui/focus",
       "//chrome/browser/ui/hung_renderer:interactive_ui_tests",
@@ -8785,7 +8778,6 @@ if (!is_android && !is_chromeos_device) {
       }
 
       if (is_mac || is_win) {
-        sources += [ "../browser/ui/extensions/settings_overridden_dialog_interactive_uitest.cc" ]
         deps += [
           "//chrome/browser/ui/omnibox/omnibox_everywhere:interactive_ui_tests",
           "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils",

@@ -362,6 +362,17 @@ source_set("unit_tests") {
       "//ui/base",
     ]
   }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "settings_overridden_dialog_unittest.cc" ]
+    deps += [
+      ":extensions",
+      "//chrome/browser/ui/views:chrome_views_delegate",
+      "//chrome/test/views",
+      "//components/constrained_window",
+      "//ui/views:test_support",
+    ]
+  }
 }
 
 source_set("browser_tests") {
@@ -494,5 +505,60 @@ if (is_android) {
       "//ui/base",
       "//url",
     ]
+  }
+}
+
+if (!is_android) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "controlled_home_dialog_interactive_uitest.cc",
+      "download_danger_dialog_interactive_uitest.cc",
+    ]
+
+    deps = [
+      ":extensions",
+      "//base",
+      "//chrome/browser/download",
+      "//chrome/browser/extensions",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//chrome/test/interaction",
+      "//components/download/public/common:public",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//testing/gmock",
+      "//ui/base/interaction",
+      "//ui/views",
+    ]
+
+    if (is_mac || is_win) {
+      sources += [ "settings_overridden_dialog_interactive_uitest.cc" ]
+      deps += [
+        "//chrome/browser/extensions:test_support",
+        "//chrome/browser/image_fetcher",
+        "//chrome/browser/search_engines",
+        "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/hats:test_support",
+        "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils",
+        "//chrome/common",
+        "//components/image_fetcher/core",
+        "//components/image_fetcher/core:test_support",
+        "//components/regional_capabilities",
+        "//components/search_engines",
+        "//components/search_engines:test_support",
+        "//components/vector_icons",
+        "//content/test:test_support",
+        "//extensions/common:extension_features",
+        "//ui/gfx",
+        "//ui/native_theme:test_support",
+      ]
+    }
   }
 }
