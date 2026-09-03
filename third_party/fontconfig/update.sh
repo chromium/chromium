@@ -13,7 +13,8 @@ cd "$SRC_DIR"
 roll-dep src/third_party/fontconfig/src --roll-to "$REVISION" "$@"
 
 cd "$SCRIPT_DIR/src"
-meson build -Ddoc=disabled --prefix=/usr
+rm -rf build
+meson setup build -Ddoc=disabled --prefix=/usr
 ninja -C build
 find build -name '*.h' -printf '%P\n' |
   rsync -R --files-from=- build/ ../include/
@@ -28,15 +29,14 @@ sed -i '/#define FREETYPE_PCF_LONG_FAMILY_NAMES/{N;d}' ../include/meson-config.h
 # to configure this with meson options.
 echo '#define ENABLE_LIBXML2 1' >>../include/config.h
 
-# Update the README.chromium version.
-sed -i "s/^Version: .*/Version: $REVISION/" ../README.chromium
-
-# Update the README.chromium CPE prefix.
+# Update the README.chromium version, revision, and CPE prefix.
 cd "$SCRIPT_DIR"
 VERSION="$(sed -n "s/^ *version: *'\([0-9.]\+\)'.*/\1/p" src/meson.build)"
 CPE="cpe:\/a:fontconfig_project:fontconfig:$VERSION"
+sed -i "s/^Version: .*/Version: $VERSION/" README.chromium
+sed -i "s/^Revision: .*/Revision: $REVISION/" README.chromium
 sed -i "s/^CPEPrefix: .*/CPEPrefix: $CPE/" README.chromium
 
 # Add the changes to the commit created by roll-dep.
-git add include README.chromium
+git add include README.chromium update.sh
 git commit --amend --no-edit
