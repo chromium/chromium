@@ -176,6 +176,7 @@ class InfoBarUiTest : public TestInfoBar,
           {{"MigratedCollectedCookies", "true"},
            {"MigratedPageInfo", "true"},
            {"MigratedGoogleApiKeys", "true"},
+           {"MigratedKeystonePromotion", "true"},
            {"MigratedObsoleteSystem", "true"},
            {"MigratedThemeInstalled", "true"},
            {"MigratedExtensionDevTools", "true"},
@@ -318,7 +319,17 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-      KeystonePromotionInfoBarDelegate::Create(GetWebContents());
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        CHECK(browser_infobar_manager);
+        browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC);
+      } else {
+        KeystonePromotionInfoBarDelegate::Create(GetWebContents());
+      }
 #else
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #endif
