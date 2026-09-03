@@ -101,6 +101,10 @@ ui::Accelerator GetDefaultOmniboxEverywhereHotkey();
 // local state, falling back to the default accelerator if unset or invalid.
 ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state);
 
+// Returns whether any shortcuts (enterprise or personal) are available and
+// enabled for the profile.
+bool AreShortcutsAvailableForProfile(Profile* profile);
+
 // Returns whether shortcuts should be shown in Omnibox Everywhere for the given
 // profile and local state, falling back to Customize Chrome / NTP settings
 // (kNtpShortcutsVisible) if the Omnibox Everywhere preference is unset.

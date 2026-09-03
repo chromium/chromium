@@ -21,24 +21,26 @@ class MostVisitedPrefObserver {
   MostVisitedPrefObserver(Profile* profile, MostVisitedHandler* handler);
   MostVisitedPrefObserver(const MostVisitedPrefObserver&) = delete;
   MostVisitedPrefObserver& operator=(const MostVisitedPrefObserver&) = delete;
-  ~MostVisitedPrefObserver();
+  virtual ~MostVisitedPrefObserver();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetProfilePrefs(PrefService* prefs);
   static void MigrateDeprecatedUseMostVisitedTilesPref(PrefService* prefs);
   static void MigrateDeprecatedShortcutsTypePref(PrefService* prefs);
 
- private:
-  bool IsShortcutsVisible() const;
-  void UpdateMostVisitedTileTypes();
-  void OnTileTypesChanged();
+ protected:
+  virtual bool IsShortcutsVisible() const;
+  virtual void OnTileTypesChanged();
   void OnTilesVisibilityPrefChanged();
-  void OnEnterpriseShortcutsPolicyChanged();
-  void MaybeEnableEnterpriseShortcutsVisibility();
 
   raw_ptr<Profile> profile_;
   raw_ptr<MostVisitedHandler> handler_;
   PrefChangeRegistrar pref_change_registrar_;
+
+ private:
+  void UpdateMostVisitedTileTypes();
+  void OnEnterpriseShortcutsPolicyChanged();
+  void MaybeEnableEnterpriseShortcutsVisibility();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_MOST_VISITED_MOST_VISITED_PREF_OBSERVER_H_

@@ -95,6 +95,39 @@ bool IsFuseboxEnabled(Profile* profile) {
   return IsFuseboxEligible(profile) && show_ai_mode;
 }
 
+class OmniboxEverywhereMostVisitedPrefObserver
+    : public MostVisitedPrefObserver {
+ public:
+  OmniboxEverywhereMostVisitedPrefObserver(Profile* profile,
+                                           MostVisitedHandler* handler)
+      : MostVisitedPrefObserver(profile, handler) {
+    if (g_browser_process && g_browser_process->local_state()) {
+      local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+      local_state_pref_change_registrar_.Add(
+          omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+          base::BindRepeating(&OmniboxEverywhereMostVisitedPrefObserver::
+                                  OnTilesVisibilityPrefChanged,
+                              base::Unretained(this)));
+    }
+    OnTilesVisibilityPrefChanged();
+  }
+
+ protected:
+  bool IsShortcutsVisible() const override {
+    return omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
+        profile_,
+        g_browser_process ? g_browser_process->local_state() : nullptr);
+  }
+
+  void OnTileTypesChanged() override {
+    MostVisitedPrefObserver::OnTileTypesChanged();
+    OnTilesVisibilityPrefChanged();
+  }
+
+ private:
+  PrefChangeRegistrar local_state_pref_change_registrar_;
+};
+
 void AddMostVisitedSourceStrings(content::WebUIDataSource* source,
                                  Profile* profile) {
   source->AddBoolean("omniboxEverywhereMostVisitedEnabled",
@@ -503,8 +536,9 @@ void OmniboxEverywhereUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_ui()->GetWebContents(),
       std::make_unique<MostVisitedMetricsLogger>("Omnibox"));
-  most_visited_pref_observer_ = std::make_unique<MostVisitedPrefObserver>(
-      profile_, most_visited_handler_.get());
+  most_visited_pref_observer_ =
+      std::make_unique<OmniboxEverywhereMostVisitedPrefObserver>(
+          profile_, most_visited_handler_.get());
 }
 
 void OmniboxEverywhereUI::BindInterface(

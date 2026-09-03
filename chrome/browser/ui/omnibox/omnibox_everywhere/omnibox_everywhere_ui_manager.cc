@@ -999,8 +999,10 @@ void OmniboxEverywhereUIManager::AppendSettingsContextMenu() {
 
   // Loomnibox settings.
   context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_model_->AddCheckItemWithStringId(
-      kShowShortcuts, IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE);
+  if (prefs::AreShortcutsAvailableForProfile(profile_)) {
+    context_menu_model_->AddCheckItemWithStringId(
+        kShowShortcuts, IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE);
+  }
   context_menu_model_->AddItemWithStringId(
       kCustomizeKeyboardShortcut,
       IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT);
@@ -1102,15 +1104,13 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
     case kShowShortcuts:
       if (g_browser_process && g_browser_process->local_state()) {
         PrefService* local_state = g_browser_process->local_state();
-        auto current_val = static_cast<prefs::ShowShortcutsPrefValue>(
-            local_state->GetInteger(prefs::kOmniboxEverywhereShowShortcuts));
+        const bool is_currently_visible =
+            prefs::IsOmniboxEverywhereShortcutsVisible(profile_, local_state);
         local_state->SetInteger(
             prefs::kOmniboxEverywhereShowShortcuts,
-            static_cast<int>(
-                current_val == prefs::ShowShortcutsPrefValue::kEnabled ||
-                        current_val == prefs::ShowShortcutsPrefValue::kUnset
-                    ? prefs::ShowShortcutsPrefValue::kDisabled
-                    : prefs::ShowShortcutsPrefValue::kEnabled));
+            static_cast<int>(is_currently_visible
+                                 ? prefs::ShowShortcutsPrefValue::kDisabled
+                                 : prefs::ShowShortcutsPrefValue::kEnabled));
       }
       break;
     // TODO(b/543460015): Differentiate settings and shortcut
@@ -1182,7 +1182,7 @@ bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
     case kAlwaysShowAiMode:
       return true;
     case kShowShortcuts:
-      return true;
+      return prefs::AreShortcutsAvailableForProfile(profile_);
     case kCustomizeKeyboardShortcut:
       return true;
     case kSettings:
@@ -1201,13 +1201,10 @@ bool OmniboxEverywhereUIManager::IsCommandIdChecked(int command_id) const {
     return true;
   }
   if (command_id == kShowShortcuts) {
-    if (g_browser_process && g_browser_process->local_state()) {
-      auto val = static_cast<prefs::ShowShortcutsPrefValue>(
-          g_browser_process->local_state()->GetInteger(
-              prefs::kOmniboxEverywhereShowShortcuts));
-      return val != prefs::ShowShortcutsPrefValue::kDisabled;
-    }
-    return true;
+    return g_browser_process && g_browser_process->local_state()
+               ? prefs::IsOmniboxEverywhereShortcutsVisible(
+                     profile_, g_browser_process->local_state())
+               : true;
   }
   return false;
 }
