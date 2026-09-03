@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -149,6 +150,22 @@ TEST_F(AutofillVotesUploaderTest, BasicVoteUpload) {
   EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateTestForm(),
                                           /*observed_submission=*/true));
   run_loop.Run();
+}
+
+// Test that Autofill.Timing.MaybeStartVoteUploadProcess is logged.
+TEST_F(AutofillVotesUploaderTest,
+       MaybeStartVoteUploadProcess_TimingHistogramEmitted) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
+      .WillOnce(QuitRunLoopAndReturnTrue(run_loop));
+
+  EXPECT_TRUE(MaybeStartVoteUploadProcess(CreateTestForm(),
+                                          /*observed_submission=*/true));
+  run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Timing.MaybeStartVoteUploadProcess", 1);
 }
 
 // Test that vote upload is not triggered when no local profile data is

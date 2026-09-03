@@ -9409,8 +9409,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="DeduplicatedProfilesForSuggestions"/>
     <variant name="DeduplicateProfiles"/>
     <variant name="DetermineHeuristicTypes"/>
+    <variant name="DeterminePossibleFieldTypesForUpload"/>
     <variant name="IsNormalizedNameVariantOf"/>
     <variant name="IsSubsetOfForFieldSet"/>
+    <variant name="MaybeStartVoteUploadProcess"/>
     <variant name="ParseFormAsync"/>
     <variant name="ParseFormsAsync"/>
     <variant name="ParseFormsAsync.RunHeuristics"/>

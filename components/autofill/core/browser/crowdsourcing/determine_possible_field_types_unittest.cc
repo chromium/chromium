@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
@@ -1575,6 +1576,28 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   EXPECT_TRUE(possible_types[1].types.contains(PHONE_HOME_COUNTRY_CODE));
   EXPECT_FALSE(possible_types[1].types.contains(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(possible_types[1].types.size(), 1u);
+}
+
+// Test that Autofill.Timing.DeterminePossibleFieldTypesForUpload is logged.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       DeterminePossibleFieldTypesForUpload_TimingHistogramEmitted) {
+  base::HistogramTester histogram_tester;
+  FormData form = test::GetFormData({
+      .fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}},
+  });
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          /*profiles=*/{}, /*credit_cards=*/{}, /*entities=*/{},
+          /*loyalty_cards=*/{}, /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-US",
+          form_structure->fields());
+  EXPECT_EQ(possible_types.size(), 1u);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Timing.DeterminePossibleFieldTypesForUpload", 1);
 }
 
 }  // namespace

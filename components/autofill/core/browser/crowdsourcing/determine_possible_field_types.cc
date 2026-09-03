@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -571,6 +572,9 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     base::span<const OneTimeToken> recent_otps,
     const std::string& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Autofill.Timing.DeterminePossibleFieldTypesForUpload");
+
   std::vector<PossibleTypes> possible_types;
   possible_types.resize(fields.size());
 

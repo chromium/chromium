@@ -26,6 +26,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -249,6 +250,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     base::TimeTicks initial_interaction_timestamp,
     const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.MaybeStartVoteUploadProcess");
+
   std::vector<const AutofillProfile*> profiles =
       client_->GetPersonalDataManager().address_data_manager().GetProfiles();
   std::vector<CreditCard> credit_cards =
