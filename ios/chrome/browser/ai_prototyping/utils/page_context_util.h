@@ -66,10 +66,4 @@ SavePageContextResult SaveSerializedPageContextToDisk(
     const std::string& dir_name,
     const std::string& file_name);
 
-std::string FileNameForPageContext(
-    const optimization_guide::proto::PageContext& page_context);
-
-// Sanitze give `url` to be used as file name.
-NSString* SanitizeUrl(NSString* url);
-
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_PAGE_CONTEXT_UTIL_H_

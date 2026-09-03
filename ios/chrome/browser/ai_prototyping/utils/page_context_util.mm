@@ -21,7 +21,7 @@
 namespace {
 // Limit the lengh of sanitized url used as filename to prevent error from
 // filename being too long.
-NSUInteger kUrlLengthLimit = 50;
+constexpr NSUInteger kUrlLengthLimit = 50;
 
 // Self-deleting observer that waits for a page to finish loading.
 class SelfDestructivePageLoadObserver : public web::WebStateObserver {
@@ -132,6 +132,26 @@ base::FilePath GetDirectoryPath() {
   return base::apple::NSStringToFilePath([NSSearchPathForDirectoriesInDomains(
       NSDocumentDirectory, NSAllDomainsMask, YES) firstObject]);
 }
+
+// Sanitizes given `url` to be used as file name.
+NSString* SanitizeUrl(NSString* url) {
+  NSCharacterSet* illegalFileNameCharacters =
+      [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>:"];
+  return [[url componentsSeparatedByCharactersInSet:illegalFileNameCharacters]
+      componentsJoinedByString:@""];
+}
+
+std::string FileNameForPageContext(
+    const optimization_guide::proto::PageContext& page_context) {
+  NSString* urlString = base::SysUTF8ToNSString(page_context.url());
+  if ([urlString length] > kUrlLengthLimit) {
+    urlString = [urlString substringToIndex:kUrlLengthLimit];
+  }
+  NSString* fileName =
+      [SanitizeUrl(urlString) stringByAppendingString:@".txtpb"];
+  return base::SysNSStringToUTF8(fileName);
+}
+
 }  // namespace
 
 SavePageContextResult::SavePageContextResult() = default;
@@ -209,22 +229,4 @@ SavePageContextResult SaveSerializedPageContextToDisk(
   std::string file_name = FileNameForPageContext(page_context);
   base::FilePath file_path = directory_path.Append(file_name);
   return SaveProtoToPath(page_context, file_path);
-}
-
-std::string FileNameForPageContext(
-    const optimization_guide::proto::PageContext& page_context) {
-  NSString* urlString = base::SysUTF8ToNSString(page_context.url());
-  if ([urlString length] > kUrlLengthLimit) {
-    urlString = [urlString substringToIndex:kUrlLengthLimit];
-  }
-  NSString* fileName =
-      [SanitizeUrl(urlString) stringByAppendingString:@".txtpb"];
-  return base::SysNSStringToUTF8(fileName);
-}
-
-NSString* SanitizeUrl(NSString* url) {
-  NSCharacterSet* illegalFileNameCharacters =
-      [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>:"];
-  return [[url componentsSeparatedByCharactersInSet:illegalFileNameCharacters]
-      componentsJoinedByString:@""];
 }
