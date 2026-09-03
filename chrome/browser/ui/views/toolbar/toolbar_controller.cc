@@ -147,6 +147,7 @@ ToolbarController::ToolbarController(
               views::FlexSpecification flex_spec;
               if (!original_spec) {
                 flex_spec = views::FlexSpecification(
+                    views::LayoutOrientation::kHorizontal,
                     views::MinimumFlexSizeRule::kPreferredSnapToZero,
                     views::MaximumFlexSizeRule::kPreferred);
                 toolbar_element->SetProperty(views::kFlexBehaviorKey,
@@ -303,7 +304,8 @@ bool ToolbarController::PopOut(ui::ElementIdentifier identifier,
       // below the mininmum size.
       element->SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToMinimum,
                                    views::MaximumFlexSizeRule::kPreferred)
               .WithOrder((*original).order())
               .WithWeight((*original).weight())

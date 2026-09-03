@@ -732,6 +732,7 @@ ToolbarView::CreateGlicActorTaskIcon() {
     glic_actor_task_icon->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
+            views::LayoutOrientation::kHorizontal,
             views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
             views::MaximumFlexSizeRule::kPreferred));
   }
@@ -1537,7 +1538,8 @@ void ToolbarView::InitLayout() {
   constexpr int kExtensionsFlexOrder = kOrderOffset + 3;
 
   const views::FlexSpecification location_bar_flex_rule =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(location_bar_flex_order);
 
@@ -1588,6 +1590,7 @@ void ToolbarView::InitLayout() {
     glic_button_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
+            views::LayoutOrientation::kHorizontal,
             views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
             views::MaximumFlexSizeRule::kPreferred));
   }
@@ -1596,7 +1599,8 @@ void ToolbarView::InitLayout() {
       base::FeatureList::IsEnabled(features::kToolbarAppMenuLabelResizing)) {
     app_menu_button_->SetProperty(
         views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToMinimum,
                                  views::MaximumFlexSizeRule::kPreferred));
   }
 
@@ -1607,6 +1611,7 @@ void ToolbarView::InitLayout() {
     avatar_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
+            views::LayoutOrientation::kHorizontal,
             views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
             views::MaximumFlexSizeRule::kPreferred));
   }
@@ -1648,7 +1653,8 @@ void ToolbarView::InitLayout() {
       // and may want to get rid of the FlexLayout entirely.
       toolbar_webview_->SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToMinimum,
                                    views::MaximumFlexSizeRule::kUnbounded));
     }
   }

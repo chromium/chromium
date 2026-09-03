@@ -429,6 +429,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ui:toolbar_controller_util",
         "//chrome/browser/ui/views/performance_controls",
+        "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
         "//chrome/browser/ui/webui:webui_util",
         "//chrome/browser/ui/webui/webui_toolbar:test_support",
       ]

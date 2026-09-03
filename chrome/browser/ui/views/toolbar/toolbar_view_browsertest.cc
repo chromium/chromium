@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/common/pref_names.h"
@@ -296,4 +297,38 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
   EXPECT_TRUE(home->GetVisible());
   EXPECT_FALSE(home->bounds().IsEmpty());
   EXPECT_GT(location_bar->bounds().width(), preferred_width);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
+                       ButtonsDoNotCollapseCrossAxisHeight) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                  true);
+  ToolbarView* toolbar =
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+  ASSERT_TRUE(toolbar);
+  views::View* forward = toolbar->forward_button();
+  views::View* home = toolbar->home_button();
+  views::View* avatar = toolbar->avatar_toolbar_button();
+  ASSERT_TRUE(forward);
+  ASSERT_TRUE(home);
+
+  const int all_fit_width = toolbar->GetPreferredSize().width();
+  // Constrain toolbar height so that the available cross-axis height is smaller
+  // than the buttons' preferred height (simulating custom frame mode with
+  // vertical tabs).
+  const int constrained_height = toolbar->GetPreferredSize().height() - 4;
+
+  toolbar->SetSize(gfx::Size(all_fit_width, constrained_height));
+  toolbar->DeprecatedLayoutImmediately();
+
+  EXPECT_TRUE(forward->GetVisible());
+  EXPECT_GT(forward->bounds().height(), 0);
+
+  EXPECT_TRUE(home->GetVisible());
+  EXPECT_GT(home->bounds().height(), 0);
+
+  if (avatar && avatar->GetVisible()) {
+    EXPECT_GT(avatar->bounds().height(), 0);
+  }
 }
