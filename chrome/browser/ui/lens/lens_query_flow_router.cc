@@ -737,11 +737,14 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
   // AIM searches MUST go through QueryContextualizer gatekeeper.
   pending_search_url_request_ = std::move(request_info);
   if (query_contextualizer_) {
+    const bool is_omnibox = IsOmniboxInvocationSource(
+        pending_search_url_request_->invocation_source);
     // Force contextualization of the active tab only if the overlay token was
-    // never fetched. This happens for flows that do not call StartQueryFlow /
-    // open the overlay like omnibox contextual suggestions.
+    // never fetched and the query did not originate from an Omnibox entry
+    // point. Omnibox entry points handle tab context prior to submission or do
+    // not require a second context fetch.
     std::vector<contextual_tasks::QueryContextualizer::TabId> force_tabs;
-    if (!overlay_tab_context_file_token_.has_value()) {
+    if (!overlay_tab_context_file_token_.has_value() && !is_omnibox) {
       force_tabs.push_back(tab_interface()->GetHandle().raw_value());
     }
     contextual_tasks::QueryContextualizer::ContextualizeParams params;
@@ -752,8 +755,6 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
         base::BindRepeating(&LensQueryFlowRouter::ShowContextualTasksErrorPage,
                             weak_factory_.GetWeakPtr());
     params.on_processed_callback = base::DoNothing();
-    const bool is_omnibox = IsOmniboxInvocationSource(
-        pending_search_url_request_->invocation_source);
     if (contextual_tasks::
             GetIsContextualTasksNonBlockingUrlNavigationEnabled() &&
         is_omnibox) {

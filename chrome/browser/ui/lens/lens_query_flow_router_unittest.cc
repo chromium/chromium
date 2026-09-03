@@ -2757,6 +2757,86 @@ TEST_F(
                                  lens::LensOverlayInvocationSource::kAppMenu);
 }
 
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    SendContextualTextQuery_OmniboxSource_WithoutExistingToken_DoesNotForceTabContextualization) {
+  auto mock_service = std::make_unique<
+      testing::NiceMock<contextual_tasks::MockContextualTasksService>>();
+  // FakeQueryContextualizerDelegate must outlive router.
+  auto fake_delegate = std::make_unique<FakeQueryContextualizerDelegate>();
+
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+  router.SetTabContextualizationController(
+      mock_tab_contextualization_controller_.get());
+
+  auto mock_query_contextualizer = std::make_unique<MockQueryContextualizer>(
+      mock_service.get(), fake_delegate.get());
+  auto* mock_contextualizer_ptr = mock_query_contextualizer.get();
+  ON_CALL(*mock_contextualizer_ptr,
+          MockContextualizeWithCallbacks(_, _, _, _, _, _))
+      .WillByDefault(
+          [](const std::optional<base::Uuid>& task_id,
+             const std::string& query_text,
+             const std::vector<contextual_tasks::QueryContextualizer::TabId>&
+                 tabs_to_recontextualize,
+             const std::vector<contextual_tasks::QueryContextualizer::TabId>&
+                 tabs_to_force_contextualize,
+             contextual_tasks::QueryContextualizer::TabProcessedCallback&
+                 on_processed_callback,
+             contextual_tasks::QueryContextualizer::ContextualizedCallback
+                 callback) { std::move(callback).Run(nullptr); });
+  router.SetQueryContextualizerForTesting(std::move(mock_query_contextualizer));
+
+  // Arrange: Set up the parameters.
+  base::Time query_start_time = base::Time::Now();
+  std::string query_text = "test query";
+  lens::LensOverlaySelectionType selection_type =
+      lens::LensOverlaySelectionType::MULTIMODAL_SUGGEST_TYPEAHEAD;
+  std::map<std::string, std::string> additional_params;
+
+  EXPECT_CALL(*mock_contextualizer_ptr,
+              MockContextualize(testing::Eq(std::nullopt), query_text,
+                                testing::IsEmpty(), testing::_))
+      .WillOnce(
+          [](const std::optional<base::Uuid>& task_id,
+             const std::string& query_text,
+             const std::vector<contextual_tasks::QueryContextualizer::TabId>&
+                 tabs_to_recontextualize,
+             const std::vector<contextual_tasks::QueryContextualizer::TabId>&
+                 tabs_to_force_contextualize) {
+            EXPECT_THAT(tabs_to_force_contextualize, testing::IsEmpty());
+          });
+
+  EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          GURL("https://www.google.com/search?q=test")));
+
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+
+  EXPECT_CALL(*service,
+              StartTaskUiInSidePanelImpl(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  GURL("https://www.google.com/search?q=test"),
+                  testing::Pointer(router.mock_session_handle()), testing::_))
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*, const GURL&,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle,
+              contextual_tasks::StartTaskUiOptions options) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  // Act: Call the method with Omnibox contextual query.
+  router.SendContextualTextQuery(
+      query_start_time, query_text, selection_type, additional_params,
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+}
+
 class
     LensQueryFlowRouterContextualTaskEnabledNonBlockingPrivacyNoticeEnabledTest
     : public LensQueryFlowRouterContextualTaskEnabledTest {
