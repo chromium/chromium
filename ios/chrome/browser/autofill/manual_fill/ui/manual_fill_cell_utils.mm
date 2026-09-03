@@ -492,13 +492,6 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
   return layout_guide;
 }
 
-NSMutableAttributedString* CreateSiteNameLabelAttributedText(
-    ManualFillSiteInfo* site_info,
-    BOOL should_show_host) {
-  return CreateHeaderAttributedString(
-      site_info.siteName ? site_info.siteName : @"",
-      should_show_host ? site_info.host : nil);
-}
 
 NSString* CreateCredentialSubtitle(NSString* host,
                                    NSString* site_name,

@@ -174,11 +174,6 @@ UIButton* CreateAutofillFormButton(NSString* title);
 UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
                                            BOOL cell_has_header);
 
-// Creates the attributed string containing the site name and potentially a host
-// subtitle for the site name label.
-NSMutableAttributedString* CreateSiteNameLabelAttributedText(
-    ManualFillSiteInfo* site_info,
-    BOOL should_show_host);
 
 // Creates the subtitle string, combining host and type if `host` differs from
 // `site_name`.
