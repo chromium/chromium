@@ -20,11 +20,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -51,9 +54,6 @@ public class VerticalTabUtils {
 
     /** The ratio of window width that the vertical tabs rail can consume when expanded. */
     public static final float EXPANDED_WINDOW_WIDTH_RATIO = 0.33f;
-
-    /** Maximum number of times the "New" badge is shown on the Vertical Tabs entry points. */
-    public static final int NEW_BADGE_MAX_VIEW_COUNT = 3;
 
     @IntDef({
         LayoutSwitchEntryPoint.APP_MENU,
@@ -183,10 +183,6 @@ public class VerticalTabUtils {
      * @param enabled Whether Vertical Tabs should be enabled.
      */
     public static void setVerticalTabsEnabled(boolean enabled) {
-        if (enabled) {
-            // For all 3 entry points, mark as clicked so the "New" badge never shows again.
-            markNewBadgeAsDismissed();
-        }
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, enabled);
     }
@@ -262,41 +258,34 @@ public class VerticalTabUtils {
                 /* defaultValue= */ false);
     }
 
-    /** Reads the current view count for the Vertical Tabs "New" badge from shared preferences. */
-    public static int getNewBadgeViewCount() {
-        return ChromeSharedPreferences.getInstance()
-                .readInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
-    }
-
-    /** Increments the view count for the Vertical Tabs "New" badge in shared preferences. */
-    public static void incrementNewBadgeViewCount() {
-        ChromeSharedPreferences.getInstance()
-                .incrementInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT);
-    }
-
     /**
      * Returns whether the "New" badge should be shown for the "Show tabs vertically" menu item.
      *
      * <p>The badge is shown only on tablets (excluding desktop form factor) and capped at 3
-     * impressions until the user clicks the menu item.
+     * impressions until the user clicks the menu item, governed by the Feature Engagement Tracker.
      */
-    public static boolean shouldShowNewBadgeForVerticalTabs(@Nullable Context context) {
+    public static boolean shouldShowNewBadgeForVerticalTabs(
+            @Nullable Context context, @Nullable Profile profile) {
         // Show only on tablet devices, not on Desktop.
         if (!isVerticalTabsEligible(context) || DeviceInfo.isDesktop()) {
             return false;
         }
-        return getNewBadgeViewCount() < NEW_BADGE_MAX_VIEW_COUNT;
-    }
 
-    /**
-     * Marks the "New" badge for Vertical Tabs as permanently dismissed across all entry points by
-     * setting the view count directly to the maximum impression limit.
-     */
-    public static void markNewBadgeAsDismissed() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT,
-                        NEW_BADGE_MAX_VIEW_COUNT);
+        // Requires a profile to track impressions / usage.
+        if (profile == null) {
+            return false;
+        }
+
+        boolean shouldShow =
+                TrackerFactory.getTrackerForProfile(profile)
+                        .shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
+        // We need to immediately "dismiss" this to complete the flow if it was shown.
+        if (shouldShow) {
+            TrackerFactory.getTrackerForProfile(profile)
+                    .dismissed(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
+        }
+
+        return shouldShow;
     }
 
     /**

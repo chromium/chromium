@@ -1211,6 +1211,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     if (mMoreToolsItemBuilder.shouldShowTabLayoutToggleItem()) {
                         submenuItems.add(
                                 mMoreToolsItemBuilder.buildTabLayoutToggleItem(
+                                        assumeNonNull(currentTab).getProfile(),
                                         /* showIcon= */ false));
                     }
 

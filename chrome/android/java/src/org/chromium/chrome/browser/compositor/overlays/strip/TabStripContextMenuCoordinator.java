@@ -260,12 +260,11 @@ public class TabStripContextMenuCoordinator {
 
             boolean showNewBadge =
                     isEnablingVerticalTabs
-                            && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(mContext);
+                            && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(
+                                    mContext, profile);
 
             CharSequence title;
             if (showNewBadge) {
-                // Increment view count every time the badge is shown.
-                VerticalTabUtils.incrementNewBadgeViewCount();
                 // Prepare the title with the "New" badge.
                 title = VerticalTabUtils.getTitleWithNewBadge(mContext, layoutTitleRes);
             } else {

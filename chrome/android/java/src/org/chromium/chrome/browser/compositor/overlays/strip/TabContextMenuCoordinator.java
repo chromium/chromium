@@ -980,11 +980,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         boolean showNewBadge =
                 isEnablingVerticalTabs
-                        && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(mActivity);
+                        && VerticalTabUtils.shouldShowNewBadgeForVerticalTabs(
+                                mActivity, getTabModel().getProfile());
 
         CharSequence title;
         if (showNewBadge) {
-            VerticalTabUtils.incrementNewBadgeViewCount();
             title = VerticalTabUtils.getTitleWithNewBadge(mActivity, layoutTitleRes);
         } else {
             title = mActivity.getString(layoutTitleRes);
