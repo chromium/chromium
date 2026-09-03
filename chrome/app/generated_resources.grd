@@ -13908,6 +13908,22 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="The label of a menu entry to share the current tab to another device">
         Send to your &amp;device
       </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="The label of a menu entry to share the current tab to another device in context menus">
+          Send to your &amp;device
+        </message>
+        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_MANAGE_DEVICES" desc="The label for a menu item to manage the devices that can receive tabs in context menus">
+          Manage your devices
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="In Title Case: The label of a menu entry to share the current tab to another device in context menus">
+          Send to Your &amp;Device
+        </message>
+        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_MANAGE_DEVICES" desc="In Title Case: The label for a menu item to manage the devices that can receive tabs in context menus">
+          Manage Your Devices
+        </message>
+      </if>
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_LABEL" desc="The label for a target device in the Send Tab to Self context menu, which includes the device name and its last active time.">
         <ph name="DEVICE_NAME">$1<ex>Pixel 9 Pro</ex></ph> (<ph name="LAST_ACTIVE_TIME">$2<ex>Active 5 mins ago</ex></ph>)
       </message>

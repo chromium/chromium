@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,6 +33,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace send_tab_to_self {
@@ -198,7 +200,7 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
 }
 
 // Tests that PopulateSubmenu correctly adds the device items and the "Manage
-// Devices" item to the menu model.
+// Devices" item to the menu model with the expected localized label.
 TEST_F(SendTabToSelfContextMenuDelegateTest,
        PopulateSubmenuAddsDevicesAndManageItem) {
   base::Time now = base::Time::Now();
@@ -219,6 +221,29 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   EXPECT_EQ(menu_model.GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(menu_model.GetCommandIdAt(2),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES);
+  EXPECT_EQ(menu_model.GetLabelAt(2),
+            l10n_util::GetStringUTF16(
+                IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_MANAGE_DEVICES));
+}
+
+// Tests that PopulateSubmenu uses sentence case for the three-dot share menu
+// across all platforms including macOS (go/chrome-capitalization).
+TEST_F(SendTabToSelfContextMenuDelegateTest,
+       PopulateSubmenuUsesSentenceCaseForShareMenu) {
+  base::Time now = base::Time::Now();
+  std::vector<TargetDeviceInfo> devices;
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
+  model()->SetTargetDeviceInfoSortedList(devices);
+
+  SendTabToSelfContextMenuDelegate delegate(web_contents(),
+                                            ShareEntryPoint::kShareMenu);
+  ui::SimpleMenuModel menu_model(&delegate);
+  delegate.PopulateSubmenu(&menu_model);
+
+  ASSERT_EQ(menu_model.GetItemCount(), 3u);
+  EXPECT_EQ(menu_model.GetLabelAt(2),
+            l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES));
 }
 
 // Tests that OnMenuWillShow correctly records device count metrics.

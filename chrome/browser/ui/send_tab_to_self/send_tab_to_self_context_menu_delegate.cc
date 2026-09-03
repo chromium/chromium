@@ -174,9 +174,13 @@ void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
   }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
+  const int manage_devices_string_id =
+      entry_point_ == ShareEntryPoint::kShareMenu
+          ? IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES
+          : IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_MANAGE_DEVICES;
   model->AddItemWithStringId(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
-      IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES);
+      manage_devices_string_id);
 }
 
 bool SendTabToSelfContextMenuDelegate::IsCommandIdEnabled(

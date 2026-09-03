@@ -56,6 +56,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -120,6 +121,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
 
@@ -2673,8 +2675,8 @@ class RenderViewContextMenuSendTabToSelfPageTest
   }
 };
 
-// Tests Send Tab to Self page menu item presence and type across varied feature
-// flag states and target device availability reasons.
+// Tests Send Tab to Self page menu item presence, type, and localized label
+// across varied feature flag states and target device availability reasons.
 TEST_P(RenderViewContextMenuSendTabToSelfPageTest, CheckPageMenuState) {
   const SendTabToSelfPageMenuTestParam& param = GetParam();
   base::test::ScopedFeatureList feature_list;
@@ -2700,6 +2702,8 @@ TEST_P(RenderViewContextMenuSendTabToSelfPageTest, CheckPageMenuState) {
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(param.expected_type.value(),
               menu.menu_model().GetTypeAt(index.value()));
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
+              menu.menu_model().GetLabelAt(index.value()));
   }
 }
 
