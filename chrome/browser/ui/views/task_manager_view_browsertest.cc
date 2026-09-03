@@ -516,7 +516,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AutoSelectFirstRowOnTableFocus) {
 
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, u"*"));
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, browsertest_util::MatchAnyTab()));
   ASSERT_GT(table->GetRowCount(), 0u);
 
   // Clear existing selection entirely, as well as the focus.
