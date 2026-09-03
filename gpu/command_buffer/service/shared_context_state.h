@@ -151,6 +151,27 @@ class GPU_GLES2_EXPORT SharedContextState
   bool SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
                          bool need_graphite_submit);
 
+  // Sets the active SharedContextState for the calling thread using
+  // thread-local storage. This is typically set by the thread owner (such as
+  // GpuChannelManager on the GPU main thread, CompositorGpuThread on the
+  // compositor thread, or OutputSurfaceProviderWebView on WebView render
+  // thread) to allow downstream multi-threaded components (such as
+  // CompoundImageBacking fallback copies) to look up the active context on the
+  // current thread.
+  // Note that this and other methods below
+  // GetForCurrentThread()/ClearForCurrentThread() are currently not applicable
+  // to webview(hence OutputSurfaceProviderWebView) and should not be used for
+  // webview.
+  static void SetForCurrentThread(SharedContextState* state);
+
+  // Returns the active SharedContextState for the current thread, or nullptr
+  // if none is registered.
+  static SharedContextState* GetForCurrentThread();
+
+  // Clears the active SharedContextState for the current thread. Must be
+  // called before the registered SharedContextState is destroyed.
+  static void ClearForCurrentThread();
+
   // Returns true if context state is using GL, either for Skia to run on
   // or if there is no skia context and context state exists for WebGL fallback
   // only.

@@ -195,4 +195,40 @@ TEST_F(SharedContextStateTest, VulkanOptionsProviderSetsCustomOptions) {
   gl::GLSurfaceTestSupport::ShutdownGL(display);
 }
 
+TEST_F(SharedContextStateTest, ThreadLocalStorageBasics) {
+  gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
+  auto* display = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  ASSERT_TRUE(display);
+  {
+    NiceMock<gl::MockGLInterface> gl_interface;
+    gl::MockGLInterface::SetGLInterface(&gl_interface);
+
+    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+    auto surface = base::MakeRefCounted<gl::GLSurfaceStub>();
+    auto context = base::MakeRefCounted<gl::GLContextStub>(share_group.get());
+    const char gl_version[] = "OpenGL ES 2.0";
+    context->SetGLVersionString(gl_version);
+    const char gl_extensions[] = "GL_KHR_robustness";
+    context->SetExtensionsString(gl_extensions);
+    context->Initialize(surface.get(), {});
+
+    auto shared_context_state = base::MakeRefCounted<SharedContextState>(
+        share_group.get(), surface, context,
+        false /* use_virtualized_gl_contexts */, base::DoNothing(),
+        GrContextType::kNone);
+
+    EXPECT_TRUE(shared_context_state->MakeCurrent(surface.get()));
+
+    EXPECT_EQ(SharedContextState::GetForCurrentThread(), nullptr);
+
+    SharedContextState::SetForCurrentThread(shared_context_state.get());
+    EXPECT_EQ(SharedContextState::GetForCurrentThread(),
+              shared_context_state.get());
+
+    SharedContextState::ClearForCurrentThread();
+    EXPECT_EQ(SharedContextState::GetForCurrentThread(), nullptr);
+  }
+  gl::GLSurfaceTestSupport::ShutdownGL(display);
+}
+
 }  // namespace gpu

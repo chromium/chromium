@@ -203,6 +203,9 @@ CompositorGpuThread::GetSharedContextState() {
     LOG(ERROR) << "Failed to Initialize Skia for DrDC SharedContextState";
   }
   shared_context_state_ = std::move(shared_context_state);
+  // Register as the active SharedContextState on the CompositorGpuThread so
+  // downstream operations running on this thread can retrieve it.
+  gpu::SharedContextState::SetForCurrentThread(shared_context_state_.get());
   return shared_context_state_;
 }
 
@@ -249,6 +252,9 @@ void CompositorGpuThread::CleanUp() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (shared_context_state_) {
     shared_context_state_->MakeCurrent(nullptr);
+    // Clear the thread-local pointer before the compositor context is
+    // destroyed.
+    gpu::SharedContextState::ClearForCurrentThread();
     shared_context_state_ = nullptr;
   }
 
@@ -293,6 +299,8 @@ void CompositorGpuThread::LoseContext() {
 
   if (shared_context_state_) {
     shared_context_state_->MarkContextLost();
+    // Clear the thread-local pointer when the compositor context is lost.
+    gpu::SharedContextState::ClearForCurrentThread();
     shared_context_state_.reset();
   }
 }

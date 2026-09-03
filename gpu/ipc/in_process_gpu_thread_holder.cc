@@ -109,6 +109,9 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
   context_state_->InitializeGL(gpu_preferences_, gpu_driver_bug_workarounds,
                                gpu_feature_info_);
   context_state_->InitializeSkia(gpu_preferences_, gpu_driver_bug_workarounds);
+  // Register as the active SharedContextState for in-process GPU tasks on this
+  // thread.
+  SharedContextState::SetForCurrentThread(context_state_.get());
 
   task_executor_ = std::make_unique<GpuInProcessThreadService>(
       this, task_runner(), scheduler_.get(), sync_point_manager_.get(),
@@ -124,6 +127,8 @@ void InProcessGpuThreadHolder::DeleteOnGpuThread() {
   sync_point_manager_.reset();
   shared_image_manager_.reset();
 
+  // Clear the thread-local pointer when the context is destroyed.
+  SharedContextState::ClearForCurrentThread();
   context_state_.reset();
   context_.reset();
   surface_.reset();

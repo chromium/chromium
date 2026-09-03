@@ -88,6 +88,9 @@
 namespace gpu {
 namespace {
 
+constinit thread_local SharedContextState* g_current_shared_context_state =
+    nullptr;
+
 static constexpr size_t kInitialScratchDeserializationBufferSize = 1024;
 
 size_t MaxNumSkSurface() {
@@ -373,6 +376,11 @@ SharedContextState::~SharedContextState() {
 
   if (context_->IsCurrent(nullptr))
     context_->ReleaseCurrent(nullptr);
+
+  // Thread-local pointer must be explicitly cleared by the caller before
+  // destruction.
+  CHECK_NE(GetForCurrentThread(), this);
+
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -947,6 +955,21 @@ bool SharedContextState::SubmitIfNecessary(
     return false;
   }
   return true;
+}
+
+// static
+void SharedContextState::SetForCurrentThread(SharedContextState* state) {
+  g_current_shared_context_state = state;
+}
+
+// static
+SharedContextState* SharedContextState::GetForCurrentThread() {
+  return g_current_shared_context_state;
+}
+
+// static
+void SharedContextState::ClearForCurrentThread() {
+  g_current_shared_context_state = nullptr;
 }
 
 bool SharedContextState::MakeCurrent(gl::GLSurface* surface, bool needs_gl) {

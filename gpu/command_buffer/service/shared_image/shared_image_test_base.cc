@@ -130,6 +130,8 @@ SharedImageTestBase::~SharedImageTestBase() {
   if (context_state_) {
     // |context_state_| must be destroyed while current.
     context_state_->MakeCurrent(gl_surface_.get(), /*needs_gl=*/true);
+    // Clear the thread-local pointer when the test context is destroyed.
+    SharedContextState::ClearForCurrentThread();
   }
 }
 
@@ -222,6 +224,9 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   bool initialize_skia =
       context_state_->InitializeSkia(gpu_preferences_, gpu_workarounds_);
   ASSERT_TRUE(initialize_skia);
+  // Register as the active SharedContextState on the test thread so fallback
+  // copy strategies and representations can access it.
+  SharedContextState::SetForCurrentThread(context_state_.get());
 }
 
 void SharedImageTestBase::VerifyPixelsWithReadback(
