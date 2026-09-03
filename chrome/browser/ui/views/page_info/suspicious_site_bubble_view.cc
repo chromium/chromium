@@ -15,6 +15,7 @@
 #include "chrome/browser/safe_browsing/suspicious_site_warnings/suspicious_site_controller_desktop.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -101,6 +103,8 @@ SuspiciousSiteBubbleView::SuspiciousSiteBubbleView(
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 
+  BlockWebContents();
+
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const int vertical_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
@@ -148,7 +152,55 @@ SuspiciousSiteBubbleView::SuspiciousSiteBubbleView(
   back_to_safety_button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
+void SuspiciousSiteBubbleView::BlockWebContents() {
+  if (!web_contents()) {
+    return;
+  }
+
+  scoped_ignore_input_events_ = web_contents()->IgnoreInputEvents(std::nullopt);
+
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+    if (tab->CanShowModalUI()) {
+      scoped_tab_modal_ui_ = tab->ShowModalUI();
+    }
+  }
+
+  BrowserWindowInterface* browser = GetBrowser();
+  if (browser) {
+    browser->capabilities()->SetWebContentsBlocked(web_contents(), true);
+    is_web_contents_blocked_ = true;
+  }
+}
+
+void SuspiciousSiteBubbleView::UnblockWebContents() {
+  if (is_web_contents_blocked_ && web_contents()) {
+    BrowserWindowInterface* browser = GetBrowser();
+    if (browser) {
+      browser->capabilities()->SetWebContentsBlocked(web_contents(), false);
+    }
+    is_web_contents_blocked_ = false;
+  }
+  scoped_tab_modal_ui_.reset();
+  scoped_ignore_input_events_.reset();
+}
+
+BrowserWindowInterface* SuspiciousSiteBubbleView::GetBrowser() const {
+  if (!web_contents()) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+}
+
+void SuspiciousSiteBubbleView::OnWidgetDestroying(views::Widget* widget) {
+  UnblockWebContents();
+  PageInfoBubbleViewBase::OnWidgetDestroying(widget);
+}
+
 SuspiciousSiteBubbleView::~SuspiciousSiteBubbleView() {
+  UnblockWebContents();
   if (web_contents()) {
     if (auto* controller =
             safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
@@ -159,6 +211,7 @@ SuspiciousSiteBubbleView::~SuspiciousSiteBubbleView() {
 }
 
 void SuspiciousSiteBubbleView::OnBackToSafetyClicked() {
+  UnblockWebContents();
   if (web_contents()) {
     if (auto* controller =
             safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
@@ -196,6 +249,7 @@ void SuspiciousSiteBubbleView::OnBackToSafetyClicked() {
 }
 
 void SuspiciousSiteBubbleView::OnMarkAsSafeClicked() {
+  UnblockWebContents();
   if (web_contents()) {
     if (auto* controller =
             safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
