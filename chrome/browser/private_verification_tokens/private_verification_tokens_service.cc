@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -36,6 +37,40 @@ const base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PrivateVerificationTokens");
 
 using private_verification_tokens::PrivateVerificationTokensStore;
+
+const char* PrivacyPassAthmBatchRequestErrorToString(
+    private_verification_tokens::PrivacyPassAthmBatchRequestError error) {
+  switch (error) {
+    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
+        kInvalidBatchSize:
+      return "kInvalidBatchSize";
+    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
+        kInvalidBucketCount:
+      return "kInvalidBucketCount";
+    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
+        kClientRequestGenerationFailed:
+      return "kClientRequestGenerationFailed";
+    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
+        kAlreadyFinalized:
+      return "kAlreadyFinalized";
+    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
+        kInvalidResponseBodyLength:
+      return "kInvalidResponseBodyLength";
+    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
+        kClientFinalizeFailed:
+      return "kClientFinalizeFailed";
+  }
+}
+
+const char* TryGetTokensErrorToString(
+    private_verification_tokens::TryGetTokensError error) {
+  switch (error) {
+    case private_verification_tokens::TryGetTokensError::kNetNotOk:
+      return "kNetNotOk";
+    case private_verification_tokens::TryGetTokensError::kNullResponse:
+      return "kNullResponse";
+  }
+}
 
 }  // namespace
 
@@ -290,6 +325,8 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   auto params = private_verification_tokens::GetParametersForVersion(
       config.public_key.version());
   if (!params.has_value()) {
+    VLOG(1) << "Invalid version value in PVT config. Version: "
+            << config.public_key.version();
     return;
   }
 
@@ -299,6 +336,8 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
           private_verification_tokens::PrivacyPassAthmBatchRequest::Create(
               config, params->num_buckets);
   if (!batch_request.has_value()) {
+    VLOG(1) << "PVT token request derivation failed with error: "
+            << PrivacyPassAthmBatchRequestErrorToString(batch_request.error());
     return;
   }
 
@@ -306,6 +345,8 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
       private_verification_tokens::PrivateVerificationTokensFetcher::Create(
           config.issuer_request_url, url_loader_factory->Clone());
   if (!fetcher) {
+    VLOG(1) << "Failed to initialize PVT fetcher for URL: "
+            << config.issuer_request_url;
     return;
   }
 
@@ -337,6 +378,9 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   active_fetchers_.erase(issuer);
   if (!result.has_value()) {
+    VLOG(1) << "PVT fetcher failed with error: "
+            << TryGetTokensErrorToString(result.error().error)
+            << ", network error code: " << result.error().network_error_code;
     return;
   }
   base::expected<std::vector<std::vector<uint8_t>>,
@@ -344,6 +388,9 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
       finalized_tokens =
           batch_request.Finalize(base::as_byte_span(result.value()));
   if (!finalized_tokens.has_value()) {
+    VLOG(1) << "PVT response parsing failed with error: "
+            << PrivacyPassAthmBatchRequestErrorToString(
+                   finalized_tokens.error());
     return;
   }
   std::vector<private_verification_tokens::PrivateVerificationTokensToken>

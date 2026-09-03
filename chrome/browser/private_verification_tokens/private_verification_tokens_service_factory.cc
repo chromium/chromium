@@ -26,14 +26,20 @@ MergeCommandLineCustomIssuerConfig(
   std::string custom_issuer_json =
       net::features::kPrivateVerificationTokensCustomIssuer.Get();
   if (!custom_issuer_json.empty()) {
-    std::optional<base::DictValue> dict =
-        base::JSONReader::ReadDict(custom_issuer_json, 0);
-    if (dict.has_value()) {
+    auto parsed =
+        base::JSONReader::ReadAndReturnValueWithError(custom_issuer_json, 0);
+    if (!parsed.has_value()) {
+      LOG(WARNING) << "Failed to parse command-line custom PVT issuer JSON: "
+                   << parsed.error().message;
+    } else if (!parsed->is_dict()) {
+      LOG(WARNING) << "Failed to parse command-line custom PVT issuer JSON: "
+                   << "Root value is not a dictionary.";
+    } else {
+      VLOG(1) << "Successfully parsed and will use custom PVT issuer config "
+              << "from command line: " << custom_issuer_json;
       return private_verification_tokens::
           PrivateVerificationTokensIssuerConfig::CreateWithCustomIssuer(
-              std::move(base_config), std::move(*dict));
-    } else {
-      LOG(WARNING) << "Failed to parse command-line custom PVT issuer JSON.";
+              std::move(base_config), std::move(*parsed).TakeDict());
     }
   }
   return base_config;
