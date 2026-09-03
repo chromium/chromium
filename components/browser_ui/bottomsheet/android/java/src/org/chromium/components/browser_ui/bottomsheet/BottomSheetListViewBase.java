@@ -184,6 +184,10 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
             Boolean suppressCollectionA11y) {
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
+        mContentView.setLayoutDirection(
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR);
         mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
 
         mScrollListener = new BottomSheetRecyclerScrollListener(mBottomSheetController);

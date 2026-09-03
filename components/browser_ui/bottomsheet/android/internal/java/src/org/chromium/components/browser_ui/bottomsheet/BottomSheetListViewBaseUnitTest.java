@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
 import android.view.View;
 
 import androidx.annotation.Px;
@@ -31,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -351,5 +353,27 @@ public class BottomSheetListViewBaseUnitTest {
         // Invalidate cache (e.g. on dataset update) -> recomputes fresh.
         listView.invalidateMeasurementCache();
         // Since still scrolled, next measurement at top will recache.
+    }
+
+    @Test
+    public void testLayoutDirection_Rtl() {
+        LocalizationUtils.setRtlForTesting(true);
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
+        View contentView = new View(activity);
+        TestBottomSheetListView listView =
+                new TestBottomSheetListView(mMockBottomSheetController, contentView);
+        assertEquals(View.LAYOUT_DIRECTION_RTL, listView.getContentView().getLayoutDirection());
+    }
+
+    @Test
+    public void testLayoutDirection_Ltr() {
+        LocalizationUtils.setRtlForTesting(false);
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
+        View contentView = new View(activity);
+        TestBottomSheetListView listView =
+                new TestBottomSheetListView(mMockBottomSheetController, contentView);
+        assertEquals(View.LAYOUT_DIRECTION_LTR, listView.getContentView().getLayoutDirection());
     }
 }
