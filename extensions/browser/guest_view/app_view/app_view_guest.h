@@ -97,7 +97,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) final;
+      content::SessionStorageNamespaceHandle* session_storage_namespace) final;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

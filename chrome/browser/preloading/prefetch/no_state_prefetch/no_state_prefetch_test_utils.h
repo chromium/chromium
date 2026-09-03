@@ -279,7 +279,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
       content::BrowserMainParts* browser_main_parts) override;
   void TearDownInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
-  content::SessionStorageNamespace* GetSessionStorageNamespace() const;
+  content::SessionStorageNamespaceHandle* GetSessionStorageNamespace() const;
 
   // Many of the file and server manipulation commands are fussy about paths
   // being relative or absolute. This makes path absolute if it is not

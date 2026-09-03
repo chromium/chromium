@@ -65,7 +65,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1828,10 +1828,10 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
       prerender->contents()->no_state_prefetch_contents();
   ASSERT_TRUE(prefetch_web_contents);
 
-  content::SessionStorageNamespace* launcher_namespace =
+  content::SessionStorageNamespaceHandle* launcher_namespace =
       GetSessionStorageNamespace();
   ASSERT_TRUE(launcher_namespace);
-  content::SessionStorageNamespace* prefetch_namespace =
+  content::SessionStorageNamespaceHandle* prefetch_namespace =
       prefetch_web_contents->GetController()
           .GetDefaultSessionStorageNamespace();
   ASSERT_TRUE(prefetch_namespace);

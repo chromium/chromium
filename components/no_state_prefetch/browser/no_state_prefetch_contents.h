@@ -36,7 +36,7 @@ class ProcessMetrics;
 namespace content {
 class BrowserContext;
 class RenderViewHost;
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 class WebContents;
 class PreloadingAttempt;
 }  // namespace content
@@ -118,7 +118,7 @@ class NoStatePrefetchContents
   // this NoStatePrefetch attempt.
   virtual void StartPrerendering(
       const gfx::Rect& bounds,
-      content::SessionStorageNamespace* session_storage_namespace,
+      content::SessionStorageNamespaceHandle* session_storage_namespace,
       base::WeakPtr<content::PreloadingAttempt> preloading_attempt);
 
   // Verifies that the prerendering is not using too many resources, and kills
@@ -145,7 +145,7 @@ class NoStatePrefetchContents
   // |url| and |session_storage_namespace|.
   bool Matches(
       const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace) const;
+      content::SessionStorageNamespaceHandle* session_storage_namespace) const;
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

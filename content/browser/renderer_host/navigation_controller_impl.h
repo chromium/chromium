@@ -145,8 +145,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void GoToOffset(int offset) override;
   bool RemoveEntryAtIndex(int index) override;
   void PruneForwardEntries() override;
-  const SessionStorageNamespaceMap& GetSessionStorageNamespaceMap() override;
-  SessionStorageNamespace* GetDefaultSessionStorageNamespace() override;
+  const SessionStorageNamespaceHandleMap& GetSessionStorageNamespaceMap()
+      override;
+  SessionStorageNamespaceHandle* GetDefaultSessionStorageNamespace() override;
   bool NeedsReload() override;
   void SetNeedsReload() override;
   void CancelPendingReload() override;
@@ -283,7 +284,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // The session storage namespace that all child `blink::WebView`s associated
   // with `partition_config` should use.
-  SessionStorageNamespace* GetSessionStorageNamespace(
+  SessionStorageNamespaceHandle* GetSessionStorageNamespace(
       const StoragePartitionConfig& partition_config);
 
   // Returns the index of the specified entry, or -1 if entry is not contained
@@ -400,7 +401,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // associated with a |partition_id| will CHECK() fail.
   void SetSessionStorageNamespace(
       const StoragePartitionConfig& partition_config,
-      SessionStorageNamespace* session_storage_namespace);
+      SessionStorageNamespaceHandle* session_storage_namespace);
 
   // Random data ---------------------------------------------------------------
 
@@ -1187,14 +1188,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Prevent unsafe re-entrant calls to NavigateToPendingEntry.
   bool in_navigate_to_pending_entry_ = false;
 
-  // Used to find the appropriate SessionStorageNamespace for the storage
+  // Used to find the appropriate SessionStorageNamespaceHandle for the storage
   // partition of a NavigationEntry.
   //
   // A NavigationController may contain NavigationEntries that correspond to
   // different StoragePartitions. Even though they are part of the same
   // NavigationController, only entries in the same StoragePartition may
   // share session storage state with one another.
-  SessionStorageNamespaceMap session_storage_namespace_map_;
+  SessionStorageNamespaceHandleMap session_storage_namespace_map_;
 
   // The maximum number of entries that a navigation controller can store.
   static size_t max_entry_count_for_testing_;

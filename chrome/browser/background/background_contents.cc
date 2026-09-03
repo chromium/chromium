@@ -15,7 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_host_delegate.h"
@@ -39,7 +39,7 @@ BackgroundContents::BackgroundContents(
     bool is_new_browsing_instance,
     Delegate* delegate,
     const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace)
+    content::SessionStorageNamespaceHandle* session_storage_namespace)
     : delegate_(delegate),
       extension_host_delegate_(extensions::ExtensionsBrowserClient::Get()
                                    ->CreateExtensionHostDelegate()) {
@@ -53,7 +53,7 @@ BackgroundContents::BackgroundContents(
   }
 
   if (session_storage_namespace) {
-    content::SessionStorageNamespaceMap session_storage_namespace_map;
+    content::SessionStorageNamespaceHandleMap session_storage_namespace_map;
     session_storage_namespace_map.insert(
         std::make_pair(partition_config, session_storage_namespace));
     web_contents_ = WebContents::CreateWithSessionStorage(

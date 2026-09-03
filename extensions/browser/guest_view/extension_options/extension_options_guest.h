@@ -86,7 +86,7 @@ class ExtensionOptionsGuest
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) final;
+      content::SessionStorageNamespaceHandle* session_storage_namespace) final;
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;

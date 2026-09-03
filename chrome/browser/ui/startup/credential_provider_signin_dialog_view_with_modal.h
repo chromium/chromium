@@ -69,7 +69,8 @@ class CredentialProviderWebDialogViewWithModal
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) override;
+      content::SessionStorageNamespaceHandle* session_storage_namespace)
+      override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;

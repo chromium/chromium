@@ -120,7 +120,7 @@ FrameTree* RenderFrameHostDelegate::CreateNewWindow(
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,
     bool has_user_gesture,
-    SessionStorageNamespace* session_storage_namespace) {
+    SessionStorageNamespaceHandle* session_storage_namespace) {
   return nullptr;
 }
 

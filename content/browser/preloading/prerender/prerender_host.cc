@@ -548,7 +548,7 @@ PrerenderHost::PrerenderHost(
                          /*frame_policy=*/blink::FramePolicy(),
                          base::UnguessableToken::Create());
 
-    // Use the same SessionStorageNamespace as the primary page for the
+    // Use the same SessionStorageNamespaceHandle as the primary page for the
     // prerendering page.
     GetFrameTree()->controller().SetSessionStorageNamespace(
         site_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),

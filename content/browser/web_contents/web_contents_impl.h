@@ -833,7 +833,7 @@ class CONTENT_EXPORT WebContentsImpl
       const mojom::CreateNewWindowParams& params,
       bool is_new_browsing_instance,
       bool has_user_gesture,
-      SessionStorageNamespace* session_storage_namespace) override;
+      SessionStorageNamespaceHandle* session_storage_namespace) override;
   WebContents* ShowCreatedWindow(
       RenderFrameHostImpl* opener,
       int main_frame_widget_route_id,

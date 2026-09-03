@@ -411,7 +411,7 @@ void PrerenderInProcessBrowserTest::TearDownInProcessBrowserTestFixture() {
   safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
 }
 
-content::SessionStorageNamespace*
+content::SessionStorageNamespaceHandle*
 PrerenderInProcessBrowserTest::GetSessionStorageNamespace() const {
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents) {

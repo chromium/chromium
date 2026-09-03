@@ -13,8 +13,8 @@ ContentPlatformSpecificTabData::ContentPlatformSpecificTabData(
     content::WebContents* web_contents)
     :  // TODO(ajwong): This does not correctly handle storage for isolated
        // apps.
-      session_storage_namespace_(web_contents->GetController()
-                                     .GetDefaultSessionStorageNamespace()) {}
+      session_storage_namespace_(
+          web_contents->GetController().GetDefaultSessionStorageNamespace()) {}
 
 ContentPlatformSpecificTabData::ContentPlatformSpecificTabData() = default;
 ContentPlatformSpecificTabData::~ContentPlatformSpecificTabData() = default;

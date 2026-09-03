@@ -22,7 +22,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/restore_type.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/referrer.h"
@@ -621,13 +621,15 @@ class NavigationController {
   // Random --------------------------------------------------------------------
 
   // Session storage depends on dom_storage that depends on blink::WebString.
-  // Returns all the SessionStorageNamespace objects that this
+  // Returns all the SessionStorageNamespaceHandle objects that this
   // NavigationController knows about, the map key is a StoragePartition id.
-  virtual const SessionStorageNamespaceMap& GetSessionStorageNamespaceMap() = 0;
+  virtual const SessionStorageNamespaceHandleMap&
+  GetSessionStorageNamespaceMap() = 0;
 
   // TODO(ajwong): Remove this once prerendering, instant, and session restore
   // are migrated.
-  virtual SessionStorageNamespace* GetDefaultSessionStorageNamespace() = 0;
+  virtual SessionStorageNamespaceHandle*
+  GetDefaultSessionStorageNamespace() = 0;
 
   // Returns true if a reload happens when activated (SetActive(true) is
   // invoked). This is true for session/tab restore, cloned tabs and tabs that

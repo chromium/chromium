@@ -295,7 +295,7 @@ content::WebContents* TabWebContentsDelegateAndroid::CreateCustomWebContents(
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace) {
+    content::SessionStorageNamespaceHandle* session_storage_namespace) {
   if (actor::HasActorTaskPreventingNewWebContents(opener)) {
     // If an ExecutionEngine is acting on the opener, we force the navigation
     // to happen in the same tab.

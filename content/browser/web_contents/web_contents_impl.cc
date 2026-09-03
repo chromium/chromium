@@ -80,7 +80,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/dom_storage/session_storage_namespace_handle_impl.h"
 #include "content/browser/download/mhtml_generation_manager.h"
 #include "content/browser/download/save_package.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -770,7 +770,7 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::Create(
 
 std::unique_ptr<WebContents> WebContents::CreateWithSessionStorage(
     const WebContents::CreateParams& params,
-    const SessionStorageNamespaceMap& session_storage_namespace_map) {
+    const SessionStorageNamespaceHandleMap& session_storage_namespace_map) {
   OPTIONAL_TRACE_EVENT0("content", "WebContents::CreateWithSessionStorage");
   std::unique_ptr<WebContentsImpl> new_contents(
       new WebContentsImpl(params.browser_context));
@@ -5597,7 +5597,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,
     bool has_user_gesture,
-    SessionStorageNamespace* session_storage_namespace) {
+    SessionStorageNamespaceHandle* session_storage_namespace) {
   TRACE_EVENT2("browser,content,navigation", "WebContentsImpl::CreateNewWindow",
                "opener", opener, "params", params);
   DCHECK(opener);
@@ -5632,8 +5632,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     DOMStorageContextWrapper* dom_storage_context =
         static_cast<DOMStorageContextWrapper*>(
             partition->GetDOMStorageContext());
-    SessionStorageNamespaceImpl* session_storage_namespace_impl =
-        static_cast<SessionStorageNamespaceImpl*>(session_storage_namespace);
+    SessionStorageNamespaceHandleImpl* session_storage_namespace_impl =
+        static_cast<SessionStorageNamespaceHandleImpl*>(
+            session_storage_namespace);
     CHECK(session_storage_namespace_impl->IsFromContext(dom_storage_context));
   }
 

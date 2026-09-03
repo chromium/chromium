@@ -46,7 +46,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -64,7 +64,7 @@ using content::PreloadingFailureReason;
 using content::PreloadingHoldbackStatus;
 using content::PreloadingTriggeringOutcome;
 using content::RenderViewHost;
-using content::SessionStorageNamespace;
+using content::SessionStorageNamespaceHandle;
 using content::WebContents;
 
 namespace prerender {
@@ -214,7 +214,7 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
       break;
   }
 
-  SessionStorageNamespace* session_storage_namespace = nullptr;
+  SessionStorageNamespaceHandle* session_storage_namespace = nullptr;
   PreloadingAttempt* attempt = nullptr;
 
   // Unit tests pass in a process_id == -1.
@@ -499,7 +499,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     const content::Referrer& referrer,
     const std::optional<url::Origin>& initiator_origin,
     const gfx::Rect& bounds,
-    SessionStorageNamespace* session_storage_namespace,
+    SessionStorageNamespaceHandle* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> attempt) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -795,7 +795,7 @@ void NoStatePrefetchManager::SortActivePrefetches() {
 NoStatePrefetchManager::NoStatePrefetchData*
 NoStatePrefetchManager::FindNoStatePrefetchData(
     const GURL& url,
-    SessionStorageNamespace* session_storage_namespace) {
+    SessionStorageNamespaceHandle* session_storage_namespace) {
   for (const auto& prefetch : active_prefetches_) {
     NoStatePrefetchContents* contents = prefetch->contents();
     if (contents->Matches(url, session_storage_namespace)) {

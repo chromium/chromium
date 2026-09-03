@@ -114,7 +114,7 @@ class FileSelectListener;
 class JavaScriptDialogManager;
 class RenderFrameHost;
 class RenderWidgetHost;
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 class SiteInstance;
 class WebContents;
 struct ContextMenuParams;
@@ -404,7 +404,7 @@ class CONTENT_EXPORT WebContentsDelegate {
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const StoragePartitionConfig& partition_config,
-      SessionStorageNamespace* session_storage_namespace);
+      SessionStorageNamespaceHandle* session_storage_namespace);
 
   // Notifies the delegate about the creation of a new WebContents. This
   // typically happens when popups are created.

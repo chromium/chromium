@@ -31,7 +31,7 @@ class FakeNoStatePrefetchContents : public NoStatePrefetchContents {
 
   void StartPrerendering(
       const gfx::Rect& bounds,
-      content::SessionStorageNamespace* session_storage_namespace,
+      content::SessionStorageNamespaceHandle* session_storage_namespace,
       base::WeakPtr<content::PreloadingAttempt> preloading_attempt) override;
 
   FinalStatus expected_final_status() const { return expected_final_status_; }

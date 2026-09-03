@@ -165,7 +165,7 @@ WebContents* WebContentsDelegate::CreateCustomWebContents(
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const StoragePartitionConfig& partition_config,
-    SessionStorageNamespace* session_storage_namespace) {
+    SessionStorageNamespaceHandle* session_storage_namespace) {
   return nullptr;
 }
 

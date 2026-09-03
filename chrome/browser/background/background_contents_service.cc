@@ -569,7 +569,7 @@ BackgroundContents* BackgroundContentsService::CreateBackgroundContents(
     const std::string& frame_name,
     const std::string& application_id,
     const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace) {
+    content::SessionStorageNamespaceHandle* session_storage_namespace) {
   auto contents = std::make_unique<BackgroundContents>(
       std::move(site), opener, is_new_browsing_instance, this, partition_config,
       session_storage_namespace);

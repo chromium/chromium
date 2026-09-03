@@ -26,13 +26,13 @@
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/dom_storage/session_storage_namespace_handle_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_SessionStorageOnDiskSize) {
   NavigateToTestOrigin();
   WriteLargeValue("sessionStorage");
 
-  SessionStorageNamespace* session_storage_namespace =
+  SessionStorageNamespaceHandle* session_storage_namespace =
       shell()
           ->web_contents()
           ->GetController()

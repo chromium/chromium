@@ -107,7 +107,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
@@ -1104,7 +1104,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     RecordAppLaunchForTab(browser, tab, selected_index);
 
     // Associate sessionStorage (if any) to the restored tab.
-    scoped_refptr<content::SessionStorageNamespace> session_storage_namespace;
+    scoped_refptr<content::SessionStorageNamespaceHandle>
+        session_storage_namespace;
     if (!tab.session_storage_persistent_id.empty()) {
       session_storage_namespace =
           profile_->GetDefaultStoragePartition()

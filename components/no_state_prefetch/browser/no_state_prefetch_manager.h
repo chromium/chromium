@@ -328,7 +328,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const content::Referrer& referrer,
       const std::optional<url::Origin>& initiator_origin,
       const gfx::Rect& bounds,
-      content::SessionStorageNamespace* session_storage_namespace,
+      content::SessionStorageNamespaceHandle* session_storage_namespace,
       base::WeakPtr<content::PreloadingAttempt> attempt = nullptr);
 
   void StartSchedulingPeriodicCleanups();
@@ -369,7 +369,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // |url| and |session_storage_namespace|.
   NoStatePrefetchData* FindNoStatePrefetchData(
       const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace);
+      content::SessionStorageNamespaceHandle* session_storage_namespace);
 
   // Given the |no_state_prefetch_contents|, find the iterator in
   // |active_prefetches_| corresponding to the given prefetch.

@@ -176,7 +176,8 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) override;
+      content::SessionStorageNamespaceHandle* session_storage_namespace)
+      override;
   void WebContentsCreated(content::WebContents* source_contents,
                           const content::GlobalRenderFrameHostId& opener_id,
                           const std::string& frame_name,

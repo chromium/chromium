@@ -39,7 +39,7 @@ FakeNoStatePrefetchContents::~FakeNoStatePrefetchContents() {
 
 void FakeNoStatePrefetchContents::StartPrerendering(
     const gfx::Rect& bounds,
-    content::SessionStorageNamespace* session_storage_namespace,
+    content::SessionStorageNamespaceHandle* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
   load_start_time_ = test_no_state_prefetch_manager_->GetCurrentTimeTicks();
   prefetching_has_started_ = true;

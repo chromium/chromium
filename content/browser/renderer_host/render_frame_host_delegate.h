@@ -113,7 +113,7 @@ class FrameTreeNode;
 class Page;
 class PrerenderHostRegistry;
 class RenderWidgetHostImpl;
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 class SiteInstanceGroup;
 class SurfaceEmbedConnector;
 struct ContextMenuParams;
@@ -453,7 +453,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const mojom::CreateNewWindowParams& params,
       bool is_new_browsing_instance,
       bool has_user_gesture,
-      SessionStorageNamespace* session_storage_namespace);
+      SessionStorageNamespaceHandle* session_storage_namespace);
 
   // Show a previously created page with the specified disposition and window
   // features. The window is identified by the |main_frame_widget_route_id|

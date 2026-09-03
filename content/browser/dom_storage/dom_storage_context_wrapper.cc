@@ -25,7 +25,7 @@
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/dom_storage/session_storage_namespace_handle_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -200,10 +200,10 @@ void DOMStorageContextWrapper::PerformSessionStorageCleanup(
   session_storage_control_->CleanUpStorage(std::move(callback));
 }
 
-scoped_refptr<SessionStorageNamespace>
+scoped_refptr<SessionStorageNamespaceHandle>
 DOMStorageContextWrapper::RecreateSessionStorage(
     const std::string& namespace_id) {
-  return SessionStorageNamespaceImpl::Create(this, namespace_id);
+  return SessionStorageNamespaceHandleImpl::Create(this, namespace_id);
 }
 
 void DOMStorageContextWrapper::StartScavengingUnusedSessionStorage() {
@@ -380,7 +380,7 @@ void DOMStorageContextWrapper::MaybeBindLocalStorageControl() {
                      base::Unretained(this)));
 }
 
-scoped_refptr<SessionStorageNamespaceImpl>
+scoped_refptr<SessionStorageNamespaceHandleImpl>
 DOMStorageContextWrapper::MaybeGetExistingNamespace(
     const std::string& namespace_id) const {
   base::AutoLock lock(alive_namespaces_lock_);
@@ -390,7 +390,7 @@ DOMStorageContextWrapper::MaybeGetExistingNamespace(
 
 void DOMStorageContextWrapper::AddNamespace(
     const std::string& namespace_id,
-    SessionStorageNamespaceImpl* session_namespace) {
+    SessionStorageNamespaceHandleImpl* session_namespace) {
   base::AutoLock lock(alive_namespaces_lock_);
   CHECK(!alive_namespaces_.contains(namespace_id), base::NotFatalUntil::M158);
   alive_namespaces_[namespace_id] = session_namespace;

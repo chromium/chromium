@@ -34,7 +34,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "net/http/http_response_headers.h"
@@ -47,7 +47,7 @@
 using content::BrowserThread;
 using content::OpenURLParams;
 using content::RenderFrameHost;
-using content::SessionStorageNamespace;
+using content::SessionStorageNamespaceHandle;
 using content::WebContents;
 
 namespace prerender {
@@ -259,7 +259,7 @@ void NoStatePrefetchContents::SetPreloadingFailureReason(FinalStatus status) {
 
 void NoStatePrefetchContents::StartPrerendering(
     const gfx::Rect& bounds,
-    SessionStorageNamespace* session_storage_namespace,
+    SessionStorageNamespaceHandle* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> attempt) {
   DCHECK(browser_context_);
   DCHECK(!bounds.IsEmpty());
@@ -404,7 +404,7 @@ bool NoStatePrefetchContents::AddAliasURL(const GURL& url) {
 
 bool NoStatePrefetchContents::Matches(
     const GURL& url,
-    SessionStorageNamespace* session_storage_namespace) const {
+    SessionStorageNamespaceHandle* session_storage_namespace) const {
   // TODO(davidben): Remove any consumers that pass in a NULL
   // session_storage_namespace and only test with matches.
   if (session_storage_namespace &&

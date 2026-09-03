@@ -18,7 +18,7 @@
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/dom_storage/session_storage_namespace_handle_impl.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/storage_partition_impl.h"

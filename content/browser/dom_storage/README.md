@@ -26,11 +26,11 @@ areas for a storage partition.
 A namespace separates the Session Storage used by one tab or window from
 another. The Session Storage namespace types have different responsibilities:
 
-* [`content::SessionStorageNamespace`][content-session-storage-namespace] is
-  the `//content` interface for a namespace. It exposes the namespace ID and
+* [`content::SessionStorageNamespaceHandle`][content-session-storage-namespace-handle]
+  is the `//content` interface for a namespace. It exposes the namespace ID and
   lets callers mark whether the data should remain available for session
-  restore after the object is destroyed.
-* [`content::SessionStorageNamespaceImpl`][content-session-storage-namespace-impl]
+  restore after the handle is destroyed.
+* [`content::SessionStorageNamespaceHandleImpl`][content-session-storage-namespace-handle-impl]
   implements that interface. It uses
   [`storage::mojom::SessionStorageControl`][session-storage-control] to create
   and delete namespaces and to identify the source and destination of a clone.
@@ -44,20 +44,19 @@ another. The Session Storage namespace types have different responsibilities:
 
 ## Lifetime and session restore
 
-[`NavigationController`][navigation-controller] keeps a namespace object for
+[`NavigationController`][navigation-controller] keeps a namespace handle for
 each storage partition it uses. Creating a new namespace sends
 `SessionStorageControl::CreateNamespace()` to the Storage Service. Destroying
-the last object sends `SessionStorageControl::DeleteNamespace()`.
+the last handle sends `SessionStorageControl::DeleteNamespace()`.
 
 Chrome's session service saves the namespace ID with the tab and calls
 `SetShouldPersist(true)`. Session restore recreates tabs after the browser
 restarts. During session restore,
 [`DOMStorageContext::RecreateSessionStorage()`][dom-storage-context] creates a
-namespace object with the saved ID. The data can then be loaded from the Storage
-Service.
+handle with the saved ID. The data can then be loaded from the Storage Service.
 
 Tab restore allows a user to reopen a recently closed tab without restarting
-the browser. It keeps a reference to the namespace object in
+the browser. It keeps a namespace handle in
 [`sessions::ContentPlatformSpecificTabData`][content-platform-specific-tab-data]
 so the restored tab can reuse the same namespace.
 
@@ -87,7 +86,7 @@ Blink orders the clone with storage-area changes so that changes sent before
 the clone are included and changes sent afterward are not. With `noopener`, no
 copy is made.
 
-Code in `//content` creates an object for the new namespace and calls
+Code in `//content` creates a handle for the new namespace and calls
 `SessionStorageControl::CloneNamespace()` with the source namespace ID, the
 destination namespace ID, and either `kWaitForCloneOnNamespace` or
 `kImmediate`.
@@ -105,8 +104,8 @@ use `kImmediate` and also proceed without a renderer `Clone()` request.
 
 [blink-session-storage-namespace]: ../../../third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom
 [content-platform-specific-tab-data]: ../../../components/sessions/content/content_platform_specific_tab_data.h
-[content-session-storage-namespace]: ../../public/browser/session_storage_namespace.h
-[content-session-storage-namespace-impl]: session_storage_namespace_impl.h
+[content-session-storage-namespace-handle]: ../../public/browser/session_storage_namespace_handle.h
+[content-session-storage-namespace-handle-impl]: session_storage_namespace_handle_impl.h
 [dom-storage-context]: ../../public/browser/dom_storage_context.h
 [dom-storage-context-wrapper]: dom_storage_context_wrapper.h
 [local-storage-impl]: ../../../components/services/storage/dom_storage/local_storage_impl.h

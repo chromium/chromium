@@ -285,11 +285,11 @@ struct SessionTab {
   // Timestamp for when this tab was last activated.
   mojo_base.mojom.Time last_active_time;
   // Persistent identifier used to reassociate sessionStorage. It represents the
-  // ID of the corresponding `SessionStorageNamespace`.
+  // ID of the corresponding `SessionStorageNamespaceHandle`.
   // It is stored as a std::string in `components/sessions/core/session_types.h`
-  // because `SessionStorageNamespace` defined in
-  // (`content/public/browser/session_storage_namespace.h`) exposes the ID as a
-  // std::string.
+  // because `SessionStorageNamespaceHandle` defined in
+  // (`content/public/browser/session_storage_namespace_handle.h`) exposes the
+  // ID as a std::string.
   string session_storage_persistent_id;
   // Represents the guid associated with the tab, may be empty.
   string guid;

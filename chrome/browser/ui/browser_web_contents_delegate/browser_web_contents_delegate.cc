@@ -193,7 +193,7 @@ BackgroundContents* CreateBackgroundContents(
     const std::string& frame_name,
     const GURL& target_url,
     const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace) {
+    content::SessionStorageNamespaceHandle* session_storage_namespace) {
   BackgroundContentsService* service =
       BackgroundContentsServiceFactory::GetForProfile(profile);
   const extensions::Extension* extension =
@@ -1031,7 +1031,7 @@ content::WebContents* BrowserWebContentsDelegate::CreateCustomWebContents(
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace) {
+    content::SessionStorageNamespaceHandle* session_storage_namespace) {
   if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
       actor::HasActorTaskPreventingNewWebContents(opener)) {
     // If an ExecutionEngine is acting on the opener, we force the navigation

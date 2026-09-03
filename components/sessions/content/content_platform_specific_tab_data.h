@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/sessions_export.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 
 namespace content {
 class WebContents;
@@ -18,8 +18,8 @@ namespace sessions {
 
 // A //content-specific subclass of PlatformSpecificTabData that is used to
 // associate tab_restore::Tab instances with the
-// content::SessionStorageNamespace of the WebContents from which they were
-// created.
+// content::SessionStorageNamespaceHandle of the WebContents from which they
+// were created.
 class SESSIONS_EXPORT ContentPlatformSpecificTabData
     : public tab_restore::PlatformSpecificTabData {
  public:
@@ -27,12 +27,13 @@ class SESSIONS_EXPORT ContentPlatformSpecificTabData
   ContentPlatformSpecificTabData();
   ~ContentPlatformSpecificTabData() override;
 
-  content::SessionStorageNamespace* session_storage_namespace() const {
+  content::SessionStorageNamespaceHandle* session_storage_namespace() const {
     return session_storage_namespace_.get();
   }
 
  private:
-  scoped_refptr<content::SessionStorageNamespace> session_storage_namespace_;
+  scoped_refptr<content::SessionStorageNamespaceHandle>
+      session_storage_namespace_;
 };
 
 }  // namespace sessions

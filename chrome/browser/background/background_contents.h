@@ -22,7 +22,7 @@
 class Profile;
 
 namespace content {
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 }
 
 namespace extensions {
@@ -66,7 +66,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
       bool is_new_browsing_instance,
       Delegate* delegate,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace);
+      content::SessionStorageNamespaceHandle* session_storage_namespace);
 
   BackgroundContents(const BackgroundContents&) = delete;
   BackgroundContents& operator=(const BackgroundContents&) = delete;

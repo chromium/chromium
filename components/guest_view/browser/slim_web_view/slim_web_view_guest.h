@@ -89,7 +89,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) final;
+      content::SessionStorageNamespaceHandle* session_storage_namespace) final;
   void RendererUnresponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,

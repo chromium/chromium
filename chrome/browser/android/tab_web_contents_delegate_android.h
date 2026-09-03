@@ -82,7 +82,8 @@ class TabWebContentsDelegateAndroid
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) override;
+      content::SessionStorageNamespaceHandle* session_storage_namespace)
+      override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
   void RequestMediaAccessPermission(

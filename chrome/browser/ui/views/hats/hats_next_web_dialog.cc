@@ -123,7 +123,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) override {
+      content::SessionStorageNamespaceHandle* session_storage_namespace)
+      override {
     // The HaTS Next WebDialog runs with a non-primary OTR profile. This profile
     // cannot open new browser windows, so they are instead opened in the
     // regular browser that initiated the HaTS survey.

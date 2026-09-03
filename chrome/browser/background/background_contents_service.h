@@ -31,7 +31,7 @@ class PrefService;
 class Profile;
 
 namespace content {
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 }
 
 namespace extensions {
@@ -135,7 +135,7 @@ class BackgroundContentsService
       const std::string& frame_name,
       const std::string& application_id,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace);
+      content::SessionStorageNamespaceHandle* session_storage_namespace);
 
   // Removes |contents| from |contents_map_|, deleting it.
   void DeleteBackgroundContents(BackgroundContents* contents);

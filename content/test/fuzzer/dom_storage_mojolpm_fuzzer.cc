@@ -15,7 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"  // nogncheck
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"  // nogncheck
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"  // nogncheck
+#include "content/browser/dom_storage/session_storage_namespace_handle_impl.h"  // nogncheck
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"  // nogncheck
 #include "content/browser/storage_partition_impl.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
@@ -192,10 +192,10 @@ class DomStorageTestcase
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   blink::SessionStorageNamespaceId session_namespace_id_;
-  scoped_refptr<SessionStorageNamespaceImpl> session_namespace_;
+  scoped_refptr<SessionStorageNamespaceHandleImpl> session_namespace_;
   // Keeps alive cloned namespaces created via NewPendingCloneAction so that the
   // storage service retains their pending-clone state until Clone() is called.
-  std::vector<scoped_refptr<SessionStorageNamespaceImpl>>
+  std::vector<scoped_refptr<SessionStorageNamespaceHandleImpl>>
       pending_clone_namespaces_;
 };
 
@@ -229,7 +229,7 @@ void DomStorageTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
   // Create a session storage namespace for session storage fuzzing.
   auto* dom_storage_context = GetStoragePartition()->GetDOMStorageContext();
   session_namespace_id_ = blink::AllocateSessionStorageNamespaceId();
-  session_namespace_ = SessionStorageNamespaceImpl::Create(
+  session_namespace_ = SessionStorageNamespaceHandleImpl::Create(
       dom_storage_context, session_namespace_id_);
 
   GetFuzzerTaskRunner()->PostTask(
@@ -496,10 +496,12 @@ void DomStorageTestcase::SetUpPendingClone(uint32_t id,
 
 void DomStorageTestcase::DoSetUpPendingClone(
     const std::string& target_namespace_id) {
-  pending_clone_namespaces_.push_back(SessionStorageNamespaceImpl::CloneFrom(
-      scoped_refptr<DOMStorageContextWrapper>(session_namespace_->context()),
-      target_namespace_id, session_namespace_id_,
-      /*immediately=*/false));
+  pending_clone_namespaces_.push_back(
+      SessionStorageNamespaceHandleImpl::CloneFrom(
+          scoped_refptr<DOMStorageContextWrapper>(
+              session_namespace_->context()),
+          target_namespace_id, session_namespace_id_,
+          /*immediately=*/false));
 }
 
 void DomStorageTestcase::BindTargetSessionStorageNamespace(

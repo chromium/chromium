@@ -19,7 +19,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -34,7 +34,7 @@
 
 using base::TimeTicks;
 using content::RenderViewHost;
-using content::SessionStorageNamespace;
+using content::SessionStorageNamespaceHandle;
 
 namespace prerender {
 

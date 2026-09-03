@@ -29,7 +29,7 @@ namespace content {
 class JavaScriptDialogManager;
 class NavigationHandle;
 class RenderFrameHost;
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 class SiteInstance;
 class StoragePartitionConfig;
 class WebContents;
@@ -79,7 +79,8 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) override;
+      content::SessionStorageNamespaceHandle* session_storage_namespace)
+      override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

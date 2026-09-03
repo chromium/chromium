@@ -39,7 +39,7 @@
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/dom_storage/session_storage_namespace_handle_impl.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/global_privacy_control_util.h"
 #include "content/browser/gpu/compositor_util.h"

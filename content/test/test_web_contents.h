@@ -239,7 +239,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       const mojom::CreateNewWindowParams& params,
       bool is_new_browsing_instance,
       bool has_user_gesture,
-      SessionStorageNamespace* session_storage_namespace) override;
+      SessionStorageNamespaceHandle* session_storage_namespace) override;
   RenderWidgetHostImpl* CreateNewPopupWidget(
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t route_id,

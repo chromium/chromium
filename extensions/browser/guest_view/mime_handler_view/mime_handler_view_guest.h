@@ -140,7 +140,8 @@ class MimeHandlerViewGuest
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace) override;
+      content::SessionStorageNamespaceHandle* session_storage_namespace)
+      override;
 
   // Updates the fullscreen state for the guest. Returns whether the change
   // needs to be propagated to the embedder.

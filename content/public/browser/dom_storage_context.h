@@ -17,7 +17,7 @@ class StorageKey;
 namespace content {
 
 struct StorageUsageInfo;
-class SessionStorageNamespace;
+class SessionStorageNamespaceHandle;
 struct SessionStorageUsageInfo;
 
 // Access point for the per-BrowserContext Local Storage and Session Storage
@@ -41,11 +41,11 @@ class DOMStorageContext {
   virtual void DeleteSessionStorage(const SessionStorageUsageInfo& usage_info,
                                     base::OnceClosure callback) = 0;
 
-  // Creates a SessionStorageNamespace with the given `namespace_id`. Used
+  // Creates a SessionStorageNamespaceHandle with the given `namespace_id`. Used
   // after tabs are restored by session restore. When created, the
-  // SessionStorageNamespace with the correct `namespace_id` will be
+  // SessionStorageNamespaceHandle with the correct `namespace_id` will be
   // associated with the persisted sessionStorage data.
-  virtual scoped_refptr<SessionStorageNamespace> RecreateSessionStorage(
+  virtual scoped_refptr<SessionStorageNamespaceHandle> RecreateSessionStorage(
       const std::string& namespace_id) = 0;
 
   // Starts deleting sessionStorages which don't have an associated
