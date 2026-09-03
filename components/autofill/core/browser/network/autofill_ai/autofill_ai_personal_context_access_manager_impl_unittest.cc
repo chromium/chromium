@@ -116,6 +116,14 @@ MATCHER_P(MatchEncryptedEntity, expected_encrypted_bytes, "") {
          arg.encrypted_entity() == expected_encrypted_bytes;
 }
 
+personal_context::FetchContextResult FetchContextSuccess(
+    const personal_context::proto::ContextMemoryAmbientAutofillResponse&
+        response) {
+  personal_context::proto::Any any;
+  response.SerializeToString(any.mutable_value());
+  return personal_context::FetchContextResult(base::ok(std::move(any)));
+}
+
 template <size_t I = 0, typename T>
 auto SaveOptSpanToVector(std::vector<T>* vector_ptr) {
   return [vector_ptr](auto&&... args) {
@@ -240,13 +248,6 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
 
     const bool has_spii = !expected_spii_types.empty();
 
-    personal_context::proto::Any any_presence_response;
-    non_spii_and_presence_response.SerializeToString(
-        any_presence_response.mutable_value());
-
-    personal_context::proto::Any any_spii_response;
-    spii_response.SerializeToString(any_spii_response.mutable_value());
-
     {
       InSequence s;
 
@@ -255,8 +256,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
           FetchContext(
               personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
               MatchContextFetchRequest(proto_types, has_spii), _, _))
-          .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
-              base::ok(std::move(any_presence_response)))));
+          .WillOnce(RunOnceCallback<3>(
+              FetchContextSuccess(non_spii_and_presence_response)));
 
       if (has_spii) {
         EXPECT_CALL(
@@ -265,8 +266,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
                              CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
                          MatchContextFetchRequest(proto_spii_types, false), _,
                          _))
-            .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
-                base::ok(std::move(any_spii_response)))));
+            .WillOnce(
+                RunOnceCallback<3>(FetchContextSuccess(spii_response)));
       }
     }
 
@@ -511,15 +512,13 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // Cache TTL Expired
   FastForwardBy(base::Minutes(31));
 
-  personal_context::proto::Any any_presence_response;
-  expected_response.SerializeToString(any_presence_response.mutable_value());
   EXPECT_CALL(
       mock_personal_context_service(),
       FetchContext(
           personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
           _, _))
-      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
-          base::ok(std::move(any_presence_response)))));
+      .WillOnce(
+          RunOnceCallback<3>(FetchContextSuccess(expected_response)));
 
   access_manager().PrefetchContext(requested_types);
   histogram_tester().ExpectBucketCount(
@@ -602,12 +601,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
   spii_response.add_entities()->mutable_passport()->set_number("12345");
 
-  personal_context::proto::Any any_presence_response;
-  presence_response.SerializeToString(any_presence_response.mutable_value());
-
-  personal_context::proto::Any any_spii_response;
-  spii_response.SerializeToString(any_spii_response.mutable_value());
-
   base::OnceCallback<void(personal_context::FetchContextResult)>
       presence_callback;
   base::OnceCallback<void(personal_context::FetchContextResult)> spii_callback;
@@ -643,9 +636,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(base::Milliseconds(100));
 
   // Complete the Non-SPII and presence request.
-  std::move(presence_callback)
-      .Run(personal_context::FetchContextResult(
-          base::ok(std::move(any_presence_response))));
+  std::move(presence_callback).Run(FetchContextSuccess(presence_response));
 
   // Verify NonSpiiAndPresence latency is recorded.
   histogram_tester().ExpectUniqueTimeSample(
@@ -658,9 +649,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(base::Milliseconds(50));
 
   // Complete the SPII masked data request.
-  std::move(spii_callback)
-      .Run(personal_context::FetchContextResult(
-          base::ok(std::move(any_spii_response))));
+  std::move(spii_callback).Run(FetchContextSuccess(spii_response));
 
   // Verify SpiiMasked latency is recorded.
   histogram_tester().ExpectUniqueTimeSample(
@@ -732,9 +721,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::Entity* entity = expected_response.add_entities();
   entity->mutable_order()->set_order_id("12345");
 
-  personal_context::proto::Any any_presence_response;
-  expected_response.SerializeToString(any_presence_response.mutable_value());
-
   base::OnceCallback<void(personal_context::FetchContextResult)> callback;
   EXPECT_CALL(
       mock_personal_context_service(),
@@ -751,8 +737,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(latency);
 
   // Complete the request.
-  std::move(callback).Run(personal_context::FetchContextResult(
-      base::ok(std::move(any_presence_response))));
+  std::move(callback).Run(FetchContextSuccess(expected_response));
 
   // Verify that the total latency is recorded to the histogram.
   histogram_tester().ExpectUniqueTimeSample(
@@ -770,12 +755,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       presence_response;
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
   spii_response.add_entities()->mutable_passport()->set_number("12345");
-
-  personal_context::proto::Any any_presence_response;
-  presence_response.SerializeToString(any_presence_response.mutable_value());
-
-  personal_context::proto::Any any_spii_response;
-  spii_response.SerializeToString(any_spii_response.mutable_value());
 
   base::OnceCallback<void(personal_context::FetchContextResult)>
       presence_callback;
@@ -812,9 +791,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(base::Milliseconds(100));
 
   // Complete Request 1 (collects presence signals).
-  std::move(presence_callback)
-      .Run(personal_context::FetchContextResult(
-          base::ok(std::move(any_presence_response))));
+  std::move(presence_callback).Run(FetchContextSuccess(presence_response));
 
   // Verify NonSpiiAndPresence request latency is recorded.
   histogram_tester().ExpectUniqueTimeSample(
@@ -828,9 +805,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(base::Milliseconds(50));
 
   // Complete Request 2 (collects actual entities).
-  std::move(spii_callback)
-      .Run(personal_context::FetchContextResult(
-          base::ok(std::move(any_spii_response))));
+  std::move(spii_callback).Run(FetchContextSuccess(spii_response));
 
   // Verify SpiiMasked request latency is recorded.
   histogram_tester().ExpectUniqueTimeSample(
@@ -855,9 +830,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::Entity* entity = expected_response.add_entities();
   entity->mutable_order()->set_order_id("12345");
 
-  personal_context::proto::Any any_presence_response;
-  expected_response.SerializeToString(any_presence_response.mutable_value());
-
   base::OnceCallback<void(personal_context::FetchContextResult)> callback;
   EXPECT_CALL(
       mock_personal_context_service(),
@@ -874,8 +846,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(latency);
 
   // Complete the request.
-  std::move(callback).Run(personal_context::FetchContextResult(
-      base::ok(std::move(any_presence_response))));
+  std::move(callback).Run(FetchContextSuccess(expected_response));
 
   // Verify NonSpiiAndPresence request latency is recorded.
   histogram_tester.ExpectUniqueTimeSample(
@@ -1122,29 +1093,24 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // 2. Mock responses.
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
   spii_response.add_entities()->mutable_passport()->set_number("P123");
-  personal_context::proto::Any any_spii_response;
-  spii_response.SerializeToString(any_spii_response.mutable_value());
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
-  personal_context::proto::Any any_presence_response;
-  presence_response.SerializeToString(any_presence_response.mutable_value());
 
   // 3. Complete SPII request (Request 2) first.
   EXPECT_CALL(mock_observer(),
               OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))));
-  spii_callback_future.Take().Run(personal_context::FetchContextResult(
-      base::ok(std::move(any_spii_response))));
+  spii_callback_future.Take().Run(FetchContextSuccess(spii_response));
 
   EXPECT_TRUE(access_manager().IsTypePrefetched(passport_type));
 
   // 4. Complete Presence request (Request 1) second.
   EXPECT_CALL(mock_observer(),
               OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  presence_callback_future.Take().Run(personal_context::FetchContextResult(
-      base::ok(std::move(any_presence_response))));
+  presence_callback_future.Take().Run(
+      FetchContextSuccess(presence_response));
 
   // `ServerHasSpiiPresenceSignal` should now return true even if the presence
   // signal arrived after the SPII data was cached.
@@ -1472,10 +1438,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   // Resolve the first request.
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  personal_context::proto::Any any_response;
-  response.SerializeToString(any_response.mutable_value());
-  future.Take().Run(
-      personal_context::FetchContextResult(base::ok(std::move(any_response))));
+  future.Take().Run(FetchContextSuccess(response));
 
   // Now it is prefetched.
   EXPECT_TRUE(
@@ -1491,8 +1454,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, FailureTriggersBackoff) {
       ContextMemoryError::ExecutionError::kGenericFailure);
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  personal_context::proto::Any any_response;
-  response.SerializeToString(any_response.mutable_value());
 
   MockFunction<void(std::string_view)> check;
   {
@@ -1537,8 +1498,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, FailureTriggersBackoff) {
         FetchContext(
             personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
             _, _))
-        .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
-            base::ok(std::move(any_response)))));
+        .WillOnce(RunOnceCallback<3>(FetchContextSuccess(response)));
     EXPECT_CALL(check, Call("7. Success"));
 
     // 9. Success resets failure count.
@@ -1621,13 +1581,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // 2. Resolve request successfully. Status should transition to `kSuccess`,
   // and observer should be notified with success = true.
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  personal_context::proto::Any any_response;
-  response.SerializeToString(any_response.mutable_value());
 
   EXPECT_CALL(mock_observer(),
               OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  future.Take().Run(
-      personal_context::FetchContextResult(base::ok(std::move(any_response))));
+  future.Take().Run(FetchContextSuccess(response));
 
   EXPECT_EQ(access_manager().GetPrefetchStatusByEntityType(order_type),
             RequestStatus::kSuccess);
@@ -2105,17 +2062,13 @@ class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
       return;
     }
 
-    personal_context::proto::Any any_response;
-    response.SerializeToString(any_response.mutable_value());
-
     EXPECT_CALL(
         mock_personal_context_service(),
         FetchContext(
             personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
             MatchContextFetchRequest(proto_types, /*expected_presence=*/false),
             _, _))
-        .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
-            base::ok(std::move(any_response)))));
+        .WillOnce(RunOnceCallback<3>(FetchContextSuccess(response)));
 
     access_manager().PrefetchContext(requested_types);
   }
