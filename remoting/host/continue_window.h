@@ -35,10 +35,16 @@ class ContinueWindow : public HostWindow {
   virtual void ShowUi() = 0;
   virtual void HideUi() = 0;
 
+  // Enables or disables the UI buttons.
+  virtual void SetButtonsEnabled(bool enabled) = 0;
+
  private:
   // Invoked periodically to ask for the local user whether the session should
   // be continued.
   void OnSessionExpired();
+
+  // Invoked when the initial activation delay expires.
+  void OnActivationDelayExpired();
 
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
@@ -48,6 +54,9 @@ class ContinueWindow : public HostWindow {
 
   // Used to ask the local user whether the session should be continued.
   base::OneShotTimer session_expired_timer_;
+
+  // Used to delay enabling the default action / buttons.
+  base::OneShotTimer activation_delay_timer_;
 };
 
 }  // namespace remoting

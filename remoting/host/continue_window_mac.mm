@@ -20,6 +20,8 @@
  @private
   NSMutableArray<NSWindow*>* __strong _shades;
   NSAlert* __strong _continue_alert;
+  NSButton* __weak _cancel_button;
+  NSButton* __weak _continue_button;
   raw_ptr<remoting::ContinueWindow> _continue_window;
 }
 
@@ -27,6 +29,7 @@
 - (void)show;
 - (void)hide;
 - (void)cancelOperation:(id)sender;
+- (void)setButtonsEnabled:(BOOL)enabled;
 - (void)onCancel:(id)sender;
 - (void)onContinue:(id)sender;
 @end
@@ -48,6 +51,7 @@ class ContinueWindowMac : public ContinueWindow {
   // ContinueWindow overrides.
   void ShowUi() override;
   void HideUi() override;
+  void SetButtonsEnabled(bool enabled) override;
 
  private:
   ContinueWindowMacController* __strong controller_;
@@ -77,6 +81,14 @@ void ContinueWindowMac::HideUi() {
   @autoreleasepool {
     [controller_ hide];
     controller_ = nil;
+  }
+}
+
+void ContinueWindowMac::SetButtonsEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (controller_) {
+    [controller_ setButtonsEnabled:enabled ? YES : NO];
   }
 }
 
@@ -126,16 +138,18 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   _continue_alert = [[NSAlert alloc] init];
   _continue_alert.messageText = l10n_util::GetNSString(IDS_CONTINUE_PROMPT);
 
-  NSButton* cancel_button = [_continue_alert
+  _cancel_button = [_continue_alert
       addButtonWithTitle:l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON)];
-  cancel_button.action = @selector(onCancel:);
-  cancel_button.target = self;
+  _cancel_button.action = @selector(onCancel:);
+  _cancel_button.target = self;
+  _cancel_button.enabled = NO;
 
-  NSButton* continue_button = [_continue_alert
+  _continue_button = [_continue_alert
       addButtonWithTitle:l10n_util::GetNSString(IDS_CONTINUE_BUTTON)];
-  continue_button.action = @selector(onContinue:);
-  continue_button.target = self;
-  continue_button.keyEquivalent = @"";
+  _continue_button.action = @selector(onContinue:);
+  _continue_button.target = self;
+  _continue_button.keyEquivalent = @"";
+  _continue_button.enabled = NO;
 
   NSBundle* bundle = [NSBundle bundleForClass:[self class]];
   NSString* imagePath = [bundle pathForResource:@"chromoting128" ofType:@"png"];
@@ -168,6 +182,13 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
     [_continue_alert.window close];
     _continue_alert = nil;
   }
+  _cancel_button = nil;
+  _continue_button = nil;
+}
+
+- (void)setButtonsEnabled:(BOOL)enabled {
+  _cancel_button.enabled = enabled;
+  _continue_button.enabled = enabled;
 }
 
 - (void)cancelOperation:(id)sender {
@@ -175,11 +196,19 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
 }
 
 - (void)onCancel:(id)sender {
+  if (!_cancel_button.enabled) {
+    return;
+  }
+
   [self hide];
   _continue_window->DisconnectSession();
 }
 
 - (void)onContinue:(id)sender {
+  if (!_continue_button.enabled) {
+    return;
+  }
+
   [self hide];
   _continue_window->ContinueSession();
 }

@@ -35,6 +35,7 @@ class ContinueWindowWin : public ContinueWindow {
   // ContinueWindow overrides.
   void ShowUi() override;
   void HideUi() override;
+  void SetButtonsEnabled(bool enabled) override;
 
  private:
   static BOOL CALLBACK DialogProc(HWND hwmd,
@@ -47,6 +48,7 @@ class ContinueWindowWin : public ContinueWindow {
   void EndDialog();
 
   HWND hwnd_;
+  bool buttons_enabled_ = false;
 };
 
 ContinueWindowWin::ContinueWindowWin() : hwnd_(nullptr) {}
@@ -66,6 +68,7 @@ void ContinueWindowWin::ShowUi() {
     return;
   }
 
+  SetButtonsEnabled(false);
   ShowWindow(hwnd_, SW_SHOW);
 }
 
@@ -73,6 +76,21 @@ void ContinueWindowWin::HideUi() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EndDialog();
+}
+
+void ContinueWindowWin::SetButtonsEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  buttons_enabled_ = enabled;
+  if (hwnd_) {
+    HWND cancel_button = GetDlgItem(hwnd_, IDC_CONTINUE_CANCEL);
+    if (cancel_button) {
+      EnableWindow(cancel_button, enabled ? TRUE : FALSE);
+    }
+    HWND continue_button = GetDlgItem(hwnd_, IDC_CONTINUE_BUTTON);
+    if (continue_button) {
+      EnableWindow(continue_button, enabled ? TRUE : FALSE);
+    }
+  }
 }
 
 BOOL CALLBACK ContinueWindowWin::DialogProc(HWND hwnd,
@@ -111,15 +129,20 @@ BOOL ContinueWindowWin::OnDialogMessage(HWND hwnd,
     case WM_COMMAND:
       switch (LOWORD(wParam)) {
         case IDC_CONTINUE_BUTTON:
-          ContinueSession();
-          EndDialog();
+          if (buttons_enabled_) {
+            ContinueSession();
+            EndDialog();
+          }
           return TRUE;
         case IDC_CONTINUE_CANCEL:
         case IDCANCEL:
-          DisconnectSession();
-          EndDialog();
+          if (buttons_enabled_) {
+            DisconnectSession();
+            EndDialog();
+          }
           return TRUE;
       }
+      return FALSE;
   }
   return FALSE;
 }

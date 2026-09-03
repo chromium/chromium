@@ -25,6 +25,7 @@ class TestContinueWindow : public ContinueWindow {
 
   MOCK_METHOD(void, ShowUi, (), (override));
   MOCK_METHOD(void, HideUi, (), (override));
+  MOCK_METHOD(void, SetButtonsEnabled, (bool), (override));
 };
 
 }  // namespace
@@ -48,6 +49,7 @@ TEST_F(ContinueWindowTest, ShowUiAndDisableInputsOnSessionExpired) {
 
   EXPECT_CALL(client_session_control_, SetDisableInputs(true));
   EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
   task_environment_.FastForwardBy(base::Minutes(30));
 }
 
@@ -57,7 +59,11 @@ TEST_F(ContinueWindowTest, ContinueSessionResumesInputsAndRestartsTimer) {
 
   EXPECT_CALL(client_session_control_, SetDisableInputs(true));
   EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
   task_environment_.FastForwardBy(base::Minutes(30));
+
+  EXPECT_CALL(window, SetButtonsEnabled(true));
+  task_environment_.FastForwardBy(base::Seconds(2));
 
   EXPECT_CALL(window, HideUi());
   EXPECT_CALL(client_session_control_, SetDisableInputs(false));
@@ -65,6 +71,7 @@ TEST_F(ContinueWindowTest, ContinueSessionResumesInputsAndRestartsTimer) {
 
   EXPECT_CALL(client_session_control_, SetDisableInputs(true));
   EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
   task_environment_.FastForwardBy(base::Minutes(30));
 }
 
@@ -74,7 +81,11 @@ TEST_F(ContinueWindowTest, DisconnectSessionDisconnectsClient) {
 
   EXPECT_CALL(client_session_control_, SetDisableInputs(true));
   EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
   task_environment_.FastForwardBy(base::Minutes(30));
+
+  EXPECT_CALL(window, SetButtonsEnabled(true));
+  task_environment_.FastForwardBy(base::Seconds(2));
 
   EXPECT_CALL(
       client_session_control_,
@@ -88,12 +99,71 @@ TEST_F(ContinueWindowTest, DisconnectsOnTimeoutWithoutUserResponse) {
 
   EXPECT_CALL(client_session_control_, SetDisableInputs(true));
   EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
   task_environment_.FastForwardBy(base::Minutes(30));
+
+  EXPECT_CALL(window, SetButtonsEnabled(true));
+  task_environment_.FastForwardBy(base::Seconds(2));
 
   EXPECT_CALL(
       client_session_control_,
       DisconnectSession(ErrorCode::MAX_SESSION_LENGTH, testing::_, testing::_));
   task_environment_.FastForwardBy(base::Minutes(5));
+}
+
+TEST_F(ContinueWindowTest, ActivationDelayBlocksEarlyUserActions) {
+  TestContinueWindow window;
+  window.Start(client_session_control_factory_.GetWeakPtr());
+
+  EXPECT_CALL(client_session_control_, SetDisableInputs(true));
+  EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
+  task_environment_.FastForwardBy(base::Minutes(30));
+
+  // Before delay expires (1 second in), user actions should be ignored.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(window, HideUi()).Times(0);
+  EXPECT_CALL(client_session_control_, SetDisableInputs(false)).Times(0);
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  window.ContinueSession();
+  window.DisconnectSession();
+
+  // Once the 2-second delay expires, buttons are enabled and action succeeds.
+  EXPECT_CALL(window, SetButtonsEnabled(true));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_CALL(window, HideUi());
+  EXPECT_CALL(client_session_control_, SetDisableInputs(false));
+  window.ContinueSession();
+}
+
+TEST_F(ContinueWindowTest, ActivationDelayBlocksEarlyDisconnect) {
+  TestContinueWindow window;
+  window.Start(client_session_control_factory_.GetWeakPtr());
+
+  EXPECT_CALL(client_session_control_, SetDisableInputs(true));
+  EXPECT_CALL(window, ShowUi());
+  EXPECT_CALL(window, SetButtonsEnabled(false));
+  task_environment_.FastForwardBy(base::Minutes(30));
+
+  // Early disconnect attempt during activation delay is ignored.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(testing::_, testing::_, testing::_))
+      .Times(0);
+  window.DisconnectSession();
+
+  // Once the 2-second delay expires, DisconnectSession succeeds.
+  EXPECT_CALL(window, SetButtonsEnabled(true));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_CALL(
+      client_session_control_,
+      DisconnectSession(ErrorCode::MAX_SESSION_LENGTH, testing::_, testing::_));
+  window.DisconnectSession();
 }
 
 }  // namespace remoting

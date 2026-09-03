@@ -32,6 +32,7 @@ class ContinueWindowGtk : public ContinueWindow {
   // ContinueWindow overrides.
   void ShowUi() override;
   void HideUi() override;
+  void SetButtonsEnabled(bool enabled) override;
 
  private:
   void CreateWindow();
@@ -39,6 +40,8 @@ class ContinueWindowGtk : public ContinueWindow {
   void OnResponse(GtkDialog*, int);
 
   raw_ptr<GtkWidget> continue_window_;
+
+  bool buttons_enabled_ = false;
 
   ScopedGSignal signal_;
 };
@@ -70,6 +73,18 @@ void ContinueWindowGtk::HideUi() {
   }
 }
 
+void ContinueWindowGtk::SetButtonsEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  buttons_enabled_ = enabled;
+  if (continue_window_) {
+    gtk_dialog_set_response_sensitive(GTK_DIALOG(continue_window_.get()),
+                                      GTK_RESPONSE_CANCEL,
+                                      enabled ? TRUE : FALSE);
+    gtk_dialog_set_response_sensitive(GTK_DIALOG(continue_window_.get()),
+                                      GTK_RESPONSE_OK, enabled ? TRUE : FALSE);
+  }
+}
+
 void ContinueWindowGtk::CreateWindow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!continue_window_);
@@ -84,6 +99,10 @@ void ContinueWindowGtk::CreateWindow() {
 
   gtk_dialog_set_default_response(GTK_DIALOG(continue_window_.get()),
                                   GTK_RESPONSE_CANCEL);
+  gtk_dialog_set_response_sensitive(GTK_DIALOG(continue_window_.get()),
+                                    GTK_RESPONSE_CANCEL, FALSE);
+  gtk_dialog_set_response_sensitive(GTK_DIALOG(continue_window_.get()),
+                                    GTK_RESPONSE_OK, FALSE);
   gtk_window_set_resizable(GTK_WINDOW(continue_window_.get()), FALSE);
 
   // Set always-on-top, otherwise this window tends to be obscured by the
@@ -120,6 +139,10 @@ void ContinueWindowGtk::CreateWindow() {
 
 void ContinueWindowGtk::OnResponse(GtkDialog* dialog, int response_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!buttons_enabled_) {
+    return;
+  }
 
   if (response_id == GTK_RESPONSE_OK) {
     ContinueSession();

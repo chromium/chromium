@@ -15,6 +15,9 @@ constexpr base::TimeDelta kSessionExpirationTimeout = base::Minutes(30);
 // window has been shown).
 constexpr base::TimeDelta kSessionDisconnectTimeout = base::Minutes(5);
 
+// Time to wait before enabling the Continue/Cancel buttons.
+constexpr base::TimeDelta kInitialActivationDelay = base::Seconds(2);
+
 namespace remoting {
 
 ContinueWindow::ContinueWindow() = default;
@@ -36,6 +39,10 @@ void ContinueWindow::Start(
 void ContinueWindow::ContinueSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (activation_delay_timer_.IsRunning()) {
+    return;
+  }
+
   disconnect_timer_.Stop();
 
   if (!client_session_control_) {
@@ -52,6 +59,10 @@ void ContinueWindow::ContinueSession() {
 
 void ContinueWindow::DisconnectSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (activation_delay_timer_.IsRunning()) {
+    return;
+  }
 
   disconnect_timer_.Stop();
   if (client_session_control_) {
@@ -73,8 +84,16 @@ void ContinueWindow::OnSessionExpired() {
 
   // Show the Continue window and wait for the local user input.
   ShowUi();
+  SetButtonsEnabled(false);
   disconnect_timer_.Start(FROM_HERE, kSessionDisconnectTimeout, this,
                           &ContinueWindow::DisconnectSession);
+  activation_delay_timer_.Start(FROM_HERE, kInitialActivationDelay, this,
+                                &ContinueWindow::OnActivationDelayExpired);
+}
+
+void ContinueWindow::OnActivationDelayExpired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetButtonsEnabled(true);
 }
 
 }  // namespace remoting
