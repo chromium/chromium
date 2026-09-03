@@ -13,7 +13,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_blur_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_iph_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
@@ -60,11 +59,9 @@ constexpr CGFloat kAppBarAnimationDuration = 0.25;
 // The progress value at which the buttons should be completely faded out
 // during the fullscreen transition with Glass Toolbar.
 constexpr CGFloat kButtonsFadeEndProgress = 0.5;
-// The maximum fraction of blur effect applied to buttons during fullscreen.
-constexpr CGFloat kButtonsMaxBlurFraction = 0.1;
-// The vertical offset applied to the buttons during the fullscreen
-// transition with fullscreen eased transitions.
-constexpr CGFloat kButtonsFullscreenMoveDistance = -10;
+// The distance the buttons should appear to move down during the fullscreen
+// transition with Glass Toolbar.
+constexpr CGFloat kButtonsFullscreenMoveDistance = 8;
 // Spacing between tab grid button and the tab grid spotlight view anchor.
 constexpr CGFloat kSpotlightViewHorizontalInset = 12;
 constexpr CGFloat kSpotlightViewVerticalInset = 2;
@@ -208,8 +205,6 @@ UIColor* AssistantHighlightBackgroundColor() {
   NSArray<NSLayoutConstraint*>* _buttonWidthConstraints;
   // Container view for buttons that clips contents to the top of the app bar.
   UIView* _buttonsContainerView;
-  // Blur effect view for buttons during fullscreen transition.
-  AppBarBlurView* _buttonsBlurView;
   // Stack view for buttons.
   UIStackView* _stackView;
   // Constraint for height of the app bar view.
@@ -244,7 +239,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   // Update the alpha with a duration of 0 as it is already in an animation
   // block.
   [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
-  if (IsFullscreenEasedTransitionsEnabled()) {
+  if (IsGlassToolbarEnabled()) {
     [self
         updateButtonsVerticalPositionForFullscreenProgress:_fullscreenProgress];
   }
@@ -328,8 +323,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   if ([self shouldHideButtonLabels]) {
     targetAlpha = 0;
   } else if (appBarPosition == AppBarPosition::kBottom) {
-    targetAlpha =
-        IsFullscreenEasedTransitionsEnabled() ? 1.0 : buttonsTitleAlpha;
+    targetAlpha = IsGlassToolbarEnabled() ? 1.0 : buttonsTitleAlpha;
   } else if (appBarPosition == AppBarPosition::kLeft ||
              appBarPosition == AppBarPosition::kRight) {
     targetAlpha = 0;
@@ -366,7 +360,6 @@ UIColor* AssistantHighlightBackgroundColor() {
   if (_isRotated) {
     _stackView.transform = CGAffineTransformIdentity;
     _stackView.alpha = 1.0;
-    _buttonsBlurView.blurAmount = 0.0;
     _stackView.distribution = UIStackViewDistributionEqualSpacing;
     [NSLayoutConstraint activateConstraints:_buttonWidthConstraints];
     _leadingSpacer.hidden = NO;
@@ -384,7 +377,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     _stackViewBottomConstraint.constant = 0;
     _stackViewLeadingConstraint.constant = kStackViewHorizontalMargin;
     _stackViewTrailingConstraint.constant = -kStackViewHorizontalMargin;
-    if (IsFullscreenEasedTransitionsEnabled()) {
+    if (IsGlassToolbarEnabled()) {
       [self updateButtonsVerticalPositionForFullscreenProgress:
                 _fullscreenProgress];
     }
@@ -510,16 +503,6 @@ UIColor* AssistantHighlightBackgroundColor() {
   AddSameConstraints(_buttonsContainerView, view);
 
   [_buttonsContainerView addSubview:_stackView];
-
-  if (IsFullscreenEasedTransitionsEnabled()) {
-    _buttonsBlurView =
-        [[AppBarBlurView alloc] initWithEffectStyle:UIBlurEffectStyleDark
-                                    maxBlurFraction:kButtonsMaxBlurFraction];
-    _buttonsBlurView.translatesAutoresizingMaskIntoConstraints = NO;
-    _buttonsBlurView.userInteractionEnabled = NO;
-    [_buttonsContainerView addSubview:_buttonsBlurView];
-    AddSameConstraints(_buttonsBlurView, _buttonsContainerView);
-  }
 
   _stackViewBottomConstraint = [_stackView.bottomAnchor
       constraintEqualToAnchor:_buttonsContainerView.bottomAnchor];
@@ -686,20 +669,13 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  if (IsFullscreenEasedTransitionsEnabled()) {
-    [self
-        updateButtonsVerticalPositionForFullscreenProgress:_fullscreenProgress];
-  } else {
+  if (!IsGlassToolbarEnabled()) {
     [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
   }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
-  if (IsFullscreenEasedTransitionsEnabled()) {
-    [self
-        updateButtonsVerticalPositionForFullscreenProgress:animator
-                                                               .finalProgress];
-  } else {
+  if (!IsGlassToolbarEnabled()) {
     [self setButtonsTitleAlpha:animator.finalProgress
              animationDuration:animator.duration];
   }
@@ -709,7 +685,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
   _fullscreenProgress = agent->bottom_progress();
-  if (IsFullscreenEasedTransitionsEnabled()) {
+  if (IsGlassToolbarEnabled()) {
     [self
         updateButtonsVerticalPositionForFullscreenProgress:_fullscreenProgress];
     if (!agent->animation_duration().is_zero()) {
@@ -726,11 +702,10 @@ UIColor* AssistantHighlightBackgroundColor() {
 // Updates the vertical position of the buttons according to the fullscreen
 // `progress`.
 - (void)updateButtonsVerticalPositionForFullscreenProgress:(CGFloat)progress {
-  CHECK(IsFullscreenEasedTransitionsEnabled());
+  CHECK(IsGlassToolbarEnabled());
   if (self.layoutState.appBarPosition != AppBarPosition::kBottom) {
     _stackView.transform = CGAffineTransformIdentity;
     _stackView.alpha = 1.0;
-    _buttonsBlurView.blurAmount = 0.0;
     return;
   }
 
@@ -740,7 +715,6 @@ UIColor* AssistantHighlightBackgroundColor() {
   if (totalMove <= 0) {
     _stackView.transform = CGAffineTransformIdentity;
     _stackView.alpha = 1.0;
-    _buttonsBlurView.blurAmount = 0.0;
     return;
   }
 
@@ -748,11 +722,9 @@ UIColor* AssistantHighlightBackgroundColor() {
   CGFloat translationY =
       -moveProgress * (totalMove - kButtonsFullscreenMoveDistance);
   _stackView.transform = CGAffineTransformMakeTranslation(0, translationY);
-  CGFloat alpha = std::clamp(
+  _stackView.alpha = std::clamp(
       (progress - kButtonsFadeEndProgress) / (1.0 - kButtonsFadeEndProgress),
       0.0, 1.0);
-  _stackView.alpha = alpha;
-  _buttonsBlurView.blurAmount = 1.0 - alpha;
 }
 
 // Updates the height constraint based on the orientation and triggers layout.
