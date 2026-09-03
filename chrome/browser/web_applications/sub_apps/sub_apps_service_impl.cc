@@ -348,7 +348,8 @@ void SubAppsServiceImpl::CreateIfAllowed(
 
 void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
                              AddCallback result_callback) {
-  if (!IsInstalledNonChildApp(render_frame_host())) {
+  if (!render_frame_host().IsActive() ||
+      !IsInstalledNonChildApp(render_frame_host())) {
     std::move(result_callback)
         .Run(base::unexpected(SubAppsServiceResultCode::kWrongContext));
     return;
@@ -642,7 +643,8 @@ void SubAppsServiceImpl::FinishAddCall(
 }
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
-  if (!IsInstalledNonChildApp(render_frame_host())) {
+  if (!render_frame_host().IsActive() ||
+      !IsInstalledNonChildApp(render_frame_host())) {
     return std::move(result_callback)
         .Run(base::unexpected(SubAppsServiceResultCode::kWrongContext));
   }
@@ -665,7 +667,8 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
 
 void SubAppsServiceImpl::Remove(const std::vector<std::string>& manifest_ids,
                                 RemoveCallback result_callback) {
-  if (!IsInstalledNonChildApp(render_frame_host())) {
+  if (!render_frame_host().IsActive() ||
+      !IsInstalledNonChildApp(render_frame_host())) {
     return std::move(result_callback)
         .Run(base::unexpected(SubAppsServiceResultCode::kWrongContext));
   }
