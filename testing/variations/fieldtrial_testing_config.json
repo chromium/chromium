@@ -19292,6 +19292,29 @@
             ]
         }
     ],
+    "ThrottleConsecutiveNoDamageMainFrames": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260903",
+                    "params": {
+                        "repeated_no_damage_frame_throttling_threshold1": "360",
+                        "repeated_no_damage_frame_throttling_threshold2": "60"
+                    },
+                    "enable_features": [
+                        "ThrottleRepeatedNoDamageFrames"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThrottleMainFrameTo60HzDesktopAndroid": [
         {
             "platforms": [
