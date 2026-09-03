@@ -1425,24 +1425,6 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1962273523772270623">允許從 Google 服務收集 WebRTC 事件記錄</translation>
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1963986268950915756">允許使用者透過瀏覽器安裝網頁應用程式</translation>
-<translation id="1964128875283181035">網址模式清單。若網站來自相符來源，發出的網路要求不會受到<ph name="LOCAL_NETWORK_ACCESS" />檢查。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">媒體庫 (自 117 版起開始支援)</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964985353230379667">為手動建立的新票證指定 <ph name="KRB5_CONFIG" /> 建議設定。
@@ -4107,7 +4089,6 @@ SwiftShader 曾在沒有 GPU 加速功能的系統 (例如無頭系統或虛擬�
           </translation>
 <translation id="3677660004554019617">禁止使用生成式 AI VC 背景</translation>
 <translation id="3678069907945250643">允許個人化應用程式存取 Google 相簿</translation>
-<translation id="3682200407044593844">覆寫裝置上的 IP 位址空間對應關係</translation>
 <translation id="3685979383016152590">你可以透過這項政策指定要套用到大量印表機設定的存取權政策，藉此控管要為使用者提供 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 的哪些印表機。
 
       * <ph name="PRINTERS_BLOCKLIST" /> (值為 0) 會採用 <ph name="PRINTERS_BULK_BLOCKLIST" />，禁止使用者存取特定印表機
@@ -4507,23 +4488,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
       如果將這項政策設為 Enabled，每當自動選取政策與多個憑證相符時，系統會提示使用者選取用戶端憑證。
       如果將這項政策設為 Disabled 或不予設定，則只有在沒有任何符合自動選取政策的憑證時，系統才會提示使用者。</translation>
 <translation id="3947897854999940598">根據身分資訊指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>
-<translation id="394949637082417941">你可以使用這項政策將某些內部位址範圍視為「公開」，並套用到整部裝置，這樣就不會受到<ph name="LOCAL_NETWORK_ACCESS" />檢查。反之，如果某些公開位址範圍可能用於內部，你可以將其視為「本機」，讓<ph name="LOCAL_NETWORK_ACCESS" />檢查保護這些位址範圍。
-
-IP 位址空間覆寫有兩種形式：
-
-[cidr]=[public|local|loopback]
-
-其中 [cidr] 是採用 CIDR 標記法的 IP 位址範圍 (如要瞭解 IPv4，請參閱 https://tools.ietf.org/html/rfc4632 的第 3.1 節；如要瞭解 IPv6，請參閱 https://tools.ietf.org/html/rfc4291 的第 2.3 節)。IPv6 位址必須採用網址安全 (加括號) 格式。CIDR 覆寫設定會套用至所有通訊埠。
-
-或
-
-[IP 位址]:[通訊埠]=[public|local|loopback]
-
-如要進一步瞭解<ph name="LOCAL_NETWORK_ACCESS" />，請參閱 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
-
-政策 LocalNetworkAccessIpAddressSpaceOverrides 的覆寫設定優先於這項政策設定的覆寫設定。
-
-指令列參數 --ip-address-space-overrides 的覆寫設定優先於政策設定的覆寫設定。</translation>
 <translation id="3949642828552641632">允許 <ph name="GOOGLE_DRIVE_NAME" />和 <ph name="GOOGLE_WORKSPACE_NAME" /> 的<ph name="CLOUD_UPLOAD_NAME" />資料流</translation>
 <translation id="3950110092991281616">僅在一般工作階段中啟用背景驗證功能。</translation>
 <translation id="3950239119790560549">更新時間限制</translation>
@@ -4636,6 +4600,7 @@ IP 位址空間覆寫有兩種形式：
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
 <translation id="4027608872760987929">啟用預設搜尋引擎</translation>
 <translation id="4030152268425532846">停用自動登入規避</translation>
+<translation id="4032740546145417900">不允許使用語音輸入功能。</translation>
 <translation id="4043796890723386527">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="4047633048700722778">設定這項政策可控管安全網站的網址篩選器，這個篩選器會使用 Google Safe Search API 分辨網址是否指向色情內容。
 
@@ -4959,24 +4924,6 @@ IP 位址空間覆寫有兩種形式：
 <translation id="4238777612788632629">如果過時就快速重新啟動</translation>
 <translation id="4239720644496144453">這個快取不會供 Android 應用程式使用。如有多位使用者安裝同一個 Android 應用程式，則會針對每位使用者重新下載快取。</translation>
 <translation id="4239949495354048254">允許將檔案上傳至 Chrome 內建 Gemini。</translation>
-<translation id="424049794524032498">網址模式清單。如果傳送網路要求的網站來自相符來源，將無法在裝置上的所有工作階段發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
-
-如果來源不符合此處指定的模式，系統會套用工作階段或設定檔的設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會在驗證伺服器憑證時使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
 如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將使用系統憑證驗證器和系統根憑證。
 
@@ -5121,6 +5068,22 @@ IP 位址空間覆寫有兩種形式：
 <translation id="4363057787588706121">允許合併不同來源的清單政策</translation>
 <translation id="4363101430102811068">為已輸入的憑證啟用資料外洩偵測功能</translation>
 <translation id="436581050240847513">回報裝置網路介面</translation>
+<translation id="4366420138981318392">網址模式清單。若網站來自相符來源，發出的網路要求不會經過<ph name="LOCAL_NETWORK_ACCESS" />檢查。
+
+如果來源不符合此處指定的模式，將套用使用者的個人設定。
+
+如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
+
+如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
+
+有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用政策：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">工作站 (網路工作站、Service Worker 等) 指令碼會採用寬鬆的 MIME 類型檢查。使用舊版 MIME 類型的工作站指令碼 (例如 <ph name="MIMETYPE_TEXT_ASCII" />) 可正常運作。</translation>
 <translation id="4370937370030117032">禁止將使用者名稱和檔案名稱傳送給原生印表機</translation>
 <translation id="4372704773119750918">不允許企業使用者使用多重設定檔 (主要或次要)</translation>
@@ -5156,6 +5119,20 @@ IP 位址空間覆寫有兩種形式：
 如果停用這項政策，將會停用已淘汰的舊語法。
 
 如果不設定這項政策，將會停用已淘汰的舊語法。</translation>
+<translation id="4400152722459197056">網址模式清單。如果網站來自相符來源，向區域網路端點發出的網路要求就不會經過<ph name="LOCAL_NETWORK_ACCESS" />檢查。
+
+如果來源不符合此處指定的模式，將套用使用者的個人設定。
+
+如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
+
+如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
+
+有多項政策列出會影響可傳送要求至區域網路端點的來源。如果來源比對符合下列多項政策，系統會按照下列順序優先採用政策：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">自 M110 起，系統將移除不安全環境中的 WebSQL。這項政策會重新啟用這個 API。
           如果將這項政策設為 True，系統將在不安全的環境中開放使用 WebSQL。如果將這項政策設為 False 或未設定，WebSQL 仍可在 M109 以前的不安全環境中使用，但自 M110 起將無法使用。
 這項政策將在 M112 中移除。</translation>
@@ -5849,6 +5826,22 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="4826977043372474305">資訊站 Wi-Fi 憑證會儲存在資訊站層級</translation>
 <translation id="4827727182370777723">預設的本機字型權限設定</translation>
 <translation id="482803100714220060">顯示完整網址</translation>
+<translation id="4830717535196994979">網址模式清單。若傳送網路要求的網站來自相符來源，將無法發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
+
+如果來源不符合此處指定的模式，將套用使用者的個人設定。
+
+如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
+
+如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
+
+有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用政策：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">控管 <ph name="PRODUCT_NAME" /> 的 PDF 檢視器是否支援 PDF 文件中的 XFA 表單。
 
 如果將這項政策設為 True，系統會啟用 XFA 表單支援功能。
@@ -6579,6 +6572,17 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 <translation id="5247584184349816217">啟用螢幕鎖定畫面螢幕保護程式。</translation>
 <translation id="5247973380763021389">禁止使用者雲端政策覆寫裝置雲端政策。</translation>
 <translation id="5249006530384016395">控管是否啟用已淘汰的 CSS 自訂狀態 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 語法</translation>
+<translation id="5249271416806588789">語音輸入是一項 AI 功能，讓使用者能透過語音輸入及編輯文字；這項功能採用生成式 AI 模型，可提供高品質的轉錄與格式設定。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋 (視功能而定)。這些資料也可能會送交人工審查，以改良 AI 模型。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="5249453807420671499">使用者可以新增 Kerberos 帳戶</translation>
 <translation id="5249555581286638799">啟用高效率模式</translation>
 <translation id="5252210248395576403">這項政策可讓快速解答功能存取所選內容，並將相關資訊傳送給伺服器，進而取得翻譯結果。
@@ -6891,23 +6895,6 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 
       指定政策值時需以天為單位。</translation>
 <translation id="5457065417344056871">在瀏覽器中啟用訪客模式</translation>
-<translation id="5457999916455787365">你可以將某些內部位址範圍視為「公開」，因此不會受到<ph name="LOCAL_NETWORK_ACCES" />檢查。反之，如果某些公開位址範圍可能用於內部，你可以將其視為「本機」，讓<ph name="LOCAL_NETWORK_ACCESS" />檢查保護這些位址範圍。
-
-IP 位址空間覆寫有兩種形式：
-
-[cidr]=[public|local|loopback]
-
-其中 [cidr] 是採用 CIDR 標記法的 IP 位址範圍 (如要瞭解 IPv4，請參閱 https://tools.ietf.org/html/rfc4632 的第 3.1 節；如要瞭解 IPv6，請參閱 https://tools.ietf.org/html/rfc4291 的第 2.3 節)。IPv6 位址必須採用網址安全 (加括號) 格式。CIDR 覆寫設定會套用至所有通訊埠。
-
-或
-
-[IP 位址]:[通訊埠]=[public|local|loopback]
-
-如要進一步瞭解<ph name="LOCAL_NETWORK_ACCESS" />，請參閱 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
-
-這項政策的覆寫設定優先於 DeviceLocalNetworkAccessIpAddressSpaceOverrides 設定的覆寫設定。
-
-指令列參數 --ip-address-space-overrides 的覆寫設定優先於政策設定的覆寫設定。</translation>
 <translation id="545817252640069915">啟用登入攔截功能</translation>
 <translation id="5460797984317417682">啟用全螢幕警示</translation>
 <translation id="5462898272514237681">控管 <ph name="PRODUCT_OS_NAME" /> 的 Google 定位服務存取權</translation>
@@ -6993,22 +6980,6 @@ Microsoft SharePoint 和 OneDrive 資訊卡需要額外的管理員設定。想�
 <translation id="5519619299971727565">停用 Linux 應用程式使用情形報告功能</translation>
 <translation id="5521035900165046997">啟用裝置藍牙資訊回報功能</translation>
 <translation id="5521875416764302911">禁止使用者登入 <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">網址模式清單。如果網站來自相符來源，向區域網路端點發出的網路要求就不會受到<ph name="LOCAL_NETWORK_ACCESS" />檢查。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">停用 <ph name="DBSC_FEATURE_NAME" />。</translation>
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
@@ -7646,6 +7617,23 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_BLOCKLIST" />。</translation>
 <translation id="591088232153082363">根據電池用量模式自動調整充電方式。</translation>
+<translation id="5913506885872855604">你可以將某些內部位址範圍視為「公開」，因此不會受到 <ph name="LOCAL_NETWORK_ACCES" /> 檢查。反之，如果某些公開位址範圍可能用於內部，你可以將其視為「本機」，讓 <ph name="LOCAL_NETWORK_ACCESS" /> 檢查保護這些位址範圍。
+
+IP 位址空間覆寫有兩種形式：
+
+[cidr]=[public|local|loopback]
+
+其中 [cidr] 是採用 CIDR 標記法的 IP 位址範圍 (如要瞭解 IPv4，請參閱 https://tools.ietf.org/html/rfc4632 的第 3.1 節；如要瞭解 IPv6，請參閱 https://tools.ietf.org/html/rfc4291 的第 2.3 節)。IPv6 位址必須採用網址安全 (加括號) 格式。CIDR 覆寫設定會套用至所有通訊埠。
+
+或
+
+[IP 位址]:[通訊埠]=[public|local|loopback]
+
+如要進一步瞭解<ph name="LOCAL_NETWORK_ACCESS" />，請參閱 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
+
+這項政策不支援動態重新整理。
+
+指令列參數 --ip-address-space-overrides 的覆寫設定優先於這項政策設定的覆寫設定。</translation>
 <translation id="5915023683182228340">如果將這項政策設為啟用或不設定，系統會允許 <ph name="PRODUCT_NAME" /> 使用 QUIC 通訊協定。
 
       如果將這項政策設為停用，系統會禁止使用 QUIC 通訊協定。</translation>
@@ -7721,6 +7709,7 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
       如果將這項政策設為停用，使用者將無法向 Google 傳送意見回饋。</translation>
 <translation id="5976636832661103220">F11 設定採用含有 Shift 輔助鍵的快速鍵</translation>
 <translation id="5979376378555121803">代管的應用程式</translation>
+<translation id="5983016603010860828">語音輸入設定</translation>
 <translation id="5983274643567559194">已停用為「刪除」動作設定捷徑的功能。</translation>
 <translation id="5984099692320899605">不要使用 NTLM 驗證</translation>
 <translation id="5984237109586500246">接受以 Signed HTTP Exchange 技術提供的網路內容</translation>
@@ -7813,24 +7802,6 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 如果值設為 True 或未設定，老師可以使用 Google Classroom 課程學生名單。
 
 如果設為 False，老師就無法存取這項功能。</translation>
-<translation id="606337187257433827">網址模式清單。若傳送網路要求的網站來自相符來源，將無法發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 政策來指定搜尋引擎提供搜尋建議的網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 
       你可以將 Google 的搜尋網址指定為：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>
@@ -8241,22 +8212,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
        注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />，這項政策會遭到覆寫。</translation>
 <translation id="6315039134652691025">使用者無法將現有瀏覽資料匯入受管理的設定檔</translation>
-<translation id="6316247387848694915">網址模式清單。如果傳送網路要求的網站來自相符來源，將無法向區域網路端點發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
-
-如果來源不符合此處指定的模式，將套用使用者的個人設定。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">允許 <ph name="PRODUCT_NAME" /> 決定要採用的方法</translation>
 <translation id="6316885783540658874">這項政策可控管是否要為 Chrome OS 上的 <ph name="DM_CRYPT" /> 使用者首頁啟用 <ph name="AES_KL_NAME" /> 實作功能，以進行使用者儲存空間加密 (如果支援)。
 
@@ -9414,7 +9369,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7030205756530739128">如果將 <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> 設為<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，則你可以透過 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 自訂開始充電的時機 (根據電量百分比進行設定)。設定值必須至少比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 的值低 5 個百分點。
 
       如果不設定這項政策，系統會套用標準充電模式。</translation>
-<translation id="7030213287413687536">允許網站向本機裝置和裝置上的區域網路端點發出網路要求</translation>
 <translation id="7030407698292813622">允許對其他 DNS 記錄類型進行 DNS 查詢</translation>
 <translation id="7030632236140191991">在清單中指定要將哪些 Chrome Enterprise 連接器服務設定套用到 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise 連接器 (使用者以剪貼簿或拖曳網路內容的方式在 Chrome 中輸入資料時會觸發此連接器)。
 
@@ -9926,6 +9880,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果啟用這項政策，網站可能會容易遭受某些類型的跨網站攻擊。不肖人士只要透過網址中內嵌的憑證，就能在 HTTP 驗證快取中新增項目來追蹤使用者，而不必用到 Cookie。
 
       這項政策旨在讓採用舊版行為的企業有機會更新登入程序，並將於日後移除。</translation>
+<translation id="7322231030019184787">允許使用語音輸入功能，但不收集資料。</translation>
 <translation id="7322825363493984512">用於向遠端網路 Proxy 驗證系統服務的密碼。</translation>
 <translation id="7323773727263636287">啟用色彩校正無障礙功能。
 
@@ -10330,6 +10285,20 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
           如果將這項政策設為 False 或不設定，系統就不會在螢幕鎖定畫面和登入畫面提供 PIN 碼自動提交功能。
 
           如果設定了這項政策，使用者就無法啟用這項功能。</translation>
+<translation id="7609566862616914296">網址模式清單。如果傳送網路要求的網站來自相符來源，將無法向區域網路端點發出<ph name="LOCAL_NETWORK_ACCESS" />要求。
+
+如果來源不符合此處指定的模式，將套用使用者的個人設定。
+
+如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
+
+如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
+
+有多項政策列出會影響可傳送要求至區域網路端點的來源。如果來源比對符合下列多項政策，系統會按照下列順序優先採用政策：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">設定要停用<ph name="PASSWORD_MANAGER_NAME" /> (儲存及填入) 的網域清單</translation>
 <translation id="7612059745454194563">不允許顯示憑證提供者擴充功能宣傳資訊</translation>
 <translation id="7612157962821894603">要在 <ph name="PRODUCT_NAME" /> 啟動時套用的全系統設定</translation>
@@ -10353,6 +10322,7 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 這項政策應用於逐步輪換存取碼設定。新設定一律會加到 |future_config| 中，同時
       現有值會移到 |current_config| 中。|current_config| 先前的值則會移到 |old_configs|，並在輪換結束後移除。這項政策只適用於兒童使用者。如果設定這項政策，系統將可在兒童使用者裝置上驗證家長存取碼。如果不設定這項政策，系統將無法在兒童使用者裝置上驗證家長存取碼。</translation>
 <translation id="7623431489198474050">停用內容保護遠端認證</translation>
+<translation id="7624832415093566709">允許使用語音輸入功能。</translation>
 <translation id="7625858205605842562">設定這項政策後，你可以使用網址模式清單，指定哪些網站不得要求使用者授予 USB 裝置存取權。
 
       如果未設定這項政策，系統會將 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策套用至所有網站 (如果已設定)，否則會套用使用者的個人設定。
@@ -10563,22 +10533,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
       <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於這項政策，可以針對特定網址重新啟用無痕模式。如果這項政策在提供許可清單時停用無痕模式，則只有許可清單中的網址可使用無痕模式，其他網頁都會遭到封鎖。
 
       注意：在 iOS 上，如果政策在工作階段期間發生變更，裝置重新啟動後才會生效。</translation>
-<translation id="7753487237310360952">網址模式清單。如果網站來自相符來源，發出的網路要求就不會受到<ph name="LOCAL_NETWORK_ACCESS" />檢查，這項規則適用於裝置上的所有工作階段。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-有多項政策列出會影響可傳送要求至本機裝置和區域網路端點的來源。如果來源比對符合下列多項政策，系統會依以下優先順序採用這些政策：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">啟用瀏覽器實驗功能工具列進入點</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7754893969683595513">你可以透過這項政策，指定向裝置管理服務查詢使用者政策資訊的時間範圍 (以毫秒為單位)。有效值範圍介於 1,800,000 (30 分鐘) 到 86,400,000 (1 天) 之間。系統會將超出範圍的值調整成接近的上限值或下限值。
@@ -12286,7 +12240,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
       如果將這項政策設為 False 或不予設定，系統將不會
       回報顯示狀態和圖形狀態。如果設為 True，系統將會
       回報顯示狀態和圖形狀態。</translation>
-<translation id="8912595396523313912">禁止網站向本機裝置和裝置上的區域網路端點發出網路要求</translation>
 <translation id="891435090623616439">以 JSON 字串格式編碼，詳情請參閱 <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">進行頂層跨網站瀏覽並替換 BrowsingContextGroup，不要清除 window.name。</translation>
 <translation id="8917070657147922192">允許使用者管理已安裝的 CA 憑證。</translation>

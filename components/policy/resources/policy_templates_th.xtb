@@ -1470,24 +1470,6 @@ URL ต้องเป็นรูปแบบมาตรฐาน เช่น
 <translation id="1962273523772270623">อนุญาตให้รวบรวมบันทึกเหตุการณ์ WebRTC จากบริการของ Google</translation>
 <translation id="1962864958436828230">ตั้งขีดจำกัดข้อมูลขนาดเล็กสำหรับข้อจำกัดของคลิปบอร์ดเพื่อป้องกันข้อมูลรั่วไหล</translation>
 <translation id="1963986268950915756">เปิดใช้การติดตั้งเว็บแอปของผู้ใช้จากเบราว์เซอร์</translation>
-<translation id="1964128875283181035">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" />
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
-
-มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">แกลเลอรี (รองรับตั้งแต่เวอร์ชัน 117)</translation>
 <translation id="1964634611280150550">ปิดใช้งานโหมดไม่ระบุตัวตน</translation>
 <translation id="1964985353230379667">ระบุการกำหนดค่าที่แนะนำของ <ph name="KRB5_CONFIG" /> สำหรับตั๋วใหม่ที่สร้างขึ้นด้วยตนเอง
@@ -4213,7 +4195,6 @@ URL ทางลัดต้องไม่ซ้ำกัน
           </translation>
 <translation id="3677660004554019617">ไม่อนุญาตให้ใช้พื้นหลัง VC ที่ Generative AI สร้างขึ้น</translation>
 <translation id="3678069907945250643">อนุญาตให้แอปการปรับเปลี่ยนเฉพาะบุคคลเข้าถึง Google Photos</translation>
-<translation id="3682200407044593844">ลบล้างการแมปพื้นที่ที่อยู่ IP ในอุปกรณ์</translation>
 <translation id="3685979383016152590">การตั้งค่านโยบายนี้จะกำหนดนโยบายการเข้าถึงที่ใช้กับการกำหนดค่าเครื่องพิมพ์จำนวนมาก โดยควบคุมว่าเครื่องพิมพ์เครื่องใดใน <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> ที่พร้อมใช้งานสำหรับผู้ใช้
 
       * <ph name="PRINTERS_BLOCKLIST" /> (ค่า 0) ใช้ <ph name="PRINTERS_BULK_BLOCKLIST" /> เพื่อจำกัดการเข้าถึงเครื่องพิมพ์ที่ระบุไว้
@@ -4616,23 +4597,6 @@ URL ทางลัดต้องไม่ซ้ำกัน
       หากตั้งค่านโยบายนี้เป็น "เปิดใช้" ระบบจะแสดงข้อความแจ้งให้ผู้ใช้เลือกใบรับรองไคลเอ็นต์เมื่อนโยบายการเลือกอัตโนมัติพบใบรับรองที่ตรงกันหลายรายการ
       หากตั้งค่านโยบายนี้เป็น "ปิดใช้" หรือไม่ได้ตั้งค่า ระบบอาจแสดงข้อความแจ้งผู้ใช้เฉพาะในกรณีที่ไม่มีใบรับรองตรงกับการเลือกอัตโนมัติ</translation>
 <translation id="3947897854999940598">ระบุเทมเพลต URI ของรีโซลเวอร์ DNS-over-HTTPS ที่ต้องการด้วยข้อมูลประจำตัว</translation>
-<translation id="394949637082417941">ซึ่งสามารถใช้เพื่อถือว่าช่วงที่อยู่ภายในบางช่วงเป็น "สาธารณะ" ในอุปกรณ์ทั้งหมด และจึงไม่ต้องมีการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" /> ในทางกลับกัน คุณสามารถใช้ตัวเลือกนี้เพื่อถือว่าช่วงที่อยู่สาธารณะบางช่วงที่อาจใช้ภายในเป็น "ในระบบ" เพื่อให้ได้รับการปกป้องโดยการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" />
-
-การลบล้างพื้นที่ที่อยู่ IP มี 2 รูปแบบดังนี้
-
-[cidr]=[public|local|loopback]
-
-โดยที่ [cidr] คือช่วงที่อยู่ IP ในรูปแบบ CIDR (ดูส่วนที่ 3.1 ของ https://tools.ietf.org/html/rfc4632 สำหรับ IPv4 และส่วนที่ 2.3 ของ https://tools.ietf.org/html/rfc4291 สำหรับ IPv6) ต้องระบุที่อยู่ IPv6 ในรูปแบบที่ปลอดภัยสำหรับ URL (อยู่ในวงเล็บ) การลบล้าง CIDR มีผลกับพอร์ตทั้งหมด
-
-หรือ
-
-[ip-address]:[port]=[public|local|loopback]
-
-ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/ และ https://developer.chrome.com/blog/local-network-access
-
-การลบล้างจากนโยบาย LocalNetworkAccessIpAddressSpaceOverrides จะมีความสำคัญเหนือกว่าการลบล้างที่ตั้งค่าโดยนโยบายนี้
-
-การลบล้างจากการเปลี่ยนบรรทัดคำสั่ง --ip-address-space-overrides จะมีความสำคัญเหนือกว่าการลบล้างที่ตั้งค่าโดยนโยบาย</translation>
 <translation id="3949642828552641632">อนุญาตการทำงานของ <ph name="CLOUD_UPLOAD_NAME" /> สําหรับ <ph name="GOOGLE_DRIVE_NAME" /> และ <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3950110092991281616">เปิดใช้การตรวจสอบสิทธิ์แบบแอมเบียนท์ในเซสชันปกติเท่านั้น</translation>
 <translation id="3950239119790560549">อัปเดตการจำกัดเวลา</translation>
@@ -4748,6 +4712,7 @@ URL ทางลัดต้องไม่ซ้ำกัน
 <translation id="402759845255257575">ไม่อนุญาตให้ไซต์ใดๆ เรียกใช้ JavaScript</translation>
 <translation id="4027608872760987929">เปิดใช้งานผู้ให้บริการการค้นหาเริ่มต้น</translation>
 <translation id="4030152268425532846">ปิดใช้การช่วยเหลือสำหรับการเข้าสู่ระบบโดยอัตโนมัติ</translation>
+<translation id="4032740546145417900">ไม่อนุญาตให้ใช้การพูดเพื่อพิมพ์</translation>
 <translation id="4043796890723386527">ป้องกันไม่ให้ผู้ใช้สร้างและใช้โปรไฟล์รอง ตลอดจนป้องกันไม่ให้ใช้โหมดผู้มาเยือนในเบราว์เซอร์ <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">การตั้งค่านโยบายจะควบคุมตัวกรอง URL ของ SafeSites ซึ่งใช้ Google Safe Search API เพื่อจำแนก URL ว่าเป็นประเภทลามกอนาจารหรือไม่
 
@@ -5072,24 +5037,6 @@ URL ทางลัดต้องไม่ซ้ำกัน
 <translation id="4238777612788632629">เปิดอีกครั้งอย่างรวดเร็วหากล้าสมัย</translation>
 <translation id="4239720644496144453">ไม่มีการใช้แคชสำหรับแอป Android หากมีผู้ใช้หลายคนติดตั้งแอป Android เดียวกัน จะมีการดาวน์โหลดแอปใหม่สำหรับผู้ใช้แต่ละราย</translation>
 <translation id="4239949495354048254">อนุญาตให้อัปโหลดไฟล์ไปยัง Gemini ใน Chrome</translation>
-<translation id="424049794524032498">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะถูกบล็อกไม่ให้ส่งคำขอ<ph name="LOCAL_NETWORK_ACCESS" />ในทุกเซสชันในอุปกรณ์
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าเซสชันหรือโปรไฟล์
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
-
-มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">เมื่อตั้งค่านโยบายนี้เป็น "เปิดใช้" <ph name="PRODUCT_NAME" /> จะยืนยันใบรับรองเซิร์ฟเวอร์โดยใช้ตัวตรวจสอบใบรับรองในตัวที่มี Chrome Root Store เป็นแหล่งที่มาของความน่าเชื่อถือสาธารณะ
 
 เมื่อตั้งค่านโยบายนี้เป็น "ปิดใช้" <ph name="PRODUCT_NAME" /> จะใช้ตัวตรวจสอบใบรับรองของระบบและใบรับรองรูทของระบบ
@@ -5243,6 +5190,22 @@ URL ทางลัดต้องไม่ซ้ำกัน
 <translation id="4363057787588706121">อนุญาตให้รวมนโยบายรายการจากแหล่งที่มาหลายแห่ง</translation>
 <translation id="4363101430102811068">เปิดใช้นโยบายการตรวจหาการรั่วไหลของข้อมูลเข้าสู่ระบบที่ป้อน</translation>
 <translation id="436581050240847513">รายงานอินเทอร์เฟซเครือข่ายของอุปกรณ์</translation>
+<translation id="4366420138981318392">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" />
+
+สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
+
+ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
+
+มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">สคริปต์สำหรับผู้ปฏิบัติงาน (Web Worker, Service Worker ฯลฯ) จะใช้การตรวจสอบประเภท MIME แบบ Lax สคริปต์สำหรับผู้ปฏิบัติงานที่มีประเภท MIME เดิม เช่น <ph name="MIMETYPE_TEXT_ASCII" /> จะใช้งานได้</translation>
 <translation id="4370937370030117032">ไม่อนุญาตให้ส่งชื่อผู้ใช้และชื่อไฟล์ไปยังเครื่องพิมพ์ที่มาพร้อมระบบ</translation>
 <translation id="4372704773119750918">ไม่อนุญาตให้ผู้ใช้องค์กรเป็นส่วนหนึ่งของหลายโปรไฟล์ (หลักหรือรอง)</translation>
@@ -5278,6 +5241,20 @@ URL ทางลัดต้องไม่ซ้ำกัน
 หากปิดใช้นโยบายนี้ ระบบจะปิดใช้ไวยากรณ์เก่าที่เลิกใช้งานแล้ว
 
 หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะปิดใช้ไวยากรณ์เก่าที่เลิกใช้งานแล้ว</translation>
+<translation id="4400152722459197056">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันไปยังอุปกรณ์ปลายทางของเครือข่ายภายในจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" />
+
+สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
+
+ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
+
+มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">ระบบจะนำ WebSQL ในบริบทที่ไม่ปลอดภัยออกเริ่มตั้งแต่เวอร์ชัน M110 นโยบายนี้จะเปิดใช้ API อีกครั้ง
           หากตั้งค่านโยบายนี้เป็น "จริง" WebSQL ในบริบทที่ไม่ปลอดภัยจะพร้อมใช้งาน
           หากตั้งค่านโยบายนี้เป็น "เท็จ" หรือไม่ได้ตั้งค่า WebSQL ในบริบทที่ไม่ปลอดภัยจะยังคงใช้งานได้จนถึงเวอร์ชัน M109 จากนั้นจะใช้งานไม่ได้ตั้งแต่เวอร์ชัน M110
@@ -5982,6 +5959,22 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="4826977043372474305">ระบบจะจัดเก็บข้อมูลเข้าสู่ระบบ Wi-Fi ของคีออสก์ไว้ในระดับคีออสก์</translation>
 <translation id="4827727182370777723">การตั้งค่าเริ่มต้นของสิทธิ์สำหรับแบบอักษรในเครื่อง</translation>
 <translation id="482803100714220060">แสดง URL แบบเต็ม</translation>
+<translation id="4830717535196994979">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะถูกบล็อกไม่ให้ส่งคําขอ<ph name="LOCAL_NETWORK_ACCESS" />
+
+สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
+
+ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
+
+มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">ควบคุมว่าจะให้โปรแกรมอ่าน PDF ใน <ph name="PRODUCT_NAME" /> รองรับแบบฟอร์ม XFA ในเอกสาร PDF หรือไม่
 
 หากตั้งค่านโยบายนี้เป็น "จริง" ระบบจะเปิดใช้การรองรับแบบฟอร์ม XFA
@@ -6712,6 +6705,17 @@ https://chromeenterprise.google/policies/url-patterns/ * ไม่ใช่ค�
 <translation id="5247584184349816217">เปิดใช้โปรแกรมรักษาหน้าจอในหน้าจอล็อก</translation>
 <translation id="5247973380763021389">ป้องกันไม่ให้นโยบายระดับผู้ใช้บนระบบคลาวด์ลบล้างนโยบายระดับแมชชีนบนระบบคลาวด์</translation>
 <translation id="5249006530384016395">ควบคุมว่าจะเปิดใช้ไวยากรณ์ <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> ที่เลิกใช้งานแล้วสำหรับสถานะที่กำหนดเองของ CSS หรือไม่</translation>
+<translation id="5249271416806588789">การพูดเพื่อพิมพ์เป็นฟีเจอร์ที่ใช้ AI ซึ่งช่วยให้ผู้ใช้ป้อนและแก้ไขข้อความโดยใช้เสียงของตนเอง ขับเคลื่อนด้วยโมเดล Generative AI เพื่อให้การถอดเสียงเป็นคำและการจัดรูปแบบที่มีคุณภาพสูง
+
+0 = อนุญาตให้ใช้ฟีเจอร์ พร้อมกับอนุญาตให้ Google ใช้ข้อมูลที่เกี่ยวข้องเพื่อปรับปรุงโมเดล AI ข้อมูลที่เกี่ยวข้องอาจรวมถึงพรอมต์ อินพุต เอาต์พุต เนื้อหาแหล่งที่มา และความคิดเห็นเป็นลายลักษณ์อักษร โดยทั้งนี้จะขึ้นอยู่กับฟีเจอร์นั้นๆ รวมถึงเจ้าหน้าที่อาจตรวจสอบข้อมูลดังกล่าวเพื่อปรับปรุงโมเดล AI 0 คือค่าเริ่มต้น เว้นแต่จะระบุไว้ด้านล่าง
+
+1 = อนุญาตให้ใช้ฟีเจอร์ แต่ไม่อนุญาตให้ Google ปรับปรุงโมเดลโดยใช้เนื้อหาของผู้ใช้ (รวมถึงพรอมต์ อินพุต เอาต์พุต เนื้อหาแหล่งที่มา และความคิดเห็นเป็นลายลักษณ์อักษร) 1 คือค่าเริ่มต้นสำหรับผู้ใช้ระดับองค์กรที่จัดการโดย<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> และบัญชี Education ที่จัดการโดย <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />
+
+2 = ไม่อนุญาตให้ใช้ฟีเจอร์
+
+หากไม่ได้ตั้งค่านโยบาย ลักษณะการทำงานจะกำหนดโดยนโยบาย <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />
+
+ดูข้อมูลเพิ่มเติมเกี่ยวกับการจัดการข้อมูลสำหรับฟีเจอร์ Generative AI ได้ที่ https://support.google.com/chrome/a?p=generative_ai_settings</translation>
 <translation id="5249453807420671499">ผู้ใช้เพิ่มบัญชี Kerberos ได้</translation>
 <translation id="5249555581286638799">เปิดใช้โหมดประสิทธิภาพสูง</translation>
 <translation id="5252210248395576403">นโยบายนี้ให้สิทธิ์ฟีเจอร์คำตอบด่วนในการเข้าถึงเนื้อหาที่เลือกและส่งข้อมูลไปยังเซิร์ฟเวอร์เพื่อรับผลการแปล
@@ -7027,23 +7031,6 @@ https://chromeenterprise.google/policies/url-patterns/ * ไม่ใช่ค�
 
       ควรระบุค่าของนโยบายเป็นวัน</translation>
 <translation id="5457065417344056871">เปิดใช้โหมดผู้มาเยือนในเบราว์เซอร์</translation>
-<translation id="5457999916455787365">ซึ่งสามารถใช้เพื่อถือว่าช่วงที่อยู่ภายในบางช่วงเป็น "สาธารณะ" และจึงไม่ต้องมีการตรวจสอบ <ph name="LOCAL_NETWORK_ACCES" /> ในทางกลับกัน คุณสามารถใช้ตัวเลือกนี้เพื่อถือว่าช่วงที่อยู่สาธารณะบางช่วงที่อาจใช้ภายในเป็น "ในระบบ" เพื่อให้ได้รับการปกป้องโดยการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" />
-
-การลบล้างพื้นที่ที่อยู่ IP มี 2 รูปแบบดังนี้
-
-[cidr]=[public|local|loopback]
-
-โดยที่ [cidr] คือช่วงที่อยู่ IP ในรูปแบบ CIDR (ดูส่วนที่ 3.1 ของ https://tools.ietf.org/html/rfc4632 สำหรับ IPv4 และส่วนที่ 2.3 ของ https://tools.ietf.org/html/rfc4291 สำหรับ IPv6) ต้องระบุที่อยู่ IPv6 ในรูปแบบที่ปลอดภัยสำหรับ URL (อยู่ในวงเล็บ) การลบล้าง CIDR มีผลกับพอร์ตทั้งหมด
-
-หรือ
-
-[ip-address]:[port]=[public|local|loopback]
-
-ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/ และ https://developer.chrome.com/blog/local-network-access
-
-การลบล้างจากนโยบายนี้จะมีความสำคัญเหนือกว่าการลบล้างที่ตั้งค่าโดย DeviceLocalNetworkAccessIpAddressSpaceOverrides
-
-การลบล้างจากการเปลี่ยนบรรทัดคำสั่ง --ip-address-space-overrides จะมีความสำคัญเหนือกว่าการลบล้างที่ตั้งค่าโดยนโยบาย</translation>
 <translation id="545817252640069915">เปิดใช้การสกัดกั้นการลงชื่อเข้าใช้</translation>
 <translation id="5460797984317417682">เปิดใช้การแจ้งเตือนโหมดเต็มหน้าจอ</translation>
 <translation id="5462898272514237681">ควบคุมการเข้าถึงบริการตำแหน่งของ Google สำหรับ <ph name="PRODUCT_OS_NAME" /></translation>
@@ -7128,22 +7115,6 @@ https://chromeenterprise.google/policies/url-patterns/ * ไม่ใช่ค�
 <translation id="5519619299971727565">ปิดใช้การรายงานการใช้แอป Linux</translation>
 <translation id="5521035900165046997">เปิดใช้การรายงานข้อมูลบลูทูธของอุปกรณ์</translation>
 <translation id="5521875416764302911">ป้องกันไม่ให้ผู้ใช้ลงชื่อเข้าใช้ <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันไปยังอุปกรณ์ปลายทางของเครือข่ายภายในจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" />
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
-
-มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">ปิดใช้ <ph name="DBSC_FEATURE_NAME" /></translation>
 <translation id="5526184558582921522">อนุญาตคำค้นหาที่ส่งไปยังเซิร์ฟเวอร์ Quirks และการดาวน์โหลดไฟล์การกำหนดค่าเฉพาะฮาร์ดแวร์ที่อาจเกิดขึ้น</translation>
 <translation id="5526701598901867718">ทั้งหมด (ไม่ปลอดภัย)</translation>
@@ -7803,6 +7774,23 @@ https://chromeenterprise.google/policies/url-patterns รองรับไว�
 
       นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="PRINTERS_BULK_BLOCKLIST" /> แทน</translation>
 <translation id="591088232153082363">ชาร์จแบตเตอรี่แบบปรับอัตโนมัติโดยอิงตามรูปแบบการใช้งานแบตเตอรี่</translation>
+<translation id="5913506885872855604">ซึ่งสามารถใช้เพื่อถือว่าช่วงที่อยู่ภายในบางช่วงเป็น "สาธารณะ" และจึงไม่ต้องมีการตรวจสอบ <ph name="LOCAL_NETWORK_ACCES" /> ในทางกลับกัน คุณสามารถใช้ตัวเลือกนี้เพื่อถือว่าช่วงที่อยู่สาธารณะบางช่วงที่อาจใช้ภายในเป็น "ในระบบ" เพื่อให้ได้รับการปกป้องโดยการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" />
+
+การลบล้างพื้นที่ที่อยู่ IP มี 2 รูปแบบดังนี้
+
+[cidr]=[public|local|loopback]
+
+โดยที่ [cidr] คือช่วงที่อยู่ IP ในรูปแบบ CIDR (ดูส่วนที่ 3.1 ของ https://tools.ietf.org/html/rfc4632 สำหรับ IPv4 และส่วนที่ 2.3 ของ https://tools.ietf.org/html/rfc4291 สำหรับ IPv6) ต้องระบุที่อยู่ IPv6 ในรูปแบบที่ปลอดภัยสำหรับ URL (อยู่ในวงเล็บ) การลบล้าง CIDR มีผลกับพอร์ตทั้งหมด
+
+หรือ
+
+[ip-address]:[port]=[public|local|loopback]
+
+ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/ และ https://developer.chrome.com/blog/local-network-access
+
+นโยบายนี้ไม่รองรับการรีเฟรชแบบไดนามิก
+
+การลบล้างจากการเปลี่ยนบรรทัดคำสั่ง --ip-address-space-overrides จะมีความสำคัญเหนือกว่าการลบล้างที่ตั้งค่าโดยนโยบายนี้</translation>
 <translation id="5915023683182228340">การตั้งค่านโยบายเป็น "เปิดใช้" หรือไม่ได้ตั้งค่าจะทำให้ใช้โปรโตคอล QUIC ใน <ph name="PRODUCT_NAME" /> ได้
 
       การตั้งค่านโยบายเป็น "ปิดใช้" จะทำให้ใช้โปรโตคอล QUIC ไม่ได้</translation>
@@ -7879,6 +7867,7 @@ https://chromeenterprise.google/policies/url-patterns รองรับไว�
       การตั้งค่านโยบายเป็น "ปิดใช้งาน" หมายความว่าผู้ใช้จะส่งความคิดเห็นไปให้ Google ไม่ได้</translation>
 <translation id="5976636832661103220">การตั้งค่า F11 ใช้แป้นพิมพ์ลัดที่มีแป้นกดร่วม Shift</translation>
 <translation id="5979376378555121803">แอปที่โฮสต์</translation>
+<translation id="5983016603010860828">การตั้งค่าการพูดเพื่อพิมพ์</translation>
 <translation id="5983274643567559194">ปิดการตั้งค่าแป้นพิมพ์ลัดสำหรับการดำเนินการ "ลบ"</translation>
 <translation id="5984099692320899605">ไม่ใช้การตรวจสอบสิทธิ์ NTLM</translation>
 <translation id="5984237109586500246">ยอมรับเนื้อหาเว็บที่แสดงเป็น Signed HTTP Exchange</translation>
@@ -7971,24 +7960,6 @@ https://chromeenterprise.google/policies/url-patterns รองรับไว�
 หากตั้งค่าเป็น "จริง" หรือไม่ได้ตั้งค่า ครูจะใช้บัญชีรายชื่อของชั้นเรียนใน Google Classroom ได้
 
 หากตั้งค่าเป็น "เท็จ" ครูจะเข้าถึงฟีเจอร์นี้ไม่ได้</translation>
-<translation id="606337187257433827">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะถูกบล็อกไม่ให้ส่งคําขอ<ph name="LOCAL_NETWORK_ACCESS" />
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
-
-มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">หาก <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> เปิดอยู่ การตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> จะระบุ URL ของเครื่องมือค้นหาเพื่อจัดเตรียมการแนะนำการค้นหา URL ดังกล่าวควรมีสตริง <ph name="SEARCH_TERM_MARKER" /> ซึ่งข้อความค้นหาของผู้ใช้จะมาแทนที่ในการค้นหา
 
       คุณระบุ URL การค้นหาของ Google เป็น <ph name="GOOGLE_SUGGEST_SEARCH_URL" /> ได้</translation>
@@ -8408,22 +8379,6 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
 
       หมายเหตุ: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> จะลบล้างนโยบายนี้หากระบุนโยบายเดิมไว้</translation>
 <translation id="6315039134652691025">ผู้ใช้ไม่สามารถนำข้อมูลการท่องเว็บที่มีอยู่ไปไว้ในโปรไฟล์ที่มีการจัดการ</translation>
-<translation id="6316247387848694915">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันไปยังอุปกรณ์ปลายทางของเครือข่ายภายในจะถูกบล็อกไม่ให้ส่งคำขอ<ph name="LOCAL_NETWORK_ACCESS" />
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
-
-มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">อนุญาตให้ <ph name="PRODUCT_NAME" /> เลือกว่าจะใช้แนวทางใด</translation>
 <translation id="6316885783540658874">นโยบายนี้ควบคุมว่าจะเปิดการใช้งาน <ph name="AES_KL_NAME" /> กับการเข้ารหัสพื้นที่เก็บข้อมูลของผู้ใช้สำหรับหน้าแรกของผู้ใช้ <ph name="DM_CRYPT" /> ใน Chrome OS หรือไม่ (หากรองรับ)
 
@@ -9621,7 +9576,6 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="7030205756530739128">หากตั้งค่า <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> เป็น <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> การตั้งค่า <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> จะปรับแต่งเวลาที่แบตเตอรี่เริ่มชาร์จ โดยอิงตามเปอร์เซ็นต์ของการชาร์จแบตเตอรี่ ค่านี้ต้องอยู่ที่จุดต่ำกว่า <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> อย่างน้อย 5%
 
       การไม่ตั้งค่านโยบายจะทำให้มีการใช้โหมดการชาร์จแบตเตอรี่แบบมาตรฐาน</translation>
-<translation id="7030213287413687536">อนุญาตให้เว็บไซต์ส่งคำขอเครือข่ายไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายในในอุปกรณ์</translation>
 <translation id="7030407698292813622">อนุญาตคำขอ DNS สำหรับประเภทระเบียน DNS เพิ่มเติม</translation>
 <translation id="7030632236140191991">รายการของการตั้งค่าบริการเครื่องมือเชื่อมต่อ Chrome Enterprise ที่จะใช้กับเครื่องมือเชื่อมต่อ <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise ซึ่งจะเรียกใช้งานเมื่อมีการป้อนข้อมูลใน Chrome จากคลิปบอร์ดหรือผ่านการลากและวางเนื้อหาเว็บ
 
@@ -10154,6 +10108,7 @@ https://chromeenterprise.google/policies/url-patterns
       การเปิดใช้นโยบายนี้จะทำให้เว็บไซต์เสี่ยงต่อการโจมตีแบบข้ามเว็บไซต์บางประเภท และจะอนุญาตให้มีการติดตามผู้ใช้ในเว็บไซต์ต่างๆ แม้จะไม่มีคุกกี้ ด้วยการเพิ่มรายการในแคชการตรวจสอบสิทธิ์ HTTP โดยใช้ข้อมูลเข้าสู่ระบบที่ฝังไว้ใน URL
 
       นโยบายนี้มีไว้เพื่อให้องค์กรต่างๆ มีโอกาสอัปเดตขั้นตอนการเข้าสู่ระบบขององค์กร ทั้งนี้ขึ้นอยู่กับลักษณะการทำงานเดิม และเราจะนำนโยบายนี้ออกในอนาคต</translation>
+<translation id="7322231030019184787">อนุญาตให้ใช้การพูดเพื่อพิมพ์โดยไม่ต้องมีการเก็บรวบรวมข้อมูล</translation>
 <translation id="7322825363493984512">รหัสผ่านสำหรับการตรวจสอบสิทธิ์บริการระบบสำหรับเข้าถึงพร็อกซีเว็บทางไกล</translation>
 <translation id="7323773727263636287">เปิดใช้ฟีเจอร์การช่วยเหลือพิเศษสำหรับการแก้สี
 
@@ -10568,6 +10523,20 @@ URL ที่ตรงกับทั้งรายการที่อนุ�
           หากตั้งค่านโยบายเป็น "เท็จ" หรือไม่ได้ตั้งค่า ผู้ใช้จะไม่เห็นฟีเจอร์ส่ง PIN อัตโนมัติในหน้าจอล็อกและหน้าจอการเข้าสู่ระบบ
 
           หากตั้งค่านโยบายนี้ ผู้ใช้จะไม่มีตัวเลือกในการเปิดใช้ฟีเจอร์นี้</translation>
+<translation id="7609566862616914296">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันไปยังอุปกรณ์ปลายทางของเครือข่ายภายในจะถูกบล็อกไม่ให้ส่งคำขอ<ph name="LOCAL_NETWORK_ACCESS" />
+
+สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
+
+ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
+
+มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">กำหนดค่ารายการโดเมนที่จะปิดใช้ <ph name="PASSWORD_MANAGER_NAME" /> (บันทึกและป้อนข้อมูล)</translation>
 <translation id="7612059745454194563">ไม่อนุญาตให้แสดงการโปรโมตส่วนขยายผู้ให้บริการเอกสารสิทธิ์</translation>
 <translation id="7612157962821894603">การตั้งค่าสถานะที่ใช้ทั้งระบบที่จะนำไปใช้กับการเริ่มต้นใช้งาน <ph name="PRODUCT_NAME" /></translation>
@@ -10598,6 +10567,7 @@ URL ที่ตรงกับทั้งรายการที่อนุ�
       เมื่อตั้งค่านโยบายนี้ คุณจะยืนยันรหัสการเข้าถึงของผู้ปกครองในอุปกรณ์ของผู้ใช้ที่เป็นเด็กได้
       เมื่อไม่ได้ตั้งค่านโยบายนี้ คุณจะยืนยันรหัสการเข้าถึงของผู้ปกครองในอุปกรณ์ของผู้ใช้ที่เป็นเด็กไม่ได้</translation>
 <translation id="7623431489198474050">ปิดใช้เอกสารรับรองระยะไกลสำหรับการปกป้องเนื้อหา</translation>
+<translation id="7624832415093566709">อนุญาตให้ใช้การพูดเพื่อพิมพ์</translation>
 <translation id="7625858205605842562">การตั้งค่านโยบายจะให้คุณสร้างรายการรูปแบบ URL ซึ่งระบุเว็บไซต์ที่ไม่สามารถขอให้ผู้ใช้ให้สิทธิ์เข้าถึงอุปกรณ์ USB ได้
 
       การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้) แต่หากไม่ได้ตั้งค่าไว้ การตั้งค่าส่วนตัวของผู้ใช้จะมีผล
@@ -10809,22 +10779,6 @@ URL ที่ตรงกับทั้งรายการที่อนุ�
       นโยบาย <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> มีความสำคัญเหนือกว่านโยบายนี้และสามารถเปิดใช้โหมดไม่ระบุตัวตนอีกครั้งสำหรับ URL ที่เฉพาะเจาะจงได้ เมื่อนโยบายนี้ปิดใช้โหมดไม่ระบุตัวตนเมื่อมีการระบุรายการที่อนุญาต โหมดไม่ระบุตัวตนจะใช้ได้เฉพาะกับ URL ที่ตรงกับรายการที่อนุญาตเท่านั้น ส่วนหน้าอื่นๆ ทั้งหมดจะถูกบล็อก
 
       หมายเหตุ: ใน iOS หากมีการเปลี่ยนนโยบายระหว่างที่เข้าชม นโยบายใหม่จะมีผลต่อเมื่อเปิดเบราว์เซอร์อีกครั้ง</translation>
-<translation id="7753487237310360952">รายการรูปแบบ URL คำขอเครือข่ายที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" /> ในทุกเซสชันบนอุปกรณ์
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns/
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://wicg.github.io/local-network-access/
-
-มีนโยบายหลายรายการที่ระบุต้นทางซึ่งส่งผลต่อการส่งคำขอไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายใน หากต้นทางตรงกับนโยบายต่อไปนี้มากกว่า 1 รายการ นโยบายจะมีผลก่อนหลังตามลำดับดังนี้
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">เปิดจุดเข้าใช้งานแถบเครื่องมือสำหรับฟีเจอร์ทดลองของเบราว์เซอร์</translation>
 <translation id="7754704193130578113">สอบถามที่เก็บไฟล์ก่อนดาวน์โหลด</translation>
 <translation id="7754893969683595513">การตั้งค่านโยบายจะมีระยะเวลาเป็นมิลลิวินาทีที่ใช้ในการค้นหาข้อมูลนโยบายผู้ใช้จากบริการจัดการอุปกรณ์ ค่าที่ใช้ได้จะอยู่ในช่วง 1,800,000 (30 นาที) ถึง 86,400,000 (1 วัน) ค่าที่ไม่ได้อยู่ในช่วงนี้จะถูกบีบให้อยู่ภายในขอบเขตที่เกี่ยวข้อง
@@ -12561,7 +12515,6 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="8911736066340032670">รายงานข้อมูลเกี่ยวกับการแสดงผล เช่น อัตราการรีเฟรช และข้อมูลเกี่ยวกับกราฟิก เช่น เวอร์ชันของไดรเวอร์
 
       หากตั้งค่านโยบายเป็น "เท็จ" หรือไม่ได้ตั้งค่า ระบบจะไม่รายงานสถานะการแสดงผลและกราฟิก หากตั้งค่าเป็น "จริง" ระบบจะรายงานสถานะการแสดงผลและกราฟิก</translation>
-<translation id="8912595396523313912">บล็อกเว็บไซต์ไม่ให้ส่งคำขอเครือข่ายไปยังอุปกรณ์ที่ใช้และอุปกรณ์ปลายทางของเครือข่ายภายในในอุปกรณ์</translation>
 <translation id="891435090623616439">เข้ารหัสเป็นสตริง JSON ดูรายละเอียดได้ที่ <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">อย่าล้าง window.name เมื่อการนำทางเป็นระดับบนสุด ข้ามเว็บไซต์ และเปลี่ยน BrowsingContextGroup</translation>
 <translation id="8917070657147922192">อนุญาตให้ผู้ใช้จัดการใบรับรอง CA ที่ติดตั้งไว้</translation>

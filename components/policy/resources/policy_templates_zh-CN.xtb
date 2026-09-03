@@ -1454,24 +1454,6 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1962273523772270623">允许从 Google 服务收集 WebRTC 事件日志</translation>
 <translation id="1962864958436828230">设定数据大小下限以与旨在预防数据泄露的剪贴板限制规则搭配使用</translation>
 <translation id="1963986268950915756">允许用户从浏览器安装 Web 应用</translation>
-<translation id="1964128875283181035">指定一系列网址格式。从匹配源所提供的网站中发起的网络请求无需接受<ph name="LOCAL_NETWORK_ACCESS" />检查。
-
-          对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
-
-如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-有多项政策列出了会影响向本地设备和本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">媒体库（自 117 版起受支持）</translation>
 <translation id="1964634611280150550">隐身模式已停用</translation>
 <translation id="1964985353230379667">此政策旨在为手动创建的新票据指定建议的 <ph name="KRB5_CONFIG" /> 配置。
@@ -4192,7 +4174,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
           </translation>
 <translation id="3677660004554019617">不允许使用生成式 AI VC 背景</translation>
 <translation id="3678069907945250643">允许通过个性化设置应用访问 Google 相册</translation>
-<translation id="3682200407044593844">覆盖设备上的 IP 地址空间映射</translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
@@ -4592,23 +4573,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       如果此政策已启用，每当自动选择政策与多个证书匹配时，系统都会提示用户选择客户端证书。
       如果此政策已停用或未设置，只有当无任何证书与自动选择政策匹配时，系统才会提示用户。</translation>
 <translation id="3947897854999940598">根据身份信息指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
-<translation id="394949637082417941">设置此政策即可将某些内部地址范围视为整个设备上的“公开”地址范围，使之无需接受<ph name="LOCAL_NETWORK_ACCESS" />检查。反之，如果某些公开地址范围可能用于内部，则可以将其视为“本地”，以便通过<ph name="LOCAL_NETWORK_ACCESS" />检查予以保护。
-
-IP 地址空间覆盖有两种形式：
-
-[cidr]=[public|local|loopback]
-
-其中 [cidr] 是以 CIDR 表示法表示的 IP 地址范围（对于 IPv4，请参阅 https://tools.ietf.org/html/rfc4632 的第 3.1 节；对于 IPv6，请参阅 https://tools.ietf.org/html/rfc4291 的第 2.3 节）。IPv6 地址必须采用网址安全（带方括号）格式指定。CIDR 覆盖适用于所有端口。
-
-或
-
-[ip-address]:[port]=[public|local|loopback]
-
-如需详细了解<ph name="LOCAL_NETWORK_ACCESS" />，请参阅 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
-
-LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政策设定的覆盖设置。
-
-命令行开关 --ip-address-space-overrides 的覆盖设置优先于政策设定的覆盖设置。</translation>
 <translation id="3949642828552641632">允许 <ph name="GOOGLE_DRIVE_NAME" />和 <ph name="GOOGLE_WORKSPACE_NAME" /> 使用<ph name="CLOUD_UPLOAD_NAME" />流程</translation>
 <translation id="3950110092991281616">仅为常规会话启用静默身份验证。</translation>
 <translation id="3950239119790560549">更新时间限制</translation>
@@ -4724,6 +4688,7 @@ LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政�
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
+<translation id="4032740546145417900">不允许使用“语音输入”功能。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4047633048700722778">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
 
@@ -5048,24 +5013,6 @@ LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政�
 <translation id="4238777612788632629">版本过期则快速重新启动</translation>
 <translation id="4239720644496144453">缓存不适用于 Android 应用。如果多个用户都想安装同一款 Android 应用，系统便会分别为每个用户重新下载相应的 Android 应用。</translation>
 <translation id="4239949495354048254">允许将文件上传到 Chrome 中的 Gemini。</translation>
-<translation id="424049794524032498">指定一系列网址格式。从匹配源所提供的网站中发起的网络请求将无法在设备上的所有会话中发出<ph name="LOCAL_NETWORK_ACCESS" />请求。
-
-对于与此处所列格式不匹配的源，系统会应用会话或个人资料配置。
-
-如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-有多项政策列出了会影响向本地设备和本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会使用内置的证书验证程序来验证服务器证书，并会将 Chrome 根存储区作为公共信任来源。
 
 如果此政策已停用，<ph name="PRODUCT_NAME" /> 会使用系统证书验证程序和系统根证书。
@@ -5205,6 +5152,22 @@ LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政�
 <translation id="4363057787588706121">允许合并具有多个不同来源的列表政策</translation>
 <translation id="4363101430102811068">针对输入的凭据启用泄露检测功能</translation>
 <translation id="436581050240847513">报告设备网络接口</translation>
+<translation id="4366420138981318392">指定一系列网址格式。从匹配源所提供的网站中发起的网络请求无需接受<ph name="LOCAL_NETWORK_ACCESS" />检查。
+
+          对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
+
+如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
+
+如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
+
+有多项政策列出了会影响向本地设备和本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">适用于工作器（Web Worker、Service Worker 等）的脚本使用宽松的 MIME 类型检查。采用旧版 MIME 类型（例如 <ph name="MIMETYPE_TEXT_ASCII" />）的工作器脚本将会正常运行。</translation>
 <translation id="4370937370030117032">禁止向原生打印机发送用户名和文件名</translation>
 <translation id="4372704773119750918">不允许企业用户成为多用户配置的用户（一级或二级）</translation>
@@ -5240,6 +5203,20 @@ LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政�
 如果此政策已停用，已弃用的旧语法将会停用。
 
 如果此政策未设置，已弃用的旧语法将会停用。</translation>
+<translation id="4400152722459197056">指定一系列网址格式。从匹配源所提供网站发起的针对本地网络端点的网络请求不会受到<ph name="LOCAL_NETWORK_ACCESS" />检查机制的约束。
+
+对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
+
+如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
+
+如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
+
+有多项政策列出了相关源，这些政策会影响向本地网络端点发送的请求。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">从 M110 开始，不安全情境中的 WebSQL 将被移除。此政策用于重新启用该 API。
           如果此政策设为 true，不安全情境中的 WebSQL 将可用。
           如果此政策设为 false 或未设置，不安全情境中的 WebSQL 在 M109 之前将一直可用，然后从 M110 起将不再可用。
@@ -5940,6 +5917,22 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="4826977043372474305">自助服务终端 Wi-Fi 凭证存储在自助服务终端级别</translation>
 <translation id="4827727182370777723">默认的本地字体权限设置</translation>
 <translation id="482803100714220060">显示完整网址</translation>
+<translation id="4830717535196994979">指定一系列网址格式。从匹配源所提供的网站中发起的网络请求将无法发出<ph name="LOCAL_NETWORK_ACCESS" />请求。
+
+对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
+
+如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
+
+如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
+
+有多项政策列出了会影响向本地设备和本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 查看器是否支持 PDF 文档中的 XFA 表单。
 
 如果此政策设为 True，系统会启用对 XFA 表单的支持。
@@ -6672,6 +6665,17 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="5247584184349816217">为锁定屏幕启用屏保。</translation>
 <translation id="5247973380763021389">禁止用户级云政策覆盖计算机级云政策。</translation>
 <translation id="5249006530384016395">控制是否为 CSS 自定义状态启用已弃用的 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 语法</translation>
+<translation id="5249271416806588789">“语音输入”功能依托 AI 技术，让用户可以通过语音输入和编辑文字。该功能由生成式 AI 模型提供支持，可提供高质量的转写文本和格式编排。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 账号</translation>
 <translation id="5249555581286638799">启用高效模式</translation>
 <translation id="5252210248395576403">此政策旨在授权快速解答功能访问所选内容并将相关信息发送给服务器，以获得翻译结果。
@@ -6987,23 +6991,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 
       此政策的值应以天为单位。</translation>
 <translation id="5457065417344056871">在浏览器中启用访客模式</translation>
-<translation id="5457999916455787365">设置此政策即可将某些内部地址范围视为“公开”，使之无需接受<ph name="LOCAL_NETWORK_ACCES" />检查。反之，如果某些公开地址范围可能用于内部，则可以将其视为“本地”，以便通过<ph name="LOCAL_NETWORK_ACCESS" />检查予以保护。
-
-IP 地址空间覆盖有两种形式：
-
-[cidr]=[public|local|loopback]
-
-其中 [cidr] 是以 CIDR 表示法表示的 IP 地址范围（对于 IPv4，请参阅 https://tools.ietf.org/html/rfc4632 的第 3.1 节；对于 IPv6，请参阅 https://tools.ietf.org/html/rfc4291 的第 2.3 节）。IPv6 地址必须采用网址安全（带方括号）格式指定。CIDR 覆盖适用于所有端口。
-
-或
-
-[ip-address]:[port]=[public|local|loopback]
-
-如需详细了解<ph name="LOCAL_NETWORK_ACCESS" />，请参阅 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
-
-此政策的覆盖设置优先于 DeviceLocalNetworkAccessIpAddressSpaceOverrides 设定的覆盖设置。
-
-命令行开关 --ip-address-space-overrides 的覆盖设置优先于政策设定的覆盖设置。</translation>
 <translation id="545817252640069915">启用登录拦截功能</translation>
 <translation id="5460797984317417682">启用全屏提醒</translation>
 <translation id="5462898272514237681">控制 <ph name="PRODUCT_OS_NAME" /> 对 Google 位置信息服务的访问权限</translation>
@@ -7088,22 +7075,6 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 <translation id="5519619299971727565">停用 Linux 应用使用情况报告</translation>
 <translation id="5521035900165046997">启用设备蓝牙信息报告功能</translation>
 <translation id="5521875416764302911">禁止用户登录 <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">指定一系列网址格式。从匹配源所提供的网站中发起的针对本地网络端点的网络请求无需接受<ph name="LOCAL_NETWORK_ACCESS" />检查。
-
-对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
-
-如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-有多项政策列出了会影响向本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">停用“<ph name="DBSC_FEATURE_NAME" />”。</translation>
 <translation id="5526184558582921522">允许向 Quirks Server 发送查询并酌情下载硬件专用配置文件</translation>
 <translation id="5526701598901867718">所有（不安全）</translation>
@@ -7755,6 +7726,23 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_BLOCKLIST" />。</translation>
 <translation id="591088232153082363">基于电池使用模式自动调节电池充电速率。</translation>
+<translation id="5913506885872855604">设置此政策即可将某些内部地址范围视为“公开”，使之无需接受<ph name="LOCAL_NETWORK_ACCES" />检查。反之，如果某些公开地址范围可能用于内部，则可以将其视为“本地”，以便通过<ph name="LOCAL_NETWORK_ACCESS" />检查予以保护。
+
+IP 地址空间覆盖有两种形式：
+
+[cidr]=[public|local|loopback]
+
+其中 [cidr] 是以 CIDR 表示法表示的 IP 地址范围（对于 IPv4，请参阅 https://tools.ietf.org/html/rfc4632 的第 3.1 节；对于 IPv6，请参阅 https://tools.ietf.org/html/rfc4291 的第 2.3 节）。IPv6 地址必须采用网址安全（带方括号）格式指定。CIDR 覆盖适用于所有端口。
+
+或
+
+[ip-address]:[port]=[public|local|loopback]
+
+如需详细了解<ph name="LOCAL_NETWORK_ACCESS" />，请参阅 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
+
+此政策不支持动态刷新。
+
+命令行开关 --ip-address-space-overrides 的覆盖设置优先于此政策设定的覆盖设置。</translation>
 <translation id="5915023683182228340">如果此政策已启用或未设置，系统将允许在 <ph name="PRODUCT_NAME" /> 中使用 QUIC 协议。
 
       如果此政策已停用，系统将禁止使用 QUIC 协议。</translation>
@@ -7831,6 +7819,7 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
       如果此政策已停用，用户将无法向 Google 发送反馈。</translation>
 <translation id="5976636832661103220">F11 设置使用包含 Shift 辅助键的快捷键</translation>
 <translation id="5979376378555121803">托管应用程序</translation>
+<translation id="5983016603010860828">“语音输入”功能设置</translation>
 <translation id="5983274643567559194">为“Delete”操作设置快捷键的功能已停用。</translation>
 <translation id="5984099692320899605">不使用 NTLM 身份验证</translation>
 <translation id="5984237109586500246">接受通过 Signed HTTP Exchange (SXG) 提供的网络内容</translation>
@@ -7923,24 +7912,6 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 如果此政策的值设为 true 或未设置，教师可以使用 Google 课堂课程学生名单。
 
 如果此政策的值设为 false，教师将无法使用该功能。</translation>
-<translation id="606337187257433827">指定一系列网址格式。从匹配源所提供的网站中发起的网络请求将无法发出<ph name="LOCAL_NETWORK_ACCESS" />请求。
-
-对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
-
-如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-有多项政策列出了会影响向本地设备和本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 来指定用于提供搜索建议的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>
@@ -8361,22 +8332,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       注意：<ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
 <translation id="6315039134652691025">用户无法将现有浏览数据添加到受管理资料名下</translation>
-<translation id="6316247387848694915">指定一系列网址格式。从匹配源所提供的网站中发起的针对本地网络端点的网络请求将无法发出<ph name="LOCAL_NETWORK_ACCESS" />请求。
-
-对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
-
-如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-有多项政策列出了会影响向本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">允许 <ph name="PRODUCT_NAME" /> 决定要使用的方法</translation>
 <translation id="6316885783540658874">此政策旨在控制是否为 Chrome 操作系统上的 <ph name="DM_CRYPT" /> 用户主目录启用“<ph name="AES_KL_NAME" />”实现方案来进行用户存储加密（若支持）。
 
@@ -9567,7 +9522,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="7030205756530739128">如果 <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> 设为<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，您便可通过设置 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 根据电池充电百分比自定义电池开始充电的时间。此值必须比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 低至少 5 个百分点。
 
       如果您未设置此政策，系统会采用标准电池充电模式。</translation>
-<translation id="7030213287413687536">允许网站向设备上的本地设备和本地网络端点发送网络请求</translation>
 <translation id="7030407698292813622">允许针对其他 DNS 记录类型发出 DNS 查询</translation>
 <translation id="7030632236140191991">让您能够以列表形式指定要应用于 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在下述情况发生时调用：有人通过复制剪贴板内容或拖放网页内容在 Chrome 中输入数据。
 
@@ -10093,6 +10047,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
       启用此政策会导致网站容易受到某些类型的跨网站攻击，并允许使用网址内嵌的凭证向 HTTP 身份验证缓存文件添加条目，让攻击者能够对用户进行跨网站跟踪（甚至是在不使用 Cookie 的情况下）。
 
       此政策旨在让依靠旧版行为的企业能够更新其登录流程，日后将会移除。</translation>
+<translation id="7322231030019184787">允许使用“语音输入”功能，但不收集数据。</translation>
 <translation id="7322825363493984512">用于向远程网络代理验证系统服务身份的密码。</translation>
 <translation id="7323773727263636287">启用色彩校正无障碍功能。
 
@@ -10499,6 +10454,20 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
           如果此政策设为 false 或未设置，用户将无法在锁定的屏幕和登录屏幕上自动提交 PIN 码。
 
           如果您设置了此政策，用户将无法选择启用该功能。</translation>
+<translation id="7609566862616914296">指定一系列网址格式。从匹配源所提供网站发起的针对本地网络端点的网络请求将无法发出<ph name="LOCAL_NETWORK_ACCESS" />请求。
+
+对于与此处所列格式不匹配的源，系统会应用用户的个人配置。
+
+如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
+
+如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
+
+有多项政策列出了相关源，这些政策会影响向本地网络端点发送的请求。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">配置将停用<ph name="PASSWORD_MANAGER_NAME" />（保存和填充）的网域列表</translation>
 <translation id="7612059745454194563">不允许显示弹出式提醒“Credential Provider 扩展程序”</translation>
 <translation id="7612157962821894603">在 <ph name="PRODUCT_NAME" /> 启动时应用于整个系统的设置</translation>
@@ -10528,6 +10497,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       如果设置了此政策，则可在未成年用户的设备上验证家长访问码。
       如果未设置此政策，则无法在未成年用户的设备上验证家长访问码。</translation>
 <translation id="7623431489198474050">禁止为保护内容而进行远程认证</translation>
+<translation id="7624832415093566709">允许使用“语音输入”功能。</translation>
 <translation id="7625858205605842562">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户授权其访问 USB 设备。
 
       未设置此政策时，如果已设置 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />，则系统会将其应用于所有网站，否则应用用户的个人设置。
@@ -10739,22 +10709,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于此政策，它可以为特定网址重新启用无痕模式。当存在许可清单时，如果此政策停用了无痕模式，则无痕模式仅适用于与许可清单匹配的网址，而所有其他网页都会被屏蔽。
 
       注意：在 iOS 上，如果此政策在会话期间发生更改，相应更改要等到浏览器重新启动时才会生效。</translation>
-<translation id="7753487237310360952">指定一系列网址格式。从匹配源所提供的网站中发起的网络请求，在设备上的所有会话中均无需接受<ph name="LOCAL_NETWORK_ACCESS" />检查。
-
-如需详细了解有效网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-有多项政策列出了会影响向本地设备和本地网络端点发送请求的源。如果某个源同时匹配以下多项政策，则政策的优先级顺序如下：
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">启用浏览器实验性功能工具栏入口点</translation>
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
 <translation id="7754893969683595513">通过设置此政策，您可以指定向设备管理服务查询用户政策信息的周期（以毫秒为单位）。有效值范围为 1800000（30 分钟）至 86400000（1 天）。此范围之外的值均会被相应地向上/向下舍入为邻近的限值。
@@ -12479,7 +12433,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8911736066340032670">报告与显示相关的信息（例如刷新频率）以及与图形相关的信息（例如驱动程序版本）。
 
       如果此政策设为 false 或未设置，系统将不会报告显示状态和图形状态。如果此政策设为 true，系统将会报告显示状态和图形状态。</translation>
-<translation id="8912595396523313912">禁止网站向设备上的本地设备和本地网络端点发送网络请求</translation>
 <translation id="891435090623616439">已编码为 JSON 字符串。有关详情，请访问 <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">如果进行顶层跨网站导航且交换 BrowsingContextGroup，则不要清除 window.name。</translation>
 <translation id="8917070657147922192">允许用户管理已安装的 CA 证书。</translation>

@@ -1517,24 +1517,6 @@ Observação: bloquear URLs internos chrome://* e chrome-untrusted://* pode gera
 <translation id="1962273523772270623">Permite a coleta de logs de eventos WebRTC dos serviços do Google</translation>
 <translation id="1962864958436828230">Definir o limite mínimo para a prevenção contra vazamento de dados de acordo com a restrição da área de transferência</translation>
 <translation id="1963986268950915756">Permitir instalação de apps da web pelo navegador</translation>
-<translation id="1964128875283181035">Lista de padrões de URL. Solicitações de rede iniciadas em sites com as mesmas origens não ficam sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
-
-Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
-
-Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">Galeria (com suporte desde a versão 117)</translation>
 <translation id="1964634611280150550">Modo de navegação anônima desativado</translation>
 <translation id="1964985353230379667">Especifica a configuração <ph name="KRB5_CONFIG" /> sugerida para os novos tíquetes criados manualmente.
@@ -4369,7 +4351,6 @@ O "Fuso horário do carimbo de data/hora" especifica o identificador da IANA (po
           </translation>
 <translation id="3677660004554019617">Não permitir segundo plano de IA generativa para videochamadas</translation>
 <translation id="3678069907945250643">Permitir acesso do app de personalização ao Google Fotos</translation>
-<translation id="3682200407044593844">Substituir mapeamentos de espaço de endereço IP no dispositivo</translation>
 <translation id="3685979383016152590">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> estão disponíveis para os usuários.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) usa <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir o acesso às impressoras especificadas.
@@ -4773,23 +4754,6 @@ Em plataformas para computador, também é possível desativar o download desse 
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado de cliente sempre que a política de seleção automática corresponder a vários certificados.
       Se esta política for definida como "Desativada" ou deixada sem definição, o usuário só receberá a solicitação quando nenhum certificado corresponder à seleção automática.</translation>
 <translation id="3947897854999940598">Especificar o modelo de URI do resolvedor de DNS sobre HTTPS desejado com informações de identidade</translation>
-<translation id="394949637082417941">A política pode ser usada para tratar determinados intervalos de endereços internos como "públicos" em todo o dispositivo e, portanto, não sujeitos a verificações de <ph name="LOCAL_NETWORK_ACCESS" />. Da mesma maneira, pode ser usada para tratar determinados intervalos de endereços públicos com possível uso interno como endereços "locais" para que fiquem protegidos por verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-As substituições de espaço de endereço IP têm duas formas:
-
-[cidr]=[public|local|loopback]
-
-Nesta, [cidr] é um intervalo de endereço IP na notação CIDR (consulte a seção 3.1 de https://tools.ietf.org/html/rfc4632 para IPv4 e a seção 2.3 de https://tools.ietf.org/html/rfc4291 para IPv6, ambos em inglês). Endereços IPv6 precisam ser especificados em formato seguro para URL (entre colchetes). As substituições de CIDR se aplicam a todas as portas.
-
-ou
-
-[ip-address]:[port]=[public|local|loopback]
-
-Para saber mais sobre o <ph name="LOCAL_NETWORK_ACCESS" />, consulte https://wicg.github.io/local-network-access/ (em inglês) e https://developer.chrome.com/blog/local-network-access.
-
-As substituições da política LocalNetworkAccessIpAddressSpaceOverrides têm precedência sobre as definidas por esta política.
-
-As substituições da chave de linha de comando --ip-address-space-overrides têm precedência sobre as definidas por políticas.</translation>
 <translation id="3949642828552641632">Permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3950110092991281616">Ativar a autenticação pelo SO apenas em sessões normais.</translation>
 <translation id="3950239119790560549">Atualiza restrições de tempo</translation>
@@ -4905,6 +4869,7 @@ Importante:
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
 <translation id="4030152268425532846">Desativar o descarte do login automático</translation>
+<translation id="4032740546145417900">Não permitir o recurso de digitação por voz.</translation>
 <translation id="4043796890723386527">Impedir que os usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Se a política for definida, será possível controlar o filtro de URL SafeSites, que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
 
@@ -5238,24 +5203,6 @@ Domínios com formato incorreto serão ignorados.</translation>
 <translation id="4238777612788632629">Reinicializar rapidamente em caso de desatualização</translation>
 <translation id="4239720644496144453">O cache não é usado para apps Android. Se vários usuários instalarem o mesmo app Android, o download dele será feito novamente para cada usuário.</translation>
 <translation id="4239949495354048254">Permita uploads de arquivos para o Gemini no Chrome.</translation>
-<translation id="424049794524032498">Lista de padrões de URL. As solicitações de rede iniciadas em sites que têm as mesmas origens são bloqueadas e não podem solicitar <ph name="LOCAL_NETWORK_ACCESS" /> em nenhuma sessão no dispositivo.
-
-Se as origens não corresponderem aos padrões especificados aqui, a configuração de sessão ou de perfil será aplicada.
-
-Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
-
-Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
 verifica os certificados do servidor usando o verificador de certificados integrado,
 com a Chrome Root Store como fonte de verdade pública.
@@ -5414,6 +5361,22 @@ Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAM
 <translation id="4363057787588706121">Permitir a mescla de políticas de lista de diferentes fontes</translation>
 <translation id="4363101430102811068">Ativa a detecção de vazamento para credenciais digitadas</translation>
 <translation id="436581050240847513">Relatar interfaces de redes de dispositivos</translation>
+<translation id="4366420138981318392">Lista de padrões do URL. Solicitações de rede iniciadas em sites com as mesmas origens não ficam sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
+
+Para saber mais sobre padrões do URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">Os scripts para workers (como Web workers, service workers etc.) usam a verificação não rigorosa de tipo MIME. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão funcionar.</translation>
 <translation id="4370937370030117032">Desativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>
 <translation id="4372704773119750918">Não permitir que o usuário corporativo faça parte de diversos perfis (primários ou secundários)</translation>
@@ -5452,6 +5415,20 @@ Se ela for ativada, a sintaxe descontinuada será ativada.
 Se ela for desativada, a sintaxe descontinuada também será.
 
 Se ela não for definida, a sintaxe descontinuada será desativada.</translation>
+<translation id="4400152722459197056">Lista de padrões de URL. Solicitações de rede iniciadas em sites que têm as mesmas origens dos endpoints da rede local não estão sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
+
+Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Várias políticas listam origens que afetam as solicitações para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">O WebSQL em contextos não seguros vai ser removido da versão M110 em diante. Esta política reativa a API.
           Se a política for definida como verdadeira, o WebSQL em contextos não seguros vai ficar disponível.
           Se ela for definida como falsa ou for deixada sem definição, o WebSQL em contextos não seguros continuará disponível até a versão M109 e indisponível da M110 em diante.
@@ -6188,6 +6165,22 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4826977043372474305">As credenciais do Wi-Fi do quiosque são armazenadas no nível do quiosque</translation>
 <translation id="4827727182370777723">Configuração padrão de permissão das fontes locais</translation>
 <translation id="482803100714220060">Exibir URLs completos</translation>
+<translation id="4830717535196994979">Lista de padrões do URL. Solicitações de rede iniciadas em sites que têm as mesmas origens são bloqueadas e não podem solicitar <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
+
+Para saber mais sobre padrões do URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> aceita formulários XFA em documentos PDF.
 
 Se esta política for definida como verdadeira, o suporte a formulários XFA será ativado.
@@ -6962,6 +6955,17 @@ Observação: esse recurso ainda não está disponível para o público geral. P
 <translation id="5247584184349816217">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="5247973380763021389">Impedir que políticas da nuvem de usuários substituam políticas da nuvem da máquina.</translation>
 <translation id="5249006530384016395">Controla se a sintaxe <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> descontinuada para o estado personalizado de CSS está ativada</translation>
+<translation id="5249271416806588789">A digitação por voz é um recurso baseado em IA que permite aos usuários inserir e editar textos usando a voz. Ela usa modelos de IA generativa para oferecer transcrição e formatação de alta qualidade.
+
+Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de origem e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se ela for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre o tratamento de dados dos recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Os usuários podem adicionar contas do Kerberos</translation>
 <translation id="5249555581286638799">Ativar o modo de alta eficiência</translation>
 <translation id="5252210248395576403">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de tradução.
@@ -7290,23 +7294,6 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 
       O valor da política precisa ser especificado em dias.</translation>
 <translation id="5457065417344056871">Ativar o modo visitante no navegador</translation>
-<translation id="5457999916455787365">A política pode ser usada para tratar determinados intervalos de endereços internos como "públicos" e, portanto, não sujeitos a verificações de <ph name="LOCAL_NETWORK_ACCES" />. Da mesma maneira, pode ser usada para tratar determinados intervalos de endereços públicos com possível uso interno como endereços "locais" para que fiquem protegidos por verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-As substituições de espaço de endereço IP têm duas formas:
-
-[cidr]=[public|local|loopback]
-
-Nesta, [cidr] é um intervalo de endereço IP na notação CIDR (consulte a seção 3.1 de https://tools.ietf.org/html/rfc4632 para IPv4 e a seção 2.3 de https://tools.ietf.org/html/rfc4291 para IPv6, ambos em inglês). Endereços IPv6 precisam ser especificados em formato seguro para URL (entre colchetes). As substituições de CIDR se aplicam a todas as portas.
-
-ou
-
-[ip-address]:[port]=[public|local|loopback]
-
-Para saber mais sobre o <ph name="LOCAL_NETWORK_ACCESS" />, consulte https://wicg.github.io/local-network-access/ (em inglês) e https://developer.chrome.com/blog/local-network-access.
-
-As substituições desta política têm precedência sobre as definidas por DeviceLocalNetworkAccessIpAddressSpaceOverrides.
-
-As substituições da chave de linha de comando --ip-address-space-overrides têm precedência sobre as definidas por políticas.</translation>
 <translation id="545817252640069915">Ativar interceptação de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>
 <translation id="5462898272514237681">Controlar o acesso do <ph name="PRODUCT_OS_NAME" /> aos Serviços de localização do Google</translation>
@@ -7392,22 +7379,6 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do SharePoin
 <translation id="5519619299971727565">Desativar os relatórios de uso de apps Linux</translation>
 <translation id="5521035900165046997">Ativar relatórios de informações de Bluetooth do dispositivo</translation>
 <translation id="5521875416764302911">Impedir que os usuários façam login no <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">Lista de padrões de URL. Solicitações de rede iniciadas em sites com as mesmas origens dos endpoints da rede local não ficam sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
-
-Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
-
-Várias políticas listam origens que afetam as solicitações para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">Desativar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Permitir consultas ao Quirks Server e possíveis downloads de arquivos de configuração específicos de hardware</translation>
 <translation id="5526701598901867718">Todos (não seguro)</translation>
@@ -8084,6 +8055,23 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Carregamento adaptável com base no padrão de uso da bateria.</translation>
+<translation id="5913506885872855604">A política pode ser usada para tratar determinados intervalos de endereços internos como "públicos" e, portanto, não sujeitos a verificações de <ph name="LOCAL_NETWORK_ACCES" />. Da mesma maneira, pode ser usada para tratar determinados intervalos de endereços públicos com possível uso interno como endereços "locais" para que fiquem protegidos por verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+As substituições de espaço de endereço IP têm duas formas:
+
+[cidr]=[public|local|loopback]
+
+Nesta, [cidr] é um intervalo de endereço IP na notação CIDR (consulte a seção 3.1 de https://tools.ietf.org/html/rfc4632 para IPv4 e a seção 2.3 de https://tools.ietf.org/html/rfc4291 para IPv6). Endereços IPv6 precisam ser especificados em formato seguro para URL (entre colchetes). As substituições de CIDR se aplicam a todas as portas.
+
+ou
+
+[ip-address]:[port]=[public|local|loopback]
+
+Para saber mais sobre o <ph name="LOCAL_NETWORK_ACCESS" />, consulte https://wicg.github.io/local-network-access/ e https://developer.chrome.com/blog/local-network-access.
+
+Esta política não é compatível com atualização dinâmica.
+
+As substituições da chave de linha de comando --ip-address-space-overrides têm precedência sobre as definidas por esta política.</translation>
 <translation id="5915023683182228340">Se a política for definida como "Ativada" ou não for definida, o uso de protocolo QUIC será permitido no <ph name="PRODUCT_NAME" />.
 
       Se a política for definida como "Desativada", o uso de protocolo QUIC não será permitido.</translation>
@@ -8160,6 +8148,7 @@ Se essa política não for definida, então <ph name="DEFAULT_AUTOMATIC_DOWNLOAD
       Se a política for definida como "Desativada", os usuários não poderão enviar feedback ao Google.</translation>
 <translation id="5976636832661103220">As configurações F11 usam o atalho que contém a tecla modificadora Shift</translation>
 <translation id="5979376378555121803">App hospedado</translation>
+<translation id="5983016603010860828">Configurações do recurso de digitação por voz</translation>
 <translation id="5983274643567559194">Não é possível definir um atalho para a ação "Delete".</translation>
 <translation id="5984099692320899605">Não usar a autenticação do NTLM</translation>
 <translation id="5984237109586500246">Aceitar conteúdos da Web exibidos como Signed HTTP Exchanges</translation>
@@ -8257,24 +8246,6 @@ Se a política for definida como "false", a atribuição à extensão no rodapé
 Se o valor for "true" ou não for definido, a lista poderá ser usada.
 
 Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
-<translation id="606337187257433827">Lista de padrões de URL. Solicitações de rede iniciadas em sites que têm as mesmas origens são bloqueadas e não podem solicitar <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
-
-Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
-
-Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> especificará o URL do mecanismo que fornecerá sugestões de pesquisa. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário.
 
       É possível especificar o URL de pesquisa do Google como: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8741,22 +8712,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Observação: se <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="6315039134652691025">Os usuários não podem migrar dados de navegação para o perfil gerenciado</translation>
-<translation id="6316247387848694915">Lista de padrões de URL. Solicitações de rede iniciadas em sites que têm as mesmas origens dos endpoints da rede local são bloqueadas e não podem solicitar <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
-
-Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
-
-Várias políticas listam origens que afetam as solicitações para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">Permite que o <ph name="PRODUCT_NAME" /> decida qual abordagem usar</translation>
 <translation id="6316885783540658874">Esta política controla se a implementação de <ph name="AES_KL_NAME" /> está ativada para a criptografia de armazenamento do usuário em telas iniciais <ph name="DM_CRYPT" /> no ChromeOS, se compatível.
 
@@ -10023,7 +9978,6 @@ a otimização do JavaScript será ativada.</translation>
 <translation id="7030205756530739128">Se <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> for definida como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> personalizará quando o carregamento da bateria será iniciado, com base na porcentagem de carga da bateria. O valor precisa estar pelo menos 5% abaixo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se a política não for definida, o modo padrão de carregamento da bateria será aplicado.</translation>
-<translation id="7030213287413687536">Permitir que sites façam solicitações de rede para dispositivos locais e endpoints da rede local no dispositivo</translation>
 <translation id="7030407698292813622">Permitir consultas DNS em mais tipos de registro DNS</translation>
 <translation id="7030632236140191991">Lista de configurações para os serviços do Chrome Enterprise Connectors que serão aplicadas ao conector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, que é acionado quando há a inserção de dados da área de transferência ou de conteúdos da Web (usando o recurso de arrastar e soltar) no Chrome.
 
@@ -10594,6 +10548,7 @@ Se esta política for desativada ou não for definida, as configurações de con
       A ativação desta política cria vulnerabilidades para alguns tipos de ataque entre sites e permite que os usuários sejam rastreados nos sites mesmo sem cookies, pela adição de entradas ao cache de autenticação de HTTP usando credenciais incorporadas em URLs.
 
       O objetivo desta política é dar às empresas, dependendo do comportamento legado, a chance de atualizar os próprios procedimentos de login. Ela será removida no futuro.</translation>
+<translation id="7322231030019184787">Permitir o recurso de digitação por voz sem coleta de dados.</translation>
 <translation id="7322825363493984512">A senha para autenticação de serviços do sistema para o proxy remoto da Web.</translation>
 <translation id="7323773727263636287">Ativar o recurso de acessibilidade de correção de cor.
 
@@ -11014,6 +10969,20 @@ Esta política tem um limite de 1.000 entradas.</translation>
           Se ela for definida como "false" (falsa) ou não for definida, o PIN não vai ser enviado automaticamente na tela de bloqueio e login.
 
           Se a política for definida, os usuários não poderão ativar esse recurso.</translation>
+<translation id="7609566862616914296">Lista de padrões de URL. Solicitações de rede iniciadas em sites que têm as mesmas origens dos endpoints da rede local são bloqueadas e não podem pedir<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
+
+Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Várias políticas listam origens que afetam as solicitações para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">Configure a lista de domínios em que <ph name="PASSWORD_MANAGER_NAME" /> (salvar e preencher) vai estar desativado</translation>
 <translation id="7612059745454194563">Não permitir que a promoção da extensão do provedor de credenciais seja mostrada</translation>
 <translation id="7612157962821894603">Sinalizações amplas do sistema que devem ser aplicadas na inicialização do <ph name="PRODUCT_NAME" /></translation>
@@ -11044,6 +11013,7 @@ Para saber mais sobre padrões de URL válidos, consulte https://chromeenterpris
       Quando esta política é definida, o código de acesso do familiar responsável pode ser verificado no dispositivo da criança.
       Quando esta política não é definida, não é possível verificar o código de acesso do familiar responsável no dispositivo da criança.</translation>
 <translation id="7623431489198474050">Desativar atestado remoto para proteção de conteúdo</translation>
+<translation id="7624832415093566709">Permitir o recurso de digitação por voz.</translation>
 <translation id="7625858205605842562">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário permita o acesso a um dispositivo USB.
 
       Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -11255,22 +11225,6 @@ Observação: esta política só se aplica a plataformas que são compatíveis c
       A política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> tem precedência e pode reativar o modo de navegação anônima para URLs específicos. Quando o modo de navegação anônima é desativado por essa política e uma lista de permissões é fornecida, ele fica disponível apenas para URLs que correspondem a essa lista, enquanto todas as outras páginas são bloqueadas.
 
       Observação: no iOS, se a política for alterada durante a sessão, ela só terá efeito após a reinicialização.</translation>
-<translation id="7753487237310360952">Lista de padrões de URL. As solicitações de rede iniciadas em sites com origens correspondentes não ficam sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" /> em todas as sessões no dispositivo.
-
-Para saber mais sobre padrões de URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
-
-Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">Ativar o ponto de entrada da barra de ferramentas de recursos experimentais do navegador</translation>
 <translation id="7754704193130578113">Perguntar onde salvar cada arquivo antes de fazer download</translation>
 <translation id="7754893969683595513">A definição da política especifica um período em milissegundos em que o serviço de gerenciamento do dispositivo recebe consultas sobre informações de políticas do usuário. O intervalo válido de valores é de 1.800.000 (30 minutos) até 86.400.000 (1 dia). Valores fora desse intervalo serão ajustados para o respectivo limite.
@@ -13093,7 +13047,6 @@ Esta política só controla a <ph name="ARC_VM" /> no <ph name="PRODUCT_OS_FLEX_
 <translation id="8911736066340032670">Informe os dados relacionados à tela, como a taxa de atualização, e os relacionados a gráficos, como versão do driver.
 
       Se a política for definida como falsa ou não for definida, os status de tela e gráficos não serão informados. Se ela for definida como verdadeira, os status de tela e gráficos serão informados.</translation>
-<translation id="8912595396523313912">Impedir que sites façam solicitações de rede para dispositivos locais e endpoints da rede local no dispositivo</translation>
 <translation id="891435090623616439">codificado como um string JSON, para ver mais detalhes consulte <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">A propriedade window.name não será removida quando a navegação for de nível superior, entre sites e trocar BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Permite que o usuário gerencie os certificados de CA instalados.</translation>

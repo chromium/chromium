@@ -248,7 +248,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1408696301184924537">Salve o IBAN na sua Conta do Google para que ele seja usado automaticamente da próxima vez</translation>
 <translation id="1408787208417187241">Três grampos na parte superior</translation>
 <translation id="1410306713026702438"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES_IN_GROUP" /> no grupo <ph name="GROUP_HEADER" />.</translation>
-<translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os itens da Lista de Leitura, downloads e favoritos ainda serão salvos.</translation>
+<translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não muda como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os itens da Lista de Leitura, os downloads e os favoritos ficarão salvos.</translation>
 <translation id="1410941016594047814">Envelope de convite</translation>
 <translation id="1413235258620101697">O CVC desse cartão será criptografado e salvo na Carteira do Google para agilizar pagamentos</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
@@ -3097,7 +3097,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6259282549512536479">Você bloqueou <ph name="BLOCKED_URL" /> anteriormente</translation>
 <translation id="6263284346895336537">Não crítico</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
-<translation id="6264376385120300461">Fazer o download mesmo assim</translation>
+<translation id="6264376385120300461">Baixar mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6264636978858465832">O Gerenciador de senhas precisa de mais acesso</translation>
 <translation id="6265794661083428563">Copiar o valor da política <ph name="POLICY_NAME" /></translation>

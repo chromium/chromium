@@ -1495,24 +1495,6 @@ Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenm
 <translation id="1962273523772270623">Google hizmetlerinden WebRTC olay günlüklerinin toplanmasına izin ver</translation>
 <translation id="1962864958436828230">Veri sızıntısını önleme amaçlı pano kısıtlaması için minimum boyut sınırını belirleyin</translation>
 <translation id="1963986268950915756">Kullanıcıların Tarayıcıdan Web Uygulaması Yüklemesine İzin Ver</translation>
-<translation id="1964128875283181035">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan istekler <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerine tabi değildir.
-
-Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
-
-Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">Galeri (117 sürümünden itibaren desteklenir)</translation>
 <translation id="1964634611280150550">Gizli mod devre dışı</translation>
 <translation id="1964985353230379667">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
@@ -4314,7 +4296,6 @@ Masaüstünde varsayılan değerler şunlardır: dolgu opaklığı 4, çizgi opa
           </translation>
 <translation id="3677660004554019617">Generative AI VC Background özelliğine izin verme</translation>
 <translation id="3678069907945250643">Google Fotoğraflar'ın, kişiselleştirme uygulamasından erişmesine izin ver</translation>
-<translation id="3682200407044593844">Cihazdaki IP adresi alanı eşlemelerini geçersiz kılma</translation>
 <translation id="3685979383016152590">Politika ayarlanırsa toplu yazıcı yapılandırması için hangi erişim politikasının geçerli olacağı belirlenerek <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> içerisinden hangi yazıcıların kullanılabileceği kontrol edilir.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (0 değeri) ayarlanırsa belirtilen yazıcılara erişimi kısıtlamak için <ph name="PRINTERS_BULK_BLOCKLIST" /> kullanılır.
@@ -4718,23 +4699,6 @@ Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENAB
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan bir istemci sertifikası seçmesi istenir.
       Bu politika Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcıdan yalnızca otomatik seçimle eşleşen sertifika olmadığında seçim yapması istenebilir.</translation>
 <translation id="3947897854999940598">İstenen DNS-over-HTTPS çözümleyicisinin kimlik bilgilerini içeren URI şablonunu belirtin</translation>
-<translation id="394949637082417941">Bu politika, belirli dahili adres aralıklarını tüm cihaz genelinde "herkese açık" olarak değerlendirmek ve dolayısıyla <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerine tabi tutmamak için kullanılabilir. Diğer taraftan, dahili olarak kullanılabilecek belirli herkese açık adres aralıklarını "yerel" olarak değerlendirmek için de kullanılabilir. Böylece, bu adresler <ph name="LOCAL_NETWORK_ACCESS" /> kontrolleriyle korunur.
-
-IP adresi alanı, iki şekilde geçersiz kılınabilir:
-
-[cidr]=[public|local|loopback]
-
-Burada [cidr], CIDR gösteriminde bir IP adresi aralığıdır (IPv4 için https://tools.ietf.org/html/rfc4632 adresindeki 3.1. bölüme ve IPv6 için ise https://tools.ietf.org/html/rfc4291 adresindeki 2.3. bölümüne bakın). IPv6 adresleri, URL açısından güvenli (köşeli parantezli) biçimde belirtilmelidir. CIDR geçersiz kılmaları, tüm bağlantı noktaları için geçerlidir.
-
-veya
-
-[ip-address]:[port]=[public|local|loopback]
-
-<ph name="LOCAL_NETWORK_ACCESS" /> hakkında daha fazla bilgi için https://wicg.github.io/local-network-access/ ve https://developer.chrome.com/blog/local-network-access adreslerini ziyaret edin.
-
-LocalNetworkAccessIpAddressSpaceOverrides politikası ile yapılan geçersiz kılmalar, bu politika ile belirlenen geçersiz kılmalara göre önceliklidir.
-
---ip-address-space-overrides komut satırı anahtarı ile yapılan geçersiz kılmalar, politikalar ile belirlenen geçersiz kılmalara göre önceliklidir.</translation>
 <translation id="3949642828552641632"><ph name="GOOGLE_DRIVE_NAME" /> ve <ph name="GOOGLE_WORKSPACE_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışına izin ver</translation>
 <translation id="3950110092991281616">Ambiyans kimlik doğrulamasını yalnızca normal oturumlarda etkinleştir.</translation>
 <translation id="3950239119790560549">Güncelleme Zamanı Kısıtlamaları</translation>
@@ -4850,6 +4814,7 @@ Dikkat edilmesi gereken noktalar:
 <translation id="402759845255257575">Hiçbir sitenin JavaScript çalıştırmasına izin verme</translation>
 <translation id="4027608872760987929">Varsayılan arama sağlayıcıyı etkinleştir</translation>
 <translation id="4030152268425532846">Otomatik giriş kurtarmayı devre dışı bırak</translation>
+<translation id="4032740546145417900">"Konuşarak yazma" özelliğine izin verme.</translation>
 <translation id="4043796890723386527">Kullanıcıların, <ph name="LACROS_NAME" /> tarayıcıda ikinci profiller oluşturup kullanmalarını ve misafir modunu kullanmalarını engelle.</translation>
 <translation id="4047633048700722778">Politikanın ayarlanması, URL'lerin pornografik olup olmadığını sınıflandırmak için Google Safe Search API'yi kullanan SafeSites URL filtresini kontrol eder.
 
@@ -5180,24 +5145,6 @@ Yanlış biçimlendirilmiş alanlar yoksayılır.</translation>
 <translation id="4238777612788632629">Sürüm güncel değilse hızlıca yeniden başlat</translation>
 <translation id="4239720644496144453">Önbellek, Android uygulamaları için kullanılmaz. Birden fazla kullanıcı aynı Android uygulamasını yüklerse bu uygulama her kullanıcı için yeniden indirilir.</translation>
 <translation id="4239949495354048254">Chrome'da Gemini'a dosya yüklenmesine izin ver.</translation>
-<translation id="424049794524032498">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan ağ isteklerinin, cihazdaki tüm oturumlarda <ph name="LOCAL_NETWORK_ACCESS" /> isteği göndermesi engellenir.
-
-Burada belirtilen kalıpların dışında kalan kaynaklar için oturum veya profil yapılandırması geçerli olur.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
-
-Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">Bu politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
 
 Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sistem sertifikası doğrulayıcıyı ve sistem kök sertifikalarını kullanır.
@@ -5352,6 +5299,22 @@ Not: Bu politika ile birlikte <ph name="ARC_GLS_POLICY_NAME" /> politikasının 
 <translation id="4363057787588706121">Farklı kaynaklara ait liste politikalarını birleştirmeye izin ver</translation>
 <translation id="4363101430102811068">Girilen kimlik bilgileri için sızıntı algılamayı etkinleştir</translation>
 <translation id="436581050240847513">Cihaz ağ arayüzlerini rapor etme</translation>
+<translation id="4366420138981318392">URL kalıpları listesi Eşleşen kaynakların sunduğu web sitelerinden başlatılan istekler <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerine tabi değildir.
+
+Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
+
+Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">Çalışanlar (Web Çalışanları, Hizmet Çalışanları vb.) için komut dosyaları, lax MIME türü kontrolünü kullanır. <ph name="MIMETYPE_TEXT_ASCII" /> gibi eski MIME türlerine sahip çalışan komut dosyaları çalışır.</translation>
 <translation id="4370937370030117032">Kullanıcı adını ve dosya adını yerel yazıcılara göndermeyi devre dışı bırak</translation>
 <translation id="4372704773119750918">Kurumsal kullanıcının çok profilli oturumun parçası olmasına izin verme (birincil veya ikincil)</translation>
@@ -5387,6 +5350,20 @@ Bu politika etkinleştirilirse, desteği sonlandırılmış eski söz dizimi etk
 Bu politika devre dışı bırakılırsa, desteği sonlandırılmış eski söz dizimi devre dışı bırakılır.
 
 Bu politika ayarlanmazsa, desteği sonlandırılmış eski söz dizimi devre dışı bırakılır.</translation>
+<translation id="4400152722459197056">URL kalıplarının listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan yerel ağ uç noktalarına yönelik ağ istekleri, <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerine tabi değildir.
+
+Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
+
+Yerel ağ uç noktalarına yönelik istekleri etkileyen ve içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">Güvenli olmayan bağlamlarda WebSQL, M110'dan itibaren kaldırılacaktır. Bu politika, API'yi yeniden etkinleştirir.
           Bu politika Doğru değerine ayarlanırsa güvenli olmayan bağlamlarda WebSQL kullanımı etkinleştirilir.
           Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa güvenli olmayan bağlamlarda WebSQL, M109'a kadar kullanılabilir ancak M110'dan itibaren kullanılamaz.
@@ -6092,6 +6069,22 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
 <translation id="4826977043372474305">Kiosk kablosuz ağ kimlik bilgileri kiosk düzeyinde depolanır</translation>
 <translation id="4827727182370777723">Varsayılan yerel yazı tipleri izni ayarı</translation>
 <translation id="482803100714220060">Tam URL'leri göster</translation>
+<translation id="4830717535196994979">URL kalıpları listesi Eşleşen kaynakların sunduğu web sitelerinden başlatılan ağ isteklerinin <ph name="LOCAL_NETWORK_ACCESS" /> istekleri göndermesi engellenir.
+
+Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
+
+Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927"><ph name="PRODUCT_NAME" /> ürünündeki PDF görüntüleyicinin PDF belgelerindeki XFA formlarını destekleyip desteklemeyeceğini kontrol eder.
 
 Bu politika, Doğru değerine ayarlanırsa XFA form desteği etkinleştirilir.
@@ -6839,6 +6832,17 @@ Not: Bu özellik henüz genel kullanıma sunulmadığı için özelliğin etkinl
 <translation id="5247584184349816217">Kilit ekranında ekran koruyucuyu etkinleştir.</translation>
 <translation id="5247973380763021389">Kullanıcı bulut politikalarının makine bulut politikalarını geçersiz kılmasını engelle.</translation>
 <translation id="5249006530384016395">CSS özel durumu için desteği sonlandırılmış <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> söz diziminin etkinleştirilip etkinleştirilmeyeceğini kontrol eder</translation>
+<translation id="5249271416806588789">Konuşarak yazma, kullanıcıların seslerini kullanarak metin girmesine ve düzenlemesine olanak tanıyan yapay zeka tabanlı bir özelliktir. Yüksek kaliteli metne dönüştürme ve biçimlendirme için üretken yapay zeka modelleriyle desteklenir.
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliğe izin vermez.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="5249453807420671499">Kullanıcılar Kerberos hesapları ekleyebilirler</translation>
 <translation id="5249555581286638799">Yüksek Verimlilik Modu'nu etkinleştir</translation>
 <translation id="5252210248395576403">Bu politika, çeviri sonuçlarını almak için Bil bakalım'a seçilen içeriğe erişme ve sunucuya bilgi gönderme izni verir.
@@ -7172,23 +7176,6 @@ arama tabanlı kısayollar varsayılan davranışı gerçekleştirir.</translati
 
       Politika değeri gün olarak belirtilmelidir.</translation>
 <translation id="5457065417344056871">Tarayıcıda misafir modunu etkinleştir</translation>
-<translation id="5457999916455787365">Bu, belirli dahili adres aralıklarını "herkese açık" olarak değerlendirmek ve dolayısıyla <ph name="LOCAL_NETWORK_ACCES" /> kontrollerine tabi tutmamak için kullanılabilir. Diğer taraftan, dahili olarak kullanılabilecek belirli herkese açık adres aralıklarını "yerel" olarak değerlendirmek için de kullanılabilir. Böylece, bu adresler <ph name="LOCAL_NETWORK_ACCESS" /> kontrolleriyle korunur.
-
-IP adresi alanı, iki şekilde geçersiz kılınabilir:
-
-[cidr]=[public|local|loopback]
-
-Burada [cidr], CIDR gösteriminde bir IP adresi aralığıdır (IPv4 için https://tools.ietf.org/html/rfc4632 adresindeki 3.1. bölüme ve IPv6 için ise https://tools.ietf.org/html/rfc4291 adresindeki 2.3. bölümüne bakın). IPv6 adresleri, URL açısından güvenli (köşeli parantezli) biçimde belirtilmelidir. CIDR geçersiz kılmaları, tüm bağlantı noktaları için geçerlidir.
-
-veya
-
-[ip-address]:[port]=[public|local|loopback]
-
-<ph name="LOCAL_NETWORK_ACCESS" /> hakkında daha fazla bilgi için https://wicg.github.io/local-network-access/ ve https://developer.chrome.com/blog/local-network-access adreslerini ziyaret edin.
-
-Bu politika ile yapılan geçersiz kılmalar, DeviceLocalNetworkAccessIpAddressSpaceOverrides ile belirlenen geçersiz kılmalara göre önceliklidir.
-
---ip-address-space-overrides komut satırı anahtarı ile yapılan geçersiz kılmalar, politikalar ile belirlenen geçersiz kılmalara göre önceliklidir.</translation>
 <translation id="545817252640069915">Oturum açma müdahalesini etkinleştir</translation>
 <translation id="5460797984317417682">Tam ekran uyarısını etkinleştir</translation>
 <translation id="5462898272514237681"><ph name="PRODUCT_OS_NAME" /> sisteminin, Google Konum Hizmetleri'ne erişimini kontrol et</translation>
@@ -7274,22 +7261,6 @@ Microsoft SharePoint ve OneDrive kartı için ek yönetici yapılandırması ger
 <translation id="5519619299971727565">Linux uygulamaları kullanım raporlamasını devre dışı bırak</translation>
 <translation id="5521035900165046997">Cihazın Bluetooth bilgileri raporlamasını etkinleştir</translation>
 <translation id="5521875416764302911">Kullanıcıların <ph name="PRODUCT_NAME" /> oturumu açmasını engelle</translation>
-<translation id="5523077138980091816">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan yerel ağ uç noktalarına yönelik ağ istekleri, <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerine tabi değildir.
-
-Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
-
-Yerel ağ uç noktalarına yönelik istekleri etkileyen ve içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365"><ph name="DBSC_FEATURE_NAME" /> özelliğini devre dışı bırak</translation>
 <translation id="5526184558582921522">Quirks Sunucusu'nu sorgulamaya ve donanıma özgü yapılandırma dosyalarını içerebilecek indirmelere izin ver</translation>
 <translation id="5526701598901867718">Hepsi (güvenli değil)</translation>
@@ -7951,6 +7922,23 @@ Bu politika normal ifadeleri desteklemez ancak belirli bir alanın alt alan adla
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PRINTERS_BULK_BLOCKLIST" /> politikasını kullanın.</translation>
 <translation id="591088232153082363">Pil kullanım modeline göre pili uyarlanabilir şarj et.</translation>
+<translation id="5913506885872855604">Bu, belirli dahili adres aralıklarını "herkese açık" olarak değerlendirmek ve dolayısıyla <ph name="LOCAL_NETWORK_ACCES" /> kontrollerine tabi tutmamak için kullanılabilir. Diğer taraftan, dahili olarak kullanılabilecek belirli herkese açık adres aralıklarını "yerel" olarak değerlendirmek için de kullanılabilir. Böylece, bu adresler <ph name="LOCAL_NETWORK_ACCESS" /> kontrolleriyle korunur.
+
+IP adresi alanı, iki şekilde geçersiz kılınabilir:
+
+[cidr]=[public|local|loopback]
+
+Burada [cidr], CIDR gösteriminde bir IP adresi aralığıdır (IPv4 için https://tools.ietf.org/html/rfc4632 adresindeki 3.1. bölüme ve IPv6 için ise https://tools.ietf.org/html/rfc4291 adresindeki 2.3. bölümüne bakın). IPv6 adresleri, URL açısından güvenli (köşeli parantezli) biçimde belirtilmelidir. CIDR geçersiz kılmaları, tüm bağlantı noktaları için geçerlidir.
+
+veya
+
+[ip-address]:[port]=[public|local|loopback]
+
+<ph name="LOCAL_NETWORK_ACCESS" /> hakkında daha fazla bilgi için https://wicg.github.io/local-network-access/ ve https://developer.chrome.com/blog/local-network-access adreslerini ziyaret edin.
+
+Bu politika, dinamik yenilemeyi desteklemez.
+
+--ip-address-space-overrides komut satırı anahtarından yapılan geçersiz kılmalar, bu politika tarafından ayarlanan geçersiz kılmalara göre önceliklidir.</translation>
 <translation id="5915023683182228340">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> ürününde QUIC protokolünün kullanımına izin verilir.
 
       Politika, Devre Dışı değerine ayarlanırsa QUIC protokolünün kullanımına izin verilmez.</translation>
@@ -8027,6 +8015,7 @@ Bu politika ayarlanmazsa <ph name="DEFAULT_AUTOMATIC_DOWNLOADS_SETTING_POLICY_NA
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Google'a geri bildirim gönderemez.</translation>
 <translation id="5976636832661103220">F11 ayarları, üst karakter değiştiriciyi içeren kısayolu kullanır</translation>
 <translation id="5979376378555121803">Barındırılan uygulama</translation>
+<translation id="5983016603010860828">Konuşarak yazma ayarları</translation>
 <translation id="5983274643567559194">"Delete" işlemi için kısayol ayarlama devre dışı.</translation>
 <translation id="5984099692320899605">NTLM kimlik doğrulaması kullanma</translation>
 <translation id="5984237109586500246">İmzalanmış HTTP Takası olarak yayınlanan web içeriklerini kabul et</translation>
@@ -8125,24 +8114,6 @@ Bu politika, Yanlış değerine ayarlanırsa NTP altbilgisinde uzantıyla ilgili
 Politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa öğretmenler Google Classroom öğrenci listesini kullanabilir.
 
 Politika, Yanlış değerine ayarlanırsa öğretmenler bu özelliğe erişemez.</translation>
-<translation id="606337187257433827">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan ağ isteklerinin <ph name="LOCAL_NETWORK_ACCESS" /> istekleri göndermesi engellenir.
-
-Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
-
-Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> politikasının ayarlanması, arama önerileri sağlamak için kullanılan arama motorunun URL'sini belirler. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir.
 
       Google'ın arama URL'sini şu şekilde belirtebilirsiniz: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8575,22 +8546,6 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
 
       Not: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> belirtilmişse bu politikayı geçersiz kılar.</translation>
 <translation id="6315039134652691025">Kullanıcılar, mevcut tarama verilerini yönetilen profillerine taşıyamaz</translation>
-<translation id="6316247387848694915">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan yerel ağ uç noktalarına yönelik ağ isteklerinin <ph name="LOCAL_NETWORK_ACCESS" /> isteği göndermesi engellenir.
-
-Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
-
-Yerel ağ uç noktalarına yönelik istekleri etkileyen ve içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617"><ph name="PRODUCT_NAME" /> hizmetinin, kullanılacak yaklaşıma karar vermesine izin verir</translation>
 <translation id="6316885783540658874">Bu politika, destekleniyorsa ChromeOS'te <ph name="DM_CRYPT" /> kullanıcı evleri için kullanıcı depolama alanı şifrelemesinde <ph name="AES_KL_NAME" /> uygulamasının etkinleştirilip etkinleştirilmeyeceğini kontrol eder.
 
@@ -9816,7 +9771,6 @@ Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_
 <translation id="7030205756530739128"><ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> olarak ayarlanırsa <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> ayarı, şarj yüzdesine göre pilin ne zaman şarj edilmeye başlayacağını özelleştirir. Değer, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> değerinin en az yüzde 5 altında olmalıdır.
 
       Bu politika ayarlanmadan bırakılırsa standart pil şarj modu uygulanır.</translation>
-<translation id="7030213287413687536">Sitelerin yerel cihazlara ve cihazdaki yerel ağ uç noktalarına ağ isteğinde bulunmasına izin verme</translation>
 <translation id="7030407698292813622">İlave DNS kayıt türleri için DNS sorgularına izin ver</translation>
 <translation id="7030632236140191991">Chrome'da panodan veri girildiğinde veya web içeriği sürüklenip bırakıldığında tetiklenen <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak Chrome Enterprise Connectors hizmetleri ayarlarının listesidir.
 
@@ -10369,6 +10323,7 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa Kerberos Hesapları aya
       Bu politikanın etkinleştirilmesi, siteleri bazı siteler arası saldırılara açık bırakır ve kullanıcıların, URL'lere gömülü kimlik bilgilerini kullanıp HTTP kimlik doğrulama önbelleğine girişler ekleyerek, çerezler bile olmadan siteler arasında takip edilmesine olanak tanır.
 
       Bu politikanın amacı eski ayarlarına bağlı olarak işletmelere giriş prosedürlerini güncelleme fırsatı vermektir ve ileride kaldırılacaktır.</translation>
+<translation id="7322231030019184787">Konuşarak yazma özelliğinin veri toplamadan kullanılmasına izin ver.</translation>
 <translation id="7322825363493984512">Uzak web proxy'sinde sistem hizmetlerinin kimliğini doğrulamak için kullanılan şifre.</translation>
 <translation id="7323773727263636287">Renk düzeltme erişilebilirlik özelliğini etkinleştirin.
 
@@ -10792,6 +10747,20 @@ Bu politika 1.000 giriş ile sınırlıdır.</translation>
           Politika, yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcılar, kilit ve giriş ekranında PIN'i otomatik olarak göndermez.
 
           Bu politika ayarlanırsa kullanıcılara bu özelliği etkinleştirme seçeneği sunulmaz.</translation>
+<translation id="7609566862616914296">URL kalıplarının listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan yerel ağ uç noktalarına yönelik ağ isteklerinin <ph name="LOCAL_NETWORK_ACCESS" /> isteği göndermesi engellenir.
+
+Burada belirtilen kalıpların dışında kalan kaynaklar için kullanıcının kişisel yapılandırması geçerli olur.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
+
+Yerel ağ uç noktalarına yönelik istekleri etkileyen ve içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401"><ph name="PASSWORD_MANAGER_NAME" /> (Kaydet ve Doldur) hizmetinin devre dışı bırakılacağı alanların listesini yapılandır</translation>
 <translation id="7612059745454194563">Kimlik Bilgisi Sağlayıcı uzantısı promosyonunun gösterilmesine izin verme</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> başlatılırken uygulanan sistem genelindeki işaretler</translation>
@@ -10822,6 +10791,7 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterp
       Bu politika ayarlandığında, Ebeveyn Erişim Kodu çocuk kullanıcının cihazında doğrulanabilir.
       Bu politika ayarlanmadığında, Ebeveyn Erişim Kodu çocuk kullanıcının cihazında doğrulanamaz.</translation>
 <translation id="7623431489198474050">İçerik koruması için uzaktan onayı devre dışı bırak</translation>
+<translation id="7624832415093566709">Konuşarak yazma özelliğine izin ver.</translation>
 <translation id="7625858205605842562">Politikayı ayarlamak, kullanıcıların sistemindeki bir USB cihazına erişme izni isteyemeyecek siteleri belirten bir URL kalıpları listesi yapmanıza olanak tanır.
 
       Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
@@ -11034,22 +11004,6 @@ Not: Bu politika yalnızca uzantıları destekleyen platformlarda geçerlidir.</
       <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> politikası bu politikaya göre daha önceliklidir ve belirli URL'ler için Gizli modu yeniden etkinleştirebilir. İzin verilenler listesi sağlandığında Gizli mod bu politika tarafından devre dışı bırakılırsa Gizli mod, yalnızca izin verilenler listesiyle eşleşen URL'lerde kullanılabilir. Diğer tüm sayfalar engellenir.
 
       Not: iOS'te oturum esnasında yapılan politika değişiklikleri, yeniden başlatmanın ardından uygulanır.</translation>
-<translation id="7753487237310360952">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan istekler, cihazdaki tüm oturumlarda <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerine tabi tutulmaz.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
-
-Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde kaynakların listelendiği birden fazla politika vardır. Bir kaynak aşağıdaki politikalardan birden fazlasıyla eşleşirse politikalar aşağıdaki öncelik sırasına göre uygulanır:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">Tarayıcı deneysel özellikler araç çubuğu giriş noktasını etkinleştir</translation>
 <translation id="7754704193130578113">İndirmeden önce her dosyanın nereye kaydedileceğini sor</translation>
 <translation id="7754893969683595513">Politikanın ayarlanması, cihaz yönetimi hizmetinin kullanıcı politikası bilgileri için sorgulandığı süreyi milisaniye olarak belirtir. Geçerli değerler, 1.800.000 (30 dakika) ile 86.400.000 (1 gün) aralığındadır. Bu aralık dışındaki değerler ilgili sınıra ayarlanır.
@@ -12837,7 +12791,6 @@ Bu politika yalnızca <ph name="ARC_VM" /> resmini <ph name="PRODUCT_OS_FLEX_NAM
 <translation id="8911736066340032670">Yenileme hızı gibi ekranla ilgili bilgileri ve sürücünün sürümü gibi grafikle ilgili bilgileri raporlayın.
 
       Politika yanlış (false) değerine ayarlanır veya ayarlanmadan bırakılırsa ekran ve grafik durumu raporlanmaz. Doğru (true) değerine ayarlanırsa ekran ve grafik durumları raporlanır.</translation>
-<translation id="8912595396523313912">Sitelerin yerel cihazlara ve cihazdaki yerel ağ uç noktalarına ağ isteği göndermesini engelleme</translation>
 <translation id="891435090623616439">JSON dizesi olarak kodlanmıştır, ayrıntılar için <ph name="COMPLEX_POLICIES_URL" /> sayfasına bakın</translation>
 <translation id="8916106787085606382">Gezinme üst düzeyde, siteler arasında olduğunda ve BrowsingContextGroup'u değiştirdiğinde window.name öğesi temizlenmesin.</translation>
 <translation id="8917070657147922192">Kullanıcıların yüklü CA sertifikalarını yönetmelerine izin ver.</translation>

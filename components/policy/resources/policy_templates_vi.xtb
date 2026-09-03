@@ -1483,24 +1483,6 @@ Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* c
 <translation id="1962273523772270623">Cho phép thu thập nhật ký sự kiện WebRTC từ các dịch vụ của Google</translation>
 <translation id="1962864958436828230">Đặt giới hạn kích thước tối thiểu để ngăn chặn rò rỉ dữ liệu theo quy tắc hạn chế khay nhớ tạm</translation>
 <translation id="1963986268950915756">Cho phép người dùng cài đặt ứng dụng web từ trình duyệt</translation>
-<translation id="1964128875283181035">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Đối với những nguồn gốc không khớp với các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
-
-Hãy truy cập https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách đó sẽ được ưu tiên theo thứ tự sau:
-
-  – LocalNetworkBlockedForUrls
-  – LocalNetworkAllowedForUrls
-  – LoopbackNetworkBlockedForUrls
-  – LoopbackNetworkAllowedForUrls
-  – LocalNetworkAccessBlockedForUrls
-  – LocalNetworkAccessAllowedForUrls
-  – DeviceLocalNetworkAccessBlockedForUrls
-  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">Thư viện (được hỗ trợ kể từ phiên bản 117)</translation>
 <translation id="1964634611280150550">Đã tắt chế độ ẩn danh</translation>
 <translation id="1964985353230379667">Chỉ định cấu hình <ph name="KRB5_CONFIG" /> đề xuất cho các phiếu yêu cầu hỗ trợ mới được tạo theo cách thủ công.
@@ -4251,7 +4233,6 @@ Giá trị mặc định trên máy tính: độ mờ của phần tô là 4, đ
           </translation>
 <translation id="3677660004554019617">Không cho phép dùng nền AI tạo sinh cho hội nghị truyền hình</translation>
 <translation id="3678069907945250643">Cho phép truy cập vào Google Photos từ ứng dụng cá nhân hoá</translation>
-<translation id="3682200407044593844">Ghi đè liên kết không gian địa chỉ IP trên thiết bị</translation>
 <translation id="3685979383016152590">Việc đặt chính sách này sẽ chỉ định chính sách truy cập nào áp dụng cho cấu hình máy in số lượng lớn, kiểm soát máy in nào từ <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> là dành cho người dùng.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (giá trị 0) sử dụng <ph name="PRINTERS_BULK_BLOCKLIST" /> để hạn chế quyền truy cập vào các máy in đã chỉ định
@@ -4655,23 +4636,6 @@ Trên nền tảng máy tính, bạn cũng có thể tắt tính năng tải mô
       Nếu bạn bật chính sách này, thì người dùng sẽ được nhắc chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ.
       Nếu bạn tắt hoặc không đặt chính sách này, thì người dùng chỉ có thể được nhắc khi không có chứng chỉ nào khớp với chính sách tự động chọn.</translation>
 <translation id="3947897854999940598">Chỉ định mẫu URI của trình phân giải DNS-over-HTTPS mà bạn muốn kèm theo thông tin danh tính</translation>
-<translation id="394949637082417941">Bạn có thể dùng chính sách này để coi một số dải địa chỉ nội bộ là "công khai" trên toàn bộ thiết bị và do đó không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />. Ngược lại, bạn cũng có thể dùng chính sách này để coi một số dải địa chỉ công khai có thể được dùng nội bộ là "cục bộ" để các dải địa chỉ này được bảo vệ bằng các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Quy tắc ghi đè không gian địa chỉ IP có hai dạng:
-
-[cidr]=[public|local|loopback]
-
-trong đó [cidr] là một dải địa chỉ IP theo ký pháp CIDR (xem mục 3.1 của https://tools.ietf.org/html/rfc4632 đối với IPv4 và mục 2.3 của https://tools.ietf.org/html/rfc4291 đối với IPv6). Bạn phải chỉ định địa chỉ IPv6 theo định dạng an toàn cho URL (có dấu ngoặc). Quy tắc ghi đè CIDR áp dụng cho tất cả các cổng.
-
-hoặc
-
-[ip-address]:[port]=[public|local|loopback]
-
-Để biết thêm thông tin về <ph name="LOCAL_NETWORK_ACCESS" />, hãy truy cập vào https://wicg.github.io/local-network-access/ và https://developer.chrome.com/blog/local-network-access.
-
-Quy tắc ghi đè từ chính sách LocalNetworkAccessIpAddressSpaceOverrides được ưu tiên hơn quy tắc ghi đè từ chính sách này.
-
-Quy tắc ghi đè từ tuỳ chọn chuyển dòng lệnh --ip-address-space-overrides được ưu tiên hơn quy tắc ghi đè từ các chính sách.</translation>
 <translation id="3949642828552641632">Cho phép quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="GOOGLE_DRIVE_NAME" /> và <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3950110092991281616">Chỉ bật tùy chọn xác thực môi trường xung quanh đối với các phiên thông thường.</translation>
 <translation id="3950239119790560549">Giới hạn thời gian cập nhật</translation>
@@ -4787,6 +4751,7 @@ Những điều cần lưu ý:
 <translation id="402759845255257575">Không cho phép bất kỳ trang web nào chạy JavaScript</translation>
 <translation id="4027608872760987929">Bật nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4030152268425532846">Tắt phím tắt bailout tự động đăng nhập</translation>
+<translation id="4032740546145417900">Không cho phép tính năng Nói để nhập.</translation>
 <translation id="4043796890723386527">Ngăn người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Khi bạn đặt chính sách này, hệ thống sẽ kiểm soát bộ lọc URL SafeSites. Bộ lọc này dùng API Tìm kiếm an toàn của Google để phân loại xem các URL có chứa nội dung khiêu dâm hay không.
 
@@ -5118,24 +5083,6 @@ Hệ thống sẽ bỏ qua các miền không đúng định dạng.</translatio
 <translation id="4238777612788632629">Chạy lại nhanh nếu đã lỗi thời</translation>
 <translation id="4239720644496144453">Bộ nhớ đệm không được sử dụng cho các ứng dụng Android. Nếu nhiều người dùng cài đặt cùng một ứng dụng Android thì ứng dụng sẽ được tải xuống lại cho từng người dùng.</translation>
 <translation id="4239949495354048254">Cho phép tải tệp lên Gemini trong Chrome.</translation>
-<translation id="424049794524032498">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không được phép gửi yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> trong tất cả các phiên trên thiết bị.
-
-Đối với những nguồn gốc không khớp với các mẫu nêu ở đây, cấu hình phiên hoặc hồ sơ sẽ được áp dụng.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
-
-Hãy truy cập https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách đó sẽ được ưu tiên theo thứ tự sau:
-
-  – LocalNetworkBlockedForUrls
-  – LocalNetworkAllowedForUrls
-  – LoopbackNetworkBlockedForUrls
-  – LoopbackNetworkAllowedForUrls
-  – LocalNetworkAccessBlockedForUrls
-  – LocalNetworkAccessAllowedForUrls
-  – DeviceLocalNetworkAccessBlockedForUrls
-  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">Khi bạn đặt chính sách này thành bật, <ph name="PRODUCT_NAME" />
 sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn
 cùng với Chrome Root Store là nguồn tin cậy công khai để xác minh chứng chỉ máy chủ.
@@ -5294,6 +5241,22 @@ Lưu ý: Chính sách này sẽ vô hiệu hoá chính sách <ph name="ARC_GLS_P
 <translation id="4363057787588706121">Cho phép hợp nhất các chính sách trong danh sách thuộc các nguồn khác nhau</translation>
 <translation id="4363101430102811068">Bật tùy chọn phát hiện rò rỉ thông tin đăng nhập đã nhập</translation>
 <translation id="436581050240847513">Báo cáo giao diện mạng thiết bị</translation>
+<translation id="4366420138981318392">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Đối với những nguồn gốc không được áp dụng các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách sẽ được ưu tiên theo thứ tự sau:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">Tập lệnh dành cho trình chạy (Trình chạy web, Trình chạy dịch vụ, v.v.) sử dụng tính năng kiểm tra loại MIME nới lỏng. Tập lệnh trình chạy có loại MIME cũ, như <ph name="MIMETYPE_TEXT_ASCII" />, sẽ hoạt động.</translation>
 <translation id="4370937370030117032">Không cho phép gửi tên người dùng và tên tệp đến máy in gốc</translation>
 <translation id="4372704773119750918">Không cho phép người dùng doanh nghiệp là một phần của đa cấu hình (chính hoặc phụ)</translation>
@@ -5332,6 +5295,20 @@ Nếu bạn bật chính sách này, thì cú pháp cũ không dùng nữa cũng
 Nếu bạn tắt chính sách này, thì cú pháp cũ không dùng nữa cũng sẽ tắt.
 
 Nếu bạn không đặt chính sách này, thì cú pháp cũ không dùng nữa sẽ tắt.</translation>
+<translation id="4400152722459197056">Danh sách mẫu URL. Yêu cầu mạng gửi tới thiết bị đầu cuối trên mạng cục bộ, nếu được khởi tạo từ các trang web có nguồn gốc trùng khớp, sẽ không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Đối với những nguồn gốc không được áp dụng các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách sẽ được ưu tiên theo thứ tự sau:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">WebSQL trong ngữ cảnh không an toàn sẽ bị loại bỏ kể từ M110. Chính sách này sẽ bật lại API này.
           Nếu bạn đặt chính sách này thành true (đúng) thì WebSQL trong ngữ cảnh không an toàn sẽ hoạt động.
           Nếu bạn đặt chính sách này thành false (sai) hoặc không đặt thì WebSQL trong ngữ cảnh không an toàn sẽ vẫn hoạt động cho đến M109, sau đó sẽ ngừng hoạt động kể từ M110.
@@ -6046,6 +6023,22 @@ Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc 
 <translation id="4826977043372474305">Thông tin đăng nhập Wi-Fi của kiosk được lưu trữ ở cấp kiosk</translation>
 <translation id="4827727182370777723">Chế độ cài đặt quyền Phông chữ trên máy mặc định</translation>
 <translation id="482803100714220060">Hiển thị URL đầy đủ</translation>
+<translation id="4830717535196994979">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không được phép gửi các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Đối với những nguồn gốc không được áp dụng các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách sẽ được ưu tiên theo thứ tự sau:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">Kiểm soát việc trình xem PDF trong <ph name="PRODUCT_NAME" /> có hỗ trợ biểu mẫu XFA trong tài liệu PDF hay không.
 
 Nếu bạn đặt chính sách này thành True (Đúng) thì tính năng hỗ trợ cho biểu mẫu XFA sẽ được bật.
@@ -6813,6 +6806,17 @@ Lưu ý: Tính năng này chưa được phát hành rộng rãi nên có thể 
 <translation id="5247584184349816217">Bật trình bảo vệ màn hình trên màn hình khoá.</translation>
 <translation id="5247973380763021389">Không cho phép các chính sách đám mây ở cấp người dùng ghi đè các chính sách đám mây ở cấp thiết bị.</translation>
 <translation id="5249006530384016395">Kiểm soát xem có bật cú pháp <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> không dùng nữa cho trạng thái tuỳ chỉnh của CSS hay không</translation>
+<translation id="5249271416806588789">Nói để nhập là tính năng dựa trên AI cho phép người dùng nhập và chỉnh sửa văn bản bằng giọng nói của họ. Tính năng này hoạt động dựa trên các mô hình AI tạo sinh nhằm cung cấp khả năng phiên âm và định dạng chất lượng cao.
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Người dùng có thể thêm các tài khoản Kerberos</translation>
 <translation id="5249555581286638799">Bật Chế độ hiệu quả cao</translation>
 <translation id="5252210248395576403">Chính sách này cấp cho tính năng Thông tin nhanh quyền truy cập vào nội dung đã chọn và gửi thông tin đó đến máy chủ để nhận kết quả dịch.
@@ -7144,23 +7148,6 @@ Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến 
 
       Bạn phải chỉ định giá trị của chính sách bằng ngày.</translation>
 <translation id="5457065417344056871">Bật chế độ khách trong trình duyệt</translation>
-<translation id="5457999916455787365">Bạn có thể dùng chính sách này để coi một số dải địa chỉ nội bộ là "công khai" và do đó không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCES" />. Ngược lại, bạn cũng có thể dùng chính sách này để coi một số dải địa chỉ công khai có thể được dùng nội bộ là "cục bộ" để các dải địa chỉ này được bảo vệ bằng các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Quy tắc ghi đè không gian địa chỉ IP có hai dạng:
-
-[cidr]=[public|local|loopback]
-
-trong đó [cidr] là một dải địa chỉ IP theo ký pháp CIDR (xem mục 3.1 của https://tools.ietf.org/html/rfc4632 đối với IPv4 và mục 2.3 của https://tools.ietf.org/html/rfc4291 đối với IPv6). Bạn phải chỉ định địa chỉ IPv6 theo định dạng an toàn cho URL (có dấu ngoặc). Quy tắc ghi đè CIDR áp dụng cho tất cả các cổng.
-
-hoặc
-
-[ip-address]:[port]=[public|local|loopback]
-
-Để biết thêm thông tin về <ph name="LOCAL_NETWORK_ACCESS" />, hãy truy cập vào https://wicg.github.io/local-network-access/ và https://developer.chrome.com/blog/local-network-access.
-
-Quy tắc ghi đè từ chính sách này được ưu tiên hơn quy tắc ghi đè từ chính sách DeviceLocalNetworkAccessIpAddressSpaceOverrides.
-
-Quy tắc ghi đè từ tuỳ chọn chuyển dòng lệnh --ip-address-space-overrides được ưu tiên hơn quy tắc ghi đè từ các chính sách.</translation>
 <translation id="545817252640069915">Bật tùy chọn chặn đăng nhập</translation>
 <translation id="5460797984317417682">Bật cảnh báo toàn màn hình</translation>
 <translation id="5462898272514237681">Kiểm soát quyền truy cập của <ph name="PRODUCT_OS_NAME" /> vào dịch vụ vị trí của Google</translation>
@@ -7246,22 +7233,6 @@ Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, thẻ SharePoint và OneDrive s
 <translation id="5519619299971727565">Tắt tính năng báo cáo mức sử dụng ứng dụng trên Linux</translation>
 <translation id="5521035900165046997">Bật tính năng báo cáo thông tin về Bluetooth của thiết bị</translation>
 <translation id="5521875416764302911">Ngăn người dùng đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">Danh sách mẫu URL. Yêu cầu mạng gửi tới thiết bị đầu cuối trên mạng cục bộ, nếu được khởi tạo từ các trang web có nguồn gốc trùng khớp, sẽ không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Đối với những nguồn gốc không khớp với các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
-
-Hãy truy cập https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách đó sẽ được ưu tiên theo thứ tự sau:
-
-  – LocalNetworkBlockedForUrls
-  – LocalNetworkAllowedForUrls
-  – LocalNetworkAccessBlockedForUrls
-  – LocalNetworkAccessAllowedForUrls
-  – DeviceLocalNetworkAccessBlockedForUrls
-  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">Tắt <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Cho phép gửi các truy vấn đến máy chủ của Quirks và các tệp cấu hình dành riêng cho phần cứng có thể tải xuống</translation>
 <translation id="5526701598901867718">Tất cả (không an toàn)</translation>
@@ -7935,6 +7906,23 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Pin sạc thích ứng dựa trên thói quen sử dụng pin.</translation>
+<translation id="5913506885872855604">Bạn có thể dùng chế độ này để coi một số dải địa chỉ nội bộ là "công khai" và do đó không phải trải qua các quy trình kiểm tra <ph name="LOCAL_NETWORK_ACCES" />. Ngược lại, bạn cũng có thể dùng tính năng này để coi một số dải địa chỉ công khai có thể được dùng nội bộ là "cục bộ" để các dải địa chỉ này được bảo vệ bằng các quy trình kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Quy tắc ghi đè không gian địa chỉ IP có hai dạng:
+
+[cidr]=[public|local|loopback]
+
+trong đó [cidr] là một dải địa chỉ IP theo ký pháp CIDR (xem mục 3.1 của https://tools.ietf.org/html/rfc4632 đối với IPv4 và mục 2.3 của https://tools.ietf.org/html/rfc4291 đối với IPv6). Bạn phải chỉ định địa chỉ IPv6 theo định dạng an toàn cho URL (có dấu ngoặc). Quy tắc ghi đè CIDR áp dụng cho tất cả các cổng.
+
+hoặc
+
+[ip-address]:[port]=[public|local|loopback]
+
+Để biết thêm thông tin về <ph name="LOCAL_NETWORK_ACCESS" />, hãy xem https://wicg.github.io/local-network-access/ và https://developer.chrome.com/blog/local-network-access.
+
+Chính sách này không hỗ trợ tính năng làm mới động.
+
+Các quy tắc ghi đè từ nút chuyển dòng lệnh --ip-address-space-overrides được ưu tiên hơn các quy tắc ghi đè được đặt theo chính sách này.</translation>
 <translation id="5915023683182228340">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng có thể sử dụng giao thức QUIC trong <ph name="PRODUCT_NAME" />.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không sử dụng được giao thức QUIC (giao thức kết nối Internet nhanh UDP).</translation>
@@ -8011,6 +7999,7 @@ Nếu bạn không đặt chính sách này nhưng có đặt chính sách <ph n
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể gửi ý kiến phản hồi cho Google.</translation>
 <translation id="5976636832661103220">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ shift</translation>
 <translation id="5979376378555121803">Ứng dụng được lưu trữ</translation>
+<translation id="5983016603010860828">Cài đặt tính năng Nói để nhập</translation>
 <translation id="5983274643567559194">Không cho phép đặt phím tắt cho thao tác của phím "Delete".</translation>
 <translation id="5984099692320899605">Không sử dụng tuỳ chọn xác thực NTLM</translation>
 <translation id="5984237109586500246">Chấp nhận nội dung web được phân phối ở dạng Signed HTTP Exchanges</translation>
@@ -8102,24 +8091,6 @@ Nếu bạn đặt chính sách này thành false (sai), thì thông tin về ng
 Nếu bạn đặt giá trị này thành true hoặc không đặt, thì học viên có thể sử dụng danh sách học viên trên Google Lớp học.
 
 Nếu bạn đặt chính sách này thành false (sai), thì người dùng sẽ không thể truy cập vào tính năng này.</translation>
-<translation id="606337187257433827">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không được phép gửi các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Đối với những nguồn gốc không khớp với các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
-
-Hãy truy cập https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách đó sẽ được ưu tiên theo thứ tự sau:
-
-  – LocalNetworkBlockedForUrls
-  – LocalNetworkAllowedForUrls
-  – LoopbackNetworkBlockedForUrls
-  – LoopbackNetworkAllowedForUrls
-  – LocalNetworkAccessBlockedForUrls
-  – LocalNetworkAccessAllowedForUrls
-  – DeviceLocalNetworkAccessBlockedForUrls
-  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> sẽ chỉ định URL của công cụ tìm kiếm sẽ đưa ra đề xuất tìm kiếm. URL phải chứa chuỗi <ph name="SEARCH_TERM_MARKER" />. Chuỗi này sẽ được thay bằng cụm từ tìm kiếm của người dùng trong truy vấn.
 
       Bạn có thể chỉ định URL tìm kiếm của Google là: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8562,22 +8533,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 
       Lưu ý: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> (nếu đã được chỉ định) sẽ ghi đè chính sách này.</translation>
 <translation id="6315039134652691025">Người dùng không thể chuyển dữ liệu duyệt web hiện có sang hồ sơ được quản lý</translation>
-<translation id="6316247387848694915">Danh sách mẫu URL. Yêu cầu mạng gửi tới thiết bị đầu cuối trên mạng cục bộ, nếu được khởi tạo từ các trang web có nguồn gốc trùng khớp, sẽ không được phép gửi các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Đối với những nguồn gốc không khớp với các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
-
-Hãy truy cập https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách đó sẽ được ưu tiên theo thứ tự sau:
-
-  – LocalNetworkBlockedForUrls
-  – LocalNetworkAllowedForUrls
-  – LocalNetworkAccessBlockedForUrls
-  – LocalNetworkAccessAllowedForUrls
-  – DeviceLocalNetworkAccessBlockedForUrls
-  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">Cho phép <ph name="PRODUCT_NAME" /> quyết định phương thức cần sử dụng</translation>
 <translation id="6316885783540658874">Chính sách này kiểm soát việc có triển khai <ph name="AES_KL_NAME" /> để mã hoá bộ nhớ của người dùng cho trang chủ <ph name="DM_CRYPT" /> của người dùng trên ChromeOS hay không (nếu có hỗ trợ).
 
@@ -9816,7 +9771,6 @@ Nếu bạn không đặt chính sách này cho một trang web thì hệ thốn
 <translation id="7030205756530739128">Nếu bạn đặt <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> thành <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, tùy chọn cài đặt <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> sẽ tùy chỉnh khi pin bắt đầu sạc, dựa vào phần trăm pin đã sạc. Giá trị này phải thấp hơn <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> tối thiểu là 5 điểm phần trăm.
 
       Nếu bạn không đặt chính sách này, chế độ sạc pin chuẩn sẽ được áp dụng.</translation>
-<translation id="7030213287413687536">Cho phép các trang web gửi yêu cầu mạng đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ, áp dụng trên toàn thiết bị</translation>
 <translation id="7030407698292813622">Cho phép truy vấn DNS đối với các loại bản ghi DNS khác</translation>
 <translation id="7030632236140191991">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi người dùng nhập dữ liệu vào Chrome từ bảng nhớ tạm hoặc bằng cách kéo và thả nội dung trên web).
 
@@ -10353,6 +10307,7 @@ Nếu bạn tắt hoặc không đặt chính sách này, thì các chế độ 
       Khi bạn bật chính sách này, các trang web có nguy cơ trở thành mục tiêu tấn công trên nhiều trang web, đồng thời khiến người dùng bị theo dõi trên các trang web ngay cả khi không có cookie bằng cách thêm các mục vào bộ nhớ đệm xác thực HTTP sử dụng thông tin xác thực được nhúng trong URL.
 
       Chính sách này nhằm tạo điều kiện để các doanh nghiệp đang phụ thuộc vào chế độ cũ có thể cập nhật quy trình đăng nhập. Chính sách này sẽ bị xoá bỏ trong tương lai.</translation>
+<translation id="7322231030019184787">Cho phép tính năng Nói để nhập mà không thu thập dữ liệu.</translation>
 <translation id="7322825363493984512">Mật khẩu để xác thực các dịch vụ hệ thống dành cho proxy web từ xa.</translation>
 <translation id="7323773727263636287">Bật tính năng hỗ trợ tiếp cận chỉnh màu
 
@@ -10777,6 +10732,20 @@ Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
           Nếu bạn đặt chính sách này thành sai hoặc không đặt thì người dùng sẽ không được tự động gửi mã PIN trên màn hình đăng nhập và màn hình khoá.
 
           Nếu bạn đặt chính sách này, thì người dùng sẽ không có tuỳ chọn bật tính năng này.</translation>
+<translation id="7609566862616914296">Danh sách mẫu URL. Yêu cầu mạng gửi tới thiết bị đầu cuối trên mạng cục bộ, nếu được khởi tạo từ các trang web có nguồn gốc trùng khớp, sẽ không được phép gửi các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Đối với những nguồn gốc không được áp dụng các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách sẽ được ưu tiên theo thứ tự sau:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">Thiết lập danh sách các miền mà <ph name="PASSWORD_MANAGER_NAME" /> (Lưu và điền) sẽ bị vô hiệu hoá</translation>
 <translation id="7612059745454194563">Không cho phép hiển thị quảng cáo Tiện ích nhà cung cấp chứng chỉ</translation>
 <translation id="7612157962821894603">Cờ trên toàn hệ thống được áp dụng khi khởi động <ph name="PRODUCT_NAME" /></translation>
@@ -10807,6 +10776,7 @@ Các mẫu URL không được xung đột với <ph name="WEB_PRINTING_BLOCKED_
       Khi bạn đặt chính sách này, Mã truy cập dành cho cha mẹ có thể được xác minh trên thiết bị của người dùng là trẻ em.
       Khi bạn không đặt chính sách này, Mã truy cập dành cho cha mẹ không xác minh được trên thiết bị của người dùng là trẻ em.</translation>
 <translation id="7623431489198474050">Tắt chính sách chứng thực từ xa để bảo vệ nội dung</translation>
+<translation id="7624832415093566709">Cho phép tính năng Nói để nhập.</translation>
 <translation id="7625858205605842562">Nếu đặt chính sách này, bạn có thể liệt kê các mẫu URL để chỉ định những trang web không được phép yêu cầu người dùng cấp quyền truy cập vào thiết bị USB.
 
       Khi bạn không đặt chính sách này, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tuỳ chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
@@ -11019,22 +10989,6 @@ Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ 
       Chính sách <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> sẽ được ưu tiên hơn chính sách này và có thể kích hoạt lại chế độ ẩn danh cho các URL cụ thể. Khi chế độ ẩn danh bị vô hiệu hoá theo chính sách này và bạn cung cấp danh sách cho phép, thì chế độ ẩn danh chỉ hoạt động đối với những URL khớp với danh sách cho phép, còn tất cả các trang khác đều bị chặn.
 
       Lưu ý: Trên iOS, nếu bạn thay đổi chính sách này trong một phiên đăng nhập, thì chính sách sẽ chỉ có hiệu lực sau khi chạy lại.</translation>
-<translation id="7753487237310360952">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" /> trong tất cả các phiên trên thiết bị.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
-
-Hãy truy cập https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách đó sẽ được ưu tiên theo thứ tự sau:
-
-  – LocalNetworkBlockedForUrls
-  – LocalNetworkAllowedForUrls
-  – LoopbackNetworkBlockedForUrls
-  – LoopbackNetworkAllowedForUrls
-  – LocalNetworkAccessBlockedForUrls
-  – LocalNetworkAccessAllowedForUrls
-  – DeviceLocalNetworkAccessBlockedForUrls
-  – DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">Bật điểm truy cập vào các tính năng thử nghiệm của trình duyệt trên thanh công cụ</translation>
 <translation id="7754704193130578113">Hỏi vị trí lưu từng tệp trước khi tải xuống</translation>
 <translation id="7754893969683595513">Việc đặt chính sách này sẽ chỉ định khoảng thời gian bằng mili giây mà dịch vụ quản lý thiết bị được truy vấn về thông tin chính sách người dùng. Phạm vi giá trị hợp lệ là từ 1.800.000 (30 phút) đến 86.400.000 (1 ngày). Các giá trị không nằm trong khoảng này sẽ bị xếp vào ranh giới tương ứng.
@@ -12802,7 +12756,6 @@ Chính sách này chỉ kiểm soát <ph name="ARC_VM" /> trên <ph name="PRODUC
       Nếu đặt chính sách thành false hoặc không đặt, thì trạng thái đồ họa và hiển thị
       sẽ không được báo cáo. Nếu đặt thành true, trạng thái đồ họa và hiển thị
       sẽ được báo cáo.</translation>
-<translation id="8912595396523313912">Không cho phép các trang web gửi yêu cầu mạng đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ, áp dụng trên toàn thiết bị</translation>
 <translation id="891435090623616439">được mã hóa dưới dạng chuỗi JSON, để biết chi tiết hãy xem <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">Không xoá window.name khi thao tác điều hướng là thao tác ở cấp cao nhất giữa các trang web và hoán đổi BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Cho phép người dùng quản lý các chứng chỉ CA đã cài đặt.</translation>
