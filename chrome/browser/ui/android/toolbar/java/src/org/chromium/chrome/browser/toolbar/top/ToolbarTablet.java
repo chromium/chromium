@@ -1189,7 +1189,8 @@ public class ToolbarTablet extends ToolbarLayout {
                             : mThemeColorProvider.getThemeColor());
             mShowingFusebox = false;
             updateHairlineVisibility();
-            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.height =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         }
         setLayoutParams(layoutParams);
     }
