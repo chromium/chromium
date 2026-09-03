@@ -149,22 +149,14 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
 
 TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip,
                                      wm::ActivationClient* activation_client)
-    : activation_client_(activation_client),
-      state_manager_(
+    : state_manager_(
           std::make_unique<TooltipStateManager>(std::move(tooltip))) {
-  if (activation_client_) {
-    activation_client_->AddObserver(this);
+  if (activation_client) {
+    activation_client_observation_.Observe(activation_client);
   }
 }
 
-TooltipController::~TooltipController() {
-  if (observed_window_) {
-    observed_window_->RemoveObserver(this);
-  }
-  if (activation_client_) {
-    activation_client_->RemoveObserver(this);
-  }
-}
+TooltipController::~TooltipController() = default;
 
 void TooltipController::AddObserver(wm::TooltipObserver* observer) {
   state_manager_->AddObserver(observer);
@@ -381,6 +373,7 @@ void TooltipController::OnWindowDestroying(aura::Window* window) {
 
 void TooltipController::OnWindowDestroyed(aura::Window* window) {
   if (observed_window_ == window) {
+    window_observation_.Reset();
     RemoveTooltipDelayFromMap(observed_window_);
     observed_window_ = nullptr;
   }
@@ -512,12 +505,10 @@ void TooltipController::SetObservedWindow(aura::Window* target) {
     state_manager_->HideAndReset();
   }
 
-  if (observed_window_) {
-    observed_window_->RemoveObserver(this);
-  }
+  window_observation_.Reset();
   observed_window_ = target;
   if (observed_window_) {
-    observed_window_->AddObserver(this);
+    window_observation_.Observe(observed_window_);
   }
 }
 

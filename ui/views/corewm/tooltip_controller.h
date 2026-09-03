@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
@@ -219,15 +220,22 @@ class VIEWS_EXPORT TooltipController
   // "disabled_hide_timeout_views_set_" or something like that.
   std::map<aura::Window*, base::TimeDelta> hide_tooltip_timeout_map_;
 
-  // We want to hide tooltips whenever our client window loses focus. This will
-  // ensure that no tooltip stays visible when the user navigated away from
-  // our client.
-  raw_ptr<wm::ActivationClient> activation_client_;
-
   // The TooltipStateManager is responsible for keeping track of the current
   // tooltip state (its text, position, id, etc.) and to modify it when asked
   // by the TooltipController or the show/hide timers.
   std::unique_ptr<TooltipStateManager> state_manager_;
+
+  // We want to hide tooltips whenever our client window loses focus. This
+  // will ensure that no tooltip stays visible when the user navigated away
+  // from our client.
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_client_observation_{this};
+
+  // Observes `observed_window_`. The two are kept in sync by
+  // SetObservedWindow() and OnWindowDestroyed(), the only two places
+  // `observed_window_` is written.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 }  // namespace views::corewm
