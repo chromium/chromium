@@ -51,10 +51,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/extension_features.h"
+#endif
 
 // Helper function to provide eligibility response for intercepted requests.
 // This function can also simulate network failures by using the optional
@@ -1716,4 +1721,133 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_FALSE(has_auth_future.Take());
   EXPECT_EQ(credentials_mode_future.Take(),
             network::mojom::CredentialsMode::kInclude);
+}
+
+class ChromeAimEligibilityServiceSearchCapabilitiesBrowserTest
+    : public AimEligibilityTestBase {
+ public:
+  ChromeAimEligibilityServiceSearchCapabilitiesBrowserTest() = default;
+  ~ChromeAimEligibilityServiceSearchCapabilitiesBrowserTest() override =
+      default;
+
+ protected:
+  void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {omnibox::kAimEnabled, {}},
+        {omnibox::kAimServerEligibilityEnabled, {}},
+        {omnibox::kAimServerRequestOnStartupEnabled, {}},
+        {omnibox::kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled, {}},
+        {contextual_tasks::kContextualTasksRearchitecture, {}},
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+        {extensions_features::kApiContextualTasksPrivate, {}},
+#endif
+    };
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                /*disabled_features=*/{});
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    SetUpDefaultSearchEngine(GetProfile(), /*is_google_dse=*/true);
+
+    AimEligibilityTestBase::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceSearchCapabilitiesBrowserTest,
+                       RequestIncludesSearchCapabilitiesHeader) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  base::test::TestFuture<bool> request_handled_future;
+  base::test::TestFuture<std::optional<std::string>> capabilities_header_future;
+  base::test::TestFuture<std::optional<std::string>> user_agent_header_future;
+
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.path() != "/async/folae") {
+              return false;
+            }
+
+            capabilities_header_future.SetValue(
+                params->url_request.headers.GetHeader(
+                    contextual_tasks::
+                        kContextualTasksSearchCapabilitiesHeaderName));
+            user_agent_header_future.SetValue(
+                params->url_request.headers.GetHeader("User-Agent"));
+
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  // Trigger the request.
+  auto* service = GetAimEligibilityService(GetProfile());
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+  EXPECT_TRUE(request_handled_future.Get());
+
+  std::optional<std::string> header = capabilities_header_future.Take();
+  std::optional<std::string> user_agent = user_agent_header_future.Take();
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  EXPECT_TRUE(header.has_value());
+  EXPECT_EQ(*header,
+            contextual_tasks::kContextualTasksSearchCapabilitiesDefaultVersion);
+  EXPECT_FALSE(user_agent.has_value());
+#else
+  EXPECT_FALSE(header.has_value());
+  EXPECT_TRUE(user_agent.has_value());
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceSearchCapabilitiesBrowserTest,
+                       RequestIncludesSearchCapabilitiesHeader_Incognito) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  base::test::TestFuture<bool> request_handled_future;
+  base::test::TestFuture<std::optional<std::string>> capabilities_header_future;
+
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.path() != "/async/folae") {
+              return false;
+            }
+
+            capabilities_header_future.SetValue(
+                params->url_request.headers.GetHeader(
+                    contextual_tasks::
+                        kContextualTasksSearchCapabilitiesHeaderName));
+
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  Profile* otr_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  SetUpDefaultSearchEngine(otr_profile, /*is_google_dse=*/true);
+  auto* otr_service = GetAimEligibilityService(otr_profile);
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription =
+      otr_service->RegisterEligibilityChangedCallback(
+          eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+  EXPECT_TRUE(request_handled_future.Get());
+
+  std::optional<std::string> header = capabilities_header_future.Take();
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  EXPECT_TRUE(header.has_value());
+  EXPECT_EQ(*header,
+            contextual_tasks::kContextualTasksSearchCapabilitiesDefaultVersion);
+#else
+  EXPECT_FALSE(header.has_value());
+#endif
 }

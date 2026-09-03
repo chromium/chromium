@@ -26,6 +26,9 @@ BASE_FEATURE(kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled,
 BASE_FEATURE(kAimServerEligibilitySendFullVersionListEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimServerEligibilityCustomRetryPolicyEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
