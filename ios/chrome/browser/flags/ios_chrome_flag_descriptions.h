@@ -811,11 +811,6 @@ inline constexpr char kExplainGeminiEditMenuDescription[] =
     "When enabled, the explain Gemini edit menu will be available to eligible "
     "users when highlighting any text on a web page.";
 
-inline constexpr char kFRESignInHeaderTextUpdateName[] =
-    "Enable header text variations on the FRE sign-in page.";
-inline constexpr char kFRESignInHeaderTextUpdateDescription[] =
-    "When enabled, the FRE sign-in page displays a different header text.";
-
 inline constexpr char kFeedBackgroundRefreshName[] =
     "Enable feed background refresh";
 inline constexpr char kFeedBackgroundRefreshDescription[] =

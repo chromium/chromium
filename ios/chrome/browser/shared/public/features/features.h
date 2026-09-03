@@ -383,16 +383,6 @@ BASE_DECLARE_FEATURE(kIOSOneTimeDefaultBrowserNotification);
 
 // Returns whether `kIOSReactivationNotifications` is enabled.
 
-// Feature to enable different text for the main header text on FRE sign-in
-// promo.
-BASE_DECLARE_FEATURE(kFRESignInHeaderTextUpdate);
-extern const base::FeatureParam<std::string> kFRESignInHeaderTextUpdateParam;
-extern const std::string_view kFRESignInHeaderTextUpdateParamArm0;
-extern const std::string_view kFRESignInHeaderTextUpdateParamArm1;
-
-// Returns whether 'kFRESignInHeaderTextUpdate' is enabled.
-bool FRESignInHeaderTextUpdate();
-
 // Enables Profile-specific push notification handling logic. When enabled, this
 // routes incoming notifications to the PushNotificationClientManager associated
 // with the current Profile, rather than using a single global manager. This

@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -271,36 +270,12 @@ NSString* const kCollaborationSigninHeaderBackground =
 
 // Generates the promo sign-in header string.
 - (NSString*)promoSignInHeaderText {
-  if (!FRESignInHeaderTextUpdate()) {
-    return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
-  }
-
-  std::string armValue = kFRESignInHeaderTextUpdateParam.Get();
-
-  if (armValue == kFRESignInHeaderTextUpdateParamArm0) {
-    return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_0);
-  } else if (armValue == kFRESignInHeaderTextUpdateParamArm1) {
-    return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_1);
-  }
-
-  return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
+  return l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_1);
 }
 
 // Generates the FRE sign-in header string.
 - (NSString*)FRESignInHeaderText {
-  if (!FRESignInHeaderTextUpdate()) {
-    return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-  }
-
-  std::string armValue = kFRESignInHeaderTextUpdateParam.Get();
-
-  if (armValue == kFRESignInHeaderTextUpdateParamArm0) {
-    return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
-  } else if (armValue == kFRESignInHeaderTextUpdateParamArm1) {
-    return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1);
-  }
-
-  return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+  return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1);
 }
 
 // Generates the footer string.

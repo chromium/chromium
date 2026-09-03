@@ -1019,18 +1019,6 @@ const FeatureEntry::FeatureVariation
     kWalletApiPrivatePassesEnabledVariations[] = {
         {"1P URL", kWalletApiPrivatePassesUrl, nullptr}};
 
-const char kFRESignInHeaderTextUpdateParamName[] =
-    "FRESignInHeaderTextUpdateParam";
-const FeatureEntry::FeatureParam kFRESignInHeaderTextUpdateArm0[] = {
-    {kFRESignInHeaderTextUpdateParamName, "Arm0"}};
-const FeatureEntry::FeatureParam kFRESignInHeaderTextUpdateArm1[] = {
-    {kFRESignInHeaderTextUpdateParamName, "Arm1"}};
-
-const FeatureEntry::FeatureVariation kFRESignInHeaderTextUpdateVariations[] = {
-    {"Header variation #1", kFRESignInHeaderTextUpdateArm0, nullptr},
-    {"Header variation #2", kFRESignInHeaderTextUpdateArm1, nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kPersistTabContextFileSystem_WasHidden_FullContext[] = {
         {kPersistTabContextStorageParam, "0"},
@@ -2158,12 +2146,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-navigation-promo", flag_descriptions::kGeminiNavigationPromoName,
      flag_descriptions::kGeminiNavigationPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiNavigationPromo)},
-    {"fre-sign-in-header-text-update",
-     flag_descriptions::kFRESignInHeaderTextUpdateName,
-     flag_descriptions::kFRESignInHeaderTextUpdateDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kFRESignInHeaderTextUpdate,
-                                    kFRESignInHeaderTextUpdateVariations,
-                                    "FRESignInHeaderTextUpdate")},
     {"gemini-live", flag_descriptions::kGeminiLiveName,
      flag_descriptions::kGeminiLiveDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiLive)},
