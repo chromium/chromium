@@ -6330,6 +6330,21 @@
             ]
         }
     ],
+    "DefaultBrowserPipTextVideo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserPipTextVideo"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserPromoFre": [
         {
             "platforms": [
