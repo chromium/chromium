@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -21,6 +21,8 @@ class ToastSpecification {
    public:
     Builder(const gfx::VectorIcon& icon, int body_string_id);
     explicit Builder(const gfx::VectorIcon& icon);
+    explicit Builder(int body_string_id);
+    Builder();
     Builder(const Builder& other) = delete;
     Builder& operator=(const Builder&) = delete;
 
@@ -52,6 +54,9 @@ class ToastSpecification {
     // events (like form submissions).
     Builder& SetPersistOnNavigation();
 
+    // Replaces the leading static icon with an animated throbber spinner.
+    Builder& SetHasThrobber();
+
     // Explicitly marks this toast as an actionable toast (allows the user to
     // interact with it in some way).
     // NOTE: Only use this for toasts that do not have actionable buttons /
@@ -72,10 +77,16 @@ class ToastSpecification {
                      int string_id);
   ToastSpecification(base::PassKey<ToastSpecification::Builder>,
                      const gfx::VectorIcon& icon);
+  ToastSpecification(base::PassKey<ToastSpecification::Builder>, int string_id);
+  explicit ToastSpecification(base::PassKey<ToastSpecification::Builder>);
   ~ToastSpecification();
 
   int body_string_id() const { return body_string_id_; }
-  const gfx::VectorIcon& icon() const { return *icon_; }
+  bool has_icon() const { return icon_ != nullptr; }
+  const gfx::VectorIcon& icon() const {
+    CHECK(icon_);
+    return *icon_;
+  }
   bool has_close_button() const { return has_close_button_; }
   std::optional<int> action_button_string_id() const {
     return action_button_string_id_;
@@ -87,6 +98,7 @@ class ToastSpecification {
   bool has_menu() const { return has_menu_; }
   bool is_global_scope() const { return is_global_scope_; }
   bool persist_on_navigation() const { return persist_on_navigation_; }
+  bool has_throbber() const { return has_throbber_; }
   bool is_actionable() const {
     return has_close_button() || has_menu() || has_actionable_override();
   }
@@ -97,10 +109,11 @@ class ToastSpecification {
   void AddMenu();
   void AddGlobalScope();
   void SetPersistOnNavigation();
+  void SetHasThrobber();
   void SetToastAsActionable();
 
  private:
-  const base::raw_ref<const gfx::VectorIcon> icon_;
+  const raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   int body_string_id_ = 0;
   bool has_close_button_ = false;
   bool has_menu_ = false;
@@ -108,6 +121,7 @@ class ToastSpecification {
   base::RepeatingClosure action_button_closure_;
   bool is_global_scope_ = false;
   bool persist_on_navigation_ = false;
+  bool has_throbber_ = false;
   bool actionable_toast_override_ = false;
 };
 

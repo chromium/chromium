@@ -22,6 +22,15 @@ ToastSpecification::Builder::Builder(const gfx::VectorIcon& icon)
     : toast_specification_(
           std::make_unique<ToastSpecification>(base::PassKey<Builder>(),
                                                icon)) {}
+
+ToastSpecification::Builder::Builder(int body_string_id)
+    : toast_specification_(
+          std::make_unique<ToastSpecification>(base::PassKey<Builder>(),
+                                               body_string_id)) {}
+
+ToastSpecification::Builder::Builder()
+    : toast_specification_(
+          std::make_unique<ToastSpecification>(base::PassKey<Builder>())) {}
 ToastSpecification::Builder::~Builder() {
   // Verify that ToastSpecification::Builder::Build() has been called
   // so the toast specification is completely built.
@@ -57,6 +66,11 @@ ToastSpecification::Builder::SetPersistOnNavigation() {
   return *this;
 }
 
+ToastSpecification::Builder& ToastSpecification::Builder::SetHasThrobber() {
+  toast_specification_->SetHasThrobber();
+  return *this;
+}
+
 ToastSpecification::Builder&
 ToastSpecification::Builder::SetToastAsActionable() {
   toast_specification_->SetToastAsActionable();
@@ -69,6 +83,14 @@ std::unique_ptr<ToastSpecification> ToastSpecification::Builder::Build() {
 }
 
 void ToastSpecification::Builder::ValidateSpecification() {
+  // A toast cannot have both a static vector icon and an animated throbber.
+  // Exactly one of them must be present.
+  if (toast_specification_->has_throbber()) {
+    CHECK(!toast_specification_->has_icon());
+  } else {
+    CHECK(toast_specification_->has_icon());
+  }
+
   // Toasts with an action button must have a close button and not a menu.
   if (toast_specification_->action_button_string_id().has_value()) {
     CHECK(toast_specification_->has_close_button());
@@ -94,12 +116,20 @@ ToastSpecification::ToastSpecification(
     base::PassKey<ToastSpecification::Builder>,
     const gfx::VectorIcon& icon,
     int string_id)
-    : icon_(icon), body_string_id_(string_id) {}
+    : icon_(&icon), body_string_id_(string_id) {}
 
 ToastSpecification::ToastSpecification(
     base::PassKey<ToastSpecification::Builder>,
     const gfx::VectorIcon& icon)
-    : icon_(icon) {}
+    : icon_(&icon) {}
+
+ToastSpecification::ToastSpecification(
+    base::PassKey<ToastSpecification::Builder>,
+    int string_id)
+    : body_string_id_(string_id) {}
+
+ToastSpecification::ToastSpecification(
+    base::PassKey<ToastSpecification::Builder>) {}
 
 ToastSpecification::~ToastSpecification() = default;
 
@@ -124,6 +154,10 @@ void ToastSpecification::AddGlobalScope() {
 
 void ToastSpecification::SetPersistOnNavigation() {
   persist_on_navigation_ = true;
+}
+
+void ToastSpecification::SetHasThrobber() {
+  has_throbber_ = true;
 }
 
 void ToastSpecification::SetToastAsActionable() {

@@ -119,6 +119,34 @@ TEST_F(ToastRegistryTest, ToastWithNavigationPersistence) {
   EXPECT_TRUE(spec->persist_on_navigation());
 }
 
+TEST_F(ToastRegistryTest, ToastWithThrobber) {
+  const int body_string_id = 0;
+  std::unique_ptr<ToastSpecification> spec =
+      ToastSpecification::Builder(body_string_id).SetHasThrobber().Build();
+
+  EXPECT_EQ(body_string_id, spec->body_string_id());
+  EXPECT_TRUE(spec->has_throbber());
+  EXPECT_FALSE(spec->has_icon());
+
+  std::unique_ptr<ToastSpecification> spec_no_string =
+      ToastSpecification::Builder().SetHasThrobber().Build();
+  EXPECT_EQ(0, spec_no_string->body_string_id());
+  EXPECT_TRUE(spec_no_string->has_throbber());
+  EXPECT_FALSE(spec_no_string->has_icon());
+
+  // A toast cannot have both an icon and a throbber.
+  EXPECT_DEATH(ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kMailFilledIcon
+                                               : vector_icons::kEmailOldIcon,
+                                           body_string_id)
+                   .SetHasThrobber()
+                   .Build(),
+               "");
+
+  // A toast cannot have neither an icon nor a throbber.
+  EXPECT_DEATH(ToastSpecification::Builder(body_string_id).Build(), "");
+}
+
 TEST_F(ToastRegistryTest, RegisterSpecification) {
   std::unique_ptr<ToastSpecification> unique_spec =
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()

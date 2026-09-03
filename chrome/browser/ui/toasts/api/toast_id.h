@@ -77,7 +77,8 @@ enum class ToastId {
   kIndigoDeleteSuccess = 54,
   kAtMemorySpiiFetchErrorMessage = 55,
   kDictationNoMicrophoneError = 56,
-  kMaxValue = kDictationNoMicrophoneError,
+  kEmailVerificationLoading = 57,
+  kMaxValue = kEmailVerificationLoading,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

@@ -36,6 +36,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
@@ -114,8 +115,31 @@ ToastView::ToastView(
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
       AnimationDelegateViews(this),
       toast_text_(toast_text),
-      icon_(icon),
+      icon_(&icon),
       image_override_(std::move(image_override)),
+      render_toast_over_web_contents_(render_toast_over_web_contents),
+      toast_close_callback_(std::move(toast_close_callback)) {
+  SetBackgroundColor(ui::kColorToastBackgroundProminent);
+  SetShowCloseButton(false);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  set_corner_radius(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_TOAST_BUBBLE_HEIGHT));
+  SetProperty(views::kElementIdentifierKey, kToastElementId);
+  set_close_on_deactivate(false);
+  SetProperty(views::kElementIdentifierKey, kToastViewId);
+  SetAccessibleWindowRole(ax::mojom::Role::kAlert);
+  SetAccessibleTitle(toast_text_);
+}
+
+ToastView::ToastView(
+    views::View* anchor_view,
+    const std::u16string& toast_text,
+    bool render_toast_over_web_contents,
+    base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback)
+    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
+      AnimationDelegateViews(this),
+      toast_text_(toast_text),
+      icon_(nullptr),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
   SetBackgroundColor(ui::kColorToastBackgroundProminent);
@@ -158,6 +182,10 @@ void ToastView::AddMenu(std::unique_ptr<ui::MenuModel> model) {
                           ToastCloseReason::kMenuItemClick));
 }
 
+void ToastView::AddThrobber() {
+  has_throbber_ = true;
+}
+
 int ToastView::GetIconSize() {
   const ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
   return lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE);
@@ -170,11 +198,27 @@ void ToastView::Init() {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  icon_view_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(0, lp->GetDistanceMetric(
-                             DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS)));
+  if (has_throbber_) {
+    CHECK(!icon_);
+    CHECK(!image_override_.has_value());
+    auto throbber = std::make_unique<views::Throbber>(GetIconSize());
+    throbber->SetColorId(ui::kColorToastForeground);
+    throbber->Start();
+    throbber_ = AddChildView(std::move(throbber));
+    throbber_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(0,
+                        lp->GetDistanceMetric(
+                            DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS)));
+  } else {
+    CHECK(icon_ || image_override_.has_value());
+    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+    icon_view_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(0,
+                        lp->GetDistanceMetric(
+                            DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS)));
+  }
 
   label_ = AddChildView(
       std::make_unique<views::Label>(toast_text_, CONTEXT_TOAST_BODY_TEXT));
@@ -436,14 +480,17 @@ gfx::Rect ToastView::GetBubbleBounds() {
 
 void ToastView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
-  const auto* color_provider = GetColorProvider();
-  if (image_override_.has_value() &&
-      IsCompatibleImageSize(image_override_.value())) {
-    icon_view_->SetImage(image_override_.value());
-  } else {
-    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        *icon_, color_provider->GetColor(ui::kColorToastForeground),
-        GetIconSize()));
+  if (icon_view_) {
+    const auto* color_provider = GetColorProvider();
+    if (image_override_.has_value() &&
+        IsCompatibleImageSize(image_override_.value())) {
+      icon_view_->SetImage(image_override_.value());
+    } else {
+      CHECK(icon_);
+      icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+          *icon_, color_provider->GetColor(ui::kColorToastForeground),
+          GetIconSize()));
+    }
   }
 }
 

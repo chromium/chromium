@@ -131,6 +131,9 @@ class ToastController : public views::WidgetObserver,
   toasts::ToastView* GetToastViewForTesting() { return toast_view_; }
 
   base::OneShotTimer* GetToastCloseTimerForTesting();
+  void ClearTabScopedToastsForTesting(bool is_navigation) {
+    ClearTabScopedToasts(is_navigation);
+  }
 
   static constexpr base::TimeDelta kToastDefaultTimeout = base::Seconds(4);
   static constexpr base::TimeDelta kToastWithActionTimeout = base::Seconds(8);

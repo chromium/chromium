@@ -305,6 +305,9 @@ void ToastController::ShowToast(ToastParams params) {
 }
 
 void ToastController::CloseToast(toasts::ToastCloseReason reason) {
+  // Stop the auto-dismiss timer to prevent it from firing while the toast view
+  // is closing or animating out.
+  toast_close_timer_.Stop();
   if (toast_view_) {
     toast_view_->Close(reason);
   }
@@ -330,10 +333,24 @@ void ToastController::CreateToast(ToastParams params,
           : FormatString(spec->body_string_id(),
                          params.body_string_replacement_params,
                          params.body_string_cardinality_param);
-  auto toast_view = std::make_unique<toasts::ToastView>(
-      anchor_view, body_string, spec->icon(), params.image_override,
-      ShouldRenderToastOverWebContents(),
-      base::BindRepeating(&RecordToastDismissReason, params.toast_id));
+  std::unique_ptr<toasts::ToastView> toast_view;
+  // Toasts have either a static vector icon or an animated throbber. For
+  // throbber toasts, instantiate an iconless ToastView and add the throbber
+  // child view below.
+  if (spec->has_icon()) {
+    toast_view = std::make_unique<toasts::ToastView>(
+        anchor_view, body_string, spec->icon(), params.image_override,
+        ShouldRenderToastOverWebContents(),
+        base::BindRepeating(&RecordToastDismissReason, params.toast_id));
+  } else {
+    toast_view = std::make_unique<toasts::ToastView>(
+        anchor_view, body_string, ShouldRenderToastOverWebContents(),
+        base::BindRepeating(&RecordToastDismissReason, params.toast_id));
+  }
+
+  if (spec->has_throbber()) {
+    toast_view->AddThrobber();
+  }
 
   if (spec->has_close_button()) {
     toast_view->AddCloseButton(
@@ -477,7 +494,6 @@ void ToastController::ClearTabScopedToasts(bool is_navigation) {
     const bool should_persist =
         is_navigation && specification->persist_on_navigation();
     if (!specification->is_global_scope() && !should_persist) {
-      toast_close_timer_.Stop();
       CloseToast(toasts::ToastCloseReason::kAbort);
     }
   }

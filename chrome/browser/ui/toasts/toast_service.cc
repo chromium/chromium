@@ -336,6 +336,10 @@ void ToastService::RegisterToasts(
           .Build());
 
   toast_registry_->RegisterToast(
+      ToastId::kEmailVerificationLoading,
+      ToastSpecification::Builder().SetHasThrobber().Build());
+
+  toast_registry_->RegisterToast(
       ToastId::kGlicShareImageFailed,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
                                       ? vector_icons::kInfoIcon

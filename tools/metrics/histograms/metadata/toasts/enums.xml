@@ -116,6 +116,7 @@ chromium-metrics-reviews@google.com.
   <int value="54" label="Indigo delete uploaded photo success"/>
   <int value="55" label="Showed AtMemory SPII fetch error message"/>
   <int value="56" label="Dictation no microphone detected error"/>
+  <int value="57" label="Email verification loading"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
