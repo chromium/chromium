@@ -19,6 +19,7 @@
 @protocol EnhancedCalendarCommands;
 @protocol MiniMapCommands;
 @protocol UnitConversionCommands;
+@protocol CountryCodePickerCommands;
 
 // Wraps information to add/show to/in a context menu
 @interface ElementsToAddToContextMenu : NSObject
@@ -37,6 +38,7 @@
 @property(nonatomic, weak) id<MiniMapCommands> miniMapHandler;
 @property(nonatomic, weak) id<UnitConversionCommands> unitConversionHandler;
 @property(nonatomic, weak) id<EnhancedCalendarCommands> enhancedCalendarHandler;
+@property(nonatomic, weak) id<CountryCodePickerCommands> countryCodeHandler;
 
 @end
 

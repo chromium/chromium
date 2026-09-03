@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -154,39 +155,44 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
            initWithBrowser:browser_.get()
         baseViewController:base_view_controller_];
 
-    mock_scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_scene_handler
+        startDispatchingToTarget:mock_scene_handler_
                      forProtocol:@protocol(SceneCommands)];
-    mock_mini_map_commands_handler =
+    mock_mini_map_commands_handler_ =
         OCMStrictProtocolMock(@protocol(MiniMapCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_mini_map_commands_handler
+        startDispatchingToTarget:mock_mini_map_commands_handler_
                      forProtocol:@protocol(MiniMapCommands)];
-    mock_unit_conversion_handler =
+    mock_unit_conversion_handler_ =
         OCMStrictProtocolMock(@protocol(UnitConversionCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_unit_conversion_handler
+        startDispatchingToTarget:mock_unit_conversion_handler_
                      forProtocol:@protocol(UnitConversionCommands)];
-    mock_save_to_photos_commands_handler =
+    mock_save_to_photos_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SaveToPhotosCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_save_to_photos_commands_handler
+        startDispatchingToTarget:mock_save_to_photos_commands_handler_
                      forProtocol:@protocol(SaveToPhotosCommands)];
-    mock_activity_service_commands_handler =
+    mock_activity_service_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ActivityServiceCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_activity_service_commands_handler
+        startDispatchingToTarget:mock_activity_service_commands_handler_
                      forProtocol:@protocol(ActivityServiceCommands)];
-    mock_enhanced_calendar_handler =
+    mock_enhanced_calendar_handler_ =
         OCMStrictProtocolMock(@protocol(EnhancedCalendarCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_enhanced_calendar_handler
+        startDispatchingToTarget:mock_enhanced_calendar_handler_
                      forProtocol:@protocol(EnhancedCalendarCommands)];
-    mock_gemini_handler = OCMStrictProtocolMock(@protocol(GeminiCommands));
+    mock_gemini_handler_ = OCMStrictProtocolMock(@protocol(GeminiCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_gemini_handler
+        startDispatchingToTarget:mock_gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
+    mock_country_code_handler_ =
+        OCMStrictProtocolMock(@protocol(CountryCodePickerCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_country_code_handler_
+                     forProtocol:@protocol(CountryCodePickerCommands)];
   }
 
   void TearDown() final {
@@ -251,13 +257,14 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   UIViewController* base_view_controller_;
   ContextMenuConfigurationProvider* configuration_provider_;
 
-  id mock_mini_map_commands_handler;
-  id mock_unit_conversion_handler;
-  id mock_save_to_photos_commands_handler;
-  id mock_activity_service_commands_handler;
-  id mock_scene_handler;
-  id mock_enhanced_calendar_handler;
-  id mock_gemini_handler;
+  id mock_mini_map_commands_handler_;
+  id mock_unit_conversion_handler_;
+  id mock_save_to_photos_commands_handler_;
+  id mock_activity_service_commands_handler_;
+  id mock_scene_handler_;
+  id mock_enhanced_calendar_handler_;
+  id mock_gemini_handler_;
+  id mock_country_code_handler_;
 };
 
 // TODO(crbug.com/484919846): Remove this test once the "Save to Photos for

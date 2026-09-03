@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -290,6 +291,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
         HandlerForProtocol(dispatcher, UnitConversionCommands);
     contextMenuHandlers.enhancedCalendarHandler =
         HandlerForProtocol(dispatcher, EnhancedCalendarCommands);
+    contextMenuHandlers.countryCodeHandler =
+        HandlerForProtocol(dispatcher, CountryCodePickerCommands);
     // Insert any provided menu items. Do after Link and/or Image to allow
     // inserting at beginning or adding to end.
     ElementsToAddToContextMenu* result =
