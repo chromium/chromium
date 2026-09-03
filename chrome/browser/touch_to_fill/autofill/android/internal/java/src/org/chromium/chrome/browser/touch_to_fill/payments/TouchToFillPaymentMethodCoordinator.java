@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillCommonViewBinder;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
@@ -191,16 +192,16 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 TouchToFillPaymentMethodViewBinder::bindAllLoyaltyCardsItemView);
         adapter.registerType(
                 HEADER,
-                TouchToFillPaymentMethodViewBinder::createHeaderItemView,
-                TouchToFillPaymentMethodViewBinder::bindHeaderView);
+                TouchToFillCommonViewBinder::createHeaderItemView,
+                TouchToFillCommonViewBinder::bindHeaderView);
         adapter.registerType(
                 FILL_BUTTON,
-                TouchToFillPaymentMethodViewBinder::createFillButtonView,
-                TouchToFillPaymentMethodViewBinder::bindButtonView);
+                TouchToFillCommonViewBinder::createFillButtonView,
+                TouchToFillCommonViewBinder::bindButtonView);
         adapter.registerType(
                 WALLET_SETTINGS_BUTTON,
                 TouchToFillPaymentMethodViewBinder::createWalletSettingsButtonView,
-                TouchToFillPaymentMethodViewBinder::bindButtonView);
+                TouchToFillCommonViewBinder::bindButtonView);
         adapter.registerType(
                 FOOTER,
                 TouchToFillPaymentMethodViewBinder::createFooterItemView,
@@ -243,8 +244,8 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 TouchToFillPaymentMethodViewBinder::bindLegalMessageItemView);
         adapter.registerType(
                 TEXT_BUTTON,
-                TouchToFillPaymentMethodViewBinder::createTextButtonView,
-                TouchToFillPaymentMethodViewBinder::bindButtonView);
+                TouchToFillCommonViewBinder::createTextButtonView,
+                TouchToFillCommonViewBinder::bindButtonView);
         adapter.registerType(
                 TOS_HEADER,
                 TouchToFillPaymentMethodViewBinder::createBnplTosHeaderView,

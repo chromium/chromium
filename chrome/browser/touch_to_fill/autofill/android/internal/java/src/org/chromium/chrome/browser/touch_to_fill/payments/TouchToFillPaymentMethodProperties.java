@@ -359,25 +359,6 @@ final class TouchToFillPaymentMethodProperties {
     }
 
     /**
-     * Properties defined here reflect the visible state of the header in the TouchToFill sheet for
-     * payments.
-     */
-    static final class HeaderProperties {
-        static final ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
-                new ReadableIntPropertyKey("image_drawable_id");
-        static final ReadableIntPropertyKey TITLE_ID = new ReadableIntPropertyKey("title_id");
-        static final ReadableIntPropertyKey SUBTITLE_ID = new ReadableIntPropertyKey("subtitle_id");
-        static final ReadableObjectPropertyKey<String> TITLE_STRING =
-                new ReadableObjectPropertyKey<>("title_string");
-
-        static final PropertyKey[] ALL_KEYS = {
-            IMAGE_DRAWABLE_ID, TITLE_ID, SUBTITLE_ID, TITLE_STRING
-        };
-
-        private HeaderProperties() {}
-    }
-
-    /**
      * Properties defined here reflect the visible state of the BNPL ToS header in the TouchToFill
      * sheet for payments.
      */
@@ -422,20 +403,6 @@ final class TouchToFillPaymentMethodProperties {
         static final PropertyKey[] ALL_KEYS = {ERROR_DESCRIPTION_STRING};
 
         private ErrorDescriptionProperties() {}
-    }
-
-    /**
-     * Properties defined here reflect the visible state of a button in the TouchToFill sheet for
-     * payments.
-     */
-    static final class ButtonProperties {
-        static final ReadableIntPropertyKey TEXT_ID = new ReadableIntPropertyKey("text_id");
-        static final ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
-                new ReadableObjectPropertyKey<>("on_click_action");
-
-        static final PropertyKey[] ALL_KEYS = {TEXT_ID, ON_CLICK_ACTION};
-
-        private ButtonProperties() {}
     }
 
     /**

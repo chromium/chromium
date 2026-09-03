@@ -17,13 +17,13 @@ found in the LICENSE file.
   <ImageView
       android:id="@+id/branding_icon"
       android:layout_width="wrap_content"
-      android:layout_height="@dimen/ttf_for_payments_product_icon_height"
-      android:layout_marginVertical="@dimen/ttf_for_payments_product_icon_margin_vertical"
+      android:layout_height="@dimen/ttf_header_product_icon_height"
+      android:layout_marginVertical="@dimen/ttf_header_product_icon_margin_vertical"
       android:importantForAccessibility="no"
       android:layout_gravity="center_horizontal"/>
 
     <androidx.appcompat.widget.DialogTitle
-        android:id="@+id/touch_to_fill_sheet_title"
+        android:id="@+id/touch_to_fill_sheet_header_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
 
     <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/touch_to_fill_sheet_subtitle"
+        android:id="@+id/touch_to_fill_sheet_header_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

@@ -26,8 +26,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_TITLE_STRING;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_ART_URL;
@@ -47,10 +45,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.SUBTITLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
@@ -188,7 +182,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == TABBED_HEADER_TITLE_ID) {
             View headerView = view.getContentView().findViewById(R.id.tabbed_header);
             if (headerView != null) {
-                TextView title = headerView.findViewById(R.id.touch_to_fill_sheet_title);
+                TextView title = headerView.findViewById(R.id.touch_to_fill_sheet_header_title);
                 if (title != null) {
                     title.setText(model.get(TABBED_HEADER_TITLE_ID));
                 }
@@ -375,45 +369,6 @@ final class TouchToFillPaymentMethodViewBinder {
     }
 
     /**
-     * Factory used to create a new header inside the ListView inside the {@link
-     * TouchToFillPaymentMethodView}.
-     *
-     * @param parent The parent {@link ViewGroup} of the new item.
-     */
-    static View createHeaderItemView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_header_item, parent, false);
-    }
-
-    /**
-     * Called whenever a property in the given model changes. It updates the given view accordingly.
-     *
-     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
-     * @param view The {@link View} of the header to update.
-     * @param key The {@link PropertyKey} which changed.
-     */
-    static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
-        ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
-        TextView sheetHeaderTitle = view.findViewById(R.id.touch_to_fill_sheet_title);
-        TextView sheetHeaderSubtitle = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
-
-        if (propertyKey == IMAGE_DRAWABLE_ID) {
-            sheetHeaderImage.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                            view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
-        } else if (propertyKey == TITLE_ID) {
-            sheetHeaderTitle.setText(view.getContext().getString(model.get(TITLE_ID)));
-        } else if (propertyKey == SUBTITLE_ID) {
-            sheetHeaderSubtitle.setVisibility(View.VISIBLE);
-            sheetHeaderSubtitle.setText(view.getContext().getString(model.get(SUBTITLE_ID)));
-        } else if (propertyKey == TITLE_STRING) {
-            sheetHeaderTitle.setText(model.get(TITLE_STRING));
-        } else {
-            assert false : "Unhandled update to property: " + propertyKey;
-        }
-    }
-
-    /**
      * Factory used to create a new BNPL ToS header inside the ListView inside the {@link
      * TouchToFillPaymentMethodView}.
      *
@@ -499,35 +454,6 @@ final class TouchToFillPaymentMethodViewBinder {
     }
 
     /**
-     * Factory used to create a new "Continue" or "Autofill" button that fills in data into the
-     * focused field.
-     *
-     * @param parent The parent {@link ViewGroup} of the new item.
-     */
-    static Button createFillButtonView(ViewGroup parent) {
-        Button buttonView =
-                (Button)
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.touch_to_fill_fill_button, parent, false);
-        AutofillUiUtils.setFilterTouchForSecurity(buttonView);
-        return buttonView;
-    }
-
-    /**
-     * Factory used to create a new "Cancel" button that dismiss the current screen.
-     *
-     * @param parent The parent {@link ViewGroup} of the new item.
-     */
-    static Button createTextButtonView(ViewGroup parent) {
-        Button buttonView =
-                (Button)
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.touch_to_fill_text_button, parent, false);
-        AutofillUiUtils.setFilterTouchForSecurity(buttonView);
-        return buttonView;
-    }
-
-    /**
      * Factory used to create a new "Wallet settings" button that redirects the user to the
      * corresponding Chrome settings page.
      *
@@ -543,24 +469,6 @@ final class TouchToFillPaymentMethodViewBinder {
                                         false);
         AutofillUiUtils.setFilterTouchForSecurity(buttonView);
         return buttonView;
-    }
-
-    /**
-     * Called whenever a property in the given model changes. It updates the given view accordingly.
-     *
-     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
-     * @param button The {@link Button} from the bottom sheet to update.
-     * @param key The {@link PropertyKey} which changed.
-     */
-    static void bindButtonView(PropertyModel model, Button button, PropertyKey propertyKey) {
-        if (propertyKey == TEXT_ID) {
-            button.setText(model.get(TEXT_ID));
-        } else if (propertyKey == ON_CLICK_ACTION) {
-            assert model.get(ON_CLICK_ACTION) != null : "A button must have an action";
-            button.setOnClickListener(_ -> model.get(ON_CLICK_ACTION).run());
-        } else {
-            assert false : "Unhandled update to property: " + propertyKey;
-        }
     }
 
     /**

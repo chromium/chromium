@@ -12,4 +12,6 @@ found in the LICENSE file.
     <dimen name="ttf_buttons_height">56dp</dimen>
     <dimen name="ttf_sheet_padding">22dp</dimen>
     <dimen name="ttf_sheet_margin">16dp</dimen>
+    <dimen name="ttf_header_product_icon_height">32dp</dimen>
+    <dimen name="ttf_header_product_icon_margin_vertical">12dp</dimen>
 </resources>
