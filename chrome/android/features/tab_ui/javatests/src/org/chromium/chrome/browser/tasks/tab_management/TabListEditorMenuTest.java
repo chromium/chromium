@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Acti
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.NumberRollView;
@@ -258,10 +259,7 @@ public class TabListEditorMenuTest {
                             TabListEditorActionProperties.ICON_TINT,
                             activity.getColorStateList(R.color.default_icon_color_tint_list));
             action.configure(
-                    () -> mTabModel,
-                    mSelectionDelegate,
-                    mDelegate,
-                    /* editorSupportsActionOnRelatedTabs= */ false);
+                    () -> mTabModel, mSelectionDelegate, mDelegate, TabListLayoutType.FLAT);
             models.add(action.getPropertyModel());
         }
         mPropertyListModel.addAll(models, 0);

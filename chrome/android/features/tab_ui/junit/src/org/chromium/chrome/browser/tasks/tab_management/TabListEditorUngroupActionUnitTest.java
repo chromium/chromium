@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Acti
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
@@ -63,7 +64,7 @@ public class TabListEditorUngroupActionUnitTest {
                         IconPosition.START);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
-        mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, false);
+        mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, TabListLayoutType.FLAT);
     }
 
     @Test

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -103,7 +104,8 @@ public class TabListEditorAddToGroupActionUnitTest {
                         START,
                         mDrawable,
                         (a, b, c, d, e, f, g, h, i) -> mCoordinator);
-        mAction.configure(mTabModelSupplier, mSelectionDelegate, mActionDelegate, false);
+        mAction.configure(
+                mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
     }
 
     @Test
@@ -126,7 +128,8 @@ public class TabListEditorAddToGroupActionUnitTest {
                 TabListEditorAddToGroupAction.createAction(
                         mActivity, mTabGroupCreationDialogManager, MENU_ONLY, TEXT, START);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        action.configure(mTabModelSupplier, mSelectionDelegate, mActionDelegate, false);
+        action.configure(
+                mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
 
         assertTrue(action instanceof TabListEditorAddToGroupAction);
         assertEquals(
@@ -153,7 +156,8 @@ public class TabListEditorAddToGroupActionUnitTest {
                 TabListEditorAddToGroupAction.createAction(
                         mActivity, mTabGroupCreationDialogManager, MENU_ONLY, TEXT, START);
         when(mTabModel.getTabGroupCount()).thenReturn(0);
-        action.configure(mTabModelSupplier, mSelectionDelegate, mActionDelegate, false);
+        action.configure(
+                mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
 
         assertTrue(action instanceof TabListEditorAddToGroupAction);
         assertEquals(
@@ -182,7 +186,8 @@ public class TabListEditorAddToGroupActionUnitTest {
                                 TabListEditorItemSelectionId.createTabId(1),
                                 TabListEditorItemSelectionId.createTabId(2)));
         when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
-        mAction.configure(mTabModelSupplier, mSelectionDelegate, mActionDelegate, false);
+        mAction.configure(
+                mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
 
         assertTrue(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
@@ -210,7 +215,8 @@ public class TabListEditorAddToGroupActionUnitTest {
         when(mTabGroupSyncService.getGroup(new LocalTabGroupId(mTabGroupId)))
                 .thenReturn(savedTabGroup);
         when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
-        mAction.configure(mTabModelSupplier, mSelectionDelegate, mActionDelegate, false);
+        mAction.configure(
+                mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
 
         assertFalse(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));

@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
@@ -43,7 +44,7 @@ public class TabListEditorSelectArchivedTabsActionUnitTest {
                 (TabListEditorSelectArchivedTabsAction)
                         TabListEditorSelectArchivedTabsAction.createAction(mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, false);
+        mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, TabListLayoutType.FLAT);
     }
 
     @Test

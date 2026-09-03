@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.LifecycleObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -364,7 +365,10 @@ class TabListEditorMediator
         mActionListModel.clear();
         for (TabListEditorAction action : actions) {
             action.configure(
-                    mCurrentTabModelSupplier, mSelectionDelegate, this, mActionOnRelatedTabs);
+                    mCurrentTabModelSupplier,
+                    mSelectionDelegate,
+                    this,
+                    mActionOnRelatedTabs ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT);
             mActionListModel.add(action.getPropertyModel());
         }
 

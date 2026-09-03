@@ -22,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -130,7 +131,7 @@ public abstract class TabListEditorAction {
     private Supplier<@Nullable TabModel> mCurrentTabModelSupplier;
     private ActionDelegate mActionDelegate;
     private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
-    private Boolean mEditorSupportsActionOnRelatedTabs;
+    private @TabListLayoutType int mLayoutType;
 
     public TabListEditorAction(
             int menuItemId,
@@ -205,12 +206,16 @@ public abstract class TabListEditorAction {
         return true;
     }
 
+    /** Returns the {@link TabListLayoutType} of the editor. */
+    public @TabListLayoutType int getLayoutType() {
+        return mLayoutType;
+    }
+
     /**
      * @return Whether the TabListEditor supports applying the actions to related tabs.
      */
     public boolean editorSupportsActionOnRelatedTabs() {
-        assert mEditorSupportsActionOnRelatedTabs != null;
-        return mEditorSupportsActionOnRelatedTabs;
+        return getLayoutType() == TabListLayoutType.GROUPED;
     }
 
     /**
@@ -304,19 +309,18 @@ public abstract class TabListEditorAction {
      * @param currentTabModelSupplier that this action should act on.
      * @param selectionDelegate to get selected tab IDs from.
      * @param actionDelegate to control the TabListEditor.
-     * @param editorSupportsActionOnRelatedTabs whether the TabListEditor supports actions on
-     *     related tabs.
+     * @param layoutType The {@link TabListLayoutType} of the tab list editor.
      */
     @Initializer
     void configure(
             Supplier<@Nullable TabModel> currentTabModelSupplier,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             ActionDelegate actionDelegate,
-            boolean editorSupportsActionOnRelatedTabs) {
+            @TabListLayoutType int layoutType) {
         mCurrentTabModelSupplier = currentTabModelSupplier;
         mSelectionDelegate = selectionDelegate;
         mActionDelegate = actionDelegate;
-        mEditorSupportsActionOnRelatedTabs = editorSupportsActionOnRelatedTabs;
+        mLayoutType = layoutType;
         onSelectionStateChange(mSelectionDelegate.getSelectedItemsAsList());
     }
 
