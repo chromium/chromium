@@ -3955,6 +3955,65 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testDeleteButtonVisibility_hasDesktopExperience_aiMode_draftingNoPopover() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mMediator.onFinishNativeInitialization();
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.beginInput(
+                new AutocompleteInput()
+                        .setUserText("")
+                        .setRequestType(AutocompleteRequestType.AI_MODE));
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
+    }
+
+    @Test
+    public void testDeleteButtonVisibility_hasDesktopExperience_aiMode_reparenting() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        doReturn(mLocationBarParent).when(mLocationBarLayout).getParent();
+        doReturn(mSuggestionsContainer).when(mAutocompleteCoordinator).getSuggestionsContainer();
+        doReturn(mDropdown).when(mSuggestionsContainer).takeDropdownView();
+        MarginLayoutParams layoutParams = new MarginLayoutParams(-2, -2);
+        doReturn(layoutParams).when(mLocationBarLayout).getLayoutParams();
+        doReturn(mPlaceholder)
+                .when(mLocationBarLayout)
+                .findViewById(R.id.suggestions_container_placeholder);
+        doReturn(2).when(mLocationBarLayout).indexOfChild(mPlaceholder);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.DRAFTING);
+        mMediator.beginInput(input);
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // While in SEARCH and DRAFTING mode, not reparented to suggestions container.
+        assertFalse(mMediator.isParentedToSuggestionsContainer());
+        verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
+
+        // Transition to AI_MODE and SUGGESTIONS mode triggers reparenting to suggestions container.
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertTrue(mMediator.isParentedToSuggestionsContainer());
+        verify(mLocationBarLayout, atLeastOnce()).setDeleteButtonVisibility(true);
+
+        // Transition back to DRAFTING mode reparents back to toolbar and hides delete button.
+        input.setDisplayState(DisplayState.DRAFTING);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertFalse(mMediator.isParentedToSuggestionsContainer());
+        verify(mLocationBarLayout, atLeastOnce()).setDeleteButtonVisibility(false);
+    }
+
+    @Test
     public void testIsKeyboardSuppressed() {
         SettableNonNullObservableSupplier<Integer> popupStateSupplier =
                 ObservableSuppliers.createNonNull(PopupState.HIDDEN);

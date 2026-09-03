@@ -2677,7 +2677,7 @@ class LocationBarMediator
         }
         updateShowFocusRing();
         updateReparentingState();
-        updateActivationChip();
+        updateButtonVisibility();
     }
 
     private void updateReparentingState() {
