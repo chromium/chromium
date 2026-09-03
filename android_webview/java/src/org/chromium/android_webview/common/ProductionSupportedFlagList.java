@@ -618,6 +618,9 @@ public final class ProductionSupportedFlagList {
                 "Straightens free lists for larger slot spans in PartitionRoot::PurgeMemory() -> "
                         + "... -> PartitionPurgeSlotSpan()."),
         Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_TIGHTER_ALIGNED_ALLOC_BOUND,
+                "Allocates less memory for aligned allocations."),
+        Flag.baseFeature(
                 "PartitionAllocUseSmallSingleSlotSpans",
                 "Uses a more nuanced heuristic to classify small single-slot spans."),
         Flag.baseFeature(
