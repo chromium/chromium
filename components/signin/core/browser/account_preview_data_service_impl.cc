@@ -434,8 +434,8 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
         "Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch",
         cause);
 
-    all_accounts_fetched_barrier_.Reset();
-    if (all_data_available_callback_for_testing_) {
+    if (!all_accounts_fetched_barrier_ &&
+        all_data_available_callback_for_testing_) {
       std::move(all_data_available_callback_for_testing_).Run();
     }
     return;
@@ -608,7 +608,6 @@ AccountPreviewDataServiceImpl::GetAccountsWithValidRefreshTokens() const {
 }
 
 void AccountPreviewDataServiceImpl::RefreshAccountIdToGaiaIdMapping() {
-  account_id_to_gaia_id_.clear();
   for (const auto& account : GetAccountsWithValidRefreshTokens()) {
     account_id_to_gaia_id_[account.account_id] = account.gaia;
   }

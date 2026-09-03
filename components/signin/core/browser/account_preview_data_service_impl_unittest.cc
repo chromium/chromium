@@ -845,6 +845,54 @@ TEST_F(AccountPreviewDataServiceTest,
       service_->GetAccountPreviewData(account3.GetGaiaId()).has_value());
 }
 
+TEST_F(AccountPreviewDataServiceTest,
+       AccountRemovedDuringInFlightFetchWithSurvivingAccountUpdate) {
+  // 1. Account 1 is signed in and its preview data is fetched and persisted.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  service_->OnRefreshTokenUpdatedForAccount(account1);
+  run_loop.Run();
+  ASSERT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_EQ(1u,
+            prefs_.GetList(prefs::kAccountPreviewDataLastFetchAccounts).size());
+
+  // 2. Account 2 is added, triggering an in-flight fetch.
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
+
+  base::RunLoop all_data_run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_data_run_loop.QuitClosure());
+
+  // 3. Simulate Android batch removal sequence when account2 is removed:
+  // On Android, IdentityManager updates its token list to [account1] first,
+  // then fires OnRefreshTokenUpdatedForAccount for surviving accounts
+  // (account1), and only afterwards fires OnRefreshTokenRemovedForAccount for
+  // account2.
+  identity_test_env_.identity_manager()->RemoveObserver(service_.get());
+  identity_test_env_.RemoveRefreshTokenForAccount(account2.account_id);
+  identity_test_env_.identity_manager()->AddObserver(service_.get());
+
+  // Step 3a: Surviving account notification arrives first. Current accounts
+  // [account1] matches prefs [account1], hitting the unchanged accounts check.
+  service_->OnRefreshTokenUpdatedForAccount(account1);
+
+  // Step 3b: Removed account notification arrives.
+  service_->OnRefreshTokenRemovedForAccount(account2.account_id);
+
+  // The barrier completion should trigger all_data_available_callback.
+  all_data_run_loop.Run();
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
+  EXPECT_EQ(1u,
+            prefs_.GetList(prefs::kAccountPreviewDataLastFetchAccounts).size());
+}
+
 TEST_F(AccountPreviewDataServiceTest, RegularFetchOfAllAccountsResetsTimer) {
   // Pre-set the timer last update pref to a past time (e.g. 5 hours ago).
   base::Time past_time = base::Time::Now() - base::Hours(5);
