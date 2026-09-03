@@ -145,7 +145,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final TopInsetProvider mTopInsetProvider;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Supplier<@Nullable Tab> mActiveTabSupplier;
-    private final Supplier<Integer> mBookmarkBarIdSupplier;
+    private final Supplier<Integer> mTopAnchorViewIdSupplier;
     private final Handler mHandler;
     private @LayerVisibility int mLayerVisibility;
     private int mControlContainerHeight;
@@ -238,7 +238,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             MonotonicObservableSupplier<Profile> profileSupplier,
             Supplier<@Nullable Tab> activeTabSupplier,
             NonNullObservableSupplier<Integer> keyboardHeightSupplier,
-            Supplier<Integer> bookmarkBarIdSupplier,
+            Supplier<Integer> topAnchorViewIdSupplier,
             WindowAndroid windowAndroid) {
         mBrowserControlsSizer = browserControlsSizer;
         mIsNtpWithFakeboxShowingSupplier = isNtpWithFakeboxShowingSupplier;
@@ -265,7 +265,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mCurrentPosition.set(mBrowserControlsSizer.getControlsPosition());
         mProfileSupplier = profileSupplier;
         mActiveTabSupplier = activeTabSupplier;
-        mBookmarkBarIdSupplier = bookmarkBarIdSupplier;
+        mTopAnchorViewIdSupplier = topAnchorViewIdSupplier;
 
         mIsFirstPositionChange = true;
         mHairlineHeight =
@@ -588,7 +588,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             updateLayerVisibility(animatingToTop);
             mControlContainer.getView().setTranslationY(0);
             mToolbarProgressBarContainer.setTranslationY(0);
-            updateProgressBarAnchor();
         } else {
             maybeForceBottomToolbarLayoutUpdateAndCapture(ntpShowing);
 
@@ -1003,7 +1002,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         return mIsFirstPositionChange;
     }
 
-    private void updateProgressBarAnchor() {
+    // Applies the progress bar's TOP-position anchor + gravity. Invoked reactively via
+    // ToolbarProgressBarLayer (TopControlsStacker); wired in ToolbarManager through
+    // setCustomizationAnchorUpdater().
+    void updateProgressBarAnchor() {
         Runnable progressBarChangeRunnable =
                 () -> {
                     // Bail out if there was a state change while we waited for the runnable to
@@ -1012,12 +1014,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     LayoutParams progressBarLayoutParams =
                             (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
 
-                    int targetAnchorId = mControlContainer.getView().getId();
-                    if (mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)
-                            && mBookmarkBarIdSupplier.get() != 0) {
-                        targetAnchorId = mBookmarkBarIdSupplier.get();
-                    }
-                    progressBarLayoutParams.setAnchorId(targetAnchorId);
+                    progressBarLayoutParams.setAnchorId(mTopAnchorViewIdSupplier.get());
 
                     progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
                     if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()

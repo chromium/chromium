@@ -38,6 +38,7 @@ public class TabSharingToolbarContainer extends LinearLayout implements TopContr
      */
     public TabSharingToolbarContainer(Context context, TopControlsStacker stacker) {
         super(context);
+        setId(R.id.tab_sharing_toolbar_container);
         mTopControlsStacker = stacker;
         mToolbarHeightPx =
                 context.getResources().getDimensionPixelSize(R.dimen.tab_sharing_toolbar_height);
@@ -167,13 +168,9 @@ public class TabSharingToolbarContainer extends LinearLayout implements TopContr
 
     @Override
     public @ScrollBehavior int getScrollBehavior() {
-        // The tab sharing toolbar is pinned: it stays fixed at the top for the duration of a
-        // sharing session and never scrolls off with the web contents. It has no composited
-        // (SceneLayer) counterpart and is positioned entirely by the Android view layout via its
-        // top margin (see onTopControlLayerHeightChanged), with the web contents inset purely by
-        // its reported height, so it needs no per-frame offset handling and relies on
-        // TopControlLayer's default no-op onBrowserControlsOffsetUpdate().
-        return ScrollBehavior.NEVER_SCROLLABLE;
+        // Not the bottommost layer, so it must be scrollable; it never actually scrolls off since
+        // tab sharing is desktop-only and the top controls are locked there.
+        return ScrollBehavior.DEFAULT_SCROLLABLE;
     }
 
     @Override

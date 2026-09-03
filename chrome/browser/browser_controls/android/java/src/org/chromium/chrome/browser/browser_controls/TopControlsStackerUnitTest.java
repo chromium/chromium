@@ -1538,6 +1538,9 @@ public class TopControlsStackerUnitTest {
         assertEquals(
                 150,
                 mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TAB_SHARING_TOOLBAR));
+        // The progress bar now sits below the tab sharing toolbar (bottom-most), beneath
+        // TabStrip (50) + Toolbar (100) + TabSharingToolbar (48) = 198 total offset.
+        assertEquals(198, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.PROGRESS_BAR));
     }
 
     @Test

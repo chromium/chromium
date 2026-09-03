@@ -121,8 +121,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 TopControlType.TOOLBAR,
                 TopControlType.BOOKMARK_BAR,
                 TopControlType.HAIRLINE,
-                TopControlType.PROGRESS_BAR,
                 TopControlType.TAB_SHARING_TOOLBAR,
+                TopControlType.PROGRESS_BAR,
             };
 
     /** Helper class used to mark state for {@link #requestLayerUpdatePost(boolean).} */

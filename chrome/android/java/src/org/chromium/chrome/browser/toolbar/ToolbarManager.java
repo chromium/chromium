@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.activity.BackEventCompat;
+import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -82,6 +83,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -1233,11 +1235,7 @@ public class ToolbarManager
                         progressBar,
                         mToolbarHairline,
                         mToolbarPositionSupplier,
-                        () ->
-                                mBookmarkBarHeightSupplier != null
-                                                && mBookmarkBarHeightSupplier.get() == 0
-                                        ? 0
-                                        : R.id.bookmark_bar,
+                        this::getProgressBarTopAnchorId,
                         topControlsStacker,
                         bottomControlsStacker,
                         ToolbarPositionController.isToolbarPositionCustomizationEnabled(
@@ -2083,12 +2081,15 @@ public class ToolbarManager
                         mActivityTabProvider,
                         assertNonNull(mWindowAndroid.getInsetObserver())
                                 .getSupplierForKeyboardInset(),
-                        () ->
-                                mBookmarkBarHeightSupplier != null
-                                                && mBookmarkBarHeightSupplier.get() == 0
-                                        ? 0
-                                        : R.id.bookmark_bar,
+                        this::getProgressBarTopAnchorId,
                         mWindowAndroid);
+        // Drive the customization-path progress bar anchor update reactively through the
+        // TopControlsStacker (via ToolbarProgressBarLayer) rather than manual calls.
+        mToolbarProgressBarLayer.setCustomizationAnchorUpdater(
+                mToolbarPositionController::updateProgressBarAnchor);
+        // Establish the initial anchor now; the controller no longer sets it during construction
+        // (it runs before this wiring). Subsequent updates arrive reactively via the stacker.
+        mToolbarProgressBarLayer.updateTopAnchorView();
 
         mMiniOriginBarController =
                 new MiniOriginBarController(
@@ -3414,6 +3415,28 @@ public class ToolbarManager
     }
 
     /**
+     * Resolves the view Id that the toolbar progress bar should be anchored to (i.e. the bottom of
+     * the top controls). Walks the anchor priority ladder: tab sharing toolbar, then bookmark bar,
+     * then falls back to the control container itself.
+     *
+     * @return The progress bar's top anchor view Id.
+     */
+    private @IdRes int getProgressBarTopAnchorId() {
+        // When simultaneous sessions (multiple toolbars) are supported, containers must be
+        // differentiated per session and this anchor lookup revisited.
+        // TODO(crbug.com/487666920): Support multiple simultaneous tab-sharing toolbars.
+        if (mTopControlsStacker.isLayerAtBottom(TopControlType.TAB_SHARING_TOOLBAR)) {
+            return R.id.tab_sharing_toolbar_container;
+        }
+        if (mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)
+                && mBookmarkBarHeightSupplier != null
+                && mBookmarkBarHeightSupplier.get() > 0) {
+            return R.id.bookmark_bar;
+        }
+        return mControlContainer.getView().getId();
+    }
+
+    /**
      * Sets the drawable that the close button shows, or hides it if {@code drawable} is {@code
      * null}.
      */
@@ -3497,21 +3520,6 @@ public class ToolbarManager
     private void onScrimClicked() {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).onScrimClicked();
-    }
-
-    /**
-     * Sets a new anchor view for the progress bar, which is anchored to the bottom of a given view.
-     * By default the progress bar is anchored to the control_container, but when the Bookmark Bar
-     * is visible, it should be anchored below that.
-     *
-     * @param anchorId The ID of the new anchor view
-     */
-    public void setProgressBarAnchorView(int anchorId) {
-        // TODO(crbug.com/417238089): Position should be controlled by the TopControlsStacker.
-        CoordinatorLayout.LayoutParams params =
-                (CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams();
-        params.setAnchorId(anchorId);
-        mProgressBarContainer.setLayoutParams(params);
     }
 
     /**

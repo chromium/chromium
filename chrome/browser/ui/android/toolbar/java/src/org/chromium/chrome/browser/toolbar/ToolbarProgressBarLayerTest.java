@@ -10,6 +10,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -59,7 +60,7 @@ public class ToolbarProgressBarLayerTest {
 
     private ToolbarProgressBarLayer mLayer;
     private @ControlsPosition int mTestControlPosition = ControlsPosition.BOTTOM;
-    private SettableMonotonicObservableSupplier<Integer> mBookmarkBarIdSupplier;
+    private SettableMonotonicObservableSupplier<Integer> mTopAnchorViewIdSupplier;
 
     @Before
     public void setUp() {
@@ -68,7 +69,7 @@ public class ToolbarProgressBarLayerTest {
         doReturn(mContentView).when(mProgressBarContainer).getParent();
         mToolbarHairline = new View(mActivity);
 
-        mBookmarkBarIdSupplier = ObservableSuppliers.createMonotonic(0);
+        mTopAnchorViewIdSupplier = ObservableSuppliers.createMonotonic(Resources.ID_NULL);
 
         mLayer =
                 new ToolbarProgressBarLayer(
@@ -77,7 +78,7 @@ public class ToolbarProgressBarLayerTest {
                         mProgressBarView,
                         mToolbarHairline,
                         () -> mTestControlPosition,
-                        mBookmarkBarIdSupplier,
+                        mTopAnchorViewIdSupplier,
                         mTopControlsStacker,
                         mBottomControlsStacker,
                         false,
@@ -108,8 +109,9 @@ public class ToolbarProgressBarLayerTest {
                 new CoordinatorLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        // Bookmark bar is not visible.
-        mBookmarkBarIdSupplier.set(0);
+        // The progress bar anchors to whatever the supplier resolves (the anchor priority ladder
+        // now lives in ToolbarManager).
+        mTopAnchorViewIdSupplier.set(controlContainerView.getId());
         mLayer.onTopControlLayerHeightChanged(0, 0);
         ShadowLooper.idleMainLooper();
         assertEquals(
@@ -117,24 +119,59 @@ public class ToolbarProgressBarLayerTest {
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
 
-        // Bookmark bar is visible.
-        mBookmarkBarIdSupplier.set(456);
+        // Bookmark bar Id resolved by the supplier.
+        mTopAnchorViewIdSupplier.set(456);
         ShadowLooper.idleMainLooper();
-        when(mTopControlsStacker.isLayerAtBottom(TopControlsStacker.TopControlType.BOOKMARK_BAR))
-                .thenReturn(true);
         mLayer.onTopControlLayerHeightChanged(0, 0);
+        ShadowLooper.idleMainLooper();
         assertEquals(
                 456,
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
 
-        // Tab sharing toolbar is visible and at bottom.
-        when(mTopControlsStacker.isLayerAtBottom(
-                        TopControlsStacker.TopControlType.TAB_SHARING_TOOLBAR))
-                .thenReturn(true);
+        // Tab sharing toolbar Id resolved by the supplier.
+        mTopAnchorViewIdSupplier.set(R.id.tab_sharing_toolbar_container);
+        ShadowLooper.idleMainLooper();
         mLayer.onTopControlLayerHeightChanged(0, 0);
+        ShadowLooper.idleMainLooper();
         assertEquals(
                 R.id.tab_sharing_toolbar_container,
+                ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
+                        .getAnchorId());
+    }
+
+    @Test
+    public void testUpdateTopAnchorView_customizationEnabled() {
+        ToolbarProgressBarLayer layer =
+                new ToolbarProgressBarLayer(
+                        mControlContainer,
+                        mProgressBarContainer,
+                        mProgressBarView,
+                        mToolbarHairline,
+                        () -> mTestControlPosition,
+                        mTopAnchorViewIdSupplier,
+                        mTopControlsStacker,
+                        mBottomControlsStacker,
+                        true,
+                        mToolbarLayout);
+
+        mTestControlPosition = ControlsPosition.TOP;
+        View controlContainerView = new View(mActivity);
+        controlContainerView.setId(123);
+        when(mControlContainer.getView()).thenReturn(controlContainerView);
+        CoordinatorLayout.LayoutParams params =
+                new CoordinatorLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params.setAnchorId(controlContainerView.getId());
+        mProgressBarContainer.setLayoutParams(params);
+
+        // When customization is enabled, updateTopAnchorView() bails out early, so the supplier's
+        // value is never applied.
+        mTopAnchorViewIdSupplier.set(456);
+        ShadowLooper.idleMainLooper();
+        layer.onTopControlLayerHeightChanged(0, 0);
+        assertEquals(
+                controlContainerView.getId(),
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
     }
