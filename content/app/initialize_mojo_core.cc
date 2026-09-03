@@ -16,6 +16,7 @@
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 
 namespace content {
@@ -46,6 +47,20 @@ void InitializeMojoCore() {
     // On Windows it's not necessary to broker shared memory allocation, as
     // even sandboxed processes can allocate their own without trouble.
     config.force_direct_shared_memory_allocation = true;
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // Renderer and GPU processes create a lot of unsafe regions (data pipes,
+    // large IPC payloads) and their seccomp policies allow the memfd
+    // creation, sizing and sealing that base needs for one, so let them skip
+    // the broker round trip for those. Other sandbox types keep delegating
+    // everything; some of them (e.g. the hardware video decoder) deliberately
+    // forbid ftruncate().
+    const sandbox::mojom::Sandbox sandbox_type =
+        sandbox::policy::SandboxTypeFromCommandLine(command_line);
+    config.direct_unsafe_shared_memory_allocation =
+        sandbox_type == sandbox::mojom::Sandbox::kRenderer ||
+        sandbox_type == sandbox::mojom::Sandbox::kGpu;
 #endif
   }
 

@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <atomic>
+#include <limits>
 #include <optional>
 
 #include "base/check_op.h"
@@ -259,6 +260,23 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   mode_ = Mode::kUnsafe;
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// static
+PlatformSharedMemoryRegion PlatformSharedMemoryRegion::CreateUnsafeAnonymous(
+    size_t size) {
+  if (size == 0 ||
+      size > static_cast<size_t>(std::numeric_limits<int>::max())) {
+    return {};
+  }
+  ScopedFDPair anonymous_region = CreateAnonymousRegion(Mode::kUnsafe, size);
+  if (!anonymous_region.fd.is_valid()) {
+    return {};
+  }
+  return PlatformSharedMemoryRegion(std::move(anonymous_region), Mode::kUnsafe,
+                                    size, UnguessableToken::Create());
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,

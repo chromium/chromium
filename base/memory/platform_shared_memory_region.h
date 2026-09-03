@@ -117,6 +117,17 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   static PlatformSharedMemoryRegion CreateWritable(size_t size);
   static PlatformSharedMemoryRegion CreateUnsafe(size_t size);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Creates a new kUnsafe region backed by an anonymous file (memfd) without
+  // touching the filesystem, so that it also works inside a sandbox whose
+  // seccomp policy allows memfd_create(2) (the baseline policy does). Unlike
+  // CreateUnsafe() this never falls back to a file in /dev/shm; it returns an
+  // invalid region if the kernel does not support memfd_create(). Writable
+  // regions cannot be created this way because their read-only descriptor
+  // comes from procfs.
+  static PlatformSharedMemoryRegion CreateUnsafeAnonymous(size_t size);
+#endif
+
   // Returns a new PlatformSharedMemoryRegion that takes ownership of the
   // `handle` (which may be null/invalid). All parameters should be
   // self-consistent, e.g. `size` must be equal to the actual region size as
