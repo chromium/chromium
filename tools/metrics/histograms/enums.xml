@@ -8824,6 +8824,7 @@ from previous Chrome versions.
   <int value="-1832575380" label="show-saved-copy"/>
   <int value="-1832512456" label="LibinputHandleTouchpad:disabled"/>
   <int value="-1832221649" label="disable-out-of-process-pac"/>
+  <int value="-1830973180" label="AppMenuGlowUp:enabled"/>
   <int value="-1830711139" label="FedCmNavigationInterception:disabled"/>
   <int value="-1830709105" label="OmniboxPedalsBatch3NonEnglish:disabled"/>
   <int value="-1830472348" label="CryptAuthV2DeviceSync:enabled"/>
@@ -10583,6 +10584,7 @@ from previous Chrome versions.
       label="OmniboxSuggestionTransparencyOptions:disabled"/>
   <int value="-1292333085" label="CCTAdaptiveButtonTestSwitch:enabled"/>
   <int value="-1291963295" label="ComputePressure:disabled"/>
+  <int value="-1291113229" label="AppMenuGlowUp:disabled"/>
   <int value="-1290471006"
       label="EnableHistoryFaviconsGoogleServerQuery:enabled"/>
   <int value="-1290446351"

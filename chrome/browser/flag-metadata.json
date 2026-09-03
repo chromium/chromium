@@ -688,6 +688,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "app-menu-glow-up",
+    "owners": [
+      "emshack@chromium.org",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "app-specific-history",
     "owners": [ "katzz@google.com", "jinsukkim@google.com" ],
     "expiry_milestone": 142

@@ -257,6 +257,10 @@ inline constexpr char kApiMimeHandlerDescription[] =
     "mime_types_handler manifest entry. The API is currently limited to "
     "a small set of MIME types (e.g. application/pdf).";
 
+inline constexpr char kAppMenuGlowUpName[] = "App Menu Glow Up";
+inline constexpr char kAppMenuGlowUpDescription[] =
+    "Enables the App Menu Glow Up feature.";
+
 inline constexpr char kApproximateGeolocationPermissionName[] =
     "Approximate Geolocation Permission";
 inline constexpr char kApproximateGeolocationPermissionDescription[] =
