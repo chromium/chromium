@@ -603,7 +603,6 @@ public class SigninBridgeTest {
     @SmallTest
     public void testSigninDeepLinkFlow_userSignedOut_targetAccountNotOnDevice() {
         Context context = Robolectric.buildActivity(Activity.class).get();
-        lenient().when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
@@ -614,8 +613,6 @@ public class SigninBridgeTest {
                 new SigninDeepLinkPayload(
                         /* externalEntryPoint= */ ExternalEntryPoint.DESKTOP_DEFAULT,
                         /* email= */ TestAccounts.ACCOUNT1.getEmail());
-
-        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         var expectedConfig =
                 FullscreenSigninAndHistorySyncConfig.builder(
@@ -628,6 +625,11 @@ public class SigninBridgeTest {
                         .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
                         .build();
+        when(mSigninAndHistorySyncActivityLauncherMock.createFullscreenSigninIntentOrShowError(
+                        any(), any(), any(), anyInt()))
+                .thenReturn(new Intent());
+
+        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         verify(mSigninAndHistorySyncActivityLauncherMock)
                 .createFullscreenSigninIntentOrShowError(
@@ -646,7 +648,6 @@ public class SigninBridgeTest {
     public void
             testSigninDeepLinkFlow_userSignedIn_toDifferentAccount_targetAccountNotOnTheDevice() {
         Context context = Robolectric.buildActivity(Activity.class).get();
-        lenient().when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
@@ -660,8 +661,6 @@ public class SigninBridgeTest {
                 new SigninDeepLinkPayload(
                         /* externalEntryPoint= */ ExternalEntryPoint.DESKTOP_DEFAULT,
                         /* email= */ TestAccounts.ACCOUNT2.getEmail());
-
-        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         var expectedConfig =
                 FullscreenSigninAndHistorySyncConfig.builderForSwitchAccountFlow(
@@ -679,6 +678,11 @@ public class SigninBridgeTest {
                                 TestAccounts.ACCOUNT2.getEmail())
                         .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .build();
+        when(mSigninAndHistorySyncActivityLauncherMock.createFullscreenSigninIntentOrShowError(
+                        any(), any(), any(), anyInt()))
+                .thenReturn(new Intent());
+
+        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         verify(mSigninAndHistorySyncActivityLauncherMock)
                 .createFullscreenSigninIntentOrShowError(
@@ -698,7 +702,6 @@ public class SigninBridgeTest {
     @SmallTest
     public void testSigninDeepLinkFlow_userSignedIn_withTheTargetAccount() {
         Context context = Robolectric.buildActivity(Activity.class).get();
-        lenient().when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
@@ -724,9 +727,8 @@ public class SigninBridgeTest {
 
     @Test
     @SmallTest
-    public void testSigninDeepLinkFlow_signinNotAllowed() {
+    public void testSigninDeepLinkFlow_launcherReturnsNull_recordsFlowForbidden() {
         Context context = Robolectric.buildActivity(Activity.class).get();
-        lenient().when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
@@ -737,8 +739,6 @@ public class SigninBridgeTest {
                 new SigninDeepLinkPayload(
                         /* externalEntryPoint= */ ExternalEntryPoint.DESKTOP_DEFAULT,
                         /* email= */ TestAccounts.ACCOUNT1.getEmail());
-
-        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         var expectedConfig =
                 FullscreenSigninAndHistorySyncConfig.builder(
@@ -751,6 +751,11 @@ public class SigninBridgeTest {
                         .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
                         .build();
+        when(mSigninAndHistorySyncActivityLauncherMock.createFullscreenSigninIntentOrShowError(
+                        any(), any(), any(), anyInt()))
+                .thenReturn(null);
+
+        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         verify(mSigninAndHistorySyncActivityLauncherMock)
                 .createFullscreenSigninIntentOrShowError(
@@ -768,7 +773,6 @@ public class SigninBridgeTest {
     @SmallTest
     public void testSigninDeepLinkFlow_userSignedOut_targetAccountOnDevice() {
         Context context = Robolectric.buildActivity(Activity.class).get();
-        lenient().when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
@@ -782,8 +786,6 @@ public class SigninBridgeTest {
                         /* externalEntryPoint= */ ExternalEntryPoint.DESKTOP_DEFAULT,
                         /* email= */ TestAccounts.ACCOUNT1.getEmail());
 
-        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
-
         var expectedConfig =
                 FullscreenSigninAndHistorySyncConfig.builder(
                                 context.getString(R.string.signin_deep_link_flow_signin_title),
@@ -795,6 +797,11 @@ public class SigninBridgeTest {
                         .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
                         .build();
+        when(mSigninAndHistorySyncActivityLauncherMock.createFullscreenSigninIntentOrShowError(
+                        any(), any(), any(), anyInt()))
+                .thenReturn(new Intent());
+
+        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         verify(mSigninAndHistorySyncActivityLauncherMock)
                 .createFullscreenSigninIntentOrShowError(
@@ -812,7 +819,6 @@ public class SigninBridgeTest {
     @SmallTest
     public void testSigninDeepLinkFlow_userSignedIn_toDifferentAccount_targetAccountOnTheDevice() {
         Context context = Robolectric.buildActivity(Activity.class).get();
-        lenient().when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
@@ -827,8 +833,6 @@ public class SigninBridgeTest {
                 new SigninDeepLinkPayload(
                         /* externalEntryPoint= */ ExternalEntryPoint.DESKTOP_DEFAULT,
                         /* email= */ TestAccounts.ACCOUNT2.getEmail());
-
-        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         var expectedConfig =
                 FullscreenSigninAndHistorySyncConfig.builderForSwitchAccountFlow(
@@ -846,6 +850,11 @@ public class SigninBridgeTest {
                                 TestAccounts.ACCOUNT2.getEmail())
                         .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .build();
+        when(mSigninAndHistorySyncActivityLauncherMock.createFullscreenSigninIntentOrShowError(
+                        any(), any(), any(), anyInt()))
+                .thenReturn(new Intent());
+
+        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
 
         verify(mSigninAndHistorySyncActivityLauncherMock)
                 .createFullscreenSigninIntentOrShowError(
