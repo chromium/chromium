@@ -27,11 +27,13 @@
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_store.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_manager/addresses/home_and_work_metadata_store.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
+#include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #include "components/autofill/core/browser/strike_databases/addresses/address_on_typing_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/address_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_migration_strike_database.h"
@@ -615,7 +617,12 @@ void AddressDataManager::NotifyObservers() {
 }
 
 bool AddressDataManager::IsAutofillProfileEnabled() const {
-  return prefs::IsAutofillProfileEnabled(pref_service_);
+  if (!pref_service_) {
+    return false;
+  }
+  return !AutofillPolicyService::IsAutofillTypeBlockedByPolicyFromPref(
+      *pref_service_, GURL(),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo);
 }
 
 bool AddressDataManager::IsSyncFeatureEnabledForAutofill() const {
