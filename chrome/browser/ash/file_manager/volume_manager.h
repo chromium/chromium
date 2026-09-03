@@ -275,11 +275,6 @@ class VolumeManager
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
 
-  // For SmbFs.
-  void AddSmbFsVolume(const base::FilePath& mount_point,
-                      const std::string& display_name);
-  void RemoveSmbFsVolume(const base::FilePath& mount_point);
-
   void ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(std::string* volume_id) const;
 
   // policy::local_user_files::Observer:
@@ -396,6 +391,11 @@ class VolumeManager
   // thus removing all local volumes.
   void OnMigrationReset() override;
 
+  // For SmbFs.
+  void AddSmbFsVolume(const base::FilePath& mount_point,
+                      const std::string& display_name);
+  void RemoveSmbFsVolume(const base::FilePath& mount_point);
+
   std::optional<policy::DeviceId> GetDeviceIdFromDevicePath(
       std::string_view device_path);
 
@@ -431,6 +431,9 @@ class VolumeManager
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>
       arc_session_manager_observation_{this};
+
+  class SmbObserver;
+  std::unique_ptr<SmbObserver> smb_observer_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

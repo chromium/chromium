@@ -10,6 +10,7 @@ static_library("constants") {
   visibility = [
     ":*",
     "//chrome/browser/ash/smb_client/discovery:*",
+    "//chrome/browser/ash/system_web_apps/apps:*",
   ]
 
   sources = [

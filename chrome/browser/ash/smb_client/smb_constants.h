@@ -9,6 +9,7 @@ namespace ash::smb_client {
 
 extern const char kSmbScheme[];
 extern const char kSmbSchemePrefix[];
+extern const char kSmbfsEnableVerboseLogging[];
 
 inline constexpr int kNetBiosDiscoveryTimeoutSeconds = 1;
 

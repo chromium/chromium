@@ -20,7 +20,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
-#include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ash/smb_client/discovery/mdns_host_locator.h"
 #include "chrome/browser/ash/smb_client/discovery/netbios_client.h"
 #include "chrome/browser/ash/smb_client/discovery/netbios_host_locator.h"
+#include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "chrome/browser/ash/smb_client/smb_file_system.h"
 #include "chrome/browser/ash/smb_client/smb_file_system_id.h"
 #include "chrome/browser/ash/smb_client/smb_kerberos_credentials_updater.h"
@@ -156,12 +156,34 @@ SmbService::SmbService(Profile* profile,
 
 SmbService::~SmbService() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  smbfs_shares_.clear();
 }
 
 void SmbService::Shutdown() {
   // Unmount and destroy all smbfs instances explicitly before destruction,
   // since SmbFsShare accesses KeyedServices on destruction.
   smbfs_shares_.clear();
+}
+
+void SmbService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SmbService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void SmbService::OnSmbFsMounted(const base::FilePath& mount_path,
+                                const std::string& display_name) {
+  for (auto& observer : observers_) {
+    observer.OnSmbFsMounted(mount_path, display_name);
+  }
+}
+
+void SmbService::OnSmbFsUnmounted(const base::FilePath& mount_path) {
+  for (auto& observer : observers_) {
+    observer.OnSmbFsUnmounted(mount_path);
+  }
 }
 
 // static
@@ -175,6 +197,7 @@ void SmbService::RegisterProfilePrefs(
   registry->RegisterListPref(ash::prefs::kNetworkFileSharesPreconfiguredShares);
   registry->RegisterStringPref(ash::prefs::kMostRecentlyUsedNetworkFileShareURL,
                                "");
+  registry->RegisterBooleanPref(kSmbfsEnableVerboseLogging, false);
   SmbPersistedShareRegistry::RegisterProfilePrefs(registry);
 }
 
@@ -381,8 +404,8 @@ void SmbService::MountInternal(const SmbShareInfo& info,
   smbfs_options.password = password;
   smbfs_options.allow_ntlm = IsNTLMAuthenticationEnabled();
   smbfs_options.skip_connect = skip_connect;
-  smbfs_options.enable_verbose_logging = profile_->GetPrefs()->GetBoolean(
-      file_manager::prefs::kSmbfsEnableVerboseLogging);
+  smbfs_options.enable_verbose_logging =
+      profile_->GetPrefs()->GetBoolean(kSmbfsEnableVerboseLogging);
   if (save_credentials && !info.password_salt().empty()) {
     smbfs_options.save_restore_password = true;
     smbfs_options.account_hash = user->username_hash();
@@ -403,6 +426,7 @@ void SmbService::MountInternal(const SmbShareInfo& info,
 
   std::unique_ptr<SmbFsShare> mount = std::make_unique<SmbFsShare>(
       profile_, info.share_url(), info.display_name(), smbfs_options);
+  mount->AddMountObserver(this);
   if (smbfs_mounter_creation_callback_) {
     mount->SetMounterCreationCallbackForTest(smbfs_mounter_creation_callback_);
   }

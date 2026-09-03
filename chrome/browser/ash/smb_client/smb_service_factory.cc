@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/time/default_tick_clock.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -85,7 +84,6 @@ SmbServiceFactory::SmbServiceFactory()
               .Build()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
   DependsOn(KerberosCredentialsManagerFactory::GetInstance());
-  DependsOn(file_manager::VolumeManagerFactory::GetInstance());
 }
 
 SmbServiceFactory::~SmbServiceFactory() = default;

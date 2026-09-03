@@ -14,6 +14,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
@@ -29,6 +31,15 @@ namespace ash::smb_client {
 // Destroying will unmount and deregister the filesystem.
 class SmbFsShare : public smbfs::SmbFsHost::Delegate {
  public:
+  class MountObserver : public base::CheckedObserver {
+   public:
+    ~MountObserver() override = default;
+
+    virtual void OnSmbFsMounted(const base::FilePath& mount_path,
+                                const std::string& display_name) {}
+    virtual void OnSmbFsUnmounted(const base::FilePath& mount_path) {}
+  };
+
   using KerberosOptions = smbfs::SmbFsMounter::KerberosOptions;
   using MountOptions = smbfs::SmbFsMounter::MountOptions;
   using MountCallback = base::OnceCallback<void(SmbMountResult)>;
@@ -41,6 +52,9 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
           const std::string& mount_dir_name,
           const MountOptions& options,
           smbfs::SmbFsHost::Delegate* delegate)>;
+
+  void AddMountObserver(MountObserver* observer);
+  void RemoveMountObserver(MountObserver* observer);
 
   SmbFsShare(Profile* profile,
              const SmbUrl& share_url,
@@ -145,6 +159,8 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
 
   base::TimeTicks allow_credential_request_expiry_;
   bool allow_credential_request_ = false;
+
+  base::ObserverList<MountObserver> mount_observers_;
 
   base::WeakPtrFactory<SmbFsShare> weak_factory_{this};
 };

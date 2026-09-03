@@ -8,5 +8,6 @@ namespace ash::smb_client {
 
 const char kSmbScheme[] = "smb";
 const char kSmbSchemePrefix[] = "smb://";
+const char kSmbfsEnableVerboseLogging[] = "smbfs.enable_verbose_logging";
 
 }  // namespace ash::smb_client

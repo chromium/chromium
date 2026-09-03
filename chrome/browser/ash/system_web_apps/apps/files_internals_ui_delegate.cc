@@ -13,12 +13,12 @@
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
-#include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -245,15 +245,15 @@ void ChromeFilesInternalsUIDelegate::GetFileTasks(
 bool ChromeFilesInternalsUIDelegate::GetSmbfsEnableVerboseLogging() const {
   Profile* profile = Profile::FromWebUI(web_ui_);
   return profile && profile->GetPrefs()->GetBoolean(
-                        file_manager::prefs::kSmbfsEnableVerboseLogging);
+                        ash::smb_client::kSmbfsEnableVerboseLogging);
 }
 
 void ChromeFilesInternalsUIDelegate::SetSmbfsEnableVerboseLogging(
     bool enabled) {
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (profile) {
-    profile->GetPrefs()->SetBoolean(
-        file_manager::prefs::kSmbfsEnableVerboseLogging, enabled);
+    profile->GetPrefs()->SetBoolean(ash::smb_client::kSmbfsEnableVerboseLogging,
+                                    enabled);
   }
 }
 

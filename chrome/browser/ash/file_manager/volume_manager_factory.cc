@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
+#include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,6 +76,7 @@ VolumeManagerFactory::VolumeManagerFactory()
               .Build()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(ash::file_system_provider::ServiceFactory::GetInstance());
+  DependsOn(ash::smb_client::SmbServiceFactory::GetInstance());
   if (base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     DependsOn(policy::local_user_files::LocalFilesMigrationManagerFactory::
                   GetInstance());

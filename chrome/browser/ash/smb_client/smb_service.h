@@ -15,6 +15,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
@@ -43,8 +45,21 @@ class SmbShareInfo;
 
 // Creates and manages an smb file system.
 class SmbService : public KeyedService,
-                   public net::NetworkChangeNotifier::NetworkChangeObserver {
+                   public net::NetworkChangeNotifier::NetworkChangeObserver,
+                   public SmbFsShare::MountObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnSmbFsMounted(const base::FilePath& mount_path,
+                                const std::string& display_name) {}
+    virtual void OnSmbFsUnmounted(const base::FilePath& mount_path) {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   using MountResponse = base::OnceCallback<void(SmbMountResult result)>;
   using StartReadDirIfSuccessfulCallback =
       base::OnceCallback<void(bool should_retry_start_read_dir)>;
@@ -243,6 +258,7 @@ class SmbService : public KeyedService,
   const file_system_provider::ProviderId provider_id_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<SmbShareFinder> share_finder_;
+  base::ObserverList<Observer> observers_;
   // |smbfs_mount_id| -> SmbFsShare
   // Note, mount ID for smbfs is a randomly generated string. For smbprovider
   // shares, it is an integer.
@@ -250,6 +266,11 @@ class SmbService : public KeyedService,
   SmbPersistedShareRegistry registry_;
 
   std::unique_ptr<SmbKerberosCredentialsUpdater> kerberos_credentials_updater_;
+
+  // SmbFsShare::MountObserver overrides:
+  void OnSmbFsMounted(const base::FilePath& mount_path,
+                      const std::string& display_name) override;
+  void OnSmbFsUnmounted(const base::FilePath& mount_path) override;
 
   base::OnceClosure setup_complete_callback_;
   SmbFsShare::MounterCreationCallback smbfs_mounter_creation_callback_;
