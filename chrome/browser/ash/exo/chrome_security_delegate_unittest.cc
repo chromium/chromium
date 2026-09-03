@@ -190,6 +190,14 @@ TEST_F(ChromeSecurityDelegateTest, CanLockPointer) {
   EXPECT_FALSE(security_delegate->CanLockPointer(crostini_toplevel.get()));
 }
 
+TEST_F(ChromeSecurityDelegateTest, CanSetSystemModal) {
+  ChromeSecurityDelegate chrome_security_delegate;
+  EXPECT_TRUE(chrome_security_delegate.CanSetSystemModal());
+
+  guest_os::GuestOsSecurityDelegate crostini_security_delegate("termina");
+  EXPECT_FALSE(crostini_security_delegate.CanSetSystemModal());
+}
+
 TEST_F(ChromeSecurityDelegateTest, GetFilenames) {
   ChromeSecurityDelegate security_delegate;
   base::FilePath shared_path = myfiles_dir_.Append("shared");
