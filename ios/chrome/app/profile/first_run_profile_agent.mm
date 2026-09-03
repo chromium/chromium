@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_promo_coordinator.h"
 #import "ios/chrome/browser/first_run/public/features.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
@@ -225,7 +224,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   if (appState.startupInformation.isFirstRun) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
 
-    if (IsBestOfAppFREEnabled() || IsAppStoreInAppEventsEnabled()) {
+    if (IsBestOfAppFREEnabled()) {
       id<BrowserProvider> presentingInterface =
           _presentingSceneState.browserProviderInterface.currentBrowserProvider;
       Browser* browser = presentingInterface.browser;
@@ -339,7 +338,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     return;
   }
 
-  if (IsAppStoreInAppEventsEnabled() && profile->GetPrefs() &&
+  if (profile->GetPrefs() &&
       profile->GetPrefs()->GetBoolean(prefs::kAppStoreGeminiPromoTriggered)) {
     // If first run started due to app store external action, do not show
     // any follow up IPH.

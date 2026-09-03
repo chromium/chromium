@@ -449,8 +449,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                  forceApplicationMode:forceApplicationMode];
       params.postOpeningAction = EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
     }
-  } else if (IsAppStoreInAppEventsEnabled() &&
-             [path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
+  } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
     base::RecordAction(base::UserMetricsAction(
         "MobileExternalActionURLOpenedWithAppStoreGeminiPromo"));
     action = IOSExternalAction::ACTION_APP_STORE_GEMINI_PROMO;

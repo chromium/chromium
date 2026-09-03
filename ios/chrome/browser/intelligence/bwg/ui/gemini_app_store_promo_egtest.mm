@@ -74,7 +74,6 @@ void SimulateGeminiPromoURLOpening() {
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   config.features_enabled.push_back(kPageActionMenu);
-  config.features_enabled.push_back(kAppStoreInAppEvents);
   config.iph_feature_enabled = "IPH_iOSGeminiExternalAppStoreEvent";
   return config;
 }

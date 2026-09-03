@@ -315,7 +315,7 @@ TEST_F(TaskRequestForURLContextTest, TestSimpleURLMetrics) {
 TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kAppStoreInAppEvents, kAppSwitcherAISummarization}, {});
+      {kPageActionMenu, kAppSwitcherAISummarization}, {});
 
   struct TestCase {
     NSString* url_string;

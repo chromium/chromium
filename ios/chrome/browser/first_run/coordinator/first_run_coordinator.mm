@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
@@ -177,8 +176,7 @@ class FirstRunCoordinatorMetricsHelper final {
         return;
       }
 
-      if (IsAppStoreInAppEventsEnabled() && self.profile &&
-          self.profile->GetPrefs() &&
+      if (self.profile && self.profile->GetPrefs() &&
           self.profile->GetPrefs()->GetBoolean(
               prefs::kAppStoreGeminiPromoTriggered)) {
         // If first run started due to app store external action, do not show

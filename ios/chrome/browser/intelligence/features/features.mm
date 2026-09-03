@@ -723,13 +723,6 @@ bool IsGeminiScreenContextMigrationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiScreenContextMigration);
 }
 
-BASE_FEATURE(kAppStoreInAppEvents, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAppStoreInAppEventsEnabled() {
-  return IsPageActionMenuEnabled() &&
-         base::FeatureList::IsEnabled(kAppStoreInAppEvents);
-}
-
 BASE_FEATURE(kGeneralizedGeminiEntryFlow, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeneralizedGeminiEntryFlowEnabled() {

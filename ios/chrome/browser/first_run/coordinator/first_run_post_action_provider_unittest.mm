@@ -35,8 +35,7 @@ class FirstRunPostActionProviderTest : public PlatformTest {
 // promo is enabled and the Gemini promo has triggered.
 TEST_F(FirstRunPostActionProviderTest, SkipScreensForGeminiPromo) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kAppStoreInAppEvents, kPageActionMenu},
-                                       {});
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
 
   pref_service_->SetBoolean(prefs::kAppStoreGeminiPromoTriggered, true);
 

@@ -719,8 +719,7 @@ TEST_F(AppStartupParametersTest,
 // "appstoregeminipromo" action.
 TEST_F(AppStartupParametersTest, ExternalActionSchemeAppStoreGeminiPromo) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kAppStoreInAppEvents, kPageActionMenu},
-                                       {});
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
 
   base::HistogramTester histogram_tester;
   NSURL* url =

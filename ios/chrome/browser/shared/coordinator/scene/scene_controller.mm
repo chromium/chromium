@@ -671,7 +671,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
         NOTREACHED() << "Credential import is available on iOS 26+ only.";
       }
     case TRIGGER_GEMINI_PROMO:
-      if (IsAppStoreInAppEventsEnabled()) {
+      if (IsPageActionMenuEnabled()) {
         return ^{
           [weakSelf triggerGeminiFlowFromAppStoreEvent];
         };

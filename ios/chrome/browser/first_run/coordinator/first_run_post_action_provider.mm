@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_post_action_provider.h"
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -25,7 +24,7 @@
   }
 
   BOOL promoTriggered =
-      IsAppStoreInAppEventsEnabled() && prefService &&
+      prefService &&
       prefService->GetBoolean(prefs::kAppStoreGeminiPromoTriggered);
   if (promoTriggered) {
     prefService->SetBoolean(prefs::kAppStoreGeminiPromoTriggered, false);

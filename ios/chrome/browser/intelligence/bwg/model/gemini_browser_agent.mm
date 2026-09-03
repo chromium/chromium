@@ -800,8 +800,7 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
   RecordInvocationPageType();
 
   // TODO(crbug.com/507509815): Link to Gemini sign in flow.
-  if (IsAppStoreInAppEventsEnabled() &&
-      entry_point == gemini::EntryPoint::ExternalAppStoreEvent) {
+  if (entry_point == gemini::EntryPoint::ExternalAppStoreEvent) {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
     if (!auth_service || !auth_service->HasPrimaryIdentity()) {

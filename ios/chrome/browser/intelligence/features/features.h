@@ -350,13 +350,6 @@ BASE_DECLARE_FEATURE(kGeminiScreenContextMigration);
 // Returns true if the GeminiScreenContextMigration feature is enabled.
 bool IsGeminiScreenContextMigrationEnabled();
 
-// Feature flag to control the App Store In-App Events feature. Enables a
-// user to tap the promo within the iOS App Store and invoke the Gemini FRE
-// after navigating to a Gemini related web page through an external action.
-BASE_DECLARE_FEATURE(kAppStoreInAppEvents);
-
-// Returns true if the App Store In-App Events feature is enabled.
-bool IsAppStoreInAppEventsEnabled();
 
 // Feature flag controlling the generalized Gemini entry flow outside of the
 // Page Action Menu.
