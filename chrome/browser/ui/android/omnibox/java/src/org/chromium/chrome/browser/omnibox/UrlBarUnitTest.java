@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -63,6 +62,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -132,7 +132,9 @@ public class UrlBarUnitTest {
             "www.a.com/"
                     + TextUtils.join("", Collections.nCopies(MAX_DISPLAYABLE_LENGTH + 100, "a"));
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Rule public final TestName mTestName = new TestName();
 
     @Mock private UrlBarDelegate mUrlBarDelegate;
@@ -185,10 +187,12 @@ public class UrlBarUnitTest {
         mLastTextDirection = -1;
         mLastTextAlignment = -1;
 
-        doAnswer(i -> mLastTextDirection = i.getArgument(0))
+        lenient()
+                .doAnswer(i -> mLastTextDirection = i.getArgument(0))
                 .when(mUrlBar)
                 .setTextDirection(anyInt());
-        doAnswer(i -> mLastTextAlignment = i.getArgument(0))
+        lenient()
+                .doAnswer(i -> mLastTextAlignment = i.getArgument(0))
                 .when(mUrlBar)
                 .setTextAlignment(anyInt());
 
@@ -1019,7 +1023,6 @@ public class UrlBarUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD)
     public void scrollToTLD_differentTLD_noVisibleHintCalculation() {
         doReturn(mLayout).when(mUrlBar).getLayout();
-        doReturn(mPaint).when(mLayout).getPaint();
 
         measureAndLayoutUrlBar();
         // Url needs to be long enough to fill the entire url bar.

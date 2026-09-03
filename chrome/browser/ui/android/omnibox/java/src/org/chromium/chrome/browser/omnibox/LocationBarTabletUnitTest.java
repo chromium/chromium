@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
@@ -34,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -71,7 +73,9 @@ public class LocationBarTabletUnitTest {
     private static final int POPUP_INSET_DP = 8;
     private static final int MIN_TABLET_WIDTH_DP = 504;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DisplayAndroid mDisplay;
     @Mock private UrlBarCoordinator mUrlBarCoordinator;
@@ -102,9 +106,10 @@ public class LocationBarTabletUnitTest {
                 new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.addView(mHolderView, parentParams);
         mActivity.setContentView(contentView, parentParams);
-        doReturn(mDisplay).when(mWindowAndroid).getDisplay();
-        doReturn(DIP_SCALE).when(mDisplay).getDipScale();
-        doReturn(ChromeColors.getDefaultThemeColor(mActivity, /* isIncognito= */ false))
+        lenient().doReturn(mDisplay).when(mWindowAndroid).getDisplay();
+        lenient().doReturn(DIP_SCALE).when(mDisplay).getDipScale();
+        lenient()
+                .doReturn(ChromeColors.getDefaultThemeColor(mActivity, /* isIncognito= */ false))
                 .when(mLocationBarDataProvider)
                 .getPrimaryColor();
         mLocationBarTablet.setHolderAndContainer(mHolderView, null);

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,6 +38,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowMimeTypeMap;
@@ -53,7 +55,8 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link LocationBarDragDropHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LocationBarDragDropHandlerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private OmniboxStub mOmniboxStub;
     @Mock private LocationBarDataProvider mDataProvider;
@@ -77,8 +80,8 @@ public class LocationBarDragDropHandlerUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        when(mDataProvider.getTab()).thenReturn(mTab);
-        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        lenient().when(mDataProvider.getTab()).thenReturn(mTab);
+        lenient().when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         mHandler = new LocationBarDragDropHandler(mOmniboxStub, mDataProvider);
 
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
@@ -125,9 +128,6 @@ public class LocationBarDragDropHandlerUnitTest {
     public void testOnDrag_DragStarted_TabDragWithUriList_Accepted() {
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
         when(mDragEvent.getClipDescription()).thenReturn(mClipDescription);
-        when(mClipDescription.getMimeTypeCount()).thenReturn(2);
-        when(mClipDescription.getMimeType(0)).thenReturn("chrome/tab");
-        when(mClipDescription.getMimeType(1)).thenReturn("text/uri-list");
         when(mClipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)).thenReturn(true);
 
         View view = new View(mContext);

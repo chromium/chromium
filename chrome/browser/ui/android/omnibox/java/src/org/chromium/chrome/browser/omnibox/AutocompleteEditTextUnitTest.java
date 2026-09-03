@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowAccessibilityManager;
@@ -58,7 +59,9 @@ public class AutocompleteEditTextUnitTest {
 
     private static final boolean DEBUG = false;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private InOrder mInOrder;
     private TestAutocompleteEditText mAutocomplete;
     private LinearLayout mFocusPlaceHolder;

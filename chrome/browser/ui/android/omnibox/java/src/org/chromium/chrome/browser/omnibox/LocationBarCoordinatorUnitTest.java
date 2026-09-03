@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -40,7 +42,8 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TOOLBAR_PHONE_ANIMATION_REFACTOR)
 public class LocationBarCoordinatorUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
@@ -72,13 +75,21 @@ public class LocationBarCoordinatorUnitTest {
         mCoordinator.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
         mCoordinator.setLocationBarMediatorForTesting(mLocationBarMediator);
 
-        when(mUrlCoordinator.hasFocus()).thenReturn(true);
-        when(mLocationBarMediator.getLocationBarDataProvider())
+        lenient().when(mUrlCoordinator.hasFocus()).thenReturn(true);
+        lenient()
+                .when(mLocationBarMediator.getLocationBarDataProvider())
                 .thenReturn(mLocationBarDataProvider);
-        when(mLocationBarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
-        when(mLocationBarLayout.findViewById(R.id.fusebox_plus_button)).thenReturn(mPlusButton);
-        when(mLocationBarLayout.getContext()).thenReturn(RuntimeEnvironment.getApplication());
-        when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
+        lenient()
+                .when(mLocationBarDataProvider.getNewTabPageDelegate())
+                .thenReturn(mNewTabPageDelegate);
+        lenient()
+                .when(mLocationBarLayout.findViewById(R.id.fusebox_plus_button))
+                .thenReturn(mPlusButton);
+        lenient()
+                .when(mLocationBarLayout.getContext())
+                .thenReturn(RuntimeEnvironment.getApplication());
+        lenient()
+                .when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
                 .thenReturn(mFuseboxLayoutModeSupplier);
     }
 

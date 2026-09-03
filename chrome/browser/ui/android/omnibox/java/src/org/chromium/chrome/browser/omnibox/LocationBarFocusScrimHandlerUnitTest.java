@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -39,7 +40,8 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 public class LocationBarFocusScrimHandlerUnitTest {
     private static final int BOTTOM_CHIN_HEIGHT = 37;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private View mScrimTarget;
     @Mock private Runnable mClickDelegate;
