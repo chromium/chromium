@@ -68,9 +68,6 @@ tast.peripherals.LaunchAppFromGuestSession.diagnostics
 tast.health.MonitorKeyboardDiagnosticEvent.tablet_mode_form_factors
 tast.health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
 
-# b/409349162
-tast.inputs.PhysicalKeyboardKoreanTyping@jacuzzi
-
 # b/422132031
 tast.inputs.VirtualKeyboardHandwriting.docked
 tast.inputs.VirtualKeyboardHandwriting.floating
