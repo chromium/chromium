@@ -46,7 +46,8 @@
 
 void RegisterChromeUntrustedWebUIConfigs() {
   // Don't add calls to `AddUntrustedWebUIConfig()` for ash-specific UIs here.
-  // Add them in chrome_untrusted_web_ui_configs_chromeos.cc.
+  // Add them to `AshWebUIConfigManager::RegisterUntrustedWebUIConfigs()` in
+  // ash_web_ui_config_manager.cc
 #if BUILDFLAG(IS_CHROMEOS)
   if (auto* ash_webui_config_manager =
           ash::AshWebUIConfigManager::GetInstance()) {

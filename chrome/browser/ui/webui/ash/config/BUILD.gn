@@ -10,7 +10,6 @@ static_library("config") {
   sources = [
     "ash_web_ui_config_manager.cc",
     "ash_web_ui_config_manager.h",
-    "chrome_untrusted_web_ui_configs_chromeos.cc",
   ]
 
   deps = [

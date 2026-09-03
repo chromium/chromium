@@ -7,26 +7,35 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_ui.h"
+#include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+#include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/eche_app_ui/eche_app_ui.h"
+#include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
+#include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/focus_mode/focus_mode_ui.h"
+#include "ash/webui/focus_mode/focus_mode_untrusted_ui.h"
 #include "ash/webui/graduation/graduation_ui.h"
 #include "ash/webui/growth_internals/growth_internals_ui.h"
+#include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/mall/mall_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
+#include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
@@ -36,13 +45,17 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
+#include "chrome/browser/ash/boca/receiver/receiver_handler_delegate_impl.h"
 #include "chrome/browser/ash/borealis/borealis_motd_ui_impl.h"
 #include "chrome/browser/ash/diagnostics/system_routine_controller_delegate_impl.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/mall/chrome_mall_ui_delegate.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
@@ -51,13 +64,21 @@
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/boca_web_app_config.h"
+#include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/chrome_demo_mode_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/chrome_file_manager_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/crosh_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/files_internals_ui_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
+#include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -94,6 +115,7 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
@@ -126,6 +148,7 @@
 
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
+#include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
 namespace content {
@@ -266,6 +289,32 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
   return std::make_unique<RecorderAppUIConfig>(create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeDemoModeAppUntrustedUIConfig() {
+  auto create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        return std::make_unique<DemoModeAppUntrustedUI>(
+            web_ui, DemoSession::Get()->GetDemoAppComponentPath(),
+            std::make_unique<ChromeDemoModeAppDelegate>(web_ui));
+      });
+  return std::make_unique<DemoModeAppUntrustedUIConfig>(create_controller_func);
+}
+
+std::unique_ptr<content::WebUIConfig> MakeBocaReceiverUntrustedUIConfig() {
+  auto create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        auto delegate =
+            std::make_unique<boca_receiver::ReceiverHandlerDelegateImpl>(
+                web_ui);
+        return std::make_unique<BocaReceiverUntrustedUI>(web_ui,
+                                                         std::move(delegate));
+      });
+
+  return std::make_unique<BocaReceiverUntrustedUIConfig>(
+      create_controller_func);
+}
+
 }  // namespace
 
 // static
@@ -396,6 +445,40 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
 #if !defined(OFFICIAL_BUILD)
   AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
   AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());
+#endif  // !defined(OFFICIAL_BUILD)
+}
+
+void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
+  //
+  // All `WebUIConfig`s should be registered here, irrespective of whether their
+  // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
+  // developers should override `WebUIConfig::IsWebUIEnabled()`.
+  AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
+  AddUntrustedWebUIConfig(MakeBocaReceiverUntrustedUIConfig());
+  AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
+  AddUntrustedWebUIConfig(
+      std::make_unique<eche_app::UntrustedEcheAppUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(
+      std::make_unique<HelpAppKidsMagazineUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<UntrustedAnnotatorUIConfig>());
+  AddUntrustedWebUIConfig(
+      std::make_unique<file_manager::FileManagerUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(
+      std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
+  AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<ScannerFeedbackUntrustedUIConfig>());
+#if !defined(OFFICIAL_BUILD)
+  AddUntrustedWebUIConfig(
+      std::make_unique<SampleSystemWebAppUntrustedUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 }
 
