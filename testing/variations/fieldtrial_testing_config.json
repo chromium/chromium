@@ -6948,6 +6948,48 @@
             ]
         }
     ],
+    "DesktopWebUIOmniboxAskGAboutThisPage": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CobrowseAndLensEntrypoint",
+                    "params": {
+                        "Omnibox_AskGBypassPrivacyNotice": "true",
+                        "Omnibox_AskGCoBrowse": "true",
+                        "Omnibox_AskGLensChipRoute": "true",
+                        "Omnibox_AskGLensIcon": "true",
+                        "Omnibox_AskGLensSearchHintText": "true",
+                        "Omnibox_AskGSwapIcon": "true"
+                    },
+                    "enable_features": [
+                        "WebUIOmniboxAskGAboutThisPage"
+                    ]
+                },
+                {
+                    "name": "OmniboxComposeboxAndLensEntrypoint",
+                    "params": {
+                        "Omnibox_AskGBlockAutoTabZeroStateSuggestions": "true",
+                        "Omnibox_AskGBypassPrivacyNotice": "true",
+                        "Omnibox_AskGComposeBox": "true",
+                        "Omnibox_AskGComposeboxPlaceholder": "true",
+                        "Omnibox_AskGLensChipRoute": "true",
+                        "Omnibox_AskGLensIcon": "true",
+                        "Omnibox_AskGLensSearchHintText": "true",
+                        "Omnibox_AskGSwapIcon": "true"
+                    },
+                    "enable_features": [
+                        "WebUIOmniboxAskGAboutThisPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "DevToolsAiV2Architecture": [
         {
             "platforms": [
