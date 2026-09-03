@@ -497,6 +497,7 @@ void WebAppProvider::OnSyncBridgeReady(
     case WebAppDatabaseOpenResult::kOpenError:
     case WebAppDatabaseOpenResult::kReadError:
       // TODO(crbug.com/506131577): Handle read/open errors properly.
+      on_registry_ready_.Signal();
       return;
     case WebAppDatabaseOpenResult::kDowngradeDetected:
       ui_manager_->ShowProfileErrorDialogForCorruptDB();
