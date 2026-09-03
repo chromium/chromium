@@ -709,6 +709,11 @@ inline constexpr char kEnableACPrefetchName[] = "Enable AC Prefetch";
 inline constexpr char kEnableACPrefetchDescription[] =
     "Ensures that account capabilities are prefetched and cached.";
 
+inline constexpr char kEnableAccountPreviewPreferredAccountName[] =
+    "Enable Account Preview Preferred Account";
+inline constexpr char kEnableAccountPreviewPreferredAccountDescription[] =
+    "Controls whether computing and storing the preferred account is enabled.";
+
 inline constexpr char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 inline constexpr char kEnableAutofillAddressSavePromptDescription[] =

@@ -3278,6 +3278,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-account-preview-use-app-account",
+    "owners": [ "myuu@google.com", "rsult@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-activityless-signin-all-entry-point",
     "owners": [ "agonch@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 152
