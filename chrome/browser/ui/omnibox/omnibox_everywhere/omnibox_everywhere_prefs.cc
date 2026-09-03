@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -81,22 +82,45 @@ ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state) {
   return GetDefaultOmniboxEverywhereHotkey();
 }
 
+namespace {
+
+bool AreShortcutsAvailableForProfile(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return true;
+  }
+  PrefService* prefs = profile->GetPrefs();
+  const bool has_enterprise_shortcuts =
+      !prefs->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList).empty();
+  const bool enterprise_visible =
+      has_enterprise_shortcuts &&
+      prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible);
+  const bool personal_visible =
+      prefs->GetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible);
+  return enterprise_visible || personal_visible;
+}
+
+}  // namespace
+
 bool IsOmniboxEverywhereShortcutsVisible(Profile* profile,
                                          PrefService* local_state) {
   if (local_state) {
     const auto pref_value = static_cast<ShowShortcutsPrefValue>(
         local_state->GetInteger(kOmniboxEverywhereShowShortcuts));
-    if (pref_value == ShowShortcutsPrefValue::kEnabled) {
-      return true;
-    }
     if (pref_value == ShowShortcutsPrefValue::kDisabled) {
       return false;
+    }
+    if (pref_value == ShowShortcutsPrefValue::kEnabled) {
+      return AreShortcutsAvailableForProfile(profile);
     }
   }
 
   // Fallback to Customize Chrome / NTP setting.
-  return profile && profile->GetPrefs() &&
-         profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
+  if (!profile || !profile->GetPrefs() ||
+      !profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible)) {
+    return false;
+  }
+
+  return AreShortcutsAvailableForProfile(profile);
 }
 
 }  // namespace prefs

@@ -14,6 +14,7 @@ source_set("prefs") {
     "//chrome/browser:browser_process",
     "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/profiles:profile",
+    "//components/ntp_tiles:pref_names",
     "//components/pref_registry",
     "//components/prefs",
     "//ui/base",
