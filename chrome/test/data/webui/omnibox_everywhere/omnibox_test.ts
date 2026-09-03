@@ -18,7 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -1171,9 +1171,110 @@ suite('OmniboxEverywhereAppTest', () => {
     const dialog =
         app.shadowRoot.querySelector<HTMLDialogElement>('#voiceSearchDialog');
     assertTrue(!!dialog);
+    assertTrue(dialog.open);
     const voiceSearch = app.shadowRoot.querySelector('#voiceSearch');
     assertTrue(!!voiceSearch);
   });
+
+  test(
+      'open-voice-search does not re-open modal when dialog is already open',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-voice-search', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        let showModalCallCount = 0;
+        const originalShowModal = dialog.showModal.bind(dialog);
+        dialog.showModal = () => {
+          showModalCallCount++;
+          originalShowModal();
+        };
+
+        searchbox.dispatchEvent(new CustomEvent('open-voice-search', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertEquals(0, showModalCallCount);
+        assertTrue(dialog.open);
+      });
+
+  // Ensure that no crash occurs if voice searchdialog's parent does not exist
+  // (post tear down).
+  test(
+      'open-voice-search aborts safely if disconnected before update completes',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-voice-search', {
+          bubbles: true,
+          composed: true,
+        }));
+        app.remove();
+        await microtasksFinished();
+
+        assertFalse(app.isConnected);
+        const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        assertTrue(!!dialog);
+        assertFalse(dialog.open);
+      });
+
+  // Verifies that the voice search DOM tears down correctly and is re-built
+  // upon re-opening voice search, all without crashing.
+  test(
+      'reopening voice search after close starts fresh voice search instance',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-voice-search', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const dialog1 = app.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        const voiceSearch1 = app.shadowRoot.querySelector('#voiceSearch');
+        assertTrue(!!dialog1);
+        assertTrue(dialog1.open);
+        assertTrue(!!voiceSearch1);
+
+        voiceSearch1.dispatchEvent(new CustomEvent('voice-search-cancel', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
+        assertFalse(!!app.shadowRoot.querySelector('#voiceSearch'));
+
+        searchbox.dispatchEvent(new CustomEvent('open-voice-search', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const dialog2 = app.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        const voiceSearch2 = app.shadowRoot.querySelector('#voiceSearch');
+        assertTrue(!!dialog2);
+        assertTrue(dialog2.open);
+        assertTrue(!!voiceSearch2);
+        // Assert that the voice search component fetched is refreshed very
+        // fetch and not cached.
+        assertNotEquals(voiceSearch1, voiceSearch2);
+      });
 
   test(
       'clicking voice search button opens voice search dialog overlay and handles permission prompt',
