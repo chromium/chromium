@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_decoder_configurator.h"
+#include "media/gpu/windows/d3d_decoder_configurator.h"
 
 #include <d3d11.h>
 #include <d3d9.h>
@@ -64,7 +64,7 @@ GUID GetD3D11DecoderGUID(const VideoCodecProfile& profile,
 
 }  // namespace
 
-D3D11DecoderConfigurator::D3D11DecoderConfigurator(
+D3DDecoderConfigurator::D3DDecoderConfigurator(
     DXGI_FORMAT decoder_output_dxgifmt,
     GUID decoder_guid,
     gfx::Size coded_size,
@@ -72,12 +72,12 @@ D3D11DecoderConfigurator::D3D11DecoderConfigurator(
     : dxgi_format_(decoder_output_dxgifmt),
       decoder_guid_(decoder_guid),
       supports_swap_chain_(supports_swap_chain) {
-  SetUpDecoderDescriptor(coded_size);
-  SetUpTextureDescriptor();
+  SetUpD3D11DecoderDescriptor(coded_size);
+  SetUpD3D11TextureDescriptor();
 }
 
 // static
-std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
+std::unique_ptr<D3DDecoderConfigurator> D3DDecoderConfigurator::Create(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& workarounds,
     const VideoDecoderConfig& config,
@@ -143,28 +143,29 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
       << "D3DVideoDecoder is using " << GetProfileName(config.profile())
       << " / " << VideoChromaSamplingToString(chroma_sampling);
 
-  return std::make_unique<D3D11DecoderConfigurator>(
+  return std::make_unique<D3DDecoderConfigurator>(
       decoder_dxgi_format, decoder_guid, config.coded_size(),
       supports_nv12_decode_swap_chain);
 }
 
-bool D3D11DecoderConfigurator::SupportsDevice(
+bool D3DDecoderConfigurator::SupportsD3D11Device(
     ComD3D11VideoDevice1 video_device) {
   for (UINT i = video_device->GetVideoDecoderProfileCount(); i--;) {
     GUID profile = {};
     if (SUCCEEDED(video_device->GetVideoDecoderProfile(i, &profile))) {
-      if (profile == decoder_guid_)
+      if (profile == decoder_guid_) {
         return true;
+      }
     }
   }
   return false;
 }
 
 D3D11Status::Or<ComD3D11Texture2D>
-D3D11DecoderConfigurator::CreateOutputTexture(ComD3D11Device device,
-                                              gfx::Size size,
-                                              uint32_t array_size,
-                                              bool use_shared_handle) {
+D3DDecoderConfigurator::CreateD3D11OutputTexture(ComD3D11Device device,
+                                                 gfx::Size size,
+                                                 uint32_t array_size,
+                                                 bool use_shared_handle) {
   output_texture_desc_.Width = size.width();
   output_texture_desc_.Height = size.height();
   output_texture_desc_.ArraySize = array_size;
@@ -192,16 +193,18 @@ D3D11DecoderConfigurator::CreateOutputTexture(ComD3D11Device device,
   ComD3D11Texture2D texture;
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
+  }
   hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
+  }
   return texture;
 }
 
 // private
-void D3D11DecoderConfigurator::SetUpDecoderDescriptor(
+void D3DDecoderConfigurator::SetUpD3D11DecoderDescriptor(
     const gfx::Size& coded_size) {
   decoder_desc_ = {};
   decoder_desc_.Guid = decoder_guid_;
@@ -211,7 +214,7 @@ void D3D11DecoderConfigurator::SetUpDecoderDescriptor(
 }
 
 // private
-void D3D11DecoderConfigurator::SetUpTextureDescriptor() {
+void D3DDecoderConfigurator::SetUpD3D11TextureDescriptor() {
   output_texture_desc_ = {};
   output_texture_desc_.MipLevels = 1;
   output_texture_desc_.Format = dxgi_format_;

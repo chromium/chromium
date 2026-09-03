@@ -231,7 +231,7 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
              : 8);
   }
 
-  auto decoder_configurator = D3D11DecoderConfigurator::Create(
+  auto decoder_configurator = D3DDecoderConfigurator::Create(
       gpu_preferences_, gpu_workarounds_, config_, bit_depth, chroma_sampling_,
       media_log_.get(), use_shared_handle_, device_);
   if (!decoder_configurator) {
@@ -239,7 +239,7 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
     return false;
   }
 
-  if (!decoder_configurator->SupportsDevice(video_device_)) {
+  if (!decoder_configurator->SupportsD3D11Device(video_device_)) {
     NotifyError(D3D11StatusCode::kDecoderUnsupportedCodec);
     return false;
   }
@@ -277,7 +277,7 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
 
 std::unique_ptr<D3DVideoDecoderWrapper>
 D3DVideoDecoder::CreateD3DVideoDecoderWrapper(
-    D3D11DecoderConfigurator* decoder_configurator,
+    D3DDecoderConfigurator* decoder_configurator,
     uint8_t bit_depth) {
   CHECK(decoder_configurator);
   std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper;
@@ -825,7 +825,7 @@ void D3DVideoDecoder::CreatePictureBuffers() {
   for (size_t i = 0; i < pic_buffers_required; i++) {
     // Create an input texture / texture array if we haven't already.
     if (!in_texture) {
-      auto result = decoder_configurator_->CreateOutputTexture(
+      auto result = decoder_configurator_->CreateD3D11OutputTexture(
           device_, size,
           use_single_video_decoder_texture_ ? 1 : pic_buffers_required,
           texture_selector_->DoesDecoderOutputUseSharedHandle());

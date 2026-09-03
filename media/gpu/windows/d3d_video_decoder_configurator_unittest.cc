@@ -7,7 +7,7 @@
 #include "media/base/media_util.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/windows/av1_guids.h"
-#include "media/gpu/windows/d3d11_decoder_configurator.h"
+#include "media/gpu/windows/d3d_decoder_configurator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +20,7 @@ using ::testing::Values;
 
 namespace media {
 
-class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
+class D3DDecoderConfiguratorUnittest : public ::testing::Test {
  public:
   VideoDecoderConfig CreateDecoderConfig(VideoCodecProfile profile,
                                          gfx::Size size) {
@@ -33,7 +33,7 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
     return result;
   }
 
-  std::unique_ptr<D3D11DecoderConfigurator> CreateWithDefaultGPUInfo(
+  std::unique_ptr<D3DDecoderConfigurator> CreateWithDefaultGPUInfo(
       const VideoDecoderConfig& config,
       bool zero_copy_enabled = true,
       uint8_t bit_depth = 8) {
@@ -43,43 +43,47 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
     workarounds.disable_dxgi_zero_copy_video = false;
     VideoChromaSampling chroma_sampling = VideoChromaSampling::k420;
     auto media_log = std::make_unique<NullMediaLog>();
-    return D3D11DecoderConfigurator::Create(
+    return D3DDecoderConfigurator::Create(
         prefs, workarounds, config, bit_depth, chroma_sampling, media_log.get(),
         /*use_shared_handle=*/false, MakeComPtr<D3D11DeviceMock>());
   }
 };
 
-TEST_F(D3D11DecoderConfiguratorUnittest, VP9Profile0RightFormats) {
+TEST_F(D3DDecoderConfiguratorUnittest, VP9Profile0RightFormats) {
   auto configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(VP9PROFILE_PROFILE0, {0, 0}));
 
   EXPECT_EQ(configurator->DecoderGuid(),
             D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
-  EXPECT_EQ(configurator->DecoderDescriptor()->OutputFormat, DXGI_FORMAT_NV12);
+  EXPECT_EQ(configurator->D3D11DecoderDescriptor()->OutputFormat,
+            DXGI_FORMAT_NV12);
 }
 
-TEST_F(D3D11DecoderConfiguratorUnittest, VP9Profile2RightFormats) {
+TEST_F(D3DDecoderConfiguratorUnittest, VP9Profile2RightFormats) {
   auto configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(VP9PROFILE_PROFILE2, {0, 0}), false, 10);
 
   EXPECT_EQ(configurator->DecoderGuid(),
             D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2);
-  EXPECT_EQ(configurator->DecoderDescriptor()->OutputFormat, DXGI_FORMAT_P010);
+  EXPECT_EQ(configurator->D3D11DecoderDescriptor()->OutputFormat,
+            DXGI_FORMAT_P010);
 }
 
-TEST_F(D3D11DecoderConfiguratorUnittest, AV1ProfileRightFormats) {
+TEST_F(D3DDecoderConfiguratorUnittest, AV1ProfileRightFormats) {
   auto configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(AV1PROFILE_PROFILE_MAIN, {0, 0}), false, 8);
   EXPECT_EQ(configurator->DecoderGuid(), DXVA_ModeAV1_VLD_Profile0);
-  EXPECT_EQ(configurator->DecoderDescriptor()->OutputFormat, DXGI_FORMAT_NV12);
+  EXPECT_EQ(configurator->D3D11DecoderDescriptor()->OutputFormat,
+            DXGI_FORMAT_NV12);
 
   configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(AV1PROFILE_PROFILE_MAIN, {0, 0}), false, 10);
   EXPECT_EQ(configurator->DecoderGuid(), DXVA_ModeAV1_VLD_Profile0);
-  EXPECT_EQ(configurator->DecoderDescriptor()->OutputFormat, DXGI_FORMAT_P010);
+  EXPECT_EQ(configurator->D3D11DecoderDescriptor()->OutputFormat,
+            DXGI_FORMAT_P010);
 }
 
-TEST_F(D3D11DecoderConfiguratorUnittest, SupportsDeviceNoProfiles) {
+TEST_F(D3DDecoderConfiguratorUnittest, SupportsD3D11DeviceNoProfiles) {
   auto configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(VP9PROFILE_PROFILE0, {0, 0}));
 
@@ -88,10 +92,10 @@ TEST_F(D3D11DecoderConfiguratorUnittest, SupportsDeviceNoProfiles) {
       .Times(1)
       .WillOnce(Return(0));
 
-  EXPECT_FALSE(configurator->SupportsDevice(vd_mock));
+  EXPECT_FALSE(configurator->SupportsD3D11Device(vd_mock));
 }
 
-TEST_F(D3D11DecoderConfiguratorUnittest, SupportsDeviceWrongProfiles) {
+TEST_F(D3DDecoderConfiguratorUnittest, SupportsD3D11DeviceWrongProfiles) {
   auto configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(VP9PROFILE_PROFILE0, {0, 0}));
 
@@ -108,10 +112,10 @@ TEST_F(D3D11DecoderConfiguratorUnittest, SupportsDeviceWrongProfiles) {
       .WillOnce(
           DoAll(SetArgPointee<1>(D3D11_DECODER_PROFILE_VC1_VLD), Return(S_OK)));
 
-  EXPECT_FALSE(configurator->SupportsDevice(vd_mock));
+  EXPECT_FALSE(configurator->SupportsD3D11Device(vd_mock));
 }
 
-TEST_F(D3D11DecoderConfiguratorUnittest, SupportsDeviceCorrectProfile) {
+TEST_F(D3DDecoderConfiguratorUnittest, SupportsD3D11DeviceCorrectProfile) {
   auto configurator = CreateWithDefaultGPUInfo(
       CreateDecoderConfig(VP9PROFILE_PROFILE0, {0, 0}));
 
@@ -124,7 +128,7 @@ TEST_F(D3D11DecoderConfiguratorUnittest, SupportsDeviceCorrectProfile) {
       .WillOnce(DoAll(SetArgPointee<1>(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0),
                       Return(S_OK)));
 
-  EXPECT_TRUE(configurator->SupportsDevice(vd_mock));
+  EXPECT_TRUE(configurator->SupportsD3D11Device(vd_mock));
 }
 
 }  // namespace media

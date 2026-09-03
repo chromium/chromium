@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_DECODER_CONFIGURATOR_H_
-#define MEDIA_GPU_WINDOWS_D3D11_DECODER_CONFIGURATOR_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_DECODER_CONFIGURATOR_H_
+#define MEDIA_GPU_WINDOWS_D3D_DECODER_CONFIGURATOR_H_
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -24,15 +24,15 @@ class MediaLog;
 // Stores different pixel formats and DGXI formats, and checks for decoder
 // GUID support.  Generally provides a centralized place to figure out which
 // decoder to use, and how its output texture should be configured.
-class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
+class MEDIA_GPU_EXPORT D3DDecoderConfigurator {
  public:
-  D3D11DecoderConfigurator(DXGI_FORMAT decoder_output_dxgifmt,
-                           GUID decoder_guid,
-                           gfx::Size coded_size,
-                           bool supports_swap_chain);
-  virtual ~D3D11DecoderConfigurator() = default;
+  D3DDecoderConfigurator(DXGI_FORMAT decoder_output_dxgifmt,
+                         GUID decoder_guid,
+                         gfx::Size coded_size,
+                         bool supports_swap_chain);
+  virtual ~D3DDecoderConfigurator() = default;
 
-  static std::unique_ptr<D3D11DecoderConfigurator> Create(
+  static std::unique_ptr<D3DDecoderConfigurator> Create(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const VideoDecoderConfig& config,
@@ -42,16 +42,16 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
       bool use_shared_handle,
       ComD3D11Device device);
 
-  bool SupportsDevice(ComD3D11VideoDevice1 video_device);
+  bool SupportsD3D11Device(ComD3D11VideoDevice1 video_device);
 
   // Create the decoder's output texture.
-  D3D11Status::Or<ComD3D11Texture2D> CreateOutputTexture(
+  D3D11Status::Or<ComD3D11Texture2D> CreateD3D11OutputTexture(
       ComD3D11Device device,
       gfx::Size size,
       uint32_t array_size,
       bool use_shared_handle);
 
-  const D3D11_VIDEO_DECODER_DESC* DecoderDescriptor() const {
+  const D3D11_VIDEO_DECODER_DESC* D3D11DecoderDescriptor() const {
     return &decoder_desc_;
   }
   const GUID DecoderGuid() const { return decoder_guid_; }
@@ -59,8 +59,8 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
 
  private:
   // Set up instances of the parameter structs for D3D11 Functions
-  void SetUpDecoderDescriptor(const gfx::Size& coded_size);
-  void SetUpTextureDescriptor();
+  void SetUpD3D11DecoderDescriptor(const gfx::Size& coded_size);
+  void SetUpD3D11TextureDescriptor();
 
   D3D11_TEXTURE2D_DESC output_texture_desc_;
   D3D11_VIDEO_DECODER_DESC decoder_desc_;
@@ -73,4 +73,4 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_DECODER_CONFIGURATOR_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_DECODER_CONFIGURATOR_H_

@@ -26,11 +26,11 @@
 #include "media/base/video_types.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_decoder_configurator.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/d3d_decoder_configurator.h"
 #include "media/gpu/windows/d3d_h264_accelerator.h"
 #include "media/gpu/windows/d3d_video_decoder_client.h"
 #include "media/gpu/windows/d3d_video_frame_mailbox_release_helper.h"
@@ -164,7 +164,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
 
   // Create the D3DVideoDecoderWrapper according to the version level.
   std::unique_ptr<D3DVideoDecoderWrapper> CreateD3DVideoDecoderWrapper(
-      D3D11DecoderConfigurator* decoder_configurator,
+      D3DDecoderConfigurator* decoder_configurator,
       uint8_t bit_depth);
 
   std::unique_ptr<MediaLog> media_log_;
@@ -229,7 +229,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
 
   std::unique_ptr<AcceleratedVideoDecoder> accelerated_video_decoder_;
 
-  std::unique_ptr<D3D11DecoderConfigurator> decoder_configurator_;
+  std::unique_ptr<D3DDecoderConfigurator> decoder_configurator_;
 
   std::unique_ptr<TextureSelector> texture_selector_;
 

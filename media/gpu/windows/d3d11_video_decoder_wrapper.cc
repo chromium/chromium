@@ -307,11 +307,11 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
     MediaLog* media_log,
     ComD3D11VideoDevice1 video_device,
     ComD3D11VideoContext1 video_context,
-    const D3D11DecoderConfigurator* decoder_configurator,
+    const D3DDecoderConfigurator* decoder_configurator,
     VideoDecoderConfig config) {
   UINT config_count = 0;
   HRESULT hr = video_device->GetVideoDecoderConfigCount(
-      decoder_configurator->DecoderDescriptor(), &config_count);
+      decoder_configurator->D3D11DecoderDescriptor(), &config_count);
   if (FAILED(hr) || config_count == 0) {
     MEDIA_PLOG(ERROR, hr, media_log) << "GetVideoDecoderConfigCount failed";
     return nullptr;
@@ -321,7 +321,7 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
   bool found = false;
   for (UINT i = 0; i < config_count; i++) {
     hr = video_device->GetVideoDecoderConfig(
-        decoder_configurator->DecoderDescriptor(), i, &dec_config);
+        decoder_configurator->D3D11DecoderDescriptor(), i, &dec_config);
     if (FAILED(hr)) {
       MEDIA_PLOG(ERROR, hr, media_log) << "GetVideoDecoderConfig failed";
       return nullptr;
@@ -352,7 +352,8 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
 
   ComD3D11VideoDecoder video_decoder;
   hr = video_device->CreateVideoDecoder(
-      decoder_configurator->DecoderDescriptor(), &dec_config, &video_decoder);
+      decoder_configurator->D3D11DecoderDescriptor(), &dec_config,
+      &video_decoder);
   if (FAILED(hr)) {
     MEDIA_PLOG(ERROR, hr, media_log) << "CreateVideoDecoder failed";
     return nullptr;
