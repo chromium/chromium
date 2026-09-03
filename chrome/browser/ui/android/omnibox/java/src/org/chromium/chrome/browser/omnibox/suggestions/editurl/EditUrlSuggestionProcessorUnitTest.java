@@ -12,6 +12,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
@@ -88,7 +90,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public static final GURL ESCAPED_PATH_URL =
             new GURL("https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka");
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Tab mTab;
@@ -156,12 +159,13 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mProcessor = new EditUrlSuggestionProcessor(uiContext);
         mModel = mProcessor.createModel();
 
-        doReturn(SEARCH_URL_1).when(mTab).getUrl();
-        doReturn(TAB_TITLE).when(mTab).getTitle();
-        doReturn(mTabUserData).when(mTab).getUserDataHost();
-        doReturn(true).when(mTab).isInitialized();
+        lenient().doReturn(SEARCH_URL_1).when(mTab).getUrl();
+        lenient().doReturn(TAB_TITLE).when(mTab).getTitle();
+        lenient().doReturn(mTabUserData).when(mTab).getUserDataHost();
+        lenient().doReturn(true).when(mTab).isInitialized();
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
-        when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
+        lenient()
+                .when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(SEARCH_URL_1);
 
         mProcessor.onOmniboxSessionStateChange(true);
