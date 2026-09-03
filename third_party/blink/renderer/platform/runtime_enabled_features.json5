@@ -5142,6 +5142,12 @@
       name: "RenderPriorityAttribute",
     },
     {
+      // When enabled, avoids calling RemoveChildren() in
+      // ReplaceChildrenWithFragment() if the container is already empty.
+      name: "ReplaceChildrenWithFragmentFastPath",
+      status: "stable",
+    },
+    {
       // Kill switch for painting non-SVG replaced normal-flow stacking
       // contexts inline with their siblings.
       // This was set to experimental due to crbug.com/532229489.

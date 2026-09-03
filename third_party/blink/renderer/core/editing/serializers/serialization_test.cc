@@ -6,11 +6,15 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -478,6 +482,120 @@ TEST_F(SerializationTest, MathML_TableWithTextElements) {
   ASSERT_TRUE(ms_element);
   EXPECT_EQ(ms_element->nodeName(), "ms");
   EXPECT_EQ(ms_element->textContent().SimplifyWhiteSpace(), "result");
+}
+
+TEST_F(SerializationTest, ReplaceChildrenWithFragment) {
+  for (bool feature_enabled : {true, false}) {
+    ScopedReplaceChildrenWithFragmentFastPathForTest scoped_feature(
+        feature_enabled);
+
+    // Replace children of an empty container with a non-empty fragment.
+    {
+      Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+      ASSERT_FALSE(container->hasChildren());
+
+      auto* fragment = DocumentFragment::Create(GetDocument());
+      Element* child1 = GetDocument().CreateRawElement(html_names::kSpanTag);
+      Element* child2 = GetDocument().CreateRawElement(html_names::kPTag);
+      fragment->AppendChild(child1);
+      fragment->AppendChild(child2);
+
+      DummyExceptionStateForTesting exception_state;
+      ReplaceChildrenWithFragment(container, fragment, exception_state);
+      EXPECT_FALSE(exception_state.HadException());
+      EXPECT_TRUE(container->hasChildren());
+      EXPECT_EQ(container->firstChild(), child1);
+      EXPECT_EQ(container->lastChild(), child2);
+      EXPECT_EQ(container->firstChild()->nextSibling(), child2);
+    }
+
+    // Replace children of an empty container with an empty fragment.
+    {
+      Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+      ASSERT_FALSE(container->hasChildren());
+      auto* empty_fragment = DocumentFragment::Create(GetDocument());
+
+      DummyExceptionStateForTesting exception_state;
+      ReplaceChildrenWithFragment(container, empty_fragment, exception_state);
+      EXPECT_FALSE(exception_state.HadException());
+      EXPECT_FALSE(container->hasChildren());
+    }
+
+    // Replace children of a container with a single child (HasOneChild)
+    // with a non-empty fragment.
+    {
+      Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+      container->AppendChild(
+          GetDocument().CreateRawElement(html_names::kSpanTag));
+      ASSERT_TRUE(container->HasOneChild());
+
+      auto* fragment = DocumentFragment::Create(GetDocument());
+      Element* child = GetDocument().CreateRawElement(html_names::kPTag);
+      fragment->AppendChild(child);
+
+      DummyExceptionStateForTesting exception_state;
+      ReplaceChildrenWithFragment(container, fragment, exception_state);
+      EXPECT_FALSE(exception_state.HadException());
+      EXPECT_TRUE(container->hasChildren());
+      EXPECT_EQ(container->firstChild(), child);
+    }
+
+    // Replace children of a container with a single child with an empty
+    // fragment.
+    {
+      Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+      container->AppendChild(
+          GetDocument().CreateRawElement(html_names::kSpanTag));
+      ASSERT_TRUE(container->HasOneChild());
+
+      auto* empty_fragment = DocumentFragment::Create(GetDocument());
+
+      DummyExceptionStateForTesting exception_state;
+      ReplaceChildrenWithFragment(container, empty_fragment, exception_state);
+      EXPECT_FALSE(exception_state.HadException());
+      EXPECT_FALSE(container->hasChildren());
+    }
+
+    // Replace children of a container with multiple children using a
+    // non-empty fragment.
+    {
+      Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+      container->AppendChild(
+          GetDocument().CreateRawElement(html_names::kSpanTag));
+      container->AppendChild(
+          GetDocument().CreateRawElement(html_names::kSpanTag));
+      ASSERT_TRUE(container->hasChildren());
+
+      auto* fragment = DocumentFragment::Create(GetDocument());
+      Element* child = GetDocument().CreateRawElement(html_names::kPTag);
+      fragment->AppendChild(child);
+
+      DummyExceptionStateForTesting exception_state;
+      ReplaceChildrenWithFragment(container, fragment, exception_state);
+      EXPECT_FALSE(exception_state.HadException());
+      EXPECT_TRUE(container->hasChildren());
+      EXPECT_EQ(container->firstChild(), child);
+      EXPECT_EQ(container->lastChild(), child);
+    }
+
+    // Replace children of a container with multiple children using an empty
+    // fragment.
+    {
+      Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+      container->AppendChild(
+          GetDocument().CreateRawElement(html_names::kSpanTag));
+      container->AppendChild(
+          GetDocument().CreateRawElement(html_names::kSpanTag));
+      ASSERT_TRUE(container->hasChildren());
+
+      auto* empty_fragment = DocumentFragment::Create(GetDocument());
+
+      DummyExceptionStateForTesting exception_state;
+      ReplaceChildrenWithFragment(container, empty_fragment, exception_state);
+      EXPECT_FALSE(exception_state.HadException());
+      EXPECT_FALSE(container->hasChildren());
+    }
+  }
 }
 
 }  // namespace blink

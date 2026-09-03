@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -724,6 +725,11 @@ void ReplaceChildrenWithFragment(ContainerNode* container,
       RuntimeCallStats::CounterId::kReplaceChildrenWithFragment);
   ContainerNode* container_node(container);
 
+  if (RuntimeEnabledFeatures::ReplaceChildrenWithFragmentFastPathEnabled() &&
+      !fragment->firstChild() && !container_node->hasChildren()) {
+    return;
+  }
+
   ChildListMutationScope mutation(*container_node);
 
   if (!fragment->firstChild()) {
@@ -739,7 +745,10 @@ void ReplaceChildrenWithFragment(ContainerNode* container,
     return;
   }
 
-  container_node->RemoveChildren();
+  if (!RuntimeEnabledFeatures::ReplaceChildrenWithFragmentFastPathEnabled() ||
+      container_node->hasChildren()) {
+    container_node->RemoveChildren();
+  }
   container_node->AppendChild(fragment, exception_state);
 }
 

@@ -96,9 +96,9 @@ bool IsPlainTextMarkup(Node*);
 
 // These methods are used by HTMLElement & ShadowRoot to replace the
 // children with respected fragment/text.
-void ReplaceChildrenWithFragment(ContainerNode*,
-                                 DocumentFragment*,
-                                 ExceptionState&);
+CORE_EXPORT void ReplaceChildrenWithFragment(ContainerNode*,
+                                             DocumentFragment*,
+                                             ExceptionState&);
 void ReplaceChildrenWithText(ContainerNode*, const String&, ExceptionState&);
 
 CORE_EXPORT String
