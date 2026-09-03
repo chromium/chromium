@@ -106,8 +106,6 @@ tab_groups::SavedTabGroup CreateGroup(
     chrome_test_util::AddGroupToFakeServer(
         CreateGroup(base::NumberToString16(i) + u"RemoteGroup", tabs, groupID));
   }
-
-  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
 
 + (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups
@@ -122,8 +120,6 @@ tab_groups::SavedTabGroup CreateGroup(
     GetShareKitService()->CreateSharedTabGroupInFakeServer(
         owner, collaborationID, gurl);
   }
-
-  chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
 }
 
 + (void)removeAtIndex:(unsigned int)index {
@@ -132,7 +128,6 @@ tab_groups::SavedTabGroup CreateGroup(
   tab_groups::SavedTabGroup groupToRemove = groups[index];
 
   chrome_test_util::DeleteTabOrGroupFromFakeServer(groupToRemove.saved_guid());
-  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 
   // When a group is shared, the fake server stores the data of the group as
   // syncer::SAVED_TAB_GROUP and syncer::SHARED_TAB_GROUP_DATA. Remove the both
@@ -140,7 +135,6 @@ tab_groups::SavedTabGroup CreateGroup(
   if (groupToRemove.is_shared_tab_group()) {
     chrome_test_util::DeleteSharedGroupFromFakeServer(
         groupToRemove.saved_guid());
-    chrome_test_util::TriggerSyncCycle(syncer::SHARED_TAB_GROUP_DATA);
   }
 }
 
@@ -150,8 +144,6 @@ tab_groups::SavedTabGroup CreateGroup(
   for (unsigned int i = 0; i < groups.size(); i++) {
     [self removeAtIndex:i];
   }
-
-  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
 
 + (int)countOfSavedTabGroups {
@@ -186,7 +178,6 @@ tab_groups::SavedTabGroup CreateGroup(
                                    group.saved_guid(), 1);
   chrome_test_util::AddSharedTabToFakeServer(
       tab, group.collaboration_id().value());
-  chrome_test_util::TriggerSyncCycle(syncer::SHARED_TAB_GROUP_DATA);
 }
 
 + (NSString*)activityLogsURL {
