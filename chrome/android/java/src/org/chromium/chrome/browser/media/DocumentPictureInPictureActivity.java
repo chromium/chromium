@@ -269,7 +269,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         null);
 
         mAppThemeColorProvider =
-                new AppThemeColorProvider(this, getLifecycleDispatcher(), mAppHeaderCoordinator);
+                new AppThemeColorProvider(
+                        this, getLifecycleDispatcher(), getMultiWindowModeStateDispatcher());
         mAppThemeColorProvider.onIncognitoStateChanged(mInitiatorTab.isIncognitoBranded());
     }
 

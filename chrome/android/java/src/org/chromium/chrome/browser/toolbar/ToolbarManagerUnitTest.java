@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.media.PictureInPictureWindowManagerBridgeJni;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
@@ -248,6 +249,7 @@ public class ToolbarManagerUnitTest {
     @Mock private StatusBarColorController mStatusBarColorController;
     @Mock private AppMenuDelegate mAppMenuDelegate;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContentManager mTabContentManager;
@@ -491,6 +493,7 @@ public class ToolbarManagerUnitTest {
                         mStatusBarColorController,
                         mAppMenuDelegate,
                         mActivityLifecycleDispatcher,
+                        mMultiWindowModeStateDispatcher,
                         mBottomSheetController,
                         mDataSharingTabManager,
                         mTabContentManager,

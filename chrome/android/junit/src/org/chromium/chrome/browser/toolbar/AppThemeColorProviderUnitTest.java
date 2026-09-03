@@ -26,11 +26,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** Unit tests for {@link AppThemeColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,8 +37,7 @@ public class AppThemeColorProviderUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private AppHeaderState mAppHeaderState;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private TintObserver mTintObserver;
 
     private AppThemeColorProvider mAppThemeColorProvider;
@@ -51,9 +49,6 @@ public class AppThemeColorProviderUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
-        when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
     }
 
     @After
@@ -66,8 +61,9 @@ public class AppThemeColorProviderUnitTest {
     @Test
     public void appStartsInUnfocusedDesktopWindow() {
         // Initialize.
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
-        when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
+        when(mActivityLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(4); // > 3 (unfocused)
         initThemeColorProvider();
 
         // Simulate incognito state change that updates tint at startup.
@@ -89,13 +85,29 @@ public class AppThemeColorProviderUnitTest {
                 unfocusedActivityTint.toString(),
                 mAppThemeColorProvider.getActivityFocusTint().toString());
         verify(mTintObserver).onTintChanged(tint, unfocusedActivityTint, brandedColorScheme);
+
+        // Assume that the activity gained focus.
+        mAppThemeColorProvider.onTopResumedActivityChanged(true);
+
+        // Verify.
+        assertEquals(
+                "Default tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getTint().toString());
+        assertEquals(
+                "Activity focus tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getActivityFocusTint().toString());
+        verify(mTintObserver).onTintChanged(tint, tint, brandedColorScheme);
     }
 
     @Test
     public void topResumedActivityChanged_NotInDesktopWindow() {
         // Initialize.
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
+        when(mActivityLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(3); // <= 3 (focused)
         initThemeColorProvider();
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
 
         // Assume that the activity lost focus.
         mAppThemeColorProvider.onTopResumedActivityChanged(false);
@@ -132,8 +144,10 @@ public class AppThemeColorProviderUnitTest {
     @Test
     public void topResumedActivityChanged_InDesktopWindow() {
         // Initialize.
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
+        when(mActivityLifecycleDispatcher.getCurrentActivityState())
+                .thenReturn(3); // <= 3 (focused)
         initThemeColorProvider();
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
         // Assume that the activity lost focus.
         mAppThemeColorProvider.onTopResumedActivityChanged(false);
@@ -173,9 +187,10 @@ public class AppThemeColorProviderUnitTest {
     private void initThemeColorProvider() {
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
-                        mContext, mActivityLifecycleDispatcher, mDesktopWindowStateManager);
+                        mContext, mActivityLifecycleDispatcher, mMultiWindowModeStateDispatcher);
         mAppThemeColorProvider.addTintObserver(mTintObserver);
 
+        verify(mMultiWindowModeStateDispatcher).addObserver(mAppThemeColorProvider);
         verify(mActivityLifecycleDispatcher).register(mAppThemeColorProvider);
         assertNull(
                 "Activity focus tint should not be set on instantiation.",

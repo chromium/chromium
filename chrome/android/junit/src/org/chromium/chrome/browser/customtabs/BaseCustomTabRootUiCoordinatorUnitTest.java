@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -125,6 +126,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private OneshotSupplier<ChromeAndroidTask> mChromeAndroidTask;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private Supplier<Integer> mActivityThemeColorSupplier;
     @Mock private AppMenuBlocker mAppMenuBlocker;
@@ -230,6 +232,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 mActivityResultTracker,
                 mChromeAndroidTask,
                 mActivityLifecycleDispatcher,
+                mMultiWindowModeStateDispatcher,
                 mLayoutManagerSupplier,
                 mMenuOrKeyboardActionController,
                 mActivityThemeColorSupplier,

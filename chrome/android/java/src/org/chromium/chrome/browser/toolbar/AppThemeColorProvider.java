@@ -13,19 +13,22 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher.MultiWindowModeObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** A ThemeColorProvider for the app theme (incognito or standard theming). */
 @NullMarked
 public class AppThemeColorProvider extends ThemeColorProvider
-        implements IncognitoStateObserver, TopResumedActivityChangedObserver {
+        implements IncognitoStateObserver,
+                TopResumedActivityChangedObserver,
+                MultiWindowModeObserver {
     /** Primary color for standard mode. */
     private final int mStandardPrimaryColor;
 
@@ -47,33 +50,28 @@ public class AppThemeColorProvider extends ThemeColorProvider
     /** The activity {@link Context}. */
     private final Context mActivityContext;
 
-    /**
-     * The {@link ActivityLifecycleDispatcher} instance associated with the current activity, if
-     * available.
-     */
-    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    /** The {@link ActivityLifecycleDispatcher} instance associated with the current activity. */
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
-     * Whether the current activity is the top resumed activity. This is only relevant for use in
-     * the desktop windowing mode, to determine the tint for the toolbar icons.
+     * Whether the current activity is the top resumed activity. This is relevant in multi-window
+     * mode to determine the tint for the toolbar icons.
      */
     private boolean mIsTopResumedActivity;
 
-    /** Provider for desktop windowing mode state. */
-    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private @Nullable MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
-     *     associated with the current activity. {@code null} if activity lifecycle observation is
-     *     not required.
-     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the current
-     *     activity. {@code null} if desktop window state observation is not required.
+     *     associated with the current activity.
+     * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} instance for
+     *     the current activity. {@code null} if multi-window observation is not required.
      */
     public AppThemeColorProvider(
             Context context,
-            @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @Nullable MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
         super(context);
 
         mActivityContext = context;
@@ -99,16 +97,18 @@ public class AppThemeColorProvider extends ThemeColorProvider
                     }
                 };
 
-        mDesktopWindowStateManager = desktopWindowStateManager;
+        mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
+        if (mMultiWindowModeStateDispatcher != null) {
+            mMultiWindowModeStateDispatcher.addObserver(this);
+        }
+
+        // Fetch the active top-resumed status dynamically on start-up.
         mIsTopResumedActivity =
-                mDesktopWindowStateManager == null
-                        || !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
+                AppHeaderUtils.isActivityFocusedAtStartup(activityLifecycleDispatcher);
 
         // Activity lifecycle observation for activity focus change.
-        if (activityLifecycleDispatcher != null) {
-            mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-            mActivityLifecycleDispatcher.register(this);
-        }
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
     }
 
     void setIncognitoStateProvider(IncognitoStateProvider provider) {
@@ -127,6 +127,11 @@ public class AppThemeColorProvider extends ThemeColorProvider
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
+    @Override
+    public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
+        updateTheme();
+    }
+
     private void updateTheme() {
         updatePrimaryColor(mIsIncognito ? mIncognitoPrimaryColor : mStandardPrimaryColor, false);
         final @BrandedColorScheme int brandedColorScheme =
@@ -134,9 +139,12 @@ public class AppThemeColorProvider extends ThemeColorProvider
         final ColorStateList iconTint =
                 ThemeUtils.getThemedToolbarIconTint(mActivityContext, brandedColorScheme);
 
+        final boolean isInMultiWindowMode =
+                mMultiWindowModeStateDispatcher != null
+                        && mMultiWindowModeStateDispatcher.isInMultiWindowMode();
+
         final ColorStateList activityFocusTint =
-                mActivityLifecycleDispatcher == null
-                                || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
+                !isInMultiWindowMode
                         ? iconTint
                         : ThemeColorProvider.calculateActivityFocusTint(
                                 mActivityContext, brandedColorScheme, mIsTopResumedActivity);
@@ -154,8 +162,10 @@ public class AppThemeColorProvider extends ThemeColorProvider
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
             mLayoutStateProvider = null;
         }
-        if (mActivityLifecycleDispatcher != null) {
-            mActivityLifecycleDispatcher.unregister(this);
+        mActivityLifecycleDispatcher.unregister(this);
+        if (mMultiWindowModeStateDispatcher != null) {
+            mMultiWindowModeStateDispatcher.removeObserver(this);
+            mMultiWindowModeStateDispatcher = null;
         }
     }
 

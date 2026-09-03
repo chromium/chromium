@@ -432,6 +432,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getActivityResultTracker(),
                         getChromeAndroidTaskSupplier(),
                         getLifecycleDispatcher(),
+                        getMultiWindowModeStateDispatcher(),
                         getLayoutManagerSupplier(),
                         /* menuOrKeyboardActionController= */ this,
                         this::getActivityThemeColor,

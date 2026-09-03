@@ -25,6 +25,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  'AppThemeColorProvider.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow",
+  ],
   'ToolbarManager.java': [
     "+chrome/android/features/tab_ui",
     "+chrome/android/features/vr",

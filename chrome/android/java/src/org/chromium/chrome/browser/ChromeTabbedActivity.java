@@ -3342,6 +3342,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getActivityResultTracker(),
                 getChromeAndroidTaskSupplier(),
                 getLifecycleDispatcher(),
+                getMultiWindowModeStateDispatcher(),
                 getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this,
                 this::getActivityThemeColor,
