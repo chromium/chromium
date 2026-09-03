@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_TAB_HELPER_H_
 
+#import <memory>
 #import <optional>
+#import <string>
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
@@ -13,6 +15,7 @@
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
 #import "base/scoped_observation.h"
+#import "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 #import "ios/web/public/web_state_observer.h"
@@ -21,24 +24,53 @@
 
 class ProfileIOS;
 
+namespace optimization_guide {
+class ModelQualityLogEntry;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
+
 namespace contextual_cueing {
 
 class ContextualCueingCapTrackerService;
 
 // Tab helper that orchestrates contextual cueing classification for a WebState.
 // It requests page classification from OnDevicePageClassificationService and
-// evaluates page eligibility and category confidence against frequency limits.
+// evaluates page eligibility and category confidence against frequency limits
+// to request and present contextual cues via Model Execution Service.
 class ContextualCueingTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<ContextualCueingTabHelper> {
  public:
+  struct BackgroundTabContext {
+    GURL url;
+    std::string title;
+  };
+
+  // Delegate interface to provide surrounding context (such as background tabs)
+  // without coupling ContextualCueingTabHelper directly to Browser or
+  // WebStateList UI container objects.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns a list of background tab contexts eligible to be included in
+    // contextual cue requests.
+    virtual std::vector<BackgroundTabContext> GetEligibleBackgroundTabs(
+        web::WebState* active_web_state,
+        size_t max_tabs) = 0;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnPageClassificationCompleted(
-        web::WebState* web_state,
+        ContextualCueingTabHelper* tab_helper,
         const std::optional<std::vector<page_content_annotations::Category>>&
             categories) {}
-    virtual void OnContextualCueInvalidated(web::WebState* web_state) {}
+    virtual void OnContextualCueReceived(
+        ContextualCueingTabHelper* tab_helper,
+        const std::optional<optimization_guide::proto::ContextualCue>& cue) {}
+    virtual void OnContextualCueInvalidated(
+        ContextualCueingTabHelper* tab_helper) {}
   };
 
   ~ContextualCueingTabHelper() override;
@@ -47,6 +79,9 @@ class ContextualCueingTabHelper
   ContextualCueingTabHelper& operator=(const ContextualCueingTabHelper&) =
       delete;
 
+  // Sets the delegate for providing surrounding context.
+  void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -54,6 +89,11 @@ class ContextualCueingTabHelper
   // std::nullopt if classification has not completed.
   const std::optional<std::vector<page_content_annotations::Category>>&
   GetCategories() const;
+
+  // Returns the contextual cue for the current committed page, or std::nullopt
+  // if no cue is available.
+  const std::optional<optimization_guide::proto::ContextualCue>&
+  GetContextualCue() const;
 
   // Records that a contextual cue was shown to the user.
   void RecordCueShown();
@@ -92,6 +132,19 @@ class ContextualCueingTabHelper
       const std::optional<std::vector<page_content_annotations::Category>>&
           categories);
 
+  // Initiates a request to the Model Execution Service for contextual cues.
+  void InitiateModelExecutionRequest(const GURL& expected_url);
+
+  // Callback invoked when the Model Execution Service returns a response.
+  void OnModelExecutionResponseReceived(
+      const GURL& expected_url,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Updates `cue_` and notifies observers.
+  void NotifyContextualCueReceived(
+      std::optional<optimization_guide::proto::ContextualCue> cue);
+
   // Checks if history sync is enabled.
   bool IsHistorySyncEnabled(ProfileIOS* profile);
 
@@ -102,9 +155,13 @@ class ContextualCueingTabHelper
   ContextualCueingCapTrackerService* GetCapTrackerService() const;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
   GURL current_url_;
 
   std::optional<std::vector<page_content_annotations::Category>> categories_;
+  std::optional<optimization_guide::proto::ContextualCue> cue_;
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
 
   base::ObserverList<Observer> observers_;
 

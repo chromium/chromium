@@ -400,6 +400,14 @@ extern const char kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam[];
 // instead of extracting APC and generating passages.
 bool IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled();
 
+// Feature parameter for enabling server model execution in Gemini contextual
+// suggestions cues.
+extern const char kGeminiContextualSuggestionsCuesServerModelExecutionParam[];
+
+// Returns true if server model execution is enabled for Gemini contextual
+// suggestions cues.
+bool IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled();
+
 #pragma mark - Debugging Features
 
 // Holds the variations of the BWG Promo Consent flow for debugging.

@@ -780,6 +780,15 @@ BASE_FEATURE_PARAM(bool,
                    kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
                    true);
 
+const char kGeminiContextualSuggestionsCuesServerModelExecutionParam[] =
+    "enable_server_model_execution";
+
+BASE_FEATURE_PARAM(bool,
+                   kGeminiContextualSuggestionsCuesServerModelExecution,
+                   &kGeminiContextualSuggestionsCues,
+                   kGeminiContextualSuggestionsCuesServerModelExecutionParam,
+                   false);
+
 bool IsGeminiContextualSuggestionsCuesEnabled() {
   if (!IsPageActionMenuEnabled()) {
     return false;
@@ -799,6 +808,11 @@ bool IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled() {
 
 bool IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled() {
   return kGeminiContextualSuggestionsCuesTitleAndUrlOnly.Get();
+}
+
+bool IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled() {
+  return IsGeminiContextualSuggestionsCuesEnabled() &&
+         kGeminiContextualSuggestionsCuesServerModelExecution.Get();
 }
 
 #pragma mark - Debugging Features

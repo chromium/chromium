@@ -3,6 +3,8 @@ include_rules = [
   "+components/google/core/common",
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
   "+components/page_content_annotations/core",
   "+components/signin/public/identity_manager",
   "+components/sync/service",
@@ -10,6 +12,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/intelligence/on_device_category_classifier",
+  "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
@@ -17,6 +20,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\\.mm": [
+    "+ios/chrome/browser/optimization_guide/model/fake_optimization_guide_service.h",
     "+ios/chrome/browser/shared/model/profile/test",
   ],
 }
