@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -169,6 +170,10 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   void OnScreensharePickerOpened();
   void OnScreensharePickerClosed();
+
+  void ShowScreenshotDisclosureDialog(
+      base::OnceClosure on_accepted,
+      base::OnceClosure on_cancelled = base::DoNothing());
   using RegionSelectedCallback =
       base::OnceCallback<void(const SkBitmap& result_bitmap)>;
   void ShowRegionSelectOverlay(const SkBitmap& screenshot,
@@ -208,6 +213,12 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   }
   bool is_screenshare_picker_open_for_testing() const {
     return is_screenshare_picker_open_;
+  }
+  bool is_screenshare_disclosure_open_for_testing() const {
+    return is_screenshare_disclosure_open_;
+  }
+  views::Widget* disclosure_dialog_widget_for_testing() {
+    return disclosure_dialog_widget_.get();
   }
   OmniboxEverywhereRegionSelectOverlay* region_select_overlay_for_testing() {
     return region_select_overlay_.get();
@@ -256,6 +267,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
   void HandleWidgetDeactivated();
+  void OnScreenshotDisclosureClosed(base::OnceClosure on_cancelled,
+                                    views::Widget::ClosedReason reason);
 
 #if defined(USE_AURA)
   std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;
@@ -272,11 +285,14 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<OmniboxEverywhereRegionSelectOverlay> region_select_overlay_;
 
+  std::unique_ptr<views::Widget> disclosure_dialog_widget_;
+
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;
   bool is_context_menu_open_ = false;
   bool is_demoted_ = false;
   bool is_screenshare_picker_open_ = false;
+  bool is_screenshare_disclosure_open_ = false;
   bool is_dragging_ = false;
   std::optional<gfx::Size> pending_auto_resize_size_;
   std::optional<SkRegion> draggable_region_;

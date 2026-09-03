@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -52,6 +53,8 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
@@ -62,6 +65,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -70,6 +75,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/view_type_utils.h"
@@ -582,6 +588,11 @@ void OmniboxEverywhereUIManager::Demote() {
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   deactivation_task_.Cancel();
+  if (disclosure_dialog_widget_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(disclosure_dialog_widget_));
+  }
+  is_screenshare_disclosure_open_ = false;
   if (widget_) {
     widget_observation_.Reset();
 #if defined(USE_AURA)
@@ -620,6 +631,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_context_menu_open_ = false;
   is_demoted_ = false;
   is_screenshare_picker_open_ = false;
+  is_screenshare_disclosure_open_ = false;
   is_dragging_ = false;
   pending_auto_resize_size_.reset();
   draggable_region_.reset();
@@ -648,7 +660,8 @@ bool OmniboxEverywhereUIManager::IsActive() const {
 
 bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
   return is_file_chooser_open_ || is_drive_picker_open_ ||
-         is_screenshare_picker_open_ || region_select_overlay_ != nullptr;
+         is_screenshare_picker_open_ || is_screenshare_disclosure_open_ ||
+         region_select_overlay_ != nullptr;
 }
 
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
@@ -787,6 +800,80 @@ void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
   is_screenshare_picker_open_ = false;
   if (widget_) {
     ActivateAndFocus();
+  }
+}
+
+void OmniboxEverywhereUIManager::ShowScreenshotDisclosureDialog(
+    base::OnceClosure on_accepted,
+    base::OnceClosure on_cancelled) {
+  if (disclosure_dialog_widget_ && !disclosure_dialog_widget_->IsClosed()) {
+    disclosure_dialog_widget_->Activate();
+    if (on_cancelled) {
+      std::move(on_cancelled).Run();
+    }
+    return;
+  }
+
+  if (!widget_ || !widget_->GetContentsView()) {
+    if (on_cancelled) {
+      std::move(on_cancelled).Run();
+    }
+    return;
+  }
+
+  is_screenshare_disclosure_open_ = true;
+
+  auto dialog_model =
+      ui::DialogModel::Builder()
+          .SetTitle(l10n_util::GetStringUTF16(
+              IDS_OMNIBOX_EVERYWHERE_SCREENSHOT_DISCLOSURE_TITLE))
+          .OverrideShowCloseButton(true)
+          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+              IDS_OMNIBOX_EVERYWHERE_SCREENSHOT_DISCLOSURE_BODY)))
+          .AddOkButton(
+              std::move(on_accepted),
+              ui::DialogModel::Button::Params()
+                  .SetLabel(l10n_util::GetStringUTF16(IDS_APP_CONTINUE))
+                  .SetStyle(ui::ButtonStyle::kProminent))
+          .AddCancelButton(base::DoNothing())
+          .Build();
+
+  auto bubble = views::BubbleDialogModelHost::CreateModal(
+      std::move(dialog_model), ui::mojom::ModalType::kWindow);
+  bubble->set_fixed_width(600);
+  bubble->set_margins(gfx::Insets::VH(16, 20));
+  bubble->set_corner_radius(16);
+  bubble->SetAnchorView(widget_->GetContentsView());
+  bubble->SetArrow(views::BubbleBorder::FLOAT);
+  bubble->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  disclosure_dialog_widget_ =
+      base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+          bubble.release(), /*context=*/gfx::NativeWindow(),
+          /*parent=*/widget_->GetNativeView()));
+  disclosure_dialog_widget_->SetZOrderLevel(widget_->GetZOrderLevel());
+  disclosure_dialog_widget_->MakeCloseSynchronous(
+      base::BindOnce(&OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed,
+                     weak_factory_.GetWeakPtr(), std::move(on_cancelled)));
+  disclosure_dialog_widget_->Show();
+}
+
+void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
+    base::OnceClosure on_cancelled,
+    views::Widget::ClosedReason reason) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(disclosure_dialog_widget_));
+  is_screenshare_disclosure_open_ = false;
+
+  if (reason != views::Widget::ClosedReason::kAcceptButtonClicked) {
+    if (on_cancelled) {
+      std::move(on_cancelled).Run();
+    }
+    if (widget_ && !widget_->IsClosed() && !is_screenshare_picker_open_ &&
+        !region_select_overlay_) {
+      ActivateAndFocus();
+    }
   }
 }
 
