@@ -91,7 +91,6 @@ def init(ctx):
         "rules": [],
         # Allowlist for fail-on-bad-deps feature.
         "bad_deps": {
-            "./gen/third_party/devtools-frontend/src/front_end/models/ai_assistance/ai_assistance.js": "crbug.com/555144010",
             "./gen/third_party/devtools-frontend/src/front_end/panels/application/application.js": "crbug.com/556413211",
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
