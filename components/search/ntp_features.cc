@@ -108,7 +108,7 @@ BASE_FEATURE(kNtpCustomizeWebUiAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 // longer treats NTP-sourced renderer-initiated link clicks as browser-
 // initiated.
 BASE_FEATURE(kNtpDisableBrowserInitiatedLinks,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.

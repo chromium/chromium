@@ -13669,24 +13669,6 @@
             ]
         }
     ],
-    "NtpDisableBrowserInitiatedLinks": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpDisableBrowserInitiatedLinks"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpGoogleLogo26": [
         {
             "platforms": [
