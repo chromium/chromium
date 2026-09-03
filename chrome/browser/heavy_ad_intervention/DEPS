@@ -9,7 +9,8 @@ include_rules = [
 specific_include_rules = {
   "heavy_ad_helper_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test",
     "+components/strings/grit/components_strings.h",
     "+content/public/test",

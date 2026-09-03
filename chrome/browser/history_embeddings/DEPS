@@ -20,7 +20,7 @@ include_rules = [
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/resource_coordinator/tab_load_tracker.h",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/common/url_constants.h",
   "+chrome/grit/generated_resources.h",

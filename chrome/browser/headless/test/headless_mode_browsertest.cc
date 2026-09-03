@@ -5,6 +5,7 @@
 #include "chrome/browser/headless/test/headless_mode_browsertest.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 // Native headless is currently available on Linux, Windows and Mac platforms.
 // More platforms will be added later, so avoid function level clutter by

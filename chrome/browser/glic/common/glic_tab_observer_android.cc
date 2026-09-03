@@ -8,8 +8,11 @@
 #include "base/notreached.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 
 // For desktop, only certain operations are considered user initiated. This
 // method will try to match those operations with Android specific actions.

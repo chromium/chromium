@@ -4,6 +4,8 @@
 
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 
+#include "ui/base/page_transition_types.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #endif

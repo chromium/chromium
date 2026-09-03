@@ -6,7 +6,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/policy_constants.h"

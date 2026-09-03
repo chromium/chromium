@@ -18,6 +18,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "url/gurl.h"
 

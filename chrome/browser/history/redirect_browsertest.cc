@@ -38,6 +38,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 
 class RedirectTest : public InProcessBrowserTest {

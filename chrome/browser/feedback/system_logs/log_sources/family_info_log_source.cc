@@ -16,6 +16,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace system_logs {
 

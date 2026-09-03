@@ -15,7 +15,6 @@
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/indigo/fake_api.h"
-#include "ui/actions/actions.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -59,6 +58,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
+#include "ui/actions/actions.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/display_switches.h"
 
 namespace indigo {

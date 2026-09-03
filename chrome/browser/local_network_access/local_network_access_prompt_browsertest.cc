@@ -4,7 +4,6 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"

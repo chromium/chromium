@@ -7,6 +7,7 @@
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/hid/hid_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {

@@ -5,7 +5,7 @@
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"

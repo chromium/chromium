@@ -29,14 +29,15 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_apitest.h",
     "+chrome/browser/printing/test_print_preview_observer.h",
     "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/browser/ui/webui/print_preview/print_preview_ui.h",
   ],
   "chrome_mime_handler_view_interactive_uitest.cc": [
     "+chrome/browser/extensions/extension_apitest.h",
     "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/exclusive_access/exclusive_access_test.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
 }

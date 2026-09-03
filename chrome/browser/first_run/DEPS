@@ -41,7 +41,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/component_loader.h",
     "+chrome/browser/history/history_service_factory.h",
     "+chrome/browser/metrics/chrome_metrics_service_accessor.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test/base/in_process_browser_test.h",
     "+chrome/test/base/ui_test_utils.h",

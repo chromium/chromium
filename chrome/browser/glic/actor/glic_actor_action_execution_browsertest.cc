@@ -4,10 +4,14 @@
 
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/actor/glic_actor_test_util.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace glic::actor {
 namespace {

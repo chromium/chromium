@@ -22,11 +22,13 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/apple/url_conversions.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
 #include "url/url_canon.h"
 
 namespace {

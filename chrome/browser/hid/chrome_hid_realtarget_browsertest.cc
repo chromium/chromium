@@ -6,7 +6,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
