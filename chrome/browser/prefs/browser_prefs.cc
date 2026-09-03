@@ -590,12 +590,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 08/2025.
-inline constexpr char kInvalidationClientIDCache[] =
-    "invalidation.per_sender_client_id_cache";
-inline constexpr char kInvalidationTopicsToHandler[] =
-    "invalidation.per_sender_topics_to_handler";
-
 #if BUILDFLAG(IS_ANDROID)
 // Deprecated 08/2025.
 constexpr char kObsoleteAccountStorageNoticeShown[] =
@@ -1051,10 +1045,6 @@ constexpr char kNSSCertsMigratedToServerCertDb[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 08/2025.
-  registry->RegisterDictionaryPref(kInvalidationClientIDCache);
-  registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kAutoScreenBrightnessMetricsDailySample);
@@ -1161,10 +1151,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  // Deprecated 08/2025.
-  registry->RegisterDictionaryPref(kInvalidationClientIDCache);
-  registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
-
 #if BUILDFLAG(IS_ANDROID)
   // Deprecated 08/2025.
   registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
@@ -2387,10 +2373,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 08/2025.
-  local_state->ClearPref(kInvalidationClientIDCache);
-  local_state->ClearPref(kInvalidationTopicsToHandler);
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Added 08/2025.
   local_state->ClearPref(kAutoScreenBrightnessMetricsDailySample);
@@ -2550,10 +2532,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
-
-  // Added 08/2025.
-  profile_prefs->ClearPref(kInvalidationClientIDCache);
-  profile_prefs->ClearPref(kInvalidationTopicsToHandler);
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 08/2025.
