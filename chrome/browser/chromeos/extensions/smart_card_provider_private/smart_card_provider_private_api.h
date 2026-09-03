@@ -310,11 +310,12 @@ class SmartCardProviderPrivateAPI
       mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
           connection_watcher);
 
+  struct ContextData;
+
   device::mojom::SmartCardTransactionResultPtr CreateSmartCardTransaction(
       ContextId scard_context,
-      Handle handle);
-
-  struct ContextData;
+      Handle handle,
+      ContextData& context_data);
 
   ContextData& GetContextData(ContextId scard_context);
 

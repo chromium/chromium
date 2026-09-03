@@ -164,6 +164,8 @@ class SmartCardConnection::TransactionState final
       device::mojom::blink::SmartCardDisposition,
       base::OnceCallback<void(device::mojom::blink::SmartCardResultPtr)>);
 
+  void Reset() { transaction_.reset(); }
+
   ScriptPromiseResolver<IDLUndefined>* GetStartTransactionRequest() const {
     return start_transaction_request_.Get();
   }
@@ -757,6 +759,9 @@ void SmartCardConnection::CleanupTransactionState() {
                                                                   this);
   }
 
+  if (transaction_state_) {
+    transaction_state_->Reset();
+  }
   transaction_state_ = nullptr;
 }
 
