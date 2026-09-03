@@ -834,6 +834,21 @@ const FeatureEntry::FeatureVariation kAndroidSidePanelDevFeatureVariations[] = {
     {"Window Scoped", kAndroidSidePanelDevFeatureWindowScoped, nullptr},
     {"Tab Scoped", kAndroidSidePanelDevFeatureTabScoped, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kEnableSwipeToSwitchPaneEmphasizedMaxDuration250ms[] = {
+        {"use_emphasized_interpolator", "true"},
+        {"max_duration_ms", "250"}};
+const FeatureEntry::FeatureParam
+    kEnableSwipeToSwitchPaneEmphasizedMaxDuration200ms[] = {
+        {"use_emphasized_interpolator", "true"},
+        {"max_duration_ms", "200"}};
+
+const FeatureEntry::FeatureVariation kEnableSwipeToSwitchPaneVariations[] = {
+    {"Emphasized curve (max duration 250ms)",
+     kEnableSwipeToSwitchPaneEmphasizedMaxDuration250ms, nullptr},
+    {"Emphasized curve (max duration 200ms)",
+     kEnableSwipeToSwitchPaneEmphasizedMaxDuration200ms, nullptr}};
+
 const FeatureEntry::Choice kAndroidTabDeclutterArchiveOnDesktopChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {"Force Disable", switches::kEnableFeatures,
@@ -12774,7 +12789,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-swipe-to-switch-pane",
      flag_descriptions::kEnableSwipeToSwitchPaneName,
      flag_descriptions::kEnableSwipeToSwitchPaneDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEnableSwipeToSwitchPane)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEnableSwipeToSwitchPane,
+                                    kEnableSwipeToSwitchPaneVariations,
+                                    "EnableSwipeToSwitchPane")},
 #endif
 
     {"autofill-ai-based-amount-extraction-ignore-seen-terms-for-testing",

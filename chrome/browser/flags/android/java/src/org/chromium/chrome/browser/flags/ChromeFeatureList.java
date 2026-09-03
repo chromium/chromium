@@ -2407,6 +2407,11 @@ public abstract class ChromeFeatureList {
                     "enable_first_paint", true);
     public static final MutableIntParamWithSafeDefault sOnDemandBackgroundTabFirstPaintDelayMs =
             sOnDemandBackgroundTabContextCaptureOptimization.newIntParam("first_paint_delay_ms", 0);
+    public static final MutableIntParamWithSafeDefault sSwipeToSwitchPaneMaxDurationMs =
+            sEnableSwipeToSwitchPane.newIntParam("max_duration_ms", 250);
+    public static final MutableBooleanParamWithSafeDefault
+            sSwipeToSwitchPaneUseEmphasizedInterpolator =
+                    sEnableSwipeToSwitchPane.newBooleanParam("use_emphasized_interpolator", false);
     public static final MutableBooleanParamWithSafeDefault
             sTabBottomSheetSuppressBottomToolbarWhileOpen =
                     sTabBottomSheet.newBooleanParam("suppress_bottom_toolbar_while_open", false);
