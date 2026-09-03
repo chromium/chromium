@@ -62,6 +62,12 @@ extern const char kNtpPromo1pUtmSource[];
 extern const char kNtpPromo2pUtmSource[];
 // From the New Tab Page browser feature promo, setup-list variant.
 extern const char kNtpPromoSlUtmSource[];
+// From the "Rate extension" option in the extensions menu.
+extern const char kReviewExtensionsMenuUtmSource[];
+// From the review button in the chrome://extensions page.
+extern const char kReviewExtensionsPageUtmSource[];
+// From the "Rate extension" option in the context menu.
+extern const char kReviewContextMenuUtmSource[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing

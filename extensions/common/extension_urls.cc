@@ -58,6 +58,9 @@ const char kCustomUiPlainLinkIphUtmSource[] = "ext_zero_state_promo_links_iph";
 const char kNtpPromo1pUtmSource[] = "ext_ntp_promo_1p";
 const char kNtpPromo2pUtmSource[] = "ext_ntp_promo_2p";
 const char kNtpPromoSlUtmSource[] = "ext_ntp_promo_sl";
+const char kReviewExtensionsMenuUtmSource[] = "ext_review_extensions_menu";
+const char kReviewExtensionsPageUtmSource[] = "ext_review_extensions_page";
+const char kReviewContextMenuUtmSource[] = "ext_review_context_menu";
 
 GURL GetWebstoreLaunchURL() {
   extensions::ExtensionsClient* client = extensions::ExtensionsClient::Get();

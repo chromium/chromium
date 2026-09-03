@@ -227,31 +227,24 @@ TEST_F(ExtensionUtilDeathTest, GetCWSWritingReviewUrl_InvalidId) {
 }
 
 TEST_F(ExtensionUtilUnittest, GetCWSWritingReviewUrl) {
+  using util::CWSReviewSource;
   const ExtensionId kValidId = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  const std::string kExpectedBaseUrl =
+      base::StrCat({"https://chromewebstore.google.com/detail/", kValidId,
+                    "/reviews/my-review?utm_source="});
 
   EXPECT_EQ(
-      util::GetCWSWritingReviewUrl(
-          kValidId, util::CWSReviewSource::kExtensionsMenu)
+      util::GetCWSWritingReviewUrl(kValidId, CWSReviewSource::kExtensionsMenu)
           .spec(),
-      base::StringPrintf("https://chromewebstore.google.com/detail/"
-                         "%s/reviews?action=write&source=extensions_menu",
-                         kValidId.c_str()));
-
+      kExpectedBaseUrl + "ext_review_extensions_menu");
   EXPECT_EQ(
-      util::GetCWSWritingReviewUrl(
-          kValidId, util::CWSReviewSource::kExtensionsPage)
+      util::GetCWSWritingReviewUrl(kValidId, CWSReviewSource::kExtensionsPage)
           .spec(),
-      base::StringPrintf("https://chromewebstore.google.com/detail/"
-                         "%s/reviews?action=write&source=extensions_page",
-                         kValidId.c_str()));
-
+      kExpectedBaseUrl + "ext_review_extensions_page");
   EXPECT_EQ(
-      util::GetCWSWritingReviewUrl(
-          kValidId, util::CWSReviewSource::kContextMenu)
+      util::GetCWSWritingReviewUrl(kValidId, CWSReviewSource::kContextMenu)
           .spec(),
-      base::StringPrintf("https://chromewebstore.google.com/detail/"
-                         "%s/reviews?action=write&source=context_menu",
-                         kValidId.c_str()));
+      kExpectedBaseUrl + "ext_review_context_menu");
 }
 #if BUILDFLAG(IS_CHROMEOS)
 class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
