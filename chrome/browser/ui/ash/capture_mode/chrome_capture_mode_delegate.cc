@@ -57,13 +57,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/search_engines/template_url_service_provider.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
@@ -805,7 +805,18 @@ void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
   // Increment the `lens_request_id_` to represent a new request id.
   ++lens_request_id_;
 
+  // TODO: crbug.com/546860700 - This function should take AccountId from
+  // callers instead of looking up the active user here, matching
+  // GetPrimaryAccountAccessToken(). That requires plumbing an AccountId
+  // through the ash::CaptureModeDelegate::SendLensWebRegionSearch() virtual
+  // interface and its callers.
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+  lens_request_account_id_ = active_user->GetAccountId();
+
   GetPrimaryAccountAccessToken(
+      lens_request_account_id_,
       base::BindRepeating(
           &ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch,
           weak_ptr_factory_.GetWeakPtr(), image, is_standalone_session,
@@ -911,16 +922,11 @@ void ChromeCaptureModeDelegate::ResetOcr() {
 }
 
 void ChromeCaptureModeDelegate::GetPrimaryAccountAccessToken(
+    const AccountId& account_id,
     base::RepeatingCallback<void(const std::string& access_token)> callback,
     AccessTokenPurpose purpose) {
-  const user_manager::User* const active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user);
-
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(account_id);
 
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -1214,6 +1220,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // Get a new access token, as they are short lived and we don't want to risk
   // the original expiring.
   GetPrimaryAccountAccessToken(
+      lens_request_account_id_,
       base::BindRepeating(
           &ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText,
           weak_ptr_factory_.GetWeakPtr(), vsr_id, request_id),
