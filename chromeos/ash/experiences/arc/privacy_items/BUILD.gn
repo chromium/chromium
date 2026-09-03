@@ -13,7 +13,11 @@ static_library("privacy_items") {
   deps = [
     "//base",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session",
     "//components/keyed_service/core",
+    "//content/public/browser",
+    "//ui/gfx",
   ]
 }
 
@@ -24,10 +28,10 @@ source_set("unit_tests") {
 
   deps = [
     ":privacy_items",
-    "//chrome/test:test_support",
-    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/session",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/gfx",
   ]
 }

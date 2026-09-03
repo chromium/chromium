@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
+#include "chromeos/ash/experiences/arc/privacy_items/arc_privacy_items_bridge.h"
 
 #include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -78,8 +78,9 @@ void ArcPrivacyItemsBridge::OnPrivacyItemsChanged(
   DVLOG(1) << "ArcPrivacyItemsBridge::OnPrivacyItemsChanged size="
            << privacy_items.size();
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnPrivacyItemsChanged(privacy_items);
+  }
 }
 
 void ArcPrivacyItemsBridge::OnMicCameraIndicatorRequirementChanged(bool flag) {
@@ -102,8 +103,9 @@ void ArcPrivacyItemsBridge::OnStaticPrivacyIndicatorBoundsChanged(
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->privacy_items(),
                                   OnStaticPrivacyIndicatorBoundsChanged);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   instance->OnStaticPrivacyIndicatorBoundsChanged(display_id, bounds);
 }

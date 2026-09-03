@@ -83,7 +83,6 @@ source_set("publishers") {
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/app_shortcuts",
-      "//chrome/browser/ash/arc/privacy_items",
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/borealis",
@@ -108,6 +107,7 @@ source_set("publishers") {
       "//chromeos/ash/experiences/arc:arc_app_constants",
       "//chromeos/ash/experiences/arc:arc_metrics_constants",
       "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+      "//chromeos/ash/experiences/arc/privacy_items",
       "//chromeos/ash/experiences/arc/session",
       "//chromeos/ash/experiences/guest_os/borealis/motd",
       "//components/app_constants",
@@ -167,7 +167,6 @@ source_set("unit_tests") {
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc/fileapi",
-      "//chrome/browser/ash/arc/privacy_items",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/bruschetta:test_support",
@@ -183,6 +182,7 @@ source_set("unit_tests") {
       "//chromeos/ash/experiences/arc:arc_app_constants",
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc:notification_test_support",
+      "//chromeos/ash/experiences/arc/privacy_items",
     ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

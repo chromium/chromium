@@ -246,7 +246,6 @@ static_library("test_support") {
     "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
-    "//chrome/browser/ash/arc/privacy_items",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/profiles",
@@ -260,6 +259,7 @@ static_library("test_support") {
     "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/privacy_items",
     "//chromeos/ash/experiences/arc/session",
     "//testing/gtest",
   ]

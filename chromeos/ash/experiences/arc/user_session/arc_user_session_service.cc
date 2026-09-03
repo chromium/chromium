@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
+#include "chromeos/ash/experiences/arc/user_session/arc_user_session_service.h"
 
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
@@ -66,13 +66,15 @@ void ArcUserSessionService::OnSessionStateChanged() {
   TRACE_EVENT0("ui", "ArcUserSessionService::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
-  if (session_state != session_manager::SessionState::ACTIVE)
+  if (session_state != session_manager::SessionState::ACTIVE) {
     return;
+  }
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->intent_helper(), SendBroadcast);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   instance->SendBroadcast(
       ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(

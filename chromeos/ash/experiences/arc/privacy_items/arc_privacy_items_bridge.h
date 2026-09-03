@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
-#define CHROME_BROWSER_ASH_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -72,4 +72,4 @@ class ArcPrivacyItemsBridge
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_

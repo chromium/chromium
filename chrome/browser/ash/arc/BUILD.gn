@@ -183,13 +183,11 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/optin:unit_tests",
     "//chrome/browser/ash/arc/pip:unit_tests",
     "//chrome/browser/ash/arc/policy:unit_tests",
-    "//chrome/browser/ash/arc/privacy_items:unit_tests",
     "//chrome/browser/ash/arc/session:unit_tests",
     "//chrome/browser/ash/arc/sharesheet:unit_tests",
     "//chrome/browser/ash/arc/survey:unit_tests",
     "//chrome/browser/ash/arc/tracing:unit_tests",
     "//chrome/browser/ash/arc/tts:unit_tests",
-    "//chrome/browser/ash/arc/user_session:unit_tests",
     "//chrome/browser/ash/arc/vmm:unit_tests",
     "//chrome/browser/ash/arc/wallpaper:unit_tests",
   ]
@@ -237,6 +235,7 @@ source_set("arc_util") {
     "//storage/browser",
   ]
 }
+
 source_set("arc_util_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 

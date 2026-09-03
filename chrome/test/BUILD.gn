@@ -3975,7 +3975,6 @@ if (!is_android) {
         "//chrome/browser/ash/arc/test:arc_test_support",
         "//chrome/browser/ash/arc/tracing",
         "//chrome/browser/ash/arc/tracing/test:test_support",
-        "//chrome/browser/ash/arc/user_session",
         "//chrome/browser/ash/arc/vmm",
         "//chrome/browser/ash/attestation",
         "//chrome/browser/ash/attestation:test_support",

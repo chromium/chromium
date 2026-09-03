@@ -4,40 +4,6 @@
 
 assert(is_chromeos)
 
-static_library("user_session") {
-  sources = [
-    "arc_user_session_service.cc",
-    "arc_user_session_service.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/ash/experiences/arc",
-    "//chromeos/ash/experiences/arc/intent_helper",
-    "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
-    "//chromeos/ash/experiences/arc/mojom",
-    "//components/keyed_service/core",
-    "//components/session_manager/core",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "arc_user_session_service_unittest.cc" ]
-
-  deps = [
-    ":user_session",
-    "//chrome/test:test_support",
-    "//chromeos/ash/experiences/arc",
-    "//chromeos/ash/experiences/arc:arc_test_support",
-    "//components/session_manager/core",
-    "//components/session_manager/core:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
-}
-
 source_set("browser_tests") {
   testonly = true
 
@@ -46,13 +12,13 @@ source_set("browser_tests") {
   sources = [ "arc_user_session_service_browsertest.cc" ]
 
   deps = [
-    ":user_session",
     "//base",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/user_session",
     "//components/session_manager/core",
     "//content/test:test_support",
   ]

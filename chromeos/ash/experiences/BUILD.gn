@@ -31,7 +31,9 @@ test("ash_components_unittests") {
     "//chromeos/ash/experiences/arc/intent_helper:unit_tests",
     "//chromeos/ash/experiences/arc/keymint:unit_tests",
     "//chromeos/ash/experiences/arc/message_center:unit_tests",
+    "//chromeos/ash/experiences/arc/privacy_items:unit_tests",
     "//chromeos/ash/experiences/arc/process:unit_tests",
     "//chromeos/ash/experiences/arc/session:unit_tests",
+    "//chromeos/ash/experiences/arc/user_session:unit_tests",
   ]
 }

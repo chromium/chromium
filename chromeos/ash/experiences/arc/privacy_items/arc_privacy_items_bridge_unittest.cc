@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
+#include "chromeos/ash/experiences/arc/privacy_items/arc_privacy_items_bridge.h"
 
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_privacy_items_instance.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -21,7 +21,7 @@ class ArcPrivacyItemsBridgeTest : public testing::Test {
   void SetUp() override {
     arc_bridge_service_ = std::make_unique<ArcBridgeService>();
     bridge_ = std::make_unique<ArcPrivacyItemsBridge>(
-        &testing_profile_, arc_bridge_service_.get());
+        &context_, arc_bridge_service_.get());
     privacy_items_instance_ = std::make_unique<arc::FakePrivacyItemsInstance>();
     arc_bridge_service_->privacy_items()->SetInstance(
         privacy_items_instance_.get());
@@ -43,7 +43,7 @@ class ArcPrivacyItemsBridgeTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile testing_profile_;
+  content::TestBrowserContext context_;
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
   std::unique_ptr<ArcPrivacyItemsBridge> bridge_;
   std::unique_ptr<FakePrivacyItemsInstance> privacy_items_instance_;

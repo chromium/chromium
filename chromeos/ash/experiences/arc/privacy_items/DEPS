@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "arc_privacy_items_bridge_unittest\\.cc": [
+    "+content/public/test/test_browser_context.h",
+  ]
+}

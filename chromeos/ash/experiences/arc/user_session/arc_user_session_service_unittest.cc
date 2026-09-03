@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
+#include "chromeos/ash/experiences/arc/user_session/arc_user_session_service.h"
 
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
@@ -12,6 +11,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +29,7 @@ class ArcUserSessionServiceTest : public testing::Test {
   void SetUp() override {
     intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
         ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
-    ArcUserSessionService::GetForBrowserContextForTesting(&profile_);
+    ArcUserSessionService::GetForBrowserContextForTesting(&context_);
     // This results in ArcUserSessionService::OnConnectionReady being called
     // by intent_helper().
     // Note that unlike other bridges, ArcUserSessionServices piggybacks on
@@ -56,7 +56,7 @@ class ArcUserSessionServiceTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   FakeIntentHelperInstance intent_helper_instance_;
-  TestingProfile profile_;
+  user_prefs::TestBrowserContextWithPrefs context_;
 };
 
 TEST_F(ArcUserSessionServiceTest, ConstructDestruct) {}
