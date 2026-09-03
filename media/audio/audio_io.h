@@ -60,7 +60,7 @@ class MEDIA_EXPORT AudioOutputStream {
   // itself such as creating Windows or initializing COM.
   class MEDIA_EXPORT AudioSourceCallback {
    public:
-    virtual ~AudioSourceCallback() {}
+    virtual ~AudioSourceCallback() = default;
 
     // Provide more data by fully filling |dest|. The source will return the
     // number of frames it filled. |delay| is the duration of audio written to
@@ -99,7 +99,7 @@ class MEDIA_EXPORT AudioOutputStream {
     virtual void OnError(ErrorType type) = 0;
   };
 
-  virtual ~AudioOutputStream() {}
+  virtual ~AudioOutputStream() = default;
 
   // Opens the stream. Returns `false` if the stream cannot be opened. This
   // method should not be called more than once, and must always be eventually
@@ -179,10 +179,10 @@ class MEDIA_EXPORT AudioInputStream {
     virtual void OnError(Error error_code) = 0;
 
    protected:
-    virtual ~AudioInputCallback() {}
+    virtual ~AudioInputCallback() = default;
   };
 
-  virtual ~AudioInputStream() {}
+  virtual ~AudioInputStream() = default;
 
   enum class OpenOutcome {
     kSuccess,

@@ -51,7 +51,7 @@ class Service final : public mojom::AudioService {
   // its created on, and that thread must be AudioManager main thread.
   class AudioManagerAccessor {
    public:
-    virtual ~AudioManagerAccessor() {}
+    virtual ~AudioManagerAccessor() = default;
 
     // Must be called before destruction to cleanly shut down AudioManager.
     // Service must ensure AudioManager is not called after that.

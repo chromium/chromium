@@ -71,7 +71,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     virtual void OnLog(std::string_view message) = 0;
 
    protected:
-    virtual ~EventHandler() {}
+    virtual ~EventHandler() = default;
   };
 
   // A synchronous reader interface used by OutputController for synchronous
@@ -80,7 +80,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // now that it can handle synchronized I/O.
   class SyncReader {
    public:
-    virtual ~SyncReader() {}
+    virtual ~SyncReader() = default;
 
     // This is used by SyncReader to prepare more data and perform
     // synchronization. Also inform about output delay at a certain moment and

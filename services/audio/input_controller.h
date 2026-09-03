@@ -159,14 +159,14 @@ class InputController final {
     virtual void OnMuted(bool is_muted) = 0;
 
    protected:
-    virtual ~EventHandler() {}
+    virtual ~EventHandler() = default;
   };
 
   // A synchronous writer interface used by InputController for
   // synchronous writing.
   class SyncWriter {
    public:
-    virtual ~SyncWriter() {}
+    virtual ~SyncWriter() = default;
 
     // Write certain amount of data from |data|.
     virtual void Write(const media::AudioBus* data,

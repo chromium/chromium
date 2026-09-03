@@ -16,7 +16,7 @@ class AudioParameters;
 // AudioLog logs state information about an active audio component.
 class AudioLog {
  public:
-  virtual ~AudioLog() {}
+  virtual ~AudioLog() = default;
 
   // Called when an audio component is created.  |params| are the parameters of
   // the created stream.  |device_id| is the id of the audio device opened by
@@ -72,7 +72,7 @@ class AudioLogFactory {
                                                    int component_id) = 0;
 
  protected:
-  virtual ~AudioLogFactory() {}
+  virtual ~AudioLogFactory() = default;
 };
 
 }  // namespace media

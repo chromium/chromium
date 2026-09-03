@@ -33,7 +33,7 @@ enum class AudioDebugRecordingStreamType {
 // Interface for feeding data to a recorder.
 class AudioDebugRecorder {
  public:
-  virtual ~AudioDebugRecorder() {}
+  virtual ~AudioDebugRecorder() = default;
 
   // If debug recording is enabled, copies audio data and makes sure it's
   // written on the right thread. Otherwise ignores the data. Can be called on

@@ -17,7 +17,7 @@ namespace media {
 // AudioManager and related classes run on.
 class MEDIA_EXPORT AudioThread {
  public:
-  virtual ~AudioThread() {}
+  virtual ~AudioThread() = default;
 
   // Synchronously stops all underlying threads.
   virtual void Stop() = 0;
