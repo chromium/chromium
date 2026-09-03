@@ -14,12 +14,15 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -94,18 +97,18 @@ class BrowserViewTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenClearsFocus) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  LocationBarView* location_bar_view = browser_view->GetLocationBarView();
-  FocusManager* focus_manager = browser_view->GetFocusManager();
+  LocationBar* location_bar = browser_view->GetLocationBar();
+  ASSERT_TRUE(location_bar);
 
   // Focus starts in the location bar or one of its children.
-  EXPECT_TRUE(location_bar_view->Contains(focus_manager->GetFocusedView()));
+  EXPECT_TRUE(location_bar->IsFocusWithin());
 
   // Enter into fullscreen mode.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   // Focus is released from the location bar.
-  EXPECT_FALSE(location_bar_view->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(location_bar->IsFocusWithin());
 }
 
 // Test that the view tree order is preserved after entering and exiting
@@ -481,7 +484,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
           .SetIsAlertDialog()
           .AddOkButton(base::DoNothing())
           .Build();
-  views::View* anchor = browser_view()->GetLocationBarView();
+  views::View* anchor =
+      browser_view()->GetLocationBarView()
+          ? static_cast<views::View*>(browser_view()->GetLocationBarView())
+          : browser_view()->top_container();
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);

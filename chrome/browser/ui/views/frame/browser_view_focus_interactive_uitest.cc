@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -12,11 +14,13 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -39,6 +43,11 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
   BrowserViewFocusTest& operator=(const BrowserViewFocusTest&) = delete;
 
   ~BrowserViewFocusTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
+  }
 
   bool IsViewFocused(ViewID vid) {
     return ui_test_utils::IsViewFocused(browser(), vid);
@@ -157,11 +166,13 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   chrome::FocusLocationBar(browser());
-  ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsViewFocused(VIEW_ID_OMNIBOX); }));
   // Hide the window, show it again, the focus should not have changed.
   ui_test_utils::HideNativeWindow(window);
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(window));
-  ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsViewFocused(VIEW_ID_OMNIBOX); }));
 
   // The rest of this test does not make sense on Linux because the behavior
   // of Activate() is not well defined and can vary by window manager.
@@ -171,6 +182,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   ASSERT_TRUE(browser2);
+  WaitForInitialWebUIToolbar(browser2);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->GetWindow()->Show();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
@@ -189,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   // Switch to the 1st browser window, focus should still be on the location
   // bar and the second browser should have nothing focused.
   browser()->GetWindow()->Activate();
-  ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsViewFocused(VIEW_ID_OMNIBOX); }));
   EXPECT_EQ(nullptr, focus_manager2->GetFocusedView());
 
   // Switch back to the second browser, focus should still be on the page.

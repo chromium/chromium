@@ -717,7 +717,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
                           .SetIsAlertDialog()
                           .AddOkButton(base::DoNothing())
                           .Build();
-  views::View* anchor = browser_view->GetLocationBarView();
+  views::View* anchor =
+      browser_view->GetLocationBarView()
+          ? static_cast<views::View*>(browser_view->GetLocationBarView())
+          : browser_view->top_container();
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
