@@ -194,7 +194,9 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void populateModel_searchTile() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", SEARCH_URL, true));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0,
+                        new TileData("title", SEARCH_URL, /* isSearch= */ true));
         verifyNoMoreInteractions(mImageSupplier);
 
         ListItem tileItem = tileList.get(0);
@@ -222,7 +224,8 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mActionDelegate);
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
 
         verifyNoMoreInteractions(mImageSupplier);
         ListItem tileItem = tileList.get(0);
@@ -235,7 +238,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void populateModel_navTileIcon_favIcon() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
 
         verify(mImageSupplier).fetchFavicon(eq(NAV_URL), any());
         mFavIconCallbackCaptor
@@ -257,7 +261,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void populateModel_navTileIcon_generatedBitmap() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
 
         verify(mImageSupplier).fetchFavicon(eq(NAV_URL), any());
         mFavIconCallbackCaptor.getValue().onResult(null);
@@ -279,7 +284,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void populateModel_navTileIcon_fallbackIconUsedWhenGeneratedBitmapFails() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
 
         // Fail to retrieve a real favicon.
         verify(mImageSupplier).fetchFavicon(eq(NAV_URL), any());
@@ -302,21 +308,26 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void populateModel_navTileTitle_withMatchDescription() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
         assertEquals("title", tileList.get(0).model.get(TileViewProperties.TITLE));
 
         tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
         assertEquals("title", tileList.get(0).model.get(TileViewProperties.TITLE));
     }
 
     @Test
     public void populateModel_navTileTitle_withoutMatchDescriptionUsesHostName() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("", NAV_URL, /* isSearch= */ false));
         assertEquals(NAV_URL.getHost(), tileList.get(0).model.get(TileViewProperties.TITLE));
 
-        tileList = populateMatchesForHorizontalRenderGroup(0, new TileData("", NAV_URL, false));
+        tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("", NAV_URL, /* isSearch= */ false));
         assertEquals(NAV_URL.getHost(), tileList.get(0).model.get(TileViewProperties.TITLE));
     }
 
@@ -325,9 +336,9 @@ public final class MostVisitedTilesProcessorUnitTest {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(
                         3,
-                        new TileData("search1", SEARCH_URL, true),
-                        new TileData("nav1", NAV_URL, false),
-                        new TileData("nav2", NAV_URL_2, false));
+                        new TileData("search1", SEARCH_URL, /* isSearch= */ true),
+                        new TileData("nav1", NAV_URL, /* isSearch= */ false),
+                        new TileData("nav2", NAV_URL_2, /* isSearch= */ false));
 
         // Simulate tile clicks.
         // Note that the value being passed to the suggestion host denotes position of the Carousel
@@ -373,9 +384,9 @@ public final class MostVisitedTilesProcessorUnitTest {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(
                         3,
-                        new TileData("search1", SEARCH_URL, true),
-                        new TileData("nav1", NAV_URL, false),
-                        new TileData("nav2", NAV_URL_2, false));
+                        new TileData("search1", SEARCH_URL, /* isSearch= */ true),
+                        new TileData("nav1", NAV_URL, /* isSearch= */ false),
+                        new TileData("nav2", NAV_URL_2, /* isSearch= */ false));
 
         // Simulate tile clicks.
         // Note that the value being passed to the suggestion host denotes position of the Carousel
@@ -421,9 +432,9 @@ public final class MostVisitedTilesProcessorUnitTest {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(
                         1,
-                        new TileData("search1", SEARCH_URL, true),
-                        new TileData("nav1", NAV_URL, true),
-                        new TileData("nav2", NAV_URL_2, true));
+                        new TileData("search1", SEARCH_URL, /* isSearch= */ true),
+                        new TileData("nav1", NAV_URL, /* isSearch= */ true),
+                        new TileData("nav2", NAV_URL_2, /* isSearch= */ true));
 
         // Simulate tile long-clicks.
         // Note that this passes both placement of the carousel in the list as well as particular
@@ -446,9 +457,9 @@ public final class MostVisitedTilesProcessorUnitTest {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(
                         1,
-                        new TileData("search1", SEARCH_URL, true),
-                        new TileData("nav1", NAV_URL, true),
-                        new TileData("nav2", NAV_URL_2, true));
+                        new TileData("search1", SEARCH_URL, /* isSearch= */ true),
+                        new TileData("nav1", NAV_URL, /* isSearch= */ true),
+                        new TileData("nav2", NAV_URL_2, /* isSearch= */ true));
 
         // Simulate tile long-clicks.
         // Note that this passes both placement of the carousel in the list as well as particular
@@ -471,9 +482,9 @@ public final class MostVisitedTilesProcessorUnitTest {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(
                         1,
-                        new TileData("search1", SEARCH_URL, true),
-                        new TileData("nav1", NAV_URL, true),
-                        new TileData("nav2", NAV_URL_2, true));
+                        new TileData("search1", SEARCH_URL, /* isSearch= */ true),
+                        new TileData("nav1", NAV_URL, /* isSearch= */ true),
+                        new TileData("nav2", NAV_URL_2, /* isSearch= */ true));
 
         // Simulate navigation between the tiles. Expect the signal to be passed back to the
         // suggestions host, describing what should be shown in the Omnibox.
@@ -493,7 +504,9 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void testAccessibility_searchTile() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", SEARCH_URL, true));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0,
+                        new TileData("title", SEARCH_URL, /* isSearch= */ true));
 
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
@@ -508,7 +521,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void testAccessibility_navTile() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
 
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
@@ -525,7 +539,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     public void testDescriptionWrapping_singleLine() {
         List<ListItem> tileList =
-                populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
+                populateMatchesForHorizontalRenderGroup(
+                        /* placement= */ 0, new TileData("title", NAV_URL, /* isSearch= */ false));
 
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
@@ -561,7 +576,8 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void createModel_checkContentDescription() {
-        populateMatchesForHorizontalRenderGroup(0, new TileData("", SEARCH_URL, true));
+        populateMatchesForHorizontalRenderGroup(
+                /* placement= */ 0, new TileData("", SEARCH_URL, /* isSearch= */ true));
 
         assertEquals(
                 mContext.getString(R.string.accessibility_omnibox_most_visited_list),
