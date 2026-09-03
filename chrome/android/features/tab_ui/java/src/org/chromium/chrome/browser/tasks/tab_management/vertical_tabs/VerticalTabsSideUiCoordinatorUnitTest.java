@@ -393,6 +393,15 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertEquals(2, transitionSet.getTransitionCount());
         assertTrue(transitionSet.getTransitionAt(0) instanceof ChangeBounds);
         assertTrue(transitionSet.getTransitionAt(1) instanceof Fade);
+        verify(mMockTabListCoordinator).setInTransition(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnTransitionEnded_ResetsInTransition() {
+        SideUiSpecs newSpecs = new SideUiSpecs(mCollapsedRailWidth, 0);
+        mCoordinator.onTransitionEnded(newSpecs);
+        verify(mMockTabListCoordinator).setInTransition(false);
     }
 
     @Test
@@ -403,6 +412,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         SideUiSpecs newSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         assertNull(mCoordinator.onPreSideUiSpecsChange(newSpecs));
+        verify(mMockTabListCoordinator, never()).setInTransition(true);
     }
 
     @Test
@@ -413,6 +423,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         SideUiSpecs newSpecs = new SideUiSpecs(0, 0);
         assertNull(mCoordinator.onPreSideUiSpecsChange(newSpecs));
+        verify(mMockTabListCoordinator, never()).setInTransition(true);
     }
 
     @Test

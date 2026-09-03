@@ -4702,4 +4702,86 @@ public class VerticalTabListCoordinatorUnitTest {
         delegate.handleInternalDragEnd();
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
     }
+
+    @Test
+    @SmallTest
+    public void testSetInTransition_RequestsLayout() {
+        createCoordinator();
+        TabListRecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        TabListRecyclerView spyPinnedRecyclerView = spy(pinnedRecyclerView);
+        ReflectionHelpers.setField(mCoordinator, "mPinnedTabsRecyclerView", spyPinnedRecyclerView);
+
+        clearInvocations(spyPinnedRecyclerView);
+
+        // Transition start does not request layout (handled by container width change).
+        mCoordinator.setInTransition(true);
+        ReflectionHelpers.callInstanceMethod(
+                verify(spyPinnedRecyclerView, never()), "requestLayout");
+
+        clearInvocations(spyPinnedRecyclerView);
+
+        // Transition end triggers layout to recycle extra items back to viewport bounds.
+        mCoordinator.setInTransition(false);
+        ReflectionHelpers.callInstanceMethod(verify(spyPinnedRecyclerView), "requestLayout");
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculatePinnedExtraLayoutSpace_NotTransitioning() {
+        createCoordinator();
+        int[] extraLayoutSpace = new int[2];
+        RecyclerView.State state = mock(RecyclerView.State.class);
+        when(state.getItemCount()).thenReturn(30);
+
+        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
+
+        assertEquals(0, extraLayoutSpace[0]);
+        assertEquals(0, extraLayoutSpace[1]);
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculatePinnedExtraLayoutSpace_InTransition() {
+        createCoordinator();
+        mCoordinator.setInTransition(true);
+        int[] extraLayoutSpace = new int[2];
+        RecyclerView.State state = mock(RecyclerView.State.class);
+
+        int itemHeight =
+                TabVerticalViewBinder.getPinnedItemHeight(mActivity)
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.vertical_tab_pinned_item_margin_bottom);
+        TabListRecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        int padding = pinnedRecyclerView.getPaddingTop() + pinnedRecyclerView.getPaddingBottom();
+
+        // 0 items: falls back to container/display height.
+        when(state.getItemCount()).thenReturn(0);
+        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
+        int baseHeight = extraLayoutSpace[0];
+        assertTrue(baseHeight > 0);
+        assertEquals(baseHeight, extraLayoutSpace[1]);
+
+        // Many items: scales with total content height.
+        extraLayoutSpace[0] = 0;
+        extraLayoutSpace[1] = 0;
+        when(state.getItemCount()).thenReturn(30);
+        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
+        int expectedHeight = 30 * itemHeight + padding;
+        assertEquals(expectedHeight, extraLayoutSpace[0]);
+        assertEquals(expectedHeight, extraLayoutSpace[1]);
+
+        // Excessive items: capped at baseHeight * MAX_SINGLE_ROW_SPAN_COUNT + padding.
+        extraLayoutSpace[0] = 0;
+        extraLayoutSpace[1] = 0;
+        when(state.getItemCount()).thenReturn(500);
+        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
+        int expectedCap =
+                baseHeight * VerticalTabListCoordinator.MAX_SINGLE_ROW_SPAN_COUNT + padding;
+        assertEquals(expectedCap, extraLayoutSpace[0]);
+        assertEquals(expectedCap, extraLayoutSpace[1]);
+    }
 }
