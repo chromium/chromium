@@ -293,6 +293,27 @@ TEST_F(FontAccessManagerTest, PermissionPreviouslyDeniedErrors) {
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
 }
 
+TEST_F(FontAccessManagerTest, PermissionDeniedForOpaqueOrigin) {
+  AutoGrantPermission();
+  SimulateUserActivation();
+
+  NavigateAndCommit(GURL("data:text/html,test"));
+  ASSERT_TRUE(main_rfh()->GetLastCommittedOrigin().opaque());
+
+  const int process_id = main_rfh()->GetProcess()->GetDeprecatedID();
+  const int routing_id = main_rfh()->GetRoutingID();
+  const GlobalRenderFrameHostId main_frame_id(process_id, routing_id);
+
+  mojo::Remote<blink::mojom::FontAccessManager> manager_remote;
+  manager_->BindReceiver(main_frame_id,
+                         manager_remote.BindNewPipeAndPassReceiver());
+  FontAccessManagerSync sync_manager(manager_remote.get());
+
+  const auto [status, region] = sync_manager.EnumerateLocalFonts();
+  EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
+  EXPECT_FALSE(region.IsValid());
+}
+
 }  // namespace
 
 }  // namespace content
