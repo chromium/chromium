@@ -74,6 +74,7 @@ _CONVERTED_SCHEMAS = [
   ('content_scripts.idl', 'content_scripts.webidl'),
   ('declarative_net_request.idl', 'declarative_net_request.webidl'),
   ('image_writer_private.idl', 'image_writer_private.webidl'),
+  ('passwords_private.idl', 'passwords_private.webidl'),
   ('printer_provider.idl', 'printer_provider.webidl'),
   ('printer_provider_internal.idl', 'printer_provider_internal.webidl'),
   ('scripts_internal.idl', 'scripts_internal.webidl'),

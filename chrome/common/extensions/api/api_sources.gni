@@ -89,7 +89,7 @@ if (enable_extensions) {
     "image_writer_private.webidl",
     "indigo_private.webidl",
     "language_settings_private.webidl",
-    "passwords_private.idl",
+    "passwords_private.webidl",
     "resources_private.idl",
     "safe_browsing_private.idl",
     "settings_private.idl",
