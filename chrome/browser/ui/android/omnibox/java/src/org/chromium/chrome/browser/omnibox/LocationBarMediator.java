@@ -856,7 +856,11 @@ class LocationBarMediator
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) return;
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return;
-        boolean onNtp = UrlUtilities.isNtpUrl(tab.getUrl());
+        GURL url = tab.getUrl();
+        // An empty or invalid URL occurs on newly created tabs/windows before the initial NTP
+        // navigation commits. Treat this transient state as an NTP candidate to allow early cursor
+        // focus.
+        boolean onNtp = UrlUtilities.isNtpUrl(url) || GURL.isEmptyOrInvalid(url);
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
@@ -866,12 +870,11 @@ class LocationBarMediator
         // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
         // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
         // clear such focus if it exists.
-        if (DeviceInput.supportsAlphabeticKeyboard()) {
-            if (onNtp) {
-                showUrlBarCursorWithoutFocusAnimations();
-            } else {
-                clearUrlBarCursorWithoutFocusAnimations();
-            }
+        if (!DeviceInput.supportsAlphabeticKeyboard()) return;
+        if (onNtp) {
+            showUrlBarCursorWithoutFocusAnimations();
+        } else {
+            clearUrlBarCursorWithoutFocusAnimations();
         }
     }
 
@@ -889,11 +892,20 @@ class LocationBarMediator
 
         // Do not go to standby for existing NTPs that have already been unfocused.
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (session != null
-                && (session.isSessionActive()
-                        || session.getAutocompleteInput().getAutocompleteState()
-                                == AutocompleteState.DISABLED)) {
-            return;
+        if (session != null) {
+            if (session.getAutocompleteInput().getAutocompleteState() == AutocompleteState.DISABLED)
+                return;
+            // The session is already active (e.g. established in STANDBY mode), so avoid restarting
+            // a new session. Ensure all components bind to the active session and UrlBar requests
+            // focus.
+            if (session.isSessionActive()) {
+                beginOrResumeInput(/* activateNewSession= */ false);
+                if (!mUrlCoordinator.hasFocus()) {
+                    mUrlFocusedWithoutAnimations = true;
+                    mUrlCoordinator.requestFocus();
+                }
+                return;
+            }
         }
 
         mUrlFocusedWithoutAnimations = true;
@@ -2916,6 +2928,7 @@ class LocationBarMediator
     public void onWindowFocusChanged(boolean windowHasFocus) {
         updateShowFocusRing();
         updateActivationChip();
+        if (windowHasFocus) maybeShowOrClearCursorInLocationBar();
     }
 
     private void updateShowFocusRing() {
@@ -3052,7 +3065,8 @@ class LocationBarMediator
             // TODO(b/548102100): See if we can remove this desktop guard.
             // When the url changes via a link click, page reload, home button press, etc, we want
             // to end the input session and exit drafting w/o focus mode.
-            if (OmniboxCapabilities.isDesktopPlatform()) {
+            if (OmniboxCapabilities.isDesktopPlatform()
+                    && displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
                 endInput();
             }
             updateUrl();

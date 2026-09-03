@@ -33,7 +33,7 @@ public class WindowFocusSupplier
             ActivityLifecycleDispatcher activityLifecycleDispatcher, WindowAndroid windowAndroid) {
         WeakReference<Activity> activityRef = windowAndroid.getActivity();
         Activity activity = activityRef != null ? activityRef.get() : null;
-        boolean initialFocus = activity != null && activity.getWindow().isActive();
+        boolean initialFocus = activity != null && activity.hasWindowFocus();
         mSupplier = ObservableSuppliers.createNonNull(initialFocus);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);

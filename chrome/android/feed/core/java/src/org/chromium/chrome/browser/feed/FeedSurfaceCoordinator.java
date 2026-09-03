@@ -86,6 +86,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -1049,8 +1050,9 @@ public class FeedSurfaceCoordinator
         setHeaders(headerList);
 
         // Explicitly request focus on the scroll container to avoid UrlBar being focused after
-        // mRootView containers are refreshed.
-        mRecyclerView.requestFocus();
+        // mRootView containers are refreshed, unless a physical keyboard is attached and UrlBar
+        // is expected to remain focused.
+        if (!DeviceInput.supportsAlphabeticKeyboard()) mRecyclerView.requestFocus();
     }
 
     /**

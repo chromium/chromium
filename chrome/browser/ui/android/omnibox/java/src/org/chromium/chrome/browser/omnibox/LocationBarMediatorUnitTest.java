@@ -4711,6 +4711,24 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void
+            testShowUrlBarCursorWithoutFocusAnimations_activeSession_resumesInputAndRequestsFocus() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        mSessionState.getAutocompleteInput().setUserText("active text", TextSelection.SELECT_END);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        assertTrue(mSessionState.isSessionActive());
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.showUrlBarCursorWithoutFocusAnimations();
+
+        verify(mUrlCoordinator).beginInput(mSessionState);
+        verify(mUrlCoordinator).requestFocus();
+        assertTrue(mMediator.isUrlBarFocusedWithoutAnimation());
+    }
+
+    @Test
     public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndDoesNotShowScrim() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
@@ -5215,6 +5233,25 @@ public class LocationBarMediatorUnitTest {
                         eq(newUrlData),
                         eq(UrlBar.ScrollType.SCROLL_TO_TLD),
                         eq(TextSelection.SELECT_ALL));
+    }
+
+    @Test
+    public void testOnUrlChanged_desktop_standbySession_doesNotEndInput() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        AutocompleteInput input =
+                new AutocompleteInput()
+                        .setDisplayState(DisplayState.DRAFTING)
+                        .setAutocompleteState(AutocompleteState.STANDBY)
+                        .setPageUrl(JUnitTestGURLs.BLUE_1);
+        beginInput(input);
+
+        UrlBarData newUrlData = UrlBarData.forUrl(JUnitTestGURLs.RED_1);
+        doReturn(newUrlData).when(mLocationBarDataProvider).getUrlBarData();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onUrlChanged(/* isTabChanging= */ false);
+
+        assertTrue(mSessionState.isSessionActive());
     }
 
     @Test
