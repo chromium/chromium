@@ -71,9 +71,6 @@ BASE_DECLARE_FEATURE(kLensOverlayNavigationHistory);
 // Feature flag to add a custom bottom sheet presentation Lens results.
 BASE_DECLARE_FEATURE(kLensOverlayCustomBottomSheet);
 
-// Feature flag to check headers for lens searches.
-BASE_DECLARE_FEATURE(kLensSearchHeadersCheckEnabled);
-
 // Variations of Composebox.
 extern const char kComposeboxParam[];
 extern const char kComposeboxParamAllOmniboxEntrypoints[];

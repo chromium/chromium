@@ -362,8 +362,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kExploreBarTab];
-  } else if (base::FeatureList::IsEnabled(kLensSearchHeadersCheckEnabled) &&
-             requestInfo.target_frame_is_main && lens::IsGoogleHostURL(URL) &&
+  } else if (requestInfo.target_frame_is_main && lens::IsGoogleHostURL(URL) &&
              [self shouldAddHeaders:request]) {
     // Only attach headers for navigation clicks targeting main frame.
     [self loadResultsURL:URL httpHeaders:_latestHttpHeaders];

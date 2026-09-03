@@ -1328,11 +1328,6 @@ inline constexpr char kLensOverlayNavigationHistoryDescription[] =
     "When enabled, web navigation in the Lens overlay are recorded in browser "
     "history.";
 
-inline constexpr char kLensSearchHeadersCheckEnabledName[] =
-    "Lens search headers check";
-inline constexpr char kLensSearchHeadersCheckEnabledDescription[] =
-    "When enabled, ensures headers are attached to Lens search requests.";
-
 inline constexpr char kLensStreamServiceWebChannelTransportEnabledName[] =
     "Lens stream service web channel transport";
 inline constexpr char
