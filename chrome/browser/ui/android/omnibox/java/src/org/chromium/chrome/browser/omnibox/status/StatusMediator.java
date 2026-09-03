@@ -425,10 +425,7 @@ public class StatusMediator
         // Don't use isNtpVisible() here -- it reports NTP visibility when navigation is already
         // underway, making the onUrlChanged fail to detect the user is navigating out of the NTP.
         var url = mLocationBarDataProvider.getCurrentGurl();
-        boolean isRegularNtpUrl =
-                url != null
-                        && UrlUtilities.isNtpUrl(url)
-                        && !mLocationBarDataProvider.isIncognitoBranded();
+        boolean isRegularNtpUrl = isNtpUrl(url) && !mLocationBarDataProvider.isIncognitoBranded();
 
         @PageClassification
         int pageClassification =
@@ -539,8 +536,10 @@ public class StatusMediator
      * no longer pointing to NTP, but the navigation not yet completed).
      */
     private boolean isNtpVisible() {
-        return mLocationBarDataProvider.getNewTabPageDelegate() != null
-                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
+        return (mLocationBarDataProvider.getNewTabPageDelegate() != null
+                        && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible())
+                || (!mLocationBarDataProvider.isIncognitoBranded()
+                        && isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
     }
 
     private boolean shouldShowNtpPlusButton() {
@@ -565,10 +564,12 @@ public class StatusMediator
      * no longer pointing to NTP, but the navigation not yet completed).
      */
     private boolean isIncognitoNtpVisible() {
-        return mLocationBarDataProvider.getNewTabPageDelegate() != null
-                && mLocationBarDataProvider
-                        .getNewTabPageDelegate()
-                        .isIncognitoNewTabPageCurrentlyVisible();
+        return (mLocationBarDataProvider.getNewTabPageDelegate() != null
+                        && mLocationBarDataProvider
+                                .getNewTabPageDelegate()
+                                .isIncognitoNewTabPageCurrentlyVisible())
+                || (mLocationBarDataProvider.isIncognitoBranded()
+                        && isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
     }
 
     @Override
@@ -811,7 +812,7 @@ public class StatusMediator
 
     private boolean hasPendingNonNtpNavigation() {
         GURL url = getPendingUrl();
-        return url != null && !UrlUtilities.isNtpUrl(url);
+        return url != null && !isNtpUrl(url);
     }
 
     private boolean hasPendingHttpOrHttpsNavigation() {
@@ -886,15 +887,17 @@ public class StatusMediator
 
     private void onPreviewMatchUrlChanged(@Nullable GURL url) {
         if (!OmniboxFeatures.sPreviewMatchFavicons.isEnabled()) {
-            if ((mPreviewMatchFetchedUrl == null) != (url == null)) {
-                mPreviewMatchFetchedUrl = url;
+            boolean wasUrl = mPreviewMatchFetchedUrl != null && !isNtpUrl(mPreviewMatchFetchedUrl);
+            boolean isUrl = url != null && !isNtpUrl(url);
+            mPreviewMatchFetchedUrl = url;
+            if (wasUrl != isUrl) {
                 updateLocationBarIcon(IconTransitionType.CROSSFADE);
             }
             return;
         }
 
         mPreviewMatchFetchedUrl = url;
-        if (url == null) {
+        if (url == null || isNtpUrl(url)) {
             mPreviewMatchFavicon = null;
             mShowPreviewMatchGlobe = false;
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -1135,14 +1138,38 @@ public class StatusMediator
             return;
         }
 
-        if (UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
+        if (isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
 
         openPageInfo(mLocationBarDataProvider.getTab());
     }
 
     private boolean isUrlBarTextSearch() {
-        return (mInputSessionState == null
-                || mInputSessionState.getAutocompleteInput().getPreviewMatchUrl() == null);
+        if (mInputSessionState == null) return true;
+        GURL previewMatchUrl = mInputSessionState.getAutocompleteInput().getPreviewMatchUrl();
+        return previewMatchUrl == null || isNtpUrl(previewMatchUrl);
+    }
+
+    /**
+     * Returns whether the supplied URL represents the New Tab Page or a transient empty state.
+     *
+     * <p>Edge cases handled:
+     *
+     * <ul>
+     *   <li>{@code null}: Not an NTP URL.
+     *   <li>Empty or invalid: Transient state occurring on newly created tabs or windows before the
+     *       initial NTP navigation commits. Treating this as an NTP candidate ensures the Default
+     *       Search Engine (DSE) logo is displayed instead of the globe icon (see
+     *       crbug.com/553118979).
+     *   <li>NTP URLs: Standard committed New Tab Page URLs (e.g. {@code chrome://newtab} or {@code
+     *       chrome-native://newtab}).
+     * </ul>
+     *
+     * @param url The URL to inspect.
+     * @return True if the URL represents the NTP or an empty transient state.
+     * @see <a href="https://crbug.com/553118979">crbug.com/553118979</a>
+     */
+    private static boolean isNtpUrl(@Nullable GURL url) {
+        return url != null && (GURL.isEmptyOrInvalid(url) || UrlUtilities.isNtpUrl(url));
     }
 
     private boolean isPageInfoMovedToAppMenu() {
