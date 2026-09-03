@@ -268,14 +268,13 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
   }
 
   void PressEnter() {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const BrowserWindowInterface* browser, bool ctrl_key) {
-              EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
-                  browser, ui::VKEY_RETURN, ctrl_key, false, false, false));
-            },
-            browser(), false));
+    BrowserWindow::FromBrowser(browser())
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->edit_model()
+        ->OpenCurrentSelection(base::TimeTicks::Now(),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               /*via_keyboard=*/true);
   }
 
   // Presses enter and waits for Activation
