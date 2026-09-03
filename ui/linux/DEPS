@@ -20,10 +20,8 @@ specific_include_rules = {
   ],
   "fallback_linux_ui.cc": [
     "+ui/events/keycodes",
-    "+ui/views/controls",
   ],
   "display_server_utils.cc": [
     "+ui/ozone",
-    "+third_party/angle"
   ],
 }

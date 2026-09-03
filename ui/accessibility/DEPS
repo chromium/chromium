@@ -29,9 +29,6 @@ specific_include_rules = {
     "+mojo/core/embedder",
     "+ui/accessibility/platform/provide_ax_platform_for_tests.h",
   ],
-  "ax_assistant_util.h": [
-    "+ui/accessibility/mojom",
-  ],
 
   # Normally we shouldn't depend on ui/accessibility/platform, but this
   # is okay because it's just constants.

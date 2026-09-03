@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "input_device_observer_android.cc": [
-    "+ui/events/devices/ui_events_devices_jni_headers",
-  ],
-}

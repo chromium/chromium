@@ -20,8 +20,6 @@ specific_include_rules = {
   ],
 
   "tooltip_view_aura.cc": [
-    "+ui/base/metadata/metadata_header_macros.h",
-    "+ui/base/metadata/metadata_impl_macros.h",
     "+ui/views/accessibility/view_accessibility.h",
     "+ui/views/background.h",
     "+ui/views/border.h",

@@ -5,8 +5,3 @@ include_rules = [
   "+ui/base/test/ui_controls.h",
 ]
 
-specific_include_rules = {
-  "platform_screen.h": [
-    "+ui/linux/linux_ui.h",
-  ]
-}
