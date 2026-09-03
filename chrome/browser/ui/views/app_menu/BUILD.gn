@@ -5,6 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("app_menu") {
   public = [
@@ -63,6 +64,7 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
     "//chrome/browser:command_updater_impl",
     "//chrome/browser:defaults",
     "//chrome/browser:global_features",
@@ -71,6 +73,8 @@ source_set("impl") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/glic",
     "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/prefs",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
@@ -87,6 +91,7 @@ source_set("impl") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/views",
@@ -96,6 +101,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
     "//chrome/browser/ui/webui/whats_new",
     "//components/bookmarks/browser",
+    "//components/bookmarks/common",
     "//components/favicon/core",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
@@ -114,6 +120,7 @@ source_set("impl") {
     "//components/user_education/common",
     "//components/vector_icons",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",
@@ -124,6 +131,10 @@ source_set("impl") {
 
   if (use_aura) {
     deps += [ "//ui/aura" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 

@@ -12,10 +12,13 @@
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -39,6 +42,7 @@
 #endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -48,12 +52,18 @@
 #include "chrome/browser/ui/views/app_menu/tab_group_dynamic_menu.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_ui_util.h"
+#endif
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -108,6 +118,24 @@ bool IsRequestingTabletSite(BrowserWindowInterface* browser) {
   return entry->GetIsOverridingUserAgent();
 }
 #endif
+
+bool ArePromotionsEnabled() {
+  PrefService* local_state = g_browser_process->local_state();
+  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
+bool CanBookmarkCurrentTab(BrowserWindowInterface* browser) {
+  if (!browser || !browser->GetProfile()) {
+    return false;
+  }
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
+  return browser_defaults::bookmarks_enabled &&
+         browser->GetProfile()->GetPrefs()->GetBoolean(
+             bookmarks::prefs::kEditBookmarksEnabled) &&
+         model && model->loaded() &&
+         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+}
 
 // Builder helper to simplify declaring the action item structure for the app
 // menu.
@@ -167,9 +195,11 @@ class AppMenuBuilder {
   AppMenuBuilder& AddSubmenu(
       actions::ActionId id,
       base::FunctionRef<void(AppMenuBuilder&)> build_submenu,
-      std::optional<DisplayType> type = std::nullopt) {
+      std::optional<DisplayType> type = std::nullopt,
+      std::optional<std::u16string> text_override = std::nullopt) {
     auto item = ActionAppMenuManager::CreateIndirectActionItem(
-        id, type.value_or(default_display_type_), bg_color_);
+        id, type.value_or(default_display_type_), bg_color_,
+        std::move(text_override));
     if (!item || !parent_) {
       return *this;
     }
@@ -341,10 +371,18 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
   AppMenuBuilder(root).AddSection(
       DisplayType::kBlock, [this](AppMenuBuilder& section) {
+        Profile* profile = browser_window_interface_->GetProfile();
+        const std::optional<std::u16string> new_tab_text_override =
+            (profile->IsIncognitoProfile() ||
+             profile->IsEnterpriseIsolatedModeProfile()) &&
+                    !profile->IsGuestSession()
+                ? std::make_optional(
+                      l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB))
+                : std::nullopt;
         section
             .AddAction(
                 kActionNewTab, DisplayType::kBlock,
-                /*text_override=*/std::nullopt,
+                /*text_override=*/new_tab_text_override,
                 /*icon_override=*/
                 ui::ImageModel::FromVectorIcon(
                     features::IsRoundedIconsEnabled() ? kTabIcon
@@ -352,7 +390,7 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
                     ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
             .AddAction(kActionNewWindow, DisplayType::kBlock);
 
-        if (!browser_window_interface_->GetProfile()->IsGuestSession()) {
+        if (!profile->IsGuestSession()) {
           section.AddAction(
               kActionNewIncognitoWindow, DisplayType::kBlock,
               /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO));
@@ -392,9 +430,11 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
         base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
                             bookmarks_menu_->GetWeakPtr()),
         [this](AppMenuBuilder& sub_builder) {
-          sub_builder.AddAction(kActionBookmarkThisTab)
-              .AddAction(kActionBookmarkAllTabs)
-              .AddDivider();
+          if (CanBookmarkCurrentTab(browser_window_interface_.get())) {
+            sub_builder.AddAction(kActionBookmarkThisTab)
+                .AddAction(kActionBookmarkAllTabs)
+                .AddDivider();
+          }
 
           if (base::FeatureList::IsEnabled(
                   ntp_features::kNtpSimplificationBookmarkBar)) {
@@ -458,10 +498,18 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
         [](AppMenuBuilder& sub) { sub.AddAction(kActionCreateNewTabGroup); });
   }
 
-  builder.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {
-    sub.AddAction(kActionExtensionsSubmenuManageExtensions)
-        .AddAction(kActionExtensionsSubmenuVisitChromeWebStore);
-  });
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ArePromotionsEnabled() &&
+      base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
+      !extensions::ui_util::HasManageableExtensions(profile)) {
+    builder.AddAction(kActionFindExtensions);
+  } else {
+    builder.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {
+      sub.AddAction(kActionExtensionsSubmenuManageExtensions)
+          .AddAction(kActionExtensionsSubmenuVisitChromeWebStore);
+    });
+  }
+#endif
 
   builder.AddAction(kActionClearBrowsingData);
 }
@@ -502,8 +550,13 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         .AddAction(actions::kActionPaste);
   });
 
+  const int save_and_share_string_id = media_router::MediaRouterEnabled(profile)
+                                           ? IDS_CAST_SAVE_AND_SHARE_MENU
+                                           : IDS_SAVE_AND_SHARE_MENU;
+
   builder.AddSubmenu(
-      kActionSaveAndShareSubmenu, [this](AppMenuBuilder& sub) {
+      kActionSaveAndShareSubmenu,
+      [this](AppMenuBuilder& sub) {
         Profile* profile = browser_window_interface_->GetProfile();
         if (media_router::MediaRouterEnabled(profile)) {
           sub.AddAction(kActionRouteMedia).AddDivider();
@@ -547,7 +600,9 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
             sub.AddAction(kActionSharingHubScreenshot);
           }
         }
-      });
+      },
+      /*type=*/std::nullopt,
+      /*text_override=*/l10n_util::GetStringUTF16(save_and_share_string_id));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (display::Screen::Get()->InTabletMode()) {
@@ -569,9 +624,44 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 #endif
 
   builder.AddSubmenu(kActionDeveloperSubmenu, [this](AppMenuBuilder& sub) {
-    sub.AddAction(kActionTabSearch)
-        .AddAction(kActionNameWindow)
-        .AddAction(kActionToggleVerticalTabs);
+#if BUILDFLAG(IS_CHROMEOS)
+    const bool is_tablet_mode = display::Screen::Get()->InTabletMode();
+#else
+    const bool is_tablet_mode = false;
+#endif
+    if (!is_tablet_mode) {
+      sub.AddAction(kActionTabSearch);
+    }
+
+    sub.AddAction(kActionNameWindow);
+
+    if (auto* controller = tabs::VerticalTabStripStateController::From(
+            browser_window_interface_.get())) {
+      if (controller->ShouldDisplayVerticalTabs()) {
+        sub.AddAction(
+            kActionToggleVerticalTabs, /*type=*/std::nullopt,
+            /*text_override=*/
+            l10n_util::GetStringUTF16(IDS_SWITCH_TO_HORIZONTAL_TAB),
+            /*icon_override=*/
+            ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled() ? kToolbarIcon
+                                                  : kToolbarOldIcon,
+                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+      } else {
+        sub.AddAction(
+            kActionToggleVerticalTabs, /*type=*/std::nullopt,
+            /*text_override=*/
+            l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB),
+            /*icon_override=*/
+            ui::ImageModel::FromVectorIcon(
+                base::i18n::IsRTL()
+                    ? (features::IsRoundedIconsEnabled() ? kDockToLeftIcon
+                                                         : kDockToRightOldIcon)
+                    : (features::IsRoundedIconsEnabled() ? kDockToRightIcon
+                                                         : kDockToLeftOldIcon),
+                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+      }
+    }
 
     Profile* profile = browser_window_interface_->GetProfile();
     if (CustomizeChromePageHandler::IsSupported(
@@ -615,7 +705,12 @@ void AddHelpSubmenuActions(AppMenuBuilder& sub, BrowserWindowInterface* bwi) {
     sub.AddAction(kActionChromeWhatsNew);
   }
 
+#if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
+  sub.AddAction(kActionHelpPageViaMenu, /*type=*/std::nullopt,
+                /*text_override=*/l10n_util::GetStringUTF16(IDS_GET_HELP));
+#else
   sub.AddAction(kActionHelpPageViaMenu);
+#endif
 
   Profile* profile = bwi->GetProfile();
   if (chrome::CanShowFeedback(profile)) {

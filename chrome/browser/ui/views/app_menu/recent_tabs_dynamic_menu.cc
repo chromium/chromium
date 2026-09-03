@@ -163,6 +163,10 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
         action_item.get()->GetActionItem()->SetImage(recent_tab.icon());
         action_item.get()->GetActionItem()->SetProperty(
             ActionAppMenuManager::kContainerColorKey, ui::kColorMenuBackground);
+        if (recent_tab.accelerator().has_value()) {
+          action_item.get()->GetActionItem()->SetAccelerator(
+              recent_tab.accelerator().value());
+        }
       } else {
         auto builder = actions::ActionItem::Builder();
         builder.SetText(recent_tab.title())
@@ -171,6 +175,9 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
             .SetInvokeActionCallback(GetInvokeCallback(recent_tab, disposition))
             .SetProperty(ActionAppMenuManager::kContainerColorKey,
                          ui::kColorMenuBackground);
+        if (recent_tab.accelerator().has_value()) {
+          builder.SetAccelerator(recent_tab.accelerator().value());
+        }
 
         action_item = std::move(builder).Build();
       }

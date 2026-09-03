@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
@@ -30,6 +32,8 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/history/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -189,7 +193,9 @@ RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split) {
                             l10n_util::GetStringUTF16(IDS_RESTORE_SPLIT));
   restore_cmd.set_session_id(split.id);
   restore_cmd.set_icon(ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchOldIcon, ui::kColorMenuIcon, gfx::kFaviconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewFlippableIcon
+                                        : vector_icons::kLaunchOldIcon,
+      ui::kColorMenuIcon, gfx::kFaviconSize));
   split_item.add_child(std::move(restore_cmd));
 
   for (const auto& tab : split.tabs) {
@@ -197,6 +203,24 @@ RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split) {
   }
 
   return split_item;
+}
+
+RecentTabItem BuildEntryItem(const sessions::tab_restore::Entry& entry) {
+  switch (entry.type) {
+    case sessions::tab_restore::Type::TAB:
+      return BuildTabItem(
+          static_cast<const sessions::tab_restore::Tab&>(entry));
+    case sessions::tab_restore::Type::WINDOW:
+      return BuildWindowItem(
+          static_cast<const sessions::tab_restore::Window&>(entry));
+    case sessions::tab_restore::Type::GROUP:
+      return BuildGroupItem(
+          static_cast<const sessions::tab_restore::Group&>(entry));
+    case sessions::tab_restore::Type::SPLIT:
+      return BuildSplitItem(
+          static_cast<const sessions::tab_restore::Split&>(entry));
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -220,6 +244,12 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRecentTabs(
   auto history_items = BuildHistoryEntries(profile, browser);
   items.insert(items.end(), std::make_move_iterator(history_items.begin()),
                std::make_move_iterator(history_items.end()));
+
+  // When history saving is disabled by policy, don't populate local recently
+  // closed tabs or synced tabs from other devices.
+  if (profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
+    return items;
+  }
 
   auto local_items = BuildLocalEntries(profile);
   items.insert(items.end(), std::make_move_iterator(local_items.begin()),
@@ -291,40 +321,46 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildLocalEntries(
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(profile);
 
-  items.emplace_back(RecentTabItem::Type::kHeader,
-                     l10n_util::GetStringUTF16(IDS_RECENT_TABS));
+  ui::Accelerator accelerator;
+  const bool has_accelerator =
+      GetAcceleratorForCommandId(IDC_RESTORE_TAB, &accelerator);
+
+  const bool is_empty = !service || service->entries().empty();
+
+  RecentTabItem header_item(
+      is_empty ? RecentTabItem::Type::kCommand : RecentTabItem::Type::kHeader,
+      l10n_util::GetStringUTF16(IDS_RECENT_TABS));
+
+  if (is_empty) {
+    header_item.set_enabled(false);
+    if (has_accelerator) {
+      header_item.set_accelerator(accelerator);
+    }
+  }
+
+  items.push_back(std::move(header_item));
+
+  if (!service) {
+    return items;
+  }
 
   int added_count = 0;
   for (const auto& entry : service->entries()) {
     if (added_count == kMaxLocalEntries) {
       break;
     }
-    switch (entry->type) {
-      case sessions::tab_restore::Type::TAB: {
-        const auto& tab =
-            static_cast<const sessions::tab_restore::Tab&>(*entry);
-        items.push_back(BuildTabItem(tab));
-        break;
-      }
-      case sessions::tab_restore::Type::WINDOW: {
-        const auto& window =
-            static_cast<const sessions::tab_restore::Window&>(*entry);
-        items.push_back(BuildWindowItem(window));
-        break;
-      }
-      case sessions::tab_restore::Type::GROUP: {
-        const auto& group =
-            static_cast<const sessions::tab_restore::Group&>(*entry);
-        items.push_back(BuildGroupItem(group));
-        break;
-      }
-      case sessions::tab_restore::Type::SPLIT: {
-        const auto& split =
-            static_cast<const sessions::tab_restore::Split&>(*entry);
-        items.push_back(BuildSplitItem(split));
-        break;
+
+    RecentTabItem item = BuildEntryItem(*entry);
+
+    if (added_count == 0 && has_accelerator) {
+      if (!item.children().empty()) {
+        item.children().front().set_accelerator(accelerator);
+      } else {
+        item.set_accelerator(accelerator);
       }
     }
+
+    items.push_back(std::move(item));
     ++added_count;
   }
 

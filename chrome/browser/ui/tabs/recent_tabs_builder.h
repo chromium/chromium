@@ -14,6 +14,7 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/actions/action_id.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
@@ -72,6 +73,13 @@ class RecentTabItem {
     device_form_factor_ = factor;
   }
 
+  const std::optional<ui::Accelerator>& accelerator() const {
+    return accelerator_;
+  }
+  void set_accelerator(std::optional<ui::Accelerator> accelerator) {
+    accelerator_ = std::move(accelerator);
+  }
+
   const std::vector<RecentTabItem>& children() const { return children_; }
   std::vector<RecentTabItem>& children() { return children_; }
   void add_child(RecentTabItem child) { children_.push_back(std::move(child)); }
@@ -87,6 +95,7 @@ class RecentTabItem {
   bool is_local_ = true;
   ui::ImageModel icon_;
   ui::ImageModel minor_icon_;
+  std::optional<ui::Accelerator> accelerator_;
   syncer::DeviceInfo::FormFactor device_form_factor_ =
       syncer::DeviceInfo::FormFactor::kUnknown;
   std::vector<RecentTabItem> children_;
