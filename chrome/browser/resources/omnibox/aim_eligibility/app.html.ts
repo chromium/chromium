@@ -41,14 +41,6 @@ export function getHtml(this: AimEligibilityAppElement) {
         </span>
       </div>
       ${this.eligibilityState_.isServerEligibilityEnabled ? html`
-        <div class="check-label">Server Eligibility:</div>
-        <div class="check-item">
-          <span class="check-value ${
-              this.getCheckClass_(
-                  this.eligibilityState_.isEligibleByServer)}">
-            ${this.getServerEligibilityText_()}
-          </span>
-        </div>
         <div class="check-label">Eligibility Response Source:</div>
         <div class="check-item">
           <span class="check-value">
@@ -65,6 +57,30 @@ export function getHtml(this: AimEligibilityAppElement) {
         ` : ''}
         <div class="check-label">Eligibility Response:</div>
         <div class="check-item">
+          <div class="check-label">AIM:</div>
+          <div class="check-item">
+            <span class="check-value ${
+                this.getCheckClass_(
+                    this.eligibilityState_.isAimEligibleByServer)}">
+              ${this.getAimEligibilityText_()}
+            </span>
+          </div>
+          <div class="check-label">Fusebox:</div>
+          <div class="check-item">
+            <span class="check-value ${
+                this.getCheckClass_(
+                    this.eligibilityState_.isFuseboxEligibleByServer)}">
+              ${this.getFuseboxEligibilityText_()}
+            </span>
+          </div>
+          <div class="check-label">Co-Browse:</div>
+          <div class="check-item">
+            <span class="check-value ${
+                this.getCheckClass_(
+                    this.eligibilityState_.isCobrowseEligibleByServer)}">
+              ${this.getCobrowseEligibilityText_()}
+            </span>
+          </div>
           <input class="response-input ${this.inputState_}"
               .value="${this.eligibilityState_.eligibilityResponseBase64Encoded}"
               @input="${this.onResponseInput_}"
@@ -88,14 +104,6 @@ export function getHtml(this: AimEligibilityAppElement) {
           </div>
         </div>
       ` : ''}
-      <div class="check-label">SearchboxConfig:</div>
-      <div class="check-item">
-        <cr-button
-            ?disabled="${!this.eligibilityState_.searchboxConfigBase64UrlEncoded}"
-            @click="${this.onViewSearchboxConfigClick_}">
-          View Demo
-        </cr-button>
-      </div>
 
       <div class="drive-state-header">Drive State</div>
       ${this.eligibilityState_.driveStatus ? html`

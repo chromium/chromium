@@ -37,29 +37,34 @@ struct DriveStatus {
 
 // The AIM eligibility state.
 struct EligibilityState {
+  // Top-level combined eligibility:
   // Whether AIM is eligible. Combines local and server eligibility, if enabled.
   bool is_eligible;
+
+  // Local preconditions:
   // Whether AIM is eligible by enterprise policy.
   bool is_eligible_by_policy;
   // Whether 3rd party AI Chat is eligible by enterprise policy.
   bool is_third_party_eligible_by_policy;
   // Whether AIM is eligible by DSE, i.e., Google is the default search engine.
   bool is_eligible_by_dse;
-  // Whether AIM is eligible by server response. Only populated if server
-  // eligibility checking is enabled.
-  bool is_eligible_by_server;
-  // Whether server eligibility checking is enabled.
+
+  // Feature-specific server eligibility:
+  // Whether AIM is eligible by server response.
+  bool is_aim_eligible_by_server;
+  // Whether Fusebox is eligible by server response.
+  bool is_fusebox_eligible_by_server;
+  // Whether Co-Browse is eligible by server response.
+  bool is_cobrowse_eligible_by_server;
+
+  // Server eligibility checking status:
   bool is_server_eligibility_enabled;
-  // Base64 encoded eligibility response proto. Populated if server eligibility
-  // checking is enabled.
+  // Base64 encoded eligibility response proto.
   string eligibility_response_base64_encoded;
   // Source of the eligibility response, e.g., "Server", "Prefs".
   string eligibility_response_source;
   // Auth type of the eligibility response, e.g., "OAuth" or "Cookie".
   string? eligibility_response_auth_type;
-  // Base64url encoded searchbox config proto. Populated if server
-  // eligibility checking is enabled.
-  string searchbox_config_base64_url_encoded;
   // The status of Google Drive support. Populated asynchronously.
   DriveStatus? drive_status;
   // Last updated time.
