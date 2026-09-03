@@ -10,7 +10,13 @@
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/uuid.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -27,6 +33,13 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/test/test_renderer_host.h"
@@ -131,6 +144,204 @@ TEST_F(ActionAppMenuTest, PopulatesRecentTabsSubmenu) {
       root->GetMenuItemByID(kActionRecentTabsSubmenu);
   ASSERT_TRUE(recent_tabs_item);
   EXPECT_TRUE(recent_tabs_item->HasSubmenu());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(bookmark_model);
+  bookmark_model->LoadEmptyForTest();
+
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(bookmark_service);
+  bookmark_service->LoadForTesting({});
+
+  const bookmarks::BookmarkNode* bar_node = bookmark_model->bookmark_bar_node();
+  bookmark_model->AddURL(bar_node, 0, u"Google",
+                         GURL("https://www.google.com"));
+  const bookmarks::BookmarkNode* folder =
+      bookmark_model->AddFolder(bar_node, 1, u"Test Folder");
+  bookmark_model->AddURL(folder, 0, u"Child Bookmark",
+                         GURL("https://example.com"));
+  bookmark_model->AddFolder(bar_node, 2, u"Empty Folder");
+
+  const bookmarks::BookmarkNode* other_node = bookmark_model->other_node();
+  bookmark_model->AddURL(other_node, 0, u"Other Bookmark",
+                         GURL("https://other.com"));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* bookmarks_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  EXPECT_TRUE(bookmarks_item->HasSubmenu());
+
+  // Verify static items like Bookmark This Tab and Bookmark Manager exist.
+  EXPECT_NE(root->GetMenuItemByID(kActionBookmarkThisTab), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionBookmarkAllTabs), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionShowBookmarkManager), nullptr);
+
+  // Verify dynamic bookmark items under the bookmarks submenu.
+  views::SubmenuView* bookmarks_submenu = bookmarks_item->GetSubmenu();
+  ASSERT_TRUE(bookmarks_submenu);
+
+  views::MenuItemView* google_item = nullptr;
+  views::MenuItemView* folder_item = nullptr;
+  views::MenuItemView* empty_folder_item = nullptr;
+  views::MenuItemView* other_folder_item = nullptr;
+  for (views::MenuItemView* item : bookmarks_submenu->GetMenuItems()) {
+    if (item->title() == u"Google") {
+      google_item = item;
+    } else if (item->title() == u"Test Folder") {
+      folder_item = item;
+    } else if (item->title() == u"Empty Folder") {
+      empty_folder_item = item;
+    } else if (item->title() == bookmark_model->other_node()->GetTitle()) {
+      other_folder_item = item;
+    }
+  }
+
+  // Top-level URL bookmark in bookmark bar.
+  ASSERT_NE(google_item, nullptr);
+  EXPECT_FALSE(google_item->HasSubmenu());
+
+  // Folder containing a child bookmark.
+  ASSERT_NE(folder_item, nullptr);
+  EXPECT_TRUE(folder_item->HasSubmenu());
+  views::MenuItemView* child_item = nullptr;
+  for (views::MenuItemView* item : folder_item->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"Child Bookmark") {
+      child_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(child_item, nullptr);
+
+  // Empty folder containing disabled "(empty)" placeholder item.
+  ASSERT_NE(empty_folder_item, nullptr);
+  EXPECT_TRUE(empty_folder_item->HasSubmenu());
+  views::MenuItemView* empty_item = nullptr;
+  for (views::MenuItemView* item :
+       empty_folder_item->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"(empty)") {
+      empty_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(empty_item, nullptr);
+  EXPECT_FALSE(empty_item->GetEnabled());
+
+  // Other bookmarks folder containing child bookmark.
+  ASSERT_NE(other_folder_item, nullptr);
+  EXPECT_TRUE(other_folder_item->HasSubmenu());
+  views::MenuItemView* other_child_item = nullptr;
+  for (views::MenuItemView* item :
+       other_folder_item->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"Other Bookmark") {
+      other_child_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(other_child_item, nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
+  FaviconServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<favicon::MockFaviconService>>();
+      }));
+
+  auto* sync_service = static_cast<tab_groups::FakeTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(sync_service);
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab1(GURL("https://example.com/1"),
+                                    u"Test Tab 1", group_guid,
+                                    /*position=*/0);
+  tab_groups::SavedTabGroupTab tab2(GURL("https://example.com/2"),
+                                    u"Test Tab 2", group_guid,
+                                    /*position=*/1);
+  tab_groups::SavedTabGroup group(
+      u"My Test Tab Group", tab_groups::TabGroupColorId::kBlue, {tab1, tab2},
+      /*position=*/std::nullopt, group_guid);
+  sync_service->AddGroup(std::move(group));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* tab_groups_item =
+      root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
+  ASSERT_TRUE(tab_groups_item);
+  EXPECT_TRUE(tab_groups_item->HasSubmenu());
+
+  // Verify the static action item for creating a new group exists.
+  views::MenuItemView* new_group_item =
+      root->GetMenuItemByID(kActionCreateNewTabGroup);
+  ASSERT_TRUE(new_group_item);
+
+  // Find the dynamically populated tab group item by title.
+  views::SubmenuView* tab_groups_submenu = tab_groups_item->GetSubmenu();
+  ASSERT_TRUE(tab_groups_submenu);
+
+  views::MenuItemView* group_item = nullptr;
+  for (views::MenuItemView* item : tab_groups_submenu->GetMenuItems()) {
+    if (item->title() == u"My Test Tab Group") {
+      group_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(group_item, nullptr);
+  EXPECT_TRUE(group_item->HasSubmenu());
+
+  // Verify group commands inside the group submenu.
+  views::SubmenuView* group_submenu = group_item->GetSubmenu();
+  ASSERT_TRUE(group_submenu);
+
+  EXPECT_NE(root->GetMenuItemByID(kActionTabGroupOpenInBrowser), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionTabGroupOpenInNewWindow), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionTabGroupPin), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionTabGroupDelete), nullptr);
+
+  // Verify the saved tabs under the group item.
+  views::MenuItemView* tab1_item = nullptr;
+  views::MenuItemView* tab2_item = nullptr;
+  for (views::MenuItemView* item : group_submenu->GetMenuItems()) {
+    if (item->title() == u"Test Tab 1") {
+      tab1_item = item;
+    } else if (item->title() == u"Test Tab 2") {
+      tab2_item = item;
+    }
+  }
+  ASSERT_NE(tab1_item, nullptr);
+  ASSERT_NE(tab2_item, nullptr);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
