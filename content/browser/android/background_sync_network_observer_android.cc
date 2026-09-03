@@ -21,7 +21,7 @@ scoped_refptr<BackgroundSyncNetworkObserverAndroid::Observer>
 BackgroundSyncNetworkObserverAndroid::Observer::Create(
     base::RepeatingCallback<void(net::NetworkChangeNotifier::ConnectionType)>
         callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   scoped_refptr<BackgroundSyncNetworkObserverAndroid::Observer> observer(
       new BackgroundSyncNetworkObserverAndroid::Observer(callback));
   return observer;
@@ -30,7 +30,7 @@ BackgroundSyncNetworkObserverAndroid::Observer::Create(
 void BackgroundSyncNetworkObserverAndroid::Observer::Init() {
   TRACE_EVENT0("startup",
                "BackgroundSyncNetworkObserverAndroid::Observer::Init");
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Attach a Java BackgroundSyncNetworkObserver object. Its lifetime will be
   // scoped to the lifetime of this object.
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -42,12 +42,12 @@ BackgroundSyncNetworkObserverAndroid::Observer::~Observer() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_BackgroundSyncNetworkObserver_removeObserver(
       env, j_observer_, reinterpret_cast<int64_t>(this));
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void BackgroundSyncNetworkObserverAndroid::Observer::
     NotifyConnectionTypeChanged(JNIEnv* env, int32_t new_connection_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   callback_.Run(static_cast<net::NetworkChangeNotifier::ConnectionType>(
       new_connection_type));
 }
@@ -56,21 +56,21 @@ BackgroundSyncNetworkObserverAndroid::Observer::Observer(
     base::RepeatingCallback<void(net::NetworkChangeNotifier::ConnectionType)>
         callback)
     : callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 BackgroundSyncNetworkObserverAndroid::BackgroundSyncNetworkObserverAndroid(
     base::RepeatingClosure network_changed_callback)
     : BackgroundSyncNetworkObserver(std::move(network_changed_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 BackgroundSyncNetworkObserverAndroid::~BackgroundSyncNetworkObserverAndroid() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void BackgroundSyncNetworkObserverAndroid::Init() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   observer_ = Observer::Create(base::BindRepeating(
       &BackgroundSyncNetworkObserverAndroid::OnConnectionChanged,
       weak_ptr_factory_.GetWeakPtr()));

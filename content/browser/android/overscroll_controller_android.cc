@@ -45,7 +45,7 @@ const float kMinGlowAlphaToDisableRefresh = 0.085f;
 std::unique_ptr<EdgeEffect> CreateGlowEdgeEffect(
     ui::ResourceManager* resource_manager,
     float dpi_scale) {
-  DCHECK(resource_manager);
+  CHECK(resource_manager, base::NotFatalUntil::M159);
   return std::make_unique<EdgeEffect>(resource_manager);
 }
 
@@ -119,7 +119,7 @@ OverscrollControllerAndroid::OverscrollControllerAndroid(
       glow_effect_(CreateGlowEffect(this)),
       refresh_effect_(
           CreateRefreshEffect(overscroll_refresh_handler, dpi_scale_)) {
-  DCHECK(compositor_);
+  CHECK(compositor_, base::NotFatalUntil::M159);
   if (host) {
     obs_.Observe(host);
   }
@@ -251,7 +251,7 @@ void OverscrollControllerAndroid::OnOverscrolled(
 
 bool OverscrollControllerAndroid::Animate(base::TimeTicks current_time,
                                           cc::slim::Layer* parent_layer) {
-  DCHECK(parent_layer);
+  CHECK(parent_layer, base::NotFatalUntil::M159);
   if (!enabled_ || !glow_effect_)
     return false;
 

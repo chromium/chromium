@@ -35,7 +35,7 @@ void PostMessageToFrameInternal(
     const url::Origin* target_origin,
     const blink::WebMessagePayload& data,
     std::vector<blink::MessagePortDescriptor> ports) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // TODO(chrisha): Kill off MessagePortChannel, as MessagePortDescriptor now
   // plays that role.

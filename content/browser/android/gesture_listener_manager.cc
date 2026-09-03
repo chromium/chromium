@@ -203,7 +203,7 @@ void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
   }
 
   if (event_type == blink::mojom::EventType::kGestureFlingStart) {
-    DCHECK(!is_in_a_fling_);
+    CHECK(!is_in_a_fling_, base::NotFatalUntil::M159);
     is_in_a_fling_ = true;
   } else if (event_type == blink::mojom::EventType::kGestureFlingCancel ||
              event_type == blink::mojom::EventType::kGestureScrollEnd ||

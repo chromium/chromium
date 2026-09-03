@@ -22,7 +22,7 @@ scoped_refptr<CATransactionGPUCoordinator> CATransactionGPUCoordinator::Create(
       new CATransactionGPUCoordinator(host));
   // Avoid modifying result's refcount in the constructor by performing this
   // PostTask afterward.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(

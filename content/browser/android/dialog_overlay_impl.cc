@@ -34,7 +34,7 @@ static int64_t JNI_DialogOverlayImpl_Init(JNIEnv* env,
                                           int64_t high,
                                           int64_t low,
                                           bool power_efficient) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
@@ -93,8 +93,8 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaRef<jobject>& obj,
       power_efficient_(power_efficient),
       observed_window_android_(false),
       observe_container_view_(observe_container_view) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(rfhi_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(rfhi_, base::NotFatalUntil::M159);
 
   JNIEnv* env = AttachCurrentThread();
   obj_ = JavaObjectWeakGlobalRef(env, obj);
@@ -111,7 +111,7 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaRef<jobject>& obj,
 }
 
 void DialogOverlayImpl::CompleteInit(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
 
@@ -143,7 +143,7 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env) {
 }
 
 DialogOverlayImpl::~DialogOverlayImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void DialogOverlayImpl::Stop() {
@@ -158,7 +158,7 @@ void DialogOverlayImpl::Stop() {
 }
 
 void DialogOverlayImpl::Destroy(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   UnregisterCallbacksIfNeeded();
   // We delete soon since this might be part of an onDismissed callback.
   GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
@@ -175,7 +175,7 @@ void DialogOverlayImpl::GetCompositorOffset(
 }
 
 void DialogOverlayImpl::UnregisterCallbacksIfNeeded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!rfhi_)
     return;
@@ -200,20 +200,20 @@ void DialogOverlayImpl::UnregisterCallbacksIfNeeded() {
 }
 
 void DialogOverlayImpl::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (render_frame_host == rfhi_)
     Stop();
 }
 
 void DialogOverlayImpl::RenderFrameHostChanged(RenderFrameHost* old_host,
                                                RenderFrameHost* new_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (old_host == rfhi_)
     Stop();
 }
 
 void DialogOverlayImpl::OnVisibilityChanged(content::Visibility visibility) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (visibility == content::Visibility::HIDDEN)
     Stop();
 }
@@ -224,13 +224,13 @@ void DialogOverlayImpl::OnRootWindowVisibilityChanged(bool visible) {
 }
 
 void DialogOverlayImpl::WebContentsDestroyed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   Stop();
 }
 
 void DialogOverlayImpl::DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                                       bool will_cause_resize) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // If the caller doesn't care about power-efficient overlays, then don't send
   // any callbacks about state change.
@@ -244,7 +244,7 @@ void DialogOverlayImpl::DidToggleFullscreenModeForTab(bool entered_fullscreen,
 }
 
 void DialogOverlayImpl::OnAttachedToWindow() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   JNIEnv* env = AttachCurrentThread();
 
   auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
@@ -326,7 +326,7 @@ static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
 static int32_t JNI_DialogOverlayImpl_RegisterSurface(
     JNIEnv* env,
     const JavaRef<jobject>& surface) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
       gpu::SurfaceRecord(gl::ScopedJavaSurface(surface, /*auto_release=*/false),
                          /*can_be_used_with_surface_control=*/false));
@@ -334,7 +334,7 @@ static int32_t JNI_DialogOverlayImpl_RegisterSurface(
 
 static void JNI_DialogOverlayImpl_UnregisterSurface(JNIEnv* env,
                                                     int32_t surface_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_id);
 }
 

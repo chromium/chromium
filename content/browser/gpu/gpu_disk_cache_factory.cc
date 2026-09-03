@@ -18,7 +18,7 @@ gpu::GpuDiskCacheFactory* g_gpu_disk_cache_factory_for_testing = nullptr;
 gpu::GpuDiskCacheFactory* factory_instance = nullptr;
 
 void CreateFactoryInstance() {
-  DCHECK(!factory_instance);
+  CHECK(!factory_instance, base::NotFatalUntil::M159);
   // Setup static reserved handles and their mapping to specific paths.
   gpu::GpuDiskCacheFactory::HandleToPathMap handle_to_path_map;
   if (features::IsShaderDiskCacheEnabled(

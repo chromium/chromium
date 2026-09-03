@@ -53,7 +53,8 @@ static int64_t JNI_SmartSelectionClient_Init(JNIEnv* env,
 
 SmartSelectionClient::SmartSelectionClient(WebContents* web_contents)
     : web_contents_(web_contents) {
-  DCHECK(!web_contents_->GetUserData(kSmartSelectionClientUDKey));
+  CHECK(!web_contents_->GetUserData(kSmartSelectionClientUDKey),
+        base::NotFatalUntil::M159);
   web_contents_->SetUserData(kSmartSelectionClientUDKey,
                              std::make_unique<UserData>(this));
 }

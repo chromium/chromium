@@ -136,7 +136,8 @@ FontUniqueNameLookup::FontUniqueNameLookup(
 FontUniqueNameLookup::~FontUniqueNameLookup() = default;
 
 base::ReadOnlySharedMemoryRegion FontUniqueNameLookup::DuplicateMemoryRegion() {
-  DCHECK(proto_storage_.IsValid() && proto_storage_.mapping.size());
+  CHECK(proto_storage_.IsValid() && proto_storage_.mapping.size(),
+        base::NotFatalUntil::M159);
   return proto_storage_.region.Duplicate();
 }
 

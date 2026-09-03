@@ -29,7 +29,7 @@ void DeserializePaymentOptionsFromJavaByteBuffer(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbuffer,
     mojo::StructPtr<blink::mojom::PaymentOptions>* out) {
-  DCHECK(out);
+  CHECK(out, base::NotFatalUntil::M159);
   if (jbuffer.is_null()) {
     *out = nullptr;
     return;
@@ -41,7 +41,7 @@ void DeserializePaymentOptionsFromJavaByteBuffer(
     return;
   }
   bool success = blink::mojom::PaymentOptions::Deserialize(span, out);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M159);
 }
 
 }  // namespace

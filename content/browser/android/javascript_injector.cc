@@ -45,7 +45,7 @@ JavascriptInjector::~JavascriptInjector() {
 }
 
 void JavascriptInjector::SetAllowInspection(JNIEnv* env, bool allow) {
-  DCHECK(java_bridge_dispatcher_host_);
+  CHECK(java_bridge_dispatcher_host_, base::NotFatalUntil::M159);
   java_bridge_dispatcher_host_->SetAllowObjectContentsInspection(allow);
 }
 
@@ -55,7 +55,7 @@ void JavascriptInjector::AddInterface(
     const JavaRef<jstring>& name,
     const JavaRef<jclass>& safe_annotation_clazz,
     origin_matcher::OriginMatcher matcher) {
-  DCHECK(java_bridge_dispatcher_host_);
+  CHECK(java_bridge_dispatcher_host_, base::NotFatalUntil::M159);
 
   // If a new js object is added or removed when a page is in BFCache or
   // prerendered, the change won't apply after activating the page. To avoid
@@ -76,7 +76,7 @@ void JavascriptInjector::AddInterface(
 
 void JavascriptInjector::RemoveInterface(JNIEnv* env,
                                          const JavaRef<jstring>& name) {
-  DCHECK(java_bridge_dispatcher_host_);
+  CHECK(java_bridge_dispatcher_host_, base::NotFatalUntil::M159);
 
   GetWebContents().GetController().GetBackForwardCache().Flush(
       content::BackForwardCache::NotRestoredReason::
@@ -99,7 +99,8 @@ static int64_t JNI_JavascriptInjectorImpl_Init(
     const JavaRef<jobject>& retained_objects) {
   auto* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents) << "Should be created with a valid WebContents.";
-  DCHECK(!JavascriptInjector::FromWebContents(web_contents));
+  CHECK(!JavascriptInjector::FromWebContents(web_contents),
+        base::NotFatalUntil::M159);
 
   // Owned by |web_contents|.
   auto* injector =

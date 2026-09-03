@@ -58,7 +58,7 @@ void CompositedTouchHandleDrawable::SetOrientation(
     ui::TouchHandleOrientation orientation,
     bool mirror_vertical,
     bool mirror_horizontal) {
-  DCHECK(layer_->parent());
+  CHECK(layer_->parent(), base::NotFatalUntil::M159);
   bool orientation_changed = orientation_ != orientation;
 
   orientation_ = orientation;
@@ -91,7 +91,7 @@ void CompositedTouchHandleDrawable::SetOrigin(const gfx::PointF& origin) {
 }
 
 void CompositedTouchHandleDrawable::SetAlpha(float alpha) {
-  DCHECK(layer_->parent());
+  CHECK(layer_->parent(), base::NotFatalUntil::M159);
   alpha = std::clamp(alpha, 0.0f, 1.0f);
   layer_->SetOpacity(alpha);
   layer_->SetHideLayerAndSubtree(!alpha);

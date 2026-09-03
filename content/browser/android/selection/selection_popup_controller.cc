@@ -78,7 +78,7 @@ JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
 static int64_t JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
     WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
 
   // Owns itself and gets destroyed when |WebContentsDestroyed| is called.
   auto* controller = new SelectionPopupController(web_contents);

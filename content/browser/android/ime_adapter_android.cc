@@ -74,7 +74,7 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
 
 static int64_t JNI_ImeAdapterImpl_Create(JNIEnv* env,
                                          WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
   auto* ime_adapter = new ImeAdapterAndroid(web_contents);
   return reinterpret_cast<intptr_t>(ime_adapter);
 }
@@ -87,8 +87,8 @@ static void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(
     int32_t start,
     int32_t end,
     int32_t background_color) {
-  DCHECK_GE(start, 0);
-  DCHECK_GE(end, 0);
+  CHECK_GE(start, 0, base::NotFatalUntil::M159);
+  CHECK_GE(end, 0, base::NotFatalUntil::M159);
   // Do not check |background_color|.
   std::vector<ui::ImeTextSpan>* ime_text_spans =
       reinterpret_cast<std::vector<ui::ImeTextSpan>*>(ime_text_spans_ptr);
@@ -108,8 +108,8 @@ static void JNI_ImeAdapterImpl_AppendForegroundColorSpan(
     int32_t start,
     int32_t end,
     int32_t foreground_color) {
-  DCHECK_GE(start, 0);
-  DCHECK_GE(end, 0);
+  CHECK_GE(start, 0, base::NotFatalUntil::M159);
+  CHECK_GE(end, 0, base::NotFatalUntil::M159);
   // Do not check |foreground_color|.
   std::vector<ui::ImeTextSpan>* ime_text_spans =
       reinterpret_cast<std::vector<ui::ImeTextSpan>*>(ime_text_spans_ptr);
@@ -134,8 +134,8 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     int32_t suggestion_highlight_color,
     const JavaRef<jobjectArray>& suggestions,
     bool should_hide_suggestion_menu) {
-  DCHECK_GE(start, 0);
-  DCHECK_GE(end, 0);
+  CHECK_GE(start, 0, base::NotFatalUntil::M159);
+  CHECK_GE(end, 0, base::NotFatalUntil::M159);
 
   ui::ImeTextSpan::Type ui_type =
       mojo::EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::
@@ -162,8 +162,8 @@ static void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
                                                    int64_t ime_text_spans_ptr,
                                                    int32_t start,
                                                    int32_t end) {
-  DCHECK_GE(start, 0);
-  DCHECK_GE(end, 0);
+  CHECK_GE(start, 0, base::NotFatalUntil::M159);
+  CHECK_GE(end, 0, base::NotFatalUntil::M159);
   std::vector<ui::ImeTextSpan>* ime_text_spans =
       reinterpret_cast<std::vector<ui::ImeTextSpan>*>(ime_text_spans_ptr);
   ime_text_spans->push_back(ui::ImeTextSpan(
@@ -631,12 +631,12 @@ void ImeAdapterAndroid::RequestCursorUpdate(JNIEnv* env,
 }
 
 RenderWidgetHostImpl* ImeAdapterAndroid::GetFocusedWidget() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return rwhva_ ? rwhva_->GetFocusedWidget() : nullptr;
 }
 
 RenderFrameHost* ImeAdapterAndroid::GetFocusedFrame() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // We get the focused frame from the WebContents of the page. Although
   // |rwhva_->GetFocusedWidget()| does a similar thing, there is no direct way
   // to get a RenderFrameHost from its RWH.

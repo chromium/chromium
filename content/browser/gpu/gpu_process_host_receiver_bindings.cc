@@ -31,7 +31,7 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 void BindAndroidOverlayProvider(
     mojo::PendingReceiver<media::mojom::AndroidOverlayProvider> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   content::GetGlobalJavaInterfaces()->GetInterface(std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -104,9 +104,9 @@ void AppWebMessagePort::PostMessage(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_message_payload,
     const base::android::JavaRef<jobjectArray>& j_ports) {
-  DCHECK(runner_->BelongsToCurrentThread());
-  DCHECK(descriptor_.IsValid());
-  DCHECK(connector_);
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
+  CHECK(descriptor_.IsValid(), base::NotFatalUntil::M159);
+  CHECK(connector_, base::NotFatalUntil::M159);
   if (connector_->encountered_error()) {
     LOG(ERROR)
         << "Failed to send message to renderer, connector encountered error.";
@@ -127,13 +127,13 @@ void AppWebMessagePort::PostMessage(
       blink::mojom::TransferableMessage::SerializeAsMessage(
           &transferable_message);
   bool send_result = connector_->Accept(&mojo_message);
-  DCHECK(send_result);
+  CHECK(send_result, base::NotFatalUntil::M159);
 }
 
 void AppWebMessagePort::SetShouldReceiveMessages(JNIEnv* env,
                                                  bool should_receive_message) {
-  DCHECK(runner_->BelongsToCurrentThread());
-  DCHECK(connector_);
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
+  CHECK(connector_, base::NotFatalUntil::M159);
   if (!should_receive_message) {
     connector_->set_incoming_receiver(nullptr);
     j_strong_obj_.Reset();
@@ -150,14 +150,14 @@ void AppWebMessagePort::SetShouldReceiveMessages(JNIEnv* env,
 }
 
 void AppWebMessagePort::CloseAndDestroy(JNIEnv* env) {
-  DCHECK(runner_->BelongsToCurrentThread());
-  DCHECK(connector_);
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
+  CHECK(connector_, base::NotFatalUntil::M159);
   delete this;
 }
 
 // mojo::MessageReceiver:
 bool AppWebMessagePort::Accept(mojo::Message* message) {
-  DCHECK(runner_->BelongsToCurrentThread());
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
   blink::TransferableMessage transferable_message;
   if (!blink::mojom::TransferableMessage::DeserializeFromMessage(
           std::move(*message), &transferable_message)) {
@@ -177,14 +177,14 @@ bool AppWebMessagePort::Accept(mojo::Message* message) {
       CreateJavaMessagePort(blink::MessagePortChannel::ReleaseHandles(ports));
   base::android::ScopedJavaLocalRef<jobject> j_message =
       ConvertWebMessagePayloadToJava(payload);
-  DCHECK(j_message);
+  CHECK(j_message, base::NotFatalUntil::M159);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AppWebMessagePort_onMessage(env, GetJavaObj(env), j_message, j_ports);
   return true;
 }
 
 blink::MessagePortDescriptor AppWebMessagePort::PassPort() {
-  DCHECK(runner_->BelongsToCurrentThread());
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AppWebMessagePort_setTransferred(env, GetJavaObj(env));
   GiveDisentangledHandleIfNeeded();
@@ -192,13 +192,13 @@ blink::MessagePortDescriptor AppWebMessagePort::PassPort() {
 }
 
 void AppWebMessagePort::OnPipeError() {
-  DCHECK(runner_->BelongsToCurrentThread());
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
   connector_errored_ = true;
   j_strong_obj_.Reset();
 }
 
 void AppWebMessagePort::GiveDisentangledHandleIfNeeded() {
-  DCHECK(runner_->BelongsToCurrentThread());
+  CHECK(runner_->BelongsToCurrentThread(), base::NotFatalUntil::M159);
   if (!connector_ || !descriptor_.IsValid()) {
     return;
   }
@@ -213,7 +213,7 @@ void AppWebMessagePort::GiveDisentangledHandleIfNeeded() {
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_AppWebMessagePort_CreatePair(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::MessagePortDescriptorPair port_pair;
   std::vector<blink::MessagePortDescriptor> descriptors;
   descriptors.emplace_back(port_pair.TakePort0());
