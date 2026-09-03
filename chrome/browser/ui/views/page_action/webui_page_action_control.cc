@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
@@ -33,6 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -68,6 +70,7 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // Updates the observed PageActionController (e.g. when the active tab
   // changes), resetting existing observations and any active anchored message.
   void SetController(page_actions::PageActionController* controller);
+  void UpdateStateAndNotify();
 
   // page_actions::PageActionController::Delegate:
   void SetIsChipShowingChangedCallback(
@@ -266,6 +269,12 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
   }
 }
 
+void WebUIPageActionControl::WebUIPageActionDelegate::UpdateStateAndNotify() {
+  if (observation_.IsObserving()) {
+    OnPageActionModelChanged(*observation_.GetSource());
+  }
+}
+
 void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     const page_actions::PageActionModelInterface& model) {
   const bool visible = model.GetVisible();
@@ -382,7 +391,6 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
     state->background_color_override =
         color_provider->GetColor(*override_color_id);
   }
-
   std::string identifier_name;
   page_actions::PageActionPropertiesProvider provider;
   if (provider.Contains(action_id_)) {
@@ -397,6 +405,9 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
       /*secondary_identifier=*/std::string());
   state->is_active = model->GetActionActive();
 
+  // Pass the current icon animation token to the WebUI so it can detect tab
+  // switches and suppress animations.
+  state->icon_animation_token = owner_->icon_animation_token_;
   return state;
 }
 
@@ -635,22 +646,51 @@ void WebUIPageActionControl::UpdateController(
     }
   }
 
-  if (active_controller_ == new_controller) {
+  const bool tab_changed = active_controller_ != new_controller;
+
+  if (tab_changed) {
+    active_controller_subscription_ = {};
+    active_controller_ = new_controller;
+
+    if (active_controller_) {
+      active_controller_subscription_ =
+          active_controller_->RegisterOnWillDestroyCallback(
+              base::BindOnce(&WebUIPageActionControl::OnControllerDestroying,
+                             base::Unretained(this)));
+    }
+
+    if (features::IsToolbarGlowUpBookmarkEnabled()) {
+      // Increment the icon animation token to signal to the WebUI that the
+      // active tab has changed. This allows the WebUI to suppress transition
+      // icon animations on tab switches.
+      ++icon_animation_token_;
+      last_url_spec_ =
+          web_contents ? web_contents->GetLastCommittedURL().spec() : "";
+    }
+
+    // Only re-initialize delegates if the tab (and controller) actually
+    // changed.
+    for (auto& [action_id, delegate] : delegates_) {
+      delegate->SetController(active_controller_);
+    }
     return;
   }
 
-  active_controller_subscription_ = {};
-  active_controller_ = new_controller;
-
-  if (active_controller_) {
-    active_controller_subscription_ =
-        active_controller_->RegisterOnWillDestroyCallback(
-            base::BindOnce(&WebUIPageActionControl::OnControllerDestroying,
-                           base::Unretained(this)));
-  }
-
-  for (auto& [action_id, delegate] : delegates_) {
-    delegate->SetController(active_controller_);
+  // Same-tab navigation: only handle animation suppression when bookmark glow
+  // up is enabled.
+  if (features::IsToolbarGlowUpBookmarkEnabled() && web_contents) {
+    const std::string current_url = web_contents->GetLastCommittedURL().spec();
+    if (current_url != last_url_spec_) {
+      last_url_spec_ = current_url;
+      // Increment the icon animation token and notify WebUI immediately on
+      // navigation so that page-load icon changes are suppressed while
+      // subsequent in-page user interactions (e.g. starring/unstarring via
+      // the bubble) can animate.
+      ++icon_animation_token_;
+      for (auto& [action_id, delegate] : delegates_) {
+        delegate->UpdateStateAndNotify();
+      }
+    }
   }
 }
 

@@ -39,6 +39,7 @@
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace page_actions {
@@ -135,6 +136,7 @@ class WebUIPageActionControlTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    scoped_feature_list_.Reset();
     control_.reset();
     page_action_controller_.reset();
     tab_features_.reset();
@@ -667,6 +669,169 @@ TEST_F(WebUIPageActionControlTest, AnchoredMessageState) {
   EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
 }
 
+TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnTabSwitch) {
+  scoped_feature_list_.InitAndEnableFeature(features::kToolbarGlowUp);
+  control_->UpdateController(web_contents());
+
+  // Show an action so we can get states.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  controller->Show(kActionAiMode);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  const uint32_t initial_token = states[0]->icon_animation_token;
+
+  // Update controller with the same web contents. Token should not change.
+  control_->UpdateController(web_contents());
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(initial_token, states[0]->icon_animation_token);
+
+  // Set up a second tab.
+  std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
+  tabs::MockTabInterface mock_tab2;
+  ui::UnownedUserDataHost user_data_host2;
+  ON_CALL(mock_tab2, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host2));
+  ON_CALL(mock_tab2, GetContents())
+      .WillByDefault(testing::Return(web_contents2.get()));
+  ON_CALL(mock_tab2, GetProfile()).WillByDefault(testing::Return(profile()));
+  ON_CALL(mock_tab2, RegisterDidActivate(_))
+      .WillByDefault([](tabs::TabInterface::DidActivateCallback cb) {
+        return base::CallbackListSubscription();
+      });
+  ON_CALL(mock_tab2, RegisterWillDeactivate(_))
+      .WillByDefault([](tabs::TabInterface::WillDeactivateCallback cb) {
+        return base::CallbackListSubscription();
+      });
+  ON_CALL(mock_tab2, IsActivated()).WillByDefault(testing::Return(true));
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents2.get(),
+                                                       &mock_tab2);
+
+  auto tab_features2 = std::make_unique<tabs::TabFeatures>();
+  ON_CALL(mock_tab2, GetTabFeatures())
+      .WillByDefault(testing::Return(tab_features2.get()));
+
+  auto page_action_controller2 =
+      std::make_unique<page_actions::PageActionControllerImpl>(
+          mock_tab2,
+          std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
+                                         page_actions::kActionIds.end()),
+          page_actions::PageActionPropertiesProvider(),
+          PinnedToolbarActionsModel::Get(profile()));
+
+  // Show action on second tab too.
+  page_action_controller2->Show(kActionAiMode);
+
+  // Switch to second tab. Token should increment and delegates should be
+  // notified with the new token.
+  uint32_t notified_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce([&notified_token](
+                    std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                        action_states) {
+        ASSERT_FALSE(action_states.empty());
+        notified_token = action_states[0]->icon_animation_token;
+      });
+  control_->UpdateController(web_contents2.get());
+  EXPECT_NE(initial_token, notified_token);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(notified_token, states[0]->icon_animation_token);
+  const uint32_t second_token = states[0]->icon_animation_token;
+
+  // Switch back to first tab. Token should increment again and delegates should
+  // be notified with the new token.
+  uint32_t third_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce(
+          [&third_token](std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                             action_states) {
+            ASSERT_FALSE(action_states.empty());
+            third_token = action_states[0]->icon_animation_token;
+          });
+  control_->UpdateController(web_contents());
+  EXPECT_NE(second_token, third_token);
+  EXPECT_NE(initial_token, third_token);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(third_token, states[0]->icon_animation_token);
+}
+
+TEST_F(WebUIPageActionControlTest, IconAnimationTokenUpdatesOnNavigation) {
+  scoped_feature_list_.InitAndEnableFeature(features::kToolbarGlowUp);
+  control_->UpdateController(web_contents());
+
+  // Show an action so we can get states.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  controller->Show(kActionAiMode);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  const uint32_t initial_token = states[0]->icon_animation_token;
+
+  // Navigate to a new page in the same tab.
+  NavigateAndCommit(GURL("https://example.com/new_page"));
+  uint32_t notified_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce([&notified_token](
+                    std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                        action_states) {
+        ASSERT_FALSE(action_states.empty());
+        notified_token = action_states[0]->icon_animation_token;
+      });
+  control_->UpdateController(web_contents());
+  EXPECT_NE(initial_token, notified_token);
+
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  // Token should have incremented.
+  EXPECT_EQ(notified_token, states[0]->icon_animation_token);
+  EXPECT_NE(initial_token, states[0]->icon_animation_token);
+}
+
+class WebUIPageActionControlDisabledGlowUpTest
+    : public WebUIPageActionControlTest {
+ public:
+  WebUIPageActionControlDisabledGlowUpTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kToolbarGlowUp, features::kDesktopGlowUp});
+  }
+};
+
+TEST_F(WebUIPageActionControlDisabledGlowUpTest,
+       NoNavigationUpdateWhenGlowUpDisabled) {
+  control_->UpdateController(web_contents());
+
+  // Show an action so we can get states.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  controller->Show(kActionAiMode);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(0u, states[0]->icon_animation_token);
+
+  // When glow up is disabled, navigating in the same tab should NOT notify
+  // delegates or update the token.
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_)).Times(0);
+
+  NavigateAndCommit(GURL("https://example.com/new_page"));
+  control_->UpdateController(web_contents());
+
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(0u, states[0]->icon_animation_token);
+}
 }  // namespace
 
 }  // namespace page_actions

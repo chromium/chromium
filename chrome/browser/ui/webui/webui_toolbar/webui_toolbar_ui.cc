@@ -223,6 +223,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);
 
   source->AddBoolean("roundedIconsEnabled", features::IsRoundedIconsEnabled());
+  source->AddBoolean("enableBookmarkGlowUp",
+                     features::IsToolbarGlowUpBookmarkEnabled());
   source->AddBoolean("enableReloadButton",
                      features::IsWebUIReloadButtonEnabled());
   source->AddBoolean("enableHomeButton", features::IsWebUIHomeButtonEnabled());

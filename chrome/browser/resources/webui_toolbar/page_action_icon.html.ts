@@ -23,8 +23,14 @@ export function getHtml(this: PageActionIconElement) {
     @pointerenter="${this.onPointerenter_}"
     @pointerleave="${this.onPointerleave_}"
     @pointercancel="${this.onPointercancel_}">
-  <icon-from-table slot="prefix-icon" id="icon"
-      .iconHandle="${this.state.icon}"></icon-from-table>
+  ${this.isIconAnimating_() ? html`
+    <cr-icon slot="prefix-icon" id="animatedIcon"
+        style="${this.getAnimatedIconStyle_() ?? nothing}"
+        .icon="${this.getAnimatedIcon_()}"></cr-icon>
+  ` : html`
+    <icon-from-table slot="prefix-icon" id="icon"
+        .iconHandle="${this.state.icon}"></icon-from-table>
+  `}
   <span id="text" ?visible="${this.shouldShowLabel_()}">
     ${this.state.text || ''}
   </span>

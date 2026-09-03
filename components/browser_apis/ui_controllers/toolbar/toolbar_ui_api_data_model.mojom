@@ -479,6 +479,10 @@ struct PageActionState {
   // is currently open). When true, the icon button is rendered with an active
   // highlight state (via the `is-menu-open` attribute in WebUI).
   bool is_active;
+
+  // Token that changes when the active tab or URL navigation changes. Used to
+  // suppress tab-switching and navigation icon animations in the WebUI.
+  uint32 icon_animation_token;
 };
 
 // Colors used by the omnibox.

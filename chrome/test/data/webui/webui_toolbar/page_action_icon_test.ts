@@ -6,10 +6,11 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import type {HelpBubbleOptions} from '//resources/cr_components/help_bubble/help_bubble_controller.js';
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, PageActionId, PageActionTrigger, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, IconTable, IconType, PageActionId, PageActionTrigger, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LhsChipIdentifier, PageActionIconElement, PageActionState} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import type {ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api.mojom-webui.js';
@@ -154,7 +155,42 @@ suite('PageActionIconTest', function() {
         secondaryIdentifier: '',
       },
       isActive: false,
+      iconAnimationToken: 0,
     };
+  }
+
+  /**
+   * Helper that yields execution to the browser for two animation frames.
+   * This is used to ensure that any requestAnimationFrame callbacks scheduled
+   * by the implementation (such as triggering SVG SMIL icon animations) have
+   * completed and the browser has initialized the icon animation state before
+   * the test code queries or interacts with it.
+   */
+  function nextFrame(): Promise<void> {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resolve();
+        });
+      });
+    });
+  }
+
+  /**
+   * Helper that finds the SMIL animate element in the given icon, dispatches
+   * the 'endEvent' to simulate the icon animation finishing, and asserts that
+   * the element resets back to the static icon.
+   */
+  async function triggerAnimationEndAndVerify(animatedIcon: CrIconElement) {
+    const animate =
+        animatedIcon.shadowRoot?.querySelector('animate, animateTransform');
+    assertTrue(!!animate, 'animate element should be found');
+    animate.dispatchEvent(new Event('endEvent'));
+
+    await icon.updateComplete;
+
+    assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
+    assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
   }
 
   setup(async function() {
@@ -589,4 +625,162 @@ suite('PageActionIconTest', function() {
     await microtasksFinished();
     assertFalse(icon.$.button.hasAttribute('is-menu-open'));
   });
+
+  test('Glow up icon animation on bookmark star', async function() {
+    icon.glowUpEnabled = true;
+
+    const iconTable = IconTable.getInstance();
+    iconTable.applyUpdates([
+      {
+        handleId: 1n,
+        iconUrlOrName: 'webui-toolbar:star',
+        iconType: IconType.kIconSet,
+        color: null,
+      },
+      {
+        handleId: 2n,
+        iconUrlOrName: 'webui-toolbar:star_filled',
+        iconType: IconType.kIconSet,
+        color: null,
+      },
+    ]);
+
+    icon.state = {
+      ...createBaseState(),
+      pageActionId: PageActionId.kActionBookmarkThisTab,
+      icon: {handleId: 1n},
+    };
+    await microtasksFinished();
+
+    assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
+    assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
+
+    // Transition to starred
+    icon.state = {
+      ...icon.state,
+      icon: {handleId: 2n},
+    };
+    await icon.updateComplete;
+
+    const animatedIcon =
+        icon.shadowRoot.querySelector<CrIconElement>('#animatedIcon');
+    assertTrue(!!animatedIcon);
+    await animatedIcon.updateComplete;
+
+    // Wait for the requestAnimationFrame in playIconAnimation_ to run and
+    // attach the listener.
+    await nextFrame();
+
+    assertEquals('webui-toolbar:star_glow_up', animatedIcon.icon);
+    assertTrue(
+        !icon.shadowRoot.querySelector('icon-from-table'),
+        'icon-from-table should not be present');
+
+    await triggerAnimationEndAndVerify(animatedIcon);
+  });
+
+  test('Glow up icon animation on bookmark unstar', async function() {
+    icon.glowUpEnabled = true;
+
+    const iconTable = IconTable.getInstance();
+    iconTable.applyUpdates([
+      {
+        handleId: 1n,
+        iconUrlOrName: 'webui-toolbar:star',
+        iconType: IconType.kIconSet,
+        color: null,
+      },
+      {
+        handleId: 2n,
+        iconUrlOrName: 'webui-toolbar:star_filled',
+        iconType: IconType.kIconSet,
+        color: null,
+      },
+    ]);
+
+    // Initial state: starred
+    icon.state = {
+      ...createBaseState(),
+      pageActionId: PageActionId.kActionBookmarkThisTab,
+      icon: {handleId: 2n},
+    };
+    await microtasksFinished();
+
+    assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
+    assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
+
+    // Transition to unstarred
+    icon.state = {
+      ...icon.state,
+      icon: {handleId: 1n},
+    };
+    await icon.updateComplete;
+
+    const animatedIcon =
+        icon.shadowRoot.querySelector<CrIconElement>('#animatedIcon');
+    assertTrue(!!animatedIcon);
+    await animatedIcon.updateComplete;
+
+    // Wait for the requestAnimationFrame in playIconAnimation_ to run and
+    // attach the listener.
+    await nextFrame();
+
+    assertEquals('webui-toolbar:star_filled_glow_up', animatedIcon.icon);
+    assertTrue(
+        !icon.shadowRoot.querySelector('icon-from-table'),
+        'icon-from-table should not be present');
+
+    await triggerAnimationEndAndVerify(animatedIcon);
+  });
+
+  test(
+      'No glow up icon animation on tab switch or navigation',
+      async function() {
+        icon.glowUpEnabled = true;
+
+        const iconTable = IconTable.getInstance();
+        iconTable.applyUpdates([
+          {
+            handleId: 1n,
+            iconUrlOrName: 'webui-toolbar:star',
+            iconType: IconType.kIconSet,
+            color: null,
+          },
+          {
+            handleId: 2n,
+            iconUrlOrName: 'webui-toolbar:star_filled',
+            iconType: IconType.kIconSet,
+            color: null,
+          },
+        ]);
+
+        // Initial state: not bookmarked, token 1
+        icon.state = {
+          ...createBaseState(),
+          pageActionId: PageActionId.kActionBookmarkThisTab,
+          icon: {handleId: 1n},
+          iconAnimationToken: 1,
+        };
+        await microtasksFinished();
+
+        assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
+        assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
+
+        // Transition to starred, but with a different icon animation token (tab
+        // switch/navigation)
+        icon.state = {
+          ...icon.state,
+          icon: {handleId: 2n},
+          iconAnimationToken: 2,
+        };
+        await icon.updateComplete;
+
+        // Wait a couple of frames to ensure no animation was deferred and
+        // triggered
+        await nextFrame();
+
+        // Verify it remains on static icon and no animated icon is rendered
+        assertTrue(!!icon.shadowRoot.querySelector('icon-from-table'));
+        assertTrue(!icon.shadowRoot.querySelector('#animatedIcon'));
+      });
 });
