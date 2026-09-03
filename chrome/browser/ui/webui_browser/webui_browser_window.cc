@@ -482,8 +482,9 @@ float WebUIBrowserWindow::GetScaleFactor() const {
 
 ui::ColorProviderKey::ThemeInitializerSupplier*
 WebUIBrowserWindow::GetThemeInitializerSupplier() const {
-  // Do not return any custom theme if this is an incognito browser.
-  if (browser_->GetProfile()->IsIncognitoProfile()) {
+  // Do not return any custom theme if this is an incognito browser or an
+  // enterprise isolated mode browser.
+  if (browser_->GetProfile()->IsPrimaryOTRProfileWithRegularParent()) {
     return nullptr;
   }
 
@@ -527,6 +528,11 @@ ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
       return;
     }
 
+    if (browser_->GetProfile()->IsEnterpriseIsolatedModeProfile()) {
+      key.color_mode = ui::ColorProviderKey::ColorMode::kLight;
+      return;
+    }
+
     const auto browser_color_scheme = theme_service->GetBrowserColorScheme();
     if (browser_color_scheme != ThemeService::BrowserColorScheme::kSystem) {
       key.color_mode =
@@ -549,6 +555,8 @@ ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
   // Determine appropriate key.user_color_source.
   if (browser_->GetProfile()->IsIncognitoProfile()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kGrayscale;
+  } else if (browser_->GetProfile()->IsEnterpriseIsolatedModeProfile()) {
+    key.user_color_source = ui::ColorProviderKey::UserColorSource::kBaseline;
   } else if (theme_service->UsingDeviceTheme()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
   } else if (theme_service->GetIsGrayscale()) {
