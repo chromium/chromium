@@ -17,6 +17,7 @@ source_set("ranking_model") {
     "//components/password_manager/core/common",
     "//components/power_bookmarks/core",
     "//components/prefs",
+    "//components/prefs/ios",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search",
     "//components/search_engines",

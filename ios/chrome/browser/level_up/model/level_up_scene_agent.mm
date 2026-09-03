@@ -95,7 +95,7 @@
 }
 
 - (void)onUserAction:(const std::string&)action {
-  if (!_levelUpService) {
+  if (!_levelUpService || !_levelUpService->IsOptedIn()) {
     return;
   }
 

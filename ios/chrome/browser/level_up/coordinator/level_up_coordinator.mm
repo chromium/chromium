@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/level_up/ui/level_up_all_tasks_view_controller.h"
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
@@ -90,6 +91,13 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
     return;
   }
 
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
+  if (!prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+    // TODO(crbug.com/546095156): Show the promo when the user didn't opt in to
+    // Level Up.
+    prefService->SetBoolean(prefs::kLevelUpOptIn, true);
+  }
+
   self.viewController = [[LevelUpViewController alloc] init];
   self.viewController.handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
@@ -99,7 +107,6 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
       IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
   LevelUpService* levelUpService =
       LevelUpServiceFactory::GetForProfile(self.browser->GetProfile());
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   self.mediator =
       [[LevelUpMediator alloc] initWithAuthenticationService:authService
                                              identityManager:identityManager

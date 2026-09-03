@@ -36,6 +36,7 @@ class LevelUpServiceTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
+    profile_->GetPrefs()->SetBoolean(prefs::kLevelUpOptIn, true);
     service_ = LevelUpServiceFactory::GetForProfile(profile_.get());
   }
 
@@ -260,6 +261,23 @@ TEST_F(LevelUpServiceTest, TestUIEnabledPrefObservation) {
 
   profile_->GetPrefs()->SetBoolean(prefs::kLevelUpUIEnabled, false);
   EXPECT_FALSE(service_->IsUIEnabled());
+}
+
+// Tests that tasks and stats are not tracked when the opt-in preference is
+// false.
+TEST_F(LevelUpServiceTest, TestOptedOutDoesNotTrack) {
+  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpOptIn, false);
+  EXPECT_FALSE(service_->IsOptedIn());
+
+  // Attempt to complete a task.
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_EQ(service_->GetCurrentLevel(), 1);
+  EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 3);
+
+  // Attempt to increment a stat.
+  service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 5);
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
 }
 
 }  // namespace

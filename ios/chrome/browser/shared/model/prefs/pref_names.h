@@ -505,6 +505,9 @@ inline constexpr char kLevelUpHighestLevel[] = "level_up.highest_level";
 // Whether the Level Up feature UI is enabled.
 inline constexpr char kLevelUpUIEnabled[] = "level_up.ui_enabled";
 
+// Whether the user opted in to the Level Up feature.
+inline constexpr char kLevelUpOptIn[] = "level_up.opt_in";
+
 // Stats tracked in the Level Up feature.
 inline constexpr char kLevelUpTabsDeclutteredStat[] =
     "level_up.tabs_decluttered_stat";

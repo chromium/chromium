@@ -115,7 +115,7 @@ class LevelUpService::LevelUpTabGroupObserver
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override {
-    if (is_restoring_session_) {
+    if (is_restoring_session_ || !service_->IsOptedIn()) {
       return;
     }
 
@@ -200,7 +200,7 @@ class LevelUpService::LevelUpPasswordCheckObserver
 
   // IOSChromePasswordCheckManager::Observer
   void PasswordCheckFinished(size_t passwords_checked) override {
-    if (passwords_checked > 0) {
+    if (passwords_checked > 0 && level_up_service_->IsOptedIn()) {
       level_up_service_->IncrementStatValue(
           LevelUpTaskStatType::kPasswordsVerified,
           static_cast<int>(passwords_checked));
@@ -264,6 +264,10 @@ void LevelUpService::OnUIEnabledPrefChanged() {
   }
 }
 
+bool LevelUpService::IsOptedIn() const {
+  return pref_service_ && pref_service_->GetBoolean(prefs::kLevelUpOptIn);
+}
+
 bool LevelUpService::IsUIEnabled() const {
   return is_ui_enabled_;
 }
@@ -291,6 +295,9 @@ int LevelUpService::GetTasksRemainingForNextLevel() const {
 }
 
 void LevelUpService::MarkTaskCompleted(TaskType task_type) {
+  if (!IsOptedIn()) {
+    return;
+  }
   std::string storage_id = TaskTypeToString(task_type);
   if (storage_id == TaskTypeToString(TaskType::kUnknown)) {
     return;
@@ -340,7 +347,7 @@ int LevelUpService::GetStatValue(LevelUpTaskStatType stat_type) const {
 
 void LevelUpService::IncrementStatValue(LevelUpTaskStatType stat_type,
                                         int delta) {
-  if (delta <= 0) {
+  if (delta <= 0 || !IsOptedIn()) {
     return;
   }
   const char* pref_name = GetPrefNameForStatType(stat_type);
@@ -447,6 +454,9 @@ void LevelUpService::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLevelUpUIEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kLevelUpOptIn, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kLevelUpTabsDeclutteredStat, 0,

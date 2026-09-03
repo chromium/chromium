@@ -75,6 +75,8 @@
     _prefChangeRegistrar.Init(prefService);
     _prefObserverBridge->ObserveChangesForPreference(prefs::kLevelUpUIEnabled,
                                                      &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(prefs::kLevelUpOptIn,
+                                                     &_prefChangeRegistrar);
   }
   return self;
 }
@@ -176,7 +178,7 @@
 - (void)disconnect {
   _identityManagerObserverBridge.reset();
   _prefObserverBridge.reset();
-  _prefChangeRegistrar.RemoveAll();
+  _prefChangeRegistrar.Reset();
   _authService = nullptr;
   _identityManager = nullptr;
   _levelUpService = nullptr;
@@ -191,6 +193,10 @@
     if ([self.consumer
             respondsToSelector:@selector(setProgressUpdatesEnabled:)]) {
       [self.consumer setProgressUpdatesEnabled:updatesEnabled];
+    }
+  } else if (preferenceName == prefs::kLevelUpOptIn) {
+    if (_prefService && !_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+      [self.delegate levelUpMediatorWantsToBeDismissed:self];
     }
   }
 }
@@ -273,7 +279,11 @@
     return;
   }
   _levelUpService->ResetAllTasksStatus();
-  [self.delegate levelUpMediatorWantsToBeDismissed:self];
+  if (_prefService) {
+    _prefService->SetBoolean(prefs::kLevelUpOptIn, false);
+  } else {
+    [self.delegate levelUpMediatorWantsToBeDismissed:self];
+  }
 }
 
 // Updates the profile consumer with the primary identity credentials.

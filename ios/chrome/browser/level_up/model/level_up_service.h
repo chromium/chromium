@@ -33,6 +33,9 @@ class LevelUpService : public KeyedService {
       IOSChromePasswordCheckManager* password_check_manager = nullptr);
   ~LevelUpService() override;
 
+  // Returns true if the user is opted in to Level Up.
+  bool IsOptedIn() const;
+
   // Returns true if the user has enabled the feature UI.
   bool IsUIEnabled() const;
 

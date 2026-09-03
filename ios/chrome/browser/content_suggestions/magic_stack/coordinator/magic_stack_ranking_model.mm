@@ -22,6 +22,8 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
@@ -115,7 +117,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                       ShopCardMediatorDelegate,
                                       ShortcutsMediatorDelegate,
                                       TabResumptionMediatorDelegate,
-                                      TipsMagicStackMediatorDelegate>
+                                      TipsMagicStackMediatorDelegate,
+                                      PrefObserverDelegate>
 // For testing-only
 @property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
 @property(nonatomic, assign) BOOL hasReceivedEphemericalCardResponse;
@@ -154,6 +157,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
   raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> _bookmarkModel;
   raw_ptr<LevelUpService, DanglingUntriaged> _levelUpService;
+  // Registrar for user Pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // Bridge to listen to Pref changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
 }
 
 - (instancetype)
@@ -227,6 +234,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         NOTREACHED();
       }
     }
+    if (_prefService && IsLevelUpEnabled()) {
+      _prefChangeRegistrar.Init(_prefService);
+      _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+      _prefObserverBridge->ObserveChangesForPreference(prefs::kLevelUpOptIn,
+                                                       &_prefChangeRegistrar);
+    }
   }
   return self;
 }
@@ -243,6 +256,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   _tipsMediator = nil;
   _tipsManager = nil;
   _appBundlePromoMediator = nil;
+  _prefChangeRegistrar.Reset();
+  _prefObserverBridge.reset();
 }
 
 #pragma mark - Public
@@ -444,6 +459,19 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                          withCompletion:nil];
 }
 
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kLevelUpOptIn) {
+    if (![self isMagicStackOrderReady]) {
+      return;
+    }
+    _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
+    [self.delegate magicStackRankingModel:self
+                 didGetLatestRankingOrder:_latestMagicStackConfigOrder];
+  }
+}
+
 - (NSUInteger)indexForMagicStackModule:
     (ContentSuggestionsModuleType)moduleType {
   return [_latestMagicStackConfigOrder
@@ -509,11 +537,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 // state.
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
   [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
-}
-
-// Adds the Level Up module to `order` based on the current Level Up state.
-- (void)addLevelUpToMagicStackOrder:(NSMutableArray*)order {
-  [order addObject:@(int(ContentSuggestionsModuleType::kLevelUp))];
 }
 
 // Starts a fetch of the ephemeral card to show from Segmentation.
@@ -880,6 +903,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     }
   }
 
+  if (IsLevelUpEnabled() &&
+      ![magicStackOrder
+          containsObject:@(int(ContentSuggestionsModuleType::kLevelUp))]) {
+    [magicStackOrder addObject:@(int(ContentSuggestionsModuleType::kLevelUp))];
+  }
+
   _magicStackOrderFromSegmentationReceived = YES;
   _magicStackOrderFromSegmentation = magicStackOrder;
   _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
@@ -996,7 +1025,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         }
         break;
       case ContentSuggestionsModuleType::kLevelUp: {
-        if (IsLevelUpEnabled()) {
+        if ([self shouldShowLevelUp]) {
           LevelUpConfig* config = [self createLevelUpConfig];
           if (config) {
             [magicStackOrder addObject:config];
@@ -1142,9 +1171,18 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   return total;
 }
 
+// Returns YES if the Level Up module should be added into the Magic Stack.
+- (BOOL)shouldShowLevelUp {
+  return IsLevelUpEnabled() && _prefService &&
+         _prefService->GetBoolean(prefs::kLevelUpOptIn);
+}
+
 // Returns the configured LevelUpConfig if incomplete tasks exist, or nil
 // otherwise.
 - (LevelUpConfig*)createLevelUpConfig {
+  if (![self shouldShowLevelUp]) {
+    return nil;
+  }
   std::optional<LevelUpTaskCategory> category = [self levelUpCategory];
   if (!category) {
     return nil;

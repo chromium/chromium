@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -37,6 +39,7 @@ class LevelUpSceneAgentTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
+    profile_->GetPrefs()->SetBoolean(prefs::kLevelUpOptIn, true);
 
     fake_startup_information_ = [[FakeStartupInformation alloc] init];
     app_state_ =
@@ -142,6 +145,35 @@ TEST_F(LevelUpSceneAgentTest, TestActionTriggersStatIncrement) {
   // Verify that the photo search stat is incremented.
   EXPECT_EQ(
       1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+}
+
+// Tests that user actions do not track tasks or stats when opted out.
+TEST_F(LevelUpSceneAgentTest, TestActionDoesNotTriggerTrackingWhenOptedOut) {
+  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpOptIn, false);
+  EXPECT_FALSE(service_->IsOptedIn());
+
+  // Simulate the scene becoming active to start listening.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Snackbar should not be shown.
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+
+  // Record task action.
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
+
+  // Verify task is not completed.
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+
+  // Record stat action.
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
+
+  // Verify stat is not incremented.
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
 }
 
 }  // namespace
