@@ -48,9 +48,9 @@ inline constexpr char kGeicGuestURLSwitch[] = "geic-guest-url";
 class GeicPwcManager : public base::SupportsUserData::Data,
                        public ProfileObserver {
  public:
-  // Returns the guest URL configured via --geic-guest-url switch or the
-  // kGeicGuestURL feature parameter.
-  static GURL GetConfiguredGuestURL();
+  // Returns the guest URL configured via --geic-guest-url switch,
+  // the kGeicGuestURL feature parameter, or enterprise policy.
+  static GURL GetConfiguredGuestURL(Profile* profile);
 
   static GeicPwcManager* GetOrCreateForProfile(Profile* profile,
                                                GURL dev_url = GURL());

@@ -1,22 +1,28 @@
 owners:
 - alexwchen@google.com
 - austinzzr@google.com
+- landry@google.com
 - file://components/policy/OWNERS
 
 caption: Configure <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> settings (BETA)
 
 desc: |-
-  Configures the connection settings for <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> to improve responses for Gemini in Chrome features.
+  Configures the connection settings for <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-  If this policy is set, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> can be used to enhance Gemini in Chrome responses for users signed in with a managed account that is associated with the specified project and app ID. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will not be available for profiles signed in with personal accounts.
+  To configure <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph>, administrators must provide either:
+  * The <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL (<ph name="URL">url</ph>), OR
+  * All three legacy parameters together: <ph name="PROJECT_ID">project_id</ph>, <ph name="APP_ID">app_id</ph>, and <ph name="LOCATION">location</ph>. Specifying only a partial subset of these three parameters without a URL will cause the policy to be rejected.
 
-  If policy is unset, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will not be used to enhance Gemini in Chrome responses.
+  If both the <ph name="URL">url</ph> parameter and the legacy parameters are configured, the <ph name="URL">url</ph> parameter takes precedence.
+
+  If this policy is set, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will be configured for users signed in with a managed account or managed browser.
+
+  If this policy is unset, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will not be configured.
 
   Note that this policy does not control the general <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Gemini</ph> integration, which can be controlled by the <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy.
 
-  All settings of this policy must match the configuration of <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> project in <ph name="GOOGLE_CLOUD_PRODUCT_NAME">Google Cloud</ph> Console. Any mismatch will cause unexpected behavior while using <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph>.
-
 example_value:
+  url: "https://vertexaisearch.cloud.google.com/home/cid/12345678-1234-1234-1234-123456789abc"
   project_id: "acme-project"
   app_id: "acme-corp-v1"
   location: "global"
@@ -34,6 +40,10 @@ type: dict
 schema:
   type: object
   properties:
+    url:
+      type: string
+      pattern: '^https:\/\/[a-zA-Z0-9.-]+(\/.*)?$'
+      description: The web application URL of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> instance for this organization.
     project_id:
       type: string
       pattern: '^[a-z0-9-]{1,30}$'
@@ -46,10 +56,6 @@ schema:
       type: string
       pattern: '^[a-z]([a-z0-9-]{0,48}[a-z0-9])?$'
       description: The multi-region or location of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> app. Learn more about <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> location at https://docs.cloud.google.com/gemini/enterprise/docs/locations.
-  required:
-  - project_id
-  - app_id
-  - location
 
 tags:
 - google-sharing

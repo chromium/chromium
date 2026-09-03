@@ -11,6 +11,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/geic/geic_browser_host_impl.h"
+#include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host.h"
@@ -152,7 +154,7 @@ TEST_F(GeicPwcManagerTest, ConfiguresGuestURLFromCommandLine) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       kGeicGuestURLSwitch, custom_url);
 
-  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(), GURL(custom_url));
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(nullptr), GURL(custom_url));
 
   GeicPwcManager manager(profile());
   EXPECT_EQ(manager.guest_url(), GURL(custom_url));
@@ -165,7 +167,7 @@ TEST_F(GeicPwcManagerTest, ConfiguresGuestURLFromFeatureParam) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kGeic, {{features::kGeicGuestURL.name, param_url}});
 
-  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(), GURL(param_url));
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(nullptr), GURL(param_url));
 
   GeicPwcManager manager(profile());
   EXPECT_EQ(manager.guest_url(), GURL(param_url));
@@ -184,7 +186,7 @@ TEST_F(GeicPwcManagerTest, CommandLineOverridesFeatureParam) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       kGeicGuestURLSwitch, custom_url);
 
-  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(), GURL(custom_url));
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(nullptr), GURL(custom_url));
 
   GeicPwcManager manager(profile());
   EXPECT_EQ(manager.guest_url(), GURL(custom_url));
@@ -203,6 +205,151 @@ TEST_F(GeicPwcManagerTest, ClearsAllEntriesOnProfileDestruction) {
 
   manager.OnProfileWillBeDestroyed(profile());
   EXPECT_EQ(manager.entry_count_for_testing(), 0u);
+}
+
+TEST_F(GeicPwcManagerTest, IsValidGuestUrlValidatesAllowedOriginsAndSchemes) {
+  EXPECT_FALSE(IsValidGuestUrl(GURL()));
+  EXPECT_FALSE(IsValidGuestUrl(GURL("")));
+  EXPECT_FALSE(IsValidGuestUrl(GURL("about:blank")));
+  EXPECT_FALSE(IsValidGuestUrl(GURL("javascript:alert(1)")));
+
+  // Insecure HTTP is rejected (except localhost):
+  EXPECT_FALSE(IsValidGuestUrl(GURL("http://business.gemini.google/")));
+  EXPECT_FALSE(IsValidGuestUrl(
+      GURL("http://vertexaisearch.cloud.google.com/home/cid/123")));
+  EXPECT_FALSE(IsValidGuestUrl(
+      GURL("http://localhost.corp.google.com:10443/side-panel")));
+
+  // Arbitrary third-party domains are rejected:
+  EXPECT_FALSE(IsValidGuestUrl(GURL("https://attacker.com/")));
+  EXPECT_FALSE(IsValidGuestUrl(GURL("https://example.com/side-panel")));
+  EXPECT_FALSE(IsValidGuestUrl(GURL("https://notgoogle.com/home/cid/123")));
+  EXPECT_FALSE(IsValidGuestUrl(
+      GURL("https://cloud.google.com.attacker.com/side-panel")));
+
+  // Localhost is allowed for development:
+  EXPECT_TRUE(IsValidGuestUrl(GURL("http://localhost:8080/side-panel")));
+  EXPECT_TRUE(IsValidGuestUrl(GURL("http://127.0.0.1:8080/side-panel")));
+  EXPECT_TRUE(IsValidGuestUrl(GURL("https://localhost:10443/side-panel")));
+  EXPECT_TRUE(IsValidGuestUrl(
+      GURL("https://localhost.corp.google.com:10443/side-panel")));
+
+  // Valid HTTPS Gemini / Cloud / Corp domains are permitted:
+  EXPECT_TRUE(IsValidGuestUrl(GURL("https://business.gemini.google/")));
+  EXPECT_TRUE(IsValidGuestUrl(GURL("https://gemini.google.com/")));
+  EXPECT_TRUE(IsValidGuestUrl(GURL(
+      "https://vertexaisearch.cloud.google.com/home/cid/fdd1e98d-1f52-4407-"
+      "98fd-80e27c61fbc9")));
+  EXPECT_TRUE(IsValidGuestUrl(
+      GURL("https://ucs-widget.corp.google.com/home/cid/fdd1e98d-1f52-4407-"
+           "98fd-80e27c61fbc9?e=SparkDogfoodLaunch%3A%3ALaunch")));
+  EXPECT_TRUE(
+      IsValidGuestUrl(GURL("https://ucs-app-autopush.corp.google.com/side-panel"
+                           "?configId=3abd7045-7845-4f83-b204-e39fcbca3494")));
+}
+
+TEST_F(GeicPwcManagerTest, CanonicalizeGuestUrlTransformsPantheonConsoleUrls) {
+  // Empty / invalid:
+  EXPECT_EQ(CanonicalizeGuestUrl(GURL()), GURL());
+
+  // Direct side-panel embed URL remains unchanged:
+  const GURL side_panel_url(
+      "https://ucs-app-autopush.corp.google.com/side-panel?configId="
+      "3abd7045-7845-4f83-b204-e39fcbca3494&location=global&mods="
+      "widget_staging_api_mod");
+  EXPECT_EQ(CanonicalizeGuestUrl(side_panel_url), side_panel_url);
+
+  // Pantheon URL with /home/cid/<configId> is rewritten to
+  // /side-panel?configId=<configId>:
+  const GURL pantheon_url(
+      "https://vertexaisearch.cloud.google.com/home/cid/fdd1e98d-1f52-4407-"
+      "98fd-80e27c61fbc9");
+  EXPECT_EQ(CanonicalizeGuestUrl(pantheon_url),
+            GURL("https://vertexaisearch.cloud.google.com/side-panel?configId="
+                 "fdd1e98d-1f52-4407-98fd-80e27c61fbc9"));
+
+  // Pantheon URL with trailing slash:
+  const GURL pantheon_slash_url(
+      "https://vertexaisearch.cloud.google.com/home/cid/fdd1e98d-1f52-4407-"
+      "98fd-80e27c61fbc9/");
+  EXPECT_EQ(CanonicalizeGuestUrl(pantheon_slash_url),
+            GURL("https://vertexaisearch.cloud.google.com/side-panel?configId="
+                 "fdd1e98d-1f52-4407-98fd-80e27c61fbc9"));
+
+  // Pantheon URL with query parameters preserves existing query params:
+  const GURL pantheon_query_url(
+      "https://vertexaisearch.cloud.google.com/home/cid/"
+      "fdd1e98d-1f52-4407-98fd-"
+      "80e27c61fbc9?e=SparkDogfoodLaunch%3A%3ALaunch&location=global");
+  EXPECT_EQ(
+      CanonicalizeGuestUrl(pantheon_query_url),
+      GURL("https://vertexaisearch.cloud.google.com/side-panel?configId="
+           "fdd1e98d-1f52-4407-98fd-"
+           "80e27c61fbc9&e=SparkDogfoodLaunch%3A%3ALaunch&location=global"));
+}
+
+TEST_F(GeicPwcManagerTest,
+       ConfiguresGuestURLFromCommandLineCanonicalizesPantheonUrl) {
+  base::test::ScopedCommandLine scoped_command_line;
+  const std::string pantheon_url =
+      "https://vertexaisearch.cloud.google.com/home/cid/"
+      "fdd1e98d-1f52-4407-98fd-"
+      "80e27c61fbc9?e=SparkDogfoodLaunch%3A%3ALaunch";
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kGeicGuestURLSwitch, pantheon_url);
+
+  const GURL expected_canonical_url(
+      "https://vertexaisearch.cloud.google.com/side-panel?configId="
+      "fdd1e98d-1f52-4407-98fd-80e27c61fbc9&e=SparkDogfoodLaunch%3A%3ALaunch");
+
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(nullptr),
+            expected_canonical_url);
+
+  GeicPwcManager manager(profile());
+  EXPECT_EQ(manager.guest_url(), expected_canonical_url);
+}
+
+TEST_F(GeicPwcManagerTest, ConfiguresGuestURLFromEnterprisePolicy) {
+  base::DictValue policy_dict;
+  policy_dict.Set(
+      "url",
+      "https://vertexaisearch.cloud.google.com/home/cid/fdd1e98d-1f52-4407-"
+      "98fd-80e27c61fbc9");
+  profile()->GetPrefs()->SetDict("glic.gemini_enterprise_settings",
+                                 std::move(policy_dict));
+
+  const GURL expected_canonical_url(
+      "https://vertexaisearch.cloud.google.com/side-panel?configId="
+      "fdd1e98d-1f52-4407-98fd-80e27c61fbc9");
+
+  EXPECT_EQ(GetPolicyGuestUrl(profile()), expected_canonical_url);
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(profile()),
+            expected_canonical_url);
+
+  GeicPwcManager manager(profile());
+  EXPECT_EQ(manager.guest_url(), expected_canonical_url);
+}
+
+TEST_F(GeicPwcManagerTest, CommandLineOverridesEnterprisePolicy) {
+  // Set policy:
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://business.gemini.google/");
+  profile()->GetPrefs()->SetDict("glic.gemini_enterprise_settings",
+                                 std::move(policy_dict));
+
+  // Set switch:
+  base::test::ScopedCommandLine scoped_command_line;
+  const std::string custom_switch_url =
+      "https://localhost.corp.google.com:10443/side-panel";
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kGeicGuestURLSwitch, custom_switch_url);
+
+  // Switch takes precedence over policy:
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(profile()),
+            GURL(custom_switch_url));
+
+  GeicPwcManager manager(profile());
+  EXPECT_EQ(manager.guest_url(), GURL(custom_switch_url));
 }
 
 }  // namespace

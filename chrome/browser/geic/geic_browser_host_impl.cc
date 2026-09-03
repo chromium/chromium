@@ -49,7 +49,7 @@ bool IsSignInURLAllowed(const GURL& url, Profile* profile) {
   if (origin == GaiaUrls::GetInstance()->gaia_origin()) {
     return true;
   }
-  GURL configured_guest_url = GeicPwcManager::GetConfiguredGuestURL();
+  GURL configured_guest_url = GeicPwcManager::GetConfiguredGuestURL(nullptr);
   if (!configured_guest_url.is_empty() &&
       origin == url::Origin::Create(configured_guest_url)) {
     return true;

@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/geic/geic_browser_host_impl.h"
+#include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
@@ -34,22 +35,22 @@ const char kGeicPwcManagerUserDataKey[] = "geic_pwc_manager";
 }  // namespace
 
 // static
-GURL GeicPwcManager::GetConfiguredGuestURL() {
+GURL GeicPwcManager::GetConfiguredGuestURL(Profile* profile) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kGeicGuestURLSwitch)) {
     GURL cmd_url(command_line->GetSwitchValueASCII(kGeicGuestURLSwitch));
-    if (cmd_url.is_valid()) {
-      return cmd_url;
+    if (IsValidGuestUrl(cmd_url)) {
+      return CanonicalizeGuestUrl(cmd_url);
     }
   }
   std::string param_url_str = features::kGeicGuestURL.Get();
   if (!param_url_str.empty()) {
     GURL param_url(param_url_str);
-    if (param_url.is_valid()) {
-      return param_url;
+    if (IsValidGuestUrl(param_url)) {
+      return CanonicalizeGuestUrl(param_url);
     }
   }
-  return GURL();
+  return profile ? GetPolicyGuestUrl(profile) : GURL();
 }
 
 // static
@@ -62,7 +63,7 @@ GeicPwcManager* GeicPwcManager::GetOrCreateForProfile(Profile* profile,
       profile->GetUserData(kGeicPwcManagerUserDataKey));
   if (!manager) {
     if (dev_url.is_empty()) {
-      dev_url = GetConfiguredGuestURL();
+      dev_url = GetConfiguredGuestURL(profile);
     }
     auto new_manager =
         std::make_unique<GeicPwcManager>(profile, std::move(dev_url));
@@ -74,7 +75,7 @@ GeicPwcManager* GeicPwcManager::GetOrCreateForProfile(Profile* profile,
 
 GeicPwcManager::GeicPwcManager(Profile* profile, GURL dev_url)
     : profile_(profile),
-      dev_url_(dev_url.is_empty() ? GetConfiguredGuestURL()
+      dev_url_(dev_url.is_empty() ? GetConfiguredGuestURL(profile)
                                   : std::move(dev_url)) {
   if (profile_) {
     profile_observation_.Observe(profile_);
