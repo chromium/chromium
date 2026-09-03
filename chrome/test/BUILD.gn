@@ -3597,7 +3597,10 @@ if (!is_android) {
         sources += [
           "../browser/ui/views/frame/browser_frame_view_browsertest_win.cc",
         ]
-        deps += [ "//chrome/browser/ui/views/frame:windows_caption_button" ]
+        deps += [
+          "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
+          "//chrome/browser/ui/views/frame:windows_caption_button",
+        ]
       }
       if (is_mac) {
         sources += [

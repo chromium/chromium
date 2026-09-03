@@ -634,6 +634,57 @@ if (is_win) {
       "//ui/gfx",
     ]
   }
+
+  source_set("browser_caption_button_container_win") {
+    public = [ "browser_caption_button_container_win.h" ]
+    sources = [ "browser_caption_button_container_win.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser:browser_public_dependencies",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+    deps = [
+      ":windows_caption_button",
+      "//chrome/app:command_ids",
+      "//chrome/browser:titlebar_config",
+      "//chrome/browser/ui:view_ids",
+      "//chrome/browser/ui/frame",
+      "//ui/strings:ui_strings",
+    ]
+  }
+
+  source_set("browser_native_widget_factory_aura") {
+    sources = [ "browser_native_widget_factory_aura.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [ ":browser_native_widget_factory" ]
+  }
+
+  source_set("browser_window_property_manager_win") {
+    public = [ "browser_window_property_manager_win.h" ]
+    sources = [ "browser_window_property_manager_win.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser:browser_public_dependencies",
+      "//components/prefs",
+    ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:misc",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/extensions",
+      "//chrome/common:constants",
+      "//extensions/browser",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
 }
 
 source_set("contents_capture_border_view") {

@@ -357,6 +357,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser:font_prewarmer_tab_helper",
       "//chrome/browser/os_crypt",
+      "//chrome/browser/ui:network_profile_bubble",
       "//chrome/browser/webnn",
       "//chrome/browser/win",
       "//components/os_crypt/browser",

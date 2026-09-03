@@ -1452,6 +1452,7 @@ source_set("core") {
       "//chrome/browser/shortcuts",
       "//chrome/browser/startup",
       "//chrome/browser/ui:accessibility_util",
+      "//chrome/browser/ui:network_profile_bubble",
       "//chrome/browser/ui:uninstall_browser_prompt",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/webnn",
@@ -3044,6 +3045,7 @@ source_set("browser") {
     deps += [
       "//chrome/browser/taskbar",
       "//chrome/browser/ui:accessibility_util",
+      "//chrome/browser/ui:network_profile_bubble",
       "//chrome/browser/win:impl",
       "//components/app_launch_prefetch",
     ]

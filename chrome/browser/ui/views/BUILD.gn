@@ -257,6 +257,7 @@ if (is_win) {
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:network_profile_bubble",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/common:constants",

@@ -1219,11 +1219,6 @@ static_library("ui") {
     # c/b/ui/browser.h
     "//chrome/browser/updates/announcement_notification:impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following header gets componentized:
-    # c/b/ui/network_profile_bubble.h
-    "//chrome/browser/prefs:impl",
-
     # TODO(crbug.com/437811373): Remove this circular dependency when the
     # following headers get componentized:
     # - c/b/ui/browser.h
@@ -2395,17 +2390,10 @@ static_library("ui") {
     assert(use_aura)
 
     sources += [
-      "network_profile_bubble.cc",
-      "network_profile_bubble.h",
-      "views/frame/browser_caption_button_container_win.cc",
-      "views/frame/browser_caption_button_container_win.h",
       "views/frame/browser_desktop_window_tree_host_win.cc",
       "views/frame/browser_desktop_window_tree_host_win.h",
       "views/frame/browser_frame_view_win.cc",
       "views/frame/browser_frame_view_win.h",
-      "views/frame/browser_native_widget_factory_aura.cc",
-      "views/frame/browser_window_property_manager_win.cc",
-      "views/frame/browser_window_property_manager_win.h",
       "views/frame/windows_taskbar_icon_updater.cc",
       "views/frame/windows_taskbar_icon_updater.h",
     ]
@@ -2418,10 +2406,14 @@ static_library("ui") {
 
     allow_circular_includes_from += [
       "//chrome/browser/ui/views:network_profile_bubble_view",
+      "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
+      "//chrome/browser/ui/views/frame:browser_native_widget_factory_aura",
+      "//chrome/browser/ui/views/frame:browser_window_property_manager_win",
       "//chrome/browser/win:impl",
     ]
 
     deps += [
+      ":network_profile_bubble",
       "//chrome/browser:font_prewarmer_tab_helper",
       "//chrome/browser:titlebar_config",
       "//chrome/browser/taskbar",
@@ -2429,6 +2421,9 @@ static_library("ui") {
       "//chrome/browser/ui/views:critical_notification_bubble_view",
       "//chrome/browser/ui/views:network_profile_bubble_view",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
+      "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
+      "//chrome/browser/ui/views/frame:browser_native_widget_factory_aura",
+      "//chrome/browser/ui/views/frame:browser_window_property_manager_win",
       "//chrome/browser/ui/views/frame:minimize_button_metrics_win",
       "//chrome/browser/win:impl",
       "//components/search_engines",
@@ -4338,6 +4333,25 @@ if (use_aura) {
 if (is_win) {
   source_set("accessibility_util") {
     public = [ "accessibility_util.h" ]
+  }
+
+  source_set("network_profile_bubble") {
+    public = [ "network_profile_bubble.h" ]
+    sources = [ "network_profile_bubble.cc" ]
+    public_deps = [
+      "//base",
+      "//components/pref_registry",
+    ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//content/public/browser",
+      "//third_party/abseil-cpp:absl",
+    ]
+    libs = [ "wtsapi32.lib" ]
   }
 }
 
