@@ -5794,17 +5794,21 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
   ASSIGN_OR_RETURN(std::optional<TensorInfo> quantized_output,
                    CanFuseQuantizeAndGetOutput(gather));
   const bool fuse_dequantize = quantized_output.has_value();
+  // The ML Drift accelerator's GATHER implementation supports float16 inputs.
+  const bool supports_float16 = context_device_ == mojom::Device::kGpu;
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(
-                       gather.input_operand_id,
-                       /*quantize_params=*/0,
-                       /*operation_supports_float16=*/false, fuse_dequantize));
+                   SerializeInputTensorInfo(gather.input_operand_id,
+                                            /*quantize_params=*/0,
+                                            supports_float16, fuse_dequantize));
   TensorIndex output_tensor_index;
   if (fuse_dequantize) {
     output_tensor_index = quantized_output->index;
   } else {
-    ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
-                     SerializeOutputTensorInfo(gather.output_operand_id));
+    ASSIGN_OR_RETURN(
+        const TensorInfo output_tensor_info,
+        SerializeOutputTensorInfo(gather.output_operand_id,
+                                  /*quantize_params=*/0, supports_float16,
+                                  input_tensor_info.data_type));
     output_tensor_index = output_tensor_info.index;
   }
 
