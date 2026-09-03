@@ -13,6 +13,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -79,6 +80,7 @@ public class VerticalTabHoverCardControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private VerticalTabRailLayout mContainerView;
+    @Mock private VerticalTabListRecyclerView mRecyclerView;
     @Mock private ViewGroup mRootView;
     @Mock private View mTabView1;
     @Mock private View mTabView2;
@@ -114,6 +116,7 @@ public class VerticalTabHoverCardControllerUnitTest {
                         .getDimension(R.dimen.vertical_tab_hover_card_margin_to_rail);
 
         when(mContainerView.getContext()).thenReturn(activity);
+        when(mContainerView.getRecyclerView()).thenReturn(mRecyclerView);
         when(mContainerView.getRootView()).thenReturn(mRootView);
         when(mRootView.getHeight()).thenReturn(ROOT_VIEW_HEIGHT_PX);
         when(mTabHoverCardView.getContext()).thenReturn(activity);
@@ -1020,5 +1023,55 @@ public class VerticalTabHoverCardControllerUnitTest {
         verify(mTabHoverCardView).destroy();
         verify(mTabGroupHoverCardView, atLeastOnce()).hide();
         verify(mTabGroupHoverCardView).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testHideHoverCard_ExecutesTagHoverExitListener() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        Runnable mockHoverExit = mock(Runnable.class);
+        when(mTabView1.getTag(R.id.tab_hover_exit_listener)).thenReturn(mockHoverExit);
+
+        TabHoverCardListener listener = mController.getTabHoverCardListener();
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+
+        mController.hideHoverCard();
+
+        verify(mockHoverExit).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenuShowing_SuppressesHoverCard() {
+        boolean[] isContextMenuShowing = new boolean[] {true};
+        VerticalTabHoverCardController controller =
+                new VerticalTabHoverCardController(
+                        mContainerView,
+                        mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
+                        mTabModelSelector,
+                        mTabContentManagerSupplier,
+                        () -> isContextMenuShowing[0]);
+        TabHoverCardListener listener = controller.getTabHoverCardListener();
+
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        controller.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testScrolling_SuppressesHoverCard() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        when(mRecyclerView.getScrollState())
+                .thenReturn(androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING);
+
+        TabHoverCardListener listener = mController.getTabHoverCardListener();
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
     }
 }

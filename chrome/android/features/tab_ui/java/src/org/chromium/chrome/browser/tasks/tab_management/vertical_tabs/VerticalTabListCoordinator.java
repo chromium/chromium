@@ -1014,6 +1014,9 @@ public class VerticalTabListCoordinator {
      * @param railCollapseState The {@link RailCollapseState} to apply to the rail.
      */
     void setRailCollapseState(@RailCollapseState int railCollapseState) {
+        if (mTabHoverCardController != null) {
+            mTabHoverCardController.hideHoverCard();
+        }
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
         updatePinnedLayoutSpanCount();
         mCollapseController.setRailCollapseStateSupplierValue(railCollapseState);

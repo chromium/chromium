@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -56,6 +57,20 @@ public class VerticalTabHoverCardController {
          */
         void onTabGroupHoverCardStateChanged(
                 int groupHeaderTabId, @Nullable Token tabGroupId, View view, boolean isHovered);
+
+        /**
+         * @return Whether any context menu is currently showing.
+         */
+        default boolean isContextMenuShowing() {
+            return false;
+        }
+
+        /**
+         * @return Whether the vertical tab strip list is currently scrolling.
+         */
+        default boolean isScrolling() {
+            return false;
+        }
     }
 
     private final VerticalTabRailLayout mContainerView;
@@ -76,6 +91,16 @@ public class VerticalTabHoverCardController {
                         View view,
                         boolean isHovered) {
                     showOrHideTabGroupHoverCard(groupHeaderTabId, tabGroupId, view, isHovered);
+                }
+
+                @Override
+                public boolean isContextMenuShowing() {
+                    return VerticalTabHoverCardController.this.isContextMenuShowing();
+                }
+
+                @Override
+                public boolean isScrolling() {
+                    return VerticalTabHoverCardController.this.isScrolling();
                 }
             };
     private final @Nullable ViewStub mTabHoverCardViewStub;
@@ -148,6 +173,18 @@ public class VerticalTabHoverCardController {
         if (mTabGroupHoverCardView != null) {
             mTabGroupHoverCardView.hide();
         }
+        View anchorView = mCurrentHoveredAnchorView;
+        mCurrentHoveredAnchorView = null;
+        mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
+        mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
+        mCurrentHoveredGroupId = null;
+
+        if (anchorView != null) {
+            Runnable onHoverExit = (Runnable) anchorView.getTag(R.id.tab_hover_exit_listener);
+            if (onHoverExit != null) {
+                onHoverExit.run();
+            }
+        }
     }
 
     /** Destroys references and cancels pending handlers. */
@@ -202,6 +239,10 @@ public class VerticalTabHoverCardController {
     /** Handles hover and keyboard focus state changes on vertical tab item views. */
     private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
         if (isHovered) {
+            if (isContextMenuShowing() || isScrolling()) {
+                return;
+            }
+
             mCurrentHoveredTabId = tabId;
             mCurrentHoveredAnchorView = view;
             mCurrentHoveredGroupHeaderTabId = Tab.INVALID_TAB_ID;
@@ -228,6 +269,10 @@ public class VerticalTabHoverCardController {
     private void showOrHideTabGroupHoverCard(
             int groupHeaderTabId, @Nullable Token tabGroupId, View view, boolean isHovered) {
         if (isHovered) {
+            if (isContextMenuShowing() || isScrolling()) {
+                return;
+            }
+
             mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
             mCurrentHoveredAnchorView = view;
             mCurrentHoveredGroupHeaderTabId = groupHeaderTabId;
@@ -249,6 +294,12 @@ public class VerticalTabHoverCardController {
         }
     }
 
+    boolean isScrolling() {
+        VerticalTabListRecyclerView recyclerView = mContainerView.getRecyclerView();
+        return recyclerView != null
+                && recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
+    }
+
     @VisibleForTesting
     int getHoverCardDelay() {
         Context context = mContainerView.getContext();
@@ -261,7 +312,7 @@ public class VerticalTabHoverCardController {
 
     private void scheduleOrShowHoverCard(View view, Runnable showRunnable) {
         cancelPendingHoverCard();
-        if (isContextMenuShowing()) {
+        if (isContextMenuShowing() || isScrolling()) {
             return;
         }
 

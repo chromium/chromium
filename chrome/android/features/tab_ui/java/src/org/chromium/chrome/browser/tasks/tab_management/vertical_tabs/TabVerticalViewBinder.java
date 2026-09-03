@@ -1145,6 +1145,11 @@ class TabVerticalViewBinder {
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
 
+        @Nullable Drawable bg = view.getBackground();
+        if (bg != null) {
+            bg.mutate();
+        }
+
         if (isHovered) {
             // TODO(crbug.com/533531896): Handle clearing all backgrounds before
             // showing tab background.
@@ -1168,6 +1173,7 @@ class TabVerticalViewBinder {
                 ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
             }
         }
+        view.invalidate();
     }
 
     /**
@@ -1188,6 +1194,13 @@ class TabVerticalViewBinder {
 
         Runnable onHoverEnter =
                 () -> {
+                    TabHoverCardListener listener =
+                            model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+                    // Blocks new tab hover backgrounds to show when context menu or scroll occurs.
+                    if (listener != null
+                            && (listener.isContextMenuShowing() || listener.isScrolling())) {
+                        return;
+                    }
                     applyHoverBackgroundState(
                             model, view, /* isHovered= */ true, defaultBackgroundColor);
                     updateIcons(model, view, /* isHovered= */ true);
@@ -1202,6 +1215,7 @@ class TabVerticalViewBinder {
                     notifyHoverChange(model, view, /* isHovered= */ false);
                 };
 
+        view.setTag(R.id.tab_hover_exit_listener, onHoverExit);
         setupHoverOrchestration(view, actionButton, onHoverEnter, onHoverExit);
 
         view.setOnFocusChangeListener((v, hasFocus) -> notifyHoverChange(model, v, hasFocus));
@@ -1219,6 +1233,13 @@ class TabVerticalViewBinder {
 
         Runnable onHoverEnter =
                 () -> {
+                    TabHoverCardListener listener =
+                            model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+                    // Blocks new tab hover backgrounds to show when context menu or scroll occurs.
+                    if (listener != null
+                            && (listener.isContextMenuShowing() || listener.isScrolling())) {
+                        return;
+                    }
                     boolean isRailCollapsed =
                             model.get(TabProperties.RAIL_COLLAPSE_STATE)
                                     == RailCollapseState.COLLAPSED;
@@ -1234,6 +1255,7 @@ class TabVerticalViewBinder {
                     notifyGroupHeaderHoverChange(model, view, /* isHovered= */ false);
                 };
 
+        view.setTag(R.id.tab_hover_exit_listener, onHoverExit);
         setupHoverOrchestration(view, menuButton, onHoverEnter, onHoverExit);
 
         view.setOnFocusChangeListener(

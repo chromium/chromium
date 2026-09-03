@@ -2047,6 +2047,16 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabHoverCardView).hide();
     }
 
+    @Test
+    @SmallTest
+    public void testHoverCard_RailCollapse_HidesHoverCard() {
+        prepareAndShowHoverCard(mMockTab1);
+
+        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
+
+        verify(mTabHoverCardView).hide();
+    }
+
     // =============================================================================================
     // Dynamically Balancing Pinned Tabs
     // =============================================================================================

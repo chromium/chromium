@@ -684,6 +684,61 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testTabHover_ExitTagRunnable_ClearsHoverState() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(
+                TabUiThemeUtil.getHoveredTabContainerColor(
+                        mItemView.getContext(), /* isIncognito= */ false),
+                bgTint.getDefaultColor());
+
+        Object tag = mItemView.getTag(R.id.tab_hover_exit_listener);
+        assertTrue(tag instanceof Runnable);
+        ((Runnable) tag).run();
+
+        bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabHover_SuppressedWhenContextMenuOrScrolling() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        when(mTabHoverCardListener.isContextMenuShowing()).thenReturn(true);
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+
+        when(mTabHoverCardListener.isContextMenuShowing()).thenReturn(false);
+        when(mTabHoverCardListener.isScrolling()).thenReturn(true);
+
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+    }
+
+    @Test
+    @SmallTest
     public void testTabHoverBackground_Incognito() {
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
