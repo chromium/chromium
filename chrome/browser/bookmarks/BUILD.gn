@@ -6,7 +6,7 @@ import("//build/config/ui.gni")
 import("//components/offline_pages/buildflags/features.gni")
 
 source_set("types") {
-  public = [ "bookmark_parent_folder_types.h" ]
+  public = [ "bookmark_node_types.h" ]
 }
 
 source_set("bookmarks") {

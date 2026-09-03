@@ -29,7 +29,7 @@ class MockBookmarkBarUIClient : public BookmarkBarUIClient {
   MOCK_METHOD(void, SetManagedBookmarksFolderVisibility, (bool), (override));
   MOCK_METHOD(void,
               ShowFolderMenu,
-              (const bookmarks_api::BookmarkParentFolderId&),
+              (const bookmarks::BookmarkNodeId&),
               (override));
 };
 
@@ -60,8 +60,7 @@ class MockBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
   MOCK_METHOD(void, NotifyFolderOpened, (), (override));
   MOCK_METHOD(void,
               OpenFolderNodes,
-              (const bookmarks_api::BookmarkParentFolderId&,
-               WindowOpenDisposition),
+              (const bookmarks::BookmarkNodeId&, WindowOpenDisposition),
               (override));
 };
 
@@ -74,7 +73,7 @@ class MockBookmarkBarModelAdapter : public BookmarkBarModelAdapter {
               (const, override));
   MOCK_METHOD((std::vector<const bookmarks::BookmarkNode*>),
               GetUnderlyingNodes,
-              (const bookmarks_api::BookmarkParentFolderId&),
+              (const bookmarks::BookmarkNodeId&),
               (const, override));
   MOCK_METHOD(void,
               CanPasteFromClipboard,
@@ -194,7 +193,7 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkDelegates) {
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenFolderCurrentTabShowsMenu) {
   controller_->Bind(&mock_client_);
-  bookmarks_api::BookmarkParentFolderId folder_id = int64_t{42};
+  bookmarks::BookmarkNodeId folder_id = int64_t{42};
   EXPECT_CALL(mock_action_adapter_, NotifyFolderOpened());
   EXPECT_CALL(mock_client_, ShowFolderMenu(folder_id));
   controller_->OpenFolder(folder_id, WindowOpenDisposition::CURRENT_TAB);
@@ -202,7 +201,7 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenFolderCurrentTabShowsMenu) {
 
 TEST_F(BookmarkBarUIControllerImplTest, OpenFolderOtherDispositionOpensNodes) {
   controller_->Bind(&mock_client_);
-  bookmarks_api::BookmarkParentFolderId folder_id = int64_t{42};
+  bookmarks::BookmarkNodeId folder_id = int64_t{42};
   EXPECT_CALL(mock_action_adapter_,
               OpenFolderNodes(folder_id, WindowOpenDisposition::NEW_WINDOW));
   EXPECT_CALL(mock_client_, ShowFolderMenu(testing::_)).Times(0);

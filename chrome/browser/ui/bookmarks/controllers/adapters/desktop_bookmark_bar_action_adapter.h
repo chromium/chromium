@@ -20,7 +20,7 @@ class DesktopBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
   void OpenBookmark(int64_t node_id,
                     WindowOpenDisposition disposition) override;
   void NotifyFolderOpened() override;
-  void OpenFolderNodes(const bookmarks_api::BookmarkParentFolderId& folder,
+  void OpenFolderNodes(const bookmarks::BookmarkNodeId& folder,
                        WindowOpenDisposition disposition) override;
 
  private:

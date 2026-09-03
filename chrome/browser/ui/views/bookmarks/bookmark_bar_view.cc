@@ -1425,7 +1425,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
 void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
   CHECK(controller_);
-  controller_->OpenFolder(chrome::ToFolderId(folder),
+  controller_->OpenFolder(chrome::ToNodeId(folder),
                           ui::DispositionFromEventFlags(event.flags()));
 }
 
@@ -1434,7 +1434,7 @@ bool BookmarkBarView::OnMenuButtonAccessibleAction(
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kExpand) {
     CHECK(controller_);
-    controller_->OpenFolder(chrome::ToFolderId(folder),
+    controller_->OpenFolder(chrome::ToNodeId(folder),
                             WindowOpenDisposition::CURRENT_TAB);
     return true;
   }
@@ -2389,7 +2389,7 @@ bool BookmarkBarView::HasDropInfo() const {
 }
 
 void BookmarkBarView::ShowFolderMenu(
-    const bookmarks_api::BookmarkParentFolderId& folder_id) {
+    const bookmarks::BookmarkNodeId& folder_id) {
   ShowFolderMenuForFolder(
       chrome::ToFolder(folder_id, bookmark_service_->bookmark_model()));
 }

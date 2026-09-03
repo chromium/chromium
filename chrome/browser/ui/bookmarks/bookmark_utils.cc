@@ -399,9 +399,8 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
 }
 #endif
 
-BookmarkParentFolder ToFolder(
-    const bookmarks_api::BookmarkParentFolderId& folder_id,
-    bookmarks::BookmarkModel* model) {
+BookmarkParentFolder ToFolder(const bookmarks::BookmarkNodeId& folder_id,
+                              bookmarks::BookmarkModel* model) {
   if (std::holds_alternative<int64_t>(folder_id)) {
     const bookmarks::BookmarkNode* node =
         bookmarks::GetBookmarkNodeByID(model, std::get<int64_t>(folder_id));
@@ -422,8 +421,7 @@ BookmarkParentFolder ToFolder(
   NOTREACHED();
 }
 
-bookmarks_api::BookmarkParentFolderId ToFolderId(
-    const BookmarkParentFolder& folder) {
+bookmarks::BookmarkNodeId ToNodeId(const BookmarkParentFolder& folder) {
   if (folder.HoldsNonPermanentFolder()) {
     return folder.as_non_permanent_folder()->id();
   }

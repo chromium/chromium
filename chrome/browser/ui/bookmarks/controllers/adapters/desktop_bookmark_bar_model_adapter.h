@@ -20,7 +20,7 @@ class DesktopBookmarkBarModelAdapter : public BookmarkBarModelAdapter {
   bool IsLoaded() const override;
   const bookmarks::BookmarkNode* GetNodeById(int64_t id) const override;
   std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
-      const bookmarks_api::BookmarkParentFolderId& folder) const override;
+      const bookmarks::BookmarkNodeId& folder) const override;
   void CanPasteFromClipboard(const BookmarkParentFolder* parent,
                              base::OnceCallback<void(bool)> callback) override;
 

@@ -81,7 +81,7 @@ void BookmarkBarUIControllerImpl::OpenBookmark(
 }
 
 void BookmarkBarUIControllerImpl::OpenFolder(
-    const bookmarks_api::BookmarkParentFolderId& folder,
+    const bookmarks::BookmarkNodeId& folder,
     WindowOpenDisposition disposition) {
   // Clicking the middle mouse button or clicking with Control/Command key down
   // opens all bookmarks in the folder in new tabs.

@@ -9,7 +9,7 @@
 #include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
+#include "chrome/browser/bookmarks/bookmark_node_types.h"
 
 namespace bookmarks {
 class BookmarkNode;

@@ -66,7 +66,7 @@ void DesktopBookmarkBarActionAdapter::NotifyFolderOpened() {
 }
 
 void DesktopBookmarkBarActionAdapter::OpenFolderNodes(
-    const bookmarks_api::BookmarkParentFolderId& folder_id,
+    const bookmarks::BookmarkNodeId& folder_id,
     WindowOpenDisposition disposition) {
   BookmarkParentFolder folder = chrome::ToFolder(
       folder_id,

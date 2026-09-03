@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
+#include "chrome/browser/bookmarks/bookmark_node_types.h"
 
 enum class WindowOpenDisposition;
 
@@ -26,9 +26,8 @@ class BookmarkBarActionAdapter {
   virtual void NotifyFolderOpened() = 0;
 
   // Opens all bookmarks in the folder using the given disposition.
-  virtual void OpenFolderNodes(
-      const bookmarks_api::BookmarkParentFolderId& folder,
-      WindowOpenDisposition disposition) = 0;
+  virtual void OpenFolderNodes(const bookmarks::BookmarkNodeId& folder,
+                               WindowOpenDisposition disposition) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_BOOKMARK_BAR_ACTION_ADAPTER_H_

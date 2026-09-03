@@ -203,8 +203,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void SetAppsPageShortcutVisibility(bool visible) override;
   void SetSavedTabGroupsVisibility(bool visible) override;
   void SetManagedBookmarksFolderVisibility(bool visible) override;
-  void ShowFolderMenu(
-      const bookmarks_api::BookmarkParentFolderId& folder) override;
+  void ShowFolderMenu(const bookmarks::BookmarkNodeId& folder) override;
 
   // BookmarkMenuControllerObserver:
   void BookmarkMenuControllerDeleted(

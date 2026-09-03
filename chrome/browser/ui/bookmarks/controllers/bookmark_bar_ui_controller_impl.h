@@ -25,7 +25,7 @@ class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
   void OpenAppsPage(WindowOpenDisposition disposition) override;
   void OpenBookmark(int64_t node_id,
                     WindowOpenDisposition disposition) override;
-  void OpenFolder(const bookmarks_api::BookmarkParentFolderId& folder,
+  void OpenFolder(const bookmarks::BookmarkNodeId& folder,
                   WindowOpenDisposition disposition) override;
 
  private:

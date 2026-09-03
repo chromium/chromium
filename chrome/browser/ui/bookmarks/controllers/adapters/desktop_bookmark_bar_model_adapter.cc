@@ -28,7 +28,7 @@ const bookmarks::BookmarkNode* DesktopBookmarkBarModelAdapter::GetNodeById(
 
 std::vector<const bookmarks::BookmarkNode*>
 DesktopBookmarkBarModelAdapter::GetUnderlyingNodes(
-    const bookmarks_api::BookmarkParentFolderId& folder_id) const {
+    const bookmarks::BookmarkNodeId& folder_id) const {
   if (!service_) {
     return {};
   }

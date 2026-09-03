@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
+#include "chrome/browser/bookmarks/bookmark_node_types.h"
 
 struct BookmarkParentFolder;
 
@@ -29,7 +29,7 @@ class BookmarkBarModelAdapter {
   // Returns the underlying bookmark nodes for a folder (permanent folder or
   // non-permanent folder node).
   virtual std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
-      const bookmarks_api::BookmarkParentFolderId& folder) const = 0;
+      const bookmarks::BookmarkNodeId& folder) const = 0;
 
   // Asynchronously checks whether bookmarks can be pasted from the clipboard
   // into `parent`.
