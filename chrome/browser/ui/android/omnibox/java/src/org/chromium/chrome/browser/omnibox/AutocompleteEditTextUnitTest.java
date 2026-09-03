@@ -287,8 +287,8 @@ public class AutocompleteEditTextUnitTest {
                                 mContext.getSystemService(Context.ACCESSIBILITY_SERVICE));
         manager.setEnabled(true);
         manager.setTouchExplorationEnabled(true);
-        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
-        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(/* enabled= */ true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(/* enabled= */ true);
 
         mInOrder = inOrder(mVerifier);
         assertTrue(mAutocomplete.requestFocus());
@@ -301,7 +301,7 @@ public class AutocompleteEditTextUnitTest {
         assertVerifierCallCounts(/* nonAccessibilityCount= */ 0, /* accessibilityCount= */ 1);
 
         // Feeder should call this at the beginning.
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(false);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ false);
 
         if (DEBUG) Log.i(TAG, "setUp finished.");
     }
@@ -1259,9 +1259,9 @@ public class AutocompleteEditTextUnitTest {
     @Test
     public void testIgnoreAndGet() {
         final String url = "https://www.google.com/";
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(true);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ true);
         mAutocomplete.setText(url);
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(false);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ false);
         mInputConnection.getTextBeforeCursor(1, 1);
         assertTrue(mAutocomplete.isCursorVisible());
         mInOrder.verifyNoMoreInteractions();
@@ -1283,9 +1283,9 @@ public class AutocompleteEditTextUnitTest {
     public void testFocusInAndSelectAll() {
         final String url = "https://google.com";
         final int len = url.length();
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(true);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ true);
         mAutocomplete.setText(url);
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(false);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ false);
 
         mInOrder.verifyNoMoreInteractions();
         assertVerifierCallCounts(/* nonAccessibilityCount= */ 0, /* accessibilityCount= */ 0);
@@ -1296,7 +1296,7 @@ public class AutocompleteEditTextUnitTest {
         assertVerifierCallCounts(/* nonAccessibilityCount= */ 0, /* accessibilityCount= */ 0);
 
         // LocationBarLayout does this.
-        mAutocomplete.setSelectAllOnFocus(true);
+        mAutocomplete.setSelectAllOnFocus(/* selectAllOnFocus= */ true);
 
         assertTrue(mAutocomplete.requestFocus());
 
@@ -1361,9 +1361,9 @@ public class AutocompleteEditTextUnitTest {
         assertTrue(mInputConnection.commitText("h", 1));
         assertTrue(mAutocomplete.shouldAutocomplete());
         mAutocomplete.setAutocompleteText("h", "ello world", null, null);
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(true);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ true);
         mAutocomplete.setText("abcde");
-        mAutocomplete.setIgnoreTextChangesForAutocomplete(false);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(/* ignoreAutocomplete= */ false);
         assertEquals("abcde", mAutocomplete.getText().toString());
 
         mAutocomplete.setSelection(0);
@@ -1461,7 +1461,7 @@ public class AutocompleteEditTextUnitTest {
         assertVerifierCallCounts(/* nonAccessibilityCount= */ 0, /* accessibilityCount= */ 0);
 
         // We left EditText with selected content. We should get the same event sent again now.
-        mAutocomplete.setSelectAllOnFocus(true);
+        mAutocomplete.setSelectAllOnFocus(/* selectAllOnFocus= */ true);
         assertTrue(mAutocomplete.requestFocus());
 
         mInOrder.verify(mVerifier).onUpdateSelection(0, len);
