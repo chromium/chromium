@@ -181,10 +181,6 @@ class PDFiumPage {
   // bounding boxes.
   std::vector<AccessibilityHighlightInfo> GetHighlightInfo();
 
-  // For all the text fields on the page, get their properties like name,
-  // value, bounding boxes, etc.
-  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo();
-
   // Traverses the entire struct tree of the page recursively and extracts the
   // text run type or the alt text from struct tree elements corresponding to
   // the marked content IDs present in `marked_content_id_to_text_runs_map_` or
@@ -323,8 +319,6 @@ class PDFiumPage {
   friend class PDFiumPageLinkTest;
   friend class PDFiumTestBase;
 
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageButtonTest, PopulateButtons);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageChoiceFieldTest, PopulateChoiceFields);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, PopulateHighlights);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, LowResolutionImage);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, HighResolutionImage);
@@ -336,7 +330,6 @@ class PDFiumPage {
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, GetLinkTarget);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, GetUTF8LinkTarget);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, LinkGeneration);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageTextFieldTest, PopulateTextFields);
 
   // Key: Marked content id for the text element as specified in the struct
   //      tree.
@@ -402,70 +395,6 @@ class PDFiumPage {
     std::string note_text;
   };
 
-  // Represents a form field within the page.
-  struct FormField {
-    FormField();
-    FormField(const FormField& other);
-    ~FormField();
-
-    gfx::Rect bounding_rect;
-    // Represents the name of form field as defined in the field dictionary.
-    std::string name;
-    // Represents the flags of form field as defined in the field dictionary.
-    int flags;
-  };
-
-  // Represents a text field within the page.
-  struct TextField : FormField {
-    TextField();
-    TextField(const TextField& other);
-    ~TextField();
-
-    std::string value;
-  };
-
-  // Represents a choice field option.
-  struct ChoiceFieldOption {
-    ChoiceFieldOption();
-    ChoiceFieldOption(const ChoiceFieldOption& other);
-    ~ChoiceFieldOption();
-
-    std::string name;
-    bool is_selected;
-  };
-
-  // Represents a choice field within the page.
-  struct ChoiceField : FormField {
-    ChoiceField();
-    ChoiceField(const ChoiceField& other);
-    ~ChoiceField();
-
-    std::vector<ChoiceFieldOption> options;
-  };
-
-  // Represents a button within the page.
-  struct Button : FormField {
-    Button();
-    Button(const Button& other);
-    ~Button();
-
-    std::string value;
-    // A button can be of type radio, checkbox or push button.
-    int type;
-    // Represents if the radio button or checkbox is checked.
-    bool is_checked = false;
-    // Represents count of controls in the control group. A group of
-    // interactive form annotations is collectively called a form control
-    // group. Here an interactive form annotation should be either a radio
-    // button or a checkbox.
-    uint32_t control_count = 0;
-    // Represents index of the control in the control group. A group of
-    // interactive form annotations is collectively called a form control
-    // group. Here an interactive form annotation should be either a radio
-    // button or a checkbox. Value of `control_index` is -1 for push button.
-    int control_index = -1;
-  };
-
   // Returns a link index if the given character index is over a link, or -1
   // otherwise.
   int GetLink(int char_index, LinkTarget* target);
@@ -481,14 +410,6 @@ class PDFiumPage {
   void PopulateAnnotations();
   // Populate `highlights_` with `annot`.
   void PopulateHighlight(FPDF_ANNOTATION annot);
-  // Populate `text_fields_` with `annot`.
-  void PopulateTextField(FPDF_ANNOTATION annot);
-  // Populate `choice_fields_` with `annot`.
-  void PopulateChoiceField(FPDF_ANNOTATION annot);
-  // Populate `buttons_` with `annot`.
-  void PopulateButton(FPDF_ANNOTATION annot);
-  // Populate form fields like text field, choice field and button on the page.
-  void PopulateFormField(FPDF_ANNOTATION annot);
   // Returns link type and fills target associated with a destination. Returns
   // NONSELECTABLE_AREA if detection failed.
   Area GetDestinationTarget(FPDF_DEST destination, LinkTarget* target);
@@ -530,9 +451,6 @@ class PDFiumPage {
       FPDF_STRUCTELEMENT element,
       std::set<FPDF_STRUCTELEMENT>& visited_elements);
 
-  bool PopulateFormFieldProperties(FPDF_ANNOTATION annot,
-                                   FormField* form_field);
-
   // Generates and sends the thumbnail using `send_callback`.
   void GenerateAndSendThumbnail(float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
@@ -555,9 +473,6 @@ class PDFiumPage {
   std::vector<Image> images_;
   bool calculated_annotations_ = false;
   std::vector<Highlight> highlights_;
-  std::vector<TextField> text_fields_;
-  std::vector<ChoiceField> choice_fields_;
-  std::vector<Button> buttons_;
   bool calculated_page_object_text_run_breaks_ = false;
   // The set of character indices on which text runs need to be broken for page
   // objects.

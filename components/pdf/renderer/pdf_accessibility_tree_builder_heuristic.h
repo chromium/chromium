@@ -18,13 +18,10 @@
 #include "services/screen_ai/buildflags/buildflags.h"
 
 namespace chrome_pdf {
-struct AccessibilityButtonInfo;
 struct AccessibilityCharInfo;
-struct AccessibilityChoiceFieldInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
 struct AccessibilityLinkInfo;
-struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 }  // namespace chrome_pdf
 
@@ -138,20 +135,6 @@ class PdfAccessibilityTreeBuilderHeuristic {
       ui::AXNodeData** previous_on_line_node,
       size_t* text_run_index);
 
-  void AddTextFieldToParaNode(
-      const chrome_pdf::AccessibilityTextFieldInfo& text_field,
-      ui::AXNodeData* para_node,
-      size_t* text_run_index);
-
-  void AddButtonToParaNode(const chrome_pdf::AccessibilityButtonInfo& button,
-                           ui::AXNodeData* para_node,
-                           size_t* text_run_index);
-
-  void AddChoiceFieldToParaNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
-      ui::AXNodeData* para_node,
-      size_t* text_run_index);
-
   void AddRemainingAnnotations(ui::AXNodeData* para_node
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
                                ,
@@ -165,9 +148,6 @@ class PdfAccessibilityTreeBuilderHeuristic {
   uint32_t current_link_index_ = 0;
   uint32_t current_image_index_ = 0;
   uint32_t current_highlight_index_ = 0;
-  uint32_t current_text_field_index_ = 0;
-  uint32_t current_button_index_ = 0;
-  uint32_t current_choice_field_index_ = 0;
 };
 
 }  // namespace pdf

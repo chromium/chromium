@@ -83,17 +83,6 @@ class PdfAccessibilityTreeBuilder {
       const {
     return *highlights_;
   }
-  const std::vector<chrome_pdf::AccessibilityTextFieldInfo>& text_fields()
-      const {
-    return *text_fields_;
-  }
-  const std::vector<chrome_pdf::AccessibilityButtonInfo>& buttons() const {
-    return *buttons_;
-  }
-  const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>& choice_fields()
-      const {
-    return *choice_fields_;
-  }
   uint32_t page_index() const { return page_index_; }
 
   // Node creation methods used by tree builders.
@@ -114,12 +103,6 @@ class PdfAccessibilityTreeBuilder {
       const chrome_pdf::AccessibilityHighlightInfo& highlight);
   ui::AXNodeData* CreatePopupNoteNode(
       const chrome_pdf::AccessibilityHighlightInfo& highlight);
-  ui::AXNodeData* CreateTextFieldNode(
-      const chrome_pdf::AccessibilityTextFieldInfo& text_field);
-  ui::AXNodeData* CreateButtonNode(
-      const chrome_pdf::AccessibilityButtonInfo& button);
-  ui::AXNodeData* CreateChoiceFieldNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   ui::AXNodeData* CreateOcrWrapperNode(const gfx::PointF& position, bool start);
 #endif
@@ -130,17 +113,6 @@ class PdfAccessibilityTreeBuilder {
       ui::AXNodeData* ax_node_data);
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
   ui::AXNodeData* CreateStaticTextNode();
-  ui::AXNodeData* CreateListboxOptionNode(
-      const chrome_pdf::AccessibilityChoiceFieldOptionInfo& choice_field_option,
-      ax::mojom::Restriction restriction);
-  ui::AXNodeData* CreateListboxNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
-      ui::AXNodeData* control_node);
-  ui::AXNodeData* CreateComboboxInputNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
-      ax::mojom::Restriction restriction);
-  ui::AXNodeData* CreateComboboxNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
 
   const bool mark_headings_using_heuristic_;
   std::vector<uint32_t> text_run_start_indices_;
@@ -151,12 +123,6 @@ class PdfAccessibilityTreeBuilder {
   const raw_ref<const std::vector<chrome_pdf::AccessibilityImageInfo>> images_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityHighlightInfo>>
       highlights_;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextFieldInfo>>
-      text_fields_;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityButtonInfo>>
-      buttons_;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>>
-      choice_fields_;
   const raw_ptr<const chrome_pdf::AccessibilityStructureElement>
       page_structure_tree_;
 

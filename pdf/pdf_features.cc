@@ -15,7 +15,6 @@ namespace {
 bool g_is_oopif_pdf_policy_enabled = true;
 }  // namespace
 
-BASE_FEATURE(kAccessiblePDFForm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables PDFium to support the experimental PDF 2.0 /BrotliDecode filter
 // allowing for PDFs encoded with Brotli to be viewable by Chrome's PDF

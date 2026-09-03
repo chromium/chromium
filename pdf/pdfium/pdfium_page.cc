@@ -222,11 +222,6 @@ bool FloatAtLeastHalf(float f1, float f2) {
   return ratio >= 0.5f;
 }
 
-bool IsRadioButtonOrCheckBox(int button_type) {
-  return button_type == FPDF_FORMFIELD_CHECKBOX ||
-         button_type == FPDF_FORMFIELD_RADIOBUTTON;
-}
-
 template <typename T>
 bool CompareTextRuns(const T& a, const T& b) {
   return a.text_range.index < b.text_range.index;
@@ -1002,35 +997,6 @@ std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo() {
   return highlight_info;
 }
 
-std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo() {
-  std::vector<AccessibilityTextFieldInfo> text_field_info;
-  if (!available_)
-    return text_field_info;
-
-  CalculateTextRuns();
-  PopulateAnnotations();
-
-  text_field_info.reserve(text_fields_.size());
-  for (size_t i = 0; i < text_fields_.size(); ++i) {
-    const TextField& text_field = text_fields_[i];
-    AccessibilityTextFieldInfo cur_info;
-    cur_info.name = text_field.name;
-    cur_info.value = text_field.value;
-    cur_info.index_in_page = i;
-    cur_info.is_read_only = !!(text_field.flags & FPDF_FORMFLAG_READONLY);
-    cur_info.is_required = !!(text_field.flags & FPDF_FORMFLAG_REQUIRED);
-    cur_info.is_password = !!(text_field.flags & FPDF_FORMFLAG_TEXT_PASSWORD);
-    // TODO(crbug.com/40661774): Update text run index to nearest text run to
-    // text field bounds.
-    cur_info.text_run_index = text_runs_.size();
-    cur_info.bounds = gfx::RectF(
-        text_field.bounding_rect.x(), text_field.bounding_rect.y(),
-        text_field.bounding_rect.width(), text_field.bounding_rect.height());
-    text_field_info.push_back(std::move(cur_info));
-  }
-  return text_field_info;
-}
-
 PDFiumPage::Area PDFiumPage::GetLinkTargetAtIndex(int link_index,
                                                   LinkTarget* target) {
   if (!available_ || link_index < 0)
@@ -1744,10 +1710,6 @@ void PDFiumPage::PopulateAnnotations() {
         PopulateHighlight(annot.get());
         break;
       }
-      case FPDF_ANNOT_WIDGET: {
-        PopulateFormField(annot.get());
-        break;
-      }
       default:
         break;
     }
@@ -1799,122 +1761,6 @@ void PDFiumPage::PopulateHighlight(FPDF_ANNOTATION annot) {
       /*check_expected_size=*/true));
 
   highlights_.push_back(std::move(highlight));
-}
-
-void PDFiumPage::PopulateTextField(FPDF_ANNOTATION annot) {
-  DCHECK(annot);
-  FPDF_FORMHANDLE form_handle = engine_->form();
-  DCHECK_EQ(FPDFAnnot_GetFormFieldType(form_handle, annot),
-            FPDF_FORMFIELD_TEXTFIELD);
-
-  TextField text_field;
-  if (!PopulateFormFieldProperties(annot, &text_field))
-    return;
-
-  text_field.value = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-      base::BindRepeating(&FPDFAnnot_GetFormFieldValue, form_handle, annot),
-      /*check_expected_size=*/true));
-  text_fields_.push_back(std::move(text_field));
-}
-
-void PDFiumPage::PopulateChoiceField(FPDF_ANNOTATION annot) {
-  DCHECK(annot);
-  FPDF_FORMHANDLE form_handle = engine_->form();
-  int form_field_type = FPDFAnnot_GetFormFieldType(form_handle, annot);
-  DCHECK(form_field_type == FPDF_FORMFIELD_LISTBOX ||
-         form_field_type == FPDF_FORMFIELD_COMBOBOX);
-
-  ChoiceField choice_field;
-  if (!PopulateFormFieldProperties(annot, &choice_field))
-    return;
-
-  int options_count = FPDFAnnot_GetOptionCount(form_handle, annot);
-  if (options_count < 0)
-    return;
-
-  choice_field.options.resize(options_count);
-  for (int i = 0; i < options_count; ++i) {
-    choice_field.options[i].name =
-        base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-            base::BindRepeating(&FPDFAnnot_GetOptionLabel, form_handle, annot,
-                                i),
-            /*check_expected_size=*/true));
-    choice_field.options[i].is_selected =
-        FPDFAnnot_IsOptionSelected(form_handle, annot, i);
-  }
-  choice_fields_.push_back(std::move(choice_field));
-}
-
-void PDFiumPage::PopulateButton(FPDF_ANNOTATION annot) {
-  DCHECK(annot);
-  FPDF_FORMHANDLE form_handle = engine_->form();
-  int button_type = FPDFAnnot_GetFormFieldType(form_handle, annot);
-  DCHECK(button_type == FPDF_FORMFIELD_PUSHBUTTON ||
-         IsRadioButtonOrCheckBox(button_type));
-
-  Button button;
-  if (!PopulateFormFieldProperties(annot, &button))
-    return;
-
-  button.type = button_type;
-  if (IsRadioButtonOrCheckBox(button_type)) {
-    button.control_count = FPDFAnnot_GetFormControlCount(form_handle, annot);
-    if (button.control_count <= 0)
-      return;
-
-    button.control_index = FPDFAnnot_GetFormControlIndex(form_handle, annot);
-    button.value = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-        base::BindRepeating(&FPDFAnnot_GetFormFieldExportValue, form_handle,
-                            annot),
-        /*check_expected_size=*/true));
-    button.is_checked = FPDFAnnot_IsChecked(form_handle, annot);
-  }
-  buttons_.push_back(std::move(button));
-}
-
-void PDFiumPage::PopulateFormField(FPDF_ANNOTATION annot) {
-  DCHECK_EQ(FPDFAnnot_GetSubtype(annot), FPDF_ANNOT_WIDGET);
-  int form_field_type = FPDFAnnot_GetFormFieldType(engine_->form(), annot);
-
-  // TODO(crbug.com/40661774): Populate other types of form fields too.
-  switch (form_field_type) {
-    case FPDF_FORMFIELD_PUSHBUTTON:
-    case FPDF_FORMFIELD_CHECKBOX:
-    case FPDF_FORMFIELD_RADIOBUTTON: {
-      PopulateButton(annot);
-      break;
-    }
-    case FPDF_FORMFIELD_COMBOBOX:
-    case FPDF_FORMFIELD_LISTBOX: {
-      PopulateChoiceField(annot);
-      break;
-    }
-    case FPDF_FORMFIELD_TEXTFIELD: {
-      PopulateTextField(annot);
-      break;
-    }
-    default:
-      break;
-  }
-}
-
-bool PDFiumPage::PopulateFormFieldProperties(FPDF_ANNOTATION annot,
-                                             FormField* form_field) {
-  DCHECK(annot);
-  const std::optional<PdfRect> maybe_rect = GetAnnotRect(annot);
-  if (!maybe_rect.has_value()) {
-    return false;
-  }
-
-  // We use the bounding box of the form field as the bounding rect.
-  form_field->bounding_rect = PageToScreen(
-      gfx::Point(), 1.0, maybe_rect.value(), PageOrientation::kOriginal);
-  FPDF_FORMHANDLE form_handle = engine_->form();
-  form_field->name = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-      base::BindRepeating(&FPDFAnnot_GetFormFieldName, form_handle, annot),
-      /*check_expected_size=*/true));
-  form_field->flags = FPDFAnnot_GetFormFieldFlags(form_handle, annot);
-  return true;
 }
 
 bool PDFiumPage::GetUnderlyingTextRangeForRect(const gfx::RectF& rect,
@@ -2158,36 +2004,5 @@ PDFiumPage::Highlight::Highlight() = default;
 PDFiumPage::Highlight::Highlight(const Highlight& that) = default;
 
 PDFiumPage::Highlight::~Highlight() = default;
-
-PDFiumPage::FormField::FormField() = default;
-
-PDFiumPage::FormField::FormField(const FormField& that) = default;
-
-PDFiumPage::FormField::~FormField() = default;
-
-PDFiumPage::TextField::TextField() = default;
-
-PDFiumPage::TextField::TextField(const TextField& that) = default;
-
-PDFiumPage::TextField::~TextField() = default;
-
-PDFiumPage::ChoiceFieldOption::ChoiceFieldOption() = default;
-
-PDFiumPage::ChoiceFieldOption::ChoiceFieldOption(
-    const ChoiceFieldOption& that) = default;
-
-PDFiumPage::ChoiceFieldOption::~ChoiceFieldOption() = default;
-
-PDFiumPage::ChoiceField::ChoiceField() = default;
-
-PDFiumPage::ChoiceField::ChoiceField(const ChoiceField& that) = default;
-
-PDFiumPage::ChoiceField::~ChoiceField() = default;
-
-PDFiumPage::Button::Button() = default;
-
-PDFiumPage::Button::Button(const Button& that) = default;
-
-PDFiumPage::Button::~Button() = default;
 
 }  // namespace chrome_pdf

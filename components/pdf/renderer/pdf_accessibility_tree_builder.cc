@@ -31,17 +31,6 @@ namespace {
 // The upper (exclusive) bound for valid 7-bit ASCII code points [0, 127].
 constexpr uint32_t kMaxAsciiCodePoint = 128;
 
-ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
-  switch (button_type) {
-    case chrome_pdf::ButtonType::kRadioButton:
-      return ax::mojom::Role::kRadioButton;
-    case chrome_pdf::ButtonType::kCheckBox:
-      return ax::mojom::Role::kCheckBox;
-    case chrome_pdf::ButtonType::kPushButton:
-      return ax::mojom::Role::kButton;
-  }
-}
-
 bool IsAsciiWhitespace(uint32_t char_code) {
   return char_code < kMaxAsciiCodePoint &&
          base::IsAsciiWhitespace(static_cast<char>(char_code));
@@ -171,9 +160,6 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       links_(page_objects.links),
       images_(page_objects.images),
       highlights_(page_objects.highlights),
-      text_fields_(page_objects.form_fields.text_fields),
-      buttons_(page_objects.form_fields.buttons),
-      choice_fields_(page_objects.form_fields.choice_fields),
       page_structure_tree_(page_structure_tree),
       page_index_(page_index),
       root_node_(root_node),
@@ -438,178 +424,6 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreatePopupNoteNode(
   popup_note_node->child_ids.push_back(static_popup_note_text_node->id);
 
   return popup_note_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateTextFieldNode(
-    const chrome_pdf::AccessibilityTextFieldInfo& text_field) {
-  ax::mojom::Restriction restriction = text_field.is_read_only
-                                           ? ax::mojom::Restriction::kReadOnly
-                                           : ax::mojom::Restriction::kNone;
-  ui::AXNodeData* text_field_node =
-      CreateAndAppendNode(ax::mojom::Role::kTextField, restriction);
-
-  text_field_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                      text_field.name);
-  text_field_node->AddStringAttribute(ax::mojom::StringAttribute::kValue,
-                                      text_field.value);
-  text_field_node->AddState(ax::mojom::State::kFocusable);
-  if (text_field.is_required) {
-    text_field_node->AddState(ax::mojom::State::kRequired);
-  }
-  if (text_field.is_password) {
-    text_field_node->AddState(ax::mojom::State::kProtected);
-  }
-  text_field_node->relative_bounds.bounds = text_field.bounds;
-  return text_field_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateButtonNode(
-    const chrome_pdf::AccessibilityButtonInfo& button) {
-  ax::mojom::Restriction restriction = button.is_read_only
-                                           ? ax::mojom::Restriction::kReadOnly
-                                           : ax::mojom::Restriction::kNone;
-  ui::AXNodeData* button_node =
-      CreateAndAppendNode(GetRoleForButtonType(button.type), restriction);
-  button_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                  button.name);
-  button_node->AddState(ax::mojom::State::kFocusable);
-
-  if (button.type == chrome_pdf::ButtonType::kRadioButton ||
-      button.type == chrome_pdf::ButtonType::kCheckBox) {
-    ax::mojom::CheckedState checkedState = button.is_checked
-                                               ? ax::mojom::CheckedState::kTrue
-                                               : ax::mojom::CheckedState::kNone;
-    button_node->SetCheckedState(checkedState);
-    button_node->AddStringAttribute(ax::mojom::StringAttribute::kValue,
-                                    button.value);
-    button_node->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                                 button.control_count);
-    button_node->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                                 button.control_index + 1);
-    button_node->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kCheck);
-  } else {
-    button_node->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
-  }
-
-  button_node->relative_bounds.bounds = button.bounds;
-  return button_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateListboxOptionNode(
-    const chrome_pdf::AccessibilityChoiceFieldOptionInfo& choice_field_option,
-    ax::mojom::Restriction restriction) {
-  ui::AXNodeData* listbox_option_node =
-      CreateAndAppendNode(ax::mojom::Role::kListBoxOption, restriction);
-
-  listbox_option_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                          choice_field_option.name);
-  listbox_option_node->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                                        choice_field_option.is_selected);
-  listbox_option_node->AddState(ax::mojom::State::kFocusable);
-  listbox_option_node->SetDefaultActionVerb(
-      ax::mojom::DefaultActionVerb::kSelect);
-
-  return listbox_option_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateListboxNode(
-    const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
-    ui::AXNodeData* control_node) {
-  ax::mojom::Restriction restriction = choice_field.is_read_only
-                                           ? ax::mojom::Restriction::kReadOnly
-                                           : ax::mojom::Restriction::kNone;
-  ui::AXNodeData* listbox_node =
-      CreateAndAppendNode(ax::mojom::Role::kListBox, restriction);
-
-  if (choice_field.type != chrome_pdf::ChoiceFieldType::kComboBox) {
-    listbox_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     choice_field.name);
-  }
-
-  ui::AXNodeData* first_selected_option = nullptr;
-  for (const chrome_pdf::AccessibilityChoiceFieldOptionInfo& option :
-       choice_field.options) {
-    ui::AXNodeData* listbox_option_node =
-        CreateListboxOptionNode(option, restriction);
-    if (!first_selected_option && listbox_option_node->GetBoolAttribute(
-                                      ax::mojom::BoolAttribute::kSelected)) {
-      first_selected_option = listbox_option_node;
-    }
-    // TODO(crbug.com/40661774): Add `listbox_option_node` specific bounds
-    // here.
-    listbox_option_node->relative_bounds.bounds = choice_field.bounds;
-    listbox_node->child_ids.push_back(listbox_option_node->id);
-  }
-
-  if (control_node && first_selected_option) {
-    control_node->AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                                  first_selected_option->id);
-  }
-
-  if (choice_field.is_multi_select) {
-    listbox_node->AddState(ax::mojom::State::kMultiselectable);
-  }
-  listbox_node->AddState(ax::mojom::State::kFocusable);
-  listbox_node->relative_bounds.bounds = choice_field.bounds;
-  return listbox_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateComboboxInputNode(
-    const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
-    ax::mojom::Restriction restriction) {
-  ax::mojom::Role input_role = choice_field.has_editable_text_box
-                                   ? ax::mojom::Role::kTextFieldWithComboBox
-                                   : ax::mojom::Role::kComboBoxMenuButton;
-  ui::AXNodeData* combobox_input_node =
-      CreateAndAppendNode(input_role, restriction);
-  combobox_input_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                          choice_field.name);
-  for (const chrome_pdf::AccessibilityChoiceFieldOptionInfo& option :
-       choice_field.options) {
-    if (option.is_selected) {
-      combobox_input_node->AddStringAttribute(
-          ax::mojom::StringAttribute::kValue, option.name);
-      break;
-    }
-  }
-
-  combobox_input_node->AddState(ax::mojom::State::kFocusable);
-  combobox_input_node->relative_bounds.bounds = choice_field.bounds;
-  if (input_role == ax::mojom::Role::kComboBoxMenuButton) {
-    combobox_input_node->SetDefaultActionVerb(
-        ax::mojom::DefaultActionVerb::kOpen);
-  }
-
-  return combobox_input_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateComboboxNode(
-    const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field) {
-  ax::mojom::Restriction restriction = choice_field.is_read_only
-                                           ? ax::mojom::Restriction::kReadOnly
-                                           : ax::mojom::Restriction::kNone;
-  ui::AXNodeData* combobox_node =
-      CreateAndAppendNode(ax::mojom::Role::kComboBoxGrouping, restriction);
-  ui::AXNodeData* input_element =
-      CreateComboboxInputNode(choice_field, restriction);
-  ui::AXNodeData* list_element = CreateListboxNode(choice_field, input_element);
-  input_element->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
-                                     std::vector<int32_t>{list_element->id});
-  combobox_node->child_ids.push_back(input_element->id);
-  combobox_node->child_ids.push_back(list_element->id);
-  combobox_node->AddState(ax::mojom::State::kFocusable);
-  combobox_node->relative_bounds.bounds = choice_field.bounds;
-  return combobox_node;
-}
-
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateChoiceFieldNode(
-    const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field) {
-  switch (choice_field.type) {
-    case chrome_pdf::ChoiceFieldType::kListBox:
-      return CreateListboxNode(choice_field, /*control_node=*/nullptr);
-    case chrome_pdf::ChoiceFieldType::kComboBox:
-      return CreateComboboxNode(choice_field);
-  }
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

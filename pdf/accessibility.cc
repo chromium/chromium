@@ -17,16 +17,6 @@
 
 namespace chrome_pdf {
 
-namespace {
-
-AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(PDFiumPage* page) {
-  AccessibilityFormFieldInfo form_field_info;
-  form_field_info.text_fields = page->GetTextFieldInfo();
-  return form_field_info;
-}
-
-}  // namespace
-
 void GetAccessibilityInfo(PDFiumEngine* engine,
                           int32_t page_index,
                           AccessibilityPageInfo& page_info,
@@ -52,7 +42,6 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   page_info.text_run_count = text_runs.size();
   page_objects.links = page->GetLinkInfo();
   page_objects.highlights = page->GetHighlightInfo();
-  page_objects.form_fields = GetAccessibilityFormFieldInfo(page);
 }
 
 }  // namespace chrome_pdf

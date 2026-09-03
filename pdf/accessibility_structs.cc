@@ -123,111 +123,13 @@ AccessibilityHighlightInfo::AccessibilityHighlightInfo(
 
 AccessibilityHighlightInfo::~AccessibilityHighlightInfo() = default;
 
-AccessibilityTextFieldInfo::AccessibilityTextFieldInfo() = default;
-
-AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(const std::string& name,
-                                                       const std::string& value,
-                                                       bool is_read_only,
-                                                       bool is_required,
-                                                       bool is_password,
-                                                       uint32_t index_in_page,
-                                                       uint32_t text_run_index,
-                                                       const gfx::RectF& bounds)
-    : name(name),
-      value(value),
-      is_read_only(is_read_only),
-      is_required(is_required),
-      is_password(is_password),
-      index_in_page(index_in_page),
-      text_run_index(text_run_index),
-      bounds(bounds) {}
-
-AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(
-    const AccessibilityTextFieldInfo& other) = default;
-
-AccessibilityTextFieldInfo::~AccessibilityTextFieldInfo() = default;
-
-AccessibilityChoiceFieldInfo::AccessibilityChoiceFieldInfo() = default;
-
-AccessibilityChoiceFieldInfo::AccessibilityChoiceFieldInfo(
-    const std::string& name,
-    const std::vector<AccessibilityChoiceFieldOptionInfo>& options,
-    ChoiceFieldType type,
-    bool is_read_only,
-    bool is_multi_select,
-    bool has_editable_text_box,
-    uint32_t index_in_page,
-    uint32_t text_run_index,
-    const gfx::RectF& bounds)
-    : name(name),
-      options(options),
-      type(type),
-      is_read_only(is_read_only),
-      is_multi_select(is_multi_select),
-      has_editable_text_box(has_editable_text_box),
-      index_in_page(index_in_page),
-      text_run_index(text_run_index),
-      bounds(bounds) {}
-
-AccessibilityChoiceFieldInfo::AccessibilityChoiceFieldInfo(
-    const AccessibilityChoiceFieldInfo& other) = default;
-
-AccessibilityChoiceFieldInfo::~AccessibilityChoiceFieldInfo() = default;
-
-AccessibilityButtonInfo::AccessibilityButtonInfo() = default;
-
-AccessibilityButtonInfo::AccessibilityButtonInfo(const std::string& name,
-                                                 const std::string& value,
-                                                 ButtonType type,
-                                                 bool is_read_only,
-                                                 bool is_checked,
-                                                 uint32_t control_count,
-                                                 uint32_t control_index,
-                                                 uint32_t index_in_page,
-                                                 uint32_t text_run_index,
-                                                 const gfx::RectF& bounds)
-    : name(name),
-      value(value),
-      type(type),
-      is_read_only(is_read_only),
-      is_checked(is_checked),
-      control_count(control_count),
-      control_index(control_index),
-      index_in_page(index_in_page),
-      text_run_index(text_run_index),
-      bounds(bounds) {}
-
-AccessibilityButtonInfo::AccessibilityButtonInfo(
-    const AccessibilityButtonInfo& other) = default;
-
-AccessibilityButtonInfo::~AccessibilityButtonInfo() = default;
-
-AccessibilityFormFieldInfo::AccessibilityFormFieldInfo() = default;
-
-AccessibilityFormFieldInfo::AccessibilityFormFieldInfo(
-    const std::vector<AccessibilityTextFieldInfo>& text_fields,
-    const std::vector<AccessibilityChoiceFieldInfo>& choice_fields,
-    const std::vector<AccessibilityButtonInfo>& buttons)
-    : text_fields(text_fields),
-      choice_fields(choice_fields),
-      buttons(buttons) {}
-
-AccessibilityFormFieldInfo::AccessibilityFormFieldInfo(
-    const AccessibilityFormFieldInfo& other) = default;
-
-AccessibilityFormFieldInfo::~AccessibilityFormFieldInfo() = default;
-
 AccessibilityPageObjects::AccessibilityPageObjects() = default;
 
 AccessibilityPageObjects::AccessibilityPageObjects(
     const std::vector<AccessibilityLinkInfo>& links,
     const std::vector<AccessibilityImageInfo>& images,
-    const std::vector<AccessibilityHighlightInfo>& highlights,
-    const AccessibilityFormFieldInfo& form_fields)
-    : links(links),
-      images(images),
-      highlights(highlights),
-      form_fields(form_fields) {}
+    const std::vector<AccessibilityHighlightInfo>& highlights)
+    : links(links), images(images), highlights(highlights) {}
 
 AccessibilityPageObjects::AccessibilityPageObjects(
     const AccessibilityPageObjects& other) = default;

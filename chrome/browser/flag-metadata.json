@@ -33,11 +33,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "accessible-pdf-form",
-    "owners": [ "bravi@microsoft.com", "mohitb@microsoft.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "account-picker-dialog",
     "owners": [ "adelm@google.com" ],
     "expiry_milestone": 170

@@ -19,7 +19,6 @@ static_assert(BUILDFLAG(ENABLE_PDF), "ENABLE_PDF not set to true");
 
 namespace chrome_pdf::features {
 
-BASE_DECLARE_FEATURE(kAccessiblePDFForm);
 BASE_DECLARE_FEATURE(kPdfBrotliDecode);
 BASE_DECLARE_FEATURE(kPdfBufferedPaintManager);
 BASE_DECLARE_FEATURE(kPdfGetSaveDataInBlocks);
