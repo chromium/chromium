@@ -115,6 +115,16 @@ def PackageInArchive(directory_path, archive_path):
       )
 
 
+def VerifyPackageDoesntExist(gcs_bucket, filename, gcs_platform):
+  """Verifies that the package doesn't already exist on GCS, exiting if so."""
+  gcs_path = f'gs://{gcs_bucket}/{gcs_platform}/{filename}'
+  print(f'Checking if {gcs_path} already exists...')
+  if (RunGsutil(['stat', gcs_path]) == 0):
+    print(f'Package {gcs_path} already exists!')
+    print('Did you forget to update the sub-revision?')
+    sys.exit(1)
+
+
 def MaybeUpload(
   do_upload, gcs_bucket, filename, gcs_platform, extra_gsutil_args=[]
 ):
@@ -126,7 +136,8 @@ def MaybeUpload(
     }
   )
   gsutil_args = (
-    ['cp']
+    # Fail if the item generation is not 0 (i.e. if it already exists).
+    ['-h', 'x-goog-if-generation-match:0', 'cp']
     + extra_gsutil_args
     + ['-n', filename, 'gs://%s/%s/' % (gcs_bucket, gcs_platform)]
   )
@@ -206,6 +217,7 @@ def UploadPDBsToSymbolServer(binaries):
     exit_code = RunGsutil(gsutil_args)
     if exit_code != 0:
       print("gsutil failed, exit_code: %s" % exit_code)
+      print("If a precondition did not hold, a package at this revision likely aready exists.")
       sys.exit(exit_code)
 
 
@@ -275,6 +287,9 @@ def main():
     gcs_platform = 'Win'
   else:
     gcs_platform = 'Linux_x64'
+
+  if args.upload:
+    VerifyPackageDoesntExist(args.bucket, pdir + '.tar.xz', gcs_platform)
 
   with open('buildlog.txt', 'w', encoding='utf-8') as log:
     Tee('Starting build\n', log)
@@ -873,8 +888,6 @@ def main():
     UploadPDBsToSymbolServer(binaries)
     end = time.time()
     print('symbol upload took', end - start, 'seconds')
-
-  # FIXME: Warn if the file already exists on the server.
 
   if args.output_artifacts_json:
     with open(args.output_artifacts_json, 'w') as f:

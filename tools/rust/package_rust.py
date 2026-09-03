@@ -23,7 +23,12 @@ from build_rust import (
     RUST_HOST_LLVM_INSTALL_DIR,
 )
 from update_rust import GetRustClangRevision
-from package import MaybeUpload, TeeCmd, DEFAULT_GCS_BUCKET
+from package import (
+    DEFAULT_GCS_BUCKET,
+    MaybeUpload,
+    TeeCmd,
+    VerifyPackageDoesntExist,
+)
 from update import CHROMIUM_DIR
 
 PACKAGE_VERSION = GetRustClangRevision()
@@ -59,6 +64,11 @@ def main():
         gcs_platform = 'Win'
     else:
         gcs_platform = 'Linux_x64'
+
+    if args.upload:
+        VerifyPackageDoesntExist(
+            args.bucket, RUST_TOOLCHAIN_PACKAGE_NAME, gcs_platform
+        )
 
     # Clean build output directory.
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
