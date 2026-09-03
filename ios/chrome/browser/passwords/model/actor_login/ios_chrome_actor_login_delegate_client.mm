@@ -6,7 +6,11 @@
 
 #import "base/notimplemented.h"
 #import "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
+#import "components/password_manager/core/browser/password_form_cache.h"
+#import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -41,6 +45,24 @@ IOSChromeActorLoginDelegateClient::IOSChromeActorLoginDelegateClient(
 IOSChromeActorLoginDelegateClient::~IOSChromeActorLoginDelegateClient() =
     default;
 
+id<ActorLoginToolDelegate>
+IOSChromeActorLoginDelegateClient::GetActorLoginToolDelegate() {
+  if (auto* helper = PasswordTabHelper::FromWebState(web_state_)) {
+    return helper->GetSharedPasswordController();
+  }
+  return nil;
+}
+
+password_manager::PasswordFormCache*
+IOSChromeActorLoginDelegateClient::GetPasswordFormCache() {
+  if (auto* helper = PasswordTabHelper::FromWebState(web_state_)) {
+    if (auto* password_manager = helper->GetPasswordManager()) {
+      return password_manager->GetPasswordFormCache();
+    }
+  }
+  return nullptr;
+}
+
 void IOSChromeActorLoginDelegateClient::SetActorLoginWebContentInterface(
     ActorLoginWebContentInterface* web_interface) {
   web_interface_ = web_interface;
@@ -61,10 +83,14 @@ IOSChromeActorLoginDelegateClient::GetPasswordManagerClient() {
 
 password_manager::PasswordManagerDriver*
 IOSChromeActorLoginDelegateClient::GetPasswordManagerDriverForMainFrame() {
+  web::WebFramesManager* frames_manager =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(web_state_);
   web::WebFrame* main_frame =
-      web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
-  return IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_,
-                                                                  main_frame);
+      frames_manager ? frames_manager->GetMainWebFrame() : nullptr;
+  return main_frame ? IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
+                          web_state_, main_frame)
+                    : nullptr;
 }
 
 ukm::SourceId
@@ -74,11 +100,15 @@ IOSChromeActorLoginDelegateClient::GetPageUkmSourceIdForMainFrame() {
 
 url::Origin
 IOSChromeActorLoginDelegateClient::GetLastCommittedOriginForMainFrame() {
-  if (web::WebFrame* main_frame =
-          web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame()) {
-    return main_frame->GetSecurityOrigin();
+  web::WebFramesManager* frames_manager =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(web_state_);
+  web::WebFrame* main_frame =
+      frames_manager ? frames_manager->GetMainWebFrame() : nullptr;
+  if (!main_frame) {
+    return url::Origin();
   }
-  return url::Origin();
+  return main_frame->GetSecurityOrigin();
 }
 
 translate::TranslateManager*

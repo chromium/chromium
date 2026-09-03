@@ -13,8 +13,10 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "base/types/expected.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#import "components/password_manager/core/browser/password_form_cache.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -26,6 +28,10 @@ class AttemptLoginAction;
 }  // namespace proto
 }  // namespace optimization_guide
 
+namespace password_manager {
+class PasswordFormManager;
+}  // namespace password_manager
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -36,7 +42,9 @@ class ToolDelegate;
 struct CredentialWithPermission;
 
 // Tool to attempt login on a page.
-class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
+class AttemptLoginTool : public ActorTool,
+                         public web::WebStateObserver,
+                         public password_manager::PasswordFormManagerObserver {
  public:
   static std::unique_ptr<AttemptLoginTool> Create(
       base::WeakPtr<web::WebState> web_state,
@@ -51,6 +59,10 @@ class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
   void Cancel() override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
+
+  // password_manager::PasswordFormManagerObserver:
+  void OnPasswordFormParsed(
+      password_manager::PasswordFormManager* form_manager) override;
 
   // web::WebStateObserver:
   void WasShown(web::WebState* web_state) override;
@@ -68,6 +80,23 @@ class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
                       bool should_store_permission,
                       actor_login::LoginStatusResultOrError login_status);
 
+  // Called when the initial DOM extraction step from the rescan attempt
+  // completes. If no forms were found in the DOM, completes rescanning with
+  // failure immediately without waiting for `rescan_timer_`.
+  void OnDomRescanComplete(bool forms_found_in_dom);
+
+  // Called when password forms in `web_state_` have finished rescanning and are
+  // registered with the password manager. Continues the login attempt if
+  // `forms_found` is true.
+  void OnWebStateRescanComplete(bool forms_found);
+
+  // Temporarily stores the parameters to the last call to `AttemptLogin`.
+  void SaveCredentialsAndPermission(actor_login::Credential selected_credential,
+                                    bool should_store_permission);
+
+  // Retries login with temporarily stored parameters, if available.
+  void RetryLoginWithSavedCredentials();
+
   // The tab and navigation item this tool actuates on.
   base::WeakPtr<web::WebState> web_state_;
   std::optional<int> navigation_item_id_;
@@ -84,14 +113,30 @@ class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
   // Callback that signals the tool execution result.
   ToolExecutionCallback execute_callback_;
 
-  // Temporarily stores the parameters to the last call to `AttemptLogin` in
-  // case the tab is not in focus when authentication is needed.
+  // Temporarily saved credential and permission status.
   std::optional<actor_login::Credential> selected_credential_;
   bool should_store_permission_ = false;
+
+  // If `true`, the tool execution is currently blocked on a device
+  // reauthentication.
+  bool waiting_for_reauth_ = false;
+
+  // Whether a rescan of the web state to find a login form is attempted.
+  bool web_state_rescan_attempted_ = false;
+
+  // Timer for timing out form rescan if password extraction takes too long, as
+  // well as a helper flag to track whether the rescan is in progress when the
+  // timer fires.
+  base::OneShotTimer rescan_timer_;
+  bool rescan_in_progress_ = false;
 
   // Observes events of the web state being actuated on by the tool.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // Whether this tool is currently observing PasswordFormCache for parsed
+  // forms.
+  bool observing_form_cache_ = false;
 
   base::WeakPtrFactory<AttemptLoginTool> weak_ptr_factory_{this};
 };

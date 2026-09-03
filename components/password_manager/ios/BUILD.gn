@@ -52,6 +52,7 @@ component("ios") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   sources = [
+    "actor_login/actor_login_tool_delegate.h",
     "constants.h",
     "ios_password_manager_driver.h",
     "ios_password_manager_driver.mm",

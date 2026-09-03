@@ -23,6 +23,8 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#import "components/password_manager/ios/actor_login/actor_login_tool_delegate.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
@@ -31,6 +33,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/passwords/model/actor_login/ios_chrome_actor_login_delegate_client.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -43,6 +46,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 // A fake implementation of ActorTaskInterventionDelegate.
 @interface FakeActorTaskInterventionDelegate
@@ -111,19 +115,26 @@ class FakeActorLoginService : public actor_login::ActorLoginService {
     attempt_login_called_ = true;
     attempted_credentials_.push_back(credential);
     attempted_should_store_permission_ = should_store_permission;
-    if (attempt_login_error_.has_value()) {
-      std::move(done_callback).Run(base::unexpected(*attempt_login_error_));
-    } else {
-      if (attempted_should_require_reauth_) {
-        attempted_should_require_reauth_ = false;
-        std::move(done_callback)
-            .Run(actor_login::LoginStatusResult::kErrorDeviceReauthRequired);
-      } else {
-        std::move(done_callback)
-            .Run(actor_login::LoginStatusResult::
-                     kSuccessUsernameAndPasswordFilled);
-      }
+
+    if (expected_attempt_login_results_.empty()) {
+      ADD_FAILURE() << "AttemptLogin called more times than configured in "
+                       "expected_attempt_login_results_.";
+      std::move(done_callback)
+          .Run(actor_login::LoginStatusResult::kErrorNoFillableFields);
+      return;
     }
+
+    actor_login::LoginStatusResult result =
+        expected_attempt_login_results_.front();
+    expected_attempt_login_results_.erase(
+        expected_attempt_login_results_.begin());
+    std::move(done_callback).Run(result);
+  }
+
+  // Configures the sequential results returned by `AttemptLogin`.
+  void SetSequentialResults(
+      std::vector<actor_login::LoginStatusResult> results) {
+    expected_attempt_login_results_ = std::move(results);
   }
 
   // The mock list of credentials returned by GetCredentials.
@@ -141,20 +152,17 @@ class FakeActorLoginService : public actor_login::ActorLoginService {
   // Stores whether the last AttemptLogin call requested storing the permission.
   bool attempted_should_store_permission_;
 
-  // Overrides the need for device reauthentication. If a test wishes to verify
-  // correct behavior handling `LoginStatusResult::kErrorDeviceReauthRequired`,
-  // set this to `true`.
-  bool attempted_should_require_reauth_ = false;
-
-  // The mock error returned by `AttemptLogin`, if set.
-  std::optional<actor_login::ActorLoginError> attempt_login_error_;
+  // Sequential results for `AttemptLogin`. Each `AttemptLogin` call pops the
+  // front element. Calling `AttemptLogin` when empty triggers a test failure.
+  std::vector<actor_login::LoginStatusResult> expected_attempt_login_results_;
 };
 
 }  // namespace
 
 class AttemptLoginToolTest : public PlatformTest {
  public:
-  AttemptLoginToolTest() {
+  AttemptLoginToolTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BrowserList* browser_list =
@@ -207,9 +215,10 @@ class AttemptLoginToolTest : public PlatformTest {
     navigation_manager->SetVisibleItem(navigation_item_.get());
 
     web_state->SetNavigationManager(std::move(navigation_manager));
-    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
-                                   std::move(web_frames_manager));
+    web_state->SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    PasswordTabHelper::CreateForWebState(web_state.get());
     IOSChromeActorLoginDelegateClient::CreateForWebState(web_state.get());
     web::FakeWebState* web_state_ptr = web_state.get();
     browser_->GetWebStateList()->InsertWebState(
@@ -230,9 +239,20 @@ class AttemptLoginToolTest : public PlatformTest {
     return intervention_delegate_;
   }
 
+  void TearDown() override {
+    [mock_password_controller_ stopMocking];
+    mock_password_controller_ = nil;
+    captured_reparse_completion_ = nil;
+    PlatformTest::TearDown();
+  }
+
   void CloseAllWebStatesHelper() {
     CloseAllWebStates(*GetWebStateList(),
                       WebStateList::ClosingReason::kDefault);
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
   }
 
   void CancelToolAndRefocus(AttemptLoginTool* tool,
@@ -245,6 +265,46 @@ class AttemptLoginToolTest : public PlatformTest {
     std::move(callback).Run();
   }
 
+  // Stubs SharedPasswordController on `web_state` to intercept page reparse
+  // requests and capture the completion handler.
+  void MockReparseForms(web::WebState* web_state) {
+    SharedPasswordController* controller =
+        PasswordTabHelper::FromWebState(web_state)
+            ->GetSharedPasswordController();
+    mock_password_controller_ = OCMPartialMock(controller);
+
+    OCMStub([mock_password_controller_
+                actorLoginToolFindsFormsInWebState:(web::WebState*)
+                                                       [OCMArg anyPointer]
+                                 completionHandler:[OCMArg any]])
+        .andDo(^(NSInvocation* invocation) {
+          reparse_call_count_++;
+          __unsafe_unretained void (^handler)(BOOL) = nil;
+          [invocation getArgument:&handler atIndex:3];
+          captured_reparse_completion_ = [handler copy];
+        });
+  }
+
+  // Completes the pending reparse request with `forms_found`. If `forms_found`
+  // is true and `tool` is provided, also notifies `tool` that a password form
+  // was parsed.
+  [[nodiscard]] testing::AssertionResult CompleteReparse(
+      BOOL forms_found,
+      AttemptLoginTool* tool = nullptr) {
+    if (!captured_reparse_completion_) {
+      return testing::AssertionFailure()
+             << "captured_reparse_completion_ is nil (no pending reparse "
+                "request).";
+    }
+    std::exchange(captured_reparse_completion_, nil)(forms_found);
+    if (forms_found && tool) {
+      tool->OnPasswordFormParsed(nullptr);
+    }
+    return testing::AssertionSuccess();
+  }
+
+  int reparse_call_count() const { return reparse_call_count_; }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -254,6 +314,9 @@ class AttemptLoginToolTest : public PlatformTest {
   raw_ptr<FakeActorLoginService> fake_actor_login_service_ptr_ = nullptr;
   raw_ptr<ActorTaskFormFillingHandler> form_filling_handler_ptr_ = nullptr;
   FakeActorTaskInterventionDelegate* intervention_delegate_;
+  id mock_password_controller_ = nil;
+  void (^captured_reparse_completion_)(BOOL) = nil;
+  int reparse_call_count_ = 0;
 };
 
 // Tests that creating the tool succeeds when given a valid tab ID corresponding
@@ -374,6 +437,8 @@ TEST_F(AttemptLoginToolTest, Execute_PersistentCredentialDirectSelect_Success) {
   cred.has_persistent_permission = true;
 
   fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -401,7 +466,9 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Shown_Retry_Success) {
   cred.has_persistent_permission = false;
 
   fake_actor_login_service()->credentials_ = {cred};
-  fake_actor_login_service()->attempted_should_require_reauth_ = true;
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorDeviceReauthRequired,
+       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -446,7 +513,8 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_WebStateDestroyed) {
   cred.has_persistent_permission = false;
 
   fake_actor_login_service()->credentials_ = {cred};
-  fake_actor_login_service()->attempted_should_require_reauth_ = true;
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorDeviceReauthRequired});
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -484,7 +552,8 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Cancel) {
   cred.has_persistent_permission = false;
 
   fake_actor_login_service()->credentials_ = {cred};
-  fake_actor_login_service()->attempted_should_require_reauth_ = true;
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorDeviceReauthRequired});
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -548,6 +617,271 @@ TEST_F(AttemptLoginToolTest, Execute_PageChangedDuringSelection) {
             shouldStorePermission:false];
   EXPECT_EQ(future.Get().code(),
             mojom::ActionResultCode::kLoginPageChangedDuringSelection);
+}
+
+// Tests that when the initial login attempt returns kErrorNoSigninForm, the
+// tool requests a page reparse via ActorLoginToolDelegate and retries login
+// upon discovering forms.
+TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_ReparseSuccess_RetriesLogin) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  // Configure first attempt to return kErrorNoSigninForm, and retry to succeed.
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm,
+       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Verifies that WasShown called during an active reparse is ignored and does
+  // not trigger a premature login attempt.
+  tool->WasShown(web_state);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
+
+  // Complete reparse with forms found and parsed.
+  ASSERT_TRUE(CompleteReparse(YES, tool.get()));
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 2u);
+  EXPECT_EQ(reparse_call_count(), 1);
+}
+
+// Tests that when a reparse returns NO (no forms found), the tool exits with
+// `kLoginNotLoginPage` without retrying login.
+TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_ReparseNoFormsFound) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Complete reparse with NO forms found.
+  ASSERT_TRUE(CompleteReparse(NO));
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kLoginNotLoginPage);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
+  EXPECT_EQ(reparse_call_count(), 1);
+}
+
+// Tests that when form reparse does not complete within the timeout, the timer
+// triggers and finishes execution with kLoginNotLoginPage.
+TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_ReparseTimeout) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward past kReparseTimeout (1 second).
+  FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kLoginNotLoginPage);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
+  EXPECT_EQ(reparse_call_count(), 1);
+
+  // Verifies that a late reparse completion callback arriving after the timeout
+  // has fired is safely dropped and does not trigger another login attempt.
+  ASSERT_TRUE(CompleteReparse(YES, tool.get()));
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
+}
+
+// Tests that the tool only attempts reparse once and does not loop if the retry
+// attempt also returns kErrorNoSigninForm.
+TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_OnlyReparsesOnce) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  // Both attempts return kErrorNoSigninForm.
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm,
+       actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ASSERT_TRUE(CompleteReparse(YES, tool.get()));
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kLoginNotLoginPage);
+  EXPECT_EQ(reparse_call_count(), 1);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 2u);
+}
+
+// Tests that when DOM extraction succeeds (discovers forms) but form parsing
+// does not complete within the timeout, the timer triggers and exits with
+// kLoginNotLoginPage.
+TEST_F(AttemptLoginToolTest,
+       Execute_NoSigninForm_ReparseDomFoundForms_ParsingTimesOut) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Complete DOM extraction with forms found, but do not emit
+  // OnPasswordFormParsed.
+  ASSERT_TRUE(CompleteReparse(YES));
+
+  // Still waiting for OnPasswordFormParsed.
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward past kReparseTimeout (1 second).
+  FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kLoginNotLoginPage);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
+  EXPECT_EQ(reparse_call_count(), 1);
+}
+
+// Tests that cancelling the tool while waiting for reparse cleans up state and
+// prevents subsequent callbacks from retrying.
+TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_CancelDuringReparse) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  tool->Cancel();
+
+  // Invoke completion after cancellation.
+  ASSERT_TRUE(CompleteReparse(YES, tool.get()));
+
+  // Advance timer as well.
+  FastForwardBy(base::Seconds(1));
+
+  // Verify only the 1 initial attempt happened and no crash occurred.
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
+  EXPECT_EQ(reparse_call_count(), 1);
+}
+
+// Tests that if the WebState is destroyed while waiting for reparse, execution
+// terminates with kTabWentAway.
+TEST_F(AttemptLoginToolTest,
+       Execute_NoSigninForm_WebStateDestroyedDuringReparse) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Destroy WebState.
+  CloseAllWebStatesHelper();
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kTabWentAway);
+  EXPECT_EQ(reparse_call_count(), 1);
 }
 
 }  // namespace actor

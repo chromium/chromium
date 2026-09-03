@@ -166,8 +166,10 @@ source_set("attempt_login_tool") {
     ":actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/ios",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/optimization_guide/model",
@@ -609,6 +611,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/ios",
     "//components/tab_groups",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -617,6 +620,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/intelligence/actor/util:test_support",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model/actor_login",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
@@ -637,5 +641,6 @@ source_set("unit_tests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

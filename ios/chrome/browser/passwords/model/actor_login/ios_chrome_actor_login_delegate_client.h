@@ -22,6 +22,11 @@ class ActionSequenceDelegate;
 struct Credential;
 }  // namespace actor_login
 
+namespace password_manager {
+class PasswordFormCache;
+}  // namespace password_manager
+
+@protocol ActorLoginToolDelegate;
 class PrefService;
 
 // iOS-specific implementation of `ActorLoginDelegateClient`.
@@ -37,6 +42,12 @@ class IOSChromeActorLoginDelegateClient
       delete;
   IOSChromeActorLoginDelegateClient& operator=(
       const IOSChromeActorLoginDelegateClient&) = delete;
+
+  // Returns the delegate for Actor Login form extraction.
+  id<ActorLoginToolDelegate> GetActorLoginToolDelegate();
+
+  // Returns the PasswordFormCache for the associated WebState.
+  password_manager::PasswordFormCache* GetPasswordFormCache();
 
   // ActorLoginDelegateClient:
   void SetActorLoginWebContentInterface(

@@ -12,6 +12,7 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/ios/actor_login/actor_login_tool_delegate.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
@@ -78,7 +79,8 @@ class PasswordManagerClient;
 // Per-tab shared password controller. Handles parsing forms, loading
 // suggestions, filling forms, and generating passwords.
 @interface SharedPasswordController
-    : NSObject <CRWWebFramesManagerObserver,
+    : NSObject <ActorLoginToolDelegate,
+                CRWWebFramesManagerObserver,
                 CRWWebStateObserver,
                 AutofillManagerObserver,
                 FormActivityObserver,
