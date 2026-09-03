@@ -12,7 +12,8 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -63,7 +64,8 @@ export interface SettingsClearBrowsingDataTimePicker {
   };
 }
 
-const SettingsClearBrowsingDataTimePickerBase = PrefsMixin(PolymerElement);
+const SettingsClearBrowsingDataTimePickerBase =
+    PrefServiceObserverMixin(PolymerElement);
 
 export class SettingsClearBrowsingDataTimePicker extends
     SettingsClearBrowsingDataTimePickerBase {
@@ -82,6 +84,8 @@ export class SettingsClearBrowsingDataTimePicker extends
         observer: 'onTimePeriodSelectionChanged_',
         value: TimePeriod.LAST_HOUR,
       },
+
+      timePeriodPref_: Object,
 
       /**
        * The list of all available Time Periods ordered by duration in ascending
@@ -132,7 +136,7 @@ export class SettingsClearBrowsingDataTimePicker extends
 
   static get observers() {
     return [
-      'onTimePeriodPrefUpdated_(prefs.browser.clear_data.time_period.value)',
+      'onTimePeriodPrefUpdated_(timePeriodPref_)',
     ];
   }
 
@@ -141,11 +145,23 @@ export class SettingsClearBrowsingDataTimePicker extends
   declare private expandedOptionList_: TimePeriodOption[];
   declare private moreOptionList_: TimePeriodOption[];
   declare private maxChipsShown_: number;
+  declare private timePeriodPref_:
+      chrome.settingsPrivate.PrefObject<TimePeriod>|undefined;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.mirrorPrefs({
+      'browser.clear_data.time_period': 'timePeriodPref_',
+    });
+  }
 
   private onTimePeriodPrefUpdated_() {
-    const timePeriodValue =
-        this.getPref<TimePeriod>('browser.clear_data.time_period').value;
+    if (this.timePeriodPref_ === undefined) {
+      return;
+    }
 
+    const timePeriodValue = this.timePeriodPref_.value;
     if (timePeriodValue in TimePeriod &&
         timePeriodValue !== this.selectedTimePeriod_) {
       this.selectedTimePeriod_ = timePeriodValue;
@@ -260,7 +276,7 @@ export class SettingsClearBrowsingDataTimePicker extends
   }
 
   sendPrefChange() {
-    this.setPrefValue(
+    PrefService.getInstance().setPrefValue(
         'browser.clear_data.time_period', this.selectedTimePeriod_);
   }
 }

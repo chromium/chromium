@@ -22,8 +22,7 @@ import './other_google_data_dialog.js';
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -101,7 +100,7 @@ const DEFAULT_BROWSING_DATATYPES_LIST: BrowsingDataType[] = [
 interface BrowsingDataTypeOption {
   label: string;
   subLabel?: string;
-  pref: chrome.settingsPrivate.PrefObject;
+  prefKey: string;
 }
 
 function getDataTypeLabel(datatypes: BrowsingDataType) {
@@ -147,7 +146,7 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
 }
 
 const SettingsClearBrowsingDataDialogElementBase =
-    RouteObserverMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)));
+    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
 
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
@@ -270,7 +269,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         (event: UpdateSyncStateEvent) =>
             this.updateDseStatus_(event.isNonGoogleDse));
 
-    CrSettingsPrefs.initialized.then(() => {
+    PrefService.getInstance().whenInitialized().then(() => {
       this.setUpDataTypeOptionLists_();
       // afterNextRender() is needed to wait for checkbox lists to be populated
       // via dom-repeat before checking if the delete button should be
@@ -311,9 +310,9 @@ export class SettingsClearBrowsingDataDialogElement extends
     const moreOptionsList: BrowsingDataTypeOption[] = [];
 
     ALL_BROWSING_DATATYPES_LIST.forEach((datatype) => {
-      const datatypeOption = {
+      const datatypeOption: BrowsingDataTypeOption = {
         label: getDataTypeLabel(datatype),
-        pref: this.getPref(getDataTypePrefName(datatype)),
+        prefKey: getDataTypePrefName(datatype),
       };
 
       if (this.shouldDataTypeBeExpanded_(datatype)) {
@@ -333,11 +332,13 @@ export class SettingsClearBrowsingDataDialogElement extends
    * @param prefName Browsing data type deletion preference.
    * @param text The text with which to update the counter.
    */
-  private updateCounterText_(prefName: string, text: string) {
+  private async updateCounterText_(prefName: string, text: string) {
+    await PrefService.getInstance().whenInitialized();
+
     // If the corresponding datatype is in the expanded options list, update the
     // sub-label.
     const expandedListIndex =
-        this.expandedBrowsingDataTypeOptionsList_.map(option => option.pref.key)
+        this.expandedBrowsingDataTypeOptionsList_.map(option => option.prefKey)
             .indexOf(prefName);
     if (expandedListIndex !== -1) {
       this.set(
@@ -349,7 +350,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     // If the datatype is not found in the expanded options list, it should be
     // in the more options list.
     const moreListIndex =
-        this.moreBrowsingDataTypeOptionsList_.map(option => option.pref.key)
+        this.moreBrowsingDataTypeOptionsList_.map(option => option.prefKey)
             .indexOf(prefName);
     assert(moreListIndex !== -1);
     this.set(
@@ -362,7 +363,9 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   private shouldDataTypeBeExpanded_(datatype: BrowsingDataType) {
     return DEFAULT_BROWSING_DATATYPES_LIST.includes(datatype) ||
-        this.getPref(getDataTypePrefName(datatype)).value;
+        PrefService.getInstance()
+            .getPref<boolean>(getDataTypePrefName(datatype))
+            .value;
   }
 
   private computeDeleteButtonLabel_() {
@@ -412,6 +415,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         .recordSettingsClearBrowsingDataTimePeriodHistogram(timePeriod);
 
     // Update the DataType and TimePeriod prefs with the latest selection.
+    const prefService = PrefService.getInstance();
     this.$.deleteBrowsingDataDialog
         .querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox[no-set-pref]')
@@ -422,7 +426,7 @@ export class SettingsClearBrowsingDataDialogElement extends
                 // not update prefs when they are passed dynamically.
                 // TODO(crbug.com/431174247): Figure out why
                 // `SettingsCheckbox.sendPrefChange` is not working.
-            this.setPrefValue(checkbox.pref!.key, checkbox.checked));
+            prefService.setPrefValue(checkbox.prefKey, checkbox.checked));
     this.$.timePicker.sendPrefChange();
 
     const {showHistoryNotice} =
@@ -462,7 +466,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     const dataTypes: string[] = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {
-        dataTypes.push(checkbox.pref!.key);
+        dataTypes.push(checkbox.prefKey);
       }
     });
     return dataTypes;

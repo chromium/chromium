@@ -6,8 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsClearBrowsingDataTimePicker} from 'chrome://settings/lazy_load.js';
 import {getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -19,20 +18,19 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 suite('DeleteBrowsingDataTimePicker', function() {
   let timePicker: SettingsClearBrowsingDataTimePicker;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+  suiteSetup(async function() {
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await prefService.setPrefValue(
+        'browser.clear_data.time_period', TimePeriod.LAST_HOUR);
     timePicker =
         document.createElement('settings-clear-browsing-data-time-picker');
-    timePicker.prefs = settingsPrefs.prefs!;
-    timePicker.setPrefValue(
-        'browser.clear_data.time_period', TimePeriod.LAST_HOUR);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
@@ -139,7 +137,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     // Verify the pref value was not modified during selection.
     assertEquals(
         TimePeriod.LAST_HOUR,
-        timePicker.getPref('browser.clear_data.time_period').value);
+        prefService.getPref('browser.clear_data.time_period').value);
   });
 
   test('SelectTimePeriodFromMenu', async function() {
@@ -168,11 +166,11 @@ suite('DeleteBrowsingDataTimePicker', function() {
     // Verify the pref value was not modified during selection.
     assertEquals(
         TimePeriod.LAST_HOUR,
-        timePicker.getPref('browser.clear_data.time_period').value);
+        prefService.getPref('browser.clear_data.time_period').value);
   });
 
   test('PrefChangesUpdatesSelectedChip', async function() {
-    timePicker.setPrefValue(
+    await prefService.setPrefValue(
         'browser.clear_data.time_period', TimePeriod.FOUR_WEEKS);
     await flushTasks();
 
@@ -229,7 +227,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     assertEquals(2, timePeriodChangeCallCount);
 
     // Update pref to FOUR_WEEKS.
-    timePicker.setPrefValue(
+    await prefService.setPrefValue(
         'browser.clear_data.time_period', TimePeriod.FOUR_WEEKS);
     await flushTasks();
     assertEquals(TimePeriod.FOUR_WEEKS, timePicker.getSelectedTimePeriod());
@@ -237,7 +235,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     assertEquals(3, timePeriodChangeCallCount);
 
     // Update pref to FOUR_WEEKS again.
-    timePicker.setPrefValue(
+    await prefService.setPrefValue(
         'browser.clear_data.time_period', TimePeriod.FOUR_WEEKS);
     await flushTasks();
     // Change event should not be fired if the pref does not change.
@@ -248,7 +246,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     // Initially, the TimePeriod should be set to LAST_HOUR.
     assertEquals(
         TimePeriod.LAST_HOUR,
-        timePicker.getPref('browser.clear_data.time_period').value);
+        prefService.getPref('browser.clear_data.time_period').value);
 
     // Select the LAST_DAY chip.
     const timePeriod = getChipForTimePeriod(TimePeriod.LAST_DAY);
@@ -260,7 +258,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     // Verify the pref was updated to LAST_DAY.
     assertEquals(
         TimePeriod.LAST_DAY,
-        timePicker.getPref('browser.clear_data.time_period').value);
+        prefService.getPref('browser.clear_data.time_period').value);
   });
 
   test('MetricsTimePickerMoreClick', async function() {

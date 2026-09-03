@@ -1,7 +1,7 @@
   <style include="cr-shared-style cr-hidden-style settings-shared"></style>
   <settings-section page-title="$i18n{privacyPageTitle}">
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
-      <settings-clear-browsing-data-dialog prefs="{{prefs}}"
+      <settings-clear-browsing-data-dialog
           on-close="onCbdDialogClosed_"
           on-browsing-data-deleted="onBrowsingDataDeleted_">
       </settings-clear-browsing-data-dialog>
