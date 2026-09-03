@@ -44,6 +44,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace policy::local_user_files {
 
@@ -74,6 +75,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
         {ash::features::kSkyVault, ash::features::kSkyVaultV2,
          ash::features::kSkyVaultV3},
         /*disabled_features=*/{});
+    message_center::MessageCenter::Initialize();
 
     scoped_profile_ = std::make_unique<TestingProfile>();
     profile_ = scoped_profile_.get();
@@ -157,6 +159,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
     profile_ = nullptr;
     scoped_user_manager_.reset();
     scoped_profile_.reset();
+    message_center::MessageCenter::Shutdown();
     testing::Test::TearDown();
   }
 

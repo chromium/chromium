@@ -31,6 +31,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace policy::local_user_files {
 
 inline constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
@@ -90,6 +94,17 @@ class MigrationNotificationManager : public KeyedService {
 
  private:
   Profile* profile();
+  const user_manager::User& user();
+
+  // Closes the notification and, if the button is clicked, opens `path` in the
+  // Files App.
+  void HandleCompletedNotificationClick(const base::FilePath& path,
+                                        std::optional<int> button);
+
+  // Closes the notification and, if the button is clicked, opens `path` in the
+  // browser.
+  void HandleErrorNotificationClick(const base::FilePath& path,
+                                    std::optional<int> button);
 
   // Callback invoked when the user responds to the OneDrive sign-in
   // notification.

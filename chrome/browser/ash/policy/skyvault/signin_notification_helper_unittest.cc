@@ -4,19 +4,30 @@
 
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 
+#include <memory>
+
+#include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace policy::skyvault_ui_utils {
 
@@ -45,15 +56,30 @@ class SignInNotificationHelperTestBase : public testing::Test {
 
  protected:
   void SetUp() override {
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile_.get());
+    message_center::MessageCenter::Initialize();
+    user_manager::User* user =
+        fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    ash::AnnotatedAccountId::Set(&profile_, user->GetAccountId());
   }
 
-  void TearDown() override { display_service_.reset(); }
+  void TearDown() override { message_center::MessageCenter::Shutdown(); }
+
+  Profile* profile() { return &profile_; }
+
+  const message_center::Notification* GetNotification(
+      const std::string& notification_id) {
+    const user_manager::User& user = CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        ash::CreateUserScopedNotificationId(notification_id,
+                                            user.username_hash()));
+  }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  TestingProfile profile_;
 };
 
 class SignInNotificationHelperTest
@@ -122,16 +148,16 @@ TEST_P(SignInNotificationHelperTest, ClickOnCancel) {
   auto [file_type, notification_id] = GetParam();
 
   base::MockCallback<base::RepeatingCallback<void(base::File::Error)>> mock_cb;
-  ShowSignInNotification(profile_.get(), kId, file_type,
+  ShowSignInNotification(profile(), kId, file_type,
                          base::FilePath("dummy_name.jpg"), mock_cb.Get());
-  EXPECT_TRUE(display_service_->GetNotification(notification_id).has_value());
+  ASSERT_TRUE(GetNotification(notification_id));
 
   EXPECT_CALL(mock_cb, Run(base::File::Error::FILE_ERROR_FAILED));
-  display_service_->SimulateClick(
-      NotificationHandler::Type::TRANSIENT, notification_id,
-      NotificationButtonIndex::kCancelButton, /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      GetNotification(notification_id)->id(),
+      NotificationButtonIndex::kCancelButton);
 
-  EXPECT_FALSE(display_service_->GetNotification(notification_id).has_value());
+  EXPECT_FALSE(GetNotification(notification_id));
 }
 
 // Tests that when the user closes the notification, the sign-in callback will
@@ -145,21 +171,17 @@ TEST_P(SignInNotificationHelperTest, CloseNotification) {
   std::optional<const gfx::Image> thumbnail =
       with_image ? std::optional<const gfx::Image>(CreateTestThumbnail())
                  : std::nullopt;
-  ShowSignInNotification(profile_.get(), kId, file_type,
+  ShowSignInNotification(profile(), kId, file_type,
                          base::FilePath("dummy_name.jpg"), mock_cb.Get(),
                          thumbnail);
-  EXPECT_TRUE(display_service_->GetNotification(notification_id).has_value());
-  EXPECT_EQ(
-      display_service_->GetNotification(notification_id)->image().IsEmpty(),
-      !with_image);
+  ASSERT_TRUE(GetNotification(notification_id));
+  EXPECT_EQ(GetNotification(notification_id)->image().IsEmpty(), !with_image);
 
   EXPECT_CALL(mock_cb, Run(base::File::Error::FILE_ERROR_FAILED));
-  display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
-                                       notification_id,
-                                       /*by_user=*/true,
-                                       /*silent=*/false);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      GetNotification(notification_id)->id(), /*by_user=*/true);
 
-  EXPECT_FALSE(display_service_->GetNotification(notification_id).has_value());
+  EXPECT_FALSE(GetNotification(notification_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -185,17 +207,13 @@ TEST_P(SignInNotificationHelperCameraTest, CheckNotificationData) {
   std::string notification_id = base::StrCat(
       {kCameraSignInNotificationIdPrefix, base::NumberToString(kId)});
   ShowSignInNotification(
-      profile_.get(), kId, local_user_files::UploadTrigger::kCamera,
+      profile(), kId, local_user_files::UploadTrigger::kCamera,
       base::FilePath("dummy_name." + extension), base::DoNothing());
-  EXPECT_TRUE(display_service_->GetNotification(notification_id).has_value());
+  ASSERT_TRUE(GetNotification(notification_id));
   auto file_type = base::UTF8ToUTF16(ExtensionToFileType(extension));
-  EXPECT_NE(display_service_->GetNotification(notification_id)
-                ->title()
-                .find(file_type),
+  EXPECT_NE(GetNotification(notification_id)->title().find(file_type),
             std::u16string::npos);
-  EXPECT_NE(display_service_->GetNotification(notification_id)
-                ->message()
-                .find(file_type),
+  EXPECT_NE(GetNotification(notification_id)->message().find(file_type),
             std::u16string::npos);
 }
 

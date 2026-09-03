@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
+#include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -16,15 +18,18 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/ash/policy/skyvault/test/skyvault_test_base.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 using policy::local_user_files::kUploadRootPrefix;
 using policy::local_user_files::SkyvaultOneDriveTest;
@@ -45,13 +50,21 @@ class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
   void SetUpOnMainThread() override {
     SkyvaultOneDriveTest::SetUpOnMainThread();
     CHECK(network::TestNetworkConnectionTracker::HasInstance());
-
-    display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
   }
 
  protected:
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+  std::string GetNotificationId(const std::string& notification_id) {
+    const user_manager::User& user = CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+    return ash::CreateUserScopedNotificationId(notification_id,
+                                               user.username_hash());
+  }
+
+  const message_center::Notification* GetNotification(
+      const std::string& notification_id) {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        GetNotificationId(notification_id));
+  }
   base::HistogramTester histogram_tester_;
 
   // Used to observe skyvault notifications during tests.
@@ -260,30 +273,27 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
           }));
 
   // Start the upload workflow and wait till the sign-in notification is shown.
-  base::RunLoop added_run_loop;
-  display_service_tester_->SetNotificationAddedClosure(
-      added_run_loop.QuitClosure());
+  const auto notification_id = base::StrCat(
+      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
+  const std::string backend_notification_id =
+      GetNotificationId(notification_id);
+  message_center::MessageCenterWaiter waiter(backend_notification_id);
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
       profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
-  added_run_loop.Run();
+  waiter.WaitUntilAdded();
 
   // Click on the sign-in button to initiate the auth flow.
-  auto notification_id = base::StrCat(
-      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
-  ASSERT_TRUE(
-      display_service_tester_->GetNotification(notification_id).has_value());
+  ASSERT_TRUE(GetNotification(notification_id));
 
-  display_service_tester_->SimulateClick(
-      NotificationHandler::Type::TRANSIENT, notification_id,
-      policy::skyvault_ui_utils::NotificationButtonIndex::kSignInButton,
-      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      backend_notification_id,
+      policy::skyvault_ui_utils::NotificationButtonIndex::kSignInButton);
 
   EXPECT_EQ(upload_callback.Get<bool>(), true);
-  ASSERT_FALSE(
-      display_service_tester_->GetNotification(notification_id).has_value());
+  ASSERT_FALSE(GetNotification(notification_id));
 
   // Check that the source file has been moved to OneDrive.
   CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
@@ -305,30 +315,27 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
       CopyTestFile(test_file_name, my_files_dir());
 
   // Start the upload workflow and wait till the sign-in notification is shown.
-  base::RunLoop added_run_loop;
-  display_service_tester_->SetNotificationAddedClosure(
-      added_run_loop.QuitClosure());
+  const auto notification_id = base::StrCat(
+      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
+  const std::string backend_notification_id =
+      GetNotificationId(notification_id);
+  message_center::MessageCenterWaiter waiter(backend_notification_id);
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
       profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
-  added_run_loop.Run();
+  waiter.WaitUntilAdded();
 
   // Click on the cancel so the upload will fail.
-  auto notification_id = base::StrCat(
-      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
-  ASSERT_TRUE(
-      display_service_tester_->GetNotification(notification_id).has_value());
+  ASSERT_TRUE(GetNotification(notification_id));
 
-  display_service_tester_->SimulateClick(
-      NotificationHandler::Type::TRANSIENT, notification_id,
-      policy::skyvault_ui_utils::NotificationButtonIndex::kCancelButton,
-      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      backend_notification_id,
+      policy::skyvault_ui_utils::NotificationButtonIndex::kCancelButton);
 
   EXPECT_EQ(upload_callback.Get<bool>(), false);
-  ASSERT_FALSE(
-      display_service_tester_->GetNotification(notification_id).has_value());
+  ASSERT_FALSE(GetNotification(notification_id));
 
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.Download.OneDrive.SignInError", false, 0);
