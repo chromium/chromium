@@ -716,7 +716,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Password and passkey sync disabled"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/password_manager/ode/on_device_encryption_metrics_reporter.h:OnDeviceEncryptionStateHistogramBucket) -->
+<!-- LINT.ThenChange(//components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h:OnDeviceEncryptionStateHistogramBucket) -->
 
 <enum name="PasskeysMigrationStatus">
   <int value="0" label="Passkey created"/>

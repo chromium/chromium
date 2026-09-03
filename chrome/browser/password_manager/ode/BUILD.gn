@@ -3,32 +3,14 @@
 # found in the LICENSE file.
 
 source_set("ode") {
-  public = [
-    "on_device_encryption_state_tracker.h",
-    "password_trusted_vault_on_device_encryption_state_tracker.h",
-  ]
-
-  sources = [
-    "on_device_encryption_state_tracker.cc",
-    "password_trusted_vault_on_device_encryption_state_tracker.cc",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/keyed_service/core",
-    "//components/sync/service",
-  ]
-
-  deps = [ "//components/sync/base" ]
+  public_deps = [ "//components/password_manager/core/browser/ode" ]
 
   if (!is_android) {
-    public += [
-      "on_device_encryption_metrics_reporter.h",
+    public = [
       "on_device_encryption_metrics_reporter_factory.h",
       "passkey_on_device_encryption_state_tracker.h",
     ]
-    sources += [
-      "on_device_encryption_metrics_reporter.cc",
+    sources = [
       "on_device_encryption_metrics_reporter_factory.cc",
       "passkey_on_device_encryption_state_tracker.cc",
     ]
@@ -36,37 +18,26 @@ source_set("ode") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/webauthn",
     ]
-    deps += [
+    deps = [
       "//chrome/browser/sync",
       "//components/keyed_service/content",
+      "//components/sync/base",
     ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "mock_on_device_encryption_state_tracker_observer.cc",
-    "mock_on_device_encryption_state_tracker_observer.h",
-    "on_device_encryption_state_tracker_unittest.cc",
-    "password_trusted_vault_on_device_encryption_state_tracker_unittest.cc",
-  ]
-  deps = [
-    ":ode",
-    "//base/test:test_support",
-    "//components/sync:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-
   if (!is_android) {
-    sources += [
-      "on_device_encryption_metrics_reporter_unittest.cc",
-      "passkey_on_device_encryption_state_tracker_unittest.cc",
-    ]
-    deps += [
+    sources = [ "passkey_on_device_encryption_state_tracker_unittest.cc" ]
+    deps = [
+      ":ode",
+      "//base/test:test_support",
       "//chrome/browser/webauthn:test_support",
+      "//components/sync:test_support",
       "//components/webauthn/core/browser:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 }

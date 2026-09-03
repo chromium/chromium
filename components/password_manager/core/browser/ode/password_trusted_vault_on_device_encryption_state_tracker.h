@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ODE_PASSWORD_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ODE_PASSWORD_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ODE_PASSWORD_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ODE_PASSWORD_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/password_manager/ode/on_device_encryption_state_tracker.h"
+#include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -47,4 +47,4 @@ class PasswordTrustedVaultOnDeviceEncryptionStateTracker
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ODE_PASSWORD_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ODE_PASSWORD_TRUSTED_VAULT_ON_DEVICE_ENCRYPTION_STATE_TRACKER_H_

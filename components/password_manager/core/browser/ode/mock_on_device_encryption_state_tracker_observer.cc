@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/ode/mock_on_device_encryption_state_tracker_observer.h"
+#include "components/password_manager/core/browser/ode/mock_on_device_encryption_state_tracker_observer.h"
 
 namespace password_manager {
 

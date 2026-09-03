@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
+#include "components/password_manager/core/browser/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
 
 #include <string>
 #include <string_view>

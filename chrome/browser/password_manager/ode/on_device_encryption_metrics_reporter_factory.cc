@@ -7,14 +7,14 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/password_manager/ode/on_device_encryption_metrics_reporter.h"
 #include "chrome/browser/password_manager/ode/passkey_on_device_encryption_state_tracker.h"
-#include "chrome/browser/password_manager/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
+#include "components/password_manager/core/browser/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
 #include "components/sync/service/sync_service.h"
 
 namespace password_manager {

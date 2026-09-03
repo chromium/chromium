@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ode") {
+  sources = [
+    "on_device_encryption_metrics_reporter.cc",
+    "on_device_encryption_metrics_reporter.h",
+    "on_device_encryption_state_tracker.cc",
+    "on_device_encryption_state_tracker.h",
+    "password_trusted_vault_on_device_encryption_state_tracker.cc",
+    "password_trusted_vault_on_device_encryption_state_tracker.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sync/service",
+  ]
+
+  deps = [ "//components/sync/base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "mock_on_device_encryption_state_tracker_observer.cc",
+    "mock_on_device_encryption_state_tracker_observer.h",
+    "on_device_encryption_metrics_reporter_unittest.cc",
+    "on_device_encryption_state_tracker_unittest.cc",
+    "password_trusted_vault_on_device_encryption_state_tracker_unittest.cc",
+  ]
+  deps = [
+    ":ode",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/password_manager/ode/on_device_encryption_state_tracker.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
+#include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/webauthn/core/browser/passkey_model.h"

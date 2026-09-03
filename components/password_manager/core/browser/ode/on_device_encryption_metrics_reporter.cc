@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/ode/on_device_encryption_metrics_reporter.h"
+#include "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
 
 #include <utility>
 
