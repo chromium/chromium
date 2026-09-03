@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/command_line.h"
 #import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_tick_clock.h"
 #import "base/test/test_future.h"
@@ -21,6 +23,7 @@
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/safe_browsing/core/common/threat_enums.h"
 #import "components/safe_browsing/core/common/visual_utils.h"
 #import "components/safe_browsing/ios/browser/client_side_detection_feature_cache.h"
@@ -1123,6 +1126,236 @@ TEST_F(ClientSideDetectionHostIOSTest, CsdAllowlistPreventsClassification) {
   ASSERT_TRUE(debugging_metadata);
   EXPECT_EQ(debugging_metadata->preclassification_check_result(),
             PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST);
+}
+
+// Tests that if the URL matches the CSD allowlist, classification still
+// continues when the request type is `FORCE_REQUEST`.
+TEST_F(ClientSideDetectionHostIOSTest, CsdAllowlistSkippedForForceRequest) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(true);
+  database_manager_->SetMatchHcAllowlist(false);
+
+  ON_CALL(mock_service_, AtPhishingReportLimit())
+      .WillByDefault(testing::Return(false));
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+
+  ExpectPreClassificationEvents(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+
+  ClientSideDetectionFeatureCache* feature_cache =
+      ClientSideDetectionFeatureCache::FromWebState(&web_state_);
+  ASSERT_TRUE(feature_cache);
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache->GetDebuggingMetadataForURL(GURL(kExampleUrl));
+  ASSERT_TRUE(debugging_metadata);
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            safe_browsing::PreClassificationCheckResult::CLASSIFY);
+}
+
+// Tests that if the URL matches the CSD allowlist, classification still
+// continues when the request type is `USER_REPORT`.
+TEST_F(ClientSideDetectionHostIOSTest, CsdAllowlistSkippedForUserReport) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(true);
+  database_manager_->SetMatchHcAllowlist(false);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::USER_REPORT);
+
+  ExpectPreClassificationEvents(
+      safe_browsing::ClientSideDetectionType::USER_REPORT);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+
+  ClientSideDetectionFeatureCache* feature_cache =
+      ClientSideDetectionFeatureCache::FromWebState(&web_state_);
+  ASSERT_TRUE(feature_cache);
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache->GetDebuggingMetadataForURL(GURL(kExampleUrl));
+  ASSERT_TRUE(debugging_metadata);
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            safe_browsing::PreClassificationCheckResult::CLASSIFY);
+}
+
+// Tests that if the URL matches the CSD allowlist, classification still
+// continues when the `kSkipCSDAllowlistOnPreclassification` flag is set.
+TEST_F(ClientSideDetectionHostIOSTest, CsdAllowlistSkippedWhenFlagPresent) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      safe_browsing::switches::kSkipCSDAllowlistOnPreclassification);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(true);
+  database_manager_->SetMatchHcAllowlist(false);
+
+  ON_CALL(mock_service_, GetValidCachedResult(testing::_, testing::_))
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_service_, AtPhishingReportLimit())
+      .WillByDefault(testing::Return(false));
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  ExpectPreClassificationEvents(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+
+  ClientSideDetectionFeatureCache* feature_cache =
+      ClientSideDetectionFeatureCache::FromWebState(&web_state_);
+  ASSERT_TRUE(feature_cache);
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache->GetDebuggingMetadataForURL(GURL(kExampleUrl));
+  ASSERT_TRUE(debugging_metadata);
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            safe_browsing::PreClassificationCheckResult::CLASSIFY);
+}
+
+// Test that classification is stopped when the database manager is null,
+// even for `FORCE_REQUEST`.
+TEST_F(ClientSideDetectionHostIOSTest,
+       NoDatabaseManagerPreventsClassificationForForceRequest) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  FakeSafeBrowsingService* sb_service = static_cast<FakeSafeBrowsingService*>(
+      GetApplicationContext()->GetSafeBrowsingService());
+  sb_service->SetDatabaseManager(nullptr);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+
+  ExpectPreClassificationEvents(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_NO_DATABASE_MANAGER,
+      1);
+
+  ClientSideDetectionFeatureCache* feature_cache =
+      ClientSideDetectionFeatureCache::FromWebState(&web_state_);
+  ASSERT_TRUE(feature_cache);
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache->GetDebuggingMetadataForURL(GURL(kExampleUrl));
+  ASSERT_TRUE(debugging_metadata);
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            safe_browsing::PreClassificationCheckResult::
+                NO_CLASSIFY_NO_DATABASE_MANAGER);
+}
+
+// Test that if the URL matches the High Confidence allowlist, classification
+// is prevented even when the `kSkipCSDAllowlistOnPreclassification` flag is
+// set.
+// TODO(crbug.com/556065493): All allowlists should be skipped when the
+// `kSkipCSDAllowlistOnPreclassification` flag is set, not just the CSD
+// allowlist.
+TEST_F(ClientSideDetectionHostIOSTest,
+       HcAllowlistPreventsClassificationWhenSkipCsdFlagPresent) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      safe_browsing::switches::kSkipCSDAllowlistOnPreclassification);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(true);
+  database_manager_->SetMatchHcAllowlist(true);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  ExpectPreClassificationEvents(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_MATCH_HC_ALLOWLIST,
+      1);
+
+  ClientSideDetectionFeatureCache* feature_cache =
+      ClientSideDetectionFeatureCache::FromWebState(&web_state_);
+  ASSERT_TRUE(feature_cache);
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache->GetDebuggingMetadataForURL(GURL(kExampleUrl));
+  ASSERT_TRUE(debugging_metadata);
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            safe_browsing::PreClassificationCheckResult::
+                NO_CLASSIFY_MATCH_HC_ALLOWLIST);
 }
 
 // Tests that if the URL matches the CSD allowlist, classification still
