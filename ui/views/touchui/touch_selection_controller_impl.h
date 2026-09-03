@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point.h"
@@ -136,7 +137,6 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   View* GetHandle2View();
 
   raw_ptr<ui::TouchEditable> client_view_ = nullptr;
-  raw_ptr<Widget> client_widget_ = nullptr;
 
   // Widgets for the selection handles and cursor handle.
   std::unique_ptr<Widget> selection_handle_1_widget_;
@@ -175,6 +175,11 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // selection dragging state changes, then the handles need to be updated on
   // the next selection change notification.
   bool is_client_selection_dragging_ = false;
+
+  // Observes the top-level widget containing the client view so that the
+  // selection handles are updated when it moves or resizes.
+  base::ScopedObservation<Widget, WidgetObserver> client_widget_observation_{
+      this};
 
   // Factory used for cancelling in-flight OpenMenu requests.
   base::WeakPtrFactory<TouchSelectionControllerImpl>

@@ -386,10 +386,10 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
   DCHECK(client_view_);
   CreateHandleWidgets();
   aura::Window* client_window = client_view_->GetNativeView();
-  client_widget_ = Widget::GetTopLevelWidgetForNativeView(client_window);
   // Observe client widget moves and resizes to update the selection handles.
-  if (client_widget_) {
-    client_widget_->AddObserver(this);
+  if (Widget* client_widget =
+          Widget::GetTopLevelWidgetForNativeView(client_window)) {
+    client_widget_observation_.Observe(client_widget);
   }
 
   // Observe certain event types sent to any event target, to hide this ui.
@@ -406,9 +406,7 @@ TouchSelectionControllerImpl::~TouchSelectionControllerImpl() {
   HideQuickMenu();
   HideMagnifier();
   aura::Env::GetInstance()->RemoveEventObserver(this);
-  if (client_widget_) {
-    client_widget_->RemoveObserver(this);
-  }
+  client_widget_observation_.Reset();
   // Close the handle widgets to clean up the EditingHandleViews. We do this
   // here to ensure that the EditingHandleViews aren't left with a pointer to a
   // deleted TouchSelectionControllerImpl.
@@ -625,16 +623,15 @@ std::u16string TouchSelectionControllerImpl::GetSelectedText() {
 }
 
 void TouchSelectionControllerImpl::OnWidgetDestroying(Widget* widget) {
-  DCHECK_EQ(client_widget_, widget);
-  client_widget_->RemoveObserver(this);
-  client_widget_ = nullptr;
+  DCHECK(client_widget_observation_.IsObservingSource(widget));
+  client_widget_observation_.Reset();
   client_view_ = nullptr;
 }
 
 void TouchSelectionControllerImpl::OnWidgetBoundsChanged(
     Widget* widget,
     const gfx::Rect& new_bounds) {
-  DCHECK_EQ(client_widget_, widget);
+  DCHECK(client_widget_observation_.IsObservingSource(widget));
   SelectionChanged();
 }
 
