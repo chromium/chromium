@@ -9,7 +9,6 @@
 
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/security_state/core/security_state.h"
-#import "ios/chrome/browser/omnibox/public/omnibox_icon_type.h"
 #include "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
@@ -35,13 +34,6 @@ UIImage* GetOmniboxSuggestionIconForSuggestTemplateInfoIconType(
     omnibox::SuggestTemplateInfo::IconType type);
 
 #pragma mark - Security icons.
-
-// Returns the asset with "always template" rendering mode.
-UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType icon);
-
-// Converts the `security_level` to an appropriate security icon type.
-LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
-    security_state::SecurityLevel security_level);
 
 // Converts the `security_level` to an appropriate icon in "always template"
 // rendering mode.
