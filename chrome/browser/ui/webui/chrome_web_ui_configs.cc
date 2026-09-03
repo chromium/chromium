@@ -246,7 +246,8 @@
 
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` for Ash-specific WebUIs here. Add
-  // them in chrome_web_ui_configs_chromeos.cc.
+  // them to `AshWebUIConfigManager::RegisterWebUIConfigs()` in
+  // ash_web_ui_config_manager.cc.
 #if BUILDFLAG(IS_CHROMEOS)
   if (auto* ash_webui_config_manager =
           ash::AshWebUIConfigManager::GetInstance()) {

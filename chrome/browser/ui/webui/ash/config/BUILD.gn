@@ -11,7 +11,6 @@ static_library("config") {
     "ash_web_ui_config_manager.cc",
     "ash_web_ui_config_manager.h",
     "chrome_untrusted_web_ui_configs_chromeos.cc",
-    "chrome_web_ui_configs_chromeos.cc",
   ]
 
   deps = [
@@ -39,6 +38,7 @@ static_library("config") {
     "//ash/webui/vc_background_ui",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/app_mode",
     "//chrome/browser/ash/annotator",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/boca/receiver",

@@ -33,9 +33,6 @@ class AshWebUIConfigManager {
   ~AshWebUIConfigManager();
 
   // Registers all trusted Ash WebUIConfigs with content::WebUIConfigMap.
-  // TODO(crbug.com/404133902): Move the definition to
-  // ash_web_ui_config_manager.cc. It is currently kept in
-  // chrome_web_ui_configs_chromeos.cc.
   void RegisterWebUIConfigs();
 
   // Registers all untrusted Ash WebUIConfigs with content::WebUIConfigMap.
