@@ -436,11 +436,23 @@ chrome.test.runTests([
         .styles = {bold: false, italic: true, strikethrough: false};
     assertTextUpdate(6, expectedAttributes);
 
+    // Toggle strikethrough style on.
+    manager.toggleTextStyle(TextStyle.STRIKETHROUGH);
+    expectedAttributes
+        .styles = {bold: false, italic: true, strikethrough: true};
+    assertTextUpdate(7, expectedAttributes);
+
+    // Toggle strikethrough style off.
+    manager.toggleTextStyle(TextStyle.STRIKETHROUGH);
+    expectedAttributes
+        .styles = {bold: false, italic: true, strikethrough: false};
+    assertTextUpdate(8, expectedAttributes);
+
     // Set style to bold + italic explicitly.
     const boldItalic = {bold: true, italic: true, strikethrough: false};
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
-    assertTextUpdate(7, expectedAttributes);
+    assertTextUpdate(9, expectedAttributes);
 
     chrome.test.succeed();
   },

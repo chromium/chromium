@@ -17,7 +17,7 @@ import {Ink2Manager, MIN_TEXTBOX_SIZE_PX, stylesEqual} from '../ink2_manager.js'
 import {convertRotatedCoordinates, screenToPageCoordinates} from '../ink_text_annotation_utils.js';
 import {record, UserAction} from '../metrics.js';
 import {PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
-import {colorsEqual, colorToHex, hasCtrlModifier, hasCtrlModifierOnly} from '../pdf_viewer_utils.js';
+import {colorsEqual, colorToHex, hasCtrlModifier, hasCtrlModifierOnly, isStrikethroughShortcut} from '../pdf_viewer_utils.js';
 import type {Viewport, ViewportRect} from '../viewport.js';
 
 import {getCss} from './ink_text_box.css.js';
@@ -575,6 +575,13 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         Ink2Manager.getInstance().toggleTextStyle(style);
         return;
       }
+    }
+
+    if (isStrikethroughShortcut(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      Ink2Manager.getInstance().toggleTextStyle(TextStyle.STRIKETHROUGH);
+      return;
     }
 
     const target = e.composedPath()[0];

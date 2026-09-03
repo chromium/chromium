@@ -17,6 +17,14 @@ export function getCtrlModifier(): ModifiersParam {
   return isMac ? ['meta'] : ['ctrl'];
 }
 
+export function getStrikethroughModifiers(): ModifiersParam {
+  return isMac ? ['meta', 'shift'] : ['alt', 'shift'];
+}
+
+export function getStrikethroughKey(): string {
+  return isMac ? 'x' : '5';
+}
+
 export async function setupTextBoxTest(
     windowWidth: number = 500, windowHeight: number = 500,
     pageWidth: number = 400, pageHeight: number = 500,

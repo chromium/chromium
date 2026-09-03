@@ -246,6 +246,11 @@ document.addEventListener('keydown', e => {
       if (hasCtrlModifier(e)) {
         break;
       }
+      // <if expr="enable_pdf_ink2">
+      if (e.altKey) {
+        break;
+      }
+      // </if>
       return;
   }
 

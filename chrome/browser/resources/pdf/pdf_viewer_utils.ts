@@ -79,6 +79,23 @@ export function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
   return hasCtrlModifier(e) && !e.shiftKey && !e.altKey && !metaModifier;
 }
 
+// <if expr="enable_pdf_ink2">
+/**
+ * Determines if the event matches the platform shortcut for strikethrough.
+ * Alt+Shift+5 on non-Mac, and Cmd+Shift+X on Mac.
+ */
+export function isStrikethroughShortcut(e: KeyboardEvent): boolean {
+  // <if expr="is_macosx">
+  return e.metaKey && e.shiftKey && !e.ctrlKey && !e.altKey &&
+      e.key.toLowerCase() === 'x';
+  // </if>
+  // <if expr="not is_macosx">
+  return e.altKey && e.shiftKey && !e.ctrlKey && !e.metaKey &&
+      (e.key === '5' || e.key === '%' || e.code === 'Digit5');
+  // </if>
+}
+// </if>
+
 /**
  * Whether keydown events should currently be ignored. Events are ignored when
  * an editable element has focus, to allow for proper editing controls.

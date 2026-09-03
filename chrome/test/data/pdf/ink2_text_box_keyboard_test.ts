@@ -11,7 +11,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertPositionAndSize, dragHandleWithKeyboard, getCtrlModifier, getTestAnnotation, initializeBox, reactivateBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
+import {assertPositionAndSize, dragHandleWithKeyboard, getCtrlModifier, getStrikethroughKey, getStrikethroughModifiers, getTestAnnotation, initializeBox, reactivateBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {getRequiredElement} from './test_util.js';
 
 async function setUpExistingAnnotation(
@@ -526,6 +526,11 @@ chrome.test.runTests([
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
 
+    keyDownOn(textbox, 0, getStrikethroughModifiers(), getStrikethroughKey());
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
+
     chrome.test.succeed();
   },
 
@@ -573,6 +578,35 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
+    chrome.test.succeed();
+  },
+
+  async function testStrikethroughShortcut() {
+    const {textbox, manager} = await setupTextBoxTest();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+
+    // Initial style is not strikethrough.
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
+
+    // Strikethrough shortcut on the textarea should toggle strikethrough on.
+    keyDownOn(
+        textbox.$.textbox, 0, getStrikethroughModifiers(),
+        getStrikethroughKey());
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
+
+    // Strikethrough shortcut on the textarea again should toggle strikethrough
+    // off.
+    keyDownOn(
+        textbox.$.textbox, 0, getStrikethroughModifiers(),
+        getStrikethroughKey());
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
 
     chrome.test.succeed();
   },
