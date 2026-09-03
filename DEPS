@@ -3462,7 +3462,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'G565PICXH0_QSd0QmYqbuj3k4o96RI92JSTI4v6xS1wC',
+        'version': 'SOH-3kmtx17_j-aQZmEjYuciL3G8iVUJ413NttpWDFwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
