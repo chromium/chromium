@@ -1429,9 +1429,12 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     const LayoutUnit annotation_space_start_offset =
         content_end_offset -
         previous_inflow_position->block_end_annotation_space;
-    const LayoutUnit container_end_offset = border_box_size.block_size -
-                                            Borders().block_end -
-                                            Scrollbar().block_end;
+    LayoutUnit container_end_offset = border_box_size.block_size -
+                                      Borders().block_end -
+                                      Scrollbar().block_end;
+    if (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled()) {
+      container_end_offset -= previously_consumed_block_size;
+    }
     const LayoutUnit available_space = std::max(
         LayoutUnit(), container_end_offset - annotation_space_start_offset);
     container_builder_.SetBlockEndAnnotationSpace(available_space);
@@ -3632,7 +3635,8 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
          container_builder_.ShouldTextBoxTrimNodeEnd()));
     if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
         GetConstraintSpace().ContainsAnnotations() &&
-        !GetConstraintSpace().IsInsideBalancedColumns() &&
+        (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() ||
+         !GetConstraintSpace().IsInsideBalancedColumns()) &&
         previous_sibling_block_end_annotation_space > LayoutUnit()) {
       builder.SetPreviousSiblingBlockEndAnnotationSpace(
           previous_sibling_block_end_annotation_space);
@@ -4148,14 +4152,17 @@ LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
   if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
       GetConstraintSpace().ContainsAnnotations() &&
       !GetConstraintSpace().IsNewFormattingContext() &&
-      !GetConstraintSpace().IsInsideBalancedColumns() &&
+      (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() ||
+       !GetConstraintSpace().IsInsideBalancedColumns()) &&
       Borders().block_start == 0) {
     MarginStrut margin_strut = GetConstraintSpace().GetMarginStrut();
     margin_strut.Append(
         ComputeMarginsForSelf(GetConstraintSpace(), Style()).block_start,
         Style().HasMarginBlockStartQuirk());
-    return margin_strut.Sum() + padding_start +
-           GetConstraintSpace().PreviousSiblingBlockEndAnnotationSpace();
+    LayoutUnit annotation_space = margin_strut.Sum() + padding_start;
+    annotation_space +=
+        GetConstraintSpace().PreviousSiblingBlockEndAnnotationSpace();
+    return annotation_space;
   }
   return padding_start;
 }
