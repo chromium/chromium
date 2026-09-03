@@ -296,11 +296,6 @@ source_set("testing_profile") {
 
 # Full implementation of the testing_profile cluster. Carries the ash and
 # extensions deps that only the .cc files need.
-#
-# TODO(crbug.com/353332589): Once testing_profile_manager.cc no longer
-# includes testing_browser_process.h, remove the allow_circular_includes_from
-# entry in testing_browser_process for this target and the TBP.h include
-# from testing_profile_manager.cc.
 source_set("testing_profile_impl") {
   testonly = true
   sources = [
@@ -430,13 +425,6 @@ source_set("testing_browser_process_impl") {
     "//ui/base/unowned_user_data",
   ]
 
-  # TODO(crbug.com/353332589): Remove once testing_profile_manager.cc no longer
-  # includes testing_browser_process.h (i.e. when the circular include is
-  # eliminated via further refactoring of the testing_profile cluster).
-  # testing_profile's sources (testing_profile_manager.cc) include TBP.h;
-  # allow_circular_includes_from permits that reverse include while keeping
-  # the dep graph one-directional (TBP → testing_profile).
-  allow_circular_includes_from = [ ":testing_profile_impl" ]
   deps = [
     "//chrome/browser:browser_process_impl",
     "//chrome/browser:global_features",
