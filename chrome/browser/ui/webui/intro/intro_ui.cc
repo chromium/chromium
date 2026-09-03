@@ -73,7 +73,8 @@ bool ShouldShowDefaultBrowserToggle() {
 }
 
 bool ShouldShowMetricsOptIn() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   return !metrics::IsMetricsReportingPolicyManaged();
 #else
   return false;
