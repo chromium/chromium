@@ -1457,6 +1457,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3495081129428749620">Şu sayfada bul:
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Maaş</translation>
+<translation id="3496531230994554300">Cüzdan bildirimi tam ekranda açıldı.</translation>
 <translation id="3497627066518778351">Cihaz üzerindeki site verileri listesini yeni pencerede inceleyin</translation>
 <translation id="3498215018399854026">Şu anda ebeveyninize erişemedik. Lütfen tekrar deneyin.</translation>
 <translation id="350069200438440499">Dosya adı:</translation>
@@ -1559,7 +1560,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3655670868607891010">Bunu çok sık görüyorsanız, şunları deneyin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Düzeltme</translation>
 <translation id="3659521826520353662">Yönetici tarafından tanımlanan hangi web sitelerinin ne zaman ziyaret edildiği: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Bu IBAN, diğer Google hizmetlerinde kullanabilmeniz için Google Cüzdan'a kaydedildi.</translation>
 <translation id="3664479564786885722">Bu ürünü satan diğer mağazalarda daha fazla satın alma seçeneği arayın.</translation>
 <translation id="3664782872746246217">Anahtar kelimeler:</translation>
 <translation id="3670030362669914947">Numara</translation>
@@ -2669,6 +2669,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5499229993630251170">Bu ileti dizisine devam edilsin mi?</translation>
 <translation id="5506286895894263601">Listede geçerli bir kısayol yok.</translation>
 <translation id="5507756662695126555">İnkar edilemez</translation>
+<translation id="5508515366054931524">E-posta doğrulama istemi tam ekranda açıldı</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Yönetilen yer işaretleri</translation>
 <translation id="5510766032865166053">Taşınmış veya silinmiş olabilir.</translation>
@@ -3451,6 +3452,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6860888819347870819">Pencere içinde pencere moduna girmek isteyebilir</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Bu kart şu anda doğrulanamıyor</translation>
+<translation id="6871073333584947219">Cüzdan bildirimi kapatıldı.</translation>
 <translation id="6871813064737840684">Bu Seçenek için Web Genelindeki Fiyat Geçmişi</translation>
 <translation id="6873456682041376666">Üst Tepsi</translation>
 <translation id="6874604403660855544">Eklemeyi &amp;yeniden yap</translation>
@@ -3906,7 +3908,6 @@ Ek ayrıntılar:
 <translation id="7615932826417658001">Kimlik kartı ekleyin</translation>
 <translation id="7616390733770379387">Sıralama rastgeledir.</translation>
 <translation id="7616645509853975347">Yöneticiniz, tarayıcınızda Chrome Enterprise Connectors özelliğini etkinleştirdi. Bu bağlayıcıların verilerinizin bir kısmına erişimi vardır.</translation>
-<translation id="7616747402308801775">Bu kart, diğer Google hizmetlerinde kullanabilmeniz için Google Cüzdan'a kaydedildi.</translation>
 <translation id="7617825962482469577">Zarf C7/C6</translation>
 <translation id="7619838219691048931">Son sayfa</translation>
 <translation id="7621546470643449009">Gece gökyüzünde neye bakacağımı öğrenmeme yardımcı olacak, kolayca tanınabilen 3 takımyıldızı da içeren bir yıldız gözlemciliğine başlangıç kılavuzu oluştur</translation>
@@ -3971,6 +3972,7 @@ Ek ayrıntılar:
 <translation id="7705085181312584869">Yazmama yardım et</translation>
 <translation id="7705992072972338699">Optik Disk (Çok Parlak)</translation>
 <translation id="7706689436519265630">Kopyaladığınız veya taşıdığınız dosyalar analiz amacıyla Google Cloud'a ya da üçüncü taraflara gönderilir. Örneğin, dosyalarınızın hassas veriler veya kötü amaçlı yazılım içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak bu dosyalar saklanabilir.</translation>
+<translation id="7709934467582922028">E-posta doğrulama istemi kapatıldı</translation>
 <translation id="7714351089363296478">Kısa süre önce ziyaret ettiniz</translation>
 <translation id="7714404809393719981">Fotoğraf (Yarı Parlak)</translation>
 <translation id="7714464543167945231">Sertifika</translation>

@@ -132,6 +132,7 @@
 Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copiar dir&amp;ección de enlace</translation>
 <translation id="1085064499066015002">Siempre en todos los sitios</translation>
+<translation id="1085340215550339505">Para hacer sugerencias de cambio de contraseña en el momento oportuno, el contenido y las URLs de las páginas que visitas se pueden procesar en un espacio privado en la nube</translation>
 <translation id="1085558727130096638">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> persona más</translation>
 <translation id="1085618740036066768">No se ha seleccionado <ph name="ITEM" />. <ph name="INDEX" /> de <ph name="COUNT" />. Pulsa Buscar y la barra espaciadora para seleccionar un elemento.</translation>
 <translation id="1086486568852410168">Busca con Google Lens</translation>
@@ -1122,6 +1123,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1871131409931646355">Historial de descargas completo</translation>
 <translation id="187145082678092583">Menos aplicaciones</translation>
 <translation id="1871615898038944731">Tu <ph name="DEVICE_TYPE" /> está actualizado</translation>
+<translation id="1872846000961079826">Durante el cambio de contraseña, el contenido de las páginas de contraseñas y la información relacionada se envían a Google y pueden revisarlos personas para mejorar la calidad de esta función</translation>
 <translation id="1873513359268939357">Calendario de Outlook</translation>
 <translation id="1873920700418191231">Volver a dar permisos a <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Puede mostrar cualquier anuncio</translation>
@@ -2848,6 +2850,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3184536091884214176">Configurar o gestionar impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Usa este PIN para cambiar los ajustes de controles parentales.
     Si olvidas el PIN, usa la función Powerwash en este dispositivo y vuelve a configurarlo.</translation>
+<translation id="3184916134413175521">Valorar</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta aplicación está bloqueada}other{Algunas aplicaciones están bloqueadas}}</translation>
 <translation id="3185454065699440434">Permitir extensiones en <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">¿Puedes ver tu dispositivo de emisión en la
@@ -2917,6 +2920,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3241680850019875542">Selecciona el directorio raíz de las extensiones que quieras empaquetar. Para actualizar una extensión, debes seleccionar también el archivo de clave privada que se va a volver a usar.</translation>
 <translation id="3241810535741601486">Este cambio es permanente y no se puede deshacer. Las actualizaciones ampliadas se aplican a todos los usuarios de este dispositivo. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Tu avatar</translation>
+<translation id="3242764115495920926">Preguntar si quiero cambiar contraseñas automáticamente</translation>
 <translation id="3243017971870859287">Leer los números de serie del dispositivo ChromeOS Flex y de los componentes</translation>
 <translation id="324366796737464147">Cancelación de ruido</translation>
 <translation id="3243680258677029936">{0,plural, =1{Aislado}other{Aislado (#)}}</translation>
@@ -4142,6 +4146,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4167924027691268367">Más acciones del acceso directo de <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Algunas opciones que pertenecen a <ph name="PRIMARY_EMAIL" /> se están compartiendo contigo. Estas opciones solo se aplican a tu cuenta cuando utilizas el inicio de sesión múltiple.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que termina en <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Valorar...</translation>
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
 <translation id="4170685671197375581">Activar atajo</translation>
@@ -4443,6 +4448,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4401912261345737180">Conéctate con un código para enviar contenido</translation>
 <translation id="4403012369005671154">Transcripción de voz</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
+<translation id="440411460180511551">Si tienes la sesión iniciada y Chromium detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla.</translation>
 <translation id="4404843640767531781">Tu padre o madre ha bloqueado <ph name="APP_NAME" />. Pídele permiso para usar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -5050,7 +5056,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4872192066608821120">Para importar contraseñas, selecciona un archivo CSV</translation>
 <translation id="4872212987539553601">Configurar el cifrado en el dispositivo</translation>
 <translation id="4875690134140862902">Pestaña</translation>
-<translation id="4876273079589074638">Cuéntanos lo que ocurrió paso a paso para que nuestros ingenieros puedan investigar y solucionar el error. Cualquier detalle es importante.</translation>
 <translation id="4876305945144899064">Ningún nombre de usuario</translation>
 <translation id="4876327226315760474">Esto significa que las opciones del sitio deberían funcionar según lo previsto, pero es posible que tengas menos protección al navegar.</translation>
 <translation id="4876895919560854374">Bloquear y desbloquear la pantalla</translation>
@@ -6576,6 +6581,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6099766472403716061">Permitir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú Inicio</translation>
 <translation id="6100737823178787570">Aumenta el tamaño de la ventana para reanudar la tarea</translation>
+<translation id="6101170451607354234">Si tienes la sesión iniciada y Chrome detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla.</translation>
 <translation id="6101226222197207147">Nueva aplicación añadida (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Protección Avanzada ha bloqueado este archivo.</translation>
 <translation id="6103681770816982672">Advertencia: Vas a cambiar al canal para desarrolladores</translation>
@@ -6781,6 +6787,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6254892857036829079">Perfecta</translation>
 <translation id="6257602895346497974">Activar sincronización...</translation>
 <translation id="625827534921607067">Esta red tendrá preferencia si hay disponible más de una red ya configurada o a la que te hayas conectado anteriormente</translation>
+<translation id="6258818697161346451">Usa tus llaves de acceso en este dispositivo</translation>
 <translation id="6259776178973198997">Actualizar información de propietarios de Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Registros de apps de kiosco de ChromeOS</translation>
 <translation id="6263082573641595914">Versión de entidad emisora de certificados de Microsoft</translation>
@@ -10333,6 +10340,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9003185744423389627">La conexión con el servidor de administración de dispositivos ha fallado con el estado "<ph name="STATUS_TEXT" />" a las <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">¿Buscar automáticamente perfiles de eSIM disponibles?</translation>
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>
+<translation id="9004279470320280717">Valorar...</translation>
 <translation id="9005774573776346118">Inicia sesión como <ph name="EMAIL" /> para acceder a tus contraseñas, marcadores y otros en todos tus dispositivos</translation>
 <translation id="9006511997799670136">Tu organización</translation>
 <translation id="900733896273558337">Editar habilidad</translation>

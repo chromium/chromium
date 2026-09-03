@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ginawa <ph name="NUM_WEEKS_ONE" /> linggo ang nakalipas}one{Ginawa <ph name="NUM_WEEKS_MANY" /> linggo ang nakalipas}other{Ginawa <ph name="NUM_WEEKS_MANY" /> na linggo ang nakalipas}}</translation>
 <translation id="1063300264396686489">Awtomatikong buksan ang mga grupo ng tab mula sa iba pang device</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
+<translation id="1089791933924803646">Makakuha ng mga suhestyon sa Chrome sa iba pang app</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_YEARS_ONE" /> taon ang nakalipas}one{Ginawa <ph name="NUM_YEARS_MANY" /> taon ang nakalipas}other{Ginawa <ph name="NUM_YEARS_MANY" /> na taon ang nakalipas}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Isasara ang mga hindi aktibong tab at grupo pagkalipas ng 1 buwan}one{Isasara ang mga hindi aktibong tab at grupo pagkalipas ng <ph name="MONTH_COUNT_MANY" /> buwan}other{Isasara ang mga hindi aktibong tab at grupo pagkalipas ng <ph name="MONTH_COUNT_MANY" /> na buwan}}</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Magdagdag ng tab sa grupo}one{Magdagdag ng mga tab sa grupo}other{Magdagdag ng mga tab sa grupo}}</translation>
 <translation id="8138067144082174140">Pagkalipas ng 14 na araw na hindi aktibo</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">I-share ang data ng pag-browse, gaya ng iyong kamakailang history ng pag-browse, para makakuha ng mga suhestyon sa mga napiling app. Secure na pinoproseso ang data na ito sa iyong device.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{I-unpin ang tab}one{I-unpin ang mga tab}other{I-unpin ang mga tab}}</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Na-update <ph name="NUM_MINS_ONE" /> minuto ang nakalipas}one{Na-update <ph name="NUM_MINS_MANY" /> minuto ang nakalipas}other{Na-update <ph name="NUM_MINS_MANY" /> na minuto ang nakalipas}}</translation>

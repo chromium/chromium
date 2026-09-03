@@ -132,6 +132,7 @@
 ທ່ານສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານຕອນໃດກໍໄດ້ໃນ <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
 <translation id="1085064499066015002">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
+<translation id="1085340215550339505">ເພື່ອໃຫ້ຄຳແນະນຳໃນການປ່ຽນລະຫັດຜ່ານໄດ້ຢ່າງທັນເວລາ, ລະບົບຈະປະມວນຜົນເນື້ອຫາ ແລະ URL ຂອງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງໃນພື້ນທີ່ສ່ວນບຸກຄົນໃນຄລາວ</translation>
 <translation id="1085558727130096638">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="1085618740036066768">ບໍ່ໄດ້ເລືອກ <ph name="ITEM" />. <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" />. ກົດປຸ່ມຊອກຫາພ້ອມກັບປຸ່ມຍະຫວ່າງເພື່ອເລືອກ.</translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
@@ -1133,6 +1134,7 @@
 <translation id="1871131409931646355">ປະຫວັດການດາວໂຫຼດແບບເຕັມ</translation>
 <translation id="187145082678092583">ແອັບໜ້ອຍລົງ</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ຂອງທ່ານໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
+<translation id="1872846000961079826">ໃນລະຫວ່າງການປ່ຽນລະຫັດຜ່ານ, ລະບົບຈະສົ່ງເນື້ອຫາຈາກໜ້າທີ່ມີລະຫັດຜ່ານ ແລະ ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງໃຫ້ Google ແລະ ຈະໄດ້ຮັບການກວດສອບໂດຍທີມງານເພື່ອປັບປຸງຄຸນນະພາບຂອງຄຸນສົມບັດນີ້</translation>
 <translation id="1873513359268939357">Outlook ປະຕິທິນ</translation>
 <translation id="1873920700418191231">ອະນຸຍາດສິດການອະນຸຍາດອີກຄັ້ງສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງໂຄສະນາຕ່າງໆ</translation>
@@ -2861,6 +2863,7 @@
 <translation id="3184536091884214176">ຕັ້ງຄ່າ ຫຼື ຈັດການເຄື່ອງພິມ CUPS. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">ໃຊ້ PIN ນີ້ເພື່ອປ່ຽນການຕັ້ງຄ່າການຄວບຄຸມຂອງພໍ່ແມ່.
     ຫາກທ່ານລືມ PIN, ໃຫ້ດຳເນີນການ powerwash ອຸປະກອນນີ້ແລ້ວຕັ້ງຄ່າອີກຄັ້ງ.</translation>
+<translation id="3184916134413175521">ໃຫ້ຄະແນນ</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ແອັບນີ້ຖືກບລັອກໄວ້}other{ບາງແອັບຖືກບລັອກໄວ້}}</translation>
 <translation id="3185454065699440434">ອະນຸຍາດສ່ວນຂະຫຍາຍຢູ່ <ph name="SITE_NAME" /></translation>
 <translation id="3186266269323401475">ເປີດການແຈ້ງເຕືອນເພື່ອຮັບຂໍ້ມູນອັບເດດໃນລະຫວ່າງທີ່ທ່ານກຳລັງທ່ອງເວັບ ຫຼື ບໍ່ຢູ່</translation>
@@ -2932,6 +2935,7 @@
 <translation id="3241680850019875542">ເລືອກໄດເຣັກຕໍຣີພື້ນຖານຂອງສ່ວນຂະຫຍາຍເພື່ອບັນຈຸ. ເພື່ອອັບເດດສ່ວນຂະຫຍາຍ, ເລືອກໄຟລ໌ລະຫັດສ່ວນຕົວເພື່ອ​ໃຊ້​ຄືນອີກ.</translation>
 <translation id="3241810535741601486">ການປ່ຽນແປງນີ້ຈະເປັນການປ່ຽນແປງຢ່າງຖາວອນ ແລະ ຈະບໍ່ສາມາດຍ້ອນກັບໄດ້. ການອັບເດດເພີ່ມເຕີມຈະມີຜົນກັບຜູ້ໃຊ້ອຸປະກອນນີ້ທຸກຄົນ. <ph name="LINK_START" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">ຮູບແທນຕົວຂອງທ່ານ</translation>
+<translation id="3242764115495920926">ສະເໜີໃຫ້ປ່ຽນລະຫັດຜ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3243017971870859287">ອ່ານອຸປະກອນ ChromeOS Flex ແລະ ໝາຍເລກຊີຣຽວສ່ວນປະກອບ</translation>
 <translation id="324366796737464147">ການຕັດສຽງລົບກວນ</translation>
 <translation id="3244271242291266297">ດດ</translation>
@@ -4161,6 +4165,7 @@
 <translation id="4167924027691268367">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບທາງລັດ <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">ການຕັ້ງຄ່າບາງອັນທີ່ເປັນຂອງ <ph name="PRIMARY_EMAIL" /> ກໍາລັງຖືກແຊຣ໌ກັບທ່ານ. ການຕັ້ງຄ່າເຫຼົ່ານີ້ມີຜົນກະທົບກັບບັນຊີຂອງທ່ານພຽງແຕ່ເມື່ອໃຊ້ການລົງຊື່ເຂົ້າ​ໃຊ້ຫຼາຍອັນເທົ່ານັ້ນ.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ລົງທ້າຍດ້ວຍ <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">ໃຫ້ຄະແນນ...</translation>
 <translation id="4169535189173047238">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4170314459383239649">ລຶບລ້າງເມື່ອອອກ</translation>
 <translation id="4170685671197375581">ເປີດໃຊ້ທາງລັດ</translation>
@@ -4464,6 +4469,7 @@
 <translation id="4401912261345737180">ເຊື່ອມຕໍ່ດ້ວຍລະຫັດເພື່ອສົ່ງສັນຍານ</translation>
 <translation id="4403012369005671154">ການປ່ຽນສຽງເວົ້າເປັນຂໍ້ຄວາມ</translation>
 <translation id="4403775189117163360">ເລືອກໂຟນເດີອື່ນ</translation>
+<translation id="440411460180511551">ຫາກ Chromium ພົບໜຶ່ງໃນລະຫັດຜ່ານຂອງທ່ານໃນການລະເມີດຂໍ້ມູນສາທາລະນະ, ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດສະເໜີໃຫ້ປ່ຽນລະຫັດຜ່ານໃຫ້ທ່ານໄດ້ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="4404843640767531781">ພໍ່ແມ່ຂອງທ່ານບລັອກ <ph name="APP_NAME" /> ໄວ້ ຂໍອະນຸຍາດນຳພໍ່ແມ່ຂອງທ່ານເພື່ອໃຊ້ແອັບນີ້.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ຍ້າຍໄປໃສ່…</translation>
@@ -5075,7 +5081,6 @@
 <translation id="4872192066608821120">ເພື່ອນຳເຂົ້າລະຫັດຜ່ານ, ໃຫ້ເລືອກໄຟລ໌ CSV</translation>
 <translation id="4872212987539553601">ຕັ້ງຄ່າການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="4875690134140862902">ແຖບ</translation>
-<translation id="4876273079589074638">ຊ່ວຍວິສະວະກອນຂອງພວກເຮົາສືບສວນ ແລະ ແກ້ໄຂການຂັດຂ້ອງນີ້. ບອກຂັ້ນຕອນທີ່ແນ່ນອນຖ້າທ່ານສາມາດເຮັດໄດ້. ບໍ່ມີລາຍລະອຽດໃດໜ້ອຍເກີນໄປ!</translation>
 <translation id="4876305945144899064">ບໍ່ມີຊື່ຜູ້ໃຊ້</translation>
 <translation id="4876327226315760474">ການຕັ້ງຄ່ານີ້ໝາຍຄວາມວ່າຄຸນສົມບັດຂອງເວັບໄຊຄວນເຮັດວຽກຕາມທີ່ຄາດໄວ້, ແຕ່ການປົກປ້ອງທ່ານໃນລະຫວ່າງການທ່ອງເວັບອາດຫຼຸດລົງ.</translation>
 <translation id="4876895919560854374">ລັອກ ແລະປົດລັອກຫນ້າ​ຈໍ</translation>
@@ -6607,6 +6612,7 @@
 <translation id="6099766472403716061">ອະນຸຍາດໃຫ້ <ph name="HOST" /> ຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ຂອງທ່ານທຸກເທື່ອ</translation>
 <translation id="6100736666660498114">ເມນູເລີ່ມຕົ້ນ</translation>
 <translation id="6100737823178787570">ເພີ່ມຂະໜາດໜ້າຈໍເພື່ອສືບຕໍ່ໜ້າວຽກ</translation>
+<translation id="6101170451607354234">ຫາກ Chrome ພົບໜຶ່ງໃນລະຫັດຜ່ານຂອງທ່ານໃນການລະເມີດຂໍ້ມູນສາທາລະນະ, ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດສະເໜີໃຫ້ປ່ຽນລະຫັດຜ່ານໃຫ້ທ່ານໄດ້ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="6101226222197207147">ເພີ່ມແອັບໃໝ່ແລ້ວ ( <ph name="EXTENSION_NAME" /> )</translation>
 <translation id="6102043788063419338">ໄຟລ໌ນີ້ຖືກບລັອກໄວ້ໂດຍການປົກປ້ອງຂັ້ນສູງ.</translation>
 <translation id="6103681770816982672">ຄໍາ​ເຕືອນ​: ທ່ານ​ກໍາ​ລັງ​ປ່ຽນໄປຫາຊ່ອງຜູ້ພັດ​ທະ​ນາ</translation>
@@ -6813,6 +6819,7 @@
 <translation id="6254892857036829079">ສົມບູນແບບ</translation>
 <translation id="6257602895346497974">ເປີດການຊິ້ງຂໍ້ມູນ...</translation>
 <translation id="625827534921607067">ເຄືອຂ່າຍນີ້ຈະຖືກຕັ້ງໄວ້ໃຫ້ເລືອກກ່ອນຫາກມີເຄືອຂ່າຍທີ່ເຊື່ອມຕໍ່ ຫຼື ຕັ້ງຄ່າໄວ້ກ່ອນໜ້າສາມາດໃຊ້ໄດ້ຫຼາຍກວ່າໜຶ່ງເຄືອຂ່າຍ</translation>
+<translation id="6258818697161346451">ໃຊ້ກະແຈຜ່ານຂອງທ່ານໃນອຸປະກອນນີ້</translation>
 <translation id="6259776178973198997">ໂຫຼດຂໍ້ມູນເຈົ້າຂອງ Wi-Fi Direct ຄືນໃໝ່</translation>
 <translation id="6261688934280090835">ບັນທຶກແອັບ Kiosk ຂອງ ChromeOS</translation>
 <translation id="6263082573641595914">ລຸ້ນ Microsoft CA</translation>
@@ -10368,6 +10375,7 @@
 <translation id="9003185744423389627">ການເຊື່ອມຕໍ່ຫາເຊີບເວີການຈັດການອຸປະກອນບໍ່ສຳເລັດໂດຍມີສະຖານະ '<ph name="STATUS_TEXT" />' ເວລາ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">ສະແກນຫາໂປຣໄຟລ໌ eSIM ທີ່ມີຢູ່ໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="9003647077635673607">ອະ​ນຸ​ຍາດ​ໃຫ້​ຢູ່​ໃນ​ທຸກເວັບ​ໄຊ​ທ​໌​</translation>
+<translation id="9004279470320280717">ໃຫ້ຄະແນນ...</translation>
 <translation id="9005774573776346118">ເພື່ອເຂົ້າເຖິງລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນທຸກອຸປະກອນຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">ອົງກອນຂອງທ່ານ</translation>
 <translation id="900733896273558337">ແກ້ໄຂທັກສະ</translation>

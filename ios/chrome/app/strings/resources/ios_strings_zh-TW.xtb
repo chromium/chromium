@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶的書籤、密碼等資訊。</translation>
 <translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
+<translation id="1056818261333183659">我該買哪一個？</translation>
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1062138828266376352">你的 PIN 碼並未變更。請檢查網路連線，然後再試一次</translation>
 <translation id="1063070031224282617">請選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">質量</translation>
 <translation id="5899314093904173337">如要與附近的使用者分享，請讓對方使用相機或 QR 掃描器應用程式掃描這個 QR code</translation>
 <translation id="5902752768726620872">{count,plural, =1{新增 {count} 個分頁}other{新增 {count} 個分頁}}</translation>
+<translation id="5906163261248594192">阿丹的生日</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5912796581727968237">開啟 Google 錢包</translation>
 <translation id="5922999516621365983">將分頁拖曳到這裡即可固定。</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">無法翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>
 <translation id="7206979415662233817">服務條款</translation>
+<translation id="721218676460477064">重點摘要這篇文章</translation>
 <translation id="7215621211572884440">允許彈出式視窗</translation>
 <translation id="7218491361283758048">郵遞區號</translation>
 <translation id="7221173315674413369">你可以前往「新功能」頁面探索新功能及相關提示</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">新資料夾…</translation>
 <translation id="8035412398498507358">相簿</translation>
 <translation id="8037713009824540257">新增網站</translation>
+<translation id="8038078082340255234">市場報告</translation>
 <translation id="8040407350301524547">如要查看路線選項，請輕觸「規劃路線」。</translation>
 <translation id="804427445359061970">這裡會顯示你在其他裝置上查看的分頁</translation>
 <translation id="8058655154417507695">到期年份</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">保留資料</translation>
 <translation id="8233237502828137700">關閉橫幅宣傳內容</translation>
 <translation id="823339794112333264">開啟麥克風</translation>
+<translation id="8240217649914883113">將這項活動新增到我的日曆</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8252980988000695656">「Google 智慧鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">開啟自動填入功能…</translation>
 <translation id="8370406443343902172">前往「設定」...</translation>
 <translation id="8370929854657845191">展開到中等高度</translation>
+<translation id="8371494817541821097">密碼金鑰建立時間：<ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8385363453480067273">使用 Google 智慧鏡頭搜尋你的視界</translation>

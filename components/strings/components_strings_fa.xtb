@@ -752,7 +752,7 @@
 <translation id="2256115617011615191">راه‌اندازی مجدد در این لحظه</translation>
 <translation id="2258928405015593961">تاریخی را در آینده به‌عنوان تاریخ انقضا وارد کنید و دوباره امتحان کنید</translation>
 <translation id="225943865679747347">کد خطا: <ph name="ERROR_CODE" /></translation>
-<translation id="2262183267184054286">درستی‌سنجی با روش دیگر.</translation>
+<translation id="2262183267184054286">درستی‌سنجی به روشی دیگر.</translation>
 <translation id="2262243747453050782">‏خطای HTTP</translation>
 <translation id="2265356434276802347">این خط‌مشی نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی ویژه داشته باشد.</translation>
 <translation id="2266175583972138136">شرایط بر مزایای کارت اعمال می‌شود</translation>
@@ -1458,6 +1458,7 @@
 <translation id="3495081129428749620">یافتن در صفحه
 <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">حقوق</translation>
+<translation id="3496531230994554300">اعلان «کیف پول» به‌صورت کامل باز شده است.</translation>
 <translation id="3497627066518778351">مرور فهرست داده‌های سایت درون دستگاه در پنجره‌ای جدید</translation>
 <translation id="3498215018399854026">در حال حاضر نمی‌توانیم با والدینتان تماس برقرار کنیم. لطفاً دوباره امتحان کنید.</translation>
 <translation id="350069200438440499">نام فایل:</translation>
@@ -1560,7 +1561,6 @@
 <translation id="3655670868607891010">اگر مکرراً با این مشکل مواجه می‌شوید، <ph name="HELP_LINK" /> را امتحان کنید.</translation>
 <translation id="3658742229777143148">ویرایش</translation>
 <translation id="3659521826520353662">سایت‌های تعریف‌شده توسط سرپرست که بازدید شده است و زمان بازدید: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">‏این شبا در «کیف پول Google» ذخیره شد تا بتوانید از آن در سراسر سرویس‌های Google استفاده کنید.</translation>
 <translation id="3664479564786885722">گزینه‌های خرید بیشتری را در سایر فروشگاه‌هایی که این محصول را می‌فروشند جستجو کنید.</translation>
 <translation id="3664782872746246217">کلیدواژه‌ها:</translation>
 <translation id="3670030362669914947">عدد</translation>
@@ -2670,6 +2670,7 @@
 <translation id="5499229993630251170">این رشته را ادامه می‌دهید؟</translation>
 <translation id="5506286895894263601">این فهرست فاقد میان‌بر معتبر است.</translation>
 <translation id="5507756662695126555">انکارناپذیری</translation>
+<translation id="5508515366054931524">پیام‌واره درستی‌سنجی ایمیل به‌صورت کامل باز شده است</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">نشانک‌های مدیریت شده</translation>
 <translation id="5510766032865166053">ممکن است جابه‌جا یا حذف شده باشد.</translation>
@@ -3452,6 +3453,7 @@
 <translation id="6860888819347870819">می‌تواند برای ورود به حالت تصویر در تصویر درخواست دهد</translation>
 <translation id="6864189428899665393">۳۸۹ × ۲۶۷ میلی‌متر</translation>
 <translation id="6865412394715372076">درحال‌حاضر نمی‌توان این کارت را به تأیید رساند</translation>
+<translation id="6871073333584947219">اعلان «کیف پول» بسته شد.</translation>
 <translation id="6871813064737840684">سابقه قیمت در سراسر وب برای این گزینه</translation>
 <translation id="6873456682041376666">سینی بالا</translation>
 <translation id="6874604403660855544">&amp;انجام مجدد افزودن</translation>
@@ -3907,7 +3909,6 @@
 <translation id="7615932826417658001">اضافه کردن کارت شناسایی</translation>
 <translation id="7616390733770379387">ترتیب نمایش این موتورهای جستجو تصادفی است.</translation>
 <translation id="7616645509853975347">‏سرپرستتان «رابط‌های Chrome Enterprise» را در مرورگرتان روشن کرده است. این رابط‌ها به برخی از داده‌هایتان دسترسی دارند.</translation>
-<translation id="7616747402308801775">‏این کارت در «کیف پول Google» ذخیره شد تا بتوانید از آن در سراسر سرویس‌های Google استفاده کنید.</translation>
 <translation id="7617825962482469577">پاکت سی۷/سی۶</translation>
 <translation id="7619838219691048931">برگ پایان</translation>
 <translation id="7621546470643449009">یک راهنمای مبتدی برای ستاره‌نگری بساز تا به من کمک کند یاد بگیرم در آسمان شب به‌دنبال چه چیزهایی بگردم، ازجمله ۳ صورت فلکی که به‌راحتی قابل‌شناسایی باشند</translation>
@@ -3972,6 +3973,7 @@
 <translation id="7705085181312584869">کمک به نوشتن</translation>
 <translation id="7705992072972338699">لوح نوری (خیلی براق)</translation>
 <translation id="7706689436519265630">‏فایل‌هایی که کپی یا منتقل می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود.</translation>
+<translation id="7709934467582922028">پیام‌واره درستی‌سنجی ایمیل بسته شد</translation>
 <translation id="7714351089363296478">به‌تازگی بازدید کردید</translation>
 <translation id="7714404809393719981">عکس (نیمه‌براق)</translation>
 <translation id="7714464543167945231">گواهی</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
-<translation id="1035560095760914532">วาง Chrome ไว้บริเวณด้านล่างเพื่อให้เข้าถึงได้ตลอดเวลา</translation>
 <translation id="1076643793026027628">Chrome จะเปิดลิงก์ที่ไม่ระบุตัวตนของ YouTube ในโหมดไม่ระบุตัวตนโดยอัตโนมัติ</translation>
 <translation id="1081114897601629648">ระบบไม่ได้นำเข้ารหัสผ่านต่อไปนี้ไปยังเครื่องมือจัดการรหัสผ่านบน Google เนื่องจากไม่ตรงตามข้อกำหนด</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">เปิดแท็บที่ไม่ระบุตัวตนใหม่ใน Chrome</translation>
 <translation id="1605168141396675642">ไม่ต้องเสียเวลาคัดลอก เปิดลิงก์ใน Chrome โดยตรง</translation>
 <translation id="1646463005043273333">เปิดการตั้งค่า Chrome เพื่อตั้งค่า Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
+<translation id="1668930590094369898">ใช้ Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1670609221633730681">เคล็ดลับสำหรับ Chrome: เลือกตำแหน่งของแถบที่อยู่</translation>
 <translation id="1683863426423719967">เปิดการแจ้งเตือนในการตั้งค่า iOS เพื่อรับการช่วยเตือนเกี่ยวกับแท็บจาก Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">เปิด "Chrome" จากการตั้งค่า "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"</translation>
 <translation id="1984705450038014246">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1987779152850321833">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อให้ใช้ Chrome ได้เกิดประโยชน์สูงสุด</translation>
+<translation id="2049569996960148258">ซ่อน "ใช้ Chrome เป็นเบราว์เซอร์เริ่มต้น"</translation>
 <translation id="2055826352861631739">ใช้ Chrome สำหรับ iPad โดยค่าเริ่มต้น</translation>
 <translation id="2056123005618757196">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Google Chrome ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
 <translation id="2120238739383482109">เปิดบุ๊กมาร์ก Chrome</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">คุณมีบุ๊กมาร์กถึงขีดจำกัด <ph name="LIMIT" /> รายการของ Google Chrome แล้ว ระบบจึงยังไม่ได้บันทึกบุ๊กมาร์กบางรายการลงในบัญชี Google
 
 บันทึกบุ๊กมาร์กใหม่ในบัญชีไม่ได้จนกว่าคุณจะลบบุ๊กมาร์กบางรายการ หากคุณออกจากระบบตอนนี้ ระบบจะลบบุ๊กมาร์กที่ยังไม่ได้บันทึก</translation>
-<translation id="2901621928549457170">เปิด Chrome ได้ทันทีเมื่อคุณใช้ iPad</translation>
 <translation id="2922914028977213693">แตะที่นี่เพื่อรับประโยชน์สูงสุดจาก Chrome ใน iPad</translation>
 <translation id="292371311537977079">การตั้งค่า Chrome</translation>
 <translation id="2923827943290349720">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome</translation>
@@ -175,8 +175,6 @@
 <translation id="5119391094379141756">เลือก Chrome</translation>
 <translation id="5123188916260706415">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="5162467219239570114">Chrome เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chrome เวอร์ชันใหม่อีกต่อไป</translation>
-<translation id="5172049865623113551">เปิด Chrome ได้ทันทีเมื่อคุณใช้ iPhone</translation>
-<translation id="5179095426828744632">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอป</translation>
 <translation id="5184329579814168207">เปิดใน Chrome</translation>
 <translation id="5190139289262548459">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome</translation>
 <translation id="5209238444239954363">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -262,8 +260,8 @@
 หากต้องการดูการตั้งค่าอื่นๆ ที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="6922332667202044570">ลบข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="6924922227983877439">เปิดลิงก์ใน Chrome โดยค่าเริ่มต้น</translation>
+<translation id="6926395711547387358">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6975725306479268850">เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
-<translation id="7001031184470316752">ย้าย Chrome ไปที่แถบแอป</translation>
 <translation id="7038674195294813388">เปิดการตั้งค่าแอปเริ่มต้นใน iOS จากนั้นแตะ "แอปเบราว์เซอร์" แล้วเลือก Chrome</translation>
 <translation id="7056826488869329999">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chrome</translation>
 <translation id="7061455974939528301">กดไอคอน Chrome ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>

@@ -105,6 +105,7 @@
 <translation id="138181280295369883">登入即可在所有裝置上存取儲存的資訊和其他內容</translation>
 <translation id="1381838868249179644">為確保你的安全，系統已移除某些網站的權限</translation>
 <translation id="1383876407941801731">搜尋</translation>
+<translation id="1384568202352682721">另存為…</translation>
 <translation id="1384704387250346179">使用 Google 智慧鏡頭翻譯圖片內容 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">你可以查看透過其他應用程式在 Chrome 中開啟連結的歷史記錄。你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="139752016751285248">價格分析底部功能表已完整開啟</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">已變更</translation>
 <translation id="1480287803138246127">這裡可能並未顯示所有歷史記錄，請開啟完整的 Chrome 歷史記錄，才能查看所有記錄。</translation>
 <translation id="1483493594462132177">傳送</translation>
+<translation id="1485343711570311792">在「<ph name="NATIVE_APP_NAME" />」中開啟 • 來自「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1496514951988037011">使用者名稱</translation>
 <translation id="1501480321619201731">刪除群組</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">從左側邊緣向內滑動即可返回</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">另存網頁…</translation>
 <translation id="2328474416100889417">所有共用對象都將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，邀請連結也會全部失效</translation>
 <translation id="2329500425421091035">隆重推出 Chrome 內建 AI 模式</translation>
 <translation id="2330186936255788117">更多書籤</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">工作仍在進行中</translation>
 <translation id="8317318757008452355">開啟列印選項</translation>
 <translation id="8320212361750431956">近期活動</translation>
+<translation id="8322452989119079156">在「<ph name="NATIVE_APP_NAME" />」中開啟 - 來自「<ph name="DEVICE_NAME" />」</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">書籤和清單</translation>
 <translation id="8342727528718219152">Chrome 會通知你哪些網站可能傳送太多通知</translation>

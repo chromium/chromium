@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Conectează-te pentru a-ți accesa informațiile salvate și altele pe toate dispozitivele</translation>
 <translation id="1381838868249179644">Pentru a te proteja, au fost eliminate permisiunile pentru unele site-uri</translation>
 <translation id="1383876407941801731">Caută</translation>
+<translation id="1384568202352682721">Salvează ca…</translation>
 <translation id="1384704387250346179">Tradu imaginea cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Poți vedea istoricul din alte aplicații care deschid linkuri în Chrome. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Foaia din partea de jos cu Statistici despre prețuri este deschisă la înălțime completă</translation>
@@ -133,6 +134,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="147982357559798527">Modificată</translation>
 <translation id="1480287803138246127">Este posibil ca o parte a istoricului să nu se afișeze aici. Pentru a vedea tot istoricul Chrome, deschide istoricul Chrome complet.</translation>
 <translation id="1483493594462132177">Trimite</translation>
+<translation id="1485343711570311792">Deschide în <ph name="NATIVE_APP_NAME" /> • De la <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Înpoi la filă</translation>
 <translation id="1496514951988037011">nume de utilizator</translation>
 <translation id="1501480321619201731">Șterge grupul</translation>
@@ -327,6 +329,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="232137538351753795">Glisează dinspre marginea stângă pentru a reveni</translation>
 <translation id="2323763861024343754">Stocarea site-urilor</translation>
 <translation id="2327445548174191329">Din <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Salvează pagina ca…</translation>
 <translation id="2328474416100889417">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și toate linkurile de invitație vor fi dezactivate</translation>
 <translation id="2329500425421091035">Îți prezentăm Modul AI în Chrome</translation>
 <translation id="2330186936255788117">Mai multe marcaje</translation>
@@ -1874,6 +1877,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8313599942510782709">Sarcina ta este încă în desfășurare.</translation>
 <translation id="8317318757008452355">Deschide opțiunile de printare</translation>
 <translation id="8320212361750431956">Activitate recentă</translation>
+<translation id="8322452989119079156">Deschide în <ph name="NATIVE_APP_NAME" /> – Trimis de la <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Marcaje și liste</translation>
 <translation id="8342727528718219152">Chrome te va informa despre site-urile care trimit prea multe notificări</translation>

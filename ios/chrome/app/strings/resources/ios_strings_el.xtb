@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Ανώνυμη περιήγηση</translation>
 <translation id="1053651653201045802">Αποσυνδεθήκατε. Συνδεθείτε ξανά για να χρησιμοποιήσετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα στον λογαριασμό σας.</translation>
 <translation id="1054745118061919935">Αν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Ποιο προϊόν να αγοράσω;</translation>
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
 <translation id="1062138828266376352">Το PIN δεν άλλαξε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά</translation>
 <translation id="1063070031224282617">Επιλέξτε πού θα αποθηκευτεί το αρχείο <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">Μάζα</translation>
 <translation id="5899314093904173337">Για κοινή χρήση με άτομα που βρίσκονται κοντά σας, επιτρέψτε τους να σαρώσουν αυτόν τον κωδικό QR με την εφαρμογή κάμερας ή την εφαρμογή σάρωσης κωδικών QR.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} νέα καρτέλα}other{{count} νέες καρτέλες}}</translation>
+<translation id="5906163261248594192">Γενέθλια του Δημήτρη</translation>
 <translation id="5911030830365207728">Μετάφραση Google</translation>
 <translation id="5912796581727968237">Άνοιγμα Πορτοφολιού Google</translation>
 <translation id="5922999516621365983">Σύρετε την καρτέλα εδώ για να την καρφιτσώσετε.</translation>
@@ -1925,6 +1927,7 @@
 <translation id="720399613139435155">Αποτυχία μετάφρασης</translation>
 <translation id="7204922488054642675">Εξατομικευμένες ειδήσεις</translation>
 <translation id="7206979415662233817">Όροι παροχής υπηρεσιών</translation>
+<translation id="721218676460477064">Σύνοψη αυτού του άρθρου</translation>
 <translation id="7215621211572884440">Επιτρέπονται αναδυόμ.</translation>
 <translation id="7218491361283758048">Ταχυδρομικός κώδικας</translation>
 <translation id="7221173315674413369">Εξερευνήστε νέες λειτουργίες και συμβουλές στην ενότητα Τι νέο υπάρχει</translation>
@@ -2186,6 +2189,7 @@
 <translation id="8035133914807600019">Νέος φάκελος…</translation>
 <translation id="8035412398498507358">Φωτογραφίες</translation>
 <translation id="8037713009824540257">Προσθήκη ιστότοπου</translation>
+<translation id="8038078082340255234">Αναφορά αγοράς</translation>
 <translation id="8040407350301524547">Για επιλογές διαδρομής, πατήστε Λήψη οδηγιών.</translation>
 <translation id="804427445359061970">Εδώ θα βρείτε τις καρτέλες σας από τις άλλες συσκευές</translation>
 <translation id="8058655154417507695">Έτος λήξης</translation>
@@ -2243,6 +2247,7 @@
 <translation id="8232956427053453090">Διατήρηση δεδομένων</translation>
 <translation id="8233237502828137700">Κλείσιμο banner προώθησης</translation>
 <translation id="823339794112333264">Ενεργοποίηση μικροφώνου</translation>
+<translation id="8240217649914883113">Πρόσθεσέ το στο ημερολόγιό μου</translation>
 <translation id="8250920743982581267">Έγγραφα</translation>
 <translation id="8252980988000695656">Το Google Lens ολοκληρώθηκε!</translation>
 <translation id="8258734532103758067">Έχω εξαγάγει τα δεδομένα μου</translation>
@@ -2287,6 +2292,7 @@
 <translation id="8368198938968349418">Ενεργοποίηση Αυτόματης συμπλήρωσης…</translation>
 <translation id="8370406443343902172">Μετάβαση στις Ρυθμίσεις…</translation>
 <translation id="8370929854657845191">Ανάπτυξη σε μεσαίο ύψος</translation>
+<translation id="8371494817541821097">Το κλειδί πρόσβασης δημιουργήθηκε στις <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Διαγραφή διεύθυνσης}other{Διαγραφή διευθύνσεων}}</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
 <translation id="8385363453480067273">Αναζητήστε αυτά που βλέπετε με το Google Lens</translation>

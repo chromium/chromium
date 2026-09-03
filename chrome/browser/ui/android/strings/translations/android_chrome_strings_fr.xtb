@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Connectez-vous pour accéder sur tous vos appareils à vos informations enregistrées et bien plus</translation>
 <translation id="1381838868249179644">Pour vous protéger, des autorisations accordées à certains sites ont été supprimées</translation>
 <translation id="1383876407941801731">Rechercher</translation>
+<translation id="1384568202352682721">Enregistrer sous…</translation>
 <translation id="1384704387250346179">Traduire avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Vous verrez peut-être l'historique d'autres applis qui ouvrent des liens dans Chrome. Votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Bottom sheet des tendances de prix ouverte à pleine hauteur</translation>
@@ -133,6 +134,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="147982357559798527">Modifié</translation>
 <translation id="1480287803138246127">Il est possible qu'une partie de votre historique ne s'affiche pas ici. Pour l'afficher en intégralité, sélectionnez "Ouvrir tout l'historique Chrome".</translation>
 <translation id="1483493594462132177">Envoyer</translation>
+<translation id="1485343711570311792">Ouvrir dans <ph name="NATIVE_APP_NAME" /> • Depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1496514951988037011">nom d'utilisateur</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
@@ -327,6 +329,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="232137538351753795">Balayer depuis le bord gauche pour revenir en arrière</translation>
 <translation id="2323763861024343754">Données de site stockées</translation>
 <translation id="2327445548174191329">Source : <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Enregistrer la page sous…</translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
 <translation id="2329500425421091035">Découvrez le Mode IA dans Chrome</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
@@ -1874,6 +1877,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8313599942510782709">Votre tâche est toujours en cours</translation>
 <translation id="8317318757008452355">Ouvrir les options d'impression</translation>
 <translation id="8320212361750431956">Activité récente</translation>
+<translation id="8322452989119079156">Ouvrir dans <ph name="NATIVE_APP_NAME" /> - Envoyé depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Favoris et listes</translation>
 <translation id="8342727528718219152">Chrome vous indiquera les sites qui envoient peut-être trop de notifications</translation>

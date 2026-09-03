@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1035560095760914532">‏‫Chrome را در قسمت پایین قرار دهید تا هرزمان خواستید به آن دسترسی داشته باشید</translation>
 <translation id="1076643793026027628">‏‫Chrome پیوندهای «ناشناس» YouTube را به‌طور خودکار در حالت «ناشناس» باز می‌کند.</translation>
 <translation id="1081114897601629648">‏گذرواژه‌های زیر در «مدیر گذرواژه Google» وارد نشدند زیرا با الزامات مطابقت ندارند.</translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
@@ -12,7 +11,7 @@
 <translation id="1166460004393506534">‏حذف کردن داده‌های مرور در Chrome</translation>
 <translation id="1179527450541388808">‏از جایگاه صفحه اصلی iPad سریع‌تر به Chrome دسترسی داشته باشید.</translation>
 <translation id="1180362651362502943">‏به استفاده از داده‌های Chrome ذخیره‌شده در «حساب Google» خود ادامه دهید.</translation>
-<translation id="1200396280085622191">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها و برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
+<translation id="1200396280085622191">‏از Chrome با تک‌ضربی روی پیوندها در پیام‌ها و برنامه‌های دیگر استفاده کنید.</translation>
 <translation id="1229222343402087523">‏جستجوی ${searchPhrase} در Chrome</translation>
 <translation id="1237769345474105984">‏از Chrome</translation>
 <translation id="124228879633599436">‏‫Chrome شما قدیمی است. برای حفظ ایمنی، آن را به‌روز کنید.</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">‏زبانه «ناشناس» جدیدی را در Chrome باز می‌کند.</translation>
 <translation id="1605168141396675642">‏از دردسر کپی کردن پرهیز کنید. پیوندها را مستقیماً در Chrome باز کنید.</translation>
 <translation id="1646463005043273333">‏«تنظیمات Chrome» را برای تنظیم کردن Chrome به‌عنوان مرورگر پیش‌فرض باز می‌کند.</translation>
+<translation id="1668930590094369898">‏استفاده کردن از «Chrome به‌عنوان پیش‌فرض»</translation>
 <translation id="1670609221633730681">‏نکته Chrome: جای نوار نشانی را انتخاب کنید</translation>
 <translation id="1683863426423719967">‏برای دریافت «یادآورهای زبانه» از Chrome، اعلان‌ها را در «تنظیمات» iOS روشن کنید.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">‏در تنظیمات «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»، «Chrome» را روشن کنید</translation>
 <translation id="1984705450038014246">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="1987779152850321833">‏اقدامات پیشنهادی زیر را تکمیل کنید تا بیشترین بهره را از Chrome ببرید.</translation>
+<translation id="2049569996960148258">‏پنهان کردن «استفاده از Chrome به‌عنوان پیش‌فرض»</translation>
 <translation id="2055826352861631739">‏استفاده از Chrome برای iPad به‌طور پیش‌فرض</translation>
 <translation id="2056123005618757196">‏با Google Chrome که ساده، ایمن، و سریع‌تر از همیشه است کارهای بیشتری انجام دهید.</translation>
 <translation id="2120238739383482109">‏نشانک‌های Chrome را باز می‌کند.</translation>
@@ -64,7 +65,7 @@
 <translation id="2199719347983604670">‏داده‌های مربوط به همگام‌سازی Chrome</translation>
 <translation id="2212318912894837281">‏برای ذخیره کردن این گذرواژه و دریافت داده‌های Chrome در همه دستگاه‌هایتان، گذرعبارت را وارد کنید</translation>
 <translation id="2213327331203157297">‏برای غیرفعال کردن حالت «قفل همه» در Chrome، آن را در iPhone خود خاموش کنید.</translation>
-<translation id="2242467532204595597">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد و دیگر برنامه‌ها، از Chrome استفاده کنید.</translation>
+<translation id="2242467532204595597">‏از Chrome با تک‌ضربی روی پیوندها در پیام‌ها، اسناد و دیگر برنامه استفاده کنید.</translation>
 <translation id="2270691132923135296">‏برای شروع، با مفاهیم پایه و مفید Chrome آشنا شوید</translation>
 <translation id="2311240109311056604">‏بازی «دایناسور Chrome» را باز می‌کند.</translation>
 <translation id="2339201583852607431">‏گذرواژه در «حساب Google» خودتان (<ph name="EMAIL" />) ذخیره خواهد شد.</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">‏به حداکثر تعداد نشانک‌های Google Chrome (<ph name="LIMIT" />) رسیده‌اید، بنابراین برخی‌از نشانک‌هایتان هنوز در «حساب Google» شما ذخیره نشده است.
 
 تا زمانی‌که تعدادی از نشانک‌ها را حذف نکنید، نمی‌توانید نشانک‌های جدید را در حسابتان ذخیره کنید. اگر اکنون از سیستم خارج شوید، نشانک‌های ذخیره‌نشده حذف خواهد شد.</translation>
-<translation id="2901621928549457170">‏وقتی از iPad استفاده می‌کنید، Chrome را فوری باز کنید</translation>
 <translation id="2922914028977213693">‏برای اینکه بیشترین بهره را از Chrome در iPad ببرید، اینجا تک‌ضرب بزنید.</translation>
 <translation id="292371311537977079">‏تنظیمات Chrome</translation>
 <translation id="2923827943290349720">‏قفل کردن «برگه‌های ناشناس» وقتی Chrome را می‌بندید</translation>
@@ -175,8 +175,6 @@
 <translation id="5119391094379141756">‏Chrome را انتخاب کنید</translation>
 <translation id="5123188916260706415">‏جستجو با صدا در Chrome</translation>
 <translation id="5162467219239570114">‏نسخه Chrome قدیمی است. اگر به‌روزرسانی‌ای در <ph name="BEGIN_LINK" />فروشگاه برنامه<ph name="END_LINK" /> دردسترس نیست، احتمالاً دستگاهتان نسخه‌های جدید Chrome را دیگر پشتیبانی نمی‌کند.</translation>
-<translation id="5172049865623113551">‏وقتی در iPhone خود هستید، Chromium را فوری باز کنید</translation>
-<translation id="5179095426828744632">‏از سکوی برنامه‌ها سریع‌تر به Chrome دسترسی پیدا کنید</translation>
 <translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5190139289262548459">‏سازمانتان (<ph name="DOMAIN" />) حسابی که به سیستم آن وارد شده‌اید و نحوه استفاده از Chrome را مدیریت می‌کند.</translation>
 <translation id="5209238444239954363">‏‫Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
@@ -262,8 +260,8 @@
 برای تنظیمات بیشتری که از داده‌ها برای بهبود تجربه شما در Chrome استفاده می‌کنند، به <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> بروید.</translation>
 <translation id="6922332667202044570">‏حذف کردن داده‌های مرور در Chrome.</translation>
 <translation id="6924922227983877439">‏پیوندها را به‌طور پیش‌فرض در Chrome باز کنید</translation>
+<translation id="6926395711547387358">‏تنظیم کردن «Chrome به‌عنوان پیش‌فرض»</translation>
 <translation id="6975725306479268850">‏انتخاب Chrome برای «تکمیل خودکار»</translation>
-<translation id="7001031184470316752">‏برنامه Chrome را به «سکوی برنامه‌ها» منتقل کنید</translation>
 <translation id="7038674195294813388">‏تنظیمات Default Apps (برنامه‌های پیش‌فرض) را در iOS باز کنید، سپس روی «Browser App» (برنامه مرورگر) تک‌ضرب بزنید و Chrome را انتخاب کنید.</translation>
 <translation id="7056826488869329999">‏«کنترل ایمنی» را در Chrome باز و اجرا می‌کند.</translation>
 <translation id="7061455974939528301">‏نماد Chrome را فشار دهید و نگه دارید و روی «ویرایش کردن صفحه اصلی» کلیک کنید</translation>
@@ -319,7 +317,7 @@
 <translation id="7855730255114109580">‏Google Chrome به‌روز است</translation>
 <translation id="787226752901403048">‏به سیستم Chrome وارد شوید و گروه‌های زبانه را هم‌سانی کنید، به آن‌ها بپیوندید، و با هم روی ایده‌ها کار کنید</translation>
 <translation id="7897703007638178753">‏دیدن برگه‌های اخیر Chrome</translation>
-<translation id="7948283758957877064">‏ویژگی‌های جدید Chrome</translation>
+<translation id="7948283758957877064">‏تازه‌های Chrome</translation>
 <translation id="8000174216052461231">‏نکته Chrome: بالاترین حفاظ امنیتی Chrome را دریافت کنید</translation>
 <translation id="8006014511203279255">‏برای باز کردن پیوندهای موجود در پیام‌ها یا برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
 <translation id="8014670471808569312">‏‫Chrome پیشنهاد خواهد داد که گذرواژه‌تان را ذخیره کند.</translation>

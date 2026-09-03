@@ -8,12 +8,10 @@
 <translation id="1091252999271033193">Þetta þýðir að Chromium biður alltaf um snjalltækjaútgáfu vefsvæðis.</translation>
 <translation id="1115463765356382667">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chromium sem best.</translation>
 <translation id="1185134272377778587">Um Chromium</translation>
-<translation id="119044033865561140">Opnaðu Chromium samstundis þegar þú ert í iPad</translation>
 <translation id="1229234641991056119">Notaðu aðgangsorðin þín, feril, bókamerki og kreditkort í Safar í Chromium</translation>
 <translation id="1257458525759135959">Til að vista myndir og láta Chromium bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
 <translation id="1260702988262336471">Opnaðu valmynd Chromium</translation>
 <translation id="12739128458173458">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chromium í báðum tækjum.</translation>
-<translation id="1279797561821266129">Opnaðu Chromium hraðar úr dokkunni</translation>
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1423007117030725713">Hefja leit í nýjum flipa í Chromium.</translation>
@@ -32,7 +30,6 @@
 <translation id="1553657876656159572">Sérsniðinn straumur fyrir þig. Inniheldur m.a. fréttir, íþróttir og veður.</translation>
 <translation id="1561849081734670621">Til að slökkva á Lockdown Mode í Chromium þarftu að slökkva á því í iPhone-símanum þínum.</translation>
 <translation id="1569258826720962327">Notaðu Chromium-aðgerðir í iOS</translation>
-<translation id="1573441572176948907">Færðu Chromium í dokkuna</translation>
 <translation id="159029779861043703">Chromium notar andlitskennsl til að halda viðkvæmu upplýsingunum þínum öruggum.</translation>
 <translation id="1591119736686995611">Opnar flipayfirlit Chromium.</translation>
 <translation id="16001233025397167">Öryggisathugun veitir þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira. Fáðu viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chromium greinir fyrir þig.</translation>
@@ -182,7 +179,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="4790638144988730920">Haltu áfram að nota Chromium-gögnin á Google-reikningnum þínum.</translation>
 <translation id="4828317641996116749">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
 <translation id="4856138222358683580">Chromium-aðgerðir</translation>
-<translation id="4869706986935301458">Opnaðu Chromium samstundis þegar þú ert í iPhone</translation>
 <translation id="4904452304169763785">Viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chromium greinir fyrir þig.</translation>
 <translation id="4962295957157529683">Ljúktu því sem þú ert að gera í öðrum opnum Chromium-glugga.</translation>
 <translation id="4985291216379576555">Ótengt, Chromium getur ekki leitað að uppfærslum.</translation>
@@ -307,7 +303,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7395825497086981028">Aðgangsorðið verður vistað í aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Þessi aðgangslykill verður vistaður í Aðgangsorðastjórnun fyrir <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Opna Chromium</translation>
-<translation id="7507535968973352823">Settu Chromium á neðsta svæðið til að hafa það ávallt við höndina</translation>
 <translation id="7531461704633548377">Úr Chromium</translation>
 <translation id="7554983317097061001">Ábending frá Chromium: Færðu Chromium á stikuna</translation>
 <translation id="7576863740961052505">Stjórna stillingum Chromium</translation>

@@ -1453,6 +1453,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3493881266323043047">Balio-aldia</translation>
 <translation id="3495081129428749620">Bilatu <ph name="PAGE_TITLE" /> orrian</translation>
 <translation id="3495818359064790343">Soldata</translation>
+<translation id="3496531230994554300">Diru-zorroa zerbitzuaren oharra altuera osoan ireki da.</translation>
 <translation id="3497627066518778351">Berrikusi gailuko webguneetako datuen zerrenda bat beste leiho batean</translation>
 <translation id="3498215018399854026">Ezin izan gara jarri harremanetan zure arduradunarekin. Saiatu berriro.</translation>
 <translation id="350069200438440499">Fitxategiaren izena:</translation>
@@ -1555,7 +1556,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3655670868607891010">Hau maiz agertzen bazaizu, saiatu honekin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3659521826520353662">Administratzaileak definitutako zein webgune bisitatzen diren eta noiz: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">IBANa Google Diru-zorroa zerbitzuan gorde da; beraz, Google-ren zerbitzu guztietan erabil dezakezu.</translation>
 <translation id="3664479564786885722">Bilatu erosteko aukera gehiago produktu hau saltzen duten beste denda batzuetan.</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3670030362669914947">Zenbakia</translation>
@@ -2665,6 +2665,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5499229993630251170">Elkarrizketa-hari honekin aurrera egin nahi duzu?</translation>
 <translation id="5506286895894263601">Zerrendan ez dago balio duen lasterbiderik.</translation>
 <translation id="5507756662695126555">Ukaezintasuna</translation>
+<translation id="5508515366054931524">Helbide elektronikoa egiaztatzeko eskaera-mezua altuera osoan ireki da</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kudeatutako laster-markak</translation>
 <translation id="5510766032865166053">Lekuz aldatu edo ezabatu egin da agian.</translation>
@@ -3446,6 +3447,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6860888819347870819">Pantaila txiki gainjarriak irekitzeko eska dezake</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Txartela ezin da egiaztatu une honetan</translation>
+<translation id="6871073333584947219">Diru-zorroa zerbitzuaren oharra itxi da.</translation>
 <translation id="6871813064737840684">Aukera honen sareko prezioen historia</translation>
 <translation id="6873456682041376666">Goiko erretilua</translation>
 <translation id="6874604403660855544">&amp;Berregin gehitzea</translation>
@@ -3900,7 +3902,6 @@ Xehetasun gehiago:
 <translation id="7615932826417658001">Gehitu nortasun-agiri bat</translation>
 <translation id="7616390733770379387">Bilatzaile hauek ausaz zerrendatzen dira.</translation>
 <translation id="7616645509853975347">Administratzaileak Chrome Enterprise Connectors gaitu du arakatzailean. Konektore horiek zure datu batzuetarako sarbidea dute.</translation>
-<translation id="7616747402308801775">Txartela Google Diru-zorroa zerbitzuan gorde da; beraz, Google-ren zerbitzu guztietan erabil dezakezu</translation>
 <translation id="7617825962482469577">C7/C6 gutun-azala</translation>
 <translation id="7619838219691048931">Amaierako orria</translation>
 <translation id="7621546470643449009">Sortu izarrak behatzeko hasiberrientzako gida bat, gaueko zeruan zer bilatu behar dudan ikasteko; besteak beste, erraz identifikatzeko moduko 3 konstelazio</translation>
@@ -3965,6 +3966,7 @@ Xehetasun gehiago:
 <translation id="7705085181312584869">Idazteko laguntza</translation>
 <translation id="7705992072972338699">Disko optikoa (oso distiratsua)</translation>
 <translation id="7706689436519265630">Kopiatzen edo mugitzen dituzun fitxategiak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten; esate baterako, baliteke haietan kontuzko datuak edo malwarea bilatzea, eta agian enpresaren gidalerroen arabera gordeko dira.</translation>
+<translation id="7709934467582922028">Helbide elektronikoa egiaztatzeko eskaera-mezua itxi da</translation>
 <translation id="7714351089363296478">Bisitatu berri duzu</translation>
 <translation id="7714404809393719981">Argazkia (erdidistiratsua)</translation>
 <translation id="7714464543167945231">Ziurtagiria</translation>

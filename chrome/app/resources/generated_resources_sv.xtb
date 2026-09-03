@@ -132,6 +132,7 @@
 Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopiera länk&amp;adress</translation>
 <translation id="1085064499066015002">Alltid på alla webbplatser</translation>
+<translation id="1085340215550339505">För att kunna ge förslag på lösenordsändringar vid lämpliga tidpunkter kan innehållet och webbadresserna till sidorna du besöker behandlas i ett privat utrymme i molnet</translation>
 <translation id="1085558727130096638">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och <ph name="NUM_OTHER_MEMBERS" /> till</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> har inte markerats. <ph name="INDEX" /> av <ph name="COUNT" />. Markera genom att trycka på Sök och mellanslag.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
@@ -1132,6 +1133,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1871131409931646355">Fullständig nedladdningshistorik</translation>
 <translation id="187145082678092583">Färre appar</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> är uppdaterad</translation>
+<translation id="1872846000961079826">När lösenordet ändras skickas innehåll från lösenordssidor och relaterad information till Google och kan granskas av människor för att förbättra kvaliteten på den här funktionen</translation>
 <translation id="1873513359268939357">Outlook Kalender</translation>
 <translation id="1873920700418191231">Tillåt behörigheter igen för <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Får visa alla annonser</translation>
@@ -2859,6 +2861,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3184536091884214176">Konfigurera eller hantera CUPS-skrivare. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Använd den här pinkoden om du vill ändra inställningarna för föräldrakontroller.
     Om du glömmer pinkoden använder du Powerwash på den här enheten och konfigurerar den på nytt.</translation>
+<translation id="3184916134413175521">Betygsätt</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Den här appen har blockerats}other{Vissa appar har blockerats}}</translation>
 <translation id="3185454065699440434">Tillåt tillägg på <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Visas Cast-enheten i
@@ -2928,6 +2931,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3241680850019875542">Välj rotkatalogen för tillägget som ska paketeras. Om du vill uppdatera ett tillägg väljer du också den privata nyckel som ska återanvändas.</translation>
 <translation id="3241810535741601486">Ändringen är permanent och går inte att ångra. Utökade uppdateringar gäller för alla användare av enheten. <ph name="LINK_START" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Min avatar</translation>
+<translation id="3242764115495920926">Erbjud att ändra lösenord automatiskt</translation>
 <translation id="3243017971870859287">Läsa serienummer för ChromeOS Flex-enheter och komponenter</translation>
 <translation id="324366796737464147">Brusreducering</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4153,6 +4157,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4167924027691268367">Fler åtgärder för <ph name="SHORTCUT_TITLE" />-genväg</translation>
 <translation id="4168015872538332605">Vissa inställningar som tillhör <ph name="PRIMARY_EMAIL" /> delas med dig. Dessa inställningar påverkar bara ditt konto när du använder multiinloggning.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> som slutar på <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Sätt betyg</translation>
 <translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4170314459383239649">Rensa vid avslut</translation>
 <translation id="4170685671197375581">Aktivera kortkommandot</translation>
@@ -4454,6 +4459,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4401912261345737180">Anslut med en kod om du vill casta</translation>
 <translation id="4403012369005671154">Tal till text</translation>
 <translation id="4403775189117163360">Välj en annan mapp</translation>
+<translation id="440411460180511551">Om Chromium upptäcker att ett av dina lösenord har läckt ut i ett offentligt dataintrång kan Google Lösenordshantering erbjuda att ändra lösenordet åt dig när du är inloggad.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> blockeras av en förälder. Be en förälder om behörighet att använda den här appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flytta till …</translation>
@@ -5062,7 +5068,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4872192066608821120">Välj en CSV-fil för att importera lösenord</translation>
 <translation id="4872212987539553601">Konfigurera kryptering på enheten</translation>
 <translation id="4875690134140862902">Flik</translation>
-<translation id="4876273079589074638">Hjälp våra ingenjörer att undersöka och åtgärda den här kraschen. Ange de exakta stegen om du kan. Ingen detalj är för liten.</translation>
 <translation id="4876305945144899064">Inget användarnamn</translation>
 <translation id="4876327226315760474">Detta innebär att webbplatsfunktionerna ska fungera som förväntat, men du kan ha mindre surfskydd.</translation>
 <translation id="4876895919560854374">Låsa och låsa upp skärmen</translation>
@@ -6589,6 +6594,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6099766472403716061">Tillåt alltid <ph name="HOST" /> att styra och omprogrammera dina MIDI-enheter</translation>
 <translation id="6100736666660498114">Start-meny</translation>
 <translation id="6100737823178787570">Öka fönsterstorleken för att återuppta uppgiften</translation>
+<translation id="6101170451607354234">Om Chrome upptäcker att ett av dina lösenord har läckt ut i ett offentligt dataintrång kan Google Lösenordshantering erbjuda att ändra det åt dig när du är inloggad.</translation>
 <translation id="6101226222197207147">En ny app har lagts till (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Den här filen blockerades av Avancerat skydd.</translation>
 <translation id="6103681770816982672">Varning: du byter till utvecklingskanalen</translation>
@@ -6794,6 +6800,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
 <translation id="625827534921607067">Det här nätverket visas om det finns fler än ett tidigare anslutet eller konfigurerat nätverk.</translation>
+<translation id="6258818697161346451">Använd dina nycklar på den här enheten</translation>
 <translation id="6259776178973198997">Uppdatera information om WiFi Direct-ägare</translation>
 <translation id="6261688934280090835">Loggar för ChromeOS-kioskappen</translation>
 <translation id="6263082573641595914">Microsofts version av certifikatutfärdare</translation>
@@ -10343,6 +10350,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9003185744423389627">Anslutningen till servern för enhetshanteringen misslyckades <ph name="FAILURE_TIME" /> med statusen <ph name="STATUS_TEXT" /></translation>
 <translation id="90033698482696970">Vill du söka efter tillgängliga eSIM-profiler automatiskt?</translation>
 <translation id="9003647077635673607">Tillåt på alla webbplatser</translation>
+<translation id="9004279470320280717">Sätt betyg</translation>
 <translation id="9005774573776346118">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>
 <translation id="9006511997799670136">Din organisation</translation>
 <translation id="900733896273558337">Redigera färdighet</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
-<translation id="1035560095760914532">Coloca Chrome en la parte inferior para acceder a él en cualquier momento</translation>
 <translation id="1076643793026027628">Chrome abre automáticamente los vínculos de Incógnito de YouTube en modo Incógnito.</translation>
 <translation id="1081114897601629648">No se importaron las siguientes contraseñas al Administrador de contraseñas de Google porque no cumplen con los requisitos.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
@@ -41,6 +40,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1580570086594302477">Abre una nueva pestaña de incógnito en Chrome.</translation>
 <translation id="1605168141396675642">Evita la molestia de copiar URLs. Abre vínculos directamente en Chrome.</translation>
 <translation id="1646463005043273333">Abre la Configuración de Chrome para establecer Chrome como navegador predeterminado.</translation>
+<translation id="1668930590094369898">Usar Chrome como navegador predeterminado</translation>
 <translation id="1670609221633730681">Sugerencia para Chrome: Elige la posición de la barra de direcciones</translation>
 <translation id="1683863426423719967">Para recibir Tab Reminders de Chrome, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1973910962341002002">En la configuración de "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", activa "Chrome"</translation>
 <translation id="1984705450038014246">Sincroniza tus datos de Chrome</translation>
 <translation id="1987779152850321833">Completa estas acciones sugeridas para aprovechar Chrome al máximo.</translation>
+<translation id="2049569996960148258">Ocultar Usar Chrome como navegador predeterminado</translation>
 <translation id="2055826352861631739">Usa Chrome para iPad de forma predeterminada</translation>
 <translation id="2056123005618757196">Realiza más tareas con una versión de Google Chrome más simple, segura y rápida que nunca.</translation>
 <translation id="2120238739383482109">Abre los favoritos de Chrome.</translation>
@@ -90,7 +91,6 @@ Aspectos que debes tener en cuenta:
 <translation id="288992067439702510">Alcanzaste el límite de <ph name="LIMIT" /> favoritos de Google Chrome, por lo que aún no se guardaron algunos de tus favoritos en tu Cuenta de Google.
 
 No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si sales ahora, se borrarán los favoritos no guardados.</translation>
-<translation id="2901621928549457170">Abre Chrome al instante cuando estés en tu iPad</translation>
 <translation id="2922914028977213693">Presiona aquí para aprovechar Chrome al máximo en tu iPad.</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2923827943290349720">Bloquear las pestañas de incógnito cuando cierres Chrome</translation>
@@ -175,8 +175,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
 <translation id="5123188916260706415">Realizar búsquedas con la voz en Chrome</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chrome.</translation>
-<translation id="5172049865623113551">Abre Chrome al instante cuando estés en tu iPhone</translation>
-<translation id="5179095426828744632">Accede a Chrome más rápido desde el Dock</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chrome.</translation>
 <translation id="5209238444239954363">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
@@ -262,8 +260,8 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 Si quieres ver más parámetros de configuración que usan datos para mejorar tu experiencia en Chrome, ve a los <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Borra los datos de navegación en Chrome.</translation>
 <translation id="6924922227983877439">Abrir vínculos en Chrome</translation>
+<translation id="6926395711547387358">Establecer Chrome como navegador predeterminado</translation>
 <translation id="6975725306479268850">Elige Chrome para autocompletar</translation>
-<translation id="7001031184470316752">Mueve Chrome al Dock</translation>
 <translation id="7038674195294813388">Abre la configuración de Apps predeterminadas en iOS, presiona "App de navegador" y selecciona Chrome.</translation>
 <translation id="7056826488869329999">Abre y ejecuta la Verificación de seguridad en Chrome.</translation>
 <translation id="7061455974939528301">Mantén presionado el ícono de Chrome y haz clic en "Edita la pantalla de inicio"</translation>

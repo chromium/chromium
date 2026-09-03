@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Sinine teema</translation>
 <translation id="1070329623210597193">Failid, mida see sait saab vaadata või muuta</translation>
 <translation id="1074758928858737435">Saate paluda saitide lauaarvuti versiooni nägemist</translation>
+<translation id="1089791933924803646">Chrome'i soovituste hankimine muudes rakendustes</translation>
 <translation id="1109482864356262001">Liikumis- või valgusandureid vajavad funktsioonid ei tööta.</translation>
 <translation id="1126523729897810826">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
 <translation id="113098737392899175">Lehtedel navigeerimine tekstikursoriga, kui klaviatuur on ühendatud</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Sissesuumimise takistamiseks veebisaidi taotluse alistamine</translation>
 <translation id="5668843533782548925">Saidid on aeglasemad, aga turvalisemad</translation>
 <translation id="5677928146339483299">Blokeeritud</translation>
+<translation id="5679089750838794164">Chrome saab nüüd teie sirvimisandmete (nt hiljutise sirvimisajaloo) põhjal kuvada teile soovitusi teistes rakendustes. Neid andmeid töödeldakse turvaliselt teie seadmes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="5689516760719285838">Asukoht</translation>
 <translation id="5690795753582697420">Kaamera on Androidi seadetes välja lülitatud</translation>
 <translation id="5700761515355162635">Kolmanda osapoole küpsisefailid on lubatud</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Kas kustutada faili muutmise luba? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kui see on sisse lülitatud, saavad saidid automaatselt režiimi Pilt pildis aktiveerida. Kui see on välja lülitatud, ei saa saidid automaatselt režiimi Pilt pildis aktiveerida.</translation>
 <translation id="6120483543004435978">Kui see on sisse lülitatud, võivad saidid küsida luba selle teadmiseks, millal seadet aktiivselt kasutate. Kui see on välja lülitatud, ei saa saidid teada, millal seadet aktiivselt kasutate.</translation>
+<translation id="612871598708395517">Peida kaart „Chrome'i soovituste hankimine muudes rakendustes“</translation>
 <translation id="6132075343662013154">Chrome pakub võimalust parool salvestada</translation>
 <translation id="615886654739818377">Saitidel pole lubatud aknaid kõikidel teie ekraanidel hallata</translation>
 <translation id="6165508094623778733">Lisateave</translation>

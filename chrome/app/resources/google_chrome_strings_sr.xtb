@@ -75,6 +75,7 @@
 <translation id="1640672724030957280">Преузимање...</translation>
 <translation id="1651617469580841801">Када користите Google објектив, наслов, URL и садржај странице, укључујући PDF-ове, шаљу се Google-у. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">О Chrome OS Flex-у</translation>
+<translation id="1664094661346151467">Претражујте и постављајте питања с било ког места, чак и ако је Chrome умањен</translation>
 <translation id="1674870198290878346">Отвори линк у Chrome прозору без архи&amp;вирања</translation>
 <translation id="1682634494516646069">Google Chrome не може да чита податке из свог директоријума са подацима нити да их у њих уписује:
 
@@ -112,6 +113,7 @@
 <translation id="2034233344106846793">Chrome аутоматски надограђује небезбедне везе на HTTPS када је то могуће</translation>
 <translation id="2039417478970545937">Подешавања.</translation>
 <translation id="2040220733769034247">Скенирајте QR кôд телефоном да бисте преузели Chrome и пријавили се на Google налог.</translation>
+<translation id="2044908892530830113">Прикажи претрагу помоћу Chrome-а на траци менија Mac-а и укључи тастерску пречицу</translation>
 <translation id="2050189601866423230">Можете да закачите AI режим Google претраге да бисте постављали питања током прегледања</translation>
 <translation id="2091012649849228750">Да бисте добијали будућа Google Chrome ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex услови</translation>
@@ -139,6 +141,7 @@
 <translation id="2284380654876659752">Када одете на сајт, Chrome шаље маскирани део URL-а <ph name="BEGIN_LINK" />Google безбедном прегледању<ph name="END_LINK" /> преко сервера за приватност који крије IP адресу. Ако сајт ради нешто сумњиво, шаљу се и комплетни URL-ови и делови садржаја странице.</translation>
 <translation id="2290014774651636340">Недостају шифре за Google API. Неке функције Google Chrome-а ће бити онемогућене.</translation>
 <translation id="2290095356545025170">Да ли стварно желите да деинсталирате Google Chrome?</translation>
+<translation id="2295218613066132598">Прикажи пречице за сајтове у Chrome-у</translation>
 <translation id="2301513536169703857">Да би вам лозинке, обележивачи и други садржај били доступни на свим уређајима, пријавите се у Chrome</translation>
 <translation id="2307973900865360088">Задржи на траци</translation>
 <translation id="2309047409763057870">Ово је секундарна инсталација Google Chrome-а па не можете да га подесите као подразумевани прегледач.</translation>
@@ -526,6 +529,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
+<translation id="6195202018542972563">Прикажи претрагу помоћу Chrome-а на системској палети и укључи тастерску пречицу</translation>
 <translation id="6235018212288296708">Правило за долазни саобраћај за Google Chrome да бисте омогућили mDNS саобраћај.</translation>
 <translation id="624230925347970731">Chrome ће се ускоро затворити</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
@@ -567,6 +571,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="652948702951888897">Историја Chrome-а</translation>
 <translation id="6532945796722480006">Отворите Gemini у Chrome Canary-ју</translation>
 <translation id="6539493053177300926">Једноставан приступ за коришћење Gemini-ја у Chrome-у на уређају, чак и ако је Chrome минимизован.</translation>
+<translation id="6556755379298048869">Претражујте помоћу тастерске пречице.</translation>
 <translation id="6585124893636629274">Затворите Gemini у Chrome-у</translation>
 <translation id="659498884637196217">У Google менаџеру лозинки на овом уређају</translation>
 <translation id="6613949864921837107">Синхронизујте лозинке, обележиваче и историју на свим уређајима тако што ћете подесити Chrome као подразумевани прегледач.</translation>
@@ -593,6 +598,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="683440813066116847">Правило за долазни саобраћај за Google Chrome Canary да бисте омогућили mDNS саобраћај.</translation>
 <translation id="684888714667046800">Повезивање са интернетом није успело. Ако користите заштитни зид, проверите да ли се <ph name="PRODUCT_EXE_NAME" /> налази на листи дозвољених.</translation>
 <translation id="6859580922007887573">Притисните Tab да бисте наставили</translation>
+<translation id="6869568587896659271">Лак приступ веб-сајтовима испод траке за адресу</translation>
 <translation id="6877155553248388166">доњи десни угао области претраге: удесно <ph name="RIGHT" />%, надоле <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Ажурирамо Chrome</translation>
 <translation id="6885412569789873916">Chrome апликације за бета канал</translation>
@@ -685,6 +691,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7736869414036750079">Организација захтева да се пријавите у Chrome</translation>
 <translation id="7747138024166251722">Програм за инсталацију није могао да направи привремени директоријум. Проверите да ли имате слободног простора на диску, као и дозволу да инсталирате софтвер.</translation>
 <translation id="7748969056734910029">Нисте скоро посећивали сајт. Chrome је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Претражујте помоћу Chrome-а</translation>
 <translation id="7761834446675418963">Кликните на име да бисте отворили Chrome и почните да прегледате.</translation>
 <translation id="7777080907402804672">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа. То можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="778331955594035129">Chrome-у треба дозвола за локацију за овај сајт</translation>

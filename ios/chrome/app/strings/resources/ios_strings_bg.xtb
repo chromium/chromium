@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1053651653201045802">Не сте в профила си. Влезте отново в него, за да използвате съответните отметки, пароли и др.</translation>
 <translation id="1054745118061919935">Продължавайки, приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Кои да купя?</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062138828266376352">ПИН кодът ви не бе променен. Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="1063070031224282617">Изберете къде да се запази <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">За да споделите с хората в близост, те трябва да сканират този QR код с камерата си или с приложение за целта</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} нов раздел}other{{count} нови раздела}}</translation>
+<translation id="5906163261248594192">Рожденият ден на Дан</translation>
 <translation id="5911030830365207728">Google Преводач</translation>
 <translation id="5912796581727968237">Отваряне на Google Wallet</translation>
 <translation id="5922999516621365983">Плъзнете раздела тук, за да го фиксирате.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">Преводът не бе успешен</translation>
 <translation id="7204922488054642675">Персонализирани новини</translation>
 <translation id="7206979415662233817">Общи условия</translation>
+<translation id="721218676460477064">Обобщи тази статия</translation>
 <translation id="7215621211572884440">Изскачащ. прозорци са разрешени</translation>
 <translation id="7218491361283758048">Пощенски код</translation>
 <translation id="7221173315674413369">Разгледайте новите функции и съвети в „Новите неща“</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8035412398498507358">Снимки</translation>
 <translation id="8037713009824540257">Добавяне на сайт</translation>
+<translation id="8038078082340255234">Пазарен отчет</translation>
 <translation id="8040407350301524547">За опции за маршрута докоснете „Получаване на упътвания“.</translation>
 <translation id="804427445359061970">Тук ще се показват разделите ви от други устройства</translation>
 <translation id="8058655154417507695">Година на валидност</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">Запазване на данните</translation>
 <translation id="8233237502828137700">Затваряне на банера за популяризиране</translation>
 <translation id="823339794112333264">Включване на микрофона</translation>
+<translation id="8240217649914883113">Добави това към календара ми</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8252980988000695656">Задачата в Google Обектив е изпълнена!</translation>
 <translation id="8258734532103758067">Експортирах данните си</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">Включване на автоматичното попълване…</translation>
 <translation id="8370406443343902172">Към настройките...</translation>
 <translation id="8370929854657845191">Разгъване до средна височина</translation>
+<translation id="8371494817541821097">Ключът за достъп е създаден на <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Изтриване на адреса}other{Изтриване на адресите}}</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8385363453480067273">Търсене на това, което виждате, с Google Обектив</translation>

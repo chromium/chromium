@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
-<translation id="1035560095760914532">എപ്പോൾ വേണമെങ്കിലും ആക്‌സസ് ചെയ്യാൻ താഴെയുള്ള ഏരിയയിൽ Chrome വയ്ക്കുക</translation>
 <translation id="1076643793026027628">അദൃശ്യ മോഡിൽ, YouTube അദൃശ്യ മോഡ് ലിങ്കുകൾ Chrome സ്വയമേവ തുറക്കുന്നു.</translation>
 <translation id="1081114897601629648">ആവശ്യകതകളുമായി പൊരുത്തപ്പെടാത്തതിനാൽ, ഇനിപ്പറയുന്ന പാസ്‌വേഡുകൾ Google Password Manager-ലേക്ക് ഇമ്പോർട്ട് ചെയ്തില്ല.</translation>
 <translation id="1086486568852410168">Google Lens ഉപയോഗിച്ച് തിരയുക</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">പുതിയ Chrome അദൃശ്യ ടാബ് തുറക്കുന്നു.</translation>
 <translation id="1605168141396675642">പകർത്തുന്നതിന്റെ ബുദ്ധിമുട്ട് ഒഴിവാക്കൂ. ലിങ്കുകൾ നേരിട്ട് Chrome-ലേക്ക് ലോഞ്ച് ചെയ്യൂ.</translation>
 <translation id="1646463005043273333">Chrome ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കാൻ Chrome ക്രമീകരണം തുറക്കുന്നു.</translation>
+<translation id="1668930590094369898">ഡിഫോൾട്ടായി Chrome ഉപയോഗിക്കുക</translation>
 <translation id="1670609221633730681">Chrome നുറുങ്ങ്: നിങ്ങളുടെ വിലാസ ബാറിന്റെ സ്ഥാനം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1683863426423719967">Chrome-ൽ നിന്ന് ടാബ് റിമൈൻഡറുകൾ ലഭിക്കാൻ iOS ക്രമീകരണത്തിൽ അറിയിപ്പുകൾ ഓണാക്കുക.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ക്രമീകരണത്തിൽ നിന്ന്, "Chrome" ഓണാക്കുക</translation>
 <translation id="1984705450038014246">നിങ്ങളുടെ Chrome ഡാറ്റ സമന്വയിപ്പിക്കുക</translation>
 <translation id="1987779152850321833">Chrome പരമാവധി പ്രയോജനപ്പെടുത്തുന്നതിന് ചുവടെ നിർദ്ദേശിച്ചിരിക്കുന്ന ഈ പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കുക.</translation>
+<translation id="2049569996960148258">'ഡിഫോൾട്ടായി Chrome ഉപയോഗിക്കുക' മറയ്ക്കുക</translation>
 <translation id="2055826352861631739">ഡിഫോൾട്ടായി, iPad-നുള്ള Chrome ഉപയോഗിക്കുക</translation>
 <translation id="2056123005618757196">എളുപ്പത്തിലുള്ളതും സുരക്ഷിതവും എന്നത്തേക്കാളും വേഗതയേറിയതുമായ Google Chrome ഉപയോഗിച്ച് കൂടുതൽ കാര്യങ്ങൾ ചെയ്യൂ.</translation>
 <translation id="2120238739383482109">Chrome ബുക്ക്‌മാർക്കുകൾ തുറക്കുന്നു.</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">നിങ്ങൾ <ph name="LIMIT" /> ബുക്ക്‌മാർക്കുകൾ എന്ന Google Chrome-ന്റെ പരിധിയിലെത്തി, അതിനാൽ ചില ബുക്ക്‌മാർക്കുകൾ ഇതുവരെ Google Account-ൽ സംരക്ഷിച്ചിട്ടില്ല.
 
 ഏതാനും ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കുന്നത് വരെ നിങ്ങളുടെ അക്കൗണ്ടിൽ പുതിയവ സംരക്ഷിക്കാനാകില്ല. നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുകയാണെങ്കിൽ, സംരക്ഷിക്കാത്ത ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കും.</translation>
-<translation id="2901621928549457170">നിങ്ങൾ iPad ഉപയോഗിക്കുമ്പോൾ Chrome തൽക്ഷണം തുറക്കുക</translation>
 <translation id="2922914028977213693">നിങ്ങളുടെ iPad-ൽ Chrome പരമാവധി പ്രയോജനപ്പെടുത്താൻ ഇവിടെ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="292371311537977079">Chrome ക്രമീകരണം</translation>
 <translation id="2923827943290349720">Chrome അടയ്‌ക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക</translation>
@@ -175,8 +175,6 @@
 <translation id="5119391094379141756">Chrome തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5123188916260706415">Chrome-ൽ ശബ്ദം ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="5162467219239570114">Chrome കാലഹരണപ്പെട്ടു. <ph name="BEGIN_LINK" />ആപ്പ് സ്റ്റോറിൽ<ph name="END_LINK" /> അപ്ഡേറ്റ് ലഭ്യമല്ലെങ്കിൽ, നിങ്ങളുടെ ഉപകരണം ഇനി Chrome-ന്റെ പുതിയ പതിപ്പുകളെ പിന്തുണയ്ക്കാൻ സാധ്യതയില്ല.</translation>
-<translation id="5172049865623113551">നിങ്ങൾ iPhone ഉപയോഗിക്കുമ്പോൾ Chrome തൽക്ഷണം തുറക്കുക</translation>
-<translation id="5179095426828744632">നിങ്ങളുടെ ഡോക്കിൽ നിന്ന് അതിവേഗം Chrome ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="5184329579814168207">Chrome-ൽ തുറക്കുക</translation>
 <translation id="5190139289262548459">നിങ്ങൾ സൈൻ ചെയ്തിരിക്കുന്ന അക്കൗണ്ടും Chrome ഉപയോഗിക്കുന്ന രീതിയും മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ ഓർഗനൈസേഷനായ <ph name="DOMAIN" /> ആണ്.</translation>
 <translation id="5209238444239954363">Chrome-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -262,8 +260,8 @@
 നിങ്ങളുടെ Chrome അനുഭവം മെച്ചപ്പെടുത്താനായി ഡാറ്റ ഉപയോഗിക്കുന്ന കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />Google സേവനങ്ങളിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="6922332667202044570">Chrome-ലെ ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക.</translation>
 <translation id="6924922227983877439">ഡിഫോൾട്ടായി Chrome-ൽ ലിങ്കുകൾ തുറക്കുക</translation>
+<translation id="6926395711547387358">ഡിഫോൾട്ടായി Chrome സജ്ജീകരിക്കുക</translation>
 <translation id="6975725306479268850">സ്വയമേവ പൂരിപ്പിക്കുന്നതിന് Chrome തിരഞ്ഞെടുക്കുക</translation>
-<translation id="7001031184470316752">Chrome നിങ്ങളുടെ ഡോക്കിലേക്ക് നീക്കുക</translation>
 <translation id="7038674195294813388">iOS-ൽ ഡിഫോൾട്ട് ആപ്പ് ക്രമീകരണം തുറക്കുക, തുടർന്ന് "ബ്രൗസർ ആപ്പ്" ടാപ്പ് ചെയ്ത് Chrome തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="7056826488869329999">Chrome-ൽ സുരക്ഷാ പരിശോധന തുറക്കുന്നു, റണ്‍ ചെയ്യുന്നു.</translation>
 <translation id="7061455974939528301">Chrome ഐക്കണിൽ അമർത്തിപ്പിടിച്ച് "ഹോം സ്ക്രീൻ എഡിറ്റ് ചെയ്യുക" ക്ലിക്ക് ചെയ്യൂ</translation>

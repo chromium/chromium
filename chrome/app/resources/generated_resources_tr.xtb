@@ -132,6 +132,7 @@
 Şifrelerinizi <ph name="GOOGLE_PASSWORD_MANAGER" /> üzerinden her zaman kontrol edebilirsiniz.</translation>
 <translation id="1084824384139382525">Bağlantı adr&amp;esini kopyala</translation>
 <translation id="1085064499066015002">Tüm sitelerde her zaman</translation>
+<translation id="1085340215550339505">Şifre değiştirme önerilerini zamanında sunmak için ziyaret ettiğiniz sayfaların içeriği ve URL'leri buluttaki özel bir alanda işlenebilir</translation>
 <translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUM_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> seçili değil. <ph name="INDEX" />/<ph name="COUNT" />. Seçmek için Arama'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="1086486568852410168">Google Lens ile ara</translation>
@@ -1122,6 +1123,7 @@
 <translation id="1871131409931646355">Tüm İndirme Geçmişi</translation>
 <translation id="187145082678092583">Daha az uygulama</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> cihazınız güncel</translation>
+<translation id="1872846000961079826">Şifre değiştirme işlemi sırasında, şifre sayfalarındaki içerikler ve ilgili bilgiler Google'a gönderilir ve bu özelliğin kalitesini artırmak için gerçek kişiler tarafından incelenebilir</translation>
 <translation id="1873513359268939357">Outlook Takvim</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> sitesine tekrar izin verin</translation>
 <translation id="1874248162548993294">Her reklamı göstermesine izin verilenler</translation>
@@ -2846,6 +2848,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3184536091884214176">CUPS yazıcıları kurun veya yönetin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Ebeveyn denetimleri ayarlarını değiştirmek için bu PIN'i kullanın.
     PIN'i unutursanız bu cihazda powerwash yapıp tekrar oluşturun.</translation>
+<translation id="3184916134413175521">Puan Ver</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Bu uygulama engellendi}other{Bazı uygulamalar engellendi}}</translation>
 <translation id="3185454065699440434"><ph name="SITE_NAME" /> sitesinde uzantılara izin ver</translation>
 <translation id="3187556136478864255">Yayın cihazınızı <ph name="BEGIN_LINK" />Google Home uygulamasında<ph name="END_LINK" /> görebiliyor musunuz?</translation>
@@ -2913,6 +2916,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3241680850019875542">Paketlenecek uzantının kök dizinini seçin. Bir uzantıyı güncellemek için tekrar kullanılacak özel anahtar dosyasını da seçin.</translation>
 <translation id="3241810535741601486">Bu değişiklik kalıcıdır ve geri alınamaz. Genişletilmiş güncellemeler bu cihazın tüm kullanıcıları için geçerli olur. <ph name="LINK_START" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Avatarınız</translation>
+<translation id="3242764115495920926">Şifreleri otomatik olarak değiştirmeyi öner</translation>
 <translation id="3243017971870859287">ChromeOS Flex cihaz ve bileşen seri numaralarını okuma</translation>
 <translation id="324366796737464147">Gürültü giderme</translation>
 <translation id="3244271242291266297">AA</translation>
@@ -4138,6 +4142,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> kısayolu ile ilgili diğer işlemler</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> kullanıcısına ait bazı ayarlar sizinle paylaşılıyor. Bu ayarlar sadece çoklu oturum açma işlevi kullanılırken hesabınızı etkiler.</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> ile biten <ph name="NETWORK_NAME" /></translation>
+<translation id="4169275505426201952">Puan ver...</translation>
 <translation id="4169535189173047238">İzin verme</translation>
 <translation id="4170314459383239649">Çıkışta Temizle</translation>
 <translation id="4170685671197375581">Kısayolu aç</translation>
@@ -4439,6 +4444,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4401912261345737180">Yayınlamak için kod girerek bağlantı kurun</translation>
 <translation id="4403012369005671154">Sesle yazma</translation>
 <translation id="4403775189117163360">Farklı bir klasör seçin</translation>
+<translation id="440411460180511551">Chromium, şifrelerinizden birinin herkese açık veri ihlalinde yer aldığını tespit ederse ve oturumunuz açıksa Google Şifre Yöneticisi şifrenizi sizin için değiştirmeyi önerebilir.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" />, ebeveyniniz tarafından engellendi. Bu uygulamayı kullanmak için ebeveyninizden izin isteyin.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Klasöre taşı…</translation>
@@ -5047,7 +5053,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4872192066608821120">Şifrelerin içe aktarmak için bir CSV dosyası seçin</translation>
 <translation id="4872212987539553601">Cihaz üzerinde şifrelemeyi etkinleştir</translation>
 <translation id="4875690134140862902">Sekme</translation>
-<translation id="4876273079589074638">Mühendislerimizin kilitlenme olayı araştırmalarına ve düzeltmelerine yardımcı olun. Yapabilirseniz adımları tam olarak listeleyin. Hiçbir ayrıntıyı atlamayın!</translation>
 <translation id="4876305945144899064">Kullanıcı adı yok</translation>
 <translation id="4876327226315760474">Bu durumda, site özellikleri beklendiği gibi çalışır, ancak internette gezinirken daha az korunursunuz.</translation>
 <translation id="4876895919560854374">Ekranı kilitleme ve kilidini açma</translation>
@@ -6574,6 +6579,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6099766472403716061"><ph name="HOST" /> sitesinin, MIDI cihazlarımı kontrol etmesine ve yeniden programlamasına her zaman izin ver</translation>
 <translation id="6100736666660498114">Başlat menüsü</translation>
 <translation id="6100737823178787570">Görevi devam ettirmek için pencereyi bütüyün</translation>
+<translation id="6101170451607354234">Chrome, şifrelerinizden birinin herkese açık veri ihlalinde yer aldığını tespit ederse ve oturumunuz açıksa Google Şifre Yöneticisi şifrenizi sizin için değiştirmeyi önerebilir.</translation>
 <translation id="6101226222197207147">Yeni uygulama eklendi (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Bu dosya Gelişmiş Koruma tarafından engellendi.</translation>
 <translation id="6103681770816982672">Uyarı: Geliştirici kanalına geçiş yapıyorsunuz</translation>
@@ -6779,6 +6785,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6254892857036829079">Mükemmel</translation>
 <translation id="6257602895346497974">Senkronizasyonu aç...</translation>
 <translation id="625827534921607067">Daha önce bağlanmış veya yapılandırılmış birden fazla ağ mevcutsa bu ağ tercih edilir</translation>
+<translation id="6258818697161346451">Geçiş anahtarlarınızı bu cihazda kullanın</translation>
 <translation id="6259776178973198997">WiFi Direct Sahip Bilgisini Yenile</translation>
 <translation id="6261688934280090835">ChromeOS Kiosk Uygulaması Günlükleri</translation>
 <translation id="6263082573641595914">Microsoft CA Sürümü</translation>
@@ -10327,6 +10334,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9003185744423389627">Cihaz Yönetim Paneli sunucu bağlantısı <ph name="FAILURE_TIME" /> tarihinde "<ph name="STATUS_TEXT" />" durumunu göstererek başarısız oldu</translation>
 <translation id="90033698482696970">Mevcut eSIM profilleri otomatik olarak taransın mı?</translation>
 <translation id="9003647077635673607">Tüm web sitelerinde izin ver</translation>
+<translation id="9004279470320280717">Puan Ver...</translation>
 <translation id="9005774573776346118">Şifrelerinizi, yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda almak için <ph name="EMAIL" /> olarak oturum açın</translation>
 <translation id="9006511997799670136">Kuruluşunuz</translation>
 <translation id="900733896273558337">Beceriyi düzenleyin</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1053651653201045802">સાઇન આઉટ થયા. તમારા એકાઉન્ટમાં બુકમાર્ક, પાસવર્ડ વગેરેનો ઉપયોગ કરવા માટે ફરી સાઇન ઇન કરો.</translation>
 <translation id="1054745118061919935">આગળ વધીને, તમે <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> સાથે સંમત થાઓ છો.</translation>
+<translation id="1056818261333183659">મારે કયું ખરીદવું જોઈએ?</translation>
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1062138828266376352">તમારો પિન બદલાયો નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)ને સાચવવાની જગ્યા પસંદ કરો</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">દળ</translation>
 <translation id="5899314093904173337">નજીકના લોકો સાથે શેર કરવા માટે, તેમને તેમના કૅમેરા અથવા QR સ્કૅનર ઍપ વડે આ QR કોડ તપાસવા દો</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} નવું ટૅબ}one{{count} નવું ટૅબ}other{{count} નવા ટૅબ}}</translation>
+<translation id="5906163261248594192">ડેનનો જન્મદિવસ</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet ખોલો</translation>
 <translation id="5922999516621365983">ટૅબને પિન કરવા માટે તેને અહીં ખેંચો.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">અનુવાદ કરવાનું નિષ્ફળ થયું</translation>
 <translation id="7204922488054642675">તમારી પસંદના ન્યૂઝ</translation>
 <translation id="7206979415662233817">સેવાની શરતો</translation>
+<translation id="721218676460477064">આ લેખનો સારાંશ આપો</translation>
 <translation id="7215621211572884440">પૉપ-અપને મંજૂરી આપેલી છે</translation>
 <translation id="7218491361283758048">ઝિપ કોડ</translation>
 <translation id="7221173315674413369">"નવું શું છે" સુવિધામાં નવી સુવિધાઓ અને ટિપ વિશે જાણો</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">નવું ફોલ્ડર...</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">સાઇટ ઉમેરો</translation>
+<translation id="8038078082340255234">માર્કેટ રિપોર્ટ</translation>
 <translation id="8040407350301524547">રસ્તાના વિકલ્પો માટે, “દિશાનિર્દેશો મેળવો” પર ટૅપ કરો.</translation>
 <translation id="804427445359061970">તમને અન્ય ડિવાઇસમાંની તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8058655154417507695">સમાપ્તિ વર્ષ</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">ડેટા રાખો</translation>
 <translation id="8233237502828137700">બૅનર પ્રોમો બંધ કરો</translation>
 <translation id="823339794112333264">માઇક્રોફોન ચાલુ કરો</translation>
+<translation id="8240217649914883113">આને મારા કૅલેન્ડરમાં ઉમેરો</translation>
 <translation id="8250920743982581267">દસ્તાવેજો</translation>
 <translation id="8252980988000695656">Google Lensથી શોધવાનું કાર્ય પૂર્ણ થયું!</translation>
 <translation id="8258734532103758067">મેં મારા ડેટાની નિકાસ કરી છે</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">ઑટોમૅટિક રીતે ભરવાની સુવિધા ચાલુ કરો…</translation>
 <translation id="8370406443343902172">સેટિંગ પર જાઓ...</translation>
 <translation id="8370929854657845191">મધ્યમ ઊંચાઈ સુધી મોટું કરો</translation>
+<translation id="8371494817541821097"><ph name="DATE" />ના રોજ પાસકી બનાવી</translation>
 <translation id="8372471489238799313">{count,plural, =1{ઍડ્રેસ ડિલીટ કરો}one{ઍડ્રેસ ડિલીટ કરો}other{ઍડ્રેસ ડિલીટ કરો}}</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8385363453480067273">તમે જે જુઓ છો તેને Google Lens વડે શોધો</translation>

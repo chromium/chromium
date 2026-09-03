@@ -187,6 +187,19 @@ Dit beleid vereist een <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-licentie om 
 <translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Instellingenscherm voor de weergavegrootte niet tonen tijdens inloggen</translation>
 <translation id="1111824532252882775">Aangezet: Scrollers zijn standaard focusbaar.</translation>
+<translation id="1113523086451291158">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
+
+De beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> wordt geëvalueerd op doelniveau. URL-patronen worden vergeleken met de URL van elk doel dat wordt geïnspecteerd (zoals het hoofdframe van een pagina, een ingesloten subframe, een extensie of een web-app). Het resulterende gedrag hangt ervan af of het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ook is ingesteld.
+
+Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> niet, moet de URL van een doel overeenkomen met een patroon op deze toelatingslijst om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor dat doel. Als de URL van een doel niet overeenkomt met deze toelatingslijst, wordt <ph name="CHROME_DEVTOOLS_NAME" /> geblokkeerd voor dat doel (een subframe waarvan de URL niet op de toelatingslijst staat, kan bijvoorbeeld niet worden geïnspecteerd, maar de hoofdpagina kan nog steeds worden geïnspecteerd als de URL op de toelatingslijst staat). Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
+
+Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> beide instelt, heeft deze toelatingslijst voorrang. Als de URL van een doel overeenkomt met een patroon op deze toelatingslijst, wordt deze toegestaan, zelfs als deze ook overeenkomt met een patroon op de blokkeerlijst. Als de URL van een doel overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als de URL van een doel met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid niet instelt, wordt de beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Algemene jokertekens (zoals '*' of '[*]') zijn niet toegestaan. Gebruik het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> om de functie wereldwijd aan te zetten.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
@@ -625,6 +638,15 @@ Online opnieuw verifiëren kan om verschillende redenen vereist zijn, zoals wach
 <translation id="1438739959477268107">Standaardinstelling voor het genereren van sleutels</translation>
 <translation id="1440408958042020947">Hierdoor kunnen gebruikers die Telefoonhub toestaan, toegang krijgen tot recente foto's en video's die ze hebben gemaakt op hun telefoon</translation>
 <translation id="1443532790824582949">Het virtuele aanraaktoetsenbord aanzetten</translation>
+<translation id="1445955287827003066">Dit beleid bepaalt of en wanneer een apparaat van ChromeOS naar NextOS wordt gemigreerd.
+
+Als je dit beleid instelt op 0, wordt de geschiktheid van het apparaat voor migratie bepaald door de standaardinstellingen van Google. Deze kunnen afhankelijk zijn van het apparaatmodel, de hardware en andere factoren.
+
+Als je dit beleid instelt op 2147483647, wordt het apparaat als beschikbaar gemarkeerd en getarget voor migratie zonder specifieke deadline.
+
+Als dit beleid is ingesteld op een waarde hoger dan 0 en lager dan 2147483647, wordt het apparaat als beschikbaar gemarkeerd en getarget voor migratie. De waarde vertegenwoordigt de aanbevolen deadline voor afronding als het aantal seconden sinds het Unix-tijdvak (01-01-1970 00:00:00 UTC).
+
+Andere instellingen voor apparaatupdates, zoals versie vastzetten (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />), updates uitzetten (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) of instellingen voor releasekanalen (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />), kunnen voorkomen dat het apparaat de vereiste updates krijgt om met de migratie te beginnen, zelfs als hier een doeldatum is ingesteld. Beleid dat altijd moet worden toegepast. Niet ingesteld komt overeen met de Google-standaard, omdat de waarde van dit beleid van invloed kan zijn op de verwerking van het beleid voor apparaatupdates.</translation>
 <translation id="1447252610864877219">Toestaan dat de Gemini-app actie onderneemt op de webpagina's.</translation>
 <translation id="1449083855104537880">Als je het beleid instelt op True, worden de toegankelijkheidsopties weergegeven in het systeemvakmenu. Als je het beleid instelt op False, worden de opties niet weergegeven in het menu.
 
@@ -2147,6 +2169,7 @@ Als je het beleid niet toepast, kunnen gebruikers of <ph name="PRODUCT_NAME" />-
 
 Als je dit beleid toepast of niet instelt, kan de gebruiker een Google Foto's-afbeelding kiezen als achtergrond.</translation>
 <translation id="2393862222659066027">Een lijst met URL's openen en de laatste sessie herstellen</translation>
+<translation id="239395129206831238">De streefdatum voor apparaatmigratie naar NextOS instellen</translation>
 <translation id="239416486107542256">De instellingen voor F11 gebruiken de sneltoets met de functietoetsen Ctrl en Shift</translation>
 <translation id="2394429297128584919">Niet toestaan dat pagina's synchrone XHR-verzoeken sturen tijdens het sluiten van pagina's</translation>
 <translation id="2398817690049129302">Veiligheidsmodus van <ph name="YOUTUBE_PRODUCT_NAME" /> afdwingen</translation>
@@ -4708,6 +4731,7 @@ Overwegingen:
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
 <translation id="4030152268425532846">Automatisch inloggen voortijdig afbreken niet toestaan</translation>
+<translation id="4032740546145417900">Sta Praten om te typen niet toe.</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="4047633048700722778">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
 
@@ -6680,6 +6704,17 @@ Opmerking: Deze functie is nog niet algemeen beschikbaar, dus als je deze aanzet
 <translation id="5247584184349816217">De screensaver op het vergrendelscherm aanzetten.</translation>
 <translation id="5247973380763021389">Voorkomen dat cloudbeleidsregels voor gebruikers cloudbeleidsregels voor machines overschrijven.</translation>
 <translation id="5249006530384016395">Bepaalt of de beëindigde <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />-syntaxis voor de aangepaste css-status aanstaat</translation>
+<translation id="5249271416806588789">Praten om te typen is een AI-gestuurde functie waarmee gebruikers tekst kunnen invoeren en bewerken met hun stem. De functie wordt mogelijk gemaakt door generatieve AI-modellen die transcriptie en opmaak van hoge kwaliteit bieden.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5249453807420671499">Gebruikers kunnen Kerberos-accounts toevoegen</translation>
 <translation id="5249555581286638799">Modus voor hoge efficiëntie aanzetten</translation>
 <translation id="5252210248395576403">Dit beleid geeft Snelle antwoorden toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen om vertaalresultaten te krijgen.
@@ -6804,6 +6839,7 @@ Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een m
 <translation id="533287753294126753">Sta Tabbladen vergelijken toe en verbeter AI-modellen.</translation>
 <translation id="5334404204520035180">Gebruik van de WebPrinting API beheren</translation>
 <translation id="5334501839642146593">Statistieken nooit naar Google sturen</translation>
+<translation id="5335403007354311099">Toegankelijkheidsfuncties voor weergaveprogramma aanzetten</translation>
 <translation id="5335910979215357815">De Save and Share API aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden.</translation>
 <translation id="5337869685871558036">SpeculationRules-prefetch toestaan voor door ServiceWorker beheerde URL's</translation>
 <translation id="5339096331970464266">Het virtuele toetsenbord voor toegankelijkheid aanzetten</translation>
@@ -7829,6 +7865,7 @@ Als je dit beleid niet instelt, is <ph name="DEFAULT_AUTOMATIC_DOWNLOADS_SETTING
       Als je het beleid niet toepast, kunnen gebruikers geen feedback naar Google sturen.</translation>
 <translation id="5976636832661103220">De instellingen voor F11 gebruiken de sneltoets met de functietoets Shift</translation>
 <translation id="5979376378555121803">Gehoste app</translation>
+<translation id="5983016603010860828">Instellingen voor Praten om te typen</translation>
 <translation id="5983274643567559194">Het instellen van een sneltoets voor de actie Verwijderen staat uit.</translation>
 <translation id="5984099692320899605">NTLM-verificatie niet gebruiken</translation>
 <translation id="5984237109586500246">Webcontent accepteren die wordt geleverd als Signed HTTP Exchanges</translation>
@@ -7880,6 +7917,17 @@ Als je dit beleid niet instelt, is <ph name="DEFAULT_AUTOMATIC_DOWNLOADS_SETTING
 Dit beleid is beëindigd vanaf M124.</translation>
 <translation id="6022948604095165524">Actie bij starten</translation>
 <translation id="602318745029752898">Stemmen voor verbeterde tekst-naar-spraak via netwerk toestaan in Selecteer om voor te lezen.</translation>
+<translation id="6023434563562800942">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> te blokkeren voor specifieke URL's. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
+
+De beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> wordt geëvalueerd op doelniveau. URL-patronen worden vergeleken met de URL van elk doel dat wordt geïnspecteerd (zoals het hoofdframe van een pagina, een ingesloten subframe, een extensie of een web-app). Het resulterende gedrag hangt ervan af of het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ook is ingesteld.
+
+Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> niet, wordt <ph name="CHROME_DEVTOOLS_NAME" /> geblokkeerd voor een doel als de URL van dat doel overeenkomt met een patroon op deze blokkeerlijst (een subframe waarvan de URL overeenkomt met deze blokkeerlijst kan bijvoorbeeld niet worden geïnspecteerd, maar de hoofdpagina kan nog steeds worden geïnspecteerd als de URL niet op de blokkeerlijst staat). Als de URL van een doel niet overeenkomt met een patroon, wordt de beschikbaarheid bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> beide instelt, heeft de toelatingslijst voorrang. Als de URL van een doel overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan, zelfs als deze ook overeenkomt met een patroon op deze blokkeerlijst. Als de URL van een doel overeenkomt met een patroon op deze blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als de URL van een doel met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid niet instelt, wordt de beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="6026722971789064331">Gebruik van de File System API voor schrijven beheren</translation>
 <translation id="602728333950205286">Instant-URL voor standaardzoekprovider</translation>
 <translation id="603410445099326293">Parameters voor suggestie-URL die POST gebruikt</translation>
@@ -9591,6 +9639,7 @@ Dit beleid wordt alleen toegepast voor beheerde browsers. Het heeft dus geen eff
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7054840304131108563">Toegankelijkheidsfuncties voor weergaveprogramma uitzetten</translation>
 <translation id="7055022222176591388">Verouderde <ph name="FLASH_PLUGIN_NAME" /> niet toestaan</translation>
 <translation id="7056040036973126753">Gegevens over domeinbetrouwbaarheid kunnen naar Google worden gestuurd, afhankelijk van het Chrome-beleid voor gebruikersstatistieken</translation>
 <translation id="7062803946218028349">Toestaan dat Telefoonhub wordt aangezet</translation>
@@ -10071,6 +10120,7 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
       Als je dit beleid toepast, blijven sites blootstaan aan bepaalde typen cross-site aanvallen en kunnen gebruikers ook zonder gebruik van cookies van site naar site worden gevolgd door het toevoegen van items aan het HTTP-verificatiecachegeheugen via gegevens die zijn ingesloten in URL's.
 
 Dit beleid is bedoeld om bedrijven die afhankelijk zijn van het oude gedrag in de gelegenheid te stellen hun inlogprocedures te updaten. Het beleid wordt in de toekomst verwijderd.</translation>
+<translation id="7322231030019184787">Sta Praten om te typen toe zonder gegevensverzameling.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>
 <translation id="7323773727263636287">Zet de toegankelijkheidsfunctie voor kleurcorrectie aan.
 
@@ -10266,12 +10316,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7446978687387327623">Realtime checks via proxy voor Safe Browsing toestaan</translation>
 <translation id="7448430478749155471">Toegankelijkheidsfunctie 'Selecteer om voor te lezen' op het inlogscherm aanzetten</translation>
 <translation id="7455912144588577399">Als je het beleid instelt op True, kunnen gebruikers geschikte webpagina's laten voorlezen met tekst-naar-spraak. Dit wordt bereikt door contentdistillatie aan de serverzijde en audiosynthese. Als je het beleid instelt op False, wordt deze functie uitgezet. Als je dit beleid instelt op standaard of niet instelt, staat voorlezen aan.</translation>
-<translation id="7456922722153109956">Met dit beleid bepaal je de zichtbaarheid van de aankondiging in de middelste ruimte op de pagina Nieuw tabblad.
-
-      Als je het beleid toepast, toont de pagina Nieuw tabblad de aankondiging in de middelste ruimte als die beschikbaar is.
-
-      Als je het beleid niet toepast, toont de pagina Nieuw tabblad de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is.
-      </translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7459633275230216698">Dialoogvensters voor bestandsselectie toestaan</translation>
 <translation id="7462256705280836453">Kiezen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet</translation>
@@ -10516,6 +10560,7 @@ Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerd
       Wanneer dit beleid is ingesteld, kan de toegangscode voor ouders worden geverifieerd op het apparaat van de gebruiker met een kinderaccount.
       Wanneer dit beleid niet is ingesteld, kan de toegangscode voor ouders niet worden geverifieerd op het apparaat van de gebruiker met een kinderaccount.</translation>
 <translation id="7623431489198474050">Extern attest voor contentbescherming uitzetten</translation>
+<translation id="7624832415093566709">Sta Praten om te typen toe.</translation>
 <translation id="7625858205605842562">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een USB-apparaat.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -11206,6 +11251,7 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
 - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">Rapportage van achtergrondverlichtingsinformatie van apparaat aanzetten</translation>
 <translation id="8062485064082966327">Een anonieme Google-service gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
+<translation id="8064875716442437829">Toegankelijkheid van weergaveprogramma aanzetten</translation>
 <translation id="8066428282805800713">Extra hardwaregegevens sturen op ChromeOS Flex</translation>
 <translation id="8069233292746468045">Met dit beleid stel je <ph name="PRODUCT_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime.
 
@@ -12332,6 +12378,13 @@ Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimizati
       Als je dit beleid niet instelt, wordt de standaardconfiguratie voor de netwerksandbox gebruikt. Dit verschilt afhankelijk van de <ph name="PRODUCT_NAME" />-release, actieve praktijktests en het platform.
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de netwerksandbox uit te zetten als ze software van derden gebruiken die niet geschikt is voor het sandboxen van de netwerkservice.</translation>
 <translation id="8840243776706727185">De functie NewBaseUrlInheritanceBehavior staat uit</translation>
+<translation id="8841125674413543406">Hiermee bepaal je of de toegankelijkheidsstructuur wordt gegenereerd in de processen van het weergaveprogramma.
+
+Als je dit beleid aanzet of niet instelt, staat <ph name="PRODUCT_NAME" /> toe dat er toegankelijkheidsstructuren worden gemaakt voor webpagina's.
+
+Als je dit beleid uitzet, wordt de toegankelijkheidsstructuur van het weergaveprogramma niet meer gegenereerd, waardoor toegankelijkheidsfuncties geen interactie kunnen hebben met het weergaveprogramma.
+
+Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.</translation>
 <translation id="8842208363354615697">Toestaan dat de modus 'Alleen HTTPS' wordt aangezet</translation>
 <translation id="8843331294082716286">Laat de <ph name="PRIVACY_SANDBOX_NAME" />-prompt niet aan gebruikers zien.</translation>
 <translation id="884855199714673326">Hiermee kan de host voor externe toegang beslissen</translation>

@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Zaloguj się, aby mieć dostęp do zapisanych informacji oraz innych danych na wszystkich swoich urządzeniach</translation>
 <translation id="1381838868249179644">Aby zwiększyć Twoje bezpieczeństwo, usunęliśmy uprawnienia niektórych witryn</translation>
 <translation id="1383876407941801731">Szukaj</translation>
+<translation id="1384568202352682721">Zapisz jako…</translation>
 <translation id="1384704387250346179">Przetłumacz obraz za pomocą Obiektywu Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Możesz zobaczyć historię z innych aplikacji, które otwierają linki w Chrome. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Plansza dolna ze statystykami cen jest otwarta na całą wysokość</translation>
@@ -133,6 +134,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="147982357559798527">Zmieniono</translation>
 <translation id="1480287803138246127">Niektóre elementy Twojej historii mogą się tutaj nie wyświetlać. Możesz otworzyć całą historię Chrome.</translation>
 <translation id="1483493594462132177">Wyślij</translation>
+<translation id="1485343711570311792">Otwórz w: <ph name="NATIVE_APP_NAME" /> • Od: <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Wróć do karty</translation>
 <translation id="1496514951988037011">nazwa użytkownika</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>
@@ -327,6 +329,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="232137538351753795">Aby wrócić, przesuń palcem od lewej krawędzi</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2327445548174191329">Z urządzenia <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Zapisz stronę jako…</translation>
 <translation id="2328474416100889417">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />”, a wszystkie linki z zaproszeniami zostaną wyłączone</translation>
 <translation id="2329500425421091035">Przedstawiamy Tryb AI w Chrome</translation>
 <translation id="2330186936255788117">Więcej zakładek</translation>
@@ -1874,6 +1877,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8313599942510782709">Zadanie jest nadal w toku</translation>
 <translation id="8317318757008452355">Otwórz opcje drukowania</translation>
 <translation id="8320212361750431956">Ostatnia aktywność</translation>
+<translation id="8322452989119079156">Otwórz w: <ph name="NATIVE_APP_NAME" /> - Wysłano z: <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Zakładki i listy</translation>
 <translation id="8342727528718219152">Chrome powiadomi Cię o witrynach, które mogą wysyłać zbyt wiele powiadomień</translation>

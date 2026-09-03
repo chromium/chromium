@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1053651653201045802">Sessão terminada. Volte a iniciar sessão para usar os marcadores, as palavras-passe e muito mais na sua conta.</translation>
 <translation id="1054745118061919935">Ao continuar, aceita os <ph name="BEGIN_LINK" />Termos de Utilização<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Quais devo comprar?</translation>
 <translation id="10614374240317010">Nunca guardadas</translation>
 <translation id="1062138828266376352">O PIN não foi alterado. Verifique a ligação à Internet e tente novamente</translation>
 <translation id="1063070031224282617">Escolha onde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Para partilhar com pessoas nas proximidades, permita que leiam este código QR com a câmara ou uma app de leitura de códigos QR.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} novo separador}other{{count} novos separadores}}</translation>
+<translation id="5906163261248594192">Aniversário do Daniel</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5912796581727968237">Abrir Carteira do Google</translation>
 <translation id="5922999516621365983">Arrastar o separador para aqui para o fixar.</translation>
@@ -1924,6 +1926,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="720399613139435155">Falha ao traduzir</translation>
 <translation id="7204922488054642675">Notícias personalizadas</translation>
 <translation id="7206979415662233817">Termos de Utilização</translation>
+<translation id="721218676460477064">Resume este artigo</translation>
 <translation id="7215621211572884440">Pop-ups permitidos</translation>
 <translation id="7218491361283758048">Código postal</translation>
 <translation id="7221173315674413369">Explore novas funcionalidades e sugestões em Novidades</translation>
@@ -2185,6 +2188,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8035133914807600019">Nova pasta…</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8037713009824540257">Adicionar site</translation>
+<translation id="8038078082340255234">Relatório de mercado</translation>
 <translation id="8040407350301524547">Para obter as opções do trajeto, toque em "Receber direções".</translation>
 <translation id="804427445359061970">Os seus separadores de outros dispositivos serão apresentados aqui</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
@@ -2242,6 +2246,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8232956427053453090">Manter os dados</translation>
 <translation id="8233237502828137700">Fechar promoção de faixa</translation>
 <translation id="823339794112333264">Ativar microfone</translation>
+<translation id="8240217649914883113">Adiciona isto ao meu calendário</translation>
 <translation id="8250920743982581267">Docs</translation>
 <translation id="8252980988000695656">Google Lens concluído!</translation>
 <translation id="8258734532103758067">Exportei os meus dados</translation>
@@ -2286,6 +2291,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8368198938968349418">Ativar preenchimento automático…</translation>
 <translation id="8370406443343902172">Aceder às Definições…</translation>
 <translation id="8370929854657845191">Expandir para altura média</translation>
+<translation id="8371494817541821097">Chave de acesso criada a <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar morada}other{Eliminar moradas}}</translation>
 <translation id="8378714024927312812">Gerido pela sua entidade</translation>
 <translation id="8385363453480067273">Pesquise o que vê com o Google Lens</translation>

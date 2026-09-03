@@ -1454,6 +1454,7 @@
 <translation id="3493881266323043047">有效期</translation>
 <translation id="3495081129428749620">在网页“<ph name="PAGE_TITLE" />”中查找</translation>
 <translation id="3495818359064790343">工资</translation>
+<translation id="3496531230994554300">钱包通知已以最大高度显示。</translation>
 <translation id="3497627066518778351">在新窗口中查看设备端网站数据的列表</translation>
 <translation id="3498215018399854026">我们暂时无法与您父母取得联系，请重试。</translation>
 <translation id="350069200438440499">文件名：</translation>
@@ -1555,7 +1556,6 @@
 <translation id="3655670868607891010">如果您频繁遇到此问题，请尝试这些<ph name="HELP_LINK" />。</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">此 IBAN 已保存到 Google 钱包中，方便您在各项 Google 服务中轻松使用。</translation>
 <translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3670030362669914947">号码</translation>
@@ -2665,6 +2665,7 @@
 <translation id="5499229993630251170">要继续此会话吗？</translation>
 <translation id="5506286895894263601">该列表未包含任何有效的快捷方式。</translation>
 <translation id="5507756662695126555">不可否认</translation>
+<translation id="5508515366054931524">验证邮件提示已以最大高度显示</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理的书签</translation>
 <translation id="5510766032865166053">该文件可能已被移至别处或遭到删除。</translation>
@@ -3446,6 +3447,7 @@
 <translation id="6860888819347870819">可以请求进入画中画模式</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">暂时无法验证此信用卡</translation>
+<translation id="6871073333584947219">钱包通知已关闭。</translation>
 <translation id="6871813064737840684">此款商品的网上历史价格</translation>
 <translation id="6873456682041376666">顶部纸匣</translation>
 <translation id="6874604403660855544">恢复添加(&amp;R)</translation>
@@ -3901,7 +3903,6 @@
 <translation id="7615932826417658001">添加身份证件</translation>
 <translation id="7616390733770379387">以下搜索引擎按随机顺序显示。</translation>
 <translation id="7616645509853975347">您的管理员已在您的浏览器中启用了 Chrome 企业版接口。这些接口可以访问您的部分数据。</translation>
-<translation id="7616747402308801775">此卡已保存到 Google 钱包中，方便您在各项 Google 服务中轻松使用</translation>
 <translation id="7617825962482469577">C7/C6 信封</translation>
 <translation id="7619838219691048931">结尾工作表</translation>
 <translation id="7621546470643449009">编写一份新手观星指南，教我辨认夜空中的天体，并介绍 3 个容易识别的星座</translation>
@@ -3966,6 +3967,7 @@
 <translation id="7705085181312584869">帮我写</translation>
 <translation id="7705992072972338699">光盘（高光）</translation>
 <translation id="7706689436519265630">系统会将您复制或移动的文件发送给 Google Cloud 或第三方以供分析。例如，可能会通过扫描来确定文件是否包含敏感数据或恶意软件，并且可能会根据公司政策存储这些文件。</translation>
+<translation id="7709934467582922028">验证邮件提示已关闭</translation>
 <translation id="7714351089363296478">刚刚访问过</translation>
 <translation id="7714404809393719981">相纸（半光面）</translation>
 <translation id="7714464543167945231">证书</translation>

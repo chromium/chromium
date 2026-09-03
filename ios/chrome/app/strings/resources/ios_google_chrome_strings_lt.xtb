@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
-<translation id="1035560095760914532">Įdėkite „Chrome“ į apatinę sritį, kad bet kada galėtumėte ją pasiekti</translation>
 <translation id="1076643793026027628">„Chrome“ automatiškai atidaro „YouTube“ inkognito nuorodas inkognito režimu.</translation>
 <translation id="1081114897601629648">Toliau nurodyti slaptažodžiai nebuvo importuoti į „Google“ slaptažodžių tvarkyklę, nes jie neatitinka reikalavimų.</translation>
 <translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">Atidaromas naujas „Chrome“ inkognito skirtukas.</translation>
 <translation id="1605168141396675642">Nevarkite kopijuodami. Paleiskite nuorodas tiesiai naršyklėje „Chrome“.</translation>
 <translation id="1646463005043273333">Atidaromas „Chrome“ nustatymas nustatyti „Chrome“ kaip numatytąją naršyklę.</translation>
+<translation id="1668930590094369898">Naudoti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="1670609221633730681">„Chrome“ patarimas: pasirinkite adreso juostos padėtį</translation>
 <translation id="1683863426423719967">Jei norite gauti „Chrome“ skirtukų priminimus, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">„<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ nustatymuose įjunkite „Chrome“</translation>
 <translation id="1984705450038014246">„Chrome“ duomenų sinchronizavimas</translation>
 <translation id="1987779152850321833">Atlikite toliau nurodytus siūlomus veiksmus, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
+<translation id="2049569996960148258">Slėpti parinktį „Naudoti „Chrome“ kaip numatytąją naršyklę“</translation>
 <translation id="2055826352861631739">„Chrome“, skirtos „iPad“, naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="2056123005618757196">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Google Chrome“.</translation>
 <translation id="2120238739383482109">Atidaromos „Chrome“ žymės.</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">Pasiekėte „Google Chrome“ žymių apribojimą (<ph name="LIMIT" />), todėl kai kurios žymės dar neišsaugotos „Google“ paskyroje.
 
 Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes. Jei atsijungsite dabar, neišsaugotos žymės bus ištrintos.</translation>
-<translation id="2901621928549457170">Akimirksniu atidarykite „Chrome“ „iPad“ įrenginyje</translation>
 <translation id="2922914028977213693">Palieskite čia, kad išnaudotumėte visas „Chrome“ galimybes „iPad“ įrenginyje.</translation>
 <translation id="292371311537977079">„Chrome“ nustatymai</translation>
 <translation id="2923827943290349720">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
@@ -175,8 +175,6 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="5119391094379141756">Pasirinkite „Chrome“</translation>
 <translation id="5123188916260706415">Paieška balsu naršyklėje „Chrome“</translation>
 <translation id="5162467219239570114">„Chrome“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chrome“.</translation>
-<translation id="5172049865623113551">Akimirksniu atidarykite „Chrome“ „iPhone“ įrenginyje</translation>
-<translation id="5179095426828744632">Greičiau pasiekite „Chrome“ naudodami doką</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5190139289262548459">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chrome“.</translation>
 <translation id="5209238444239954363">„Chrome“ nepavyko patikrinti, ar yra naujinių. Vėliau bandykite dar kartą.</translation>
@@ -262,8 +260,8 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
 <translation id="6924922227983877439">Atidaryti nuorodas naršyklėje „Chrome“ pagal numatytuosius nustatymus</translation>
+<translation id="6926395711547387358">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
-<translation id="7001031184470316752">Perkelkite „Chrome“ į doką</translation>
 <translation id="7038674195294813388">Atidarykite numatytųjų programų nustatymus sistemoje „iOS“, tada palieskite „Naršyklės programa“ ir pasirinkite „Chrome“.</translation>
 <translation id="7056826488869329999">Atidaroma ir vykdoma saugos patikra naršyklėje „Chrome“.</translation>
 <translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>

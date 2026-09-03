@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1053651653201045802">Se ha cerrado la sesión. Vuelve a iniciarla para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
 <translation id="1054745118061919935">Si continúas, confirmas que aceptas los <ph name="BEGIN_LINK" />Términos del Servicio<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">¿Cuál debería comprar?</translation>
 <translation id="10614374240317010">Contraseñas que nunca se guardan</translation>
 <translation id="1062138828266376352">Tu PIN no se ha cambiado. Comprueba tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="1063070031224282617">Elige dónde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -28,6 +29,7 @@
 <translation id="1074827084851510304">Estás a punto de eliminar {password_count} contraseñas y la lista de sitios y aplicaciones de los que has elegido no guardar nunca información de inicio de sesión. Las cuentas que hayas creado para sitios y aplicaciones no se eliminarán.</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
+<translation id="1081948304372277788">Desactivar Subir de nivel</translation>
 <translation id="1082554859195167538">Reseñas de productos para ti</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
 <translation id="108485301461714610">Modo IA de la Búsqueda de Google y aplicaciones conectadas</translation>
@@ -1504,6 +1506,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR con su aplicación de cámara o de escáner de códigos QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} pestaña nueva}other{{count} pestañas nuevas}}</translation>
+<translation id="5906163261248594192">Cumpleaños de Daniel</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5912796581727968237">Abrir Google Wallet</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
@@ -1923,6 +1926,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="720399613139435155">No se ha podido traducir</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
 <translation id="7206979415662233817">Términos del servicio</translation>
+<translation id="721218676460477064">Resume este artículo</translation>
 <translation id="7215621211572884440">Pop-ups permitidos</translation>
 <translation id="7218491361283758048">Código postal</translation>
 <translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
@@ -2184,6 +2188,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8035133914807600019">Nueva carpeta…</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8037713009824540257">Añadir sitio</translation>
+<translation id="8038078082340255234">Informe de mercado</translation>
 <translation id="8040407350301524547">Para ver las opciones de ruta, toca Cómo llegar.</translation>
 <translation id="804427445359061970">Aquí verás las pestañas de otros dispositivos</translation>
 <translation id="8058655154417507695">Año de caducidad</translation>
@@ -2241,6 +2246,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8232956427053453090">Conservar datos</translation>
 <translation id="8233237502828137700">Cerrar banner de promoción</translation>
 <translation id="823339794112333264">Activar micrófono</translation>
+<translation id="8240217649914883113">Añadir esto a mi calendario</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8252980988000695656">Google Lens completado.</translation>
 <translation id="8258734532103758067">He exportado mis datos</translation>
@@ -2285,6 +2291,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8368198938968349418">Activar Autocompletar…</translation>
 <translation id="8370406443343902172">Ir a Configuración…</translation>
 <translation id="8370929854657845191">Ampliar a Medio</translation>
+<translation id="8371494817541821097">Llave de acceso creada el <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8385363453480067273">Busca información de lo que ves con Google Lens</translation>

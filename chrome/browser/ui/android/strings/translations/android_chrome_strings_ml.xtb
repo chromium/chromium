@@ -105,6 +105,7 @@
 <translation id="138181280295369883">നിങ്ങളുടെ സംരക്ഷിച്ച വിവരങ്ങളും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="1381838868249179644">നിങ്ങളെ സുരക്ഷിതരായി നിലനിർത്താൻ സഹായിക്കാൻ, ചില സൈറ്റുകളിൽ നിന്ന് അനുമതികൾ നീക്കം ചെയ്തു</translation>
 <translation id="1383876407941801731">തിരയുക</translation>
+<translation id="1384568202352682721">ഇനിപ്പറയുന്നതായി സംരക്ഷിക്കുക…</translation>
 <translation id="1384704387250346179">Google Lens-ൽ ചിത്രം വിവർത്തനം ചെയ്യൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം. നിങ്ങളുടെ Google Account-ന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രം ഉണ്ടായിരിക്കാം.</translation>
 <translation id="139752016751285248">നിരക്ക് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് പൂർണ്ണമായ ഉയരത്തിൽ തുറന്നു</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">മാറ്റി</translation>
 <translation id="1480287803138246127">നിങ്ങളുടെ ചരിത്രത്തിൽ ചിലത് ഇവിടെ ദൃശ്യമായേക്കില്ല. നിങ്ങളുടെ എല്ലാ Chrome ചരിത്രവും കാണാൻ, മുഴുവൻ Chrome ചരിത്രവും തുറക്കുക.</translation>
 <translation id="1483493594462132177">അയയ്‌ക്കുക</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> എന്നതിൽ തുറക്കുക • <ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="1495677929897281669">ടാബിലേക്ക് മടങ്ങുക</translation>
 <translation id="1496514951988037011">ഉപയോക്തൃനാമം</translation>
 <translation id="1501480321619201731">ഗ്രൂപ്പ് ഇല്ലാതാക്കൂ</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">തിരികെ പോകാൻ ഇടത്തേയറ്റത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന്</translation>
+<translation id="232757965409810352">പേജ് ഇതായി സംരക്ഷിക്കുക…</translation>
 <translation id="2328474416100889417">എല്ലാവർക്കും ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, എല്ലാ ക്ഷണ ലിങ്കുകളും ഓഫാക്കുകയും ചെയ്യും</translation>
 <translation id="2329500425421091035">Chrome-ൽ AI മോഡ് അവതരിപ്പിക്കുന്നു</translation>
 <translation id="2330186936255788117">കൂടുതൽ ബുക്ക്‌മാർക്കുകൾ</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">നിങ്ങളുടെ ടാസ്‌ക് ഇപ്പോഴും പുരോഗമിക്കുകയാണ്</translation>
 <translation id="8317318757008452355">പ്രിന്റ് ചെയ്യാനുള്ള ഓപ്ഷനുകൾ തുറക്കുക</translation>
 <translation id="8320212361750431956">സമീപകാല ആക്റ്റിവിറ്റി</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> എന്നതിൽ തുറക്കുക - <ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് അയച്ചത്</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">ബുക്ക്‌മാർക്കും ലിസ്റ്റും</translation>
 <translation id="8342727528718219152">നിരവധി അറിയിപ്പുകൾ അയച്ചേക്കാവുന്ന സൈറ്റുകളെക്കുറിച്ച് Chrome നിങ്ങളെ അറിയിക്കും</translation>

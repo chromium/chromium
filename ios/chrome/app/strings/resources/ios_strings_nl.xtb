@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Uitgelogd. Log weer in om onder meer de bookmarks en wachtwoorden in je account te gebruiken.</translation>
 <translation id="1054745118061919935">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_LINK" />Servicevoorwaarden<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Welke moet ik kopen?</translation>
 <translation id="10614374240317010">Nooit opgeslagen</translation>
 <translation id="1062138828266376352">Je pincode is niet gewijzigd. Check de internetverbinding en probeer het opnieuw.</translation>
 <translation id="1063070031224282617">Kies waar je <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />) wilt opslaan</translation>
@@ -1505,6 +1506,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Als je wilt delen met mensen in de buurt, laat je ze deze QR-code scannen met hun camera of een QR-scannerapp.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nieuw tabblad}other{{count} nieuwe tabbladen}}</translation>
+<translation id="5906163261248594192">Verjaardag van Dan</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet openen</translation>
 <translation id="5922999516621365983">Sleep het tabblad hier naartoe om het vast te zetten.</translation>
@@ -1924,6 +1926,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="720399613139435155">Vertalen mislukt</translation>
 <translation id="7204922488054642675">Jouw nieuws</translation>
 <translation id="7206979415662233817">Servicevoorwaarden</translation>
+<translation id="721218676460477064">Dit artikel samenvatten</translation>
 <translation id="7215621211572884440">Pop-ups toegestaan</translation>
 <translation id="7218491361283758048">Postcode</translation>
 <translation id="7221173315674413369">Ontdek nieuwe functies en tips in Wat is er nieuw</translation>
@@ -2185,6 +2188,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8035133914807600019">Nieuwe map…</translation>
 <translation id="8035412398498507358">Foto's</translation>
 <translation id="8037713009824540257">Site toevoegen</translation>
+<translation id="8038078082340255234">Marktrapport</translation>
 <translation id="8040407350301524547">Tik voor route-opties op Route</translation>
 <translation id="804427445359061970">Hier vind je je tabbladen van andere apparaten</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
@@ -2242,6 +2246,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8232956427053453090">Gegevens behouden</translation>
 <translation id="8233237502828137700">Bannerpromotie sluiten</translation>
 <translation id="823339794112333264">Microfoon aanzetten</translation>
+<translation id="8240217649914883113">Dit toevoegen aan mijn agenda</translation>
 <translation id="8250920743982581267">Documenten</translation>
 <translation id="8252980988000695656">Google Lens is afgerond.</translation>
 <translation id="8258734532103758067">Ik heb mijn gegevens geëxporteerd</translation>
@@ -2286,6 +2291,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8368198938968349418">Automatisch invullen aanzetten…</translation>
 <translation id="8370406443343902172">Naar Instellingen…</translation>
 <translation id="8370929854657845191">Uitvouwen naar gemiddelde hoogte</translation>
+<translation id="8371494817541821097">Toegangssleutel gemaakt op <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Adres verwijderen}other{Adressen verwijderen}}</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8385363453480067273">Met Google Lens zoeken wat je ziet</translation>

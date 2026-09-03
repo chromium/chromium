@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="1053651653201045802">సైన్ అవుట్ చేశారు. మీ ఖాతాలో బుక్‌మార్క్‌లను, పాస్‌వర్డ్‌లను, అలాగే మరిన్నింటిని ఉపయోగించడానికి తిరిగి సైన్ ఇన్ చేయండి.</translation>
 <translation id="1054745118061919935">కొనసాగించడం ద్వారా మీరు <ph name="BEGIN_LINK" />సర్వీస్ నియమాలకు<ph name="END_LINK" /> అంగీకరిస్తున్నారు.</translation>
+<translation id="1056818261333183659">నేను ఏది కొనాలి?</translation>
 <translation id="10614374240317010">ఎప్పటికి సేవ్ చేయబడవు</translation>
 <translation id="1062138828266376352">మీ PINను మార్చలేదు. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)ను ఎక్కడ సేవ్ చేయాలో ఎంచుకోండి</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">ద్రవ్యరాశి</translation>
 <translation id="5899314093904173337">సమీపంలోని వ్యక్తులతో షేర్ చేయడానికి, వారి కెమెరా లేదా QR స్కానర్ యాప్‌తో ఈ QR కోడ్‌ను స్కాన్ చేయడానికి వారిని అనుమతించండి</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} కొత్త ట్యాబ్}other{{count} కొత్త ట్యాబ్‌లు}}</translation>
+<translation id="5906163261248594192">డాన్ పుట్టినరోజు</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Walletను తెరవండి</translation>
 <translation id="5922999516621365983">దాన్ని పిన్ చేయడానికి ట్యాబ్‌ను ఇక్కడకు లాగండి.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">అనువాదం విఫలమైంది</translation>
 <translation id="7204922488054642675">వ్యక్తిగతీకరించిన వార్తలు</translation>
 <translation id="7206979415662233817">సర్వీస్ నియమాలు</translation>
+<translation id="721218676460477064">ఈ ఆర్టికల్ సారాంశాన్ని అందించు</translation>
 <translation id="7215621211572884440">పాప్-అప్‌లు అనుమతించబడ్డాయి</translation>
 <translation id="7218491361283758048">పిన్ కోడ్</translation>
 <translation id="7221173315674413369">'కొత్తగా ఏమి ఉన్నాయి' విభాగంలో కొత్త ఫీచర్‌లు, చిట్కాలను అన్వేషించండి</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">కొత్త ఫోల్డర్…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">సైట్‌ను జోడించండి</translation>
+<translation id="8038078082340255234">మార్కెట్ రిపోర్ట్</translation>
 <translation id="8040407350301524547">మార్గం ఆప్షన్‌ల కోసం, "దిశలను పొందండి"ని ట్యాప్ చేయండి.</translation>
 <translation id="804427445359061970">ఇతర పరికరాలలో ఉన్న మీ ట్యాబ్‌లను మీరు ఇక్కడ చూడవచ్చు</translation>
 <translation id="8058655154417507695">గడువు ముగింపు సంవత్సరం</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">డేటాను అలాగే ఉంచు</translation>
 <translation id="8233237502828137700">బ్యానర్ ప్రోమోను మూసివేయండి</translation>
 <translation id="823339794112333264">మైక్రోఫోన్‌ను ఆన్ చేయండి</translation>
+<translation id="8240217649914883113">దీన్ని నా క్యాలెండర్‌కు జోడించు</translation>
 <translation id="8250920743982581267">డాక్యుమెంట్లు</translation>
 <translation id="8252980988000695656">Google Lens పూర్తయింది!</translation>
 <translation id="8258734532103758067">నేను నా డేటాను ఎగుమతి చేశాను</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">ఆటోఫిల్‌ను ఆన్ చేయండి…</translation>
 <translation id="8370406443343902172">సెట్టింగ్‌లకు వెళ్లండి...</translation>
 <translation id="8370929854657845191">మధ్యస్థానికి విస్తరించండి</translation>
+<translation id="8371494817541821097"><ph name="DATE" /> తేదీన పాస్-కీ క్రియేట్ అయింది</translation>
 <translation id="8372471489238799313">{count,plural, =1{అడ్రస్‌ను తొలగించండి}other{అడ్రస్‌లను తొలగించండి}}</translation>
 <translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>
 <translation id="8385363453480067273">మీరు కంటితో చూసే ప్రతి దాన్ని Google Lensతో సెర్చ్ చేయండి</translation>

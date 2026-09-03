@@ -1455,6 +1455,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3495081129428749620">Keresés a következő oldalon:
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Fizetés</translation>
+<translation id="3496531230994554300">A Wallet-értesítés teljes magasságban megnyitva.</translation>
 <translation id="3497627066518778351">Az eszközalapú webhelyadatok listájának áttekintése új ablakban</translation>
 <translation id="3498215018399854026">Jelenleg nem tudjuk elérni szüleidet. Próbálkozz újra.</translation>
 <translation id="350069200438440499">Fájlnév?</translation>
@@ -1557,7 +1558,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Ha gyakran látja ezt, próbálja ki a következőt: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ellenőrzés</translation>
 <translation id="3659521826520353662">Mely, rendszergazda által meghatározott webhelyek lettek felkeresve, és mikor: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Az IBAN el lett mentve a Google Walletbe, így használhatja a Google-szolgáltatásokban.</translation>
 <translation id="3664479564786885722">További vásárlási lehetőségek keresése más, ezt a terméket értékesítő üzleteknél.</translation>
 <translation id="3664782872746246217">Kulcsszavak:</translation>
 <translation id="3670030362669914947">Szám</translation>
@@ -2666,6 +2666,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5499229993630251170">Folytatja ezt a témaszálat?</translation>
 <translation id="5506286895894263601">A lista nem tartalmaz érvényes gyorsparancsokat.</translation>
 <translation id="5507756662695126555">Letagadhatatlanság</translation>
+<translation id="5508515366054931524">Az e-mail-cím igazolására vonatkozó üzenet teljes magasságban megnyitva</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kezelt könyvjelzők</translation>
 <translation id="5510766032865166053">Előfordulhat, hogy át lett helyezve, vagy törölve lett.</translation>
@@ -3448,6 +3449,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6860888819347870819">Engedélyt kérhet a kép a képben mód használatára</translation>
 <translation id="6864189428899665393">267 × 389 mm</translation>
 <translation id="6865412394715372076">Ez a kártya jelenleg nem ellenőrizhető</translation>
+<translation id="6871073333584947219">A Wallet-értesítés bezárva.</translation>
 <translation id="6871813064737840684">Internetes árelőzmények ehhez a termékhez</translation>
 <translation id="6873456682041376666">Felső tálca</translation>
 <translation id="6874604403660855544">&amp;Hozzáadás újra</translation>
@@ -3903,7 +3905,6 @@ További részletek:
 <translation id="7615932826417658001">Személyazonosító okmány hozzáadása</translation>
 <translation id="7616390733770379387">Ezek véletlenszerű sorrendben jelennek meg.</translation>
 <translation id="7616645509853975347">Rendszergazdája bekapcsolta a Chrome Enterprise Connectors integrációs eszközöket az Ön böngészőjében. Az eszközök hozzáférnek bizonyos adatokhoz.</translation>
-<translation id="7616747402308801775">Ez a kártya el lett mentve a Google Walletbe, így használhatja a Google-szolgáltatásokban.</translation>
 <translation id="7617825962482469577">C7/C6 boríték</translation>
 <translation id="7619838219691048931">Befejező lap</translation>
 <translation id="7621546470643449009">Készíts egy kezdőknek szóló útmutatót a csillagászathoz, amely segít megtanulnom, hogy mit kell keresnem az éjszakai égbolton, beleértve 3 könnyen azonosítható csillagképet</translation>
@@ -3968,6 +3969,7 @@ További részletek:
 <translation id="7705085181312584869">Segítség az íráshoz</translation>
 <translation id="7705992072972338699">Optikai lemez (magas fényű)</translation>
 <translation id="7706689436519265630">A másolt vagy áthelyezett fájlokat elküldjük a Google Cloudnak vagy harmadik feleknek elemzésre. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban, és az is előfordulhat, hogy a vállalati irányelvek alapján tárolni is fogják majd őket.</translation>
+<translation id="7709934467582922028">Az e-mail-cím igazolására vonatkozó kérés bezárva</translation>
 <translation id="7714351089363296478">Az imént látogatta meg</translation>
 <translation id="7714404809393719981">Fotó (félig fényes)</translation>
 <translation id="7714464543167945231">Tanúsítvány</translation>

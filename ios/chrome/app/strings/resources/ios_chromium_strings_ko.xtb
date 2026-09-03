@@ -8,12 +8,10 @@
 <translation id="1091252999271033193">Chromium에서 모바일 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="1115463765356382667">아래의 추천 작업을 완료하여 Chromium을 최대한 활용합니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
-<translation id="119044033865561140">iPad에서 즉시 Chromium을 여세요</translation>
 <translation id="1229234641991056119">Chromium에서 Safari 비밀번호, 방문 기록, 북마크, 신용카드를 사용하세요</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1260702988262336471">Chromium 메뉴 열기</translation>
 <translation id="12739128458173458">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
-<translation id="1279797561821266129">도크에서 Chromium에 더 빠르게 액세스</translation>
 <translation id="1361748954329991663">Chromium이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chromium의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1423007117030725713">새 Chromium 탭에서 검색을 시작합니다.</translation>
@@ -32,7 +30,6 @@
 <translation id="1553657876656159572">나에게 딱 맞는 맞춤 피드이며, 뉴스, 스포츠, 날씨 정보를 포함합니다</translation>
 <translation id="1561849081734670621">Chromium에서 잠금 모드를 사용 중지하려면 iPhone에서 사용 중지하세요</translation>
 <translation id="1569258826720962327">iOS에서 Chromium 작업 사용</translation>
-<translation id="1573441572176948907">Chromium을 도크로 이동하기</translation>
 <translation id="159029779861043703">Chromium은 Face ID를 통해 사용자의 민감한 정보를 안전하게 보호합니다.</translation>
 <translation id="1591119736686995611">Chromium 탭 그리드를 엽니다.</translation>
 <translation id="16001233025397167">안전 확인은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다. Chromium에서 감지한 개인 정보 보호 또는 보안 문제에 대한 알림을 받습니다.</translation>
@@ -182,7 +179,6 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="4790638144988730920">Google 계정의 Chromium 데이터를 계속 사용하세요.</translation>
 <translation id="4828317641996116749">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4856138222358683580">Chromium 작업</translation>
-<translation id="4869706986935301458">iPhone에서 즉시 Chromium을 여세요</translation>
 <translation id="4904452304169763785">Chromium에서 감지한 개인 정보 보호 또는 보안 문제에 대한 알림입니다.</translation>
 <translation id="4962295957157529683">열려 있는 다른 Chromium 창에서 진행 중이던 작업을 완료하세요.</translation>
 <translation id="4985291216379576555">오프라인 상태이므로 Chromium에서 업데이트를 확인할 수 없습니다.</translation>
@@ -307,7 +303,6 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="7395825497086981028">비밀번호가 <ph name="EMAIL" />의 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="7434848749522628428">이 패스키는 <ph name="USER_EMAIL" />의 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="7504829997542308412">Chromium을 엽니다.</translation>
-<translation id="7507535968973352823">하단 영역에 Chromium을 배치하여 언제든지 액세스</translation>
 <translation id="7531461704633548377">Chromium에서</translation>
 <translation id="7554983317097061001">Chromium 도움말: Chromium을 도크로 이동</translation>
 <translation id="7576863740961052505">Chromium 설정 관리</translation>

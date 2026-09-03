@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Увайдзіце ва ўліковы запіс, каб карыстацца захаванай інфармацыяй і іншым змесцівам на ўсіх сваіх прыладах</translation>
 <translation id="1381838868249179644">У мэтах бяспекі ў некаторых сайтаў былі адкліканы дазволы</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="1384568202352682721">Захаваць як…</translation>
 <translation id="1384704387250346179">Перакласці ў Аб’ектыве <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Вы можаце бачыць гісторыю з іншых праграм, спасылкі з якіх адкрываюцца ў Chrome. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="139752016751285248">Ніжні аркуш са статыстыкай цэн адкрыўся на ўсю вышыню</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">Зменена</translation>
 <translation id="1480287803138246127">Тут можа паказвацца не ўся гісторыя. Каб паглядзець усю гісторыю, адкрыйце поўную гісторыю Chrome.</translation>
 <translation id="1483493594462132177">Адправіць</translation>
+<translation id="1485343711570311792">Адкрыць у праграме "<ph name="NATIVE_APP_NAME" />" • Адпраўлена з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
 <translation id="1496514951988037011">імя карыстальніка</translation>
 <translation id="1501480321619201731">Выдаліць групу</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">Каб вярнуцца назад, правядзіце пальцам ад левага краю</translation>
 <translation id="2323763861024343754">Сховішча сайта</translation>
 <translation id="2327445548174191329">Крыніца: <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Захаваць старонку як…</translation>
 <translation id="2328474416100889417">Усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />", а ўсе спасылкі з запрашэннем будуць адключаны</translation>
 <translation id="2329500425421091035">Сустракайце рэжым AI ў Chrome</translation>
 <translation id="2330186936255788117">Іншыя закладкі</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">Задача яшчэ выконваецца</translation>
 <translation id="8317318757008452355">Адкрыць параметры друку</translation>
 <translation id="8320212361750431956">Нядаўнія дзеянні</translation>
+<translation id="8322452989119079156">Адкрыць у праграме "<ph name="NATIVE_APP_NAME" />" (адпраўлена з прылады "<ph name="DEVICE_NAME" />")</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Закладкі і спісы</translation>
 <translation id="8342727528718219152">Chrome паведаміць вам пра сайты, якія могуць адпраўляць зашмат апавяшчэнняў</translation>

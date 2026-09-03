@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">ਇਨਕੋਗਨਿਟੋ</translation>
 <translation id="1053651653201045802">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਵਰਤਣ ਲਈ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1054745118061919935">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
+<translation id="1056818261333183659">ਮੈਨੂੰ ਕਿਹੜਾ ਖਰੀਦਣਾ ਚਾਹੀਦਾ ਹੈ?</translation>
 <translation id="10614374240317010">ਕਦੇ ਵੀ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="1062138828266376352">ਤੁਹਾਡਾ ਪਿੰਨ ਬਦਲਿਆ ਨਹੀਂ ਗਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="1063070031224282617">ਚੁਣੋ ਕਿ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) ਨੂੰ ਕਿੱਥੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ</translation>
@@ -1505,6 +1506,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="5898848375214731122">ਪੁੰਜ</translation>
 <translation id="5899314093904173337">ਨਜ਼ਦੀਕੀ ਲੋਕਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਉਹਨਾਂ ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਜਾਂ QR ਸਕੈਨਰ ਐਪ ਨਾਲ ਇਹ QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ਨਵੀਂ ਟੈਬ}one{{count} ਨਵੀ ਟੈਬ}other{{count} ਨਵੀਆਂ ਟੈਬਾਂ}}</translation>
+<translation id="5906163261248594192">ਡੈਨ ਦਾ ਜਨਮਦਿਨ</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet ਖੋਲ੍ਹੋ</translation>
 <translation id="5922999516621365983">ਪਿੰਨ ਕਰਨ ਲਈ ਟੈਬ ਨੂੰ ਇੱਥੇ ਘਸੀਟੋ।</translation>
@@ -1924,6 +1926,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="720399613139435155">ਅਨੁਵਾਦ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="7204922488054642675">ਵਿਅਕਤੀਗਤ ਖਬਰਾਂ</translation>
 <translation id="7206979415662233817">ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
+<translation id="721218676460477064">ਇਸ ਲੇਖ ਦਾ ਸਾਰਾਂਸ਼ ਦਿਓ</translation>
 <translation id="7215621211572884440">ਪੌਪ-ਅੱਪਾਂ ਦੀ ਆਗਿਆ ਦਿੱਤੀ</translation>
 <translation id="7218491361283758048">ਜ਼ਿੱਪ ਕੋਡ</translation>
 <translation id="7221173315674413369">'ਨਵਾਂ ਕੀ ਹੈ' ਵਿੱਚ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਨੁਕਤਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
@@ -2185,6 +2188,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8035133914807600019">ਨਵਾਂ ਫੋਲਡਰ…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">ਸਾਈਟ ਜੋੜੋ</translation>
+<translation id="8038078082340255234">ਬਜ਼ਾਰ ਸੰਬੰਧੀ ਰਿਪੋਰਟ</translation>
 <translation id="8040407350301524547">ਰਸਤੇ ਦੇ ਵਿਕਲਪਾਂ ਲਈ, "ਦਿਸ਼ਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ" 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="804427445359061970">ਤੁਹਾਨੂੰ ਹੋਰ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਇੱਥੇ ਮਿਲਣਗੀਆਂ</translation>
 <translation id="8058655154417507695">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਸਾਲ</translation>
@@ -2242,6 +2246,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8232956427053453090">ਡਾਟਾ ਰੱਖੋ</translation>
 <translation id="8233237502828137700">ਬੈਨਰ ਪ੍ਰੋਮੋ ਬੰਦ ਕਰੋ</translation>
 <translation id="823339794112333264">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="8240217649914883113">ਇਸਨੂੰ ਮੇਰੇ ਕੈਲੰਡਰ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8250920743982581267">ਦਸਤਾਵੇਜ਼</translation>
 <translation id="8252980988000695656">Google Lens ਦਾ ਕੰਮ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="8258734532103758067">ਮੈਂ ਆਪਣਾ ਡਾਟਾ ਨਿਰਯਾਤ ਕਰ ਲਿਆ ਹੈ</translation>
@@ -2286,6 +2291,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8368198938968349418">ਆਟੋਫਿਲ ਨੂੰ ਚਾਲੂ ਕਰੋ…</translation>
 <translation id="8370406443343902172">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ...</translation>
 <translation id="8370929854657845191">ਮੱਧਮ ਤੱਕ ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="8371494817541821097">ਪਾਸਕੀ <ph name="DATE" /> ਨੂੰ ਬਣਾਈ ਗਈ</translation>
 <translation id="8372471489238799313">{count,plural, =1{ਪਤਾ ਹਟਾਓ}one{ਪਤਾ ਮਿਟਾਓ}other{ਪਤੇ ਮਿਟਾਓ}}</translation>
 <translation id="8378714024927312812">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8385363453480067273">ਤੁਹਾਨੂੰ ਜੋ ਕੁਝ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ, ਉਸ ਨੂੰ Google Lens ਨਾਲ ਖੋਜੋ</translation>

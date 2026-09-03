@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Hasi saioa gordetako informazioa eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="1381838868249179644">Zu babesten laguntzeko, baimenak kendu zaizkie webgune batzuei</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
+<translation id="1384568202352682721">Gorde honela…</translation>
 <translation id="1384704387250346179">Itzuli irudia Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome-n estekak irekitzen dituzten beste aplikazioen historiak ikusiko dituzu agian. Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero, joan <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunera.</translation>
 <translation id="139752016751285248">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena, altuera osoan irekita dago</translation>
@@ -133,6 +134,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="147982357559798527">Aldatu egin da</translation>
 <translation id="1480287803138246127">Baliteke historia osoa ez agertzea hemen. Chrome-ko historia osoa ikusteko, ireki ezazu.</translation>
 <translation id="1483493594462132177">Bidali</translation>
+<translation id="1485343711570311792">Ireki <ph name="NATIVE_APP_NAME" /> aplikazioan • <ph name="DEVICE_NAME" /> gailukoa</translation>
 <translation id="1495677929897281669">Itzuli fitxara</translation>
 <translation id="1496514951988037011">erabiltzaile-izena</translation>
 <translation id="1501480321619201731">Ezabatu taldea</translation>
@@ -327,6 +329,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="232137538351753795">Atzera egiteko, pasatu hatza ezkerreko ertzetik erdirantz</translation>
 <translation id="2323763861024343754">Webguneen datuak</translation>
 <translation id="2327445548174191329">Iturburua: <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Gorde orria honela…</translation>
 <translation id="2328474416100889417">Berehala galduko dute denek "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta gonbidapen-esteka guztiak desaktibatuko dira</translation>
 <translation id="2329500425421091035">Chrome-ko AA moduaren aurkezpena</translation>
 <translation id="2330186936255788117">Laster-marka gehiago</translation>
@@ -1874,6 +1877,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8313599942510782709">Zeregina abian da oraindik</translation>
 <translation id="8317318757008452355">Ireki inprimatzeko aukerak</translation>
 <translation id="8320212361750431956">Azkenaldiko jarduerak</translation>
+<translation id="8322452989119079156">Ireki <ph name="NATIVE_APP_NAME" /> aplikazioan - <ph name="DEVICE_NAME" /> gailutik bidalia</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Laster-markak eta zerrendak</translation>
 <translation id="8342727528718219152">Chrome-k agian jakinarazpen gehiegi bidaltzen ari diren webguneen berri emango dizu</translation>

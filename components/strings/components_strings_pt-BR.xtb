@@ -1457,6 +1457,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3495081129428749620">Encontrar na página
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salário</translation>
+<translation id="3496531230994554300">Aviso da Carteira aberto no tamanho máximo.</translation>
 <translation id="3497627066518778351">Analisar uma lista de dados do site no dispositivo em uma nova janela</translation>
 <translation id="3498215018399854026">Não foi possível contatar seu familiar responsável no momento. Tente novamente.</translation>
 <translation id="350069200438440499">Nome do arquivo:</translation>
@@ -1559,7 +1560,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3655670868607891010">Caso veja esta página com frequência, tente <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3659521826520353662">Quais sites definidos pelo administrador são visitados e quando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Este IBAN foi salvo na Carteira do Google para que possa ser usado em todos os Serviços do Google.</translation>
 <translation id="3664479564786885722">Pesquise mais opções de compra de outras lojas que vendem esse produto.</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -2669,6 +2669,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5499229993630251170">Continuar esta conversa?</translation>
 <translation id="5506286895894263601">A lista não contém atalhos válidos.</translation>
 <translation id="5507756662695126555">Não repúdio</translation>
+<translation id="5508515366054931524">Mensagem de verificação de e-mail aberta no tamanho máximo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoritos gerenciados</translation>
 <translation id="5510766032865166053">Talvez tenha sido movido ou excluído.</translation>
@@ -3116,7 +3117,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6259282549512536479">Você bloqueou <ph name="BLOCKED_URL" /> anteriormente</translation>
 <translation id="6263284346895336537">Não crítico</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
-<translation id="6264376385120300461">Fazer o download mesmo assim</translation>
+<translation id="6264376385120300461">Baixar mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6264636978858465832">O Gerenciador de senhas precisa de mais acesso</translation>
 <translation id="6265794661083428563">Copiar o valor da política <ph name="POLICY_NAME" /></translation>
@@ -3451,6 +3452,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6860888819347870819">Pode pedir para entrar no picture-in-picture</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Não é possível verificar este cartão no momento</translation>
+<translation id="6871073333584947219">Aviso da Carteira fechado.</translation>
 <translation id="6871813064737840684">Histórico de preços desta opção na Web</translation>
 <translation id="6873456682041376666">Bandeja superior</translation>
 <translation id="6874604403660855544">&amp;Refazer adicionar</translation>
@@ -3906,7 +3908,6 @@ Mais detalhes:
 <translation id="7615932826417658001">Adicionar documento de identidade</translation>
 <translation id="7616390733770379387">Estas opções estão aparecendo em ordem aleatória.</translation>
 <translation id="7616645509853975347">O administrador ativou os Chrome Enterprise Connectors no seu navegador. Esses conectores têm acesso a alguns dos seus dados.</translation>
-<translation id="7616747402308801775">Este cartão foi salvo na Carteira do Google e pode ser usado em todos os Serviços do Google.</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7619838219691048931">Última página</translation>
 <translation id="7621546470643449009">Crie um guia para iniciantes sobre observação de estrelas para eu saber o que procurar no céu noturno, incluindo três constelações fáceis de identificar</translation>
@@ -3971,6 +3972,7 @@ Mais detalhes:
 <translation id="7705085181312584869">Me ajude a escrever</translation>
 <translation id="7705992072972338699">Disco óptico (alto brilho)</translation>
 <translation id="7706689436519265630">Os arquivos copiados ou movidos são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa.</translation>
+<translation id="7709934467582922028">Mensagem de verificação de e-mail fechada</translation>
 <translation id="7714351089363296478">Você acabou de visitar</translation>
 <translation id="7714404809393719981">Foto (semibrilho)</translation>
 <translation id="7714464543167945231">Certificado</translation>

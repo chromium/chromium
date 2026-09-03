@@ -132,6 +132,7 @@
 Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copiar &amp;endereço do link</translation>
 <translation id="1085064499066015002">Sempre em todos os sites</translation>
+<translation id="1085340215550339505">Para fazer sugestões de troca de senha no momento certo, o conteúdo e os URLs das páginas que você visita podem passar por tratamento em um espaço privado na nuvem</translation>
 <translation id="1085558727130096638">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUM_OTHER_MEMBERS" /> pessoa</translation>
 <translation id="1085618740036066768">Item "<ph name="ITEM" />" não selecionado. <ph name="INDEX" /> de <ph name="COUNT" />. Pressione "Pesquisar" junto à barra de espaço para selecionar.</translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
@@ -1132,6 +1133,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1871131409931646355">Histórico completo de downloads</translation>
 <translation id="187145082678092583">Menos apps</translation>
 <translation id="1871615898038944731">Seu <ph name="DEVICE_TYPE" /> está atualizado</translation>
+<translation id="1872846000961079826">Durante a troca da senha, o conteúdo das páginas de senhas e as informações relacionadas são enviados ao Google e podem ser revisados por humanos para melhorar a qualidade desse recurso</translation>
 <translation id="1873513359268939357">Calendário do Outlook</translation>
 <translation id="1873920700418191231">Conceder permissões novamente para <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Permitir a exibição de todos os anúncios</translation>
@@ -2859,6 +2861,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3184536091884214176">Configurar ou gerenciar impressoras CUPS. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Use este PIN para mudar as configurações do controle da família.
     Se você esquecer o PIN, execute um Powerwash neste dispositivo e configure-o de novo.</translation>
+<translation id="3184916134413175521">Avalie</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{O app está bloqueado}one{O app está bloqueado}other{Alguns apps estão bloqueados}}</translation>
 <translation id="3185454065699440434">Permitir extensões em <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Você consegue ver seu dispositivo de transmissão no
@@ -2928,6 +2931,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3241680850019875542">Selecione o diretório raiz da extensão a ser empacotada. Para atualizar uma extensão, selecione também a chave privada a ser reutilizada.</translation>
 <translation id="3241810535741601486">Essa mudança é permanente e não pode ser desfeita. As atualizações estendidas são válidas para todos os usuários do dispositivo. <ph name="LINK_START" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Seu avatar</translation>
+<translation id="3242764115495920926">Oferecer a troca automática de senhas</translation>
 <translation id="3243017971870859287">Ler números de série do componente e do dispositivo ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelamento de ruído</translation>
 <translation id="3243680258677029936">{0,plural, =1{Isolada}one{Isolada (#)}other{Isoladas (#)}}</translation>
@@ -4155,6 +4159,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4167924027691268367">Mais ações para o atalho "<ph name="SHORTCUT_TITLE" />"</translation>
 <translation id="4168015872538332605">Algumas configurações pertencentes a <ph name="PRIMARY_EMAIL" /> estão sendo compartilhadas com você. Essas configurações afetam sua conta apenas quando o recurso de login múltiplo é usado.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> com final <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Avaliar…</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="4170685671197375581">Ativar atalho</translation>
@@ -4456,6 +4461,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4401912261345737180">Conecte-se com um código para transmitir</translation>
 <translation id="4403012369005671154">Conversão de voz em texto</translation>
 <translation id="4403775189117163360">Escolher uma pasta diferente</translation>
+<translation id="440411460180511551">Se o Chromium encontrar uma das suas senhas em um vazamento de dados público, o Gerenciador de Senhas do Google poderá oferecer a opção de mudá-la se você estiver com a conta conectada.</translation>
 <translation id="4404843640767531781">O app <ph name="APP_NAME" /> foi bloqueado pelo seu familiar responsável. É necessário pedir permissão para usá-lo.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover para…</translation>
@@ -5064,7 +5070,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4872192066608821120">Para importar senhas, selecione um arquivo CSV.</translation>
 <translation id="4872212987539553601">Configurar a criptografia no dispositivo</translation>
 <translation id="4875690134140862902">Guia</translation>
-<translation id="4876273079589074638">Ajude nossos engenheiros a investigar e corrigir a falha. Indique as etapas exatas, se possível. Nenhum detalhe é irrelevante.</translation>
 <translation id="4876305945144899064">Sem nome de usuário</translation>
 <translation id="4876327226315760474">Isso significa que os recursos do site vão funcionar conforme o esperado, mas talvez você tenha menos proteção da navegação.</translation>
 <translation id="4876895919560854374">Bloquear e desbloquear a tela</translation>
@@ -6592,6 +6597,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6099766472403716061">Sempre permitir que <ph name="HOST" /> controle e reprograme seus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menu "Iniciar"</translation>
 <translation id="6100737823178787570">Aumente o tamanho da janela para retomar a tarefa</translation>
+<translation id="6101170451607354234">Se o Chrome encontrar uma das suas senhas em um vazamento de dados público, o Gerenciador de Senhas do Google poderá oferecer a opção de mudá-la se você estiver com a conta conectada.</translation>
 <translation id="6101226222197207147">Novo aplicativo adicionado (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Este arquivo foi bloqueado pelo Proteção Avançada.</translation>
 <translation id="6103681770816982672">Aviso: você está mudando para o canal do desenvolvedor</translation>
@@ -6797,12 +6803,13 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6254892857036829079">Perfeita</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
 <translation id="625827534921607067">Esta rede terá preferência se mais de uma rede conectada ou configurada anteriormente estiver disponível</translation>
+<translation id="6258818697161346451">Use suas chaves de acesso neste dispositivo</translation>
 <translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Registros de aplicativos de quiosque do ChromeOS</translation>
 <translation id="6263082573641595914">Versão da autoridade de certificação da Microsoft</translation>
 <translation id="6264060420924719834">Este app tem conteúdo da Web de outros sites</translation>
 <translation id="6264365405983206840">Selecionar &amp;tudo</translation>
-<translation id="6264376385120300461">Fazer o download mesmo assim</translation>
+<translation id="6264376385120300461">Baixar mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6264636978858465832">O Gerenciador de senhas precisa de mais acesso</translation>
 <translation id="626495329434552273">Podem substituir a entrada do teclado</translation>
@@ -10351,6 +10358,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9003185744423389627">A conexão com o Servidor de gerenciamento de dispositivos falhou, apresentando o status "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Procurar automaticamente perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os websites</translation>
+<translation id="9004279470320280717">Avaliar…</translation>
 <translation id="9005774573776346118">Para acessar senhas, favoritos e muito mais em todos os seus dispositivos, faça login com a conta <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Sua organização</translation>
 <translation id="900733896273558337">Editar habilidade</translation>

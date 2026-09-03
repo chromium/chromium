@@ -1457,6 +1457,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3495081129428749620">Znajdź na stronie
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Wynagrodzenie</translation>
+<translation id="3496531230994554300">Powiadomienie z Portfela jest otwarte na całą wysokość.</translation>
 <translation id="3497627066518778351">Zobacz listę danych witryn na urządzeniu w nowym oknie</translation>
 <translation id="3498215018399854026">Obecnie nie możemy się skontaktować z Twoim rodzicem. Spróbuj ponownie.</translation>
 <translation id="350069200438440499">Nazwa pliku:</translation>
@@ -1559,7 +1560,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3655670868607891010">Jeśli często widzisz ten komunikat, przeczytaj <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Wersja</translation>
 <translation id="3659521826520353662">Które witryny zdefiniowane przez administratora są odwiedzane i kiedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Ten numer IBAN jest zapisany w Portfelu Google i możesz go używać w różnych usługach Google.</translation>
 <translation id="3664479564786885722">Wyszukaj więcej opcji zakupu w innych sklepach, które sprzedają ten produkt.</translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
 <translation id="3670030362669914947">Numer</translation>
@@ -2669,6 +2669,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5499229993630251170">Kontynuować ten wątek?</translation>
 <translation id="5506286895894263601">Lista nie zawiera prawidłowych skrótów.</translation>
 <translation id="5507756662695126555">Niezaprzeczalność</translation>
+<translation id="5508515366054931524">Prośba o potwierdzenie adresu e-mail jest otwarta na całą wysokość</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Zakładki zarządzane</translation>
 <translation id="5510766032865166053">Mógł zostać przeniesiony lub usunięty.</translation>
@@ -3451,6 +3452,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6860888819347870819">Może prosić o włączenie obrazu w obrazie</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Nie można teraz zweryfikować karty</translation>
+<translation id="6871073333584947219">Powiadomienie z Portfela zostało zamknięte.</translation>
 <translation id="6871813064737840684">Historia cen w internecie dla tej opcji</translation>
 <translation id="6873456682041376666">Taca górna</translation>
 <translation id="6874604403660855544">&amp;Ponów dodanie</translation>
@@ -3906,7 +3908,6 @@ Dodatkowe informacje:
 <translation id="7615932826417658001">Dodaj dowód tożsamości</translation>
 <translation id="7616390733770379387">Pokazujemy je w kolejności losowej.</translation>
 <translation id="7616645509853975347">Administrator włączył w przeglądarce oprogramowanie sprzęgające Chrome Enterprise. Może ono mieć dostęp do niektórych Twoich danych.</translation>
-<translation id="7616747402308801775">Ta karta jest zapisana w Portfelu Google i możesz jej używać w różnych usługach Google</translation>
 <translation id="7617825962482469577">Koperta C7/C6</translation>
 <translation id="7619838219691048931">Arkusz końcowy</translation>
 <translation id="7621546470643449009">Opracuj przewodnik po obserwacji gwiazd dla początkujących, który pomoże mi dowiedzieć się, czego szukać na nocnym niebie, w tym 3 łatwo rozpoznawalne konstelacje</translation>
@@ -3971,6 +3972,7 @@ Dodatkowe informacje:
 <translation id="7705085181312584869">Pomóż mi pisać</translation>
 <translation id="7705992072972338699">Dysk optyczny (wysoki połysk)</translation>
 <translation id="7706689436519265630">Kopiowane lub przenoszone pliki są wysyłane do Google Cloud albo innych firm w celu analizy. Na przykład mogą być skanowane pod kątem danych wrażliwych lub złośliwego oprogramowania i przechowywane zgodnie z zasadami firmy.</translation>
+<translation id="7709934467582922028">Prośba o potwierdzenie adresu e-mail została zamknięta</translation>
 <translation id="7714351089363296478">Odwiedzona przed chwilą</translation>
 <translation id="7714404809393719981">Zdjęcie (półpołysk)</translation>
 <translation id="7714464543167945231">Certyfikat</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1053651653201045802">साइन आउट किया गया. अपने खाते में बुकमार्क, पासवर्ड वगैरह इस्तेमाल करने के लिए फिर से साइन इन करें.</translation>
 <translation id="1054745118061919935">जारी रखने का मतलब है कि आप Chrome की <ph name="BEGIN_LINK" />सेवा की शर्तों<ph name="END_LINK" /> से सहमत हैं.</translation>
+<translation id="1056818261333183659">मुझे कौनसा हेडफ़ोन खरीदना चाहिए?</translation>
 <translation id="10614374240317010">कभी नहीं सेव किया गया</translation>
 <translation id="1062138828266376352">आपका पिन नहीं बदला गया. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="1063070031224282617">चुनें कि "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) को कहां सेव करना है</translation>
@@ -1505,6 +1506,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="5898848375214731122">वज़न</translation>
 <translation id="5899314093904173337">आस-पास के लोगों के साथ शेयर करने के लिए, उन्हें कैमरे या क्यूआर स्कैन करने वाले ऐप्लिकेशन से इस क्यूआर कोड को स्कैन करने दें</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} नया टैब}one{{count} नया टैब}other{{count} नए टैब}}</translation>
+<translation id="5906163261248594192">राहुल का जन्मदिन</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet खोलें</translation>
 <translation id="5922999516621365983">टैब पिन करने के लिए, उसे खींचें और यहां छोड़ें.</translation>
@@ -1924,6 +1926,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="720399613139435155">अनुवाद नहीं हुआ</translation>
 <translation id="7204922488054642675">आपकी पसंद की खबरें</translation>
 <translation id="7206979415662233817">सेवा की शर्तें</translation>
+<translation id="721218676460477064">इस लेख की खास जानकारी दो</translation>
 <translation id="7215621211572884440">पॉप-अप की अनुमति है</translation>
 <translation id="7218491361283758048">ज़िप/पिन कोड</translation>
 <translation id="7221173315674413369">'नया क्या है' में नई सुविधाओं के बारे में जानें और सलाह पाएं</translation>
@@ -2185,6 +2188,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8035133914807600019">नया फ़ोल्‍डर…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">साइट जोड़ें</translation>
+<translation id="8038078082340255234">मार्केट रिपोर्ट</translation>
 <translation id="8040407350301524547">रास्ते के विकल्पों के लिए, “निर्देश पाएं” पर टैप करें.</translation>
 <translation id="804427445359061970">आपको दूसरे डिवाइस पर खोले गए टैब यहां मिलेंगे</translation>
 <translation id="8058655154417507695">समाप्ति वर्ष</translation>
@@ -2242,6 +2246,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8232956427053453090">डेटा रखें</translation>
 <translation id="8233237502828137700">बैनर प्रोमो बंद करें</translation>
 <translation id="823339794112333264">माइक्रोफ़ोन चालू करें</translation>
+<translation id="8240217649914883113">इसे मेरे कैलेंडर में जोड़ो</translation>
 <translation id="8250920743982581267">दस्तावेज़</translation>
 <translation id="8252980988000695656">Google Lens को इस्तेमाल करने की प्रोसेस पूरी हुई!</translation>
 <translation id="8258734532103758067">मैंने अपना डेटा एक्सपोर्ट कर लिया है</translation>
@@ -2286,6 +2291,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8368198938968349418">ऑटोमैटिक भरने की सुविधा चालू करें…</translation>
 <translation id="8370406443343902172">'सेटिंग' पर जाएं...</translation>
 <translation id="8370929854657845191">सामान्य ऊंचाई पर दिखाएं</translation>
+<translation id="8371494817541821097">पासकी <ph name="DATE" /> को बनाई गई</translation>
 <translation id="8372471489238799313">{count,plural, =1{पता मिटाएं}one{पता मिटाएं}other{पते मिटाएं}}</translation>
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>
 <translation id="8385363453480067273">Google Lens की मदद से, दिख रहे कॉन्टेंट के बारे में जानकारी पाएं</translation>

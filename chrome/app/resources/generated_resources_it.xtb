@@ -132,6 +132,7 @@
 Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copia indi&amp;rizzo link</translation>
 <translation id="1085064499066015002">Sempre su tutti i siti</translation>
+<translation id="1085340215550339505">Per ricevere suggerimenti tempestivi per la modifica della password, i contenuti e gli URL delle pagine che visiti possono essere elaborati in uno spazio privato nel cloud</translation>
 <translation id="1085558727130096638">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> altra persona</translation>
 <translation id="1085618740036066768">Elemento <ph name="ITEM" /> non selezionato. <ph name="INDEX" /> di <ph name="COUNT" />. Premi il tasto per la ricerca e la barra spaziatrice per selezionarlo.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
@@ -1122,6 +1123,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1871131409931646355">Cronologia dei download completa</translation>
 <translation id="187145082678092583">Meno app</translation>
 <translation id="1871615898038944731">Il dispositivo <ph name="DEVICE_TYPE" /> è aggiornato</translation>
+<translation id="1872846000961079826">Durante la modifica della password, i contenuti delle pagine delle password e le informazioni correlate vengono inviati a Google e possono essere esaminati da revisori per migliorare la qualità di questa funzionalità</translation>
 <translation id="1873513359268939357">Calendario di Outlook</translation>
 <translation id="1873920700418191231">Consenti di nuovo le autorizzazioni per il sito <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Possono mostrare qualsiasi annuncio</translation>
@@ -2845,6 +2847,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3184536091884214176">Configura o gestisci le stampanti CUPS. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Usa questo PIN per modificare le impostazioni del Controllo genitori.
     Se dimentichi il PIN, esegui il Powerwash su questo dispositivo e riconfiguralo.</translation>
+<translation id="3184916134413175521">Valuta</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Questa app è bloccata}other{Alcune app sono bloccate}}</translation>
 <translation id="3185454065699440434">Consenti le estensioni su <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Riesci a vedere il tuo dispositivo di trasmissione nell'
@@ -2914,6 +2917,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3241680850019875542">Seleziona la directory principale dell'estensione di cui creare il pacchetto. Per aggiornare un'estensione, seleziona anche il file delle chiave privata da riutilizzare.</translation>
 <translation id="3241810535741601486">Questa modifica è definitiva e irreversibile. Gli aggiornamenti estesi vengono applicati a tutti gli utenti di questo dispositivo. <ph name="LINK_START" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Il tuo avatar</translation>
+<translation id="3242764115495920926">Chiedi di cambiare le password automaticamente</translation>
 <translation id="3243017971870859287">Lettura dei numeri di serie del dispositivo ChromeOS Flex e dei componenti</translation>
 <translation id="324366796737464147">Cancellazione del rumore</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4139,6 +4143,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4167924027691268367">Altre azioni per la scorciatoia <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Alcune impostazioni di <ph name="PRIMARY_EMAIL" /> sono condivise con te. Queste impostazioni interessano il tuo account solo quando utilizzi l'accesso simultaneo.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> che termina con <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Valuta…</translation>
 <translation id="4169535189173047238">Non consentire</translation>
 <translation id="4170314459383239649">Cancella all'uscita</translation>
 <translation id="4170685671197375581">Attiva scorciatoia</translation>
@@ -4440,6 +4445,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4401912261345737180">Connetti con un codice per trasmettere</translation>
 <translation id="4403012369005671154">Conversione della voce in testo</translation>
 <translation id="4403775189117163360">Scegli una cartella diversa</translation>
+<translation id="440411460180511551">Se Chromium rileva che una delle tue password è stata compromessa nell'ambito di una violazione dei dati pubblici, Gestore delle password di Google può offrirti di cambiarla automaticamente non appena accedi.</translation>
 <translation id="4404843640767531781">L'app <ph name="APP_NAME" /> è stata bloccata da un genitore. Chiedi al tuo genitore l'autorizzazione per poterla usare.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
@@ -5047,7 +5053,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4872192066608821120">Per importare le password, seleziona un file CSV</translation>
 <translation id="4872212987539553601">Configura la crittografia on-device</translation>
 <translation id="4875690134140862902">Scheda</translation>
-<translation id="4876273079589074638">Aiuta i nostri ingegneri a effettuare accertamenti e risolvere il problema che causa l'arresto anomalo. Se puoi, elenca i passaggi esatti fornendo il maggior numero possibile di dettagli.</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
 <translation id="4876327226315760474">Ciò significa che le funzionalità del sito dovrebbero funzionare come previsto, ma potresti avere meno protezione durante la navigazione.</translation>
 <translation id="4876895919560854374">Blocco e sblocco dello schermo</translation>
@@ -6571,6 +6576,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6099766472403716061">Consenti sempre a <ph name="HOST" /> di controllare e riprogrammare i tuoi dispositivi MIDI</translation>
 <translation id="6100736666660498114">Menu di avvio</translation>
 <translation id="6100737823178787570">Aumenta le dimensioni della finestra per riprendere l'attività</translation>
+<translation id="6101170451607354234">Se Chrome rileva che una delle tue password è stata compromessa nell'ambito di una violazione dei dati pubblici, Gestore delle password di Google può offrirti di cambiarla automaticamente non appena accedi.</translation>
 <translation id="6101226222197207147">Nuova applicazione aggiunta (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Questo file è stato bloccato dalla protezione avanzata.</translation>
 <translation id="6103681770816982672">Avviso. Stai per passare al canale per gli sviluppatori</translation>
@@ -6776,6 +6782,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6254892857036829079">Perfetta</translation>
 <translation id="6257602895346497974">Attiva la sincronizzazione...</translation>
 <translation id="625827534921607067">Questa rete avrà la precedenza se sarà disponibile più di una rete configurata o collegata in passato</translation>
+<translation id="6258818697161346451">Usa le tue passkey su questo dispositivo</translation>
 <translation id="6259776178973198997">Aggiorna informazioni proprietari WiFi Direct</translation>
 <translation id="6261688934280090835">Log dell'app kiosk di ChromeOS</translation>
 <translation id="6263082573641595914">Versione CA Microsoft</translation>
@@ -10325,6 +10332,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9003185744423389627">Connessione al server di gestione dei dispositivi non riuscita. Stato: "<ph name="STATUS_TEXT" />" del giorno <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Cercare automaticamente i profili eSIM disponibili?</translation>
 <translation id="9003647077635673607">Consenti su tutti i siti web</translation>
+<translation id="9004279470320280717">Valuta…</translation>
 <translation id="9005774573776346118">Accedi come <ph name="EMAIL" /> per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="9006511997799670136">La tua organizzazione</translation>
 <translation id="900733896273558337">Modifica skill</translation>

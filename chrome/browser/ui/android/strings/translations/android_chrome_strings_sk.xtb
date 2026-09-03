@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Prihláste sa, aby ste mali svoje uložené informácie k dispozícii vo všetkých svojich zariadeniach</translation>
 <translation id="1381838868249179644">Z dôvodu ochrany vašej bezpečnosti boli z niektorých webov odstránené povolenia</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
+<translation id="1384568202352682721">Uložiť ako…</translation>
 <translation id="1384704387250346179">Preklad obrázka funkciou Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Môžete si zobraziť históriu z iných aplikácií, ktoré otvárajú odkazy v Chrome. Váš účet Google môže mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Dolný hárok cenových štatistík je otvorený na celú výšku</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">Zmenené</translation>
 <translation id="1480287803138246127">Časť vašej histórie sa tu nemusí zobraziť. Ak si chcete pozrieť celú históriu Chromu, otvorte ju.</translation>
 <translation id="1483493594462132177">Odoslať</translation>
+<translation id="1485343711570311792">Otvoriť v aplikácii <ph name="NATIVE_APP_NAME" /> • Zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Späť na kartu</translation>
 <translation id="1496514951988037011">používateľské meno</translation>
 <translation id="1501480321619201731">Odstrániť skupinu</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">Vrátite sa potiahnutím z ľavého okraja</translation>
 <translation id="2323763861024343754">Úložisko webu</translation>
 <translation id="2327445548174191329">Zo zariadenia <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Uložiť stránku ako…</translation>
 <translation id="2328474416100889417">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" /> a všetky odkazy na pozvánku sa vypnú</translation>
 <translation id="2329500425421091035">Predstavujeme režim AI v Chrome</translation>
 <translation id="2330186936255788117">Ďalšie záložky</translation>
@@ -1874,6 +1877,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8313599942510782709">Vaša úloha stále prebieha</translation>
 <translation id="8317318757008452355">Otvorenie možností tlače</translation>
 <translation id="8320212361750431956">Nedávna aktivita</translation>
+<translation id="8322452989119079156">Otvoriť v aplikácii <ph name="NATIVE_APP_NAME" /> – odoslané zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Záložky a zoznamy</translation>
 <translation id="8342727528718219152">Chrome vás bude informovať o weboch, ktoré môžu odosielať priveľa upozornení</translation>

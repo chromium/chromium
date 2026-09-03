@@ -1457,6 +1457,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3495081129428749620">Traži na stranici
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Plaća</translation>
+<translation id="3496531230994554300">Obavijest Walleta otvorena je u punoj visini.</translation>
 <translation id="3497627066518778351">Pregledajte popis podataka web-lokacije na uređaju u novom prozoru</translation>
 <translation id="3498215018399854026">Nismo uspjeli stupiti u kontakt s tvojim roditeljem. Pokušaj ponovo.</translation>
 <translation id="350069200438440499">Naziv:</translation>
@@ -1558,7 +1559,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3655670868607891010">Ako se to često događa, pokušajte <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Izmjena</translation>
 <translation id="3659521826520353662">Koje se web-lokacije koje je definirao administrator posjećuju i kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">IBAN je spremljen u Google Wallet kako biste ga mogli upotrebljavati na Googleovim uslugama.</translation>
 <translation id="3664479564786885722">Potražite više opcija za kupnju u drugim trgovinama koje prodaju taj proizvod.</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
 <translation id="3670030362669914947">Broj</translation>
@@ -2668,6 +2668,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5499229993630251170">Želite li nastaviti ovu nit?</translation>
 <translation id="5506286895894263601">Popis ne sadrži važeće prečace.</translation>
 <translation id="5507756662695126555">Neosporavanje</translation>
+<translation id="5508515366054931524">Upit za potvrdu e-adrese otvoren je u punoj visini</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Upravljane oznake</translation>
 <translation id="5510766032865166053">Datoteka je možda premještena ili izbrisana.</translation>
@@ -3450,6 +3451,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6860888819347870819">Može tražiti dopuštenje za unos slike u slici</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Trenutačno nije moguće potvrditi karticu</translation>
+<translation id="6871073333584947219">Obavijest Walleta je zatvorena.</translation>
 <translation id="6871813064737840684">Povijest cijena na webu za tu opciju</translation>
 <translation id="6873456682041376666">Gornja ladica</translation>
 <translation id="6874604403660855544">&amp;Ponovi dodavanje</translation>
@@ -3905,7 +3907,6 @@ Dodatne pojedinosti:
 <translation id="7615932826417658001">Dodajte osobnu iskaznicu</translation>
 <translation id="7616390733770379387">Tražilice se prikazuju nasumičnim redoslijedom.</translation>
 <translation id="7616645509853975347">Vaš administrator uključio je poveznike za Chrome za poduzeća u vašem pregledniku. Ti poveznici imaju pristup nekim vašim podacima.</translation>
-<translation id="7616747402308801775">Kartica je spremljena u Google Wallet kako biste ga mogli upotrebljavati na Googleovim uslugama.</translation>
 <translation id="7617825962482469577">Omotnica C7/C6</translation>
 <translation id="7619838219691048931">Zadnji list</translation>
 <translation id="7621546470643449009">Napravi vodič za početnike u promatranju zvijezda koji će mi pomoći naučiti što tražiti na noćnom nebu, uključujući tri lako prepoznatljiva zviježđa</translation>
@@ -3970,6 +3971,7 @@ Dodatne pojedinosti:
 <translation id="7705085181312584869">Pomoć pri pisanju</translation>
 <translation id="7705992072972338699">Optički disk (visoki sjaj)</translation>
 <translation id="7706689436519265630">Datoteke koje kopirate ili premjestite šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, mogu se pregledavati radi otkrivanja osjetljivih podataka ili zlonamjernog softvera i mogu se pohranjivati na temelju pravila tvrtke.</translation>
+<translation id="7709934467582922028">Zatvoren je upit za potvrdu e-adrese</translation>
 <translation id="7714351089363296478">Upravo ste posjetili</translation>
 <translation id="7714404809393719981">Fotografija (polusjajno)</translation>
 <translation id="7714464543167945231">Certifikat</translation>

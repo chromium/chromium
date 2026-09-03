@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1053651653201045802">ตอนนี้ได้ออกจากระบบแล้ว โปรดลงชื่อเข้าใช้อีกครั้งหากต้องการใช้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ในบัญชี</translation>
 <translation id="1054745118061919935">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" /></translation>
+<translation id="1056818261333183659">ฉันควรซื้ออันไหนดี</translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
 <translation id="1062138828266376352">ไม่ได้เปลี่ยน PIN โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="1063070031224282617">เลือกตำแหน่งที่จะบันทึก "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">มวล</translation>
 <translation id="5899314093904173337">ให้คนที่อยู่ใกล้ๆ สแกนคิวอาร์โค้ดนี้โดยใช้กล้องหรือตัวสแกนคิวอาร์โค้ดเพื่อแชร์</translation>
 <translation id="5902752768726620872">{count,plural, =1{แท็บใหม่ {count} แท็บ}other{แท็บใหม่ {count} แท็บ}}</translation>
+<translation id="5906163261248594192">วันเกิดของ Dan</translation>
 <translation id="5911030830365207728">Google แปลภาษา</translation>
 <translation id="5912796581727968237">เปิด Google Wallet</translation>
 <translation id="5922999516621365983">ลากแท็บมาที่นี่เพื่อปักหมุด</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">แปลไม่สำเร็จ</translation>
 <translation id="7204922488054642675">ข่าวที่คัดสรรมาให้ผู้ใช้โดยเฉพาะ</translation>
 <translation id="7206979415662233817">ข้อกำหนดในการให้บริการ</translation>
+<translation id="721218676460477064">สรุปบทความนี้</translation>
 <translation id="7215621211572884440">อนุญาตให้แสดงป๊อปอัป</translation>
 <translation id="7218491361283758048">รหัสไปรษณีย์</translation>
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">โฟลเดอร์ใหม่…</translation>
 <translation id="8035412398498507358">รูปภาพ</translation>
 <translation id="8037713009824540257">เพิ่มเว็บไซต์</translation>
+<translation id="8038078082340255234">รายงานตลาด</translation>
 <translation id="8040407350301524547">สำหรับตัวเลือกเส้นทาง ให้แตะ "ดูเส้นทาง"</translation>
 <translation id="804427445359061970">คุณจะเห็นแท็บจากอุปกรณ์อื่นๆ ที่นี่</translation>
 <translation id="8058655154417507695">ปีที่หมดอายุ</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">เก็บข้อมูลไว้</translation>
 <translation id="8233237502828137700">ปิดการโปรโมตแบนเนอร์</translation>
 <translation id="823339794112333264">เปิดไมโครโฟน</translation>
+<translation id="8240217649914883113">เพิ่มรายการนี้ลงในปฏิทินของฉัน</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
 <translation id="8252980988000695656">Google Lens เสร็จสมบูรณ์</translation>
 <translation id="8258734532103758067">ส่งออกข้อมูลแล้ว</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">เปิดการป้อนข้อความอัตโนมัติ…</translation>
 <translation id="8370406443343902172">ไปที่การตั้งค่า...</translation>
 <translation id="8370929854657845191">ขยายความสูงเป็นปานกลาง</translation>
+<translation id="8371494817541821097">สร้างพาสคีย์เมื่อวันที่ <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{ลบที่อยู่}other{ลบที่อยู่}}</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8385363453480067273">ค้นหาสิ่งที่คุณเห็นด้วย Google Lens</translation>

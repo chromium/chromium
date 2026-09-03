@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1053651653201045802">Odjavljeno. Ponovno se prijavite kako biste vidjeli oznake, zaporke i ostalo na svom računu.</translation>
 <translation id="1054745118061919935">Nastavkom upotrebe prihvaćate <ph name="BEGIN_LINK" />uvjete pružanja usluge<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Što da kupim?</translation>
 <translation id="10614374240317010">Zaporke se nikad ne spremaju</translation>
 <translation id="1062138828266376352">Vaš PIN nije promijenjen. Provjerite internetsku vezu i pokušajte ponovo</translation>
 <translation id="1063070031224282617">Odaberite mjesto za spremanje datoteke <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Za dijeljenje s osobama u blizini dopustite im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR kodova</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nova kartica}one{{count} nova kartica}few{{count} nove kartice}other{{count} novih kartica}}</translation>
+<translation id="5906163261248594192">Danijelov rođendan</translation>
 <translation id="5911030830365207728">Google prevoditelj</translation>
 <translation id="5912796581727968237">Otvorite Google Wallet</translation>
 <translation id="5922999516621365983">Povucite karticu ovdje da biste je prikvačili.</translation>
@@ -1924,6 +1926,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="720399613139435155">Prijevod nije uspio</translation>
 <translation id="7204922488054642675">Personalizirane vijesti</translation>
 <translation id="7206979415662233817">Uvjeti pružanja usluge</translation>
+<translation id="721218676460477064">Izradi sažetak ovog članka</translation>
 <translation id="7215621211572884440">Skočni prozori su dopušteni</translation>
 <translation id="7218491361283758048">Poštanski broj</translation>
 <translation id="7221173315674413369">Istražite nove značajke i savjete u odjeljku Novosti</translation>
@@ -2185,6 +2188,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8035133914807600019">Nova mapa…</translation>
 <translation id="8035412398498507358">Fotografije</translation>
 <translation id="8037713009824540257">Dodaj web-lokaciju</translation>
+<translation id="8038078082340255234">Izvješće o tržištu</translation>
 <translation id="8040407350301524547">Za opcije rute dodirnite Preuzmi upute.</translation>
 <translation id="804427445359061970">Ovdje ćete pronaći svoje kartice s ostalih uređaja</translation>
 <translation id="8058655154417507695">Godina isteka</translation>
@@ -2242,6 +2246,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8233237502828137700">Zatvorite natpis promocije</translation>
 <translation id="823339794112333264">Uključi mikrofon</translation>
+<translation id="8240217649914883113">Dodaj to u moj kalendar</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8252980988000695656">Google objektiv je dovršen!</translation>
 <translation id="8258734532103758067">Izvezao/izvezla sam svoje podatke</translation>
@@ -2286,6 +2291,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8368198938968349418">Uključivanje automatskog popunjavanja…</translation>
 <translation id="8370406443343902172">Otvori postavke...</translation>
 <translation id="8370929854657845191">Proširi na srednju visinu</translation>
+<translation id="8371494817541821097">Pristupni ključ izrađen je <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>
 <translation id="8385363453480067273">Pomoću Google objektiva možete pretražiti ono što vidite</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1053651653201045802">Ви вийшли. Увійдіть в обліковий запис, щоб використовувати закладки, паролі тощо.</translation>
 <translation id="1054745118061919935">Продовжуючи, ви приймаєте <ph name="BEGIN_LINK" />Умови використання<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Що мені купити?</translation>
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
 <translation id="1062138828266376352">Ваш PIN-код не змінено. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="1063070031224282617">Виберіть, де зберегти файл <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Щоб отримати доступ до контенту, люди поруч можуть зісканувати цей QR-код за допомогою камери або QR-сканера</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} нова вкладка}one{{count} нова вкладка}few{{count} нові вкладки}many{{count} нових вкладок}other{{count} нової вкладки}}</translation>
+<translation id="5906163261248594192">День народження Миколи</translation>
 <translation id="5911030830365207728">Google Перекладач</translation>
 <translation id="5912796581727968237">Відкрити Google Гаманець</translation>
 <translation id="5922999516621365983">Перетягніть вкладку сюди, щоб закріпити її.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">Не вдалося перекласти</translation>
 <translation id="7204922488054642675">Персоналізовані новини</translation>
 <translation id="7206979415662233817">Умови використання</translation>
+<translation id="721218676460477064">Підсумуй цю статтю</translation>
 <translation id="7215621211572884440">Спливаючі вікна дозволено</translation>
 <translation id="7218491361283758048">Поштовий індекс</translation>
 <translation id="7221173315674413369">Дізнайтеся про нові функції та поради в розділі "Що нового"</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8035412398498507358">Фото</translation>
 <translation id="8037713009824540257">Додати сайт</translation>
+<translation id="8038078082340255234">Звіт про ринок</translation>
 <translation id="8040407350301524547">Щоб переглянути варіанти маршруту, натисніть "Прокласти маршрут".</translation>
 <translation id="804427445359061970">Тут відображатимуться вкладки, які ви відкрили на інших пристроях</translation>
 <translation id="8058655154417507695">Рік закінчення терміну дії</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">Зберігати дані</translation>
 <translation id="8233237502828137700">Закрити рекламний банер</translation>
 <translation id="823339794112333264">Увімкнути мікрофон</translation>
+<translation id="8240217649914883113">Додай це в мій календар</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8252980988000695656">Завдання щодо Google Об’єктива виконано.</translation>
 <translation id="8258734532103758067">Дані експортовано</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">Увімкнути автозаповнення…</translation>
 <translation id="8370406443343902172">Перейти до налаштувань…</translation>
 <translation id="8370929854657845191">Розгорнути до середини екрана</translation>
+<translation id="8371494817541821097">Ключ доступу створено <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Видалити адресу}one{Видалити адреси}few{Видалити адреси}many{Видалити адреси}other{Видалити адреси}}</translation>
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8385363453480067273">Шукайте об’єкти за допомогою Google Об’єктива</translation>

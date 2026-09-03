@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="1053651653201045802">Pechouse a sesión. Volve iniciar sesión para usar os marcadores, os contrasinais e moito máis na túa conta.</translation>
 <translation id="1054745118061919935">Ao continuar, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Cal debería comprar?</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1062138828266376352">Non se modificou o PIN. Comproba a túa conexión a Internet e téntao de novo</translation>
 <translation id="1063070031224282617">Escolle onde queres gardar <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Para compartir contido coas persoas que estean preto, deixa que escaneen este código QR coa cámara ou coa aplicación de escáner de QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} pestana nova}other{{count} pestanas novas}}</translation>
+<translation id="5906163261248594192">Aniversario de Dan</translation>
 <translation id="5911030830365207728">Tradutor de Google</translation>
 <translation id="5912796581727968237">Abrir Google Wallet</translation>
 <translation id="5922999516621365983">Arrastrar a pestana aquí para fixala.</translation>
@@ -1924,6 +1926,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="720399613139435155">Produciuse un erro durante a tradución</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
 <translation id="7206979415662233817">Condicións de servizo</translation>
+<translation id="721218676460477064">Resume este artigo</translation>
 <translation id="7215621211572884440">Ventás emerxentes permitidas</translation>
 <translation id="7218491361283758048">Código postal</translation>
 <translation id="7221173315674413369">Explora funcións e consellos na páxina Novidades</translation>
@@ -2185,6 +2188,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8035133914807600019">Cartafol novo...</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8037713009824540257">Engadir sitio</translation>
+<translation id="8038078082340255234">Informe do mercado</translation>
 <translation id="8040407350301524547">Para consultar as opcións de ruta, toca a opción de obter indicacións.</translation>
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
@@ -2242,6 +2246,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8232956427053453090">Conservar datos</translation>
 <translation id="8233237502828137700">Pechar o báner de promoción</translation>
 <translation id="823339794112333264">Activar o micrófono</translation>
+<translation id="8240217649914883113">Engadir isto ao meu calendario</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8252980988000695656">Completouse Google Lens</translation>
 <translation id="8258734532103758067">Exportei os meus datos</translation>
@@ -2286,6 +2291,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8368198938968349418">Activar función de autocompletar…</translation>
 <translation id="8370406443343902172">Ir a Configuración...</translation>
 <translation id="8370929854657845191">Despregar a altura media</translation>
+<translation id="8371494817541821097">Clave de acceso creada o <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar enderezo}other{Eliminar enderezos}}</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8385363453480067273">Usa Google Lens para buscar o que vexas</translation>

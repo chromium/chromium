@@ -105,6 +105,7 @@
 <translation id="138181280295369883">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1381838868249179644">ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਕੁਝ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
+<translation id="1384568202352682721">ਇਸ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ…</translation>
 <translation id="1384704387250346179">Google Lens ਨਾਲ ਚਿੱਤਰ ਦਾ ਅਨੁਵਾਦ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਹੋਰ ਐਪਾਂ ਦਾ ਇਤਿਹਾਸ ਦੇਖ ਸਕਦੇ ਹੋ, ਜਿਨ੍ਹਾਂ ਦੇ ਲਿੰਕ Chrome ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ। ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="139752016751285248">ਕੀਮਤਾਂ ਬਾਰੇ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੋਲ੍ਹੀ ਗਈ</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">ਬਦਲੀ ਗਈ</translation>
 <translation id="1480287803138246127">ਤੁਹਾਡਾ ਕੁਝ ਇਤਿਹਾਸ ਸ਼ਾਇਦ ਇੱਥੇ ਦਿਖਾਈ ਨਾ ਦੇਵੇ। ਆਪਣਾ ਸਾਰਾ Chrome ਇਤਿਹਾਸ ਦੇਖਣ ਲਈ, ਪੂਰਾ Chrome ਇਤਿਹਾਸ ਖੋਲ੍ਹੋ।</translation>
 <translation id="1483493594462132177">ਭੇਜੋ</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹੋ • <ph name="DEVICE_NAME" /> ਤੋਂ</translation>
 <translation id="1495677929897281669">ਟੈਬ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="1496514951988037011">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="1501480321619201731">ਗਰੁੱਪ ਮਿਟਾਓ</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ਤੋਂ</translation>
+<translation id="232757965409810352">ਪੰਨੇ ਨੂੰ ਇਸ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ…</translation>
 <translation id="2328474416100889417">ਹਰ ਕੋਈ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਸੱਦੇ ਦੇ ਸਾਰੇ ਲਿੰਕਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2329500425421091035">ਪੇਸ਼ ਹੈ Chrome ਵਿੱਚ AI ਮੋਡ</translation>
 <translation id="2330186936255788117">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">ਤੁਹਾਡਾ ਕਾਰਜ ਹਾਲੇ ਵੀ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਹੈ</translation>
 <translation id="8317318757008452355">ਪ੍ਰਿੰਟ ਕਰਨ ਲਈ ਵਿਕਲਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="8320212361750431956">ਹਾਲੀਆ ਸਰਗਰਮੀ</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹੋ - <ph name="DEVICE_NAME" /> ਤੋਂ ਭੇਜਿਆ ਗਿਆ</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">ਬੁੱਕਮਾਰਕ ਅਤੇ ਸੂਚੀਆਂ</translation>
 <translation id="8342727528718219152">Chrome ਤੁਹਾਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਬਾਰੇ ਦੱਸੇਗਾ, ਜਿਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ</translation>

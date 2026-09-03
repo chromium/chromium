@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="1035560095760914532">Helyezze a Chrome-ot az alsó területre, hogy bármikor hozzáférhessen</translation>
 <translation id="1076643793026027628">A Chrome automatikusan inkognitó módban nyitja meg a YouTube inkognitó linkjeit.</translation>
 <translation id="1081114897601629648">A következő jelszavakat nem importálta a rendszer a Google Jelszókezelőbe, mert nem felelnek meg a követelményeknek.</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
@@ -41,6 +40,7 @@ Megjegyzések:
 <translation id="1580570086594302477">Megnyitja a Chrome egy új inkognitó lapját.</translation>
 <translation id="1605168141396675642">Nem kell a másolással foglalkoznia. A linkeket közvetlenül a Chrome-ban nyithatja meg.</translation>
 <translation id="1646463005043273333">Megnyitja a Chrome beállításait a Chrome alapértelmezett böngészőként való beállításához.</translation>
+<translation id="1668930590094369898">A Chrome használata alapértelmezettként</translation>
 <translation id="1670609221633730681">Chrome-tipp: Válassza ki a címsáv helyét</translation>
 <translation id="1683863426423719967">Ha lapokra vonatkozó emlékeztetőket szeretne kapni a Chrome-tól, kapcsolja be az értesítéseket az iOS beállításaiban.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@ Megjegyzések:
 <translation id="1973910962341002002">A(z) „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” beállításai között kapcsolja be a „Chrome” beállítást.</translation>
 <translation id="1984705450038014246">Chrome-adatok szinkronizálása</translation>
 <translation id="1987779152850321833">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chrome-ból.</translation>
+<translation id="2049569996960148258">A Chrome alapértelmezettként való használatának elrejtése</translation>
 <translation id="2055826352861631739">A Chrome használata iPaden alapértelmezés szerint</translation>
 <translation id="2056123005618757196">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Google Chrome segítségével.</translation>
 <translation id="2120238739383482109">Megnyitja a Chrome-könyvjelzőket.</translation>
@@ -90,7 +91,6 @@ Megjegyzések:
 <translation id="288992067439702510">Elérte a Google Chrome <ph name="LIMIT" /> könyvjelzőkorlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
 
 Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most kijelentkezik, a nem mentett könyvjelzők törlődnek.</translation>
-<translation id="2901621928549457170">A Chrome azonnali megnyitása iPad eszközön</translation>
 <translation id="2922914028977213693">Koppintson ide, hogy a legtöbbet hozhassa ki a Chrome-ból iPad eszközén.</translation>
 <translation id="292371311537977079">Chrome-beállítások</translation>
 <translation id="2923827943290349720">Inkognitó lapok zárolása a Chrome bezárásakor</translation>
@@ -175,8 +175,6 @@ Megjegyzések:
 <translation id="5119391094379141756">Válassza ki a Chrome böngészőt.</translation>
 <translation id="5123188916260706415">Hangalapú keresés a Chrome-ban</translation>
 <translation id="5162467219239570114">A Chrome elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chrome újabb verzióit.</translation>
-<translation id="5172049865623113551">A Chrome azonnali megnyitása iPhone eszközön</translation>
-<translation id="5179095426828744632">Gyorsabb hozzáférés a Chrome-hoz a Dockról</translation>
 <translation id="5184329579814168207">Megnyitás Chrome-ban</translation>
 <translation id="5190139289262548459">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chrome használatának módját is.</translation>
 <translation id="5209238444239954363">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
@@ -262,8 +260,8 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 Az adatokat a Chrome-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="6922332667202044570">A Chrome-ban tárolt böngészési adatok törlése.</translation>
 <translation id="6924922227983877439">A linkek megnyitása a Chrome-ban alapértelmezés szerint</translation>
+<translation id="6926395711547387358">A Chrome beállítása alapértelmezettként</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
-<translation id="7001031184470316752">A Chrome áthelyezése a Dockra</translation>
 <translation id="7038674195294813388">Nyissa meg az Alapértelmezett alkalmazások beállításait iOS rendszeren, majd koppintson a „Böngészőalkalmazás” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="7056826488869329999">Megnyitja és futtatja a biztonsági ellenőrzést a Chrome-ban.</translation>
 <translation id="7061455974939528301">Tartsa nyomva a Chrome ikont, majd kattintson a „Főképernyő szerkesztése” lehetőségre</translation>

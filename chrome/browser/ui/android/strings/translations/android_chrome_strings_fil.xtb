@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Mag-sign in para makuha ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo</translation>
 <translation id="1381838868249179644">Para mapanatili kang ligtas, inalis ang mga pahintulot sa ilang site</translation>
 <translation id="1383876407941801731">Hanapin</translation>
+<translation id="1384568202352682721">I-save bilang…</translation>
 <translation id="1384704387250346179">Isalin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Puwede mong makita ang history mula sa iba pang app na nagbubukas ng mga link sa Chrome. Posibleng may iba pang uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Binuksan nang buo ang bottom sheet ng mga insight sa presyo</translation>
@@ -133,6 +134,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="147982357559798527">Binago</translation>
 <translation id="1480287803138246127">Posibleng hindi lumabas dito ang ilan sa iyong history. Buksan ang buong history sa Chrome para makita ang lahat ng iyong history sa Chrome.</translation>
 <translation id="1483493594462132177">Ipadala</translation>
+<translation id="1485343711570311792">Buksan sa <ph name="NATIVE_APP_NAME" /> • Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
 <translation id="1496514951988037011">username</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
@@ -327,6 +329,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="232137538351753795">Mag-swipe mula sa kaliwang gilid para bumalik</translation>
 <translation id="2323763861024343754">Storage ng site</translation>
 <translation id="2327445548174191329">Mula sa <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">I-save ang page bilang…</translation>
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
 <translation id="2329500425421091035">Ipinapakilala ang AI Mode sa Chrome</translation>
 <translation id="2330186936255788117">Higit pang bookmark</translation>
@@ -1662,6 +1665,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7493994139787901920"><ph name="VERSION" /> (Na-update <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Mangyaring maghintay…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, Naka-pin at Naka-mute na Tab</translation>
+<translation id="7500851014030446046">Dina-download ang PDF</translation>
 <translation id="7501135638693251872">Lahat ng bookmark</translation>
 <translation id="7507207699631365376">Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng provider na ito</translation>
 <translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>
@@ -1874,6 +1878,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8313599942510782709">Isinasagawa pa ang iyong gawain</translation>
 <translation id="8317318757008452355">Buksan ang mga opsyon para mag-print</translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
+<translation id="8322452989119079156">Buksan sa <ph name="NATIVE_APP_NAME" /> - Ipinadala mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Mga bookmark at listahan</translation>
 <translation id="8342727528718219152">Ipapaalam sa iyo ng Chrome ang tungkol sa mga site na posibleng nagpapadala ng masyadong maraming notification</translation>

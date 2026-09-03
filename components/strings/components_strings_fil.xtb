@@ -1457,6 +1457,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3495081129428749620">Hanapin sa page
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Suweldo</translation>
+<translation id="3496531230994554300">Binuksan nang buo ang abiso sa Wallet.</translation>
 <translation id="3497627066518778351">Sumuri ng listahan ng on-device na data ng site sa isang bagong window</translation>
 <translation id="3498215018399854026">Hindi namin makaugnayan ang iyong magulang sa sandaling ito. Pakisubukang muli.</translation>
 <translation id="350069200438440499">File name:</translation>
@@ -1559,7 +1560,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3655670868607891010">Kung madalas mo itong nakikita, subukan ang mga ito <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Rebisyon</translation>
 <translation id="3659521826520353662">Aling mga website na tinukoy ng administrator ang binisita at kailan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Na-save ang IBAN na ito sa Google Wallet para magamit mo ito sa mga serbisyo ng Google.</translation>
 <translation id="3664479564786885722">Maghanap pa ng mga opsyon sa pagbili mula sa iba pang store na nagbebenta ng produktong ito.</translation>
 <translation id="3664782872746246217">Mga Keyword:</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -2669,6 +2669,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5499229993630251170">Ipagpatuloy ang thread na ito?</translation>
 <translation id="5506286895894263601">Walang valid na shortcut ang listahan.</translation>
 <translation id="5507756662695126555">Hindi makokontra</translation>
+<translation id="5508515366054931524">Binuksan nang buo ang prompt na i-verify ang email</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Mga pinamamahalaang bookmark</translation>
 <translation id="5510766032865166053">Maaaring inilipat o na-delete ito.</translation>
@@ -3451,6 +3452,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6860888819347870819">Puwedeng humiling na pumasok sa picture-in-picture</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Hindi ma-verify ang card na ito sa ngayon.</translation>
+<translation id="6871073333584947219">Isinara ang abiso sa Wallet.</translation>
 <translation id="6871813064737840684">History ng Presyo sa Buong Web para sa Opsyong Ito</translation>
 <translation id="6873456682041376666">Pang-ibabaw na Tray</translation>
 <translation id="6874604403660855544">&amp;Gawing muli ang pagdagdag</translation>
@@ -3906,7 +3908,6 @@ Mga karagdagang detalye:
 <translation id="7615932826417658001">Magdagdag ng identity card</translation>
 <translation id="7616390733770379387">Ipinapakita ang mga ito sa random na pagkakasunod-sunod.</translation>
 <translation id="7616645509853975347">Na-on ng iyong administrator ang Chrome Enterprise Connectors sa browser mo. May access ang mga connector na ito sa ilan sa iyong data.</translation>
-<translation id="7616747402308801775">Na-save ang card na ito sa Google Wallet para magamit mo ito sa mga serbisyo ng Google.</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7619838219691048931">Dulong sheet</translation>
 <translation id="7621546470643449009">Gumawa ng gabay para sa baguhan sa stargazing para tulungan akong malaman kung ano ang hahanapin sa kalangitan sa gabi, kasama ang 3 madaling matukoy na constellation</translation>
@@ -3971,6 +3972,7 @@ Mga karagdagang detalye:
 <translation id="7705085181312584869">Tulungan Akong Magsulat</translation>
 <translation id="7705992072972338699">Optical Disc (High-Gloss)</translation>
 <translation id="7706689436519265630">Ipinapadala sa Google Cloud o mga third party para sa pagsusuri ang mga file na kinokopya o inililipat mo. Halimbawa, posibleng i-scan ang mga ito para sa sensitibong data o malware at posibleng i-store batay sa mga patakaran ng kumpanya.</translation>
+<translation id="7709934467582922028">Isinara ang prompt na i-verify ang email</translation>
 <translation id="7714351089363296478">Kakabisita Mo Lang</translation>
 <translation id="7714404809393719981">Photo (Semi-Gloss)</translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -4868,6 +4870,7 @@ Mga karagdagang detalye:
 <translation id="988159990683914416">Bumuo ang Developer</translation>
 <translation id="989988560359834682">I-edit ang Address</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Patunay ng Merkle Tree</translation>
 <translation id="992110854164447044">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Pink</translation>

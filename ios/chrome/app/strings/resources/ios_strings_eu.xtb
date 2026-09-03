@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1053651653201045802">Amaitu da saioa. Hasi saioa berriro kontuko laster-markak, pasahitzak eta bestelakoak erabiltzeko.</translation>
 <translation id="1054745118061919935">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK" />Zerbitzu-baldintzak<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Zein erosi behar dut?</translation>
 <translation id="10614374240317010">Sekula gorde gabeak</translation>
 <translation id="1062138828266376352">Ez da aldatu PINa. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro</translation>
 <translation id="1063070031224282617">Aukeratu non gorde nahi duzun "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Ingurukoekin partekatu nahi izanez gero, eska iezaiezu QR kode hau eskaneatzeko kamera edo QR kodeak eskaneatzeko aplikazio baten bidez</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} fitxa berri}other{{count} fitxa berri}}</translation>
+<translation id="5906163261248594192">Danelen urtebetetzea</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Ireki Google Diru-zorroa</translation>
 <translation id="5922999516621365983">Fitxa ainguratzeko, arrasta ezazu hona.</translation>
@@ -1924,6 +1926,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="720399613139435155">Ezin izan da itzuli</translation>
 <translation id="7204922488054642675">Albiste pertsonalizatuak</translation>
 <translation id="7206979415662233817">Zerbitzu-baldintzak</translation>
+<translation id="721218676460477064">Laburbildu artikulu hau</translation>
 <translation id="7215621211572884440">Leiho gainerakorrak baimenduta dauzkatenak</translation>
 <translation id="7218491361283758048">Posta-kodea</translation>
 <translation id="7221173315674413369">Arakatu eginbide berriak eta aholkuak Berritasunak atalean</translation>
@@ -2185,6 +2188,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8035133914807600019">Karpeta berria…</translation>
 <translation id="8035412398498507358">Argazkiak</translation>
 <translation id="8037713009824540257">Gehitu gunea</translation>
+<translation id="8038078082340255234">Merkatuaren txostena</translation>
 <translation id="8040407350301524547">Ibilbidearen aukerak ikusteko, sakatu "Lortu jarraibideak".</translation>
 <translation id="804427445359061970">Beste gailuetan erabilitako fitxak aurkituko dituzu hemen</translation>
 <translation id="8058655154417507695">Iraungitze-urtea</translation>
@@ -2242,6 +2246,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8232956427053453090">Gorde datuak</translation>
 <translation id="8233237502828137700">Itxi promozioaren iragarki-banda</translation>
 <translation id="823339794112333264">Piztu mikrofonoa</translation>
+<translation id="8240217649914883113">Gehitu hau nire egutegian</translation>
 <translation id="8250920743982581267">Dokumentuak</translation>
 <translation id="8252980988000695656">Osatu da Google Lens bidezko bilaketa!</translation>
 <translation id="8258734532103758067">Esportatu ditut nire datuak</translation>
@@ -2286,6 +2291,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8368198938968349418">Aktibatu automatikoki betetzeko aukera…</translation>
 <translation id="8370406443343902172">Joan Ezarpenak atalera…</translation>
 <translation id="8370929854657845191">Zabaldu neurri ertainera</translation>
+<translation id="8371494817541821097">Sarbide-gakoaren sortze-data: <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Ezabatu helbidea}other{Ezabatu helbideak}}</translation>
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8385363453480067273">Bilatu ikusten duzuna Google Lens bidez</translation>

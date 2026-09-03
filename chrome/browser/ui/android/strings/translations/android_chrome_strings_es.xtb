@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Inicia sesión para acceder a tu información guardada y a mucho más en todos tus dispositivos</translation>
 <translation id="1381838868249179644">Para ayudarte a protegerte, se han quitado los permisos de algunos sitios</translation>
 <translation id="1383876407941801731">Buscar</translation>
+<translation id="1384568202352682721">Guardar como…</translation>
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Es posible que veas el historial de otras aplicaciones que abren enlaces en Chrome. Además, tu cuenta de Google podría tener otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Hoja inferior de estadísticas sobre precios abierta a altura completa</translation>
@@ -133,6 +134,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="147982357559798527">Modificada</translation>
 <translation id="1480287803138246127">Es posible que parte de tu historial no aparezca aquí. Abre el historial completo de Chrome para verlo todo.</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1485343711570311792">Abrir en <ph name="NATIVE_APP_NAME" /> • De <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1496514951988037011">nombre de usuario</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
@@ -327,6 +329,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="232137538351753795">Desliza desde el borde izquierdo para volver</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio web</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Guardar página como…</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se desactivarán todos los enlaces de invitación</translation>
 <translation id="2329500425421091035">Presentamos el Modo IA en Chrome</translation>
 <translation id="2330186936255788117">Más marcadores</translation>
@@ -1874,6 +1877,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8313599942510782709">Tu tarea aún está en curso</translation>
 <translation id="8317318757008452355">Abrir opciones de impresión</translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
+<translation id="8322452989119079156">Abrir en <ph name="NATIVE_APP_NAME" /> - Enviado desde <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novedad<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Marcadores y listas</translation>
 <translation id="8342727528718219152">Chrome te avisará de los sitios que puedan estar enviando demasiadas notificaciones</translation>

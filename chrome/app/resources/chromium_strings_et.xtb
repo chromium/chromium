@@ -642,6 +642,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. Chromium kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust.</translation>
 <translation id="7810005234485217901">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada</translation>
+<translation id="7828527096541974699">Valige, mida Chromiumiga jagada</translation>
 <translation id="7828947555739565424">Selle kontoga Chromiumi profiil on selles seadmes juba olemas</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
 <translation id="7847673590271334840">Teie otsingumootorit muudeti väljaspool Chromiumi. Chromium lähtestas selle teie kaitsmiseks algsele vaikeväärtusele. <ph name="LEARN_MORE_LINK" /></translation>

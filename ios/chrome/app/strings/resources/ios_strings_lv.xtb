@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Jūs izrakstījāties. Pierakstieties vēlreiz, lai izmantotu grāmatzīmes, paroles un citu saturu savā kontā.</translation>
 <translation id="1054745118061919935">Turpinot jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Kuru iegādāties?</translation>
 <translation id="10614374240317010">Netiek saglabātas</translation>
 <translation id="1062138828266376352">PIN netika mainīts. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="1063070031224282617">Izvēlieties, kur saglabāt failu “<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Lai kopīgotu saturu ar tuvumā esošajiem cilvēkiem, ļaujiet viņiem skenēt šo kvadrātkodu, izmantojot kameru vai kvadrātkodu skenēšanas lietotni.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} jauna cilne}zero{{count} jaunu ciļņu}one{{count} jauna cilne}other{{count} jaunas cilnes}}</translation>
+<translation id="5906163261248594192">Dena dzimšanas diena</translation>
 <translation id="5911030830365207728">Google tulkotājs</translation>
 <translation id="5912796581727968237">Atvērt lietotni Google maks</translation>
 <translation id="5922999516621365983">Velciet cilni šeit, lai to piespraustu.</translation>
@@ -1924,6 +1926,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="720399613139435155">Pārtulkošana neizdevās</translation>
 <translation id="7204922488054642675">Personalizētas ziņas</translation>
 <translation id="7206979415662233817">Pakalpojumu sniegšanas noteikumi</translation>
+<translation id="721218676460477064">Izveidot šī raksta apkopojumu</translation>
 <translation id="7215621211572884440">Uznirstošie logi ir atļauti</translation>
 <translation id="7218491361283758048">Pasta indekss</translation>
 <translation id="7221173315674413369">Izpētiet jaunas funkcijas un padomus sadaļā “Jaunumi”</translation>
@@ -2185,6 +2188,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8035133914807600019">Jauna mape…</translation>
 <translation id="8035412398498507358">Fotoattēli</translation>
 <translation id="8037713009824540257">Pievienot vietni</translation>
+<translation id="8038078082340255234">Tirgus pārskats</translation>
 <translation id="8040407350301524547">Lai skatītu maršruta iespējas, pieskarieties vienumam “Saņemt norādes”.</translation>
 <translation id="804427445359061970">Šeit varēsiet skatīt cilnes no citām ierīcēm</translation>
 <translation id="8058655154417507695">Derīguma termiņa gads</translation>
@@ -2242,6 +2246,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8232956427053453090">Paturēt datus</translation>
 <translation id="8233237502828137700">Aizvērt paziņojumu</translation>
 <translation id="823339794112333264">Ieslēgt mikrofonu</translation>
+<translation id="8240217649914883113">Pievienot šo informāciju manam kalendāram</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8252980988000695656">Google Lens uzdevums ir pabeigts.</translation>
 <translation id="8258734532103758067">I've exported my data (Es eksportēju savus datus)</translation>
@@ -2286,6 +2291,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8368198938968349418">Ieslēgt automātisko aizpildi…</translation>
 <translation id="8370406443343902172">Pāriet uz iestatījumiem...</translation>
 <translation id="8370929854657845191">Izvērst līdz vidējam augstumam</translation>
+<translation id="8371494817541821097">Piekļuves atslēga izveidota šādā datumā: <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Dzēst adresi}zero{Dzēst adreses}one{Dzēst adreses}other{Dzēst adreses}}</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>
 <translation id="8385363453480067273">Redzamo objektu meklēšana, izmantojot Google Lens</translation>

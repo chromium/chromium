@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Войдите, чтобы получить доступ к сохраненной информации и другим данным на всех устройствах.</translation>
 <translation id="1381838868249179644">Чтобы защитить вас, мы отозвали разрешения у нескольких сайтов.</translation>
 <translation id="1383876407941801731">Поиск</translation>
+<translation id="1384568202352682721">Сохранить как…</translation>
 <translation id="1384704387250346179">Перевести с помощью Google Объектива <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Вы можете видеть историю из приложений, которые открывают ссылки в Chrome. В вашем аккаунте Google также могут храниться другие данные истории браузера. Вы найдете их на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Нижний экран с информацией о ценах открыт полностью</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">Изменено</translation>
 <translation id="1480287803138246127">Некоторые данные могут здесь не показываться. Чтобы увидеть их все, откройте историю Chrome.</translation>
 <translation id="1483493594462132177">Отправить</translation>
+<translation id="1485343711570311792">Открыть в приложении "<ph name="NATIVE_APP_NAME" />" • Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1495677929897281669">Вернуться на вкладку</translation>
 <translation id="1496514951988037011">имя пользователя</translation>
 <translation id="1501480321619201731">Удалить группу</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">Чтобы вернуться, проведите слева направо</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
 <translation id="2327445548174191329">С устройства <ph name="DEVICE_NAME" />.</translation>
+<translation id="232757965409810352">Сохранить страницу как…</translation>
 <translation id="2328474416100889417">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
 <translation id="2329500425421091035">Представляем режим ИИ в Chrome</translation>
 <translation id="2330186936255788117">Ещё закладки</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">Задача ещё не выполнена.</translation>
 <translation id="8317318757008452355">Открыть параметры печати</translation>
 <translation id="8320212361750431956">Недавние действия</translation>
+<translation id="8322452989119079156">Открыть в приложении "<ph name="NATIVE_APP_NAME" />". Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Новая функция<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Закладки и списки</translation>
 <translation id="8342727528718219152">Chrome будет предупреждать о сайтах, которые могут отправлять слишком много уведомлений</translation>

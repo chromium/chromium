@@ -1457,6 +1457,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3495081129428749620">Buscar na páxina
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salario</translation>
+<translation id="3496531230994554300">Aviso de Wallet aberto a altura completa.</translation>
 <translation id="3497627066518778351">Revisar unha lista de datos dos sitios no dispositivo nunha nova ventá</translation>
 <translation id="3498215018399854026">Non se puido contactar cos teus pais neste momento. Téntao de novo.</translation>
 <translation id="350069200438440499">Nome do ficheiro:</translation>
@@ -1559,7 +1560,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3655670868607891010">Se esta mensaxe aparece con frecuencia, proba a solucionalo con estas <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Que sitios web definidos pola persoa administradora se visitan e cando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Este IBAN gardouse en Google Wallet para que poidas usalo nos servizos de Google.</translation>
 <translation id="3664479564786885722">Busca máis opcións de compra noutras tendas nas que se venda este produto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -2669,6 +2669,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5499229993630251170">Queres continuar este fío de mensaxes?</translation>
 <translation id="5506286895894263601">A lista non contén ningún atallo válido.</translation>
 <translation id="5507756662695126555">Sen rexeitamento</translation>
+<translation id="5508515366054931524">A solicitude de verificación do correo electrónico abriuse a pantalla completa</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores xestionados</translation>
 <translation id="5510766032865166053">É posible que se movese ou se eliminase.</translation>
@@ -3451,6 +3452,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6860888819347870819">Pode pedir permiso para acceder ao modo de pantalla superposta</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Esta tarxeta non puido verificarse neste momento</translation>
+<translation id="6871073333584947219">Pechouse o aviso de Wallet.</translation>
 <translation id="6871813064737840684">Historial de prezos na Web para esta opción</translation>
 <translation id="6873456682041376666">Bandexa superior</translation>
 <translation id="6874604403660855544">&amp;Refacer adición</translation>
@@ -3905,7 +3907,6 @@ Detalles adicionais:
 <translation id="7615932826417658001">Engadir tarxeta de identidade</translation>
 <translation id="7616390733770379387">Os buscadores móstranse en orde aleatoria.</translation>
 <translation id="7616645509853975347">O teu administrador activou Chrome Enterprise Connectors no teu navegador. Estes conectores teñen acceso a algúns dos teus datos.</translation>
-<translation id="7616747402308801775">Engadiuse a Google Wallet para que poidas usala nos servizos de Google</translation>
 <translation id="7617825962482469577">Sobre C7/C6</translation>
 <translation id="7619838219691048931">Folla final</translation>
 <translation id="7621546470643449009">Crea unha guía para principiantes sobre a observación de estrelas que me axude a aprender que buscar no ceo nocturno, incluídas 3 constelacións facilmente identificables</translation>
@@ -3970,6 +3971,7 @@ Detalles adicionais:
 <translation id="7705085181312584869">Axúdame a escribir</translation>
 <translation id="7705992072972338699">Disco óptico (alto brillo)</translation>
 <translation id="7706689436519265630">Os ficheiros que copies ou movas envíanselle a Google Cloud ou a terceiros para analizalos. Por exemplo, poderíase comprobar se conteñen datos confidenciais ou software malicioso e poderían almacenarse en función das políticas da empresa.</translation>
+<translation id="7709934467582922028">Pechouse a solicitude de verificación do correo electrónico</translation>
 <translation id="7714351089363296478">Acceso agora mesmo</translation>
 <translation id="7714404809393719981">Foto (semibrillo)</translation>
 <translation id="7714464543167945231">Certificado</translation>

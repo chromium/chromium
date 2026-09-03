@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Anonimni način</translation>
 <translation id="1053651653201045802">Odjavljeni ste. Znova se prijavite, če želite uporabljati zaznamke, gesla in drugo v računu.</translation>
 <translation id="1054745118061919935">Z nadaljevanjem se strinjate s <ph name="BEGIN_LINK" />pogoji storitve<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Kaj naj kupim?</translation>
 <translation id="10614374240317010">Nikoli shranjeno</translation>
 <translation id="1062138828266376352">Koda PIN ni bila spremenjena. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="1063070031224282617">Izberite lokacijo za shranjevanje datoteke »<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />« (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Če želite deliti z osebami v bližini, naj s fotoaparatom ali aplikacijo za optično branje kod QR optično preberejo to kodo QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nov zavihek}one{{count} nov zavihek}two{{count} nova zavihka}few{{count} novi zavihki}other{{count} novih zavihkov}}</translation>
+<translation id="5906163261248594192">Danov rojstni dan</translation>
 <translation id="5911030830365207728">Google Prevajalnik</translation>
 <translation id="5912796581727968237">Odpiranje Google Denarnice</translation>
 <translation id="5922999516621365983">Povlecite zavihek sem, če ga želite pripeti.</translation>
@@ -1924,6 +1926,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="720399613139435155">Prevajanje ni uspelo</translation>
 <translation id="7204922488054642675">Novice po meri</translation>
 <translation id="7206979415662233817">Pogoji storitve</translation>
+<translation id="721218676460477064">Povzemi ta članek</translation>
 <translation id="7215621211572884440">Pojavna okna so dovoljena</translation>
 <translation id="7218491361283758048">Poštna številka</translation>
 <translation id="7221173315674413369">Raziščite nove funkcije in nasvete v »Novosti«</translation>
@@ -2185,6 +2188,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8035133914807600019">Nova mapa …</translation>
 <translation id="8035412398498507358">Foto</translation>
 <translation id="8037713009824540257">Dodajanje mesta</translation>
+<translation id="8038078082340255234">Poročilo o trgu</translation>
 <translation id="8040407350301524547">Če želite možnosti poti, se dotaknite možnosti »Navodila za pot«.</translation>
 <translation id="804427445359061970">Tu bodo prikazani zavihki iz drugih naprav</translation>
 <translation id="8058655154417507695">Leto poteka</translation>
@@ -2242,6 +2246,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8232956427053453090">Ohrani podatke</translation>
 <translation id="8233237502828137700">Zapiranje promocijske pasice</translation>
 <translation id="823339794112333264">Vklop mikrofona</translation>
+<translation id="8240217649914883113">Dodaj to v moj koledar</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8252980988000695656">Iskanje z Googlom Lens je končano.</translation>
 <translation id="8258734532103758067">Podatki so bili izvoženi</translation>
@@ -2286,6 +2291,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8368198938968349418">Vklopi samodejno izpolnjevanje …</translation>
 <translation id="8370406443343902172">Odpri nastavitve …</translation>
 <translation id="8370929854657845191">Razširi na srednje</translation>
+<translation id="8371494817541821097">Ključ za dostop je bil ustvarjen dne <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Izbriši naslov}one{Izbriši naslove}two{Izbriši naslove}few{Izbriši naslove}other{Izbriši naslove}}</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8385363453480067273">Iskanje tega, kar vidite, z Googlom Lens</translation>

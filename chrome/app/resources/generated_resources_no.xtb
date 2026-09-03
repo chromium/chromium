@@ -132,6 +132,7 @@
 Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopiér linkadr&amp;essen</translation>
 <translation id="1085064499066015002">Alltid, på alle nettsteder</translation>
+<translation id="1085340215550339505">For å gi rettidig forslag til endring av passord, kan innholdet og nettadressene til sidene du besøker, behandles i et privat område i skyen</translation>
 <translation id="1085558727130096638">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> til</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> er ikke valgt. <ph name="INDEX" /> av <ph name="COUNT" />. Trykk på Søk + mellomrom for å velge.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
@@ -1129,6 +1130,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1871131409931646355">Fullstendig nedlastingslogg</translation>
 <translation id="187145082678092583">Færre apper</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" />-enheten er oppdatert</translation>
+<translation id="1872846000961079826">Når passordet endres, sendes innhold fra passordsider og relatert informasjon til Google og kan bli gjennomgått av mennesker for å forbedre kvaliteten på denne funksjonen</translation>
 <translation id="1873513359268939357">Outlook-kalender</translation>
 <translation id="1873920700418191231">Gi tillatelsene tilbake til <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Nettsteder som har lov til å vise alle annonser</translation>
@@ -2856,6 +2858,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3184536091884214176">Konfigurer eller administrer CUPS-skrivere. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Bruk denne PIN-koden for å endre innstillingene for foreldrekontroll.
     Hvis du glemmer PIN-koden, kan du utføre en powerwash på denne enheten og konfigurere den på nytt.</translation>
+<translation id="3184916134413175521">Gi vurdering</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Denne appen er blokkert}other{Noen apper er blokkert}}</translation>
 <translation id="3185454065699440434">Tillat utvidelser på <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Ser du Cast-enheten din i
@@ -2925,6 +2928,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3241680850019875542">Velg rotkatalogen til utvidelsen som skal pakkes. Hvis du vil oppdatere en utvidelse, velger du også den private nøkkelfilen.</translation>
 <translation id="3241810535741601486">Denne endringen er permanent og kan ikke angres. Forlenget periode for oppdateringer gjelder for alle brukere av denne enheten. <ph name="LINK_START" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Brukerbildet ditt</translation>
+<translation id="3242764115495920926">Tilby å endre passord automatisk</translation>
 <translation id="3243017971870859287">lese serienumrene til ChromeOS Flex-enheten og -komponenter</translation>
 <translation id="324366796737464147">Støyreduksjon</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4148,6 +4152,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4167924027691268367">Flere handlinger for <ph name="SHORTCUT_TITLE" />-snarveien</translation>
 <translation id="4168015872538332605">Noen innstillinger som tilhører <ph name="PRIMARY_EMAIL" /> blir delt med deg. Disse innstillingene påvirker bare kontoen din når du bruker multipålogging.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> som slutter på <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Gi vurdering …</translation>
 <translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4170314459383239649">Slett ved avslutning</translation>
 <translation id="4170685671197375581">Slå på snarveien</translation>
@@ -4449,6 +4454,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4401912261345737180">Koble til med en kode for å caste</translation>
 <translation id="4403012369005671154">Tale til tekst</translation>
 <translation id="4403775189117163360">Velg en annen mappe</translation>
+<translation id="440411460180511551">Hvis Chromium finner et av passordene dine i et offentlig databrudd, kan Google Passordlagring tilby å endre det for deg når du er logget på.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokkert av forelderen din. Spør forelderen din om tillatelse til å bruke denne appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
@@ -5056,7 +5062,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4872192066608821120">For å importere passord, velg en CSV-fil.</translation>
 <translation id="4872212987539553601">Konfigurer kryptering på enheten</translation>
 <translation id="4875690134140862902">Fane</translation>
-<translation id="4876273079589074638">Hjelp teknikerne våre med å undersøke og fikse denne feilen. Legg inn den nøyaktige fremgangsmåten om du kan. Ingen detaljer er ubetydelige.</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4876327226315760474">Dette betyr at funksjoner på nettstedet skal fungere som forventet, men det kan hende at surfebeskyttelsen svekkes.</translation>
 <translation id="4876895919560854374">låse og låse opp skjermen</translation>
@@ -6581,6 +6586,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6099766472403716061">La alltid <ph name="HOST" /> kontrollere og omprogrammere MIDI-enhetene dine</translation>
 <translation id="6100736666660498114">Start-menyen</translation>
 <translation id="6100737823178787570">Gjør vinduet større for å fortsette oppgaven</translation>
+<translation id="6101170451607354234">Hvis Chrome finner et av passordene dine i et offentlig databrudd, kan Google Passordlagring tilby å endre det for deg når du er logget på.</translation>
 <translation id="6101226222197207147">Ny app lagt til (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Denne filen ble blokkert av Avansert beskyttelse.</translation>
 <translation id="6103681770816982672">Advarsel: du bytter til utviklerkanal</translation>
@@ -6786,6 +6792,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Slå på synkronisering</translation>
 <translation id="625827534921607067">Dette nettverket foretrekkes hvis mer enn ett tidligere tilkoblet eller konfigurert nettverk er tilgjengelig</translation>
+<translation id="6258818697161346451">Bruk passnøklene dine på denne enheten</translation>
 <translation id="6259776178973198997">Last inn informasjon om Wifi Direct-eiere på nytt</translation>
 <translation id="6261688934280090835">Logger for ChromeOS-kioskapper</translation>
 <translation id="6263082573641595914">Microsoft sertifiseringsinstansversjon</translation>
@@ -10335,6 +10342,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9003185744423389627">Tilkoblingen til tjeneren for enhetsadministrasjon mislyktes med statusen «<ph name="STATUS_TEXT" />» <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Vil du automatisk skanne etter tilgjengelige eSIM-kortprofiler?</translation>
 <translation id="9003647077635673607">Tillat på alle nettsteder</translation>
+<translation id="9004279470320280717">Gi vurdering …</translation>
 <translation id="9005774573776346118">For å få passordene dine og bokmerkene med mer på alle enhetene dine, logg på som <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Organisasjonen din</translation>
 <translation id="900733896273558337">Endre ferdigheten</translation>

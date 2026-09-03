@@ -654,6 +654,15 @@ perubahan sandi, tetapi juga dapat diterapkan oleh kebijakan tertentu seperti
 <translation id="1438739959477268107">Setelan pembuatan kunci default</translation>
 <translation id="1440408958042020947">Mengizinkan pengguna yang telah mengizinkan Phone Hub mengakses foto dan video yang terakhir diambil di ponselnya</translation>
 <translation id="1443532790824582949">Mengaktifkan keyboard virtual sentuh</translation>
+<translation id="1445955287827003066">Kebijakan ini mengontrol apakah dan kapan perangkat ditargetkan untuk migrasi dari ChromeOS ke Next OS.
+
+Jika kebijakan ini disetel ke 0, kelayakan perangkat untuk migrasi ditentukan oleh setelan default Google, yang mungkin bergantung pada model perangkat, hardware, dan faktor lainnya.
+
+Jika kebijakan ini disetel ke 2147483647, perangkat akan ditandai sebagai tersedia dan ditargetkan untuk migrasi tanpa batas waktu tertentu.
+
+Jika kebijakan ini disetel ke nilai yang lebih besar dari 0 dan lebih kecil dari 2147483647, perangkat akan ditandai sebagai tersedia dan ditargetkan untuk migrasi. Nilai ini menunjukkan batas waktu penyelesaian yang direkomendasikan dalam jumlah detik sejak Epoch Unix (01-01-1970 00:00:00 UTC).
+
+Perhatikan bahwa setelan update perangkat lainnya, seperti penyematan versi (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />), penonaktifan update (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />), atau setelan saluran rilis (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />), dapat menyebabkan perangkat tidak menerima update yang diperlukan untuk memulai migrasi, meskipun tanggal target sudah ditetapkan di sini. Kebijakan ini dimaksudkan agar selalu aktif; jika tidak disetel, sistem akan mengikuti default Google karena nilainya dapat memengaruhi cara kebijakan update perangkat diproses.</translation>
 <translation id="1447252610864877219">Izinkan aplikasi Gemini melakukan tindakan di halaman web.</translation>
 <translation id="1449083855104537880">Jika kebijakan ditetapkan ke Benar (True), opsi aksesibilitas akan ditampilkan di menu area notifikasi. Jika kebijakan ditetapkan ke Salah (False), opsi tidak akan muncul di menu.
 
@@ -2227,6 +2236,7 @@ kebijakan BruschettaVMConfiguration, atau jika tidak, nama umum.</translation>
 
 Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna dapat memilih foto Google Foto sebagai wallpaper.</translation>
 <translation id="2393862222659066027">Buka daftar URL dan pulihkan sesi sebelumnya</translation>
+<translation id="239395129206831238">Tetapkan tanggal target untuk migrasi perangkat ke Next OS</translation>
 <translation id="239416486107542256">Setelan F11 menggunakan pintasan yang berisi tombol pengubah ctrl dan shift</translation>
 <translation id="2394429297128584919">Jangan izinkan halaman mengirim permintaan XHR sinkron selama penutupan halaman</translation>
 <translation id="2398817690049129302">Paksa Mode Aman <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
@@ -4883,6 +4893,7 @@ Pertimbangan:
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
 <translation id="4030152268425532846">Nonaktifkan pembatalan login otomatis</translation>
+<translation id="4032740546145417900">Jangan izinkan fitur Bicara untuk mengetik.</translation>
 <translation id="4043796890723386527">Cegah pengguna membuat dan menggunakan profil sekunder serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Menyetel kebijakan akan mengontrol filter URL SafeSites, yang menggunakan Google Safe Search API untuk mengklasifikasikan URL bersifat pornografi atau bukan.
 
@@ -6957,6 +6968,17 @@ Catatan: Fitur ini belum tersedia secara umum, sehingga mengaktifkannya tidak be
 <translation id="5247584184349816217">Aktifkan screensaver di layar kunci.</translation>
 <translation id="5247973380763021389">Cegah kebijakan cloud pengguna mengabaikan kebijakan cloud perangkat.</translation>
 <translation id="5249006530384016395">Mengontrol apakah sintaksis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> yang sudah tidak digunakan lagi untuk status kustom CSS akan diaktifkan atau tidak</translation>
+<translation id="5249271416806588789">Fitur Bicara untuk mengetik adalah fitur berbasis AI yang memungkinkan pengguna memasukkan dan mengedit teks menggunakan suara mereka, yang didukung oleh model AI generatif untuk memberikan transkripsi dan pemformatan berkualitas tinggi.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Pengguna dapat menambahkan akun Kerberos</translation>
 <translation id="5249555581286638799">Mengaktifkan Mode Efisiensi Tinggi</translation>
 <translation id="5252210248395576403">Kebijakan ini memberikan izin kepada fitur Jawaban Instan untuk mengakses konten yang dipilih dan mengirimkan info ke server untuk mendapatkan hasil terjemahan.
@@ -7088,6 +7110,7 @@ Akun terkelola tidak memenuhi syarat untuk bergabung atau membuat grup keluarga,
 <translation id="533287753294126753">Izinkan Tab Perbandingan Produk dan tingkatkan kualitas model AI.</translation>
 <translation id="5334404204520035180">Mengontrol penggunaan WebPrinting API</translation>
 <translation id="5334501839642146593">Jangan pernah kirim metrik ke Google</translation>
+<translation id="5335403007354311099">Aktifkan fitur aksesibilitas perender</translation>
 <translation id="5335910979215357815">Aktifkan Save and Share API untuk kontrol <ph name="PRODUCT_OS_NAME" /> pihak ketiga.</translation>
 <translation id="5337869685871558036">Mengizinkan pengambilan data SpeculationRules ke URL yang dikontrol ServiceWorker</translation>
 <translation id="5339096331970464266">Mengaktifkan keyboard virtual aksesibilitas</translation>
@@ -8146,6 +8169,7 @@ Jika kebijakan ini tidak disetel, <ph name="DEFAULT_AUTOMATIC_DOWNLOADS_SETTING_
       Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mengirimkan masukan ke Google.</translation>
 <translation id="5976636832661103220">Setelan F11 menggunakan pintasan yang berisi tombol pengubah shift</translation>
 <translation id="5979376378555121803">Aplikasi yang dihosting</translation>
+<translation id="5983016603010860828">Setelan untuk fitur Bicara untuk mengetik</translation>
 <translation id="5983274643567559194">Menyetel pintasan untuk tindakan "Delete" dinonaktifkan.</translation>
 <translation id="5984099692320899605">Jangan gunakan autentikasi NTLM</translation>
 <translation id="5984237109586500246">Terima konten web yang ditayangkan sebagai Signed HTTP Exchange</translation>
@@ -10046,6 +10070,7 @@ Perhatikan bahwa kebijakan ini hanya diterapkan untuk browser terkelola, sehingg
 Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7054840304131108563">Nonaktifkan fitur aksesibilitas perender</translation>
 <translation id="7055022222176591388">Larang <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="7056040036973126753">Data Keandalan Domain dapat dikirim ke Google bergantung pada kebijakan Metrik Pengguna Chrome (UMA)</translation>
 <translation id="7062803946218028349">Izinkan pengaktifan Phone Hub</translation>
@@ -10568,6 +10593,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan 
       Jika kebijakan ini diaktifkan, situs akan rentan terhadap beberapa jenis serangan lintas situs, dan memungkinkan pengguna dilacak di seluruh situs meskipun tanpa cookie dengan menambahkan entri ke cache autentikasi HTTP menggunakan kredensial yang disematkan dalam URL.
 
       Kebijakan ini dimaksudkan untuk memberi kesempatan kepada perusahaan guna memperbarui prosedur login mereka, bergantung pada perilaku lama, dan akan dihapus pada waktu mendatang.</translation>
+<translation id="7322231030019184787">Izinkan fitur Bicara untuk mengetik tanpa pengumpulan data.</translation>
 <translation id="7322825363493984512">Sandi untuk mengautentikasi layanan sistem ke proxy web jarak jauh.</translation>
 <translation id="7323773727263636287">Mengaktifkan fitur aksesibilitas koreksi warna.
 
@@ -10764,12 +10790,6 @@ Jika kebijakan ini tidak disetel, hal ini setara dengan menyetel kebijakan ke '<
 yang memenuhi syarat dibacakan secara lisan menggunakan text-to-speech. Hal ini dilakukan dengan distilasi
 konten sisi server dan sintesis audio. Jika kebijakan disetel ke salah (false), fitur ini akan dinonaktifkan. Jika kebijakan ini disetel ke default atau tidak disetel,
 baca lisan akan diaktifkan.</translation>
-<translation id="7456922722153109956">Kebijakan ini mengontrol visibilitas pengumuman slot tengah di Halaman Tab Baru.
-
-      Jika kebijakan disetel ke Aktif, Halaman Tab Baru akan menampilkan pengumuman slot tengah jika tersedia.
-
-      Jika kebijakan disetel ke Nonaktif, Halaman Tab Baru tidak akan menampilkan pengumuman slot tengah meskipun jika tersedia.
-      </translation>
 <translation id="7459601923199346224">Mengontrol kebijakan pengguna dan perangkat untuk pengelolaan sertifikat.</translation>
 <translation id="7459633275230216698">Izinkan dialog pemilihan file</translation>
 <translation id="7462256705280836453">Memilih apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>
@@ -11018,6 +11038,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan ini disetel, Kode Akses Orang Tua dapat diverifikasi di perangkat pengguna anak.
       Jika kebijakan ini tidak disetel, Kode Akses Orang Tua tidak dapat diverifikasi di perangkat pengguna anak.</translation>
 <translation id="7623431489198474050">Nonaktifkan pengesahan jarak jauh untuk perlindungan konten</translation>
+<translation id="7624832415093566709">Izinkan fitur Bicara untuk mengetik.</translation>
 <translation id="7625858205605842562">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat USB.
 
       Jika kebijakan ini tidak disetel, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak disetel, setelan pribadi pengguna akan berlaku.
@@ -11734,6 +11755,7 @@ Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke p
   - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">Aktifkan pelaporan info lampu latar perangkat</translation>
 <translation id="8062485064082966327">Gunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
+<translation id="8064875716442437829">Aktifkan aksesibilitas perender</translation>
 <translation id="8066428282805800713">Kirim data hardware tambahan di ChromeOS Flex</translation>
 <translation id="8069233292746468045">Kebijakan ini mengonfigurasi <ph name="PRODUCT_NAME" /> untuk mengurutkan algoritma perjanjian kunci pilihannya (grup yang didukung) di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui berdasarkan skema kepatuhan tertentu.
 
@@ -12901,6 +12923,13 @@ Catatan: Kebijakan ini tidak akan berpengaruh jika DevicePowerBatteryChargingOpt
       Jika kebijakan ini tidak disetel, konfigurasi default untuk sandbox jaringan akan digunakan. Konfigurasi default ini dapat bervariasi bergantung pada rilis <ph name="PRODUCT_NAME" />, uji coba kolom yang sedang berjalan, dan platform.
       Kebijakan ini dimaksudkan untuk memberikan fleksibilitas kepada perusahaan guna menonaktifkan sandbox jaringan jika perusahaan menggunakan software pihak ketiga yang mengganggu sandbox layanan jaringan.</translation>
 <translation id="8840243776706727185">Fitur NewBaseUrlInheritanceBehavior dinonaktifkan</translation>
+<translation id="8841125674413543406">Mengontrol pembuatan hierarki aksesibilitas dalam proses perender.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan mengizinkan pembuatan hierarki aksesibilitas untuk halaman web.
+
+Jika kebijakan ini disetel ke Nonaktif, hierarki aksesibilitas perender tidak akan dibuat lagi, sehingga mencegah fitur aksesibilitas berinteraksi dengan perender.
+
+Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="8842208363354615697">Mengizinkan pengaktifan Mode Khusus HTTPS</translation>
 <translation id="8843331294082716286">Jangan tampilkan permintaan <ph name="PRIVACY_SANDBOX_NAME" /> kepada pengguna.</translation>
 <translation id="884855199714673326">Izinkan host akses jarak jauh untuk memutuskan</translation>

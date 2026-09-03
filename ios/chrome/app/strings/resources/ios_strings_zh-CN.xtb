@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">无痕模式</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
+<translation id="1056818261333183659">我该买哪一款？</translation>
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
 <translation id="1063070031224282617">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”(<ph name="FILE_SIZE" />) 的位置</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">质量</translation>
 <translation id="5899314093904173337">若要与附近的人分享，请让他们用相机或二维码扫描器应用扫描此二维码</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} 个新标签页}other{{count} 个新标签页}}</translation>
+<translation id="5906163261248594192">Dan 的生日</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5912796581727968237">打开 Google 钱包</translation>
 <translation id="5922999516621365983">将标签页拖至此处即可固定。</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">翻译失败</translation>
 <translation id="7204922488054642675">个性化新闻</translation>
 <translation id="7206979415662233817">服务条款</translation>
+<translation id="721218676460477064">总结这篇文章</translation>
 <translation id="7215621211572884440">允许显示弹出式窗口</translation>
 <translation id="7218491361283758048">邮编</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">新建文件夹…</translation>
 <translation id="8035412398498507358">相册</translation>
 <translation id="8037713009824540257">添加网站</translation>
+<translation id="8038078082340255234">市场报告</translation>
 <translation id="8040407350301524547">如果您想查看路线选项，请点按“查询路线”。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8058655154417507695">到期年份</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">保留数据</translation>
 <translation id="8233237502828137700">关闭横幅宣传内容</translation>
 <translation id="823339794112333264">开启麦克风</translation>
+<translation id="8240217649914883113">将此添加到我的日历</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8252980988000695656">“Google 智能镜头”任务已完成！</translation>
 <translation id="8258734532103758067">数据已导出</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">开启自动填充功能…</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>
 <translation id="8370929854657845191">展开为中等高度</translation>
+<translation id="8371494817541821097">通行密钥创建于 <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{删除地址}other{删除地址}}</translation>
 <translation id="8378714024927312812">由您的组织管理</translation>
 <translation id="8385363453480067273">使用 Google 智能镜头搜索您看到的内容</translation>

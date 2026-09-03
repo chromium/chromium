@@ -105,6 +105,7 @@
 <translation id="138181280295369883">به سیستم وارد شوید تا اطلاعات ذخیره‌شده و موارد دیگر را در همه دستگاه‌های خود دریافت کنید</translation>
 <translation id="1381838868249179644">برای کمک به حفظ امنیت شما، اجازه‌های چند سایت برداشته شد</translation>
 <translation id="1383876407941801731">جستجو</translation>
+<translation id="1384568202352682721">ذخیره کردن به‌عنوان…</translation>
 <translation id="1384704387250346179">‏ترجمه تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">‏ممکن است سابقه را از برنامه‌های دیگری که پیوندها را در Chrome باز می‌کنند مشاهده کنید. ممکن است «حساب Google» شما انواع دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="139752016751285248">برگ زیرین اطلاعات آماری قیمت به‌صورت کامل باز شده است</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">تغییر کرده است</translation>
 <translation id="1480287803138246127">‏ممکن است بخشی از سابقه شما اینجا نمایش داده نشود. برای دیدن کل سابقه Chrome، آن را به‌صورت کامل باز کنید.</translation>
 <translation id="1483493594462132177">ارسال</translation>
+<translation id="1485343711570311792">باز کردن در <ph name="NATIVE_APP_NAME" /> • از <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">برگشتن به برگه</translation>
 <translation id="1496514951988037011">نام کاربری</translation>
 <translation id="1501480321619201731">حذف گروه</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">برای برگشتن، از لبه راست تند بکشید</translation>
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
 <translation id="2327445548174191329">از <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">ذخیره کردن صفحه به‌عنوان…</translation>
 <translation id="2328474416100889417">همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
 <translation id="2329500425421091035">‏معرفی «حالت هوشواره‌ای» در Chrome</translation>
 <translation id="2330186936255788117">نشانک‌های بیشتر</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">تکلیفتان هنوز درحال انجام است</translation>
 <translation id="8317318757008452355">باز کردن گزینه‌های چاپ</translation>
 <translation id="8320212361750431956">فعالیت اخیر</translation>
+<translation id="8322452989119079156">باز کردن در <ph name="NATIVE_APP_NAME" /> - ارسال‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">نشانک‌ها و فهرست‌ها</translation>
 <translation id="8342727528718219152">‏‫Chrome درباره سایت‌هایی که ممکن است اعلان‌های زیادی ارسال کنند به شما اطلاع می‌دهد</translation>

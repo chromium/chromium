@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Kirjaudu sisään, niin voit käyttää esimerkiksi tallennettuja tietoja kaikilla laitteilla</translation>
 <translation id="1381838868249179644">Turvallisuutesi vuoksi luvat on poistettu joiltakin sivustoilta</translation>
 <translation id="1383876407941801731">Haku</translation>
+<translation id="1384568202352682721">Tallenna nimellä…</translation>
 <translation id="1384704387250346179">Käännä kuva Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Saatat nähdä muiden sellaisten sovellusten historian, jotka avaavat linkkejä Chromessa. Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Hintatilastojen alapaneeli kokonaan avattuna</translation>
@@ -133,6 +134,7 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="147982357559798527">Muutettu</translation>
 <translation id="1480287803138246127">Osa historiastasi ei ehkä näy täällä. Avaa koko Chrome-historia, jos haluat nähdä sen kokonaan.</translation>
 <translation id="1483493594462132177">Lähetä</translation>
+<translation id="1485343711570311792">Avaa sovelluksella <ph name="NATIVE_APP_NAME" /> • Laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Takaisin välilehdelle</translation>
 <translation id="1496514951988037011">käyttäjätunnus</translation>
 <translation id="1501480321619201731">Poista ryhmä</translation>
@@ -327,6 +329,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="232137538351753795">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>
 <translation id="2327445548174191329">Lähde: <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Tallenna sivu nimellä…</translation>
 <translation id="2328474416100889417">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
 <translation id="2329500425421091035">Esittelyssä Chromen tekoälytila</translation>
 <translation id="2330186936255788117">Lisää kirjanmerkkejä</translation>
@@ -1874,6 +1877,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8313599942510782709">Tehtävä on vielä kesken</translation>
 <translation id="8317318757008452355">Avaa tulostusvaihtoehdot</translation>
 <translation id="8320212361750431956">Uusimmat tapahtumat</translation>
+<translation id="8322452989119079156">Avaa sovelluksella <ph name="NATIVE_APP_NAME" /> – Lähetetty laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Uutta<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Kirjanmerkit ja listat</translation>
 <translation id="8342727528718219152">Chrome ilmoittaa sivustoista, jotka saattavat lähettää liikaa ilmoituksia</translation>

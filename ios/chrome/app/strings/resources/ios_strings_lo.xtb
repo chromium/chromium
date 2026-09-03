@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
 <translation id="1053651653201045802">ອອກຈາກລະບົບແລ້ວ. ເຂົ້າສູ່ລະບົບຄືນໃໝ່ເພື່ອໃຊ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນບັນຊີຂອງທ່ານ.</translation>
 <translation id="1054745118061919935">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">ຂ້ອຍຄວນຊື້ອັນໃດດີ?</translation>
 <translation id="10614374240317010">ຢ່າ​ບັນທຶກ</translation>
 <translation id="1062138828266376352">PIN ຂອງທ່ານບໍ່ໄດ້ຮັບການປ່ຽນແປງ. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່</translation>
 <translation id="1063070031224282617">ເລືອກຕຳແໜ່ງທີ່ຈະບັນທຶກ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5898848375214731122">ມວນສານ</translation>
 <translation id="5899314093904173337">ອະນຸຍາດໃຫ້ເຂົາເຈົ້າສະແກນລະຫັດ QR ນີ້ດ້ວຍແອັບກ້ອງຖ່າຍຮູບ ຫຼື ເຄື່ອງສະແກນ QR ຂອງເຂົາເຈົ້າເພື່ອແບ່ງປັນກັບຄົນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ແຖບໃໝ່}other{{count} ແຖບໃໝ່}}</translation>
+<translation id="5906163261248594192">ວັນເກີດຂອງ Dan</translation>
 <translation id="5911030830365207728">Google ແປພາສາ</translation>
 <translation id="5912796581727968237">ເປີດ Google Wallet</translation>
 <translation id="5922999516621365983">ລາກແຖບມາບ່ອນນີ້ເພື່ອປັກໝຸດ.</translation>
@@ -1924,6 +1926,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="720399613139435155">ແປພາສາບໍ່ສຳເລັດ</translation>
 <translation id="7204922488054642675">ຂ່າວປັບແຕ່ງສະເພາະໂຕ</translation>
 <translation id="7206979415662233817">ຂໍ້ກຳນົດບໍລິການ</translation>
+<translation id="721218676460477064">ສະຫຼຸບບົດຄວາມນີ້</translation>
 <translation id="7215621211572884440">ອະນຸຍາດໃຫ້ສະແດງປັອບອັບ</translation>
 <translation id="7218491361283758048">ລະຫັດ ZIP</translation>
 <translation id="7221173315674413369">ສຳຫຼວດຄຸນສົມບັດ ແລະ ເຄັດລັບໃໝ່ໆໃນ ມີຫຍັງໃໝ່</translation>
@@ -2185,6 +2188,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8035133914807600019">ໂຟ​ລ​ເດີ​ໃໝ່...</translation>
 <translation id="8035412398498507358">ຮູບພາບ</translation>
 <translation id="8037713009824540257">ເພີ່ມ​ເວັບ​ໄຊ​ທ໌</translation>
+<translation id="8038078082340255234">ລາຍງານກ່ຽວກັບຕະຫຼາດ</translation>
 <translation id="8040407350301524547">ສຳລັບຕົວເລືອກເສັ້ນທາງ, ໃຫ້ແຕະ “ຂໍເສັ້ນທາງ”.</translation>
 <translation id="804427445359061970">ທ່ານຈະເຫັນແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນຢູ່ບ່ອນນີ້</translation>
 <translation id="8058655154417507695">ປີໝົດອາຍຸ</translation>
@@ -2242,6 +2246,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8232956427053453090">ຮັກສາຂໍ້ມູນໄວ້</translation>
 <translation id="8233237502828137700">ປິດການໂປຣໂໝດແບນເນີ</translation>
 <translation id="823339794112333264">ເປີດໄມໂຄຣໂຟນ</translation>
+<translation id="8240217649914883113">ເພີ່ມລາຍການນີ້ໃສ່ໃນປະຕິທິນຂອງຂ້ອຍ</translation>
 <translation id="8250920743982581267">ເອກະສານ</translation>
 <translation id="8252980988000695656">Google Lens ສຳເລັດແລ້ວ!</translation>
 <translation id="8258734532103758067">ຂ້ອຍສົ່ງອອກຂໍ້ມູນແລ້ວ</translation>
@@ -2286,6 +2291,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8368198938968349418">ເປີດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ…</translation>
 <translation id="8370406443343902172">ເຂົ້າໄປການຕັ້ງຄ່າ...</translation>
 <translation id="8370929854657845191">ຂະຫຍາຍເປັນຂະໜາດກາງ</translation>
+<translation id="8371494817541821097">ສ້າງກະແຈຜ່ານເມື່ອວັນທີ <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{ລຶບທີ່ຢູ່}other{ລຶບທີ່ຢູ່}}</translation>
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="8385363453480067273">ຊອກຫາສິ່ງທີ່ທ່ານເຫັນດ້ວຍ Google Lens</translation>

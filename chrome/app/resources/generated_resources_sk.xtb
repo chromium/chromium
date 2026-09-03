@@ -132,6 +132,7 @@
 Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopírovať adre&amp;su odkazu</translation>
 <translation id="1085064499066015002">Vždy na všetkých weboch</translation>
+<translation id="1085340215550339505">Obsah a webové adresy stránok, ktoré navštívite, sa môžu spracúvať v súkromnom priestore v cloude, aby bolo možné včas navrhovať zmeny hesiel</translation>
 <translation id="1085558727130096638">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> ďalším</translation>
 <translation id="1085618740036066768">Položka <ph name="ITEM" /> nebola vybraná. <ph name="INDEX" /> z <ph name="COUNT" />. Vyberte stlačením klávesa vyhľadávania a medzerníka.</translation>
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
@@ -1122,6 +1123,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1871131409931646355">Celá história sťahovania</translation>
 <translation id="187145082678092583">Menej aplikácií</translation>
 <translation id="1871615898038944731">Vaše zariadenie <ph name="DEVICE_TYPE" /> je aktuálne</translation>
+<translation id="1872846000961079826">Počas zmeny hesla sa obsah zo stránok s heslami a súvisiace informácie odosielajú Googlu a môžu ich kontrolovať ľudia s cieľom zlepšiť kvalitu tejto funkcie</translation>
 <translation id="1873513359268939357">Kalendár Outlook</translation>
 <translation id="1873920700418191231">Znova udeľte povolenia pre <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Môže zobrazovať ľubovoľné reklamy</translation>
@@ -2846,6 +2848,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3184536091884214176">Nastaviť alebo spravovať tlačiarne CUPS. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Pomocou tohto kódu PIN môžete zmeniť nastavenia rodičovskej kontroly.
     Ak PIN zabudnete, vykonajte Powerwash tohto zariadenia a znova ho nastavte.</translation>
+<translation id="3184916134413175521">Ohodnotiť</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Táto aplikácia je blokovaná}few{Niektoré aplikácie sú blokované}many{Niektoré aplikácie sú blokované}other{Niektoré aplikácie sú blokované}}</translation>
 <translation id="3185454065699440434">Povoliť rozšírenia na webe <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Vidíte svoje zariadenie na prenos v
@@ -2915,6 +2918,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3241680850019875542">Vyberte koreňový adresár rozšírenia, ktoré chcete zbaliť. Ak chcete rozšírenie aktualizovať, vyberte tiež súbor súkromného kľúča, ktorý sa má znova použiť.</translation>
 <translation id="3241810535741601486">Táto zmena je trvalá a nedá sa zrušiť. Rozšírené aktualizácie platia pre všetkých používateľov tohto zariadenia. <ph name="LINK_START" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Váš avatar</translation>
+<translation id="3242764115495920926">Ponúkať automatickú zmenu hesiel</translation>
 <translation id="3243017971870859287">Čítať sériové čísla zariadení ChromeOS Flex a komponentov</translation>
 <translation id="324366796737464147">Potlačenie šumu</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4140,6 +4144,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4167924027691268367">Ďalšie akcie pre odkaz <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Používateľ <ph name="PRIMARY_EMAIL" /> s vami zdieľa niektoré svoje nastavenia. Tieto nastavenia váš účet ovplyvnia iba počas používania viacnásobného prihlásenia.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> s koncovým štvorčíslím <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Ohodnotiť…</translation>
 <translation id="4169535189173047238">Nepovoliť</translation>
 <translation id="4170314459383239649">Vymazať po ukončení</translation>
 <translation id="4170685671197375581">Zapnúť skratku</translation>
@@ -4441,6 +4446,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4401912261345737180">Ak chcete prenášať, pripojite sa pomocou kódu</translation>
 <translation id="4403012369005671154">Prevod reči na text</translation>
 <translation id="4403775189117163360">Vybrať iný priečinok</translation>
+<translation id="440411460180511551">Ak Chromium zistí, že niektoré z vašich hesiel bolo odhalené pri verejnom porušení ochrany údajov a máte prihlásený účet, Správca hesiel Google vám môže ponúknuť jeho zmenu.</translation>
 <translation id="4404843640767531781">Aplikáciu <ph name="APP_NAME" /> zablokoval tvoj rodič. Ak chceš používať túto aplikáciu, požiadaj rodiča o povolenie.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Presunúť do…</translation>
@@ -5048,7 +5054,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4872192066608821120">Ak chcete importovať heslá, vyberte súbor CSV</translation>
 <translation id="4872212987539553601">Nastavenie šifrovania v zariadení</translation>
 <translation id="4875690134140862902">Karta</translation>
-<translation id="4876273079589074638">Pomôžte našim programátorom prešetriť toto zlyhanie a vyriešiť ho. Ak je to možné, uveďte presné kroky. Poskytnite čo najpodrobnejšie informácie.</translation>
 <translation id="4876305945144899064">Žiadne používateľské meno</translation>
 <translation id="4876327226315760474">Znamená to, že funkcie webu by mali fungovať podľa očakávaní, ale môžete mať menšiu ochranu pri prehliadaní.</translation>
 <translation id="4876895919560854374">Zamknúť alebo odomknúť obrazovku</translation>
@@ -6574,6 +6579,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6099766472403716061">Vždy umožňovať webu <ph name="HOST" /> ovládať a preprogramovávať zariadenia MIDI</translation>
 <translation id="6100736666660498114">Ponuka Štart</translation>
 <translation id="6100737823178787570">Ak chcete pokračovať v úlohe, zväčšite okno</translation>
+<translation id="6101170451607354234">Ak Chrome zistí, že niektoré z vašich hesiel bolo odhalené pri verejnom porušení ochrany údajov a máte prihlásený účet, Správca hesiel Google vám môže ponúknuť jeho zmenu.</translation>
 <translation id="6101226222197207147">Bola pridaná nová aplikácia (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Tento súbor zablokovala rozšírená ochrana.</translation>
 <translation id="6103681770816982672">Upozornenie: prechádzate na verziu pre vývojárov</translation>
@@ -6779,6 +6785,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6254892857036829079">Vynikajúca</translation>
 <translation id="6257602895346497974">Zapnúť synchronizáciu…</translation>
 <translation id="625827534921607067">Táto sieť bude preferovaná, keď je k dispozícii viac ako jedna predtým pripojená či nakonfigurovaná sieť</translation>
+<translation id="6258818697161346451">Používajte prístupové kľúče v tomto zariadení</translation>
 <translation id="6259776178973198997">Obnoviť informácie o vlastníkoch siete Wi‐Fi Direct</translation>
 <translation id="6261688934280090835">Denníky verejnej aplikácie ChromeOS</translation>
 <translation id="6263082573641595914">Certifikačná autorita spoločnosti Microsoft – verzia</translation>
@@ -10331,6 +10338,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9003185744423389627">Nepodarilo sa pripojiť k serveru na správu zariadení. Stav o <ph name="FAILURE_TIME" />: <ph name="STATUS_TEXT" />.</translation>
 <translation id="90033698482696970">Chcete automaticky vyhľadávať dostupné profily eSIM?</translation>
 <translation id="9003647077635673607">Povoliť na všetkých webových stránkach</translation>
+<translation id="9004279470320280717">Ohodnotiť…</translation>
 <translation id="9005774573776346118">Ak chcete mať heslá, záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Vaša organizácia</translation>
 <translation id="900733896273558337">Úprava zručnosti</translation>

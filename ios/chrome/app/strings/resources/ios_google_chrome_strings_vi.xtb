@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
-<translation id="1035560095760914532">Đặt Chrome ở khu vực dưới cùng để truy cập bất cứ lúc nào</translation>
 <translation id="1076643793026027628">Chrome tự động mở các đường liên kết ẩn danh của YouTube ở chế độ ẩn danh.</translation>
 <translation id="1081114897601629648">Những mật khẩu sau đây không được nhập vào Trình quản lý mật khẩu của Google vì không đáp ứng được các yêu cầu.</translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
@@ -41,6 +40,7 @@ Những yếu tố cần xem xét:
 <translation id="1580570086594302477">Mở thẻ Ẩn danh mới trên Chrome.</translation>
 <translation id="1605168141396675642">Không còn mất công sao chép. Mở đường liên kết ngay trong Chrome.</translation>
 <translation id="1646463005043273333">Mở phần Cài đặt Chrome để đặt Chrome làm trình duyệt mặc định.</translation>
+<translation id="1668930590094369898">Dùng Chrome làm trình duyệt mặc định</translation>
 <translation id="1670609221633730681">Mẹo dùng Chrome: Chọn vị trí thanh địa chỉ</translation>
 <translation id="1683863426423719967">Để nhận Lời nhắc về thẻ của Chrome, hãy bật thông báo trong phần Cài đặt trên iOS.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@ Những yếu tố cần xem xét:
 <translation id="1973910962341002002">Trong phần cài đặt "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", hãy bật "Chrome"</translation>
 <translation id="1984705450038014246">Đồng bộ hóa dữ liệu của bạn trên Chrome</translation>
 <translation id="1987779152850321833">Làm theo các đề xuất dưới đây để sử dụng Chrome hiệu quả nhất.</translation>
+<translation id="2049569996960148258">Ẩn mục Dùng Chrome làm trình duyệt mặc định</translation>
 <translation id="2055826352861631739">Sử dụng Chrome cho iPad theo mặc định</translation>
 <translation id="2056123005618757196">Bạn có thể làm được nhiều việc hơn với phiên bản Google Chrome đơn giản, an toàn và nhanh nhất từ trước đến nay.</translation>
 <translation id="2120238739383482109">Mở dấu trang trên Chrome.</translation>
@@ -90,7 +91,6 @@ Những yếu tố cần xem xét:
 <translation id="288992067439702510">Bạn đã đạt đến hạn mức <ph name="LIMIT" /> dấu trang của Google Chrome nên một số dấu trang chưa được lưu vào Tài khoản Google của bạn.
 
 Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu trang mới vào tài khoản. Nếu bạn đăng xuất ngay bây giờ, các dấu trang chưa lưu sẽ bị xoá.</translation>
-<translation id="2901621928549457170">Mở Chrome ngay lập tức khi bạn dùng iPad</translation>
 <translation id="2922914028977213693">Nhấn vào đây để khai thác tối đa Chrome trên iPad.</translation>
 <translation id="292371311537977079">Cài đặt Chrome</translation>
 <translation id="2923827943290349720">Khóa các thẻ Ẩn danh khi bạn đóng Chrome</translation>
@@ -175,8 +175,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="5119391094379141756">Chọn Chrome</translation>
 <translation id="5123188916260706415">Tìm kiếm bằng giọng nói trong Chrome</translation>
 <translation id="5162467219239570114">Chrome đã lỗi thời. Nếu không có bản cập nhật nào trong <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, thì có khả năng thiết bị của bạn không hỗ trợ các phiên bản Chrome mới nữa.</translation>
-<translation id="5172049865623113551">Mở Chrome ngay lập tức khi bạn dùng iPhone</translation>
-<translation id="5179095426828744632">Truy cập Chrome nhanh hơn từ thanh dock</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
 <translation id="5190139289262548459">Tổ chức <ph name="DOMAIN" /> của bạn sẽ quản lý tài khoản bạn đăng nhập và cách sử dụng Chrome.</translation>
 <translation id="5209238444239954363">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
@@ -262,8 +260,8 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 Để xem thêm các chế độ cài đặt khác có sử dụng dữ liệu để cải thiện trải nghiệm Chrome của bạn, hãy truy cập vào <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Xoá dữ liệu duyệt web trong Chrome.</translation>
 <translation id="6924922227983877439">Mở đường liên kết trong Chrome</translation>
+<translation id="6926395711547387358">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="6975725306479268850">Chọn Chrome làm dịch vụ tự động điền</translation>
-<translation id="7001031184470316752">Đưa Chrome vào thanh dock</translation>
 <translation id="7038674195294813388">Mở phần cài đặt Ứng dụng mặc định trong iOS, sau đó nhấn vào "Ứng dụng trình duyệt" rồi chọn Chrome.</translation>
 <translation id="7056826488869329999">Mở và chạy quy trình Kiểm tra an toàn trên Chrome.</translation>
 <translation id="7061455974939528301">Nhấn và giữ biểu tượng Chrome rồi nhấp vào "Chỉnh sửa màn hình chính"</translation>

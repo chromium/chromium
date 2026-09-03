@@ -1454,6 +1454,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3495081129428749620">Najít na stránce
 <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Plat</translation>
+<translation id="3496531230994554300">Oznámení ohledně Peněženky je otevřené na celou výšku.</translation>
 <translation id="3497627066518778351">Zobrazit v novém okně seznam dat webů v zařízení</translation>
 <translation id="3498215018399854026">V tuto chvíli se nám s vaším rodičem nepodařilo spojit. Zkuste to prosím znovu.</translation>
 <translation id="350069200438440499">Název souboru:</translation>
@@ -1555,7 +1556,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3655670868607891010">Pokud se vám tato stránka zobrazuje často, zkuste využít tyto <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Verze</translation>
 <translation id="3659521826520353662">Které weby definované administrátorem jsou navštěvovány a kdy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Tento kód IBAN je uložen ve vaší Peněžence Google, abyste ho mohli používat v různých službách Google.</translation>
 <translation id="3664479564786885722">Vyhledejte další možnosti nákupu v jiných obchodech, které tento produkt prodávají.</translation>
 <translation id="3664782872746246217">Klíčová slova:</translation>
 <translation id="3670030362669914947">Číslo</translation>
@@ -2665,6 +2665,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5499229993630251170">Pokračovat v tomto vlákně?</translation>
 <translation id="5506286895894263601">Seznam neobsahuje žádné platné zkratky.</translation>
 <translation id="5507756662695126555">Neodvolatelnost</translation>
+<translation id="5508515366054931524">Výzva k ověření e‑mailu je otevřená na celou výšku</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Spravované záložky</translation>
 <translation id="5510766032865166053">Soubor mohl být přesunut nebo smazán.</translation>
@@ -3446,6 +3447,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6860888819347870819">Může požádat o aktivaci režimu obrazu v obraze</translation>
 <translation id="6864189428899665393">267 × 389 mm</translation>
 <translation id="6865412394715372076">Tuto kartu teď nelze ověřit</translation>
+<translation id="6871073333584947219">Oznámení ohledně Peněženky je zavřené.</translation>
 <translation id="6871813064737840684">Historie cen na webu pro tuto možnost</translation>
 <translation id="6873456682041376666">Horní zásobník</translation>
 <translation id="6874604403660855544">&amp;Opakovat přidání</translation>
@@ -3900,7 +3902,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7615932826417658001">Přidání průkazu totožnosti</translation>
 <translation id="7616390733770379387">Vyhledávače jsou zobrazeny v náhodném pořadí.</translation>
 <translation id="7616645509853975347">Administrátor vám v prohlížeči zapnul konektory Chrome Enterprise Connectors. Tyto konektory mají přístup k některým vašim datům.</translation>
-<translation id="7616747402308801775">Tato karta je uložená ve vaší Peněžence Google, abyste vám byla k dispozici v různých službách Google.</translation>
 <translation id="7617825962482469577">Obálka C7/C6</translation>
 <translation id="7619838219691048931">Koncový list</translation>
 <translation id="7621546470643449009">Sestav mi průvodce pozorováním hvězd pro začátečníky, ať vím, co na noční obloze hledat, a přidej i 3 snadno rozpoznatelná souhvězdí</translation>
@@ -3965,6 +3966,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7705085181312584869">Pomozte mi s psaním</translation>
 <translation id="7705992072972338699">Optický disk (vysoký lesk)</translation>
 <translation id="7706689436519265630">Soubory, které zkopírujete nebo přesunete, jsou odesílány k analýze do služby Google Cloud nebo třetím stranám. Mohou například projít kontrolou přítomnosti citlivých údajů nebo malwaru a mohou být uchovávány v souladu se zásadami společnosti.</translation>
+<translation id="7709934467582922028">Výzva k ověření e‑mailu je zavřená</translation>
 <translation id="7714351089363296478">Právě jste navštívili</translation>
 <translation id="7714404809393719981">Fotografie (pololesklá)</translation>
 <translation id="7714464543167945231">Certifikát</translation>

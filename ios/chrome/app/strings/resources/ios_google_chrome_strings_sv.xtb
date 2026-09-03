@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="1035560095760914532">Placera Chrome längst ned så att du kan komma åt den när som helst</translation>
 <translation id="1076643793026027628">Chrome öppnar automatiskt inkognitolänkar till YouTube i inkognitoläget.</translation>
 <translation id="1081114897601629648">Följande lösenord importerades inte till Google Lösenordshantering eftersom de inte uppfyller kraven.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
@@ -41,6 +40,7 @@ Tänk på detta:
 <translation id="1580570086594302477">Öppnar en ny inkognitoflik i Chrome.</translation>
 <translation id="1605168141396675642">Slipp krånglet med att kopiera. Öppna länkar direkt i Chrome.</translation>
 <translation id="1646463005043273333">Öppnar Chrome-inställningen för att ställa in Chrome som standardwebbläsare.</translation>
+<translation id="1668930590094369898">Använd Chrome som standardwebbläsare</translation>
 <translation id="1670609221633730681">Tips för Chrome: Välj adressfältets position</translation>
 <translation id="1683863426423719967">Om du vill få flikpåminnelser från Chrome aktiverar du aviseringar i iOS-inställningarna.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@ Tänk på detta:
 <translation id="1973910962341002002">Aktivera Chrome i inställningarna för <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /></translation>
 <translation id="1984705450038014246">Synkronisera data i Chrome</translation>
 <translation id="1987779152850321833">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome.</translation>
+<translation id="2049569996960148258">Dölj Använd Chrome som standardwebbläsare</translation>
 <translation id="2055826352861631739">Använda Chrome för iPad som standard</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="2120238739383482109">Öppnar bokmärken i Chrome.</translation>
@@ -90,7 +91,6 @@ Tänk på detta:
 <translation id="288992067439702510">Du har nått gränsen på <ph name="LIMIT" /> bokmärken i Google Chrome, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
 
 Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
-<translation id="2901621928549457170">Öppna Chrome omedelbart på din iPad</translation>
 <translation id="2922914028977213693">Tryck här för att få ut mesta möjliga av Chrome på din iPad.</translation>
 <translation id="292371311537977079">Inställningar för Chrome</translation>
 <translation id="2923827943290349720">Lås inkognitoflikar när du stänger Chrome</translation>
@@ -175,8 +175,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="5119391094379141756">Välj Chrome</translation>
 <translation id="5123188916260706415">Sök med rösten i Chrome</translation>
 <translation id="5162467219239570114">Den här versionen av Chrome är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chrome.</translation>
-<translation id="5172049865623113551">Öppna Chrome omedelbart på din iPhone</translation>
-<translation id="5179095426828744632">Kom åt Chrome snabbare från dockan</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chrome används.</translation>
 <translation id="5209238444239954363">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
@@ -262,8 +260,8 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Radera webbinformation i Chrome.</translation>
 <translation id="6924922227983877439">Öppna länkar i Chrome som standard</translation>
+<translation id="6926395711547387358">Ställ in Chrome som standardwebbläsare</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>
-<translation id="7001031184470316752">Flytta Chrome till dockan</translation>
 <translation id="7038674195294813388">Öppna inställningarna för standardappar i iOS, tryck på Webbläsarapp och välj Chrome.</translation>
 <translation id="7056826488869329999">Öppnar och kör en säkerhetskontroll i Chrome.</translation>
 <translation id="7061455974939528301">Håll nere Chrome-ikonen och klicka på Ändra hemskärmen</translation>

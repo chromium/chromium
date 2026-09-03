@@ -132,6 +132,7 @@
 Құпия сөздеріңізді <ph name="GOOGLE_PASSWORD_MANAGER" /> қызметінен кез келген уақытта тексере аласыз.</translation>
 <translation id="1084824384139382525">Сілтеме мекен&amp;жайын көшіру</translation>
 <translation id="1085064499066015002">Әрдайым барлық сайтта</translation>
+<translation id="1085340215550339505">Құпия сөзді өзгерту туралы ұсыныстарды уақтылы жасау үшін сіз кірген беттердің контенті мен URL мекенжайлары бұлттағы құпия кеңістікте өңделуі мүмкін.</translation>
 <translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> және тағы <ph name="NUM_OTHER_MEMBERS" /> адам қосылған қойындылар тобына қосылыңыз</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> таңдалмады. <ph name="COUNT" />/<ph name="INDEX" />. Таңдау үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
@@ -1121,6 +1122,7 @@
 <translation id="1871131409931646355">Толық жүктеп алу тарихы</translation>
 <translation id="187145082678092583">Азырақ қолданба</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> құрылғысы әлдеқашан жаңартылған</translation>
+<translation id="1872846000961079826">Құпия сөзді өзгерту кезінде құпия сөз беттеріндегі контент және қатысы бар ақпарат Google-ға жіберіледі және осы функцияның сапасын жақсарту үшін оларды мамандар тексеруі мүмкін.</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> үшін рұқсаттарды қайта беру</translation>
 <translation id="1874248162548993294">Кез келген жарнаманы көрсетуге рұқсаты барлар</translation>
@@ -2845,6 +2847,7 @@
 <translation id="3184536091884214176">CUPS принтерлерін реттеу және басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Ата-ана бақылауы параметрлерін өзгерту үшін осы PIN кодын пайдаланыңыз.
     PIN кодын ұмытып қалсаңыз, бұл құрылғыны Powerwash-пен қайта форматтап, қайтадан реттеңіз.</translation>
+<translation id="3184916134413175521">Баға беру</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Бұл қолданба бөгелді}other{Кейбір қолданба бөгелді}}</translation>
 <translation id="3185454065699440434"><ph name="SITE_NAME" /> сайтындағы кеңейтімдерге рұқсат беру</translation>
 <translation id="3187556136478864255"><ph name="BEGIN_LINK" />Google Home қолданбасында<ph name="END_LINK" /> трансляциялау құрылғысы көріне ме?</translation>
@@ -2912,6 +2915,7 @@
 <translation id="3241680850019875542">Бумаға салу үшін кеңейтімнің түпкі каталогін таңдаңыз. Кеңейтімді жаңарту үшін қайта пайдалану мақсатында жеке кілтті таңдаңыз.</translation>
 <translation id="3241810535741601486">Бұл өзгеріс біржола енгізіледі және оны қайтару мүмкін емес. Кеңейтілген жаңартулар осы құрылғының барлық пайдаланушысына қолданылады. <ph name="LINK_START" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Аватарыңыз</translation>
+<translation id="3242764115495920926">Құпия сөздерді автоматты түрде өзгертуді ұсыну</translation>
 <translation id="3243017971870859287">ChromeOS Flex құрылғысы мен құрамдастың сериялық нөмірлерін оқу</translation>
 <translation id="324366796737464147">Шуды өшіру</translation>
 <translation id="3244271242291266297">АА</translation>
@@ -4137,6 +4141,7 @@
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> таңбашасына арналған қосымша әрекеттер</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> аккаунтына қатысты кейбір параметрлер сізбен бөлісілді. Бұл параметрлер бірнеше рет кіру кезінде ғана аккаунтқа әсер етеді.</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> сандарына аяқталатын <ph name="NETWORK_NAME" /> несиелік картасы.</translation>
+<translation id="4169275505426201952">Баға беру…</translation>
 <translation id="4169535189173047238">Рұқсат бермеу</translation>
 <translation id="4170314459383239649">Шыққан кезде тазалау</translation>
 <translation id="4170685671197375581">Жылдам пәрменді қосу</translation>
@@ -4438,6 +4443,7 @@
 <translation id="4401912261345737180">Трансляциялау үшін код арқылы қосылыңыз</translation>
 <translation id="4403012369005671154">Дауысты мәтінге айналдыру</translation>
 <translation id="4403775189117163360">Басқа қалта таңдаңыз</translation>
+<translation id="440411460180511551">Chromium құпия сөздеріңіздің бірін баршаға ашық қолды болған деректерден тапса, аккаунтқа кіріп тұрсаңыз, Google Password Manager оны сіздің орныңызға өзгертіп беруді ұсынуы мүмкін.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> қолданбасын ата-анаңыз бөгеді. Оны пайдалану үшін ата-анаңыздан рұқсат сұраңыз.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Мына қалтаға жылжыту…</translation>
@@ -5045,7 +5051,6 @@
 <translation id="4872192066608821120">Құпия сөздерді импорттау үшін CSV файлын таңдаңыз.</translation>
 <translation id="4872212987539553601">Құрылғыда шифрлау процесін реттеу</translation>
 <translation id="4875690134140862902">Қойынды</translation>
-<translation id="4876273079589074638">Инженерлерге бұзылу мәселелерін зерттеуге және жөндеуге көмектесіңіз. Мүмкін болса, әрекеттеріңізді ретімен сипаттаңыз. Ұсақ-түйектің өзі маңызды!</translation>
 <translation id="4876305945144899064">Пайдаланушы аты жоқ</translation>
 <translation id="4876327226315760474">Бұл жағдайда сайт функциялары ойдағыдай жұмыс істеуі керек, бірақ браузерді пайдаланудың қорғаныс дәрежесі төмен болады.</translation>
 <translation id="4876895919560854374">Экранды құлыптау және құлпын ашу</translation>
@@ -6568,6 +6573,7 @@
 <translation id="6099766472403716061"><ph name="HOST" /> сайтына MIDI құрылғыларыңызды басқаруға және қайта бағдарламалауға әрқашан рұқсат беру</translation>
 <translation id="6100736666660498114">Іске қосу мәзірі</translation>
 <translation id="6100737823178787570">Тапсырманы жалғастыру үшін терезені ұлғайтыңыз.</translation>
+<translation id="6101170451607354234">Chrome құпия сөздеріңіздің бірін баршаға ашық қолды болған деректерден тапса, аккаунтқа кіріп тұрсаңыз, Google Password Manager оны сіздің орныңызға өзгертіп беруді ұсынуы мүмкін.</translation>
 <translation id="6101226222197207147">Жаңа қолданба қосылды (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Бұл файлды "Күшейтілген қорғаныс" функциясы бөгеген.</translation>
 <translation id="6103681770816982672">Ескерту: әзірлеуші арнасына ауысудасыз</translation>
@@ -6773,6 +6779,7 @@
 <translation id="6254892857036829079">Керемет</translation>
 <translation id="6257602895346497974">Синхрондауды қосу…</translation>
 <translation id="625827534921607067">Бұрын қосылған немесе конфигурацияланған бірнеше желі қолжетімді болса, осы желі таңдалады.</translation>
+<translation id="6258818697161346451">Осы құрылғыда кіру кілттерін пайдаланыңыз</translation>
 <translation id="6259776178973198997">Wi-Fi Direct иелері туралы ақпаратты жаңарту</translation>
 <translation id="6261688934280090835">ChromeOS киоск қолданбасының журналдары</translation>
 <translation id="6263082573641595914">Microsoft CA нұсқасы</translation>
@@ -10320,6 +10327,7 @@
 <translation id="9003185744423389627">Құрылғы менеджері серверіне қосылу мүмкін болмады. Күйі: "<ph name="STATUS_TEXT" />", уақыты: <ph name="FAILURE_TIME" />.</translation>
 <translation id="90033698482696970">Қолжетімді eSIM профильдерін автоматты түрде іздеу керек пе?</translation>
 <translation id="9003647077635673607">Барлық веб-сайттарда рұқсат беру</translation>
+<translation id="9004279470320280717">Баға беру…</translation>
 <translation id="9005774573776346118">Құпия сөздерді, бетбелгілер мен басқа деректерді барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="9006511997799670136">Ұйымыңыз</translation>
 <translation id="900733896273558337">Дағдыны өзгерту</translation>

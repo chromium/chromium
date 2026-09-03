@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Nag-Sign out. Mag-sign in ulit para magamit ang mga bookmark, password, at higit pa sa iyong account.</translation>
 <translation id="1054745118061919935">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Alin ang dapat kong bilhin?</translation>
 <translation id="10614374240317010">Hindi kailanman nag-save</translation>
 <translation id="1062138828266376352">Hindi napalitan ang iyong PIN. Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="1063070031224282617">Piliin kung saan ise-save ang "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5898848375214731122">Mass</translation>
 <translation id="5899314093904173337">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito gamit ang kanilang camera o QR scanner app</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} bagong tab}one{{count} bagong tab}other{{count} na bagong tab}}</translation>
+<translation id="5906163261248594192">Kaarawan ni Dan</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Buksan ang Google Wallet</translation>
 <translation id="5922999516621365983">I-drag ang tab dito para i-pin ito.</translation>
@@ -1924,6 +1926,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="720399613139435155">Hindi na-translate</translation>
 <translation id="7204922488054642675">Naka-personalize na balita</translation>
 <translation id="7206979415662233817">Mga tuntunin ng serbisyo</translation>
+<translation id="721218676460477064">Ibuod ang artikulong ito</translation>
 <translation id="7215621211572884440">Pinapayagan ang mga pop-up</translation>
 <translation id="7218491361283758048">Zip code</translation>
 <translation id="7221173315674413369">Mag-explore ng mga bagong feature at tip sa Ano’ng Bago</translation>
@@ -2185,6 +2188,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8035133914807600019">Bagong folder…</translation>
 <translation id="8035412398498507358">Mga Larawan</translation>
 <translation id="8037713009824540257">Magdagdag ng Site</translation>
+<translation id="8038078082340255234">Ulat sa Market</translation>
 <translation id="8040407350301524547">Para sa mga opsyon sa ruta, i-tap ang “Kumuha ng mga direksyon.”</translation>
 <translation id="804427445359061970">Makikita mo rito ang iyong mga tab mula sa iba pang device</translation>
 <translation id="8058655154417507695">Taon ng pag-expire</translation>
@@ -2242,6 +2246,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8232956427053453090">Panatilihin ang data</translation>
 <translation id="8233237502828137700">Isara ang banner ng promo</translation>
 <translation id="823339794112333264">I-on ang mikropono</translation>
+<translation id="8240217649914883113">Idagdag ito sa aking kalendaryo</translation>
 <translation id="8250920743982581267">Mga Dokumento</translation>
 <translation id="8252980988000695656">Tapos na ang Google Lens!</translation>
 <translation id="8258734532103758067">Na-export ko na ang aking data</translation>
@@ -2286,6 +2291,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8368198938968349418">I-on ang AutoFill…</translation>
 <translation id="8370406443343902172">Pumunta sa Mga Setting...</translation>
 <translation id="8370929854657845191">I-expand sa Katamtaman</translation>
+<translation id="8371494817541821097">Nagawa ang passkey noong <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{I-delete ang address}one{I-delete ang mga address}other{I-delete ang mga address}}</translation>
 <translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>
 <translation id="8385363453480067273">Hanapin ang nakikita mo gamit ang Google Lens</translation>

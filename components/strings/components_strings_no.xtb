@@ -1457,6 +1457,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3495081129428749620">Finn på siden
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Lønn</translation>
+<translation id="3496531230994554300">Wallet-merknaden er åpnet i full høyde.</translation>
 <translation id="3497627066518778351">Gjennomgå en liste over nettstedsdata i et nytt vindu</translation>
 <translation id="3498215018399854026">Vi kunne ikke nå foreldrene dine akkurat nå. Prøv på nytt.</translation>
 <translation id="350069200438440499">Filnavn:</translation>
@@ -1559,7 +1560,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3655670868607891010">Hvis du ser denne meldingen ofte, kan du prøve disse <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Versjon</translation>
 <translation id="3659521826520353662">Hvilke administratordefinerte nettsteder som besøkes, og når: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Dette IBAN-nummeret er lagret i Google Wallet, slik at du kan bruke det på alle Google-tjenester.</translation>
 <translation id="3664479564786885722">Søk etter flere kjøpsalternativer fra andre butikker som selger dette produktet.</translation>
 <translation id="3664782872746246217">Nøkkelord:</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -2669,6 +2669,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5499229993630251170">Vil du fortsette denne tråden?</translation>
 <translation id="5506286895894263601">Listen inneholder ingen gyldige snarveier.</translation>
 <translation id="5507756662695126555">Ikke-avvisning</translation>
+<translation id="5508515366054931524">Forespørselen om å bekrefte e-postadressen er åpnet i full høyde</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerte bokmerker</translation>
 <translation id="5510766032865166053">Den kan ha blitt flyttet eller slettet.</translation>
@@ -3451,6 +3452,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6860888819347870819">Kan be om å få bruke bilde-i-bilde</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Dette kortet kan ikke bekreftes akkurat nå</translation>
+<translation id="6871073333584947219">Wallet-merknaden er lukket.</translation>
 <translation id="6871813064737840684">Prishistorikk for dette alternativet fra hele nettet</translation>
 <translation id="6873456682041376666">Toppskuff</translation>
 <translation id="6874604403660855544">&amp;Legg til likevel</translation>
@@ -3905,7 +3907,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7615932826417658001">Legg til et identitetskort</translation>
 <translation id="7616390733770379387">Disse vises i tilfeldig rekkefølge.</translation>
 <translation id="7616645509853975347">Administratoren har slått på Chrome Enterprise Connectors i nettleseren din. Disse koblingene har tilgang til noen av dataene dine.</translation>
-<translation id="7616747402308801775">Dette kortet er lagret i Google Wallet, slik at du kan bruke det på tvers av Google-tjenester.</translation>
 <translation id="7617825962482469577">C7-/C6-konvolutt</translation>
 <translation id="7619838219691048931">Sluttark</translation>
 <translation id="7621546470643449009">Lag en nybegynnerveiledning til stjernekikking som hjelper meg med å lære hva jeg skal se etter på nattehimmelen, inkludert tre stjernebilder som er lette å identifisere</translation>
@@ -3970,6 +3971,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7705085181312584869">Hjelp meg å skrive</translation>
 <translation id="7705992072972338699">Optisk disk (høyglans)</translation>
 <translation id="7706689436519265630">Filer du kopierer eller flytter, blir sendt til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens regler.</translation>
+<translation id="7709934467582922028">Forespørselen om å bekrefte e-postadressen er lukket</translation>
 <translation id="7714351089363296478">Du besøkte nettopp dette nettstedet</translation>
 <translation id="7714404809393719981">Foto (halvglans)</translation>
 <translation id="7714464543167945231">Sertifikat</translation>

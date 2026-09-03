@@ -1457,6 +1457,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3495081129428749620">Find på side
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Lønkonto</translation>
+<translation id="3496531230994554300">Wallet-meddelelsen er åbnet i fuld højde.</translation>
 <translation id="3497627066518778351">Gennemgå en liste over websitedata på enheden i et nyt vindue</translation>
 <translation id="3498215018399854026">Vi kan ikke få fat i din forælder på nuværende tidspunkt. Prøv igen.</translation>
 <translation id="350069200438440499">Filnavn:</translation>
@@ -1559,7 +1560,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3655670868607891010">Hvis du ser dette jævnligt, kan du prøve <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3659521826520353662">Hvilke administratordefinerede websites der besøges, og hvornår de besøges: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Dette IBAN-nummer er gemt i Google Wallet, så du kan bruge det i Google-tjenester.</translation>
 <translation id="3664479564786885722">Søg efter flere købsmuligheder i andre butikker, der sælger dette produkt.</translation>
 <translation id="3664782872746246217">Søgeord:</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -2669,6 +2669,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5499229993630251170">Vil du fortsætte denne tråd?</translation>
 <translation id="5506286895894263601">Listen indeholder ingen gyldige genveje.</translation>
 <translation id="5507756662695126555">Uafviselighed</translation>
+<translation id="5508515366054931524">Prompten til verificering af mailadresse er åbnet i fuld højde</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerede bogmærker</translation>
 <translation id="5510766032865166053">Den kan være blevet flyttet eller slettet.</translation>
@@ -3451,6 +3452,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6860888819347870819">Kan anmode om at åbne integreret billede</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Dette kort kan ikke verificeres lige nu</translation>
+<translation id="6871073333584947219">Wallet-meddelelse er lukket.</translation>
 <translation id="6871813064737840684">Prishistorik på nettet for denne valgmulighed</translation>
 <translation id="6873456682041376666">Øverste bakke</translation>
 <translation id="6874604403660855544">&amp;Annuller fortryd tilføjelse</translation>
@@ -3906,7 +3908,6 @@ Yderligere oplysninger:
 <translation id="7615932826417658001">Tilføj identitetskort</translation>
 <translation id="7616390733770379387">Disse vises i vilkårlig rækkefølge.</translation>
 <translation id="7616645509853975347">Din administrator har aktiveret Chrome Enterprise Connectors i din browser. Disse connectorer har adgang til nogle af dine data.</translation>
-<translation id="7616747402308801775">Dette kort er gemt i Google Wallet, så du kan bruge det i Google-tjenester</translation>
 <translation id="7617825962482469577">Konvolut C7/C6</translation>
 <translation id="7619838219691048931">Sidste ark</translation>
 <translation id="7621546470643449009">Opret en begyndervejledning til stjernekiggeri, der kan hjælpe mig med at lære, hvad jeg skal kigge efter på nattehimlen, herunder 3 letgenkendelige stjernebilleder</translation>
@@ -3971,6 +3972,7 @@ Yderligere oplysninger:
 <translation id="7705085181312584869">Hjælp mig med at skrive</translation>
 <translation id="7705992072972338699">Optisk disk (helblank)</translation>
 <translation id="7706689436519265630">Filer, du kopierer eller flytter, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware og kan blive gemt i henhold til virksomhedens politikker.</translation>
+<translation id="7709934467582922028">Prompten til verificering af mailadresse er lukket</translation>
 <translation id="7714351089363296478">Du har lige besøgt dette sted</translation>
 <translation id="7714404809393719981">Foto (halvblankt)</translation>
 <translation id="7714464543167945231">Certifikat</translation>

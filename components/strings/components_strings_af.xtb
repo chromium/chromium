@@ -1457,6 +1457,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3495081129428749620">Vind in bladsy
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salaris</translation>
+<translation id="3496531230994554300">Wallet-kennisgewing is teen volle hoogte oopgemaak.</translation>
 <translation id="3497627066518778351">Gaan ’n lys werfdata op die toestel in ’n nuwe venster na</translation>
 <translation id="3498215018399854026">Ons kan nie jou ouers op die oomblik bereik nie. Probeer weer.</translation>
 <translation id="350069200438440499">Lêernaam:</translation>
@@ -1559,7 +1560,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3655670868607891010">As jy dit gereeld sien, probeer hierdie <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Hersiening</translation>
 <translation id="3659521826520353662">Watter admingedefinieerde webwerwe word besoek en wanneer: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Hierdie IBAN is in Google Wallet gestoor sodat jy dit in alle Google-dienste kan gebruik.</translation>
 <translation id="3664479564786885722">Soek na meer koopopsies van ander winkels wat hierdie produk verkoop.</translation>
 <translation id="3664782872746246217">Sleutelwoorde:</translation>
 <translation id="3670030362669914947">Nommer</translation>
@@ -2669,6 +2669,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5499229993630251170">Gaan voort met hierdie gespreksdraad?</translation>
 <translation id="5506286895894263601">Die lys bevat geen geldige kortpaaie nie.</translation>
 <translation id="5507756662695126555">Nie-verwerping</translation>
+<translation id="5508515366054931524">Verifieer E-pos-porboodskap is teen volle hoogte oopgemaak</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Bestuurde boekmerke</translation>
 <translation id="5510766032865166053">Dit is dalk geskuif of uitgevee.</translation>
@@ -3451,6 +3452,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6860888819347870819">Kan vra om prent-in-prent in te gaan</translation>
 <translation id="6864189428899665393">267x389 mm</translation>
 <translation id="6865412394715372076">Hierdie kaart kan nie op die oomblik geverifieer word nie</translation>
+<translation id="6871073333584947219">Wallet-kennisgewing is toegemaak.</translation>
 <translation id="6871813064737840684">Prysgeskiedenis oral op die web vir hierdie opsie</translation>
 <translation id="6873456682041376666">Boonste laai</translation>
 <translation id="6874604403660855544">Herdoen byvoeging</translation>
@@ -3905,7 +3907,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7615932826417658001">Voeg identiteitkaart by</translation>
 <translation id="7616390733770379387">Dit word in ewekansige volgorde gewys.</translation>
 <translation id="7616645509853975347">Jou administrateur het Chrome Enterprise Connectors op jou blaaier aangeskakel. Hierdie verbinders het toegang tot van jou data.</translation>
-<translation id="7616747402308801775">Hierdie kaart is in Google Wallet gestoor sodat jy dit in alle Google-dienste kan gebruik.</translation>
 <translation id="7617825962482469577">Koevert C7/C6</translation>
 <translation id="7619838219691048931">Eindbladsy</translation>
 <translation id="7621546470643449009">Skep ’n beginnergids vir sterrekyk om my te help leer waarna om in die naghemel te soek, insluitend 3 konstellasies wat maklik identifiseerbaar is</translation>
@@ -3970,6 +3971,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7705085181312584869">Help my skryf</translation>
 <translation id="7705992072972338699">Optiese skyf (glansryk)</translation>
 <translation id="7706689436519265630">Lêers wat jy kopieer of skuif, word vir ontleding na Google Cloud of derde partye toe gestuur. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word.</translation>
+<translation id="7709934467582922028">Verifieer e-pos-porboodskap is toegemaak</translation>
 <translation id="7714351089363296478">Jy het dit sopas besoek</translation>
 <translation id="7714404809393719981">Foto (semiglans)</translation>
 <translation id="7714464543167945231">Sertifikaat</translation>

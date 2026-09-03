@@ -132,6 +132,7 @@
 કોઈપણ સમયે <ph name="GOOGLE_PASSWORD_MANAGER" />માં તમારા પાસવર્ડ ચેક કરો.</translation>
 <translation id="1084824384139382525">લિંક સર&amp;નામાંની કૉપિ કરો</translation>
 <translation id="1085064499066015002">હંમેશાં બધી સાઇટ માટે પરવાનગી આપો</translation>
+<translation id="1085340215550339505">સમયસર પાસવર્ડ બદલવાના સૂચનો આપવા માટે, તમે મુલાકાત લો છો તે પેજના કન્ટેન્ટ અને URLs પર ક્લાઉડમાં ખાનગી સ્પેસમાં પ્રક્રિયા થઈ શકે છે</translation>
 <translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUM_OTHER_MEMBERS" /> વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> પસંદ કરી નથી. <ph name="COUNT" />માંથી <ph name="INDEX" />. પસંદ કરવા માટે 'શોધ' અને Space દબાવો.</translation>
 <translation id="1086486568852410168">Google Lens વડે શોધો</translation>
@@ -1122,6 +1123,7 @@
 <translation id="1871131409931646355">સંપૂર્ણ ડાઉનલોડ ઇતિહાસ</translation>
 <translation id="187145082678092583">ઓછી ઍપ</translation>
 <translation id="1871615898038944731">તમારું <ph name="DEVICE_TYPE" /> અપ ટૂ ડેટ છે</translation>
+<translation id="1872846000961079826">પાસવર્ડ બદલવા દરમિયાન, પાસવર્ડ પેજ અને સંબંધિત માહિતીમાંથી કન્ટેન્ટ Googleને મોકલવામાં આવે છે અને આ સુવિધાની ક્વૉલિટી બહેતર બનાવવા માટે માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવી શકે છે</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />ને ફરી પરવાનગીઓ આપો</translation>
 <translation id="1874248162548993294">કોઈપણ જાહેરાતો બતાવવાની મંજૂરી છે</translation>
@@ -2847,6 +2849,7 @@
 <translation id="3184536091884214176">CUPS પ્રિન્ટર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">માતાપિતાના યોગ્ય નિયંત્રણોના સેટિંગ બદલવા માટે આ પિનનો ઉપયોગ કરો.
     જો તમે પિન ભૂલી ગયા હો, તો આ ડિવાઇસને પાવરવૉશ કરો અને ફરીથી સેટ કરો.</translation>
+<translation id="3184916134413175521">આને રેટિંગ આપો</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{આ ઍપને બ્લૉક કરવામાં આવી છે}one{આ ઍપને બ્લૉક કરવામાં આવી છે}other{કેટલીક ઍપને બ્લૉક કરવામાં આવી છે}}</translation>
 <translation id="3185454065699440434"><ph name="SITE_NAME" /> પર એક્સ્ટેન્શનને મંજૂરી આપો</translation>
 <translation id="3187556136478864255">શું તમે
@@ -2916,6 +2919,7 @@
 <translation id="3241680850019875542">પૅક કરવા માટે એક્સ્ટેંશનની રૂટ ડિરેક્ટરી પસંદ કરો. એક્સ્ટેંશનને અપડેટ કરવા માટે, ફરી ઉપયોગ કરવા ખાનગી કી ફાઇલ પણ પસંદ કરો.</translation>
 <translation id="3241810535741601486">આ ફેરફાર કાયમી છે અને તેને ઉલટાવી શકાતો નથી. વધારેલી અપડેટ આ ડિવાઇસના બધા વપરાશકર્તાઓ પર લાગુ થાય છે. <ph name="LINK_START" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">તમારો અવતાર</translation>
+<translation id="3242764115495920926">ઑટોમૅટિક રીતે પાસવર્ડ બદલવાની સુવિધા ઑફર કરો</translation>
 <translation id="3243017971870859287">ChromeOS Flex ડિવાઇસ અને કમ્પોનન્ટના અનુક્રમ નંબર વાંચો</translation>
 <translation id="324366796737464147">અવાજ રદ્દીકરણ</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4141,6 +4145,7 @@
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> શૉર્ટકટ માટે વધુ ક્રિયાઓ</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ની કેટલીક સેટિંગ તમારી સાથે શેર કરવામાં આવી રહી છે. એકથી વધુ સાઇન ઇનનો ઉપયોગ કરવા પર જ આ સેટિંગ તમારા એકાઉન્ટને પ્રભાવિત કરે છે.</translation>
 <translation id="4168651806173792090">અંતમાં <ph name="LAST_FOUR_DIGITS" /> ધરાવતું <ph name="NETWORK_NAME" /></translation>
+<translation id="4169275505426201952">આને રેટિંગ આપો...</translation>
 <translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4170314459383239649">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="4170685671197375581">શૉર્ટકટ ચાલુ કરો</translation>
@@ -4442,6 +4447,7 @@
 <translation id="4401912261345737180">કાસ્ટ કરવા માટે, કોઈ કોડ વડે કનેક્ટ કરો</translation>
 <translation id="4403012369005671154">સ્પીચ ટૂ ટેક્સ્ટ</translation>
 <translation id="4403775189117163360">કોઈ અલગ ફોલ્ડર પસંદ કરો</translation>
+<translation id="440411460180511551">જો Chromiumને તમારો કોઈ પાસવર્ડ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળે અને જો તમે સાઇન ઇન કર્યું હોય, તો Google Password Manager તમારા માટે તેને બદલવાની ઑફર કરી શકે છે.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> તમારા માતાપિતા દ્વારા બ્લૉક કરવામાં આવી છે. આ ઍપનો ઉપયોગ કરવા માટે તમારા માતાપિતા પાસેથી પરવાનગી મેળવો.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">આમાં ખસેડો…</translation>
@@ -5050,7 +5056,6 @@
 <translation id="4872192066608821120">પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો</translation>
 <translation id="4872212987539553601">ડિવાઇસ પર એન્ક્રિપ્શનનું સેટઅપ કરો</translation>
 <translation id="4875690134140862902">ટૅબ</translation>
-<translation id="4876273079589074638">આ ક્રૅશની તપાસ કરવામાં અને એને ઠીક કરવામાં અમારાં એન્જિનિયરોની મદદ કરો. જો તમે કરી શકો તેમ હોય તો ચોક્કસ પગલાંની સૂચિ બનાવો. કોઈ પણ વિગત નાની નથી હોતી!</translation>
 <translation id="4876305945144899064">કોઈ વપરાશકર્તા નામ નથી</translation>
 <translation id="4876327226315760474">આનો અર્થ એ છે કે સાઇટની સુવિધાઓ અપેક્ષા મુજબ કાર્ય કરવી જોઈએ, પરંતુ તમારી પાસે બ્રાઉઝિંગ સંરક્ષણ ઓછું હોઈ શકે છે.</translation>
 <translation id="4876895919560854374">સ્ક્રીન લૉક કરો અને અનલૉક કરો</translation>
@@ -6579,6 +6584,7 @@ USB ડિવાઇસ</translation>
 <translation id="6099766472403716061"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાની મંજૂરી આપો</translation>
 <translation id="6100736666660498114">પ્રારંભ મેનૂ</translation>
 <translation id="6100737823178787570">કાર્ય ફરી શરૂ કરવા માટે વિન્ડોનું કદ વધારો</translation>
+<translation id="6101170451607354234">તમે સાઇન ઇન કર્યું હોય ત્યારે જો Chromeને સાર્વજનિક ડેટા ઉલ્લંઘનમાં તમારો કોઈ પાસવર્ડ જોવા મળે, તો Google Password Manager તમારા માટે તેને બદલવાની ઑફર કરી શકે છે.</translation>
 <translation id="6101226222197207147">નવી ઍપ્લિકેશન ઉમેરાઈ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">આ ફાઇલને વિગતવાર સુરક્ષા દ્વારા બ્લૉક કરી હતી.</translation>
 <translation id="6103681770816982672">ચેતવણી: તમે વિકાસકર્તાની ચેનલ પર સ્વિચ કરી રહ્યાં છો</translation>
@@ -6784,6 +6790,7 @@ USB ડિવાઇસ</translation>
 <translation id="6254892857036829079">ઉત્તમ</translation>
 <translation id="6257602895346497974">સિંક કરવાનું ચાલુ કરો…</translation>
 <translation id="625827534921607067">જો અગાઉ કનેક્ટ કરેલા કે કન્ફિગર કરેલા એક કરતાં વધારે નેટવર્ક ઉપલબ્ધ હશે, તો આ નેટવર્કની પસંદગી કરવામાં આવશે</translation>
+<translation id="6258818697161346451">આ ડિવાઇસ પર તમારી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="6259776178973198997">WiFi Directના માલિકોની માહિતી રિફ્રેશ કરો</translation>
 <translation id="6261688934280090835">ChromeOS કિઓસ્ક ઍપ લૉગ</translation>
 <translation id="6263082573641595914">Microsoft CA વર્ઝન</translation>
@@ -10330,6 +10337,7 @@ USB ડિવાઇસ</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> વાગ્યે '<ph name="STATUS_TEXT" />'ના સ્ટેટસને લીધે ડિવાઇસ મેનેજમેન્ટ સર્વર સાથે કનેક્ટ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="90033698482696970">ઉપલબ્ધ ઇ-સિમ પ્રોફાઇલ માટે ઑટોમૅટિક રીતે સ્કૅન કરીએ?</translation>
 <translation id="9003647077635673607">તમામ વેબસાઇટ્સ પર મંજૂરી આપો</translation>
+<translation id="9004279470320280717">આને રેટિંગ આપો...</translation>
 <translation id="9005774573776346118">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મેળવવા માટે <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="9006511997799670136">તમારી સંસ્થા</translation>
 <translation id="900733896273558337">કૌશલ્યમાં ફેરફાર કરો</translation>

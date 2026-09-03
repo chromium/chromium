@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
-<translation id="1035560095760914532">Jarri Chrome beheko eremuan, edonoiz atzitzeko</translation>
 <translation id="1076643793026027628">Chrome-k ezkutuko moduan irekitzen ditu automatikoki YouTube-ko ezkutuko moduko estekak.</translation>
 <translation id="1081114897601629648">Pasahitz hauek ez dira inportatu Google-ren Pasahitz-kudeatzailea zerbitzura, eskakizunak betetzen ez dituztelako.</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
@@ -41,6 +40,7 @@ Kontuan hartu beharrekoak:
 <translation id="1580570086594302477">Chrome-n ezkutuko moduko fitxa berri bat irekitzen du.</translation>
 <translation id="1605168141396675642">Ahaztu URLak kopiatzeko prozesu gogaikarriaz. Ireki estekak zuzenean Chrome-n.</translation>
 <translation id="1646463005043273333">Chrome arakatzaile lehenetsi gisa ezartzeko Chrome-ren ezarpena irekitzen du.</translation>
+<translation id="1668930590094369898">Erabili Chrome modu lehenetsian</translation>
 <translation id="1670609221633730681">Chrome-rako aholkua: aukeratu helbide-barraren posizioa</translation>
 <translation id="1683863426423719967">Chrome-ren fitxei buruzko gogorarazpenak jasotzeko, aktibatu jakinarazpenak iOS-en Ezarpenak atalean.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@ Kontuan hartu beharrekoak:
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ezarpenetan, aktibatu "Chrome"</translation>
 <translation id="1984705450038014246">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1987779152850321833">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko.</translation>
+<translation id="2049569996960148258">Ezkutatu "Erabili Chrome modu lehenetsian"</translation>
 <translation id="2055826352861631739">Erabili iPad-etarako Chrome modu lehenetsian</translation>
 <translation id="2056123005618757196">Egin gauza gehiago Google Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
 <translation id="2120238739383482109">Chrome-ko laster-markak irekitzen ditu.</translation>
@@ -90,7 +91,6 @@ Kontuan hartu beharrekoak:
 <translation id="288992067439702510">Google Chrome-k onartzen dituen laster-marken mugara iritsi zara (<ph name="LIMIT" />). Beraz, laster-marka batzuk ez dira gorde Google-ko kontuan oraindik.
 
 Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan. Orain saioa amaitzen baduzu, gorde gabeko laster-markak ezabatuko dira.</translation>
-<translation id="2901621928549457170">Ireki Chrome berehala iPad-a erabiltzen ari zarenean</translation>
 <translation id="2922914028977213693">Sakatu hau Chrome-ri etekinik handiena ateratzeko iPad-ean.</translation>
 <translation id="292371311537977079">Chrome-ren ezarpenak</translation>
 <translation id="2923827943290349720">Blokeatu ezkutuko moduko fitxak Chrome ixten duzunean</translation>
@@ -175,8 +175,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="5119391094379141756">Hautatu Chrome.</translation>
 <translation id="5123188916260706415">Bilatu ahotsarekin Chrome-n</translation>
 <translation id="5162467219239570114">Chrome zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chrome-ren bertsio berriekin bateragarria ez izatea.</translation>
-<translation id="5172049865623113551">Ireki Chrome berehala iPhone-a erabiltzen ari zarenean</translation>
-<translation id="5179095426828744632">Sartu Chrome-n bizkorrago aplikazioen zintaren bidez</translation>
 <translation id="5184329579814168207">Ireki Chrome-n</translation>
 <translation id="5190139289262548459"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chrome erabiltzeko modua.</translation>
 <translation id="5209238444239954363">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
@@ -262,8 +260,8 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="6922332667202044570">Ezabatu Chrome-ko arakatze-datuak.</translation>
 <translation id="6924922227983877439">Ireki estekak Chrome-n modu lehenetsian</translation>
+<translation id="6926395711547387358">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="6975725306479268850">Aukeratu Chrome betetze automatikorako</translation>
-<translation id="7001031184470316752">Eraman Chrome zintara</translation>
 <translation id="7038674195294813388">Ireki "Default Apps" (aplikazio lehenetsiak) ataleko ezarpenak iOS-en, sakatu "Browser App" (arakatzaile-aplikazioa) eta hautatu Chrome.</translation>
 <translation id="7056826488869329999">Chrome-ren segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="7061455974939528301">Eduki sakatuta Chrome-ren ikonoa eta sakatu "Editatu orri nagusia"</translation>

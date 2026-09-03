@@ -629,6 +629,15 @@ Người dùng có thể phải xác thực lại trực tuyến vì một số 
 <translation id="1438739959477268107">Cài đặt tạo khóa mặc định</translation>
 <translation id="1440408958042020947">Cho phép người dùng đã chọn tham gia Trung tâm điều khiển điện thoại truy cập ảnh và video mới chụp/quay trên điện thoại của họ</translation>
 <translation id="1443532790824582949">Bật bàn phím ảo cảm ứng</translation>
+<translation id="1445955287827003066">Chính sách này kiểm soát việc có chuyển đổi thiết bị từ ChromeOS sang Next OS hay không và thời điểm chuyển đổi.
+
+Nếu bạn đặt chính sách này thành 0, khả năng chuyển đổi của thiết bị sẽ được xác định theo chế độ cài đặt mặc định của Google. Chế độ này có thể phụ thuộc vào mẫu thiết bị, phần cứng và các yếu tố khác.
+
+Nếu bạn đặt chính sách này thành 2147483647, thiết bị sẽ được đánh dấu là sẵn sàng và được đưa vào diện chuyển đổi mà không có thời hạn cụ thể.
+
+Nếu bạn đặt chính sách này thành một giá trị lớn hơn 0 và nhỏ hơn 2147483647, thiết bị sẽ được đánh dấu là có thể chuyển đổi và được đưa vào diện chuyển đổi. Giá trị này thể hiện thời hạn hoàn tất được đề xuất, tính bằng số giây kể từ thời gian Unix (00:00:00 ngày 1 tháng 1 năm 1970 theo giờ UTC).
+
+Xin lưu ý rằng các chế độ cài đặt khác về việc cập nhật thiết bị, chẳng hạn như ghim phiên bản (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />), tắt tính năng cập nhật (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) hoặc chế độ cài đặt kênh phát hành (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />), có thể khiến thiết bị không nhận được các bản cập nhật cần thiết để bắt đầu quá trình chuyển đổi, ngay cả khi bạn đã đặt ngày mục tiêu tại đây. Chính sách này luôn được áp dụng, trạng thái chưa đặt tương ứng với chế độ mặc định của Google, vì giá trị của chính sách này có thể ảnh hưởng đến quá trình xử lý các chính sách cập nhật thiết bị.</translation>
 <translation id="1447252610864877219">Cho phép ứng dụng Gemini thực hiện hành động trên các trang web.</translation>
 <translation id="1449083855104537880">Khi bạn đặt chính sách này thành True, các tùy chọn hỗ trợ tiếp cận sẽ hiển thị trong trình đơn ở khay hệ thống. Nếu bạn đặt chính sách này thành False, thì các tùy chọn sẽ không xuất hiện trong trình đơn.
 
@@ -2163,6 +2172,7 @@ Khi bạn đặt chính sách này thành tắt, người dùng hoặc các bi�
 
 Người dùng có thể chọn một hình ảnh trên Google Photos làm hình nền nếu bạn bật hoặc không đặt chính sách này.</translation>
 <translation id="2393862222659066027">Mở một danh sách URL và khôi phục phiên gần đây nhất</translation>
+<translation id="239395129206831238">Đặt ngày mục tiêu để chuyển đổi thiết bị sang Next OS</translation>
 <translation id="239416486107542256">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ ctrl và shift</translation>
 <translation id="2394429297128584919">Không cho phép các trang gửi yêu cầu XHR đồng bộ trong khi đóng trang</translation>
 <translation id="2398817690049129302">Buộc sử dụng Chế độ an toàn trên <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
@@ -4753,6 +4763,7 @@ Những điều cần lưu ý:
 <translation id="402759845255257575">Không cho phép bất kỳ trang web nào chạy JavaScript</translation>
 <translation id="4027608872760987929">Bật nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4030152268425532846">Tắt phím tắt bailout tự động đăng nhập</translation>
+<translation id="4032740546145417900">Không cho phép tính năng Nói để nhập.</translation>
 <translation id="4043796890723386527">Ngăn người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Khi bạn đặt chính sách này, hệ thống sẽ kiểm soát bộ lọc URL SafeSites. Bộ lọc này dùng API Tìm kiếm an toàn của Google để phân loại xem các URL có chứa nội dung khiêu dâm hay không.
 
@@ -6795,6 +6806,17 @@ Lưu ý: Tính năng này chưa được phát hành rộng rãi nên có thể 
 <translation id="5247584184349816217">Bật trình bảo vệ màn hình trên màn hình khoá.</translation>
 <translation id="5247973380763021389">Không cho phép các chính sách đám mây ở cấp người dùng ghi đè các chính sách đám mây ở cấp thiết bị.</translation>
 <translation id="5249006530384016395">Kiểm soát xem có bật cú pháp <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> không dùng nữa cho trạng thái tuỳ chỉnh của CSS hay không</translation>
+<translation id="5249271416806588789">Nói để nhập là tính năng dựa trên AI cho phép người dùng nhập và chỉnh sửa văn bản bằng giọng nói của họ. Tính năng này hoạt động dựa trên các mô hình AI tạo sinh nhằm cung cấp khả năng phiên âm và định dạng chất lượng cao.
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Người dùng có thể thêm các tài khoản Kerberos</translation>
 <translation id="5249555581286638799">Bật Chế độ hiệu quả cao</translation>
 <translation id="5252210248395576403">Chính sách này cấp cho tính năng Thông tin nhanh quyền truy cập vào nội dung đã chọn và gửi thông tin đó đến máy chủ để nhận kết quả dịch.
@@ -6926,6 +6948,7 @@ Các tài khoản được quản lý không đủ điều kiện tham gia hoặ
 <translation id="533287753294126753">Cho phép tính năng So sánh các thẻ và tham gia cải tiến mô hình AI.</translation>
 <translation id="5334404204520035180">Kiểm soát việc sử dụng API WebPrinting</translation>
 <translation id="5334501839642146593">Không bao giờ gửi các chỉ số cho Google</translation>
+<translation id="5335403007354311099">Bật bộ tính năng hỗ trợ tiếp cận của trình kết xuất</translation>
 <translation id="5335910979215357815">Bật Save and Share API để bên thứ ba kiểm soát <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5337869685871558036">Cho phép tìm nạp trước SpeculationRules tới các URL do ServiceWorker kiểm soát</translation>
 <translation id="5339096331970464266">Bật bàn phím ảo hỗ trợ tiếp cận</translation>
@@ -7977,6 +8000,7 @@ Nếu bạn không đặt chính sách này nhưng có đặt chính sách <ph n
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể gửi ý kiến phản hồi cho Google.</translation>
 <translation id="5976636832661103220">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ shift</translation>
 <translation id="5979376378555121803">Ứng dụng được lưu trữ</translation>
+<translation id="5983016603010860828">Cài đặt tính năng Nói để nhập</translation>
 <translation id="5983274643567559194">Không cho phép đặt phím tắt cho thao tác của phím "Delete".</translation>
 <translation id="5984099692320899605">Không sử dụng tuỳ chọn xác thực NTLM</translation>
 <translation id="5984237109586500246">Chấp nhận nội dung web được phân phối ở dạng Signed HTTP Exchanges</translation>
@@ -9812,6 +9836,7 @@ Xin lưu ý rằng chính sách này chỉ áp dụng cho trình duyệt đượ
 Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7054840304131108563">Tắt bộ tính năng hỗ trợ tiếp cận của trình kết xuất</translation>
 <translation id="7055022222176591388">Không cho phép <ph name="FLASH_PLUGIN_NAME" /> lỗi thời</translation>
 <translation id="7056040036973126753">Dữ liệu về Độ tin cậy của miền có thể được gửi đến Google, tuỳ thuộc vào chính sách Chỉ số người dùng của Chrome (UMA)</translation>
 <translation id="7062803946218028349">Cho phép bật Trung tâm điều khiển điện thoại</translation>
@@ -10296,6 +10321,7 @@ Nếu bạn tắt hoặc không đặt chính sách này, thì các chế độ 
       Khi bạn bật chính sách này, các trang web có nguy cơ trở thành mục tiêu tấn công trên nhiều trang web, đồng thời khiến người dùng bị theo dõi trên các trang web ngay cả khi không có cookie bằng cách thêm các mục vào bộ nhớ đệm xác thực HTTP sử dụng thông tin xác thực được nhúng trong URL.
 
       Chính sách này nhằm tạo điều kiện để các doanh nghiệp đang phụ thuộc vào chế độ cũ có thể cập nhật quy trình đăng nhập. Chính sách này sẽ bị xoá bỏ trong tương lai.</translation>
+<translation id="7322231030019184787">Cho phép tính năng Nói để nhập mà không thu thập dữ liệu.</translation>
 <translation id="7322825363493984512">Mật khẩu để xác thực các dịch vụ hệ thống dành cho proxy web từ xa.</translation>
 <translation id="7323773727263636287">Bật tính năng hỗ trợ tiếp cận chỉnh màu
 
@@ -10494,12 +10520,6 @@ Về mặt chức năng thì việc không đặt chính sách này tương đư
 web đủ điều kiện bằng tính năng chuyển văn bản sang lời nói. Tính năng lọc nội dung và tổng hợp âm thanh phía máy chủ giúp thực hiện điều này. Nếu bạn đặt thành sai
 thì hệ thống sẽ tắt tính năng này. Nếu bạn đặt chính sách này thành mặc định hoặc không đặt
 thì hệ thống sẽ bật tính năng đọc to.</translation>
-<translation id="7456922722153109956">Chính sách này kiểm soát cách thức xuất hiện của thông báo giữa trang trên trang Thẻ mới.
-
-      Nếu bạn đặt chính sách này thành Bật, thông báo giữa trang sẽ xuất hiện trên trang Thẻ mới nếu có.
-
-      Nếu bạn thiết lập chính sách này thành Tắt, thông báo giữa trang sẽ không xuất hiện trên trang Thẻ mới ngay cả khi có.
-      </translation>
 <translation id="7459601923199346224">Kiểm soát các chính sách quản lý chứng chỉ cho thiết bị và người dùng.</translation>
 <translation id="7459633275230216698">Cho phép hộp thoại chọn tệp</translation>
 <translation id="7462256705280836453">Chọn có thể tắt chế độ cài đặt Quảng cáo do trang web đề xuất của <ph name="PRIVACY_SANDBOX_NAME" /> hay không</translation>
@@ -10749,6 +10769,7 @@ Các mẫu URL không được xung đột với <ph name="WEB_PRINTING_BLOCKED_
       Khi bạn đặt chính sách này, Mã truy cập dành cho cha mẹ có thể được xác minh trên thiết bị của người dùng là trẻ em.
       Khi bạn không đặt chính sách này, Mã truy cập dành cho cha mẹ không xác minh được trên thiết bị của người dùng là trẻ em.</translation>
 <translation id="7623431489198474050">Tắt chính sách chứng thực từ xa để bảo vệ nội dung</translation>
+<translation id="7624832415093566709">Cho phép tính năng Nói để nhập.</translation>
 <translation id="7625858205605842562">Nếu đặt chính sách này, bạn có thể liệt kê các mẫu URL để chỉ định những trang web không được phép yêu cầu người dùng cấp quyền truy cập vào thiết bị USB.
 
       Khi bạn không đặt chính sách này, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tuỳ chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
@@ -11449,6 +11470,7 @@ Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến 
   – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">Bật tính năng báo cáo thông tin về đèn nền của thiết bị</translation>
 <translation id="8062485064082966327">Dùng một dịch vụ ẩn danh của Google để cung cấp nội dung mô tả tự động cho những hình ảnh chưa gắn nhãn</translation>
+<translation id="8064875716442437829">Bật tính năng hỗ trợ tiếp cận của trình kết xuất</translation>
 <translation id="8066428282805800713">Gửi thêm dữ liệu phần cứng trên ChromeOS Flex</translation>
 <translation id="8069233292746468045">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự thuật toán thoả thuận về khoá được ưu tiên (nhóm được hỗ trợ) trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
 
@@ -12593,6 +12615,13 @@ Lưu ý: Chính sách này sẽ không có hiệu lực nếu bạn đặt chín
       Nếu bạn không đặt chính sách này, thì hệ thống sẽ dùng cấu hình mặc định đối với hộp cát mạng. Điều này có thể thay đổi tuỳ thuộc vào bản phát hành <ph name="PRODUCT_NAME" /> hiện đang chạy các bản thử nghiệm và nền tảng.
       Chính sách này nhằm cho phép doanh nghiệp có thể tắt hộp cát mạng một cách linh hoạt nếu họ dùng phần mềm bên thứ ba can thiệp vào hộp cát dịch vụ mạng.</translation>
 <translation id="8840243776706727185">Tính năng NewBaseUrlInheritanceBehavior bị tắt</translation>
+<translation id="8841125674413543406">Kiểm soát việc tạo cây hỗ trợ tiếp cận trong quy trình kết xuất.
+
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt, <ph name="PRODUCT_NAME" /> sẽ cho phép tạo cây hỗ trợ tiếp cận cho các trang web.
+
+Nếu bạn đặt chính sách này thành Tắt, cây hỗ trợ tiếp cận của trình kết xuất sẽ không được tạo nữa, khiến bộ tính năng hỗ trợ tiếp cận không thể tương tác với trình kết xuất.
+
+Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi hay ghi đè chính sách.</translation>
 <translation id="8842208363354615697">Cho phép bật chế độ Chỉ HTTPS</translation>
 <translation id="8843331294082716286">Không hiển thị lời nhắc của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng.</translation>
 <translation id="884855199714673326">Cho phép máy chủ truy cập từ xa quyết định</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
-<translation id="1035560095760914532">எப்போது வேண்டுமானாலும் Chromeமை அணுக, அதைத் திரையின் கீழ்ப்பகுதியில் வைக்கவும்</translation>
 <translation id="1076643793026027628">YouTube மறைநிலை இணைப்புகளை மறைநிலைப் பயன்முறையில் Chrome தானாகவே திறக்கும்.</translation>
 <translation id="1081114897601629648">தேவைகளுடன் பொருந்தாததால் இந்தக் கடவுச்சொற்கள் Google Password Managerரில் பதிவேற்றப்படவில்லை.</translation>
 <translation id="1086486568852410168">Google Lens மூலம் தேடு</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">Chromeமில் புதிய மறைநிலைப் பக்கத்தைத் திறக்கும்.</translation>
 <translation id="1605168141396675642">நகலெடுக்கும் வேலையைத் தவிர்த்திடுங்கள். இணைப்புகளை நேரடியாக Chromeமில் திறந்திடுங்கள்.</translation>
 <translation id="1646463005043273333">Chromeமை இயல்பு பிரவுசராக அமைப்பதற்கு Chrome அமைப்பைத் திறக்கும்.</translation>
+<translation id="1668930590094369898">Chromeமை இயல்பு பிரவுசராகப் பயன்படுத்து</translation>
 <translation id="1670609221633730681">Chrome உதவிக்குறிப்பு: முகவரிப் பட்டியின் இடத்தைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="1683863426423719967">Chromeமில் இருந்து பக்க நினைவூட்டல்களைப் பெற, உங்கள் iOS அமைப்புகளில் அறிவிப்புகளை ஆன் செய்யவும்.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" அமைப்புகளில் "Chrome" என்பதை இயக்கவும்</translation>
 <translation id="1984705450038014246">உங்கள் Chrome தரவை ஒத்திசைக்கவும்</translation>
 <translation id="1987779152850321833">Chrome உலாவியில் இருந்து அதிகப் பலன்களைப் பெற இந்தப் பரிந்துரைக்கப்பட்ட செயல்களை நிறைவுசெய்யவும்.</translation>
+<translation id="2049569996960148258">‘Chromeமை இயல்பு பிரவுசராகப் பயன்படுத்து’ என்பதை மறை</translation>
 <translation id="2055826352861631739">iPadக்கு Chromeமை இயல்பாகவே பயன்படுத்துதல்</translation>
 <translation id="2056123005618757196">எளிய, பாதுகாப்பான &amp; மிகவும் விரைவான Google Chrome மூலம் மேலும் பலவற்றைச் செய்திடுங்கள்.</translation>
 <translation id="2120238739383482109">Chrome புக்மார்க்குகளைத் திறக்கலாம்.</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">Google Chromeமின் <ph name="LIMIT" /> புக்மார்க்குகள் என்ற வரம்பை அடைந்துவிட்டதால், உங்களின் சில புக்மார்க்குகள் இன்னும் உங்கள் Google கணக்கில் சேமிக்கப்படவில்லை.
 
 சில புக்மார்க்குகளை நீக்கும் வரை உங்கள் கணக்கில் புதிய புக்மார்க்குகளைச் சேமிக்க முடியாது. இப்போது வெளியேறினால், சேமிக்கப்படாத புக்மார்க்குகள் நீக்கப்படும்.</translation>
-<translation id="2901621928549457170">iPadல் இருக்கும்போது Chromeமை உடனடியாகத் திறக்கலாம்</translation>
 <translation id="2922914028977213693">iPadல் Chromeமில் இருந்து அதிகப் பலன்களைப் பெற இங்கே தட்டுங்கள்.</translation>
 <translation id="292371311537977079">Chrome அமைப்புகள்</translation>
 <translation id="2923827943290349720">Chromeமை மூடும்போது மறைநிலைத் தாவல்களைப் பூட்டு</translation>
@@ -175,8 +175,6 @@
 <translation id="5119391094379141756">Chromeமைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="5123188916260706415">Chromeமில் குரல் மூலம் தேடு</translation>
 <translation id="5162467219239570114">Chrome உலாவி காலாவதியாகிவிட்டது. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />ரில் புதுப்பிப்பு எதுவும் இல்லையெனில் உங்கள் சாதனம் Chrome உலாவியின் புதிய பதிப்புகளை இனி ஆதரிக்காமல் போவதற்கு வாய்ப்புள்ளது.</translation>
-<translation id="5172049865623113551">iPhoneனில் இருக்கும்போது Chromeமை உடனடியாகத் திறக்கலாம்</translation>
-<translation id="5179095426828744632">டாக்கில் இருந்து Chromeமை விரைவாக அணுகுங்கள்</translation>
 <translation id="5184329579814168207">Chrome இல் திற</translation>
 <translation id="5190139289262548459">நீங்கள் உள்நுழைந்திருக்கும் கணக்கையும், Chrome எப்படிப் பயன்படுத்தப்படுகிறது என்பதையும் உங்கள் நிறுவனம் (<ph name="DOMAIN" />) நிர்வகிக்கிறது.</translation>
 <translation id="5209238444239954363">புதுப்பிப்புகள் உள்ளனவா என்று Chromeமால் பார்க்க முடியவில்லை. பிறகு முயலவும்.</translation>
@@ -262,8 +260,8 @@
 உங்கள் Chrome உபயோகத்தை மேம்படுத்தப் பயன்படுத்தப்படும் தரவு குறித்த கூடுதல் அமைப்புகளுக்கு, <ph name="BEGIN_LINK" />Google சேவைகள்<ph name="END_LINK" /> என்பதற்குச் செல்லவும்.</translation>
 <translation id="6922332667202044570">Chromeமில் பிரவுசிங் தரவை நீக்கும்.</translation>
 <translation id="6924922227983877439">இணைப்புகளை இயல்பாகவே Chromeமில் திறக்கும்</translation>
+<translation id="6926395711547387358">Chromeமை இயல்பு பிரவுசராக அமை</translation>
 <translation id="6975725306479268850">தன்னிரப்பிக்கு Chromeமைத் தேர்வுசெய்யுங்கள்</translation>
-<translation id="7001031184470316752">Chromeமை டாக்கிற்கு நகர்த்துங்கள்</translation>
 <translation id="7038674195294813388">iOSஸில் இயல்பு ஆப்ஸ் அமைப்புகளைத் திறந்து "பிரவுசர் ஆப்ஸ்" என்பதைத் தட்டிவிட்டு Chromeமைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="7056826488869329999">Chromeமில் பாதுகாப்புச் சரிபார்ப்பைத் திறந்து இயக்கும்.</translation>
 <translation id="7061455974939528301">Chrome ஐகானை அழுத்திப் பிடித்து "முகப்புத் திரையில் மாற்று" என்பதைக் கிளிக் செய்யுங்கள்</translation>

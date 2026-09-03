@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="1053651653201045802">Oturum kapatıldı. Hesabınızdaki yer işaretlerini, şifreleri ve diğer öğeleri kullanmak için tekrar oturum açın.</translation>
 <translation id="1054745118061919935">Devam ederek <ph name="BEGIN_LINK" />Hizmet Şartları<ph name="END_LINK" />'nı kabul etmiş olursunuz.</translation>
+<translation id="1056818261333183659">Hangisini satın almalıyım?</translation>
 <translation id="10614374240317010">Hiç kaydedilmeyecekler</translation>
 <translation id="1062138828266376352">PIN'iniz değiştirilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" dosyasının (<ph name="FILE_SIZE" />) kaydedileceği yeri seçin</translation>
@@ -1505,6 +1506,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5898848375214731122">Kütle</translation>
 <translation id="5899314093904173337">Yakınlardaki kişilerle paylaşmak için bu QR kodunu kameraları veya QR tarayıcı uygulamalarıyla taramalarını sağlayın</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} yeni sekme}other{{count} yeni sekme}}</translation>
+<translation id="5906163261248594192">Dan'in Doğum Günü</translation>
 <translation id="5911030830365207728">Google Çeviri</translation>
 <translation id="5912796581727968237">Google Cüzdan'ı aç</translation>
 <translation id="5922999516621365983">Sabitlemek için sekmeyi buraya sürükleyin.</translation>
@@ -1924,6 +1926,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="720399613139435155">Çeviri başarısız oldu</translation>
 <translation id="7204922488054642675">Kişiselleştirilmiş haberler</translation>
 <translation id="7206979415662233817">Hizmet şartları</translation>
+<translation id="721218676460477064">Bu makaleyi özetle</translation>
 <translation id="7215621211572884440">Pop-up'lara izin verildi</translation>
 <translation id="7218491361283758048">Posta kodu</translation>
 <translation id="7221173315674413369">Yenilikler bölümünde yeni özellikleri ve ipuçlarını keşfedin</translation>
@@ -2185,6 +2188,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8035133914807600019">Yeni klasör…</translation>
 <translation id="8035412398498507358">Fotoğraflar</translation>
 <translation id="8037713009824540257">Site Ekle</translation>
+<translation id="8038078082340255234">Pazar Raporu</translation>
 <translation id="8040407350301524547">Rota seçenekleri için "Yol tarifi al"a dokunun.</translation>
 <translation id="804427445359061970">Diğer cihazlarınızdaki sekmeleri burada bulabilirsiniz</translation>
 <translation id="8058655154417507695">Son kullanım tarihinin yılı</translation>
@@ -2242,6 +2246,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8232956427053453090">Verileri koru</translation>
 <translation id="8233237502828137700">Banner tanıtımı kapat</translation>
 <translation id="823339794112333264">Mikrofonu aç</translation>
+<translation id="8240217649914883113">Bunu takvimime ekle</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="8252980988000695656">Google Lens tamamlandı.</translation>
 <translation id="8258734532103758067">Verilerimi dışa aktardım</translation>
@@ -2286,6 +2291,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8368198938968349418">Otomatik doldurmayı etkinleştir…</translation>
 <translation id="8370406443343902172">Ayarlar'a git...</translation>
 <translation id="8370929854657845191">Orta yüksekliğe genişletin</translation>
+<translation id="8371494817541821097">Geçiş anahtarı <ph name="DATE" /> tarihinde oluşturuldu</translation>
 <translation id="8372471489238799313">{count,plural, =1{Adresi sil}other{Adresleri sil}}</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>
 <translation id="8385363453480067273">Google Lens ile gördüklerinizi arayın</translation>

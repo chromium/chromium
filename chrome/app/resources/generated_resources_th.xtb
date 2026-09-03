@@ -132,6 +132,7 @@
 ตรวจสอบรหัสผ่านได้ทุกเมื่อใน <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1084824384139382525">คัดลอก&amp;ที่อยู่ลิงก์</translation>
 <translation id="1085064499066015002">ตลอดเวลาในทุกเว็บไซต์</translation>
+<translation id="1085340215550339505">ระบบจะประมวลผลเนื้อหาและ URL ของหน้าเว็บที่คุณเข้าชมในพื้นที่ส่วนตัวในระบบคลาวด์เพื่อให้คำแนะนำในการเปลี่ยนรหัสผ่านอย่างทันท่วงที</translation>
 <translation id="1085558727130096638">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
 <translation id="1085618740036066768">ไม่ได้เลือก<ph name="ITEM" /> <ph name="INDEX" /> จาก <ph name="COUNT" /> รายการ กดแป้นค้นหากับแป้นเว้นวรรคเพื่อเลือก</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
@@ -1122,6 +1123,7 @@
 <translation id="1871131409931646355">ประวัติการดาวน์โหลดแบบเต็ม</translation>
 <translation id="187145082678092583">แสดงแอปน้อยลง</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ของคุณเป็นเวอร์ชันล่าสุดแล้ว</translation>
+<translation id="1872846000961079826">ในระหว่างการเปลี่ยนรหัสผ่าน ระบบจะส่งเนื้อหาจากหน้าที่มีรหัสผ่านและข้อมูลที่เกี่ยวข้องไปยัง Google และเจ้าหน้าที่สามารถตรวจสอบเนื้อหาดังกล่าวเพื่อปรับปรุงคุณภาพของฟีเจอร์นี้</translation>
 <translation id="1873513359268939357">ปฏิทิน Outlook</translation>
 <translation id="1873920700418191231">อนุญาตสิทธิ์อีกครั้งสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">ได้รับอนุญาตให้แสดงโฆษณาใดก็ได้</translation>
@@ -2846,6 +2848,7 @@
 <translation id="3184536091884214176">ตั้งค่าหรือจัดการเครื่องพิมพ์ CUPS <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">ใช้ PIN นี้เพื่อเปลี่ยนการตั้งค่าการควบคุมโดยผู้ปกครอง
     หากลืม PIN ให้ทำการ Powerwash อุปกรณ์นี้แล้วตั้งค่าอีกครั้ง</translation>
+<translation id="3184916134413175521">ให้คะแนน</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{แอปนี้ถูกบล็อก}other{แอปบางแอปถูกบล็อก}}</translation>
 <translation id="3185454065699440434">อนุญาตให้ใช้ส่วนขยายใน <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">คุณเห็นอุปกรณ์แคสต์ใน<ph name="BEGIN_LINK" />แอป Google Home<ph name="END_LINK" /> ไหม</translation>
@@ -2913,6 +2916,7 @@
 <translation id="3241680850019875542">เลือกไดเรกทอรีหลักของส่วนขยายที่จะแพค หากคุณต้องการอัปเดตส่วนขยาย ให้เลือกไฟล์กุญแจส่วนตัวที่จะใช้ซ้ำด้วย</translation>
 <translation id="3241810535741601486">การเปลี่ยนแปลงนี้จะมีผลถาวรและย้อนกลับไม่ได้ การอัปเดตเพิ่มเติมจะมีผลกับผู้ใช้ทุกคนของอุปกรณ์นี้ <ph name="LINK_START" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">รูปโปรไฟล์ของคุณ</translation>
+<translation id="3242764115495920926">เสนอให้เปลี่ยนรหัสผ่านโดยอัตโนมัติ</translation>
 <translation id="3243017971870859287">อ่านหมายเลขซีเรียลของอุปกรณ์และคอมโพเนนต์ ChromeOS Flex</translation>
 <translation id="324366796737464147">การลดเสียงรบกวน</translation>
 <translation id="3244271242291266297">ดด</translation>
@@ -4138,6 +4142,7 @@
 <translation id="4167924027691268367">การดำเนินการเพิ่มเติมสำหรับทางลัด <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">การตั้งค่าบางอย่างที่เป็นของ <ph name="PRIMARY_EMAIL" /> กำลังมีการแชร์กับคุณ การตั้งค่าเหล่านี้มีผลกับบัญชีของคุณเมื่อมีการใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีเท่านั้น</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ลงท้ายด้วย <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">ให้คะแนน...</translation>
 <translation id="4169535189173047238">ไม่อนุญาต</translation>
 <translation id="4170314459383239649">ล้างเมื่อออก</translation>
 <translation id="4170685671197375581">เปิดทางลัด</translation>
@@ -4439,6 +4444,7 @@
 <translation id="4401912261345737180">เชื่อมต่อด้วยรหัสเพื่อแคสต์</translation>
 <translation id="4403012369005671154">การแปลงเสียงพูดเป็นข้อความ</translation>
 <translation id="4403775189117163360">เลือกโฟลเดอร์อื่น</translation>
+<translation id="440411460180511551">หาก Chromium พบรหัสผ่านของคุณในการละเมิดข้อมูลสาธารณะ เครื่องมือจัดการรหัสผ่านบน Google จะเสนอให้คุณเปลี่ยนรหัสผ่านเมื่อลงชื่อเข้าใช้</translation>
 <translation id="4404843640767531781">ผู้ปกครองของคุณบล็อก <ph name="APP_NAME" /> ไว้ โปรดขอสิทธิ์จากผู้ปกครองเพื่อใช้แอปนี้</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ย้ายไปที่…</translation>
@@ -5046,7 +5052,6 @@
 <translation id="4872192066608821120">หากต้องการนำเข้ารหัสผ่าน ให้เลือกไฟล์ CSV</translation>
 <translation id="4872212987539553601">ตั้งค่าการเข้ารหัสในอุปกรณ์</translation>
 <translation id="4875690134140862902">แท็บ</translation>
-<translation id="4876273079589074638">ช่วยวิศวกรของเราตรวจสอบและแก้ไขข้อขัดข้องนี้ ระบุขั้นตอนที่แน่นอนหากทำได้ ไม่มีรายละเอียดใดที่ไร้ประโยชน์!</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
 <translation id="4876327226315760474">การตั้งค่านี้หมายความว่าฟีเจอร์ของเว็บไซต์ควรทำงานตามที่คาดไว้ แต่การปกป้องขณะท่องเว็บอาจลดลง</translation>
 <translation id="4876895919560854374">ล็อกและปลดล็อกหน้าจอ</translation>
@@ -6569,6 +6574,7 @@
 <translation id="6099766472403716061">อนุญาตให้ <ph name="HOST" /> ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่เสมอ</translation>
 <translation id="6100736666660498114">เมนูเริ่มต้น</translation>
 <translation id="6100737823178787570">เพิ่มขนาดหน้าต่างเพื่อทำงานต่อ</translation>
+<translation id="6101170451607354234">หาก Chrome พบรหัสผ่านของคุณในการละเมิดข้อมูลสาธารณะ เครื่องมือจัดการรหัสผ่านบน Google จะเสนอให้คุณเปลี่ยนรหัสผ่านเมื่อลงชื่อเข้าใช้</translation>
 <translation id="6101226222197207147">เพิ่มแอปพลิเคชันใหม่แล้ว (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">ไฟล์นี้ถูกบล็อกโดยการปกป้องขั้นสูง</translation>
 <translation id="6103681770816982672">คำเตือน: คุณกำลังเปลี่ยนเป็นเวอร์ชันที่กำลังพัฒนา</translation>
@@ -6774,6 +6780,7 @@
 <translation id="6254892857036829079">ยอดเยี่ยม</translation>
 <translation id="6257602895346497974">เปิดการซิงค์...</translation>
 <translation id="625827534921607067">ระบบจะเลือกเครือข่ายนี้หากมีมากกว่า 1 เครือข่ายที่เชื่อมต่อหรือกำหนดค่าไว้ก่อนหน้านี้</translation>
+<translation id="6258818697161346451">ใช้พาสคีย์ในอุปกรณ์นี้</translation>
 <translation id="6259776178973198997">รีเฟรชข้อมูลเจ้าของ Wi-Fi Direct</translation>
 <translation id="6261688934280090835">บันทึกแอปคีออสก์ของ ChromeOS</translation>
 <translation id="6263082573641595914">รุ่นของผู้มีสิทธิ์ออกใบรับรองของ Microsoft</translation>
@@ -10322,6 +10329,7 @@
 <translation id="9003185744423389627">การเชื่อมต่อกับเซิร์ฟเวอร์การจัดการอุปกรณ์ไม่สำเร็จโดยมีสถานะ "<ph name="STATUS_TEXT" />" เมื่อ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">สแกนหาโปรไฟล์ eSIM ที่ใช้ได้โดยอัตโนมัติไหม</translation>
 <translation id="9003647077635673607">อนุญาตบนทุกเว็บไซต์</translation>
+<translation id="9004279470320280717">ให้คะแนน...</translation>
 <translation id="9005774573776346118">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงรหัสผ่าน บุ๊กมาร์ก และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="9006511997799670136">องค์กรของคุณ</translation>
 <translation id="900733896273558337">แก้ไขทักษะ</translation>

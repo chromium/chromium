@@ -132,6 +132,7 @@
 هرزمان خواستید گذواژه‌هایتان را در <ph name="GOOGLE_PASSWORD_MANAGER" /> بررسی کنید.</translation>
 <translation id="1084824384139382525">کپی آدر&amp;س پیوند</translation>
 <translation id="1085064499066015002">همیشه در همه سایت‌ها</translation>
+<translation id="1085340215550339505">برای ارائه پیشنهادهای به‌موقع برای تغییر گذرواژه، محتوا و نشانی‌های وب صفحه‌هایی که بازدید می‌کنید می‌توانند در یک فضای خصوصی در فضای ابری پردازش شوند</translation>
 <translation id="1085558727130096638">به «گروه زبانه» با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUM_OTHER_MEMBERS" /> نفر دیگر بپیوندید</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> انتخاب نشده است. ‫<ph name="INDEX" /> از <ph name="COUNT" />. برای انتخاب، کلید «جستجو» را به‌همراه کلید «فاصله» فشار دهید.</translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
@@ -1131,6 +1132,7 @@
 <translation id="1871131409931646355">سابقه کامل بارگیری‌ها</translation>
 <translation id="187145082678092583">برنامه‌های کمتر</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> شما به‌ روز است</translation>
+<translation id="1872846000961079826">‏درطول تغییر گذرواژه، محتوای صفحه‌های گذرواژه و اطلاعات مرتبط به Google ارسال می‌شود و ممکن است برای بهبود کیفیت این ویژگی بازبینی انسانی شود</translation>
 <translation id="1873513359268939357">‏تقویم Outlook</translation>
 <translation id="1873920700418191231">اعطای مجدد اجازه‌ها به <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">اجازه دارد همه آگهی‌ها را نشان دهد</translation>
@@ -2858,6 +2860,7 @@
 <translation id="3184536091884214176">‏چاپگرهای CUPS را راه‌اندازی یا مدیریت کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">برای تغییر دادن تنظیمات کنترل‌های والدین از این پین استفاده می‌کنید.
     اگر پین را فراموش کنید، باید این دستگاه را بازنشانی کارخانه‌ای کنید و دوباره راه‌اندازی کنید.</translation>
+<translation id="3184916134413175521">رده‌بندی کنید</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{این برنامه مسدود شده است}one{برخی برنامه‌ها مسدود شده‌اند}other{برخی برنامه‌ها مسدود شده‌اند}}</translation>
 <translation id="3185454065699440434">مجاز کردن افزونه‌ها در <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">‏آیا می‌توانید دستگاه پخش را در
@@ -2927,6 +2930,7 @@
 <translation id="3241680850019875542">دایرکتوری ریشه برنامهٔ افزودنی را برای فشرده کردن انتخاب کنید. همچنین برای به‌روزرسانی برنامهٔ افزودنی، فایل کلید خصوصی را برای استفاده مجدد انتخاب کنید.</translation>
 <translation id="3241810535741601486">این تغییر دائمی است و قابل‌بازگرداندن نیست. به‌روزرسانی‌های تمدیدشده برای همه کاربران این دستگاه اعمال می‌شود. <ph name="LINK_START" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">چهرک شما</translation>
+<translation id="3242764115495920926">پیشنهاد تغییر خودکار گذرواژه‌ها</translation>
 <translation id="3243017971870859287">‏خواندن شماره‌های سریال عنصر و دستگاه ChromeOS Flex</translation>
 <translation id="324366796737464147">حذف نوفه زمینه</translation>
 <translation id="3244271242291266297">ماه</translation>
@@ -4152,6 +4156,7 @@
 <translation id="4167924027691268367">کنش‌های بیشتر برای میان‌بر <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">برخی از تنظیمات متعلق به <ph name="PRIMARY_EMAIL" /> با شما به اشتراک گذاشته می‌شود. این تنظیمات وقتی از ورود چندگانه به سیستم استفاده شود، فقط در حساب شما اعمال می‌شود.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> با ارقام آخر <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">رده‌بندی کنید…</translation>
 <translation id="4169535189173047238">اجازه ندادن</translation>
 <translation id="4170314459383239649">پاک کردن هنگام خروج</translation>
 <translation id="4170685671197375581">روشن کردن میان‌بر</translation>
@@ -4453,6 +4458,7 @@
 <translation id="4401912261345737180">برای پخش محتوا، بااستفاده از کد متصل شوید</translation>
 <translation id="4403012369005671154">گفتار به نوشتار</translation>
 <translation id="4403775189117163360">پوشه دیگری را انتخاب کنید</translation>
+<translation id="440411460180511551">‏اگر Chromium یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه عمومی پیدا کند، «مدیر گذرواژه Google» می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد تغییر آن را به شما ارائه دهد.</translation>
 <translation id="4404843640767531781">ولی‌تان <ph name="APP_NAME" /> را مسدود کرده است. از ولی‌تان بخواهید استفاده از این برنامه را مجاز کند.</translation>
 <translation id="4405117686468554883">‏‎*.jpeg،‏ ‎*.jpg،‏ ‎*.png</translation>
 <translation id="4405224443901389797">بردن به…</translation>
@@ -5061,7 +5067,6 @@
 <translation id="4872192066608821120">‏برای وارد کردن گذرواژه‌ها، فایل CSV را انتخاب کنید</translation>
 <translation id="4872212987539553601">راه‌اندازی رمزگذاری درون‌دستگاهی</translation>
 <translation id="4875690134140862902">زبانه</translation>
-<translation id="4876273079589074638">به مهندسان ما کمک کنید این خرابی را بررسی و برطرف کنند. در صورت امکان مراحل را دقیق فهرست کنید. هیچ جزئیاتی بی‌اهمیت نیست!</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>
 <translation id="4876327226315760474">این یعنی ویژگی‌های سایت باید طبق انتظار کار کند اما ممکن است محافظت کمتری در مرورگر داشته باشید.</translation>
 <translation id="4876895919560854374">قفل و باز کردن قفل صفحه</translation>
@@ -6588,6 +6593,7 @@
 <translation id="6099766472403716061">‏همیشه اجازه دادن <ph name="HOST" /> برای کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI</translation>
 <translation id="6100736666660498114">منوی شروع</translation>
 <translation id="6100737823178787570">برای ازسر گرفتن تکلیف، اندازه پنجره را افزایش دهید</translation>
+<translation id="6101170451607354234">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه عمومی پیدا کند، «مدیر گذرواژه Google» می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد تغییر آن را به شما ارائه دهد.</translation>
 <translation id="6101226222197207147">برنامه جدید اضافه شده (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">این فایل توسط «محافظت پیشرفته» مسدود شده است.</translation>
 <translation id="6103681770816982672">هشدار: شما به کانال برنامه‌نویس می‌روید</translation>
@@ -6793,6 +6799,7 @@
 <translation id="6254892857036829079">عالی</translation>
 <translation id="6257602895346497974">روشن کردن همگام‌سازی…</translation>
 <translation id="625827534921607067">اگر بیش‌از یک شبکه قبلاً متصل‌شده یا پیکربندی‌شده دردسترس باشد، این شبکه در اولویت خواهد بود</translation>
+<translation id="6258818697161346451">از گذرکلیدها در این دستگاه استفاده کنید</translation>
 <translation id="6259776178973198997">‏بازآوری اطلاعات مالکان Wi-Fi Direct</translation>
 <translation id="6261688934280090835">‏گزارش‌های برنامه کیوسکی ChromeOS</translation>
 <translation id="6263082573641595914">‏نسخه CA Microsoft</translation>
@@ -10344,6 +10351,7 @@
 <translation id="9003185744423389627">اتصال ناموفق به «سرور مدیریت دستگاه» در تاریخ <ph name="FAILURE_TIME" /> با نشان دادن وضعیت «<ph name="STATUS_TEXT" />»</translation>
 <translation id="90033698482696970">نمایه‌های سیم‌کارت داخلی موجود به‌طور خودکار اسکن شود؟</translation>
 <translation id="9003647077635673607">در همه وب‌سایت‌ها مجاز باشد</translation>
+<translation id="9004279470320280717">رده‌بندی کنید…</translation>
 <translation id="9005774573776346118">برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم وارد شوید</translation>
 <translation id="9006511997799670136">سازمان شما</translation>
 <translation id="900733896273558337">ویرایش مهارت</translation>

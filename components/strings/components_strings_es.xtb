@@ -1457,6 +1457,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3495081129428749620">Buscar en la página
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salario</translation>
+<translation id="3496531230994554300">Aviso de Wallet abierto a altura completa.</translation>
 <translation id="3497627066518778351">Ver una lista con los datos de sitios en el dispositivo en una ventana nueva</translation>
 <translation id="3498215018399854026">No hemos podido contactar con tu padre/madre/tutor/a. Vuelve a intentarlo.</translation>
 <translation id="350069200438440499">Nombre:</translation>
@@ -1559,7 +1560,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3655670868607891010">Si este mensaje aparece con frecuencia, prueba a solucionarlo con estas <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Qué sitios web definidos por el administrador se visitan y cuándo: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Este IBAN se ha guardado en Google Wallet para que lo puedas usar en todos los servicios de Google.</translation>
 <translation id="3664479564786885722">Busca más opciones de compra en otras tiendas que vendan este producto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -2669,6 +2669,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5499229993630251170">¿Continuar esta conversación?</translation>
 <translation id="5506286895894263601">La lista no contiene accesos directos válidos.</translation>
 <translation id="5507756662695126555">Sin rechazo</translation>
+<translation id="5508515366054931524">Mensaje de verificación de correo abierto a altura completa</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores administrados</translation>
 <translation id="5510766032865166053">Es posible que se haya movido o eliminado.</translation>
@@ -3451,6 +3452,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6860888819347870819">Puede solicitar activar la función de imagen en imagen</translation>
 <translation id="6864189428899665393">267x389 mm</translation>
 <translation id="6865412394715372076">No se puede verificar la tarjeta en este momento</translation>
+<translation id="6871073333584947219">Aviso de Wallet cerrado.</translation>
 <translation id="6871813064737840684">Historial de precios de esta opción en la Web</translation>
 <translation id="6873456682041376666">Bandeja superior</translation>
 <translation id="6874604403660855544">&amp;Rehacer acción de añadir</translation>
@@ -3906,7 +3908,6 @@ Más información:
 <translation id="7615932826417658001">Añadir documento de identidad</translation>
 <translation id="7616390733770379387">Se muestran en orden aleatorio.</translation>
 <translation id="7616645509853975347">Tu administrador ha activado Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>
-<translation id="7616747402308801775">Esta tarjeta se ha guardado en Google Wallet para que la puedas usar en todos los servicios de Google</translation>
 <translation id="7617825962482469577">Sobre C7/C6</translation>
 <translation id="7619838219691048931">Hoja final</translation>
 <translation id="7621546470643449009">Crea una guía para principiantes sobre la observación de estrellas que me ayude a saber qué buscar en el cielo nocturno, incluidas 3 constelaciones fácilmente identificables</translation>
@@ -3971,6 +3972,7 @@ Más información:
 <translation id="7705085181312584869">Ayúdame a escribir</translation>
 <translation id="7705992072972338699">Disco óptico (brillo intenso)</translation>
 <translation id="7706689436519265630">Los archivos que copies o muevas se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso y que se almacenen de acuerdo con las políticas de la empresa.</translation>
+<translation id="7709934467582922028">Mensaje de verificación de correo cerrada</translation>
 <translation id="7714351089363296478">Recién visitado</translation>
 <translation id="7714404809393719981">Foto (semibrillante)</translation>
 <translation id="7714464543167945231">Certificado</translation>

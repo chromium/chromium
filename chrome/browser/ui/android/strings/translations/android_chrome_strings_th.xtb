@@ -105,6 +105,7 @@
 <translation id="138181280295369883">ลงชื่อเข้าใช้เพื่อรับข้อมูลที่บันทึกไว้และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="1381838868249179644">ระบบได้นำสิทธิ์ออกจากบางเว็บไซต์เพื่อช่วยให้คุณปลอดภัย</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
+<translation id="1384568202352682721">บันทึกเป็น…</translation>
 <translation id="1384704387250346179">แปลรูปภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">คุณอาจเห็นประวัติการเข้าชมจากแอปอื่นๆ ที่เปิดลิงก์ใน Chrome บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="139752016751285248">Bottom Sheet ข้อมูลเชิงลึกด้านราคาเปิดอยู่แบบเต็มหน้า</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">เปลี่ยนแปลงแล้ว</translation>
 <translation id="1480287803138246127">ประวัติการเข้าชมเว็บบางส่วนอาจไม่แสดงที่นี่ หากต้องการดูประวัติการเข้าชมใน Chrome ทั้งหมด ให้เปิดประวัติการเข้าชมใน Chrome แบบเต็ม</translation>
 <translation id="1483493594462132177">ส่ง</translation>
+<translation id="1485343711570311792">เปิดใน <ph name="NATIVE_APP_NAME" /> • จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1496514951988037011">ชื่อผู้ใช้</translation>
 <translation id="1501480321619201731">ลบกลุ่ม</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">ปัดจากขอบด้านซ้ายเพื่อย้อนกลับ</translation>
 <translation id="2323763861024343754">พื้นที่เก็บข้อมูลเว็บไซต์</translation>
 <translation id="2327445548174191329">จาก <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">บันทึกหน้าเป็น…</translation>
 <translation id="2328474416100889417">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะปิดลิงก์คำเชิญทั้งหมด</translation>
 <translation id="2329500425421091035">ขอแนะนำโหมด AI ใน Chrome</translation>
 <translation id="2330186936255788117">บุ๊กมาร์กเพิ่มเติม</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">งานของคุณยังอยู่ระหว่างดำเนินการ</translation>
 <translation id="8317318757008452355">เปิดตัวเลือกในการพิมพ์</translation>
 <translation id="8320212361750431956">กิจกรรมล่าสุด</translation>
+<translation id="8322452989119079156">เปิดใน <ph name="NATIVE_APP_NAME" /> - ส่งจาก <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">บุ๊กมาร์กและรายการ</translation>
 <translation id="8342727528718219152">Chrome จะแจ้งให้คุณทราบเกี่ยวกับเว็บไซต์ที่อาจส่งการแจ้งเตือนมากเกินไป</translation>

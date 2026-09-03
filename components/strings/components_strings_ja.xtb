@@ -1457,6 +1457,7 @@
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
     ページ内を検索</translation>
 <translation id="3495818359064790343">給与</translation>
+<translation id="3496531230994554300">ウォレットの通知が画面全体に表示されています。</translation>
 <translation id="3497627066518778351">デバイス上のサイトデータの一覧が新しいウィンドウに表示されます</translation>
 <translation id="3498215018399854026">現在、保護者にたずねることができません。もう一度お試しください。</translation>
 <translation id="350069200438440499">ファイル名:</translation>
@@ -1559,7 +1560,6 @@
 <translation id="3655670868607891010">このエラーが頻繁に表示される場合は、こちらの<ph name="HELP_LINK" />をお試しください。</translation>
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3659521826520353662">管理者が定義したウェブサイトとアクセスした日時: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">この IBAN は Google ウォレットに保存され、Google サービス全体で使用できるようになります。</translation>
 <translation id="3664479564786885722">この商品を販売している他のショップの購入オプションを検索します。</translation>
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3670030362669914947">番号</translation>
@@ -2669,6 +2669,7 @@
 <translation id="5499229993630251170">このスレッドを続行しますか？</translation>
 <translation id="5506286895894263601">このリストには有効なショートカットが含まれていません。</translation>
 <translation id="5507756662695126555">否認防止</translation>
+<translation id="5508515366054931524">メールアドレスの確認を求めるメッセージが画面全体に表示されています</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">管理対象のブックマーク</translation>
 <translation id="5510766032865166053">移動または削除された可能性があります。</translation>
@@ -3451,6 +3452,7 @@
 <translation id="6860888819347870819">ピクチャー イン ピクチャーの開始を要求できます</translation>
 <translation id="6864189428899665393">267x389 mm</translation>
 <translation id="6865412394715372076">現在、このカードを確認できません</translation>
+<translation id="6871073333584947219">ウォレットの通知を閉じました。</translation>
 <translation id="6871813064737840684">このオプションのウェブ全体での価格の推移</translation>
 <translation id="6873456682041376666">上トレイ</translation>
 <translation id="6874604403660855544">追加のやり直し（&amp;R）</translation>
@@ -3906,7 +3908,6 @@
 <translation id="7615932826417658001">ID カードを追加</translation>
 <translation id="7616390733770379387">表示は順不同です。</translation>
 <translation id="7616645509853975347">管理者により、お使いのブラウザで Chrome Enterprise Connectors が有効化されています。これらのコネクタには、一部のユーザーデータへのアクセスが許可されます。</translation>
-<translation id="7616747402308801775">このカードは Google ウォレットに保存され、Google サービス全体で使用できるようになります</translation>
 <translation id="7617825962482469577">C7/C6 封筒</translation>
 <translation id="7619838219691048931">最終シート</translation>
 <translation id="7621546470643449009">初心者向けの星空観察ガイドを作成して。夜空の楽しみ方がわかるように、見つけやすい星座を 3 つ教えて</translation>
@@ -3971,6 +3972,7 @@
 <translation id="7705085181312584869">文書作成サポート</translation>
 <translation id="7705992072972338699">光ディスク（高光沢）</translation>
 <translation id="7706689436519265630">コピーまたは移動したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存される場合があります。</translation>
+<translation id="7709934467582922028">メールアドレスの確認を求めるメッセージを閉じました</translation>
 <translation id="7714351089363296478">たった今訪問</translation>
 <translation id="7714404809393719981">写真（半光沢）</translation>
 <translation id="7714464543167945231">証明書</translation>

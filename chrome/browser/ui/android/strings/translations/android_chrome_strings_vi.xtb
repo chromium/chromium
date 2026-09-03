@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Đăng nhập để sử dụng thông tin đã lưu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="1381838868249179644">Để đảm bảo an toàn cho bạn, chúng tôi đã loại bỏ quyền của một số trang web</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
+<translation id="1384568202352682721">Lưu dưới dạng…</translation>
 <translation id="1384704387250346179">Dịch hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Nhật ký có thể bao gồm các đường liên kết được mở trong Chrome từ các ứng dụng khác. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Đã mở bảng thông tin chi tiết về giá ở dưới cùng trên toàn màn hình</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">Đã thay đổi</translation>
 <translation id="1480287803138246127">Một phần nhật ký duyệt web của bạn có thể không xuất hiện ở đây. Để xem toàn bộ nhật ký duyệt web trên Chrome, hãy mở nhật ký duyệt web đầy đủ trên Chrome.</translation>
 <translation id="1483493594462132177">Gửi</translation>
+<translation id="1485343711570311792">Mở trong <ph name="NATIVE_APP_NAME" /> • Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Quay lại thẻ</translation>
 <translation id="1496514951988037011">tên người dùng</translation>
 <translation id="1501480321619201731">Xóa nhóm</translation>
@@ -327,6 +329,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="232137538351753795">Vuốt từ mép trái sang để quay lại</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2327445548174191329">Từ <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Lưu trang dưới dạng…</translation>
 <translation id="2328474416100889417">Mọi người sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và tất cả đường liên kết của lời mời sẽ đều bị vô hiệu hoá</translation>
 <translation id="2329500425421091035">Giới thiệu về Chế độ AI trong Chrome</translation>
 <translation id="2330186936255788117">Các dấu trang khác</translation>
@@ -593,7 +596,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3351959803838327376">Nhấn và giữ trang web rồi mở trình đơn</translation>
 <translation id="3359667936385849800">Sử dụng nhà cung cấp dịch vụ hiện tại của bạn</translation>
 <translation id="3384347053049321195">Chia sẻ hình ảnh</translation>
-<translation id="3385749568468586663">Gemini không hoạt động ở Chế độ ẩn danh</translation>
+<translation id="3385749568468586663">Gemini không hoạt động ở chế độ ẩn danh</translation>
 <translation id="3387650086002190359">Tải xuống <ph name="FILE_NAME" /> không thành công do lỗi hệ thống tệp.</translation>
 <translation id="3391311825344469964">Bạn có thể quản lý các cửa sổ trong Trình quản lý cửa sổ của Chrome</translation>
 <translation id="3410151451624226773">Quản lý trong Trình quản lý mật khẩu của Google</translation>
@@ -1874,6 +1877,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8313599942510782709">Nhiệm vụ của bạn vẫn đang được thực hiện</translation>
 <translation id="8317318757008452355">Mở các lựa chọn để in</translation>
 <translation id="8320212361750431956">Hoạt động gần đây</translation>
+<translation id="8322452989119079156">Mở trong <ph name="NATIVE_APP_NAME" /> – Gửi từ <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Dấu trang và danh sách</translation>
 <translation id="8342727528718219152">Chrome sẽ cho bạn biết những trang web có thể đang gửi quá nhiều thông báo</translation>

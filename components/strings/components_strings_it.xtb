@@ -1454,6 +1454,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3495081129428749620">Trova nella pagina
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Conto stipendio</translation>
+<translation id="3496531230994554300">Notifica di Wallet aperta a schermo intero.</translation>
 <translation id="3497627066518778351">Esamina un elenco di dati dei siti sul dispositivo in una nuova finestra</translation>
 <translation id="3498215018399854026">In questo momento, non è possibile raggiungere il tuo genitore. Riprova.</translation>
 <translation id="350069200438440499">Nome file:</translation>
@@ -1556,7 +1557,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Se questo problema si verifica spesso, prova questi <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisione</translation>
 <translation id="3659521826520353662">Quali siti web definiti dall'amministratore vengono visitati e quando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Questo IBAN è stato salvato in Google Wallet per consentirti di utilizzarlo sui servizi Google.</translation>
 <translation id="3664479564786885722">Cerca altre opzioni di acquisto in altri negozi che vendono questo prodotto.</translation>
 <translation id="3664782872746246217">Parole chiave:</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -2666,6 +2666,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5499229993630251170">Continuare questo thread?</translation>
 <translation id="5506286895894263601">L'elenco non contiene scorciatoie valide.</translation>
 <translation id="5507756662695126555">Non ripudio</translation>
+<translation id="5508515366054931524">Richiesta di verifica dell'email aperta a schermo intero</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Preferiti gestiti</translation>
 <translation id="5510766032865166053">Potrebbe essere stato spostato o eliminato.</translation>
@@ -3447,6 +3448,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6860888819347870819">Può chiedere l'autorizzazione ad attivare la modalità Picture in picture</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Al momento non è possibile verificare questa carta.</translation>
+<translation id="6871073333584947219">Notifica di Wallet chiusa.</translation>
 <translation id="6871813064737840684">Cronologia dei prezzi sul web per questa opzione</translation>
 <translation id="6873456682041376666">Vassoio superiore</translation>
 <translation id="6874604403660855544">&amp;Ripeti aggiunta</translation>
@@ -3902,7 +3904,6 @@ Ulteriori dettagli:
 <translation id="7615932826417658001">Aggiungi carta di identità</translation>
 <translation id="7616390733770379387">Questi sono mostrati in ordine casuale.</translation>
 <translation id="7616645509853975347">L'amministratore ha attivato Chrome Enterprise Connectors sul tuo browser. Questi connettori hanno accesso ad alcuni dei tuoi dati.</translation>
-<translation id="7616747402308801775">Questa carta è stata salvata in Google Wallet per consentirti di utilizzarla sui servizi Google.</translation>
 <translation id="7617825962482469577">Busta C7/C6</translation>
 <translation id="7619838219691048931">Ultimo foglio</translation>
 <translation id="7621546470643449009">Crea una guida per principianti sull'osservazione delle stelle per aiutarmi a imparare cosa cercare nel cielo notturno, incluse 3 costellazioni facilmente identificabili</translation>
@@ -3967,6 +3968,7 @@ Ulteriori dettagli:
 <translation id="7705085181312584869">Aiutami a scrivere</translation>
 <translation id="7705992072972338699">Disco ottico (lucido)</translation>
 <translation id="7706689436519265630">I file copiati o spostati vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere sottoposti a scansione per rilevare dati sensibili o malware e archiviati in base alle policy aziendali.</translation>
+<translation id="7709934467582922028">Richiesta di verifica dell'email chiusa</translation>
 <translation id="7714351089363296478">Appena visitato</translation>
 <translation id="7714404809393719981">Foto (semilucida)</translation>
 <translation id="7714464543167945231">Certificato</translation>

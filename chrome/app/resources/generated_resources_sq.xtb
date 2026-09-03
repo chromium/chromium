@@ -132,6 +132,7 @@
 Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopjo adr&amp;esën e lidhjes</translation>
 <translation id="1085064499066015002">Gjithmonë në të gjitha sajtet</translation>
+<translation id="1085340215550339505">Për të bërë sugjerime në kohë për ndryshimin e fjalëkalimeve, përmbajtja dhe URL-të e faqeve që viziton mund të përpunohen në një hapësirë private në renë kompjuterike</translation>
 <translation id="1085558727130096638">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUM_OTHER_MEMBERS" /> tjetër</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> nuk është zgjedhur. <ph name="INDEX" /> nga <ph name="COUNT" />. Shtyp "Kërko" plus "Hapësirë" për ta zgjedhur.</translation>
 <translation id="1086486568852410168">Kërko me "Lenten e Google"</translation>
@@ -1121,6 +1122,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1871131409931646355">Historiku i plotë i shkarkimeve</translation>
 <translation id="187145082678092583">Më pak aplikacione</translation>
 <translation id="1871615898038944731">Pajisja jote <ph name="DEVICE_TYPE" /> është e përditësuar</translation>
+<translation id="1872846000961079826">Gjatë ndryshimit të fjalëkalimit, përmbajtjet nga faqet e fjalëkalimeve dhe informacionet përkatëse dërgohen te Google dhe mund të shqyrtohen nga njerëz për të përmirësuar cilësinë e kësaj veçorie</translation>
 <translation id="1873513359268939357">Kalendari i Outlook</translation>
 <translation id="1873920700418191231">Lejo përsëri lejet për <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Lejohen të shfaqin çdo reklamë</translation>
@@ -2845,6 +2847,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3184536091884214176">Konfiguro ose menaxho printerët CUPS. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Përdor këtë kod PIN për të ndryshuar cilësimet e kontrolleve prindërore
     Nëse e harron kodin PIN, kryej Powerwash për këtë pajisje dhe konfiguroje përsëri.</translation>
+<translation id="3184916134413175521">Vlerësoje</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ky aplikacion është bllokuar}other{Disa aplikacione janë bllokuar}}</translation>
 <translation id="3185454065699440434">Lejo shtesat në <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Mund ta shikosh pajisjen e transmetimit në
@@ -2914,6 +2917,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3241680850019875542">Përzgjidh direktorinë kryesore të shtesës prej nga do të krijosh paketën. Për të përditësuar një shtesë, përzgjidh gjithashtu skedarin e çelësit privat për ripërdorim.</translation>
 <translation id="3241810535741601486">Ky ndryshim është i përhershëm dhe nuk mund të anulohet. Përditësimet për një periudhë të zgjatur zbatohen për të gjithë përdoruesit e kësaj pajisjeje. <ph name="LINK_START" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Simboli yt</translation>
+<translation id="3242764115495920926">Ofro ndryshimin automatik të fjalëkalimeve</translation>
 <translation id="3243017971870859287">Të lexojë numrat e serisë të pajisjes me ChromeOS Flex dhe të komponentit</translation>
 <translation id="324366796737464147">Anulimi i zhurmës</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4139,6 +4143,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4167924027691268367">Më shumë veprime për shkurtoren e <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Disa cilësime që i përkasin <ph name="PRIMARY_EMAIL" /> po ndahen me ty. Këto cilësime prekin vetëm llogarinë tënde kur përdor identifikimin e shumëfishtë.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> që mbaron me <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Vlerësoje...</translation>
 <translation id="4169535189173047238">Mos lejo</translation>
 <translation id="4170314459383239649">Pastro në dalje</translation>
 <translation id="4170685671197375581">Aktivizo shkurtoren</translation>
@@ -4440,6 +4445,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4401912261345737180">Lidhu me një kod për të transmetuar</translation>
 <translation id="4403012369005671154">Ligjërimi-në-tekst</translation>
 <translation id="4403775189117163360">Zgjidh një dosje tjetër</translation>
+<translation id="440411460180511551">Nëse Chromium gjen një nga fjalëkalimet e tua në një nxjerrje të paautorizuar të të dhënave publike, "Menaxheri i fjalëkalimeve i Google" mund të ofrojë ta ndryshojë atë për ty kur të jesh i identifikuar.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> është bllokuar nga prindi yt. Kërko leje nga prindi që ta përdorësh këtë aplikacion.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>
@@ -5047,7 +5053,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4872192066608821120">Për t'i importuar fjalëkalimet, zgjidh një skedar CSV</translation>
 <translation id="4872212987539553601">Konfiguro enkriptimin në pajisje</translation>
 <translation id="4875690134140862902">Skeda</translation>
-<translation id="4876273079589074638">Ndihmo inxhinierët tanë të hetojnë dhe të rregullojnë këtë ndërprerje aksidentale. Rendit hapat e saktë nëse është e mundur. Nuk ka detaje të tepërta!</translation>
 <translation id="4876305945144899064">Nuk ka emër përdoruesi</translation>
 <translation id="4876327226315760474">Kjo do të thotë që veçoritë e sajtit duhet të funksionojnë siç pritet, por mund të kesh më pak mbrojtje gjatë shfletimit.</translation>
 <translation id="4876895919560854374">Kyç dhe shkyç ekranin</translation>
@@ -6573,6 +6578,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6099766472403716061">Lejo gjithmonë <ph name="HOST" /> që të kontrollojë dhe të riprogramojë pajisjet e tua MIDI</translation>
 <translation id="6100736666660498114">Menyja e nisjes</translation>
 <translation id="6100737823178787570">Rrit madhësinë e dritares për të vazhduar detyrën</translation>
+<translation id="6101170451607354234">Nëse Chrome gjen një nga fjalëkalimet e tua në një nxjerrje të paautorizuar të të dhënave publike, "Menaxheri i fjalëkalimeve i Google" mund të ofrojë ta ndryshojë atë për ty kur të jesh i identifikuar.</translation>
 <translation id="6101226222197207147">U shtua aplikacion i ri (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Ky skedar është bllokuar nga "Mbrojtja e përparuar".</translation>
 <translation id="6103681770816982672">Paralajmërim! Po kalon te kanali i zhvilluesit</translation>
@@ -6778,6 +6784,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6254892857036829079">E përkryer</translation>
 <translation id="6257602895346497974">Aktivizo sinkronizimin...</translation>
 <translation id="625827534921607067">Ky rrjet do të jetë i preferuar nëse ofrohen më shumë se një rrjet i lidhur ose i konfiguruar më parë</translation>
+<translation id="6258818697161346451">Përdor çelësat e kalimit në këtë pajisje</translation>
 <translation id="6259776178973198997">Rifresko informacionet e zotëruesve të Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Evidencat e aplikacionit "kioskë" të ChromeOS</translation>
 <translation id="6263082573641595914">Versioni i autoritetit të certifikimit të Microsoft</translation>
@@ -10326,6 +10333,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9003185744423389627">Lidhja me serverin e menaxhimit të pajisjes dështoi me statusin "<ph name="STATUS_TEXT" />" në <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Të skanohet automatikisht për profilet e disponueshme të kartës eSIM?</translation>
 <translation id="9003647077635673607">Lejo në të gjitha uebsajtet</translation>
+<translation id="9004279470320280717">Vlerësoje...</translation>
 <translation id="9005774573776346118">Për t'i marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Organizata jote</translation>
 <translation id="900733896273558337">Modifiko aftësinë</translation>

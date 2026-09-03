@@ -105,6 +105,7 @@
 <translation id="138181280295369883">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಮಾಹಿತಿ ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1381838868249179644">ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಲು ಸಹಾಯ ಮಾಡಲು, ಕೆಲವು ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
+<translation id="1384568202352682721">ಹೀಗೆ ಸೇವ್ ಮಾಡಿ…</translation>
 <translation id="1384704387250346179">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಅನುವಾದಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome ನಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ತೆರೆಯಲಾದ ಲಿಂಕ್‌ಗಳ ಇತಿಹಾಸವನ್ನು ನೀವು ನೋಡಲು ಸಾಧ್ಯವಾಗಬಹುದು. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="139752016751285248">ದರದ ಒಳನೋಟಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="1480287803138246127">ನಿಮ್ಮ ಕೆಲವು ಇತಿಹಾಸವನ್ನು ಇಲ್ಲಿ ತೋರಿಸದೇ ಇರಬಹುದು. ನಿಮ್ಮ ಎಲ್ಲಾ Chrome ಇತಿಹಾಸವನ್ನು ನೋಡಲು, ಸಂಪೂರ್ಣ Chrome ಇತಿಹಾಸವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ • <ph name="DEVICE_NAME" /> ನಿಂದ</translation>
 <translation id="1495677929897281669">ಟ್ಯಾಬ್‌ಗೆ ಮರಳಿ</translation>
 <translation id="1496514951988037011">ಬಳಕೆದಾರರ ಹೆಸರು</translation>
 <translation id="1501480321619201731">ಗುಂಪನ್ನು ಅಳಿಸಿ</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">ಹಿಂದಕ್ಕೆ ಹೋಗಲು ಎಡ ಎಡ್ಜ್‌ನಿಂದ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2323763861024343754">ಸೈಟ್ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ಇಂದ</translation>
+<translation id="232757965409810352">ಪುಟವನ್ನು ಹೀಗೆ ಸೇವ್ ಮಾಡಿ…</translation>
 <translation id="2328474416100889417">ಪ್ರತಿಯೊಬ್ಬರೂ ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಎಲ್ಲಾ ಆಹ್ವಾನ ಲಿಂಕ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="2329500425421091035">Chrome ನಲ್ಲಿ AI ಮೋಡ್ ಅನ್ನು ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2330186936255788117">ಇನ್ನಷ್ಟು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
@@ -1873,6 +1876,7 @@
 <translation id="8313599942510782709">ನಿಮ್ಮ ಕಾರ್ಯವು ಇನ್ನೂ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="8317318757008452355">ಪ್ರಿಂಟ್ ಮಾಡಲು ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8320212361750431956">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ - <ph name="DEVICE_NAME" /> ನಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಟ್ಟಿಗಳು</translation>
 <translation id="8342727528718219152">ಹಲವಾರು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವ ಸೈಟ್‌ಗಳ ಕುರಿತು Chrome ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1053651653201045802">Аккаунттан шыққансыз. Аккаунтыңыздағы бетбелгілерді, құпия сөздерді және т.б. пайдалану үшін аккаунтқа қайта кіріңіз.</translation>
 <translation id="1054745118061919935">Жалғастыру арқылы <ph name="BEGIN_LINK" />Қызмет көрсету шарттарына<ph name="END_LINK" /> келісесіз.</translation>
+<translation id="1056818261333183659">Қайсысын сатып алған дұрыс?</translation>
 <translation id="10614374240317010">Ешқашан сақталмайды</translation>
 <translation id="1062138828266376352">PIN кодыңыз өзгертілмеді. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) сақталатын жерді таңдаңыз</translation>
@@ -1505,6 +1506,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="5898848375214731122">Масса</translation>
 <translation id="5899314093904173337">Жаныңыздағы адамдармен бөлісу үшін олар осы QR кодын камера немесе QR сканерлеу қолданбасы арқылы сканерлеуі қажет.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} жаңа қойынды}other{{count} жаңа қойынды}}</translation>
+<translation id="5906163261248594192">Даниярдың туған күні</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet-ті ашу</translation>
 <translation id="5922999516621365983">Қойындыны бекіту үшін осы жерге сүйреңіз.</translation>
@@ -1924,6 +1926,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="720399613139435155">Аударылмады</translation>
 <translation id="7204922488054642675">Жекелендірілген жаңалықтар</translation>
 <translation id="7206979415662233817">Қызмет көрсету шарттары</translation>
+<translation id="721218676460477064">Осы мақаланы қысқаша мазмұндау</translation>
 <translation id="7215621211572884440">Қалқымалы терезелерге рұқсат етілген</translation>
 <translation id="7218491361283758048">Пошта индексі</translation>
 <translation id="7221173315674413369">"Жаңалықтар" бөліміндегі жаңа мүмкіндіктермен және кеңестермен танысыңыз</translation>
@@ -2185,6 +2188,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8035133914807600019">Жаңа қалта…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">Сайт қосу</translation>
+<translation id="8038078082340255234">Нарық есебі</translation>
 <translation id="8040407350301524547">Бағыт опциялары үшін "Бағыттарды алу" түймесін түртіңіз.</translation>
 <translation id="804427445359061970">Басқа құрылғылардағы қойындыларды осы жерден табасыз</translation>
 <translation id="8058655154417507695">Жарамдылық мерзімі бітетін жыл</translation>
@@ -2242,6 +2246,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8232956427053453090">Деректерді сақтау</translation>
 <translation id="8233237502828137700">Баннер промокеңесін жабу</translation>
 <translation id="823339794112333264">Микрофонды қосу</translation>
+<translation id="8240217649914883113">Мұны күнтізбеме қос</translation>
 <translation id="8250920743982581267">Құжаттар</translation>
 <translation id="8252980988000695656">Google Lens тапсырмасы аяқталды!</translation>
 <translation id="8258734532103758067">Деректерді экспорттадым</translation>
@@ -2286,6 +2291,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8368198938968349418">Автотолтыруды қосу…</translation>
 <translation id="8370406443343902172">Параметрлерге өту…</translation>
 <translation id="8370929854657845191">Орташа биіктікке жаю</translation>
+<translation id="8371494817541821097">Кіру кілті жасалған күн: <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Мекенжайды жою}other{Мекенжайларды жою}}</translation>
 <translation id="8378714024927312812">Ұйым басқарады</translation>
 <translation id="8385363453480067273">Google Lens арқылы көз алдыңыздағы нәрсе туралы ақпарат іздеңіз</translation>

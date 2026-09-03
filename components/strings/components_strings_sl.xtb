@@ -1457,6 +1457,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3495081129428749620">Iskanje na strani
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Plača</translation>
+<translation id="3496531230994554300">Obvestilo Denarnice je odprto pri polni višini.</translation>
 <translation id="3497627066518778351">Pregled seznama podatkov spletnih mest v napravi v novem oknu</translation>
 <translation id="3498215018399854026">Trenutno ni mogoče vzpostaviti stika s staršem. Poskusi znova pozneje.</translation>
 <translation id="350069200438440499">Ime datoteke:</translation>
@@ -1559,7 +1560,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3655670868607891010">Če se to pogosto zgodi, poskusite <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Različica</translation>
 <translation id="3659521826520353662">Katera spletna mesta, ki jih je določil skrbnik, so obiskana in kdaj: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Ta številka IBAN je shranjena v Google Denarnici in jo lahko uporabljate v Googlovih storitvah.</translation>
 <translation id="3664479564786885722">Poiščite več možnosti nakupa v drugih trgovinah, ki prodajajo ta izdelek.</translation>
 <translation id="3664782872746246217">Ključne besede:</translation>
 <translation id="3670030362669914947">Številka</translation>
@@ -2669,6 +2669,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5499229993630251170">Želite nadaljevati to nit?</translation>
 <translation id="5506286895894263601">Na seznamu ni veljavnih bližnjic.</translation>
 <translation id="5507756662695126555">Brez zavračanja</translation>
+<translation id="5508515366054931524">Poziv za preverjanje e-poštnega naslova je odprt pri polni višini</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Upravljani zaznamki</translation>
 <translation id="5510766032865166053">Morda je premaknjena ali izbrisana.</translation>
@@ -3451,6 +3452,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6860888819347870819">Lahko zahteva odpiranje načina slike v sliki</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Te kartice trenutno ni mogoče preveriti</translation>
+<translation id="6871073333584947219">Obvestilo Denarnice je zaprto.</translation>
 <translation id="6871813064737840684">Zgodovina cen v spletu za to možnost</translation>
 <translation id="6873456682041376666">Zgornji pladenj</translation>
 <translation id="6874604403660855544">&amp;Uveljavi dodajanje</translation>
@@ -3906,7 +3908,6 @@ Dodatne podrobnosti:
 <translation id="7615932826417658001">Dodajanje osebne izkaznice</translation>
 <translation id="7616390733770379387">Ti so prikazani naključno.</translation>
 <translation id="7616645509853975347">Skrbnik je v brskalniku vklopil priključke Chrome Enterprise Connectors. Ti priključki imajo dostop do nekaterih vaših podatkov.</translation>
-<translation id="7616747402308801775">Ta kartica je shranjena v Google Denarnici in jo lahko uporabljate v Googlovih storitvah.</translation>
 <translation id="7617825962482469577">Kuverta C7/C6</translation>
 <translation id="7619838219691048931">Končni list</translation>
 <translation id="7621546470643449009">Ustvari vodnik za začetnike za opazovanje zvezd, ki mi bo pomagal spoznati, kaj opazovati na nočnem nebu, vključno s tremi lahko prepoznavnimi ozvezdji</translation>
@@ -3971,6 +3972,7 @@ Dodatne podrobnosti:
 <translation id="7705085181312584869">Pomoč pri pisanju</translation>
 <translation id="7705992072972338699">Optical Disc (High-Gloss)</translation>
 <translation id="7706689436519265630">Datoteke, ki jih kopirate ali premaknete, so poslane storitvi Google Cloud ali tretjim osebam v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, pri čemer so morda shranjene na podlagi pravilnikov podjetja.</translation>
+<translation id="7709934467582922028">Poziv za preverjanje e-poštnega naslova je zaprt</translation>
 <translation id="7714351089363296478">Pravkar ste obiskali</translation>
 <translation id="7714404809393719981">Photo (Semi-Gloss)</translation>
 <translation id="7714464543167945231">Potrdilo</translation>

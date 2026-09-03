@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Faça login para acessar suas informações salvas e muito mais em todos os seus dispositivos</translation>
 <translation id="1381838868249179644">Para proteger você, as permissões de alguns sites foram removidas</translation>
 <translation id="1383876407941801731">Pesquise</translation>
+<translation id="1384568202352682721">Salvar como…</translation>
 <translation id="1384704387250346179">Traduzir imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">A página inferior de informações de preço está aberta no tamanho máximo</translation>
@@ -133,6 +134,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="147982357559798527">Alterada</translation>
 <translation id="1480287803138246127">Parte do seu histórico pode não aparecer aqui. Para acessar todo o seu histórico do Chrome, abra o histórico completo.</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1485343711570311792">Abrir no app <ph name="NATIVE_APP_NAME" /> • Do <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
 <translation id="1496514951988037011">nome de usuário</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
@@ -327,6 +329,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="232137538351753795">Deslize a partir da borda esquerda para voltar</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Salvar página como…</translation>
 <translation id="2328474416100889417">Todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e todos os links de convite serão desativados</translation>
 <translation id="2329500425421091035">Conheça o Modo IA no Chrome</translation>
 <translation id="2330186936255788117">Mais favoritos</translation>
@@ -1306,7 +1309,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6255809143828972562">Com esses recursos, você navega com segurança e fica no controle</translation>
 <translation id="6259107733340311168">A página inferior de exoneração de responsabilidade dos indicadores empresariais está aberta no tamanho máximo</translation>
 <translation id="6260260490042862943">Controles do site</translation>
-<translation id="6264376385120300461">Fazer o download mesmo assim</translation>
+<translation id="6264376385120300461">Baixar mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6267106249090587268">Notificações <ph name="SEPARATOR" /> O Chrome removeu essas permissões devido a spam ou conteúdo enganoso</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
@@ -1875,6 +1878,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8313599942510782709">Sua tarefa ainda está em andamento</translation>
 <translation id="8317318757008452355">Abrir opções para imprimir</translation>
 <translation id="8320212361750431956">Atividade recente</translation>
+<translation id="8322452989119079156">Abrir no app <ph name="NATIVE_APP_NAME" /> — Enviado do <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Favoritos e listas</translation>
 <translation id="8342727528718219152">O Chrome vai avisar se algum site começar a enviar muitas notificações</translation>

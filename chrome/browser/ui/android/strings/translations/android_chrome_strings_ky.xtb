@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Бардык түзмөктөрүңүздө сакталган маалыматты жана башка нерселерди алуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="1381838868249179644">Коопсуздугуңузду камсыздоо үчүн айрым сайттардан уруксаттар өчүрүлдү</translation>
 <translation id="1383876407941801731">Издөө</translation>
+<translation id="1384568202352682721">Төмөнкүдөй сактоо…</translation>
 <translation id="1384704387250346179">Google Lens аркылуу которуу <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome'до шилтемелерди ачкан башка колдонмолордун таржымалын көрө аласыз. Google аккаунтуңузда көрүлгөн вебсайттардын башка түрлөрү <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>
 <translation id="139752016751285248">Баанын статистикасынын ылдыйкы экраны толук экранда ачылды</translation>
@@ -133,6 +134,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="147982357559798527">Өзгөрдү</translation>
 <translation id="1480287803138246127">Айрым изделген нерселер бул жерде көрсөтүлбөшү мүмкүн. Chrome'до көрүлгөн бардык вебсайттарды көрүү үчүн Chrome'до көрүлгөн вебсайттардын толук тизмесин ачыңыз.</translation>
 <translation id="1483493594462132177">Жөнтүү</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> колдонмосунда ачуу • <ph name="DEVICE_NAME" /> түзмөгүнөн</translation>
 <translation id="1495677929897281669">Өтмөккө кайтуу</translation>
 <translation id="1496514951988037011">колдонуучунун аты</translation>
 <translation id="1501480321619201731">Топту жок кылуу</translation>
@@ -327,6 +329,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="232137538351753795">Артка кайтуу үчүн экранды солдон оңго карай сүрүңүз</translation>
 <translation id="2323763861024343754">Сайт дайындары</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> баштап</translation>
+<translation id="232757965409810352">Бетти төмөнкүдөй сактоо…</translation>
 <translation id="2328474416100889417">Ар бир адам дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот жана бардык чакыруу шилтемелери өчүрүлөт</translation>
 <translation id="2329500425421091035">Chrome'догу ЖИ режимине кош келиңиз</translation>
 <translation id="2330186936255788117">Дагы башка кыстармалар</translation>
@@ -1874,6 +1877,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8313599942510782709">Тапшырма дагы эле аткарылууда</translation>
 <translation id="8317318757008452355">Басып чыгаруу варианттарын ачуу</translation>
 <translation id="8320212361750431956">Соңку аракеттер</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> колдонмосунда ачуу - <ph name="DEVICE_NAME" /> түзмөгүнөн жөнөтүлдү</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Жаңылык<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Кыстармалар жана тизмелер</translation>
 <translation id="8342727528718219152">Chrome сизге өтө көп билдирмелерди жөнөтүп жаткан сайттар жөнүндө кабарлап турат</translation>

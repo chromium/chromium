@@ -1456,6 +1456,7 @@
 <translation id="3495081129428749620">በገጽ ውስጥ ያግኙ
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">ደመወዝ</translation>
+<translation id="3496531230994554300">የWallet ማሳወቂያ በሙሉ ቁመት ተከፍቷል።</translation>
 <translation id="3497627066518778351">በአዲስ መስኮት ውስጥ በመሣሪያ ላይ የጣቢያ ውሂብ ዝርዝርን ይገምግሙ</translation>
 <translation id="3498215018399854026">በዚህ ጊዜ ላይ ወላጅህን ማግኘት አልቻልንም። እባክህ እንደገና ሞክር።</translation>
 <translation id="350069200438440499">የፋይል ስም፦</translation>
@@ -1558,7 +1559,6 @@
 <translation id="3655670868607891010">ይህንን በተደጋጋሚነት የሚያዩ ከሆኑ <ph name="HELP_LINK" />ን ይሞክሩ።</translation>
 <translation id="3658742229777143148">ክለሳ</translation>
 <translation id="3659521826520353662">የትኞቹ በአስተዳዳሪ-የተገለጹ ድር ጣቢያዎች እንደሚጎበኙ እና መቼ እንደሚሆን፦ <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">ይህን አይቢኤኤን በመላው የGoogle አገልግሎቶች ላይ መጠቀም እንዲችሉ በGoogle Wallet ውስጥ ተቀምጧል።</translation>
 <translation id="3664479564786885722">ይህን ምርት ከሚሸጡ ሌሎች መደብሮች ተጨማሪ የግዢ አማራጮችን ይፈልጉ።</translation>
 <translation id="3664782872746246217">ቁልፍ ቃላት፦</translation>
 <translation id="3670030362669914947">ቁጥር</translation>
@@ -2668,6 +2668,7 @@
 <translation id="5499229993630251170">ይህን ተከታታይ ይቀጥሉ?</translation>
 <translation id="5506286895894263601">ዝርዝሩ ምንም ትክክለኛ አቋራጮች አልያዘም።</translation>
 <translation id="5507756662695126555">ክህደት የሌለበት</translation>
+<translation id="5508515366054931524">ኢሜይልን አረጋግጥ ጥያቄው በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">የተዳደሩ እልባቶች</translation>
 <translation id="5510766032865166053">ተወስዶ ወይም ተሰርዞ ሊሆን ይችላል።</translation>
@@ -3450,6 +3451,7 @@
 <translation id="6860888819347870819">ስዕል-ላይ-ስዕል ውስጥ እንዲገቡ መጠየቅ ይችላሉ</translation>
 <translation id="6864189428899665393">267 x 389 ሚሜ</translation>
 <translation id="6865412394715372076">ይህ ካርድ አሁን ላይ ሊረጋገጥ አይችልም</translation>
+<translation id="6871073333584947219">የWallet ማስታወቂያ ተዘግቷል።</translation>
 <translation id="6871813064737840684">ለዚህ አማራጭ በድሩ ላይ የዋጋ ታሪክ</translation>
 <translation id="6873456682041376666">ከፍተኛ መሳቢያ</translation>
 <translation id="6874604403660855544">&amp;አክልን ድገም</translation>
@@ -3905,7 +3907,6 @@
 <translation id="7615932826417658001">የማንነት ካርድ ያክሉ</translation>
 <translation id="7616390733770379387">እነዚህ በዘፈቀደ ቅደም ተከተል ይታያሉ።</translation>
 <translation id="7616645509853975347">የእርስዎ አስተዳዳሪ በአሳሽዎ ላይ የChrome Enterprise አገናኞችን አብርቷል። እነዚህ አገናኞች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
-<translation id="7616747402308801775">ይህን ካርድ በመላው የGoogle አገልግሎቶች ላይ መጠቀም እንዲችሉ በGoogle Wallet ውስጥ ይቀመጣል።</translation>
 <translation id="7617825962482469577">ሲ7/ሲ6 ፖስታ</translation>
 <translation id="7619838219691048931">የመጨረሻ ሉህ</translation>
 <translation id="7621546470643449009">3 በቀላሉ የሚለዩ ህብረ ከዋክብትን ጨምሮ በምሽት ሰማይ ውስጥ ምን መፈለግ እንዳለብኝ ለማወቅ እንዲያግዘኝ የከዋክብት ምልከታ የጀማሪ መመሪያ ፍጠር</translation>
@@ -3970,6 +3971,7 @@
 <translation id="7705085181312584869">ለመጻፍ አግዘኝ</translation>
 <translation id="7705992072972338699">ኦፕቲካል ዲስክ (በከፍተኛው አንጸባራቂ)</translation>
 <translation id="7706689436519265630">እርስዎ የቀዷቸው ወይም የወሰዷቸው ፋይሎች ለትንታኔ ወደ Google ደመና ወይም ሶስተኛ ወገኖች ይላካሉ። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ወይም ለተንኮል አዘል ዌር ሊቃኙ እና ምናልባት በኩባንያ መመሪያዎች መሰረት ሊከማቹ ይችላሉ።</translation>
+<translation id="7709934467582922028">ኢሜይልን አረጋግጥ ጥያቄው ተዘግቷል</translation>
 <translation id="7714351089363296478">አሁን ጎብኝተውታል</translation>
 <translation id="7714404809393719981">ፎቶ (በግማሽ አንጸባራቂ)</translation>
 <translation id="7714464543167945231">ሰርቲፊኬት</translation>

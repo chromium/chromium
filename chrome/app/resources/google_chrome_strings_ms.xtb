@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">Apabila anda membuka Chrome pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk mendayakan makluman penjejakan harga.</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Lancarkan semula untuk mengemas kini &amp;Chrome</translation>
+<translation id="1289911795790071537">Buka carian dengan Chrome</translation>
 <translation id="1290883685122687410">Ralat persediaan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
 <translation id="1330562121671411446">Kesan bahasa</translation>
@@ -350,6 +351,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="436060642166082913">Chrome menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="4367027658822022112">Anda boleh menyematkan Google Lens untuk akses yang mudah; klik butang Semat pada bahagian atas panel sisi</translation>
 <translation id="4372389195695053189">Kini Chrome ialah penyemak imbas lalai anda</translation>
+<translation id="4381814455597163081">Anda membantu kami meningkatkan Chrome dengan menghantar statistik penggunaan dan laporan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Apabila menyemak imbas dalam Mod Inkognito, Chrome akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="4400772909124543403">Tiada kemaskinian tersedia</translation>
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
@@ -566,6 +568,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6556755379298048869">Buat carian dengan pintasan papan kekunci.</translation>
 <translation id="6585124893636629274">Tutup Gemini dalam Chrome</translation>
 <translation id="659498884637196217">Dalam Pengurus Kata Laluan Google pada peranti ini</translation>
+<translation id="6612152958212564387">Anda tidak menghantar statistik penggunaan dan laporan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Pastikan kata laluan, penanda halaman dan sejarah anda disegerakkan dengan sempurna merentas peranti dengan menetapkan Chrome sebagai penyemak imbas lalai anda.</translation>
 <translation id="6631524303639368205">Teruskan dari tempat anda berhenti: Chrome telah memulihkan tab anda daripada sesi terakhir anda. Anda boleh mematikan ciri ini dalam</translation>
 <translation id="6632473616050862500">Chrome OS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
@@ -592,6 +595,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6859580922007887573">Tab untuk meneruskan proses</translation>
 <translation id="6869568587896659271">Akses mudah kepada laman web di bawah bar alamat</translation>
 <translation id="6877155553248388166">penjuru bawah sebelah kanan kawasan carian: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">Buka Carian dengan Chrome</translation>
 <translation id="6881299373831449287">Mengemas kini Chrome</translation>
 <translation id="6885412569789873916">Apl Chrome Beta</translation>
 <translation id="6893363893008038481">Alih keluar Akaun daripada Chrome</translation>
@@ -650,6 +654,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7449333426561673451">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit.}}</translation>
 <translation id="7450541714075000668">Teks disalin</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chrome tidak digunakan selama 1 minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}other{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chrome tidak digunakan selama # minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}}</translation>
+<translation id="7466577301922356468">Penghantaran data ini kepada Google secara automatik membantu kami meningkatkan Chrome. Anda boleh mengubah tetapan ini pada bila-bila masa.</translation>
 <translation id="7477130805345743099">Chrome akan memberi anda amaran sebelum memuatkan sebarang laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="7481213027396403996">Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="749228101751499733">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chrome. <ph name="SHORTCUT" /> boleh menukar tetapan perkhidmatan Google anda.</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
 <translation id="1053651653201045802">ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೋಡಲು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="1054745118061919935">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK" />ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
+<translation id="1056818261333183659">ನಾನು ಯಾವುದನ್ನು ಖರೀದಿಸಬೇಕು?</translation>
 <translation id="10614374240317010">ಉಳಿಸಿಯೇ ಇಲ್ಲ</translation>
 <translation id="1062138828266376352">ನಿಮ್ಮ ಪಿನ್ ಬದಲಾಗಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) ಅನ್ನು ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">ತೂಕ</translation>
 <translation id="5899314093904173337">ಹತ್ತಿರದ ಜನರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು, ಅವರ ಕ್ಯಾಮರಾ ಅಥವಾ QR ಸ್ಕ್ಯಾನರ್ ಆ್ಯಪ್ ಮೂಲಕ ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಅವರಿಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ಹೊಸ ಟ್ಯಾಬ್}one{{count} ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}other{{count} ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="5906163261248594192">ಡ್ಯಾನ್ ಅವರ ಜನ್ಮದಿನ</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5922999516621365983">ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಲು ಅದನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">ಅನುವಾದ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7204922488054642675">ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಸುದ್ದಿ</translation>
 <translation id="7206979415662233817">ಸೇವಾ ನಿಯಮಗಳು</translation>
+<translation id="721218676460477064">ಈ ಲೇಖನವನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
 <translation id="7215621211572884440">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7218491361283758048">ಪಿನ್‌ ಕೋಡ್</translation>
 <translation id="7221173315674413369">'ಹೊಸತೇನಿದೆ' ಎಂಬಲ್ಲಿ ಹೊಸ ಫೀಚರ್‌ಗಳು ಹಾಗೂ ಸಲಹೆಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">ಹೊಸ ಫೋಲ್ಡರ್‌…</translation>
 <translation id="8035412398498507358">ಫೋಟೋಗಳು</translation>
 <translation id="8037713009824540257">ಸೈಟ್ ಸೇರಿಸಿ</translation>
+<translation id="8038078082340255234">ಮಾರುಕಟ್ಟೆ ವರದಿ</translation>
 <translation id="8040407350301524547">ಮಾರ್ಗದ ಆಯ್ಕೆಗಳಿಗಾಗಿ, "ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳನ್ನು ಪಡೆಯಿರಿ" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ.</translation>
 <translation id="804427445359061970">ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="8058655154417507695">ಮುಕ್ತಾಯದ ವರ್ಷ</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">ಡೇಟಾವನ್ನುಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="8233237502828137700">ಬ್ಯಾನರ್ ಪ್ರೋಮೋವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="823339794112333264">ಮೈಕ್ರೊಫೋನ್‌ ಆನ್ ಮಾಡಿ</translation>
+<translation id="8240217649914883113">ಇದನ್ನು ನನ್ನ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ</translation>
 <translation id="8250920743982581267">ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು</translation>
 <translation id="8252980988000695656">Google Lens ಪೂರ್ಣಗೊಂಡಿದೆ!</translation>
 <translation id="8258734532103758067">ನಾನು ನನ್ನ ಡೇಟಾವನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿದ್ದೇನೆ</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">ಆಟೋಫಿಲ್ ಆನ್ ಮಾಡಿ…</translation>
 <translation id="8370406443343902172">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ...</translation>
 <translation id="8370929854657845191">ಮಧ್ಯಮ ಎತ್ತರಕ್ಕೆ ವಿಸ್ತೃತಗೊಳಿಸಿ</translation>
+<translation id="8371494817541821097"><ph name="DATE" /> ರಂದು ಪಾಸ್‌ಕೀ ಅನ್ನು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="8372471489238799313">{count,plural, =1{ವಿಳಾಸವನ್ನು ಅಳಿಸಿ}one{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}other{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}}</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8385363453480067273">ನೀವು Google Lens ಮೂಲಕ ನೋಡಿದ ವಿಷಯವನ್ನು ಹುಡುಕಿ</translation>

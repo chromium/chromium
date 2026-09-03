@@ -1458,6 +1458,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3495081129428749620">Hae sivulta
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Palkka</translation>
+<translation id="3496531230994554300">Wallet-ilmoitus avattu kokonaan</translation>
 <translation id="3497627066518778351">Tarkista laitepohjainen sivustodata uudessa ikkunassa</translation>
 <translation id="3498215018399854026">Emme tavoittaneet vanhempaasi. Yritä uudelleen.</translation>
 <translation id="350069200438440499">Tiedostonimi:</translation>
@@ -1560,7 +1561,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Jos näet tämän usein, kokeile näitä <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Päivitetty versio</translation>
 <translation id="3659521826520353662">Millä järjestelmänvalvojan määrittämillä verkkosivustoilla käydään ja milloin: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Tämä IBAN on tallennettu Google Walletiin, joten voit käyttää sitä Googlen palveluissa.</translation>
 <translation id="3664479564786885722">Hae lisää ostovaihtoehtoja muista tätä tuotetta myyvistä kaupoista.</translation>
 <translation id="3664782872746246217">Avainsanat:</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -2670,6 +2670,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5499229993630251170">Jatketaanko tätä viestiketjua?</translation>
 <translation id="5506286895894263601">Lista ei sisällä hyväksyttäviä pikakuvakkeita.</translation>
 <translation id="5507756662695126555">Kiistämättömyys</translation>
+<translation id="5508515366054931524">Sähköpostin vahvistuskehote avattu kokonaan</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallinnoidut kirjanmerkit</translation>
 <translation id="5510766032865166053">Se on voitu siirtää tai poistaa.</translation>
@@ -3452,6 +3453,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6860888819347870819">Saa pyytää pääsyä pikkuruututilaan</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Korttia ei voi vahvistaa juuri nyt.</translation>
+<translation id="6871073333584947219">Wallet-ilmoitus suljettu.</translation>
 <translation id="6871813064737840684">Tämän vaihtoehdon hintahistoria verkossa</translation>
 <translation id="6873456682041376666">Ylälokero</translation>
 <translation id="6874604403660855544">&amp;Toista lisäys</translation>
@@ -3907,7 +3909,6 @@ Lisätietoja:
 <translation id="7615932826417658001">Lisää henkilöllisyyskortti</translation>
 <translation id="7616390733770379387">Ne näytetään satunnaisessa järjestyksessä.</translation>
 <translation id="7616645509853975347">Järjestelmänvalvoja on ottanut Chrome Enterprise Connectorsin käyttöön selaimellesi. Nämä liittimet pääsevät osaan datastasi.</translation>
-<translation id="7616747402308801775">Tämä kortti on tallennettu Google Walletiin, joten voit käyttää sitä Googlen palveluissa.</translation>
 <translation id="7617825962482469577">Kirjekuori C7/C6</translation>
 <translation id="7619838219691048931">Viimeinen sivu</translation>
 <translation id="7621546470643449009">Luo aloittelijan opas tähtien katseluun, jotta voin oppia, mitä yötaivaalta kannattaa etsiä. Lisää mukaan kolme helposti tunnistettavaa tähtikuviota.</translation>
@@ -3972,6 +3973,7 @@ Lisätietoja:
 <translation id="7705085181312584869">Auta minua kirjoittamaan</translation>
 <translation id="7705992072972338699">Optinen levy (kiiltävä)</translation>
 <translation id="7706689436519265630">Kopioimasi tai siirtämäsi tiedostot lähetetään Google Cloudiin tai kolmansille osapuolille analysoitaviksi. Ne voidaan esimerkiksi skannata arkaluontoisten tietojen tai haittaohjelmien varalta ja tallentaa yrityksen käytäntöjen mukaisesti.</translation>
+<translation id="7709934467582922028">Sähköpostin vahvistuskehote suljettu</translation>
 <translation id="7714351089363296478">Kävit täällä juuri</translation>
 <translation id="7714404809393719981">Valokuva (puolikiiltävä)</translation>
 <translation id="7714464543167945231">Varmenne</translation>

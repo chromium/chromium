@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Identifikohu për të marrë informacionet e tua të ruajtura etj. në të gjitha pajisjet e tua</translation>
 <translation id="1381838868249179644">Për të të mbajtur të sigurt, lejet u hoqën nga disa sajte</translation>
 <translation id="1383876407941801731">Kërko</translation>
+<translation id="1384568202352682721">Ruaj si…</translation>
 <translation id="1384704387250346179">Përkthe imazh me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Mund të shikosh historikun nga aplikacionet e tjera që hapin lidhjet në Chrome. "Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Fleta e poshtme e statistikave të çmimeve e hapur në lartësi të plotë</translation>
@@ -133,6 +134,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="147982357559798527">Ndryshuar</translation>
 <translation id="1480287803138246127">Një pjesë e historikut tënd mund të mos shfaqet këtu. Për të parë të gjithë historikun e Chrome, hap historikun e plotë të Chrome.</translation>
 <translation id="1483493594462132177">Dërgo</translation>
+<translation id="1485343711570311792">Hape në <ph name="NATIVE_APP_NAME" /> • Nga <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Kthehu te skeda</translation>
 <translation id="1496514951988037011">emri i përdoruesit</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
@@ -327,6 +329,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="232137538351753795">Rrëshqit shpejt nga skaji i majtë për t'u kthyer prapa</translation>
 <translation id="2323763861024343754">Hapësira ruajtëse e sajtit</translation>
 <translation id="2327445548174191329">Nga <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Ruaje faqen si…</translation>
 <translation id="2328474416100889417">Të gjithë do të humbasin menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe të gjitha lidhjet e ftesave do të çaktivizohen</translation>
 <translation id="2329500425421091035">Prezantojmë "Modalitetin e IA-së" në Chrome</translation>
 <translation id="2330186936255788117">Më shumë faqeshënues</translation>
@@ -1874,6 +1877,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8313599942510782709">Detyra jote është ende në vazhdim</translation>
 <translation id="8317318757008452355">Hap opsionet për të printuar</translation>
 <translation id="8320212361750431956">Aktiviteti i fundit</translation>
+<translation id="8322452989119079156">Hape në <ph name="NATIVE_APP_NAME" /> - Dërguar nga <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Faqeshënuesit dhe listat</translation>
 <translation id="8342727528718219152">Chrome do të të informojë për sajtet që mund të dërgojnë shumë njoftime</translation>

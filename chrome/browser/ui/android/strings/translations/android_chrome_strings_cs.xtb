@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Přihlaste se a používejte uložené informace a další obsah na všech svých zařízeních</translation>
 <translation id="1381838868249179644">Kvůli ochraně vaší bezpečnosti byla některým webům odebrána oprávnění</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
+<translation id="1384568202352682721">Uložit jako…</translation>
 <translation id="1384704387250346179">Přeložit obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="139752016751285248">Spodní panel s informacemi o ceně otevřený přes celou výšku obrazovky</translation>
@@ -133,6 +134,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="147982357559798527">Změněno</translation>
 <translation id="1480287803138246127">Je možné, že se zde nezobrazuje část vaší historie. Pokud chcete vidět celou svou historii Chromu, otevřete ji.</translation>
 <translation id="1483493594462132177">Odeslat</translation>
+<translation id="1485343711570311792">Otevřít v aplikaci <ph name="NATIVE_APP_NAME" /> • Ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
 <translation id="1496514951988037011">uživatelské jméno</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
@@ -327,6 +329,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="232137538351753795">Přejetím prstem z levého okraje se vrátíte</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2327445548174191329">Ze zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Uložit stránku jako…</translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
 <translation id="2329500425421091035">Představujeme režim AI v Chromu</translation>
 <translation id="2330186936255788117">Další záložky</translation>
@@ -1874,6 +1877,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8313599942510782709">Úkol stále probíhá</translation>
 <translation id="8317318757008452355">Otevřít možnosti tisku</translation>
 <translation id="8320212361750431956">Nedávná aktivita</translation>
+<translation id="8322452989119079156">Otevřít v aplikaci <ph name="NATIVE_APP_NAME" /> – odesláno ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Záložky a seznamy</translation>
 <translation id="8342727528718219152">Chrome vás bude informovat o webech, které odesílají příliš mnoho oznámení</translation>

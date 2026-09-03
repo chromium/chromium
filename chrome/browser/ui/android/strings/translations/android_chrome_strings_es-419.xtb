@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Accede para obtener tu información guardada y más en todos tus dispositivos</translation>
 <translation id="1381838868249179644">Para protegerte, se quitaron los permisos de algunos sitios</translation>
 <translation id="1383876407941801731">Buscar</translation>
+<translation id="1384568202352682721">Guardar como…</translation>
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Es posible que veas el historial de otras apps que abren vínculos en Chrome. Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">La hoja inferior de información sobre precios está abierta en su totalidad</translation>
@@ -133,6 +134,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="147982357559798527">Se cambió</translation>
 <translation id="1480287803138246127">Es posible que parte de tu historial no aparezca aquí. Para ver todo tu historial de Chrome, abre el historial completo.</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1485343711570311792">Abrir en <ph name="NATIVE_APP_NAME" /> • De <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1496514951988037011">nombre de usuario</translation>
 <translation id="1501480321619201731">Borrar grupo</translation>
@@ -327,6 +329,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="232137538351753795">Para volver, desliza el dedo desde el borde izquierdo</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Guardar página como…</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
 <translation id="2329500425421091035">Presentamos el Modo IA en Chrome</translation>
 <translation id="2330186936255788117">Más favoritos</translation>
@@ -1874,6 +1877,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8313599942510782709">Tu tarea aún está en curso</translation>
 <translation id="8317318757008452355">Abrir opciones para imprimir</translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
+<translation id="8322452989119079156">Abrir en <ph name="NATIVE_APP_NAME" /> - Se envió desde <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" /> <ph name="BEGIN_NEW" />Novedad<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Favoritos y listas</translation>
 <translation id="8342727528718219152">Chrome te informará sobre los sitios que podrían estar enviando demasiadas notificaciones</translation>

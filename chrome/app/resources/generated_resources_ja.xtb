@@ -132,6 +132,7 @@
 パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> でいつでも確認できます。</translation>
 <translation id="1084824384139382525">リンクのアドレスをコピー(&amp;E)</translation>
 <translation id="1085064499066015002">すべてのサイトで常に許可</translation>
+<translation id="1085340215550339505">適切なタイミングでパスワードの変更を提案できるように、アクセスしたページのコンテンツと URL がクラウドのプライベート スペースで処理される場合があります</translation>
 <translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> さんと他 <ph name="NUM_OTHER_MEMBERS" /> 人のタブグループに参加</translation>
 <translation id="1085618740036066768">「<ph name="ITEM" />」は選択されていません。全 <ph name="COUNT" /> 件のうち、<ph name="INDEX" /> 番目です。選択するには検索+Space キーを押してください。</translation>
 <translation id="1086486568852410168">Google レンズで検索</translation>
@@ -1122,6 +1123,7 @@
 <translation id="1871131409931646355">すべてのダウンロード履歴</translation>
 <translation id="187145082678092583">表示するアプリを減らす</translation>
 <translation id="1871615898038944731">お使いの <ph name="DEVICE_TYPE" /> は最新です</translation>
+<translation id="1872846000961079826">パスワードの変更中、パスワード ページのコンテンツと関連情報が Google に送信され、この機能の品質向上のために人間のレビュアーによって確認される場合があります</translation>
 <translation id="1873513359268939357">Outlook カレンダー</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" /> にもう一度権限を許可します</translation>
 <translation id="1874248162548993294">あらゆる広告の表示を許可するサイト</translation>
@@ -2449,6 +2451,7 @@
 <translation id="2887344147309501015">ブラウジング中に Gemini in Chrome と話して、質問の回答や重要なポイントなどを確認できます</translation>
 <translation id="2889043468805635730">問題は見つかりませんでした</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
+<translation id="2889937141553641427">{0,plural, =1{アイソレート モード}other{開いているアイソレート モード ウィンドウ（# 個）}}</translation>
 <translation id="2891464434568738544">現在、追加されたサイトはありません。このサイトをリストに追加するには、サイトにアクセスしてください。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
@@ -2845,6 +2848,7 @@
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">この PIN を使用して保護者による使用制限の設定を変更できます。
     PIN を忘れた場合は、このデバイスを出荷時設定にリセットしてから、もう一度設定してください。</translation>
+<translation id="3184916134413175521">評価する</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{このアプリはブロックされています}other{一部のアプリはブロックされています}}</translation>
 <translation id="3185454065699440434"><ph name="SITE_NAME" /> で拡張機能を許可する</translation>
 <translation id="3187556136478864255"><ph name="BEGIN_LINK" />Google Home アプリ<ph name="END_LINK" />にキャスト デバイスは表示されましたか？</translation>
@@ -2912,8 +2916,10 @@
 <translation id="3241680850019875542">パッケージ化する拡張機能のルート ディレクトリを選択します。拡張機能を更新するには、再使用する秘密鍵ファイルも選択してください。</translation>
 <translation id="3241810535741601486">この変更は恒久的なもので、元に戻すことはできません。アップデートの延長は、このデバイスのすべてのユーザーに適用されます。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">アバター</translation>
+<translation id="3242764115495920926">パスワードの自動変更を提案する</translation>
 <translation id="3243017971870859287">ChromeOS Flex デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="324366796737464147">ノイズ キャンセリング</translation>
+<translation id="3243680258677029936">{0,plural, =1{アイソレート}other{アイソレート（# 個）}}</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
 <translation id="3247649647204519958">ここでは、表示しているサイトに対する拡張機能の権限を確認、管理できます</translation>
@@ -4137,6 +4143,7 @@
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> ショートカットのその他の操作</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> に帰属する設定の一部を共有しています。これらの設定は、マルチログインを使用した場合にのみこのアカウントに適用されます。</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>
+<translation id="4169275505426201952">評価する...</translation>
 <translation id="4169535189173047238">許可しない</translation>
 <translation id="4170314459383239649">終了時に削除</translation>
 <translation id="4170685671197375581">ショートカットをオンにする</translation>
@@ -4438,6 +4445,7 @@
 <translation id="4401912261345737180">コードで接続してキャストする</translation>
 <translation id="4403012369005671154">音声入力</translation>
 <translation id="4403775189117163360">別のフォルダを選択</translation>
+<translation id="440411460180511551">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移動…</translation>
@@ -5045,7 +5053,6 @@
 <translation id="4872192066608821120">パスワードをインポートするには、CSV ファイルを選択してください</translation>
 <translation id="4872212987539553601">オンデバイスの暗号化を設定</translation>
 <translation id="4875690134140862902">タブ</translation>
-<translation id="4876273079589074638">このクラッシュについて迅速に調査、解決できるよう、具体的な操作についてできるだけ詳しくご説明ください。</translation>
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
 <translation id="4876327226315760474">この場合、サイトの機能は想定どおりに動作するものの、ブラウジング保護の強度が低くなる可能性があります。</translation>
 <translation id="4876895919560854374">画面のロックとロック解除</translation>
@@ -6569,6 +6576,7 @@
 <translation id="6099766472403716061"><ph name="HOST" /> による MIDI デバイスの操作と再プログラムを常に許可する</translation>
 <translation id="6100736666660498114">スタート メニュー</translation>
 <translation id="6100737823178787570">タスクを再開するには、ウィンドウのサイズを大きくしてください</translation>
+<translation id="6101170451607354234">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。</translation>
 <translation id="6101226222197207147">新しいアプリが追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="6102043788063419338">このファイルは高度な保護機能によってブロックされました。</translation>
 <translation id="6103681770816982672">警告: Dev チャンネルに切り替えようとしています</translation>
@@ -6774,6 +6782,7 @@
 <translation id="6254892857036829079">非常に良い</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
+<translation id="6258818697161346451">このデバイスでパスキーを使用する</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 所有者情報を更新</translation>
 <translation id="6261688934280090835">ChromeOS キオスクアプリのログ</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
@@ -8561,6 +8570,7 @@
 <translation id="7651754152638505879">タスクを一時停止しました</translation>
 <translation id="7651784568388208829">スマートフォン ハブの作業の継続</translation>
 <translation id="7652954539215530680">PIN の作成</translation>
+<translation id="7653354650639364202">{0,plural, =1{アイソレート ウィンドウを閉じる}other{アイソレート ウィンドウを閉じる（# 個）}}</translation>
 <translation id="7654941827281939388">このアカウントは既にこのパソコンで使用されています。</translation>
 <translation id="7655411746932645568">サイトがシリアルポートへの接続を要求できるようにする</translation>
 <translation id="7657090467145778067">少量の節約</translation>
@@ -9168,6 +9178,7 @@
 <translation id="8106114112474206597">I キーを使用してマウスボタンを押す</translation>
 <translation id="810728361871746125">ディスプレイの解像度</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> 人のメンバー</translation>
+<translation id="8108853197309181986">アイソレート ウィンドウを使用しています</translation>
 <translation id="8109109153262930486">デフォルトのアバター</translation>
 <translation id="8109991406044913868">AI が作成したテーマ</translation>
 <translation id="8110393529211831722">登録はこのデバイスにのみインストールされ、アカウントの他のデバイスとは同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -9573,6 +9584,7 @@
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">あと <ph name="LOGOUT_TIME_LEFT" />でログアウトします</translation>
 <translation id="8429928917752180743">「<ph name="EXTENSION_NAME" />」に関するその他のオプション</translation>
+<translation id="8430438016498244645">アイソレート セッション</translation>
 <translation id="8431977087510901105">カーソルの設定がリセットされました</translation>
 <translation id="8434109185104929038">読書コーナー</translation>
 <translation id="8434837876193928924">タブグループの詳細</translation>
@@ -10322,6 +10334,7 @@
 <translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
 <translation id="90033698482696970">利用可能な eSIM プロファイルを自動的にスキャンしますか？</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
+<translation id="9004279470320280717">評価する...</translation>
 <translation id="9005774573776346118">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="9006511997799670136">あなたの組織</translation>
 <translation id="900733896273558337">スキルを編集</translation>

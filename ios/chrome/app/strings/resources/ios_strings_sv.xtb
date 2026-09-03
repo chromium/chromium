@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Utloggad. Logga in igen om du vill använda bokmärken, lösenord med mera i kontot.</translation>
 <translation id="1054745118061919935">Genom att fortsätta godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Vilken ska jag köpa?</translation>
 <translation id="10614374240317010">Aldrig sparad</translation>
 <translation id="1062138828266376352">Pinkoden ändrades inte. Kontrollera internetanslutningen och försök igen</translation>
 <translation id="1063070031224282617">Välj var du vill spara <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5898848375214731122">Vikt</translation>
 <translation id="5899314093904173337">Om du vill dela med personer i närheten ber du dem att skanna QR-koden med kameran eller en app för att skanna QR-koder</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ny flik}other{{count} nya flikar}}</translation>
+<translation id="5906163261248594192">Dans födelsedag</translation>
 <translation id="5911030830365207728">Google Översätt</translation>
 <translation id="5912796581727968237">Öppna Google Wallet</translation>
 <translation id="5922999516621365983">Dra hit fliken för att fästa den.</translation>
@@ -1924,6 +1926,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="720399613139435155">Det gick inte översätta</translation>
 <translation id="7204922488054642675">Anpassade nyheter</translation>
 <translation id="7206979415662233817">Användarvillkor</translation>
+<translation id="721218676460477064">Sammanfatta den här artikeln</translation>
 <translation id="7215621211572884440">Popupfönster tillåts</translation>
 <translation id="7218491361283758048">Postnummer</translation>
 <translation id="7221173315674413369">Utforska nya funktioner och tips i Nyheter</translation>
@@ -2185,6 +2188,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8035133914807600019">Ny mapp …</translation>
 <translation id="8035412398498507358">Foton</translation>
 <translation id="8037713009824540257">Lägg till webbplats</translation>
+<translation id="8038078082340255234">Marknadsrapport</translation>
 <translation id="8040407350301524547">Tryck på Hämta vägbeskrivning för att se ruttalternativ.</translation>
 <translation id="804427445359061970">Flikar från andra enheter visas här</translation>
 <translation id="8058655154417507695">Utgångsår</translation>
@@ -2242,6 +2246,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8232956427053453090">Behåll data</translation>
 <translation id="8233237502828137700">Stäng bannerkampanj</translation>
 <translation id="823339794112333264">Slå på mikrofonen</translation>
+<translation id="8240217649914883113">Lägg till detta i min kalender</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="8252980988000695656">Google Lens har slutförts.</translation>
 <translation id="8258734532103758067">Jag har exporterat min data</translation>
@@ -2286,6 +2291,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8368198938968349418">Aktivera autofyll …</translation>
 <translation id="8370406443343902172">Öppna inställningarna …</translation>
 <translation id="8370929854657845191">Utöka till medelhögt</translation>
+<translation id="8371494817541821097">Nyckeln skapades den <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Radera adress}other{Radera adresser}}</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>
 <translation id="8385363453480067273">Sök efter det du ser med Google Lens</translation>

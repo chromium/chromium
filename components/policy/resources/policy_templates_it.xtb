@@ -649,6 +649,15 @@ la modifica della password, ma può essere applicata in modo forzato anche da de
 <translation id="1438739959477268107">Impostazione generazione di chiavi predefinite</translation>
 <translation id="1440408958042020947">Consente agli utenti che hanno attivato Phone Hub di accedere a foto e video recenti acquisiti sul loro telefono</translation>
 <translation id="1443532790824582949">Attiva la tastiera virtuale touch</translation>
+<translation id="1445955287827003066">Questa policy consente di stabilire se e quando un dispositivo è destinato alla migrazione da ChromeOS al sistema operativo successivo.
+
+Se questa policy viene impostata su 0, l'idoneità del dispositivo alla migrazione è stabilita dalle impostazioni predefinite di Google, che possono variare in base al modello del dispositivo, all'hardware e ad altri fattori.
+
+Se questa policy viene impostata su 2147483647, il dispositivo viene contrassegnato come disponibile e destinato alla migrazione senza una scadenza specifica.
+
+Se questa policy viene impostata su un valore maggiore di 0 e minore di 2147483647, il dispositivo viene contrassegnato come disponibile e scelto come target per la migrazione. Il valore indica la scadenza consigliata per il completamento, espressa come numero di secondi trascorsi dall'epoca di Unix (1970-01-01 00:00:00 UTC).
+
+Tieni presente che altre impostazioni di aggiornamento del dispositivo, come il blocco della versione (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />), la disattivazione degli aggiornamenti (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) o le preferenze del canale di rilascio (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />), potrebbero impedire al dispositivo di ricevere gli aggiornamenti necessari per avviare la migrazione, anche se qui è stata configurata una data target. Questa policy è concepita per essere sempre erogata; se non viene configurata, viene applicata l'impostazione predefinita di Google, poiché il suo valore può influenzare l'elaborazione delle policy di aggiornamento del dispositivo.</translation>
 <translation id="1447252610864877219">Consenti all'app Gemini di eseguire azioni sulle pagine web.</translation>
 <translation id="1449083855104537880">Se la policy è impostata su True, le opzioni di accessibilità vengono mostrate nel menu della barra delle applicazioni. Se la policy è impostata su False, le opzioni non appaiono nel menu.
 
@@ -2189,6 +2198,7 @@ Se la policy viene impostata su disabled, gli utenti o le varianti <ph name="PRO
 
 L'utente può scegliere un'immagine di Google Foto come sfondo se questa policy viene attivata o se non viene configurata.</translation>
 <translation id="2393862222659066027">Apri un elenco di URL e ripristina l'ultima sessione</translation>
+<translation id="239395129206831238">Imposta la data target per la migrazione dei dispositivi a Next OS</translation>
 <translation id="239416486107542256">Le impostazioni di F11 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="2394429297128584919">Non consentire alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>
 <translation id="2398817690049129302">Forza l'applicazione della modalità provvisoria di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
@@ -4781,6 +4791,7 @@ Considerazioni:
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
 <translation id="4030152268425532846">Disattiva l'esclusione dell'accesso automatico</translation>
+<translation id="4032740546145417900">Non consentire la funzionalità Parla per scrivere.</translation>
 <translation id="4043796890723386527">Impedisci agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">La configurazione della policy consente di controllare il filtro di URL di SafeSites, che utilizza l'API Google Safe Search per classificare gli URL come pornografici o meno.
 
@@ -6802,6 +6813,17 @@ Nota: questa funzionalità non è ancora disponibile per tutti gli utenti, quind
 <translation id="5247584184349816217">Attiva il salvaschermo nella schermata di blocco.</translation>
 <translation id="5247973380763021389">Impedisci alle policy relative al cloud degli utenti di eseguire l'override delle policy relative al cloud delle macchine.</translation>
 <translation id="5249006530384016395">Consente di stabilire se la sintassi <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> deprecata per lo stato personalizzato CSS è attiva</translation>
+<translation id="5249271416806588789">La funzionalità Parla per scrivere è basata sull'AI e consente agli utenti di inserire e modificare il testo utilizzando la voce, grazie a modelli di AI generativa che forniscono trascrizione e formattazione di alta qualità.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Gli utenti possono aggiungere account Kerberos</translation>
 <translation id="5249555581286638799">Attiva la modalità ad alta efficienza</translation>
 <translation id="5252210248395576403">Questa policy consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server per ricevere i risultati della traduzione.
@@ -6926,6 +6948,7 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
 <translation id="533287753294126753">Consenti Confronta schede e migliora i modelli di AI.</translation>
 <translation id="5334404204520035180">Controlla l'utilizzo dell'API WebPrinting</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
+<translation id="5335403007354311099">Attiva le funzioni di accessibilità del renderer</translation>
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="5337869685871558036">Consenti il precaricamento di SpeculationRules per gli URL controllati da ServiceWorkers</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
@@ -7964,6 +7987,7 @@ Se questa policy non viene impostata, <ph name="DEFAULT_AUTOMATIC_DOWNLOADS_SETT
       Se viene impostata su Disattivata, gli utenti non possono inviare dei feedback a Google.</translation>
 <translation id="5976636832661103220">Le impostazioni di F11 usano la scorciatoia che contiene il tasto di modifica Maiusc</translation>
 <translation id="5979376378555121803">Applicazione in hosting</translation>
+<translation id="5983016603010860828">Impostazioni per la funzionalità Parla per scrivere</translation>
 <translation id="5983274643567559194">L'impostazione di una scorciatoia per l'azione "Elimina" è disattivata.</translation>
 <translation id="5984099692320899605">Non utilizzare l'autenticazione NTLM</translation>
 <translation id="5984237109586500246">Accetta i contenuti web pubblicati con la tecnologia Signed HTTP Exchange</translation>
@@ -9795,6 +9819,7 @@ Tieni presente che questa policy viene applicata solo ai browser gestiti, quindi
 Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7054840304131108563">Disattiva le funzioni di accessibilità del renderer</translation>
 <translation id="7055022222176591388">Non consentire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
 <translation id="7056040036973126753">I dati relativi all'attendibilità dei domini potrebbero essere inviati a Google in base alla policy Metriche utente di Chrome (UMA)</translation>
 <translation id="7062803946218028349">Consenti l'attivazione di Phone Hub</translation>
@@ -10286,6 +10311,7 @@ Se questa policy viene disattivata o se non viene configurata, le impostazioni r
       Se questa policy viene attivata, i siti sono esposti ad alcuni tipi di attacchi cross-site e gli utenti possono essere monitorati tra i siti anche senza i cookie tramite l'aggiunta di voci alla cache di autenticazione HTTP usando credenziali incorporate negli URL.
 
       Questa policy è stata ideata per dare la possibilità alle aziende che dipendono dal comportamento precedente di aggiornare le proprie procedure di accesso e verrà rimossa in futuro.</translation>
+<translation id="7322231030019184787">Consenti la funzionalità Parla per scrivere senza raccolta dei dati.</translation>
 <translation id="7322825363493984512">La password per l'autenticazione dei servizi di sistema per il proxy web remoto.</translation>
 <translation id="7323773727263636287">Attiva la funzione di accessibilità di correzione del colore.
 
@@ -10479,12 +10505,6 @@ Se la policy non viene configurata, in pratica equivale a impostarla su "<ph nam
 <translation id="7446978687387327623">Consenti i controlli in tempo reale inviati tramite proxy di Navigazione sicura</translation>
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="7455912144588577399">Se la policy viene impostata su true, gli utenti possono fare in modo che le pagine web idonee vengano lette utilizzando la sintesi vocale. Ciò si ottiene mediante la distillazione dei contenuti lato server e la sintesi audio. Se viene impostata su false, la funzionalità viene disattivata. Se questa policy viene impostata sul valore predefinito o se non viene configurata, Leggi ad alta voce è attiva.</translation>
-<translation id="7456922722153109956">Questa policy consente di stabilire la visibilità della comunicazione dell'area centrale nella pagina Nuova scheda.
-
-      Se viene impostata su Attivata, nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile.
-
-      Se viene impostata su Disattivata, nella pagina Nuova scheda non verrà mostrata la comunicazione dell'area centrale, anche se è disponibile.
-      </translation>
 <translation id="7459601923199346224">Consente di controllare le policy relative agli utenti e ai dispositivi per la gestione dei certificati.</translation>
 <translation id="7459633275230216698">Consenti finestre di dialogo per la selezione di file</translation>
 <translation id="7462256705280836453">Scegli se è possibile o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti</translation>
@@ -10730,6 +10750,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://ch
       Quando questa norma è impostata, il codice di accesso genitori può essere verificato sul dispositivo dell'utente bambino o ragazzo.
       Quando questa norma non è impostata, non è possibile verificare il codice di accesso genitori sul dispositivo dell'utente bambino o ragazzo.</translation>
 <translation id="7623431489198474050">Disattiva l'attestazione da remoto per la protezione dei contenuti</translation>
+<translation id="7624832415093566709">Consenti la funzionalità Parla per scrivere.</translation>
 <translation id="7625858205605842562">Se la policy viene configurata, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo USB.
 
       Se la policy non viene configurata, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -11431,6 +11452,7 @@ Esistono più policy che elencano le origini che influiscono sulle richieste al 
   - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">Attiva i report sulle informazioni relative alla retroilluminazione del dispositivo</translation>
 <translation id="8062485064082966327">Usa un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
+<translation id="8064875716442437829">Abilita l'accessibilità del renderer</translation>
 <translation id="8066428282805800713">Invia dati hardware aggiuntivi su ChromeOS Flex</translation>
 <translation id="8069233292746468045">Questa policy configura <ph name="PRODUCT_NAME" /> in modo che ordini i suoi algoritmi di accordo chiave preferiti (gruppi supportati) in TLS 1.3, allo scopo di riflettere una preferenza per gli algoritmi approvati da un regime di conformità specifico.
 
@@ -12583,6 +12605,13 @@ Nota: questa policy non ha effetto se viene configurata DevicePowerBatteryChargi
       Se questa policy non viene configurata, verrà usata la configurazione predefinita della sandbox della rete. Questa configurazione potrebbe variare in base alla release di <ph name="PRODUCT_NAME" />, alle prove sul campo attualmente in esecuzione e alla piattaforma.
       Questa policy è pensata per offrire alle aziende la possibilità di disattivare la sandbox della rete se usano software di terze parti che interferisce con la sandbox del servizio di rete.</translation>
 <translation id="8840243776706727185">Funzionalità NewBaseUrlInheritanceBehavior disattivata</translation>
+<translation id="8841125674413543406">Controlla la generazione dell'albero di accessibilità nei processi di rendering.
+
+Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> consente la generazione dell'albero di accessibilità per le pagine web.
+
+Se questa policy viene impostata su Disattivata, l'albero di accessibilità del renderer non verrà più generato, impedendo alle funzioni di accessibilità di interagire con il renderer.
+
+Se configuri questa policy, gli utenti non potranno modificarla né ignorarla.</translation>
 <translation id="8842208363354615697">Consenti l'attivazione della Modalità solo HTTPS</translation>
 <translation id="8843331294082716286">Non mostrare la richiesta di <ph name="PRIVACY_SANDBOX_NAME" /> agli utenti.</translation>
 <translation id="884855199714673326">Consente all'host di accesso remoto di decidere</translation>

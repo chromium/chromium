@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">ଇନ୍‌କଗ୍ନିଟୋ</translation>
 <translation id="1053651653201045802">ସାଇନ ଆଉଟ କରାଯାଇଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="1054745118061919935">ଜାରି ରଖି ଆପଣ <ph name="BEGIN_LINK" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
+<translation id="1056818261333183659">ମୁଁ କେଉଁଟି କିଣିବା ଉଚିତ?</translation>
 <translation id="10614374240317010">ଆଦୌ ସେଭ୍‍ କରାଯାଇନାହିଁ</translation>
 <translation id="1062138828266376352">ଆପଣଙ୍କ PINକୁ ପରିବର୍ତ୍ତନ କରାଯାଇନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)କୁ କେଉଁଠାରେ ସେଭ କରିବେ ବାଛନ୍ତୁ</translation>
@@ -1505,6 +1506,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="5898848375214731122">ବସ୍ତୁତ୍ୱ</translation>
 <translation id="5899314093904173337">ନିକଟରେ ଥିବା ଲୋକମାନଙ୍କ ସହ ସେୟାର୍ କରିବାକୁ, ସେମାନଙ୍କୁ ତାଙ୍କ କ୍ୟାମେରା କିମ୍ବା QR ସ୍କାନର୍ ଆପ୍ ମାଧ୍ୟମରେ ଏହି QR କୋଡ୍ ସ୍କାନ୍ କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ନୂଆ ଟାବ}other{{count} ନୂଆ ଟାବ}}</translation>
+<translation id="5906163261248594192">ଡାନଙ୍କ ଜନ୍ମଦିନ</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet ଖୋଲନ୍ତୁ</translation>
 <translation id="5922999516621365983">ଏହାକୁ ପିନ କରିବା ପାଇଁ ଟାବକୁ ଏଠାକୁ ଟାଣନ୍ତୁ।</translation>
@@ -1924,6 +1926,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="720399613139435155">ଅନୁବାଦ ବିଫଳ ହୋଇଛି</translation>
 <translation id="7204922488054642675">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ନ୍ୟୁଜ</translation>
 <translation id="7206979415662233817">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
+<translation id="721218676460477064">ଏହି ଆର୍ଟିକିଲର ସାରାଂଶ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="7215621211572884440">ପପ-ଅପଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="7218491361283758048">Zip କୋଡ</translation>
 <translation id="7221173315674413369">'ନୂଆ କଣ ଅଛି'ରେ ନୂଆ ଫିଚର ଏବଂ ଟିପ୍ସ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ</translation>
@@ -2185,6 +2188,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8035133914807600019">ନୂଆ ଫୋଲ୍ଡର…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">ସାଇଟ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8038078082340255234">ମାର୍କେଟ ରିପୋର୍ଟ</translation>
 <translation id="8040407350301524547">ରୁଟ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ “ଦିଗନିର୍ଦ୍ଦେଶ ପାଆନ୍ତୁ”ରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="804427445359061970">ଆପଣ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଏଠାରେ ପାଇବେ</translation>
 <translation id="8058655154417507695">ମିଆଦ ଶେଷ ହେଉଥିବା ବର୍ଷ</translation>
@@ -2242,6 +2246,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8232956427053453090">ଡାଟା ରଖନ୍ତୁ</translation>
 <translation id="8233237502828137700">ବେନର ପ୍ରୋମୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="823339794112333264">ମାଇକ୍ରୋଫୋନ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="8240217649914883113">ଏହାକୁ ମୋ କେଲେଣ୍ଡରରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8250920743982581267">ଡକୁମେଣ୍ଟ</translation>
 <translation id="8252980988000695656">Google Lens ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="8258734532103758067">ମୁଁ ମୋ ଡାଟାକୁ ଏକ୍ସପୋର୍ଟ କରିଛି</translation>
@@ -2286,6 +2291,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8368198938968349418">ଅଟୋଫିଲ ଚାଲୁ କରନ୍ତୁ…</translation>
 <translation id="8370406443343902172">ସେଟିଂସକୁ ଯାଆନ୍ତୁ...</translation>
 <translation id="8370929854657845191">ମଧ୍ୟମକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="8371494817541821097"><ph name="DATE" />ରେ ପାସକୀ ତିଆରି କରାଯାଇଛି</translation>
 <translation id="8372471489238799313">{count,plural, =1{ଠିକଣା ଡିଲିଟ କରନ୍ତୁ}other{ଠିକଣା ଡିଲିଟ କରନ୍ତୁ}}</translation>
 <translation id="8378714024927312812">ଆପଣଙ୍କର ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8385363453480067273">ଆପଣ ଯାହା ଦେଖୁଛନ୍ତି ତାହା Google Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>

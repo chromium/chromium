@@ -132,6 +132,7 @@
 Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopiraj naslov pove&amp;zave</translation>
 <translation id="1085064499066015002">Vedno na vseh spletnih mestih</translation>
+<translation id="1085340215550339505">Zaradi zagotavljanja pravočasnih predlogov za spremembo gesla se lahko vsebina in URL-ji strani, ki jih obiščete, obdelujejo v zasebnem prostoru v oblaku</translation>
 <translation id="1085558727130096638">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /> in še <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="1085618740036066768">Element <ph name="ITEM" /> ni izbran. <ph name="INDEX" /> od <ph name="COUNT" />. Pritisnite tipko za iskanje in preslednico, če želite izbirati.</translation>
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
@@ -1132,6 +1133,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1871131409931646355">Celotna zgodovina prenosov</translation>
 <translation id="187145082678092583">Manj aplikacij</translation>
 <translation id="1871615898038944731">Naprava <ph name="DEVICE_TYPE" /> je posodobljena</translation>
+<translation id="1872846000961079826">Med spreminjanjem gesla se vsebina s strani z gesli in povezani podatki pošiljajo Googlu in jih lahko pregledajo pregledovalci zaradi izboljšanja kakovosti te funkcije</translation>
 <translation id="1873513359268939357">Koledar v Outlooku</translation>
 <translation id="1873920700418191231">Znova omogočite dovoljenja za <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Dovoljeno je prikazovanje oglasov</translation>
@@ -2858,6 +2860,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3184536091884214176">Nastavitev ali upravljanje tiskalnikov CUPS. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">S to kodo PIN lahko spremenite nastavitve starševskega nadzora.
     Če pozabite kodo PIN, v napravi izvedite powerwash in jo znova nastavite.</translation>
+<translation id="3184916134413175521">Ocenite</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta aplikacija je blokirana}one{Nekatere aplikacije so blokirane}two{Nekatere aplikacije so blokirane}few{Nekatere aplikacije so blokirane}other{Nekatere aplikacije so blokirane}}</translation>
 <translation id="3185454065699440434">Dovoli razširitve na <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Ali je napravo za predvajanje mogoče videti v
@@ -2927,6 +2930,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3241680850019875542">Izberite korenski imenik razširitve, ki jo želite zapakirati. Če želite posodobiti razširitev, izberite tudi datoteko z zasebnim ključem, ki jo želite znova uporabiti.</translation>
 <translation id="3241810535741601486">Ta sprememba je trajna in je ni mogoče razveljaviti. Razširjene posodobitve se uporabljajo za vse uporabnike te naprave. <ph name="LINK_START" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Vaš avatar</translation>
+<translation id="3242764115495920926">Ponudba za samodejno spremembo gesel</translation>
 <translation id="3243017971870859287">Branje serijskih številk naprav in komponent s sistemom ChromeOS Flex.</translation>
 <translation id="324366796737464147">Izločanje hrupa</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4152,6 +4156,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4167924027691268367">Več dejanj za bližnjico <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Nekatere nastavitve, ki se nanašajo na uporabnika <ph name="PRIMARY_EMAIL" />, so deljene z vami. Te nastavitve vplivajo na vaš račun samo pri uporabi prijave z več računi.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> se konča z <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Ocenite …</translation>
 <translation id="4169535189173047238">Ne dovoli</translation>
 <translation id="4170314459383239649">Izbriši ob izhodu</translation>
 <translation id="4170685671197375581">Vklopi bližnjico</translation>
@@ -4453,6 +4458,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4401912261345737180">Vzpostavitev povezave s kodo za predvajanje</translation>
 <translation id="4403012369005671154">Pretvorba govora v besedilo</translation>
 <translation id="4403775189117163360">Izberi drugo mapo</translation>
+<translation id="440411460180511551">Če Chromium v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko Googlov upravitelj gesel ponudi, da ga spremeni, ko ste prijavljeni.</translation>
 <translation id="4404843640767531781">Aplikacijo <ph name="APP_NAME" /> je blokiral starš. Če želiš uporabljati to aplikacijo, prosi starša za dovoljenje.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Premakni v …</translation>
@@ -5061,7 +5067,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4872192066608821120">Če želite uvoziti gesla, izberite datoteko CSV.</translation>
 <translation id="4872212987539553601">Nastavitev šifriranja v napravi</translation>
 <translation id="4875690134140862902">Zavihek</translation>
-<translation id="4876273079589074638">Pomagajte našim tehnikom preučiti in odpraviti to zrušitev. Natančno navedite svoje korake, če lahko. Pomembna je vsaka podrobnost.</translation>
 <translation id="4876305945144899064">Ni uporabniškega imena</translation>
 <translation id="4876327226315760474">To pomeni, da bi funkcije spletnega mesta morale delovati po pričakovanjih, vendar boste morda deležni manj zaščite pri brskanju.</translation>
 <translation id="4876895919560854374">Zaklepanje in odklepanje zaslona</translation>
@@ -6589,6 +6594,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6099766472403716061">Spletnemu mestu <ph name="HOST" /> vedno dovoli upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="6100736666660498114">Meni »Start«</translation>
 <translation id="6100737823178787570">Povečajte velikost okna, če želite nadaljevati opravilo</translation>
+<translation id="6101170451607354234">Če Chrome v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko Googlov upravitelj gesel ponudi, da ga spremeni, ko ste prijavljeni.</translation>
 <translation id="6101226222197207147">Nova aplikacija je dodana (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">To datoteko je blokirala dodatna zaščita.</translation>
 <translation id="6103681770816982672">Opozorilo: preklapljate na kanal za razvijalce</translation>
@@ -6794,6 +6800,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6254892857036829079">Odlično</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
 <translation id="625827534921607067">To omrežje bo prednostno, če je na voljo več kot eno predhodno povezano ali konfigurirano omrežje.</translation>
+<translation id="6258818697161346451">Uporaba ključev za dostop v tej napravi</translation>
 <translation id="6259776178973198997">Osveži podatke o lastnikih Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Dnevniki aplikacij za kioske ChromeOS</translation>
 <translation id="6263082573641595914">Microsoftova različica overitelja potrdil</translation>
@@ -10349,6 +10356,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="9003185744423389627">Povezava s strežnikom za upravljanje naprav ni uspela; stanje napake ob <ph name="FAILURE_TIME" />: »<ph name="STATUS_TEXT" />«.</translation>
 <translation id="90033698482696970">Želite samodejno iskati razpoložljive profile za e-SIM?</translation>
 <translation id="9003647077635673607">Dovoli na vseh spletnih mestih</translation>
+<translation id="9004279470320280717">Ocenite …</translation>
 <translation id="9005774573776346118">Če želite dostopati do gesel, zaznamkov in drugega v vseh napravah, se prijavite kot <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Vaša organizacija</translation>
 <translation id="900733896273558337">Urejanje veščine</translation>

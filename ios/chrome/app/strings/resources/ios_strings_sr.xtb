@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Без архивирања</translation>
 <translation id="1053651653201045802">Одјављени сте. Поново се пријавите да бисте користили обележиваче, лозинке и други садржај на налогу.</translation>
 <translation id="1054745118061919935">Ако наставите, прихватате <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Шта да купим?</translation>
 <translation id="10614374240317010">Никада се не чува</translation>
 <translation id="1062138828266376352">PIN није промењен. Проверите интернет везу и пробајте поново</translation>
 <translation id="1063070031224282617">Одаберите где желите да сачувате <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -779,7 +780,7 @@
 <translation id="3530206579861815432">Брзо пронађите отворене и недавно затворене картице на синхронизованим уређајима.</translation>
 <translation id="3530767473765895035">Управљај налозима на овом уређају…</translation>
 <translation id="3533436815740441613">Нова картица</translation>
-<translation id="3534738261102690620">Упитајте Gemini</translation>
+<translation id="3534738261102690620">Питајте Gemini</translation>
 <translation id="3540141921715814660">Додај у обележиваче</translation>
 <translation id="3546122170015471515">Прегледи Мапа на Google.com</translation>
 <translation id="3547356470684043247">Прочитајте процене производа, услуга или доживљаја од стране клијената да бисте донели утемељеније одлуке у вези са рецензијама</translation>
@@ -1505,6 +1506,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Да бисте делили са људима у близини, дајте им да скенирају овај QR кôд помоћу камере или апликације за скенирање QR кода</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} нова картица}one{{count} нова картица}few{{count} нове картице}other{{count} нових картица}}</translation>
+<translation id="5906163261248594192">Денов рођендан</translation>
 <translation id="5911030830365207728">Google преводилац</translation>
 <translation id="5912796581727968237">Отвори Google новчаник</translation>
 <translation id="5922999516621365983">Превуците картицу овде да бисте је закачили.</translation>
@@ -1924,6 +1926,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="720399613139435155">Превођење није успело</translation>
 <translation id="7204922488054642675">Персонализоване вести</translation>
 <translation id="7206979415662233817">Услови коришћења услуге</translation>
+<translation id="721218676460477064">Резимирај овај чланак</translation>
 <translation id="7215621211572884440">Искачући прозори су дозвољени</translation>
 <translation id="7218491361283758048">Поштански број</translation>
 <translation id="7221173315674413369">Истражите нове функције и савете у одељку Шта је ново</translation>
@@ -2185,6 +2188,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8035133914807600019">Нови фолдер...</translation>
 <translation id="8035412398498507358">Слике</translation>
 <translation id="8037713009824540257">Додај сајт</translation>
+<translation id="8038078082340255234">Извештај о тржишту</translation>
 <translation id="8040407350301524547">За опције руте додирните Прикажи путању.</translation>
 <translation id="804427445359061970">Овде ћете пронаћи картице са других уређаја</translation>
 <translation id="8058655154417507695">Година истека</translation>
@@ -2242,6 +2246,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8232956427053453090">Задржи податке</translation>
 <translation id="8233237502828137700">Затворите промотивни банер</translation>
 <translation id="823339794112333264">Укључи микрофон</translation>
+<translation id="8240217649914883113">Додај ово у календар</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8252980988000695656">Радња Google објектива је завршена.</translation>
 <translation id="8258734532103758067">I've exported my data (Извезао/ла сам податке)</translation>
@@ -2286,6 +2291,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8368198938968349418">Укључи аутоматско попуњавање…</translation>
 <translation id="8370406443343902172">Иди у подешавања…</translation>
 <translation id="8370929854657845191">Прошири на средњу висину</translation>
+<translation id="8371494817541821097">Приступни кључ је направљен <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Избриши адресу}one{Избриши адресе}few{Избриши адресе}other{Избриши адресе}}</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="8385363453480067273">Претражујте оно што видите помоћу Google објектива</translation>

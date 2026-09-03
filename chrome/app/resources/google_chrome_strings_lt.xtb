@@ -75,6 +75,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1640672724030957280">Atsisiunčiama...</translation>
 <translation id="1651617469580841801">Kai naudojate „Google Lens“, puslapio pavadinimas, URL ir turinys, įskaitant PDF, siunčiami „Google“. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Apie „ChromeOS Flex“</translation>
+<translation id="1664094661346151467">Ieškokite ir užduokite klausimų iš bet kur, net kai „Chrome“ sumažinta</translation>
 <translation id="1674870198290878346">Atidaryti nuorodą „Chrome“ inko&amp;gnito lange</translation>
 <translation id="1682634494516646069">„Google Chrome“ negali skaityti ir rašyti į duomenų katalogą:
 
@@ -112,6 +113,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2034233344106846793">„Chrome“ automatiškai naujovina nesaugius ryšius į HTTPS, kai tai įmanoma</translation>
 <translation id="2039417478970545937">Nustatymai.</translation>
 <translation id="2040220733769034247">Nuskaitykite QR kodą telefonu, kad atsisiųstumėte „Chrome“ ir prisijungtumėte prie „Google“ paskyros.</translation>
+<translation id="2044908892530830113">Rodyti paiešką naudojant „Chrome“ kompiuterio „Mac“ meniu juostoje ir įjungti spartųjį klavišą</translation>
 <translation id="2050189601866423230">Galite prisegti „Google“ paieškos DI režimą, kad naršydami galėtumėte užduoti klausimų</translation>
 <translation id="2091012649849228750">Jei norite gauti būsimus „Google Chrome“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 8 versijos „Windows“.</translation>
 <translation id="2094648590148273905">„ChromeOS Flex“ sąlygos</translation>
@@ -139,6 +141,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2284380654876659752">Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį <ph name="BEGIN_LINK" />„Google“ saugaus naršymo funkcijai<ph name="END_LINK" /> per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="2290014774651636340">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Google Chrome“ funkcijos.</translation>
 <translation id="2290095356545025170">Ar tikrai norite pašalinti „Google Chrome“?</translation>
+<translation id="2295218613066132598">Rodyti „Chrome“ svetainių sparčiuosius klavišus</translation>
 <translation id="2301513536169703857">Jei norite pasiekti slaptažodžius, žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="2307973900865360088">Palikti doke</translation>
 <translation id="2309047409763057870">Tai yra antrinis „Google Chrome“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
@@ -526,6 +529,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6180522807229584611">Šiam skirtukui naudojami papildomi šaltiniai. Kad padidintumėte našumą, leiskite „Chrome“ jį padaryti neaktyvų.</translation>
 <translation id="6182736845697986886">Įdiegti nepavyko dėl vidinės atnaujinimo serverio klaidos.</translation>
 <translation id="6192058120268468905">Jūsų paskyra naršyklėje „Chrome“</translation>
+<translation id="6195202018542972563">Rodyti paiešką naudojant „Chrome“ sistemos juostelėje ir įjungti spartųjį klavišą</translation>
 <translation id="6235018212288296708">„Google Chrome“ skirta taisyklė, pagal kurią leidžiamas mDNS srautas.</translation>
 <translation id="624230925347970731">„Chrome“ netrukus bus uždaryta</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
@@ -567,6 +571,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="652948702951888897">„Chrome“ istorija</translation>
 <translation id="6532945796722480006">Atidaryti „Gemini“ naršyklėje „Chrome Canary“</translation>
 <translation id="6539493053177300926">Lengvai pasiekite ir naudokite „Gemini“ naršyklėje „Chrome“ įrenginyje, net jei „Chrome“ yra sumažinta.</translation>
+<translation id="6556755379298048869">Ieškokite naudodami spartųjį klavišą.</translation>
 <translation id="6585124893636629274">Uždaryti „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="659498884637196217">„Google“ slaptažodžių tvarkytuvė šiame įrenginyje</translation>
 <translation id="6613949864921837107">Užtikrinkite, kad slaptažodžiai, žymės ir istorija būtų tobulai sinchronizuojami įrenginiuose, nustatę „Chrome“ kaip numatytąją naršyklę.</translation>
@@ -593,6 +598,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="683440813066116847">„Canary“ versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>
 <translation id="684888714667046800">Nepavyksta prisijungti prie interneto. Jei naudojate užkardą, įsitikinkite, kad „<ph name="PRODUCT_EXE_NAME" />“ yra leidžiamųjų sąraše.</translation>
 <translation id="6859580922007887573">Jei norite tęsti, paspauskite tabuliavimo klavišą</translation>
+<translation id="6869568587896659271">Lengvai pasiekite svetaines po adreso juosta</translation>
 <translation id="6877155553248388166">apatinis dešinysis paieškos srities kampas: dešinė – <ph name="RIGHT" /> %, apačia – <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">„Chrome“ atnaujinimas</translation>
 <translation id="6885412569789873916">„Chrome“ beta versijos programos</translation>
@@ -685,6 +691,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7736869414036750079">Jūsų organizacija reikalauja prisijungti prie „Chrome“</translation>
 <translation id="7747138024166251722">Diegimo programai nepavyko sukurti laikino katalogo. Patikrinkite, ar yra laisvos vietos diske ir, ar leidžiama įdiegti programinę įrangą.</translation>
 <translation id="7748969056734910029">Pastaruoju metu nesilankėte. „Chrome“ pašalino <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Paieška naudojant „Chrome“</translation>
 <translation id="7761834446675418963">Spustelėkite savo vardą, kad atidarytumėte „Chrome“ ir pradėtumėte naršyti.</translation>
 <translation id="7777080907402804672">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="778331955594035129">„Chrome“ reikalingas leidimas pasiekti vietovės duomenis šioje svetainėje</translation>

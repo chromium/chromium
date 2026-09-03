@@ -132,6 +132,7 @@
 Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je sprawdzić w dowolnym momencie.</translation>
 <translation id="1084824384139382525">Kopiuj adr&amp;es linku</translation>
 <translation id="1085064499066015002">Zawsze na wszystkich stronach</translation>
+<translation id="1085340215550339505">Aby na czas wyświetlać sugestie dotyczące zmiany hasła, zawartość i adresy URL odwiedzanych stron mogą być przetwarzane w przestrzeni prywatnej w chmurze</translation>
 <translation id="1085558727130096638">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> inna osoba</translation>
 <translation id="1085618740036066768">Nie zaznaczono: <ph name="ITEM" />. <ph name="INDEX" /> z <ph name="COUNT" />. Aby zaznaczyć, naciśnij Wyszukaj i spację.</translation>
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
@@ -1122,6 +1123,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1871131409931646355">Pełna historia pobierania</translation>
 <translation id="187145082678092583">Mniej aplikacji</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> używa aktualnej wersji oprogramowania</translation>
+<translation id="1872846000961079826">Podczas zmiany hasła treści ze stron z hasłami i powiązane informacje są wysyłane do Google i mogą być sprawdzane przez weryfikatorów w celu poprawy jakości tej funkcji</translation>
 <translation id="1873513359268939357">Kalendarz Outlooka</translation>
 <translation id="1873920700418191231">Przyznaj ponownie uprawnienia witrynie <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Zezwolono na wyświetlanie dowolnych reklam</translation>
@@ -2840,6 +2842,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3184536091884214176">Skonfiguruj drukarki CUPS lub zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Za pomocą tego kodu PIN możesz zmieniać ustawienia kontroli rodzicielskiej.
     Jeśli go zapomnisz, wykonaj procedurę Powerwash i ponownie skonfiguruj urządzenie.</translation>
+<translation id="3184916134413175521">Oceń</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta aplikacja jest zablokowana}few{Niektóre aplikacje są zablokowane}many{Niektóre aplikacje są zablokowane}other{Niektóre aplikacje są zablokowane}}</translation>
 <translation id="3185454065699440434">Zezwalaj na rozszerzenia w witrynie <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Czy urządzenie przesyłające jest widoczne w <ph name="BEGIN_LINK" />aplikacji Google Home<ph name="END_LINK" />?</translation>
@@ -2907,6 +2910,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3241680850019875542">Wybierz główny katalog rozszerzenia, które chcesz umieścić w pakiecie. Aby zaktualizować rozszerzenie, wybierz również plik kluczy prywatnych do ponownego użycia.</translation>
 <translation id="3241810535741601486">Ta zmiana jest trwała i nie można jej cofnąć. Rozszerzone aktualizacje dotyczą wszystkich użytkowników tego urządzenia. <ph name="LINK_START" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Twój awatar</translation>
+<translation id="3242764115495920926">Proponuj automatyczną zmianę haseł</translation>
 <translation id="3243017971870859287">Odczytywanie numerów seryjnych urządzeń z ChromeOS Flex i komponentów</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4128,6 +4132,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4167924027691268367">Więcej działań dotyczących skrótu <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Niektóre ustawienia należące do <ph name="PRIMARY_EMAIL" /> zostały Ci udostępnione. Mają one wpływ na Twoje konto, tylko jeśli korzystasz z wielokrotnego logowania.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> – numer zakończony na: <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Oceń…</translation>
 <translation id="4169535189173047238">Nie zezwalaj</translation>
 <translation id="4170314459383239649">Wyczyść przy zamykaniu</translation>
 <translation id="4170685671197375581">Włącz skrót</translation>
@@ -4429,6 +4434,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4401912261345737180">Połącz się, używając kodu</translation>
 <translation id="4403012369005671154">Zamiana mowy na tekst</translation>
 <translation id="4403775189117163360">Wybierz inny folder</translation>
+<translation id="440411460180511551">Jeśli Chromium wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku publicznego naruszenia bezpieczeństwa danych, to gdy się zalogujesz, Menedżer haseł Google może Ci zaproponować zmianę hasła.</translation>
 <translation id="4404843640767531781">Twój rodzic zablokował aplikację <ph name="APP_NAME" />. Aby móc z niej korzystać, poproś go o pozwolenie.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
@@ -5036,7 +5042,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4872192066608821120">Aby zaimportować hasła, wybierz plik CSV</translation>
 <translation id="4872212987539553601">Skonfiguruj szyfrowanie na urządzeniu</translation>
 <translation id="4875690134140862902">Karta</translation>
-<translation id="4876273079589074638">Pomóż naszym inżynierom zbadać i naprawić tę awarię. Jeśli możesz, dokładnie opisz poszczególne czynności. Każdy szczegół jest ważny.</translation>
 <translation id="4876305945144899064">Brak nazwy użytkownika</translation>
 <translation id="4876327226315760474">Oznacza to, że witryny powinny działać zgodnie z oczekiwaniami, ale możesz mieć mniejszą ochronę podczas ich przeglądania.</translation>
 <translation id="4876895919560854374">Blokowanie i odblokowywanie ekranu</translation>
@@ -6561,6 +6566,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6099766472403716061">Zawsze zezwalaj stronie <ph name="HOST" /> na sterowanie urządzeniami MIDI i ich przeprogramowywanie</translation>
 <translation id="6100736666660498114">Menu Start</translation>
 <translation id="6100737823178787570">Aby je wznowić, zwiększ rozmiar okna</translation>
+<translation id="6101170451607354234">Jeśli Chrome wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku publicznego naruszenia bezpieczeństwa danych, to gdy się zalogujesz, Menedżer haseł Google może Ci zaproponować zmianę hasła.</translation>
 <translation id="6101226222197207147">Dodano nową aplikację (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Ten plik został zablokowany przez Ochronę zaawansowaną.</translation>
 <translation id="6103681770816982672">Ostrzeżenie: przełączasz wersję na deweloperską</translation>
@@ -6766,6 +6772,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6254892857036829079">Idealna</translation>
 <translation id="6257602895346497974">Włącz synchronizację…</translation>
 <translation id="625827534921607067">Ta sieć będzie preferowana, jeśli będzie dostępna więcej niż 1 wcześniej podłączona lub skonfigurowana sieć</translation>
+<translation id="6258818697161346451">Używaj kluczy dostępu na tym urządzeniu</translation>
 <translation id="6259776178973198997">Odśwież informacje o właścicielach Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Logi aplikacji kiosku ChromeOS</translation>
 <translation id="6263082573641595914">Wersja urzędu certyfikacji firmy Microsoft</translation>
@@ -10312,6 +10319,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9003185744423389627">Nie udało się połączyć z serwerem zarządzania urządzeniami (stan „<ph name="STATUS_TEXT" />” o godzinie „<ph name="FAILURE_TIME" />”)</translation>
 <translation id="90033698482696970">Automatycznie skanować pod kątem dostępnych profili eSIM?</translation>
 <translation id="9003647077635673607">Zezwól we wszystkich witrynach</translation>
+<translation id="9004279470320280717">Oceń…</translation>
 <translation id="9005774573776346118">Aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Twoja organizacja</translation>
 <translation id="900733896273558337">Edytuj umiejętność</translation>

@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Thema las</translation>
 <translation id="1070329623210597193">Ffeiliau y gall y wefan hon eu gweld neu eu golygu</translation>
 <translation id="1074758928858737435">Gallwch ofyn am weld y fersiwn bwrdd gwaith o wefannau</translation>
+<translation id="1089791933924803646">Cael awgrymiadau Chrome mewn apiau eraill</translation>
 <translation id="1109482864356262001">Ni fydd nodweddion sydd angen synwyryddion symudiad neu olau yn gweithio</translation>
 <translation id="1126523729897810826">Cwblhewch y gweithredoedd a awgrymir isod i gael y gorau o Chrome</translation>
 <translation id="113098737392899175">Llywio tudalennau gyda chyrchwr testun pan fydd bysellfwrdd wedi'i atodi</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Diystyru cais gwefan i atal chwyddo</translation>
 <translation id="5668843533782548925">Mae gwefannau'n arafach ond yn fwy diogel</translation>
 <translation id="5677928146339483299">Rhwystrwyd</translation>
+<translation id="5679089750838794164">Gall Chrome bellach ddangos awgrymiadau i chi mewn apiau eraill yn seiliedig ar eich data pori, megis hanes pori diweddar. Mae'r data hyn yn cael eu prosesu'n ddiogel ar eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="5689516760719285838">Lleoliad</translation>
 <translation id="5690795753582697420">Mae'r camera wedi'i ddiffodd yn Gosodiadau Android</translation>
 <translation id="5700761515355162635">Caniateir cwcis trydydd parti</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Tynnu mynediad golygu ffeiliau? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Pan fydd ymlaen, gall gwefannau ddefnyddio'r modd llun mewn llun yn awtomatig. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio'r modd llun mewn llun yn awtomatig.</translation>
 <translation id="6120483543004435978">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael gwybod pryd rydych yn defnyddio'ch dyfais yn weithredol. Pan fydd wedi'i ddiffodd, ni all gwefannau wybod pryd rydych yn defnyddio'ch dyfais yn weithredol.</translation>
+<translation id="612871598708395517">Cuddio Cael awgrymiadau Chrome mewn apiau eraill</translation>
 <translation id="6132075343662013154">Bydd Chrome yn cynnig cadw eich cyfrinair</translation>
 <translation id="615886654739818377">Peidio â chaniatáu i wefannau reoli ffenestri ar eich holl sgriniau</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>

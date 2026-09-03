@@ -132,6 +132,7 @@
 Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translation>
 <translation id="1084824384139382525">Kopiatu estekaren &amp;helbidea</translation>
 <translation id="1085064499066015002">Webgune guztietan beti</translation>
+<translation id="1085340215550339505">Pasahitza aldatzeko iradokizunak une egokian egiteko, bisitatzen dituzun orrien edukia eta URLak hodeiko eremu pribatu batean prozesa daitezke</translation>
 <translation id="1085558727130096638">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> eta beste <ph name="NUM_OTHER_MEMBERS" /> erabiltzailerekin</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> ez da hautatu. <ph name="COUNT" /> elementutatik <ph name="INDEX" />. Hautatzeko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
@@ -1121,6 +1122,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1871131409931646355">Deskargen historia osoa</translation>
 <translation id="187145082678092583">Aplikazio gutxiago</translation>
 <translation id="1871615898038944731">Eguneratuta dago <ph name="DEVICE_TYPE" /> gailua</translation>
+<translation id="1872846000961079826">Pasahitzak aldatzeko prozesuan, pasahitzak idazteko orrien edukia eta erlazionatutako informazioa Google-ri bidaltzen zaizkio, eta batzuetan gizakiek berrikusten dituzte eginbidearen kalitatea hobetzeko.</translation>
 <translation id="1873513359268939357">Outlook-en egutegia</translation>
 <translation id="1873920700418191231">Eman baimenak berriro <ph name="WEBSITE" /> webguneari</translation>
 <translation id="1874248162548993294">Edozein iragarki erakuts dezakete</translation>
@@ -2844,6 +2846,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3184536091884214176">Konfiguratu edo instalatu CUPS inprimagailuak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Erabili PIN hau guraso-murriztapenen ezarpenak aldatzeko.
     PINa ahazten baduzu, leheneratu gailua Powerwash bidez eta konfigura ezazu berriro.</translation>
+<translation id="3184916134413175521">Baloratu</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aplikazioa blokeatuta dago}other{Zenbait aplikazio blokeatuta daude}}</translation>
 <translation id="3185454065699440434">Eman luzapenak erabiltzeko baimena <ph name="SITE_NAME" /> webgunean</translation>
 <translation id="3187556136478864255">Ikusten al duzu igorpen-gailua <ph name="BEGIN_LINK" />Google Home aplikazioan<ph name="END_LINK" />?</translation>
@@ -2911,6 +2914,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3241680850019875542">Hautatu paketatu beharreko luzapenaren erroko direktorioa. Luzapenak eguneratzeko, hautatu berriro erabili beharreko gako pribatuaren fitxategia ere.</translation>
 <translation id="3241810535741601486">Aldaketa hau behin betikoa da eta ezin da alderantzikatu. Gailua darabilten pertsona guztiei aplikatuko zaizkie eguneratze hedatuak. <ph name="LINK_START" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Zure abatarra</translation>
+<translation id="3242764115495920926">Eskaini pasahitzak automatikoki aldatzeko aukera</translation>
 <translation id="3243017971870859287">ChromeOS Flex-eko gailuaren eta osagaien serie-zenbakiak irakurri.</translation>
 <translation id="324366796737464147">Zarata-murrizketa</translation>
 <translation id="3244271242291266297">HH</translation>
@@ -4136,6 +4140,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" /> zerbitzuaren lasterbidearen ekintza gehiago</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> kontuko ezarpen batzuk zurekin partekatu dira. Ezarpen horiek saio bat baino gehiago hastean soilik izango dute eragina zure kontuan.</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> amaiera daukan <ph name="NETWORK_NAME" /></translation>
+<translation id="4169275505426201952">Baloratu…</translation>
 <translation id="4169535189173047238">Ez eman baimenik</translation>
 <translation id="4170314459383239649">Garbitu irteterakoan</translation>
 <translation id="4170685671197375581">Aktibatu lasterbidea</translation>
@@ -4437,6 +4442,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4401912261345737180">Igortzeko, konektatu kode bat erabilita</translation>
 <translation id="4403012369005671154">Ahotsa testu bihurtzeko eginbidea</translation>
 <translation id="4403775189117163360">Aukeratu beste karpeta bat</translation>
+<translation id="440411460180511551">Datuen isilpekotasunaren urratze publiko batean zure pasahitzetako bat aurkitzen badu Chromium-ek, hura aldatzeko eskain diezazuke Google-ren Pasahitz-kudeatzailea zerbitzuak, saioa hasita badaukazu.</translation>
 <translation id="4404843640767531781">Guraso batek <ph name="APP_NAME" /> blokeatu du. Eska iezaiozu baimena aplikazioa erabiltzeko.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Eraman hona…</translation>
@@ -5044,7 +5050,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4872192066608821120">Pasahitzak inportatzeko, hautatu CSV fitxategi bat</translation>
 <translation id="4872212987539553601">Konfiguratu gailuan bertan enkriptatzeko aukera</translation>
 <translation id="4875690134140862902">Fitxa</translation>
-<translation id="4876273079589074638">Lagundu gure ingeniariei hutsegitea aztertzen eta konpontzen. Ahal baduzu, azaldu zer egin duzun urratsez urrats. Xehetasun txikienek ere garrantzitsuak dira!</translation>
 <translation id="4876305945144899064">Ez dago erabiltzaile-izenik</translation>
 <translation id="4876327226315760474">Horrek esan nahi du webgunearen eginbideek funtzionatu beharko luketela, baina arakatzean babes txikiagoa daukazula.</translation>
 <translation id="4876895919560854374">Pantaila blokeatu eta desblokeatu.</translation>
@@ -6567,6 +6572,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6099766472403716061">Eman zure MIDI gailuak kontrolatzeko eta berriro programatzeko baimena beti <ph name="HOST" /> webguneari</translation>
 <translation id="6100736666660498114">Hasierako menua</translation>
 <translation id="6100737823178787570">Zereginari berrekiteko, handitu leihoaren tamaina</translation>
+<translation id="6101170451607354234">Datuen isilpekotasunaren urratze publiko batean zure pasahitzetako bat aurkitzen badu Chrome-k, hura aldatzeko eskain diezazuke Google-ren Pasahitz-kudeatzailea zerbitzuak, saioa hasita badaukazu.</translation>
 <translation id="6101226222197207147">Aplikazio berria gaitu da (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Babes aurreratuak blokeatu du fitxategi hau.</translation>
 <translation id="6103681770816982672">Abisua: garatzaileentzako kanalera aldatzen ari zara</translation>
@@ -6772,6 +6778,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6254892857036829079">Ezin hobea</translation>
 <translation id="6257602895346497974">Aktibatu sinkronizazioa…</translation>
 <translation id="625827534921607067">Lehenago konektatutako edo konfiguratutako sare bat baino gehiago erabilgarri badaude, sare hau hobetsiko da</translation>
+<translation id="6258818697161346451">Erabili sarbide-gakoak gailu honetan</translation>
 <translation id="6259776178973198997">Freskatu WiFi Direct-en jabeen informazioa</translation>
 <translation id="6261688934280090835">ChromeOS-en kiosko-aplikazioaren erregistroak</translation>
 <translation id="6263082573641595914">Microsoft CA bertsioa</translation>
@@ -10319,6 +10326,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9003185744423389627">Data honetan, gailuak kudeatzeko zerbitzariarekiko konexioak huts egin du: <ph name="FAILURE_TIME" />. Egoera: <ph name="STATUS_TEXT" />.</translation>
 <translation id="90033698482696970">Erabilgarri dauden eSIMen profilak automatikoki bilatu nahi dituzu?</translation>
 <translation id="9003647077635673607">Baimendu webgune guztietan</translation>
+<translation id="9004279470320280717">Baloratu…</translation>
 <translation id="9005774573776346118">Pasahitzak, laster-markak eta bestelako datuak gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="9006511997799670136">Zure erakundea</translation>
 <translation id="900733896273558337">Editatu gaitasuna</translation>

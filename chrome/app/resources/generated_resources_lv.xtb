@@ -132,6 +132,7 @@
 Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopēt saites adresi</translation>
 <translation id="1085064499066015002">Vienmēr visās vietnēs</translation>
+<translation id="1085340215550339505">Lai savlaicīgi sniegtu ieteikumus par paroles maiņu, jūsu apmeklēto lapu saturs un vietrāži URL var tikt apstrādāti privātā telpā mākonī.</translation>
 <translation id="1085558727130096638">Pievienošanās ciļņu grupai, ko izmanto <ph name="OWNER_FIRST_NAME" /> un <ph name="NUM_OTHER_MEMBERS" /> cits dalībnieks</translation>
 <translation id="1085618740036066768">Vienums <ph name="ITEM" /> nav atlasīts. Numur <ph name="INDEX" />, kopā ir <ph name="COUNT" />. Lai atlasītu, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
@@ -1122,6 +1123,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1871131409931646355">Pilna lejupielāžu vēsture</translation>
 <translation id="187145082678092583">Mazāk lietotņu</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ierīce ir atjaunināta.</translation>
+<translation id="1872846000961079826">Paroles maiņas laikā saturs no paroļu lapām un saistītā informācija tiek sūtīta uzņēmumam Google un var tikt manuāli pārskatīta, lai uzlabotu šīs funkcijas kvalitāti.</translation>
 <translation id="1873513359268939357">Outlook kalendārs</translation>
 <translation id="1873920700418191231">Atkal piešķirt atļaujas vietnei <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Drīkst rādīt reklāmas</translation>
@@ -2846,6 +2848,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3184536091884214176">Iestatīt vai pārvaldīt CUPS printerus. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Izmantojiet šo PIN, lai mainītu vecāku kontroles iestatījumus.
     Ja esat aizmirsis PIN, izmantojiet funkciju Powerwash šai ierīcei un vēlreiz veiciet iestatīšanu.</translation>
+<translation id="3184916134413175521">Novērtēt šo</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Šī lietotne ir bloķēta}zero{Dažas lietotnes ir bloķētas}one{Dažas lietotnes ir bloķētas}other{Dažas lietotnes ir bloķētas}}</translation>
 <translation id="3185454065699440434">Atļaut paplašinājumus vietnē <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Vai jūsu apraides ierīce ir redzama <ph name="BEGIN_LINK" />lietotnē Google Home<ph name="END_LINK" />?</translation>
@@ -2913,6 +2916,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3241680850019875542">Atlasiet pakojamā paplašinājuma saknes direktoriju. Lai atjauninātu paplašinājumu, atlasiet arī privātās atslēgas failu atkārtotai izmantošanai.</translation>
 <translation id="3241810535741601486">Šīs izmaiņas ir neatgriezeniskas, un tās nevar atsaukt. Paplašinātie atjauninājumi tiek lietoti visiem šīs ierīces lietotājiem. <ph name="LINK_START" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Jūsu avatārs</translation>
+<translation id="3242764115495920926">Piedāvāt automātiski nomainīt paroles</translation>
 <translation id="3243017971870859287">Lasīt ChromeOS Flex ierīces un komponentu sērijas numurus.</translation>
 <translation id="324366796737464147">Trokšņu mazināšana</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4138,6 +4142,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4167924027691268367">Citas darbības <ph name="SHORTCUT_TITLE" /> saīsnei</translation>
 <translation id="4168015872538332605">Daži iestatījumi, ko veica <ph name="PRIMARY_EMAIL" />, ir kopīgoti ar jums. Šie iestatījumi ietekmē jūsu kontu tikai tad, kad izmantojat vairākkārtēju pierakstīšanos.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, pēdējie cipari ir <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Novērtēt šo…</translation>
 <translation id="4169535189173047238">Neatļaut</translation>
 <translation id="4170314459383239649">Aizverot notīrīt</translation>
 <translation id="4170685671197375581">Ieslēgt saīsni</translation>
@@ -4439,6 +4444,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4401912261345737180">Lai sāktu apraidi, izveidojiet savienojumu, norādot kodu</translation>
 <translation id="4403012369005671154">Runas pārvēršana tekstā</translation>
 <translation id="4403775189117163360">Izvēlēties citu mapi</translation>
+<translation id="440411460180511551">Ja pārlūkā Chromium tiek konstatēts, ka kāda no jūsu parolēm ir atklāta publiska datu aizsardzības pārkāpuma dēļ, un ja ir veikta pierakstīšanās, Google paroļu pārvaldnieks var piedāvāt nomainīt attiecīgo paroli.</translation>
 <translation id="4404843640767531781">Lietotni <ph name="APP_NAME" /> bloķēja kāds no jūsu vecākiem. Lai izmantotu šo lietotni, lūdziet vecākiem piešķirt atļauju.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Pārvietot uz…</translation>
@@ -5047,7 +5053,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4872192066608821120">Lai importētu paroles, atlasiet CSV failu</translation>
 <translation id="4872212987539553601">Iestatiet šifrēšanu ierīcē</translation>
 <translation id="4875690134140862902">Cilne</translation>
-<translation id="4876273079589074638">Palīdziet mūsu inženieriem izpētīt un novērst šo avāriju. Ja varat, norādiet konkrētas darbības (jo detalizētāk, jo labāk).</translation>
 <translation id="4876305945144899064">Nav lietotājvārda</translation>
 <translation id="4876327226315760474">Tas nozīmē, ka vietnes funkcijas, visticamāk, darbosies paredzētajā veidā, taču, iespējams, pārlūkošanas aizsardzības līmenis būs zemāks.</translation>
 <translation id="4876895919560854374">Bloķēt un atbloķēt ekrānu</translation>
@@ -6570,6 +6575,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6099766472403716061">Vienmēr atļaut vietnei <ph name="HOST" /> kontrolēt un pārprogrammēt jūsu MIDI ierīces</translation>
 <translation id="6100736666660498114">Starta izvēlne</translation>
 <translation id="6100737823178787570">Lai atsāktu uzdevumu, palieliniet loga lielumu.</translation>
+<translation id="6101170451607354234">Ja pārlūkā Chrome tiek konstatēts, ka kāda no jūsu parolēm ir atklāta publiska datu aizsardzības pārkāpuma dēļ, un ja ir veikta pierakstīšanās, Google paroļu pārvaldnieks var piedāvāt nomainīt attiecīgo paroli.</translation>
 <translation id="6101226222197207147">Ir pievienota jauna lietotne (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Šis fails tika bloķēts ar papildu aizsardzības funkcijām.</translation>
 <translation id="6103681770816982672">Brīdinājums: jūs pārslēdzat izstrādātāja versiju</translation>
@@ -6775,6 +6781,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6254892857036829079">Nevainojama</translation>
 <translation id="6257602895346497974">Ieslēgt sinhronizāciju...</translation>
 <translation id="625827534921607067">Ja būs pieejami vairāki konfigurēti tīkli vai tīkli, ar kuriem iepriekš tika izveidots savienojums, tiks izmantots šis tīkls.</translation>
+<translation id="6258818697161346451">Izmantojiet savas piekļuves atslēgas šajā ierīcē</translation>
 <translation id="6259776178973198997">Atsvaidzināt informāciju par Wi-Fi Direct īpašniekiem</translation>
 <translation id="6261688934280090835">ChromeOS kioska lietotņu žurnāli</translation>
 <translation id="6263082573641595914">Microsoft CA versija</translation>
@@ -10328,6 +10335,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="9003185744423389627">Neizdevās izveidot statusu ar ierīces pārvaldības serveri. Statuss: “<ph name="STATUS_TEXT" />” (<ph name="FAILURE_TIME" />).</translation>
 <translation id="90033698482696970">Vai automātiski meklēt pieejamos eSIM profilus?</translation>
 <translation id="9003647077635673607">Atļaut visās vietnēs</translation>
+<translation id="9004279470320280717">Novērtēt šo…</translation>
 <translation id="9005774573776346118">Pierakstieties kā <ph name="EMAIL" />, lai varētu piekļūt parolēm, grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="9006511997799670136">Jūsu organizācija</translation>
 <translation id="900733896273558337">Prasmes rediģēšana</translation>

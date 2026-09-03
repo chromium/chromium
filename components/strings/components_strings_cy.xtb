@@ -1560,7 +1560,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3655670868607891010">Os ydych yn gweld hyn yn aml, rhowch gynnig ar y <ph name="HELP_LINK" /> hyn.</translation>
 <translation id="3658742229777143148">Adolygiad</translation>
 <translation id="3659521826520353662">Pa wefannau a ddiffinnir gan weinyddwyr yr ymwelir â nhw a phryd: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Mae'r IBAN hwn wedi'i gadw yn Google Wallet fel y gallwch ei ddefnyddio ar draws gwasanaethau Google.</translation>
 <translation id="3664479564786885722">Chwilio am ragor o opsiynau prynu o siopau eraill sy'n gwerthu'r cynnyrch hwn.</translation>
 <translation id="3664782872746246217">Allweddeiriau:</translation>
 <translation id="3670030362669914947">Rhif</translation>
@@ -3908,7 +3907,6 @@ Manylion ychwanegol:
 <translation id="7615932826417658001">Ychwanegu cerdyn adnabod</translation>
 <translation id="7616390733770379387">Dangosir y rhain mewn trefn ar hap.</translation>
 <translation id="7616645509853975347">Mae eich gweinyddwr wedi troi Cysylltiadau Chrome Enterprise ymlaen ar eich porwr. Mae gan y cysylltiadau hyn fynediad at rywfaint o'ch data.</translation>
-<translation id="7616747402308801775">Mae'r cerdyn hwn wedi'i gadw yn Google Wallet fel y gallwch ei ddefnyddio ar draws gwasanaethau Google</translation>
 <translation id="7617825962482469577">Amlen C7/C6</translation>
 <translation id="7619838219691048931">Dalen ddiwedd</translation>
 <translation id="7621546470643449009">Creu canllaw i ddechreuwyr i edrych ar y sêr i'm helpu i ddysgu am beth i chwilio amdano yn awyr y nos, gan gynnwys 3 chytser y gellir eu hadnabod yn hawdd</translation>
@@ -4871,6 +4869,7 @@ Manylion ychwanegol:
 <translation id="988159990683914416">Fersiwn Datblygwyr</translation>
 <translation id="989988560359834682">Golygu'r Cyfeiriad</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Prawf Coeden Merkle</translation>
 <translation id="992110854164447044">Mae cerdyn rhithwir yn cuddio eich cerdyn go iawn i helpu i'ch amddiffyn rhag twyll posib. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992256792861109788">Pinc</translation>
 <translation id="992432478773561401">Ni osodwyd "<ph name="SOFTWARE_NAME" />" yn iawn ar eich cyfrifiadur na'r rhwydwaith:

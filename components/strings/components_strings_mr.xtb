@@ -1559,7 +1559,6 @@
 <translation id="3655670868607891010">तुम्ही हे वारंवार पहात असल्यास, हे वापरून पहा <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">पुनरावृत्ती</translation>
 <translation id="3659521826520353662">अ‍ॅडमिनिस्ट्रेटरने परिभाषित केलेल्या कोणत्या वेबसाइटना भेट दिली आहे आणि कधी: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">हा IBAN Google Wallet मध्ये सेव्ह केला आहे, जेणेकरून तुम्ही तो सर्व Google सेवांवर वापरू शकता.</translation>
 <translation id="3664479564786885722">या उत्पादनाची विक्री करणाऱ्या इतर स्टोअरवरून खरेदीचे आणखी पर्याय शोधा.</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3670030362669914947">नंबर</translation>
@@ -3909,7 +3908,6 @@
 <translation id="7615932826417658001">ओळखपत्र जोडा</translation>
 <translation id="7616390733770379387">ही रँडम क्रमाने दाखवली आहेत.</translation>
 <translation id="7616645509853975347">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमच्या ब्राउझरवर Chrome एंटरप्राइझ कनेक्टर्स सुरू केली आहेत. या कनेक्टरना तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
-<translation id="7616747402308801775">हे कार्ड Google Wallet मध्ये सेव्ह केले आहे, जेणेकरून तुम्ही ते सर्व Google सेवांवर वापरू शकाल</translation>
 <translation id="7617825962482469577">एन्व्हलप सी७/सी६</translation>
 <translation id="7619838219691048931">शेवटचे शीट</translation>
 <translation id="7621546470643449009">रात्रीच्या आकाशात काय पाहावे हे शिकण्यात मला मदत करण्यासाठी, ३ सहज ओळखता येण्याजोग्या नक्षत्रांसह, तारामंडळांचे निरीक्षण करण्यासाठी नवीन वापरकर्त्यांचे मार्गदर्शक तयार करा</translation>
@@ -4872,6 +4870,7 @@
 <translation id="988159990683914416">डेव्हलपर बिल्ड</translation>
 <translation id="989988560359834682">पत्ता संपादित करा</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">मर्कल ट्री पुरावा</translation>
 <translation id="992110854164447044">संभाव्य घोटाळ्यापासून तुमचे संरक्षण करण्यात मदत करण्यासाठी, व्हर्च्युअल कार्ड तुमचे मूळ कार्ड लपवते. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">गुलाबी</translation>

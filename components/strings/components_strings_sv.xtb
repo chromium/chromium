@@ -1457,6 +1457,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3495081129428749620">Hitta på sidan
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Lön</translation>
+<translation id="3496531230994554300">Wallet-meddelandet har öppnats över hela skärmen.</translation>
 <translation id="3497627066518778351">Granska en lista över webbplatsdata på enheten i ett nytt fönster</translation>
 <translation id="3498215018399854026">Vi kunde inte nå din förälder just nu. Försök igen.</translation>
 <translation id="350069200438440499">Filnamn:</translation>
@@ -1559,7 +1560,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3655670868607891010">Om du ser detta ofta provar du <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Version</translation>
 <translation id="3659521826520353662">Vilka administratörsdefinierade webbplatser som besöks och när: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Detta IBAN sparas i Google Wallet så att du kan använda det i Googles tjänster.</translation>
 <translation id="3664479564786885722">Sök efter fler köpalternativ från andra butiker som säljer produkten.</translation>
 <translation id="3664782872746246217">Sökord:</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -2669,6 +2669,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5499229993630251170">Vill du fortsätta med den här tråden?</translation>
 <translation id="5506286895894263601">Listan innehåller inga giltiga genvägar.</translation>
 <translation id="5507756662695126555">Ej avvisande</translation>
+<translation id="5508515366054931524">Uppmaning om att verifiera e-postadressen har öppnats över hela skärmen</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hanterade bokmärken</translation>
 <translation id="5510766032865166053">Den kan ha flyttats eller tagits bort.</translation>
@@ -3451,6 +3452,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6860888819347870819">Kan begära åtkomst till bild-i-bild</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Det går inte att verifiera kortet just nu</translation>
+<translation id="6871073333584947219">Wallet-meddelandet har stängts.</translation>
 <translation id="6871813064737840684">Prishistorik på webben för det här alternativet</translation>
 <translation id="6873456682041376666">Övre fack</translation>
 <translation id="6874604403660855544">&amp;Gör om Lägg till</translation>
@@ -3906,7 +3908,6 @@ Mer information.
 <translation id="7615932826417658001">Lägg till id-kort</translation>
 <translation id="7616390733770379387">Dessa visas i slumpmässig ordning.</translation>
 <translation id="7616645509853975347">Administratören har aktiverat Chrome Enterprise Connectors i din webbläsare. Dessa funktioner har åtkomst till en del av din data.</translation>
-<translation id="7616747402308801775">Kortet sparas i Google Wallet så att du kan använda det i Googles tjänster.</translation>
 <translation id="7617825962482469577">C7/C6-kuvert</translation>
 <translation id="7619838219691048931">Sista ark</translation>
 <translation id="7621546470643449009">Skapa en nybörjarguide till stjärnskådning som hjälper mig att lära mig vad jag ska titta efter på natthimlen, inklusive tre lättidentifierade stjärnbilder</translation>
@@ -3971,6 +3972,7 @@ Mer information.
 <translation id="7705085181312584869">Hjälp mig skriva</translation>
 <translation id="7705992072972338699">Optisk skiva (högblank)</translation>
 <translation id="7706689436519265630">Filer som du kopierar eller flyttar skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och de kan lagras i enlighet med företagspolicyer.</translation>
+<translation id="7709934467582922028">Uppmaningen om att verifiera e-postadressen har stängts</translation>
 <translation id="7714351089363296478">Du har precis besökt</translation>
 <translation id="7714404809393719981">Foto (halvblankt)</translation>
 <translation id="7714464543167945231">Certifikat</translation>

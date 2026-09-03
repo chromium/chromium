@@ -625,6 +625,15 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1438739959477268107">默认的密钥生成设置</translation>
 <translation id="1440408958042020947">允许已选择启用 Phone Hub 的用户访问其手机上近期拍摄的照片和视频</translation>
 <translation id="1443532790824582949">启用触摸虚拟键盘</translation>
+<translation id="1445955287827003066">此政策用于控制是否要将设备从 ChromeOS 迁移到 Next OS 以及具体迁移时间。
+
+如果此政策设为 0，设备是否可以迁移取决于 Google 默认设置，可能会因设备型号、硬件和其他因素而异。
+
+如果此政策设为 2147483647，设备会被标记为可迁移并被列为迁移对象，但没有具体期限。
+
+如果此政策设置的值大于 0 且小于 2147483647，则设备会被标记为可迁移并被列为迁移对象。该值表示建议的迁移完成期限，以自 Unix 纪元（1970 年 1 月 1 日 00:00:00 UTC）以来的秒数表示。
+
+请注意，即使在此处设置了目标日期，版本固定 (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />)、停用更新 (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) 或发布渠道设置 (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />) 等其他设备更新设置也可能会阻止设备接收启动迁移所需的更新。此政策始终生效；若未设置，则遵循 Google 默认值，因为其值会影响设备更新政策的处理。</translation>
 <translation id="1447252610864877219">允许 Gemini 应用在网页上执行操作。</translation>
 <translation id="1449083855104537880">如果此政策设为 True，无障碍选项将会显示在系统任务栏菜单中。如果此政策设为 False，这些选项就不会显示在菜单中。
 
@@ -2136,6 +2145,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 如果此政策处于启用状态或未设置，用户可以选择 Google 相册中的图片作为壁纸。</translation>
 <translation id="2393862222659066027">打开一系列网址并恢复上次的会话</translation>
+<translation id="239395129206831238">设置设备迁移到 Next OS 的目标日期</translation>
 <translation id="239416486107542256">F11 设置使用包含 Ctrl 和 Shift 辅助键的快捷键</translation>
 <translation id="2394429297128584919">不允许页面在关闭期间发送同步 XHR 请求</translation>
 <translation id="2398817690049129302">强制启用 <ph name="YOUTUBE_PRODUCT_NAME" /> 安全模式</translation>
@@ -4690,6 +4700,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
+<translation id="4032740546145417900">不允许使用“语音输入”功能。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4047633048700722778">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
 
@@ -6654,6 +6665,17 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="5247584184349816217">为锁定屏幕启用屏保。</translation>
 <translation id="5247973380763021389">禁止用户级云政策覆盖计算机级云政策。</translation>
 <translation id="5249006530384016395">控制是否为 CSS 自定义状态启用已弃用的 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 语法</translation>
+<translation id="5249271416806588789">“语音输入”功能依托 AI 技术，让用户可以通过语音输入和编辑文字。该功能由生成式 AI 模型提供支持，可提供高质量的转写文本和格式编排。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 账号</translation>
 <translation id="5249555581286638799">启用高效模式</translation>
 <translation id="5252210248395576403">此政策旨在授权快速解答功能访问所选内容并将相关信息发送给服务器，以获得翻译结果。
@@ -6778,6 +6800,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="533287753294126753">允许使用“标签页比较”工具并改进 AI 模型。</translation>
 <translation id="5334404204520035180">控制对 WebPrinting API 的使用</translation>
 <translation id="5334501839642146593">一律不向 Google 发送指标</translation>
+<translation id="5335403007354311099">启用渲染程序无障碍功能</translation>
 <translation id="5335910979215357815">允许第三方使用 Save and Share API 控制 <ph name="PRODUCT_OS_NAME" />。</translation>
 <translation id="5337869685871558036">允许将 SpeculationRules 预提取发送到由 ServiceWorker 控制的网址</translation>
 <translation id="5339096331970464266">启用无障碍虚拟键盘</translation>
@@ -7797,6 +7820,7 @@ IP 地址空间覆盖有两种形式：
       如果此政策已停用，用户将无法向 Google 发送反馈。</translation>
 <translation id="5976636832661103220">F11 设置使用包含 Shift 辅助键的快捷键</translation>
 <translation id="5979376378555121803">托管应用程序</translation>
+<translation id="5983016603010860828">“语音输入”功能设置</translation>
 <translation id="5983274643567559194">为“Delete”操作设置快捷键的功能已停用。</translation>
 <translation id="5984099692320899605">不使用 NTLM 身份验证</translation>
 <translation id="5984237109586500246">接受通过 Signed HTTP Exchange (SXG) 提供的网络内容</translation>
@@ -9559,6 +9583,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 请注意，此政策仅适用于受管浏览器，对使用非受管浏览器的受管用户没有影响。在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。
 
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。</translation>
+<translation id="7054840304131108563">停用渲染程序无障碍功能</translation>
 <translation id="7055022222176591388">禁止使用已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">系统可能会根据 Chrome 用户指标 (UMA) 政策将网域可靠性数据发送给 Google</translation>
 <translation id="7062803946218028349">允许启用 Phone Hub</translation>
@@ -10034,6 +10059,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
       启用此政策会导致网站容易受到某些类型的跨网站攻击，并允许使用网址内嵌的凭证向 HTTP 身份验证缓存文件添加条目，让攻击者能够对用户进行跨网站跟踪（甚至是在不使用 Cookie 的情况下）。
 
       此政策旨在让依靠旧版行为的企业能够更新其登录流程，日后将会移除。</translation>
+<translation id="7322231030019184787">允许使用“语音输入”功能，但不收集数据。</translation>
 <translation id="7322825363493984512">用于向远程网络代理验证系统服务身份的密码。</translation>
 <translation id="7323773727263636287">启用色彩校正无障碍功能。
 
@@ -10224,12 +10250,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="7446978687387327623">允许“安全浏览”功能通过代理进行实时检查</translation>
 <translation id="7448430478749155471">在登录屏幕上启用“随选朗读”</translation>
 <translation id="7455912144588577399">如果此政策设为 true，用户便可让系统使用文字转语音功能大声朗读符合条件的网页。这是通过服务器端内容提取和音频合成来实现的。如果此政策设为 false，系统会停用该功能。如果此政策设为默认值或未设置，系统会启用大声朗读。</translation>
-<translation id="7456922722153109956">此政策用于控制是否在“新标签页”页面上显示中间槽通知。
-
-      如果启用此政策，“新标签页”页面将会显示中间槽通知（若有）。
-
-      如果停用此政策，“新标签页”页面将不会显示中间槽通知（即使有）。
-      </translation>
 <translation id="7459601923199346224">控制证书管理机制的用户和设备政策。</translation>
 <translation id="7459633275230216698">允许显示文件选择对话框</translation>
 <translation id="7462256705280836453">选择是否可以停用 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置</translation>
@@ -10468,6 +10488,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       如果设置了此政策，则可在未成年用户的设备上验证家长访问码。
       如果未设置此政策，则无法在未成年用户的设备上验证家长访问码。</translation>
 <translation id="7623431489198474050">禁止为保护内容而进行远程认证</translation>
+<translation id="7624832415093566709">允许使用“语音输入”功能。</translation>
 <translation id="7625858205605842562">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户授权其访问 USB 设备。
 
       未设置此政策时，如果已设置 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />，则系统会将其应用于所有网站，否则应用用户的个人设置。
@@ -11153,6 +11174,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
   - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">启用设备背光信息报告功能</translation>
 <translation id="8062485064082966327">使用匿名 Google 服务为无标签图片提供自动说明</translation>
+<translation id="8064875716442437829">启用渲染程序无障碍功能</translation>
 <translation id="8066428282805800713">在 ChromeOS Flex 上发送其他硬件数据</translation>
 <translation id="8069233292746468045">此政策旨在配置 <ph name="PRODUCT_NAME" />，使其对 TLS 1.3 中的首选密钥协议算法（受支持的群组）进行排序，以反映对特定合规制度所批准的算法的偏好程度。设置此政策并不能保证系统会协商使用任何特定算法。
 
@@ -12271,6 +12293,13 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       如果此政策未设置，系统将使用网络沙盒的默认配置。网络沙盒的默认配置可能会因 <ph name="PRODUCT_NAME" /> 版本、当前运行的现场试验以及平台而异。
       此政策旨在给予企业灵活度，让企业在使用会干扰网络服务沙盒的第三方软件的情况下仍可停用网络沙盒。</translation>
 <translation id="8840243776706727185">已停用 NewBaseUrlInheritanceBehavior 功能</translation>
+<translation id="8841125674413543406">控制渲染程序进程中的无障碍功能树生成。
+
+如果此政策设为“已启用”或未设置，<ph name="PRODUCT_NAME" /> 会允许为网页生成无障碍功能树。
+
+如果此政策设为“已停用”，系统将不再生成渲染程序无障碍功能树，这会阻止无障碍功能与渲染程序交互。
+
+如果您设置了此政策，用户将无法更改或覆盖它。</translation>
 <translation id="8842208363354615697">允许启用纯 HTTPS 模式</translation>
 <translation id="8843331294082716286">不向用户显示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示。</translation>
 <translation id="884855199714673326">允许远程访问主机决定</translation>

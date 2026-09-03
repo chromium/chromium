@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">ആള്‍‌മാറാട്ടം</translation>
 <translation id="1053651653201045802">സൈൻ ഔട്ട് ചെയ്‌തു. നിങ്ങളുടെ അക്കൗണ്ടിലെ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഉപയോഗിക്കാൻ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="1054745118061919935">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK" />സേവന നിബന്ധനകൾ<ph name="END_LINK" /> അംഗീകരിക്കുന്നു.</translation>
+<translation id="1056818261333183659">ഞാൻ ഏതാണ് വാങ്ങേണ്ടത്?</translation>
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
 <translation id="1062138828266376352">നിങ്ങളുടെ പിൻ മാറ്റിയിട്ടില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">ഭാരം</translation>
 <translation id="5899314093904173337">സമീപമുള്ള ആളുകളുമായി പങ്കിടുന്നതിന്, അവരുടെ ക്യാമറയോ QR സ്‌കാനർ ആപ്പോ ഉപയോഗിച്ച് ഈ QR കോഡ് സ്‌കാൻ ചെയ്യാൻ അവരെ അനുവദിക്കുക</translation>
 <translation id="5902752768726620872">{count,plural, =1{പുതിയ {count} ടാബ്}other{പുതിയ {count} ടാബുകൾ}}</translation>
+<translation id="5906163261248594192">ഡാനിന്റെ ജന്മദിനം</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Google Wallet തുറക്കുക</translation>
 <translation id="5922999516621365983">പിൻ ചെയ്യാൻ, ടാബ് ഇവിടേക്ക് വലിച്ചിടുക.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">വിവർത്തനം ചെയ്യാനായില്ല</translation>
 <translation id="7204922488054642675">അഭിരുചിക്കനുസരിച്ചുള്ള വാർത്തകൾ</translation>
 <translation id="7206979415662233817">സേവന നിബന്ധനകൾ</translation>
+<translation id="721218676460477064">ഈ ലേഖനം സംഗ്രഹിക്കുക</translation>
 <translation id="7215621211572884440">പോപ്പ്-അപ്പുകൾ അനുവദിച്ചവ</translation>
 <translation id="7218491361283758048">പിന്‍‌ കോഡ്</translation>
 <translation id="7221173315674413369">പുതിയത് എന്തൊക്കെ എന്നതിൽ പുതിയ ഫീച്ചറുകളും നുറുങ്ങുകളും അടുത്തറിയുക</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">പുതിയ ഫോൾഡർ…</translation>
 <translation id="8035412398498507358">ഫോട്ടോകൾ</translation>
 <translation id="8037713009824540257">സൈറ്റ് ചേർക്കുക</translation>
+<translation id="8038078082340255234">മാർക്കറ്റ് റിപ്പോർട്ട്</translation>
 <translation id="8040407350301524547">വഴി ഓപ്ഷനുകൾക്ക് “വഴികൾ നേടുക” ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="804427445359061970">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">ഡാറ്റ സൂക്ഷിക്കുക</translation>
 <translation id="8233237502828137700">ബാനർ പ്രമോ അടയ്ക്കുക</translation>
 <translation id="823339794112333264">മൈക്രോഫോൺ ഓണാക്കുക</translation>
+<translation id="8240217649914883113">ഇത് എന്റെ കലണ്ടറിലേക്ക് ചേർക്കുക</translation>
 <translation id="8250920743982581267">ഡോക്യുമെന്റുകൾ</translation>
 <translation id="8252980988000695656">Google Lens പൂർത്തിയായി!</translation>
 <translation id="8258734532103758067">എന്റെ ഡാറ്റ ഞാൻ എക്‌സ്‌പോർട്ട് ചെയ്തിട്ടുണ്ട്</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">സ്വയമേവ പൂരിപ്പിക്കൽ ഓണാക്കുക…</translation>
 <translation id="8370406443343902172">ക്രമീകരണത്തിലേക്ക് പോകുക…</translation>
 <translation id="8370929854657845191">മീഡിയം വലുപ്പത്തിലേക്ക് വികസിപ്പിക്കുക</translation>
+<translation id="8371494817541821097"><ph name="DATE" />-ന് പാസ്‌കീ സൃഷ്ടിച്ചു</translation>
 <translation id="8372471489238799313">{count,plural, =1{വിലാസം ഇല്ലാതാക്കുക}other{വിലാസങ്ങൾ ഇല്ലാതാക്കുക}}</translation>
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8385363453480067273">കാണുന്നത് എന്തെല്ലാമാണെന്ന്, Google Lens ഉപയോഗിച്ച് തിരയുക</translation>

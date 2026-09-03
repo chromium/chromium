@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1053651653201045802">Telah Logout. Login kembali untuk menggunakan bookmark, sandi, dan lainnya di akun Anda.</translation>
 <translation id="1054745118061919935">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Mana yang harus saya beli?</translation>
 <translation id="10614374240317010">Jangan pernah disimpan</translation>
 <translation id="1062138828266376352">PIN Anda tidak diubah. Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="1063070031224282617">Pilih tempat untuk menyimpan "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini dengan kamera atau aplikasi pemindai QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} tab baru}other{{count} tab baru}}</translation>
+<translation id="5906163261248594192">Hari Ulang Tahun Dan</translation>
 <translation id="5911030830365207728">Google Terjemahan</translation>
 <translation id="5912796581727968237">Buka Google Wallet</translation>
 <translation id="5922999516621365983">Tarik tab ke sini untuk menyematkannya.</translation>
@@ -1924,6 +1926,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="720399613139435155">Terjemahan gagal</translation>
 <translation id="7204922488054642675">Berita yang dipersonalisasi</translation>
 <translation id="7206979415662233817">Persyaratan layanan</translation>
+<translation id="721218676460477064">Ringkas artikel ini</translation>
 <translation id="7215621211572884440">Pop-up diizinkan</translation>
 <translation id="7218491361283758048">Kode pos</translation>
 <translation id="7221173315674413369">Pelajari berbagai fitur dan tips baru di Yang Baru</translation>
@@ -2185,6 +2188,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8035133914807600019">Folder baru…</translation>
 <translation id="8035412398498507358">Foto</translation>
 <translation id="8037713009824540257">Tambahkan Situs</translation>
+<translation id="8038078082340255234">Laporan Pasar</translation>
 <translation id="8040407350301524547">Untuk opsi rute, ketuk “Dapatkan rute”.</translation>
 <translation id="804427445359061970">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
 <translation id="8058655154417507695">Tahun akhir masa berlaku</translation>
@@ -2242,6 +2246,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8232956427053453090">Pertahankan data</translation>
 <translation id="8233237502828137700">Tutup banner promo</translation>
 <translation id="823339794112333264">Aktifkan mikrofon</translation>
+<translation id="8240217649914883113">Tambahkan ini ke kalender saya</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="8252980988000695656">Google Lens selesai.</translation>
 <translation id="8258734532103758067">Saya telah mengekspor data saya</translation>
@@ -2286,6 +2291,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8368198938968349418">Aktifkan Isi Otomatis…</translation>
 <translation id="8370406443343902172">Buka Setelan...</translation>
 <translation id="8370929854657845191">Luaskan ke Sedang</translation>
+<translation id="8371494817541821097">Kunci sandi dibuat pada <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Hapus alamat}other{Hapus alamat}}</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>
 <translation id="8385363453480067273">Telusuri apa yang Anda lihat dengan Google Lens</translation>

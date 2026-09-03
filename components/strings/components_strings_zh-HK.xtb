@@ -1456,6 +1456,7 @@
 <translation id="3493881266323043047">有效性</translation>
 <translation id="3495081129428749620">喺「<ph name="PAGE_TITLE" />」網頁度搵</translation>
 <translation id="3495818359064790343">薪金</translation>
+<translation id="3496531230994554300">「錢包」通知宜家喺成個畫面上顯示。</translation>
 <translation id="3497627066518778351">在新視窗中審核裝置上網站資料清單</translation>
 <translation id="3498215018399854026">目前無法聯絡您的家長。請再試一次。</translation>
 <translation id="350069200438440499">檔案名稱：</translation>
@@ -1558,7 +1559,6 @@
 <translation id="3655670868607891010">如果您經常看到這個頁面，請嘗試這些 <ph name="HELP_LINK" />。</translation>
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3659521826520353662">瀏覽過哪些管理員定義的網站和瀏覽時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">此 IBAN 已儲存至「Google 錢包」，你可在各項 Google 服務中使用。</translation>
 <translation id="3664479564786885722">搜尋其他出售此產品的店舖的更多購買選項。</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3670030362669914947">號碼</translation>
@@ -2668,6 +2668,7 @@
 <translation id="5499229993630251170">要繼續此訊息串嗎？</translation>
 <translation id="5506286895894263601">此清單不含有效捷徑。</translation>
 <translation id="5507756662695126555">不可否認性</translation>
+<translation id="5508515366054931524">驗證電郵提示宜家喺成個畫面上顯示</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理書籤</translation>
 <translation id="5510766032865166053">此檔案可能已被移動或刪除。</translation>
@@ -3450,6 +3451,7 @@
 <translation id="6860888819347870819">可要求進入畫中畫</translation>
 <translation id="6864189428899665393">267 x 389 毫米</translation>
 <translation id="6865412394715372076">目前無法驗證此信用卡</translation>
+<translation id="6871073333584947219">「錢包」通知閂咗。</translation>
 <translation id="6871813064737840684">此選項適用的網絡價格記錄</translation>
 <translation id="6873456682041376666">上匣</translation>
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
@@ -3905,7 +3907,6 @@
 <translation id="7615932826417658001">加入身分證</translation>
 <translation id="7616390733770379387">搜尋引擎以隨機次序顯示。</translation>
 <translation id="7616645509853975347">管理員已在您的瀏覽器上啟用 Chrome Enterprise Connectors。這些連接器可存取您的部分資料。</translation>
-<translation id="7616747402308801775">此卡已儲存至「Google 錢包」，你可在各項 Google 服務中使用</translation>
 <translation id="7617825962482469577">C7/C6 信封</translation>
 <translation id="7619838219691048931">結束工作表</translation>
 <translation id="7621546470643449009">製作新手觀星指南，助我觀察夜空中的天體，包括 3 個易於辨認的星座</translation>
@@ -3970,6 +3971,7 @@
 <translation id="7705085181312584869">幫我寫</translation>
 <translation id="7705992072972338699">光碟 (高光面)</translation>
 <translation id="7706689436519265630">您複製或移動的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，並可能會根據公司政策儲存這些檔案。</translation>
+<translation id="7709934467582922028">驗證電郵提示閂咗</translation>
 <translation id="7714351089363296478">剛瀏覽過</translation>
 <translation id="7714404809393719981">相紙 (半光面)</translation>
 <translation id="7714464543167945231">憑證</translation>

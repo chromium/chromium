@@ -1457,6 +1457,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3495081129428749620">Cerca a la pàgina
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salari</translation>
+<translation id="3496531230994554300">L'avís de Wallet s'ha obert a alçada completa.</translation>
 <translation id="3497627066518778351">Revisa una llista de dades dels llocs web al dispositiu en una finestra nova</translation>
 <translation id="3498215018399854026">En aquests moments no ens hem pogut posar en contacte amb els pares. Torneu-ho a provar.</translation>
 <translation id="350069200438440499">Nom del fitxer:</translation>
@@ -1559,7 +1560,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3655670868607891010">Si aquest missatge apareix sovint, proveu aquests <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisió</translation>
 <translation id="3659521826520353662">Quins llocs web definits per l'administrador es visiten i quan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Aquest IBAN s'ha desat a Google Wallet perquè el puguis utilitzar en tots els serveis de Google.</translation>
 <translation id="3664479564786885722">Cerca més opcions de compra en altres botigues que venen aquest producte.</translation>
 <translation id="3664782872746246217">Paraules clau:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -2669,6 +2669,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5499229993630251170">Vols continuar amb aquest fil de discussió?</translation>
 <translation id="5506286895894263601">La llista no conté cap drecera vàlida.</translation>
 <translation id="5507756662695126555">No repudiació</translation>
+<translation id="5508515366054931524">La sol·licitud de verificació de l'adreça electrònica s'ha obert a alçada completa</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Adreces d'interès gestionades</translation>
 <translation id="5510766032865166053">És possible que s'hagi mogut o s'hagi suprimit.</translation>
@@ -3451,6 +3452,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6860888819347870819">Pot demanar permís per entrar al mode d'imatge sobre imatge</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">En aquests moments no es pot verificar la targeta</translation>
+<translation id="6871073333584947219">S'ha tancat l'avís de Wallet.</translation>
 <translation id="6871813064737840684">Historial de preus al web per a aquesta opció</translation>
 <translation id="6873456682041376666">Safata superior</translation>
 <translation id="6874604403660855544">&amp;Refés l'addició</translation>
@@ -3906,7 +3908,6 @@ Detalls addicionals:
 <translation id="7615932826417658001">Afegeix un document d'identitat</translation>
 <translation id="7616390733770379387">Es mostren en ordre aleatori.</translation>
 <translation id="7616645509853975347">L'administrador ha activat Chrome Enterprise Connectors al navegador. Aquests connectors tenen accés a algunes de les teves dades.</translation>
-<translation id="7616747402308801775">Aquesta targeta s'ha desat a Google Wallet perquè la puguis utilitzar en tots els serveis de Google</translation>
 <translation id="7617825962482469577">Sobre C7/C6</translation>
 <translation id="7619838219691048931">Full final</translation>
 <translation id="7621546470643449009">Crea una guia d'iniciació sobre l'observació d'estrelles que m'ajudi a aprendre què he de cercar de nit al cel, incloses 3 constel·lacions fàcilment identificables</translation>
@@ -3971,6 +3972,7 @@ Detalls addicionals:
 <translation id="7705085181312584869">Ajuda'm a escriure</translation>
 <translation id="7705992072972338699">Disc òptic (brillantor alta)</translation>
 <translation id="7706689436519265630">Els fitxers que copies o mous s'envien a Google Cloud o a tercers perquè s'analitzin. Per exemple, pot ser que s'analitzin per detectar-hi dades sensibles o programari maliciós i que s'emmagatzemin d'acord amb les polítiques de l'empresa.</translation>
+<translation id="7709934467582922028">La sol·licitud de verificació de l'adreça electrònica s'ha tancat</translation>
 <translation id="7714351089363296478">L'acabes de visitar</translation>
 <translation id="7714404809393719981">Foto (semibrillant)</translation>
 <translation id="7714464543167945231">Certificat</translation>

@@ -132,6 +132,7 @@
 Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copiar endere&amp;zo da ligazón</translation>
 <translation id="1085064499066015002">Activar sempre en todos os sitios</translation>
+<translation id="1085340215550339505">Para ofrecer suxestións de cambio de contrasinal no momento oportuno, o contido e os URL das páxinas que visites poden procesarse nun espazo privado na nube</translation>
 <translation id="1085558727130096638">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> persoa máis</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> (elemento non seleccionado). <ph name="INDEX" /> de <ph name="COUNT" />. Preme a tecla Buscar e a de espazo para seleccionalo.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
@@ -1121,6 +1122,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1871131409931646355">Historial de descargas completo</translation>
 <translation id="187145082678092583">Menos aplicacións</translation>
 <translation id="1871615898038944731">O dispositivo <ph name="DEVICE_TYPE" /> está actualizado</translation>
+<translation id="1872846000961079826">Durante o cambio de contrasinal, o contido das páxinas de contrasinais e a información relacionada envíanse a Google e poden someterse a un proceso de revisión manual para mellorar a calidade desta función</translation>
 <translation id="1873513359268939357">Calendario de Outlook</translation>
 <translation id="1873920700418191231">Volver conceder permisos a <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Permiso concedido para mostrar calquera anuncio</translation>
@@ -2845,6 +2847,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3184536091884214176">Configurar ou xestionar impresoras CUPS. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Usa este PIN para cambiar a configuración dos controis parentais.
     Se esqueces o PIN, fai Powerwash neste dispositivo e configúrao de novo.</translation>
+<translation id="3184916134413175521">Valorar</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta aplicación está bloqueada}other{Algunhas aplicacións están bloqueadas}}</translation>
 <translation id="3185454065699440434">Permitir extensións en <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Ves o dispositivo de emisión na
@@ -2914,6 +2917,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3241680850019875542">Selecciona o directorio raíz da extensión que vaias comprimir. Para actualizar unha extensión, selecciona tamén o ficheiro da clave privada que queres reutilizar.</translation>
 <translation id="3241810535741601486">Esta cambio é permanente e non se pode desfacer. As actualizacións ampliadas afectarán a todos os usuarios do dispositivo. <ph name="LINK_START" />Máis información<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">O teu avatar</translation>
+<translation id="3242764115495920926">Ofrecer a posibilidade de cambiar os contrasinais automaticamente</translation>
 <translation id="3243017971870859287">Ler números de serie dos compoñentes e dispositivos ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4142,6 +4146,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4167924027691268367">Máis accións do atallo de <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Estanse compartindo contigo algúns parámetros de configuración pertencentes a <ph name="PRIMARY_EMAIL" />. Estes parámetros só afectan á túa conta cando se utiliza o inicio de sesión múltiple.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que remata en <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Valorar...</translation>
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4170314459383239649">Borrar as cookies ao saír</translation>
 <translation id="4170685671197375581">Activar atallo</translation>
@@ -4443,6 +4448,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4401912261345737180">Conectarse cun código para emitir contido</translation>
 <translation id="4403012369005671154">Voz a texto</translation>
 <translation id="4403775189117163360">Escoller un cartafol diferente</translation>
+<translation id="440411460180511551">Se Chromium detecta un dos teus contrasinais nunha violación da seguranza dos datos, o xestor de contrasinais de Google pode ofrecerche a opción de cambialo por ti se tes a sesión iniciada.</translation>
 <translation id="4404843640767531781">O teu pai ou nai bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg e *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -5051,7 +5057,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4872192066608821120">Para importar contrasinais, selecciona un ficheiro CSV</translation>
 <translation id="4872212987539553601">Configurar encriptación no dispositivo</translation>
 <translation id="4875690134140862902">Pestana</translation>
-<translation id="4876273079589074638">Indica exactamente o que aconteceu paso a paso para axudar aos nosos enxeñeiros a investigar e solucionar este fallo. Calquera detalle é importante.</translation>
 <translation id="4876305945144899064">Sen nome de usuario</translation>
 <translation id="4876327226315760474">Isto significa que as funcións do sitio deberían funcionar segundo o previsto, pero pode que teñas menos protección durante a navegación.</translation>
 <translation id="4876895919560854374">Bloquear e desbloquear a pantalla</translation>
@@ -6575,6 +6580,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6099766472403716061">Permitir sempre que <ph name="HOST" /> controle e volva programar os teus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú de inicio</translation>
 <translation id="6100737823178787570">Aumenta o tamaño da ventá para retomar a tarefa</translation>
+<translation id="6101170451607354234">Se Chrome detecta un dos teus contrasinais nunha violación da seguranza dos datos, o xestor de contrasinais de Google pode ofrecerche a opción de cambialo por ti se tes a sesión iniciada.</translation>
 <translation id="6101226222197207147">Nova aplicación engadida (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">A función Protección avanzada bloqueou este ficheiro.</translation>
 <translation id="6103681770816982672">Advertencia: Estás cambiando á canle do programador</translation>
@@ -6780,6 +6786,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6254892857036829079">Perfecto</translation>
 <translation id="6257602895346497974">Activar sincronización…</translation>
 <translation id="625827534921607067">Esta rede terá preferencia se hai dispoñible máis dunha rede xa configurada ou á que te conectases anteriormente</translation>
+<translation id="6258818697161346451">Usa as túas claves de acceso neste dispositivo</translation>
 <translation id="6259776178973198997">Actualizar información das persoas propietarias de Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Rexistros da aplicación de quiosco de ChromeOS</translation>
 <translation id="6263082573641595914">Versión de entidade emisora de certificados de Microsoft</translation>
@@ -10328,6 +10335,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="9003185744423389627">Produciuse un erro ("<ph name="STATUS_TEXT" />") ao establecer conexión co servidor de xestión de dispositivos. Hora: <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Queres buscar automaticamente perfís de eSIM dispoñibles?</translation>
 <translation id="9003647077635673607">Permitir en todos os sitios web</translation>
+<translation id="9004279470320280717">Valorar...</translation>
 <translation id="9005774573776346118">Para poder acceder aos teus contrasinais, marcadores e a outros datos en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">A túa organización</translation>
 <translation id="900733896273558337">Editar habilidade</translation>

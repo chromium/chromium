@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1053651653201045802">Bạn đã đăng xuất. Hãy đăng nhập lại để sử dụng dấu trang, mật khẩu và nhiều nội dung khác trong tài khoản của bạn.</translation>
 <translation id="1054745118061919935">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK" />Điều khoản dịch vụ<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Tôi nên mua loại nào?</translation>
 <translation id="10614374240317010">Không bao giờ lưu</translation>
 <translation id="1062138828266376352">Bạn chưa thay đổi được mã PIN. Hãy kiểm tra kết nối Internet rồi thử lại</translation>
 <translation id="1063070031224282617">Chọn vị trí bạn muốn lưu "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">Khối lượng</translation>
 <translation id="5899314093904173337">Để chia sẻ với những người ở gần, hãy cho phép họ quét mã QR này bằng máy ảnh hoặc ứng dụng quét mã QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} thẻ mới}other{{count} thẻ mới}}</translation>
+<translation id="5906163261248594192">Sinh nhật của Dan</translation>
 <translation id="5911030830365207728">Google Dịch</translation>
 <translation id="5912796581727968237">Mở Google Wallet</translation>
 <translation id="5922999516621365983">Kéo thẻ vào đây để ghim.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">Không dịch được</translation>
 <translation id="7204922488054642675">Tin tức được cá nhân hoá</translation>
 <translation id="7206979415662233817">Điều khoản dịch vụ</translation>
+<translation id="721218676460477064">Tóm tắt bài viết này</translation>
 <translation id="7215621211572884440">Đã cho phép cửa sổ bật lên</translation>
 <translation id="7218491361283758048">Mã Zip</translation>
 <translation id="7221173315674413369">Khám phá các mẹo và tính năng mới trong phần Tính năng mới</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">Thư mục mới...</translation>
 <translation id="8035412398498507358">Ảnh</translation>
 <translation id="8037713009824540257">Thêm trang web</translation>
+<translation id="8038078082340255234">Báo cáo thị trường</translation>
 <translation id="8040407350301524547">Để biết các lựa chọn về tuyến đường, hãy nhấn vào "Xem đường đi".</translation>
 <translation id="804427445359061970">Tại đây, bạn sẽ thấy các thẻ mà bạn mở trên những thiết bị khác</translation>
 <translation id="8058655154417507695">Năm hết hạn</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">Lưu giữ dữ liệu</translation>
 <translation id="8233237502828137700">Đóng biểu ngữ gợi ý mẹo</translation>
 <translation id="823339794112333264">Bật micrô</translation>
+<translation id="8240217649914883113">Thêm sự kiện này vào lịch của tôi</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="8252980988000695656">Đã hoàn thành tác vụ với Google Ống kính!</translation>
 <translation id="8258734532103758067">Tôi đã xuất dữ liệu của mình</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">Bật tính năng Tự động điền…</translation>
 <translation id="8370406443343902172">Chuyển đến phần Cài đặt...</translation>
 <translation id="8370929854657845191">Mở rộng thành Trung bình</translation>
+<translation id="8371494817541821097">Khoá truy cập được tạo vào ngày <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Xoá địa chỉ}other{Xoá các địa chỉ}}</translation>
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8385363453480067273">Tìm thông tin về điều bạn thấy bằng Google Ống kính</translation>

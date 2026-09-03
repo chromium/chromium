@@ -105,6 +105,7 @@
 <translation id="138181280295369883">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ସୂଚନା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1381838868249179644">ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ କିଛି ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="1383876407941801731">ସର୍ଚ୍ଚ</translation>
+<translation id="1384568202352682721">ଏହି ଭାବେ ସେଭ କରନ୍ତୁ…</translation>
 <translation id="1384704387250346179">Google Lens ସହ ଛବି ଅନୁବାଦ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chromeରେ ଲିଙ୍କ ଖୋଲୁଥିବା ଅନ୍ୟ ଆପ୍ସରୁ ଇତିହାସ ଆପଣ ଦେଖିପାରନ୍ତି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଇତିହାସର ଅନ୍ୟ ପ୍ରକାରଗୁଡ଼ିକ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଥାଇପାରେ।</translation>
 <translation id="139752016751285248">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="1480287803138246127">ଆପଣଙ୍କର କିଛି ଇତିହାସ ଏଠାରେ ଦେଖାଯାଇନପାରେ। ଆପଣଙ୍କର ସମସ୍ତ Chrome ଇତିହାସ ଦେଖିବାକୁ ସମ୍ପୂର୍ଣ୍ଣ Chrome ଇତିହାସ ଖୋଲନ୍ତୁ।</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" />ରେ ଖୋଲନ୍ତୁ • <ph name="DEVICE_NAME" />ରୁ</translation>
 <translation id="1495677929897281669">ଟାବ୍‌କୁ ଫେରନ୍ତୁ</translation>
 <translation id="1496514951988037011">ୟୁଜରନେମ</translation>
 <translation id="1501480321619201731">ଗୋଷ୍ଠୀ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">ପଛକୁ ଫେରିବା ପାଇଁ ବାମ ଧାରରୁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="2323763861024343754">ସାଇଟ୍ ଷ୍ଟୋରେଜ୍</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />ରୁ</translation>
+<translation id="232757965409810352">ଏହି ଭାବେ ପୃଷ୍ଠା ସେଭ କରନ୍ତୁ…</translation>
 <translation id="2328474416100889417">ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ସମସ୍ତ ଆମନ୍ତ୍ରଣ ଲିଙ୍କ କାମ କରିବ ନାହିଁ</translation>
 <translation id="2329500425421091035">Chromeରେ AI ମୋଡ ଆସିଯାଇଛି</translation>
 <translation id="2330186936255788117">ଅଧିକ ବୁକମାର୍କ</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">ଆପଣଙ୍କ ଟାସ୍କ ଏବେ ବି ଚାଲିଛି</translation>
 <translation id="8317318757008452355">ପ୍ରିଣ୍ଟ କରିବାର ବିକଳ୍ପଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8320212361750431956">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" />ରେ ଖୋଲନ୍ତୁ - <ph name="DEVICE_NAME" />ରୁ ପଠାଯାଇଛି</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">ବୁକମାର୍କ ଏବଂ ତାଲିକା</translation>
 <translation id="8342727528718219152">ବହୁତ ଅଧିକ ବିଜ୍ଞପ୍ତି ପଠାଉଥିବା ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ Chrome ଆପଣଙ୍କୁ ଜଣାଇବ</translation>

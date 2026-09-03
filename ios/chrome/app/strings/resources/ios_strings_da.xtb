@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget ud. Log ind igen for at bruge bogmærkerne, adgangskoderne m.m. på din konto.</translation>
 <translation id="1054745118061919935">Ved at fortsætte accepterer du <ph name="BEGIN_LINK" />servicevilkårene<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Hvilken skal jeg købe?</translation>
 <translation id="10614374240317010">Gemmes aldrig</translation>
 <translation id="1062138828266376352">Din pinkode blev ikke ændret. Tjek din internetforbindelse, og prøv igen</translation>
 <translation id="1063070031224282617">Vælg, hvor du vil gemme "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5898848375214731122">Masse</translation>
 <translation id="5899314093904173337">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode med deres kamera eller app til scanning af QR-koder</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ny fane}one{{count} ny fane}other{{count} nye faner}}</translation>
+<translation id="5906163261248594192">Dans fødselsdag</translation>
 <translation id="5911030830365207728">Google Oversæt</translation>
 <translation id="5912796581727968237">Åbn Google Wallet</translation>
 <translation id="5922999516621365983">Træk fanen hertil for at fastgøre den.</translation>
@@ -1924,6 +1926,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="720399613139435155">Oversættelsen mislykkedes</translation>
 <translation id="7204922488054642675">Personligt tilpassede nyheder</translation>
 <translation id="7206979415662233817">Servicevilkår</translation>
+<translation id="721218676460477064">Opsummer denne artikel</translation>
 <translation id="7215621211572884440">Pop op-vinduer er tilladt</translation>
 <translation id="7218491361283758048">Postnummer</translation>
 <translation id="7221173315674413369">Se nye funktioner og tips i Nyheder</translation>
@@ -2185,6 +2188,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8035133914807600019">Ny mappe…</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8037713009824540257">Tilføj website</translation>
+<translation id="8038078082340255234">Markedsrapport</translation>
 <translation id="8040407350301524547">Tryk på "Få rutevejledning" for at få vist rutemuligheder.</translation>
 <translation id="804427445359061970">Her kan du se dine faner fra andre enheder</translation>
 <translation id="8058655154417507695">Udløbsår</translation>
@@ -2242,6 +2246,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8232956427053453090">Behold data</translation>
 <translation id="8233237502828137700">Luk bannerpromovering</translation>
 <translation id="823339794112333264">Aktivér mikrofon</translation>
+<translation id="8240217649914883113">Føj dette til min kalender</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8252980988000695656">Google Lens er fuldført.</translation>
 <translation id="8258734532103758067">Jeg har eksporteret mine data</translation>
@@ -2286,6 +2291,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8368198938968349418">Aktivér Autofyld…</translation>
 <translation id="8370406443343902172">Gå til Indstillinger…</translation>
 <translation id="8370929854657845191">Udvid til middel</translation>
+<translation id="8371494817541821097">Adgangsnøglen blev oprettet den <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Slet adresse}one{Slet adresse}other{Slet adresser}}</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8385363453480067273">Søg efter det, du ser, med Google Lens</translation>

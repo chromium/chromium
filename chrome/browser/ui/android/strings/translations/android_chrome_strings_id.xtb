@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Login untuk mendapatkan info tersimpan dan lainnya di semua perangkat Anda</translation>
 <translation id="1381838868249179644">Untuk membantu menjaga keamanan Anda, izin telah dihapus dari beberapa situs</translation>
 <translation id="1383876407941801731">Telusuri</translation>
+<translation id="1384568202352682721">Simpan sebagai…</translation>
 <translation id="1384704387250346179">Terjemahkan gambar dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Anda mungkin melihat histori dari aplikasi lain yang membuka link di Chrome. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Sheet bawah analisis harga terbuka sepenuhnya</translation>
@@ -133,6 +134,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="147982357559798527">Berubah</translation>
 <translation id="1480287803138246127">Beberapa histori Anda mungkin tidak muncul di sini. Untuk melihat semua Histori Chrome Anda, buka Histori Chrome lengkap.</translation>
 <translation id="1483493594462132177">Kirim</translation>
+<translation id="1485343711570311792">Buka di <ph name="NATIVE_APP_NAME" /> • Dari <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1496514951988037011">nama pengguna</translation>
 <translation id="1501480321619201731">Hapus grup</translation>
@@ -327,6 +329,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="232137538351753795">Geser dari tepi kiri untuk kembali</translation>
 <translation id="2323763861024343754">Penyimpanan situs</translation>
 <translation id="2327445548174191329">Dari <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Simpan halaman sebagai…</translation>
 <translation id="2328474416100889417">Semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan semua link undangan akan dinonaktifkan</translation>
 <translation id="2329500425421091035">Memperkenalkan Mode AI di Chrome</translation>
 <translation id="2330186936255788117">Bookmark lainnya</translation>
@@ -1874,6 +1877,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8313599942510782709">Tugas Anda masih dalam proses</translation>
 <translation id="8317318757008452355">Buka opsi untuk mencetak</translation>
 <translation id="8320212361750431956">Aktivitas Terbaru</translation>
+<translation id="8322452989119079156">Buka di <ph name="NATIVE_APP_NAME" /> - Dikirim dari <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Bookmark dan daftar</translation>
 <translation id="8342727528718219152">Chrome akan memberi tahu Anda terkait situs yang mungkin mengirim terlalu banyak notifikasi</translation>

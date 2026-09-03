@@ -132,6 +132,7 @@
 Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopírovat a&amp;dresu odkazu</translation>
 <translation id="1085064499066015002">Vždy na všech webech</translation>
+<translation id="1085340215550339505">Aby bylo možné včas navrhovat změny hesel, mohou být obsah a adresy URL navštívených stránek zpracovávány v soukromém prostoru v cloudu</translation>
 <translation id="1085558727130096638">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> dalším</translation>
 <translation id="1085618740036066768">Položka <ph name="ITEM" /> není vybrána. <ph name="INDEX" /> z <ph name="COUNT" />. Vyberete ji stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
@@ -1122,6 +1123,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1871131409931646355">Úplná historie stahování</translation>
 <translation id="187145082678092583">Méně aplikací</translation>
 <translation id="1871615898038944731">Vaše zařízení <ph name="DEVICE_TYPE" /> je aktuální</translation>
+<translation id="1872846000961079826">Během změny hesla se obsah ze stránek s hesly a související informace odesílají do Googlu a mohou je kontrolovat lidé za účelem zlepšení kvality této funkce</translation>
 <translation id="1873513359268939357">Kalendář Outlook</translation>
 <translation id="1873920700418191231">Znovu povolit oprávnění webu <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Povolení zobrazovat jakékoliv reklamy</translation>
@@ -2846,6 +2848,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3184536091884214176">Nastavení nebo správa tiskáren CUPS. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Tento PIN budete potřebovat ke změně nastavení rodičovské kontroly.
     Pokud ho zapomenete, proveďte Powerwash tohoto zařízení a nastavte ho znovu.</translation>
+<translation id="3184916134413175521">Ohodnotit</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Tato aplikace je blokována}few{Některé aplikace jsou blokovány}many{Některé aplikace jsou blokovány}other{Některé aplikace jsou blokovány}}</translation>
 <translation id="3185454065699440434">Povolit rozšíření na webu <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Vidíte své streamovací zařízení v <ph name="BEGIN_LINK" />aplikaci Google Home<ph name="END_LINK" />?</translation>
@@ -2913,6 +2916,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3241680850019875542">Vyberte kořenový adresář rozšíření, které chcete zabalit. Chcete-li rozšíření aktualizovat, vyberte také soubor soukromého klíče, který chcete znovu použít.</translation>
 <translation id="3241810535741601486">Tato změna je trvalá a nelze ji vrátit zpět. Rozšířené aktualizace se vztahují na všechny uživatele tohoto zařízení. <ph name="LINK_START" />Další informace<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Váš avatar</translation>
+<translation id="3242764115495920926">Nabízet automatickou změnu hesel</translation>
 <translation id="3243017971870859287">Číst sériová čísla zařízení se systémem ChromeOS Flex a komponent</translation>
 <translation id="324366796737464147">Potlačení hluku</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4137,6 +4141,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4167924027691268367">Další akce pro zástupce <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Uživatel <ph name="PRIMARY_EMAIL" /> s vámi sdílí některá svá nastavení. Tato nastavení váš účet ovlivní pouze během vícenásobného přihlášení.</translation>
 <translation id="4168651806173792090">Účet <ph name="NETWORK_NAME" /> končící na <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Ohodnotit…</translation>
 <translation id="4169535189173047238">Nepovolovat</translation>
 <translation id="4170314459383239649">Smazat při ukončení</translation>
 <translation id="4170685671197375581">Zapnout zkratku</translation>
@@ -4438,6 +4443,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4401912261345737180">Připojit se pomocí kódu k odesílání</translation>
 <translation id="4403012369005671154">Převod řeči na text</translation>
 <translation id="4403775189117163360">Vybrat jinou složku</translation>
+<translation id="440411460180511551">Pokud Chromium některé z vašich hesel najde ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů a budete přihlášeni, může vám nabídnout, že dané heslo změní.</translation>
 <translation id="4404843640767531781">Tvůj rodič aplikaci <ph name="APP_NAME" /> zablokoval. Pokud ji chceš používat, požádej rodiče o oprávnění.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
@@ -5045,7 +5051,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4872192066608821120">Pokud chcete importovat hesla, vyberte soubor CSV</translation>
 <translation id="4872212987539553601">Nastavení šifrování v zařízení</translation>
 <translation id="4875690134140862902">Karta</translation>
-<translation id="4876273079589074638">Pomozte našim technikům prozkoumat toto selhání a odstranit jeho příčiny. Je-li to možné, přesně popište jednotlivé kroky. Důležité mohou být i nejmenší podrobnosti.</translation>
 <translation id="4876305945144899064">Žádné uživatelské jméno</translation>
 <translation id="4876327226315760474">To znamená, že funkce webu by měly fungovat podle očekávání, ale můžete mít menší ochranu při procházení.</translation>
 <translation id="4876895919560854374">Uzamknutí a odemknutí obrazovky</translation>
@@ -6568,6 +6573,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6099766472403716061">Webu <ph name="HOST" /> vždy povolit ovládat a přeprogramovat zařízení MIDI</translation>
 <translation id="6100736666660498114">Nabídka Start</translation>
 <translation id="6100737823178787570">Pokud chcete pokračovat v úkolu, zvětšete okno</translation>
+<translation id="6101170451607354234">Pokud Chrome některé z vašich hesel najde ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů a budete přihlášeni, může vám nabídnout, že dané heslo změní.</translation>
 <translation id="6101226222197207147">Byla přidána nová aplikace (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Tento soubor byla zablokován pokročilou ochranou.</translation>
 <translation id="6103681770816982672">Upozornění: přepínáte na kanál pro vývojáře</translation>
@@ -6773,6 +6779,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6254892857036829079">Perfektní</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="625827534921607067">Tato síť bude preferována, pokud bude k dispozici více než jedna dříve připojená nebo nakonfigurovaná síť</translation>
+<translation id="6258818697161346451">Používejte na tomto zařízení své přístupové klíče</translation>
 <translation id="6259776178973198997">Obnovit informace o vlastnících WiFi Direct</translation>
 <translation id="6261688934280090835">Protokoly terminálových aplikací pro ChromeOS</translation>
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
@@ -10324,6 +10331,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="9003185744423389627">Připojení k serveru Správce zařízení se nezdařilo, stav: <ph name="STATUS_TEXT" /> v <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Automaticky vyhledávat dostupné profily eSIM karet?</translation>
 <translation id="9003647077635673607">Povolit na všech webech</translation>
+<translation id="9004279470320280717">Ohodnotit…</translation>
 <translation id="9005774573776346118">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, přihlaste se jako <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Vaše organizace</translation>
 <translation id="900733896273558337">Úprava dovednosti</translation>

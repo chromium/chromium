@@ -2454,6 +2454,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2887344147309501015">Nəzər saldığınız zaman cavablar, əsas təkliflər və s. əldə etmək üçün Chrome-da Gemini ilə söhbət edin</translation>
 <translation id="2889043468805635730">Problem tapılmadı</translation>
 <translation id="2889064240420137087">Linki bununla açın:</translation>
+<translation id="2889937141553641427">{0,plural, =1{İzolə edilmiş rejim}other{# açıq İzolə edilmiş rejim pəncərəsi}}</translation>
 <translation id="2891464434568738544">Əlçatan sayt yoxdur. Bu siyahıya əlavə etmək üçün sayta daxil olun.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> tətbiqinə daxil olmaq üçün cihazınız istifadə edilsin?</translation>
 <translation id="2893168226686371498">Defolt brauzer</translation>
@@ -2923,6 +2924,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3242764115495920926">Parolları avtomatik dəyişməyi təklif edin</translation>
 <translation id="3243017971870859287">ChromeOS Flex cihaz və komponent seriya nömrələrini oxumaq</translation>
 <translation id="324366796737464147">Səs-küyün əngəllənməsi</translation>
+<translation id="3243680258677029936">{0,plural, =1{İzolə edilmiş}other{İzolə edilmiş (#)}}</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Səssiz etməyə davam edin</translation>
 <translation id="3247649647204519958">Burada sayt üzrə artırma icazələrinə baxa və onları idarə edə bilərsiniz</translation>
@@ -5055,7 +5057,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4872192066608821120">Parolları import etmək üçün CSV faylı seçin</translation>
 <translation id="4872212987539553601">Cihazda şifrələməni ayarlayın</translation>
 <translation id="4875690134140862902">Sayt paneli</translation>
-<translation id="4876273079589074638">Bu xətanın araşdırılması və aradan qaldırılması üçün mühəndislərimizə yardım edin. Bunu edə bilərsinizsə, dəqiq mərhələləri qeyd edin. Heç bir xırdalığı gözdən qaçırmayın!</translation>
 <translation id="4876305945144899064">İstifadəçi adı yoxdur</translation>
 <translation id="4876327226315760474">Sayt funksiyaları düzgün işləməlidir, lakin axtarış zamanı qoruma səviyyəsi aşağı ola bilər.</translation>
 <translation id="4876895919560854374">Ekranı kiliddəyin və kiliddən çıxarın</translation>
@@ -8575,6 +8576,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7651754152638505879">Tapşırıq durduruldu</translation>
 <translation id="7651784568388208829">Telefon Mərkəzi tapşırığının davamı</translation>
 <translation id="7652954539215530680">PIN yaradın</translation>
+<translation id="7653354650639364202">{0,plural, =1{İzolə edilmiş pəncərəni bağlayın}other{İzolə edilmiş pəncərəni bağlayın (# pəncərə)}}</translation>
 <translation id="7654941827281939388">Bu hesab bu kompüterdə artıq istifadə olunur.</translation>
 <translation id="7655411746932645568">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="7657090467145778067">Kiçik qənaət</translation>
@@ -9082,6 +9084,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8035059678007243127">Anonim Geri/İrəli Keşlənmiş Səhifə: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Yadda saxlanılmış tab qruplarını göstərin düyməsi</translation>
 <translation id="8036193484521570992">Avto doldurmanı təkmilləşdirməyə yardım edin</translation>
+<translation id="803639495237134713">Klaviatura qısayolunu fərdiləşdirin</translation>
 <translation id="8036504271468642248">Əvvəlki cümlə</translation>
 <translation id="8037117027592400564">Sintetik nitq işlədərək bütün mətni oxuyun</translation>
 <translation id="8037357227543935929">Soruşun (defolt)</translation>
@@ -9183,6 +9186,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8106114112474206597">Maus düyməsini basmaq üçün "i" düyməsindən istifadə edin</translation>
 <translation id="810728361871746125">Displeyin ayırdetmə dəqiqliyi</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> üzv</translation>
+<translation id="8108853197309181986">İzolə edilmiş pəncərədəsiniz</translation>
 <translation id="8109109153262930486">Defolt avatar</translation>
 <translation id="8109991406044913868">AI ilə yaradılmış tema</translation>
 <translation id="8110393529211831722">Abunə bu cihazda quraşdırılır və hesaba aid digər cihazlar ilə sinxronlaşdırılmır. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -9588,6 +9592,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> üçün əlavə seçimlər</translation>
+<translation id="8430438016498244645">İzolə edilmiş sessiya</translation>
 <translation id="8431977087510901105">Kursor ayarları sıfırlaması</translation>
 <translation id="8434109185104929038">Oxu guşəsi</translation>
 <translation id="8434837876193928924">Tab qrupu təfərrüatları</translation>

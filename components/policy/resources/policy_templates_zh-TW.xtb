@@ -613,6 +613,15 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1438739959477268107">預設金鑰產生設定</translation>
 <translation id="1440408958042020947">允許 Phone Hub 的使用者存取手機上最近拍攝的相片和影片</translation>
 <translation id="1443532790824582949">啟用觸控虛擬鍵盤</translation>
+<translation id="1445955287827003066">這項政策可控管裝置是否要從 ChromeOS 遷移至 Next OS，以及遷移時間。
+
+如果將這項政策設為 0，系統會根據 Google 預設設定判斷裝置是否符合遷移資格，這可能取決於裝置型號、硬體和其他因素。
+
+如果將這項政策設為 2147483647，裝置會標示為可用，並指定為遷移目標，但沒有特定期限。
+
+如果將這項政策設為介於 0 和 2147483647 之間的值，裝置會標示為可用，並指定為遷移目標。這個值代表建議的完成期限，以 Unix 紀元 (1970-01-01 00:00:00 UTC) 起算的秒數表示。
+
+請注意，即使在此設定目標日期，其他裝置更新設定 (例如固定版本 (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />)、停用更新 (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) 或發布管道設定 (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />)) 仍可能導致裝置無法接收必要更新，因而無法啟動遷移作業。系統一律會套用這項政策，如果未設定，則會套用 Google 預設值，因為其值可能會影響裝置更新政策的處理方式。</translation>
 <translation id="1447252610864877219">允許 Gemini 應用程式在網頁執行動作。</translation>
 <translation id="1449083855104537880">將這項政策設為 True 時，系統匣選單中會顯示無障礙工具選項。如果將這項政策設為 False，選單中不會顯示無障礙工具選項。
 
@@ -2095,6 +2104,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 
 如果啟用或未設定這項政策，使用者將能選擇 Google 相簿的圖像做為桌布。</translation>
 <translation id="2393862222659066027">開啟網址清單並還原前次的工作階段</translation>
+<translation id="239395129206831238">設定裝置遷移至 Next OS 的目標日期</translation>
 <translation id="239416486107542256">F11 設定採用含有 Ctrl 和 Shift 輔助鍵的快速鍵</translation>
 <translation id="2394429297128584919">禁止網頁在關閉時傳送同步 XHR 要求</translation>
 <translation id="2398817690049129302">強制執行 <ph name="YOUTUBE_PRODUCT_NAME" /> 安全模式</translation>
@@ -4602,6 +4612,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
 <translation id="4027608872760987929">啟用預設搜尋引擎</translation>
 <translation id="4030152268425532846">停用自動登入規避</translation>
+<translation id="4032740546145417900">不允許使用語音輸入功能。</translation>
 <translation id="4043796890723386527">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="4047633048700722778">設定這項政策可控管安全網站的網址篩選器，這個篩選器會使用 Google Safe Search API 分辨網址是否指向色情內容。
 
@@ -6561,6 +6572,17 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 <translation id="5247584184349816217">啟用螢幕鎖定畫面螢幕保護程式。</translation>
 <translation id="5247973380763021389">禁止使用者雲端政策覆寫裝置雲端政策。</translation>
 <translation id="5249006530384016395">控管是否啟用已淘汰的 CSS 自訂狀態 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 語法</translation>
+<translation id="5249271416806588789">語音輸入是一項 AI 功能，讓使用者能透過語音輸入及編輯文字；這項功能採用生成式 AI 模型，可提供高品質的轉錄與格式設定。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋 (視功能而定)。這些資料也可能會送交人工審查，以改良 AI 模型。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="5249453807420671499">使用者可以新增 Kerberos 帳戶</translation>
 <translation id="5249555581286638799">啟用高效率模式</translation>
 <translation id="5252210248395576403">這項政策可讓快速解答功能存取所選內容，並將相關資訊傳送給伺服器，進而取得翻譯結果。
@@ -6683,6 +6705,7 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 <translation id="533287753294126753">允許使用「分頁比較」並改善 AI 模型。</translation>
 <translation id="5334404204520035180">控管 WebPrinting API 的使用情形</translation>
 <translation id="5334501839642146593">一律不傳送指標資料給 Google</translation>
+<translation id="5335403007354311099">啟用轉譯器無障礙功能</translation>
 <translation id="5335910979215357815">為第三方 <ph name="PRODUCT_OS_NAME" /> 控制項啟用 Save and Share API。</translation>
 <translation id="5337869685871558036">允許將 SpeculationRules 預先擷取傳送到 ServiceWorkers 控管的網址</translation>
 <translation id="5339096331970464266">啟用無障礙虛擬鍵盤</translation>
@@ -7687,6 +7710,7 @@ IP 位址空間覆寫有兩種形式：
       如果將這項政策設為停用，使用者將無法向 Google 傳送意見回饋。</translation>
 <translation id="5976636832661103220">F11 設定採用含有 Shift 輔助鍵的快速鍵</translation>
 <translation id="5979376378555121803">代管的應用程式</translation>
+<translation id="5983016603010860828">語音輸入設定</translation>
 <translation id="5983274643567559194">已停用為「刪除」動作設定捷徑的功能。</translation>
 <translation id="5984099692320899605">不要使用 NTLM 驗證</translation>
 <translation id="5984237109586500246">接受以 Signed HTTP Exchange 技術提供的網路內容</translation>
@@ -9406,6 +9430,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能使用這項政策。
 
 <ph name="MAC_OS_NAME" /> 執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能使用這項政策。</translation>
+<translation id="7054840304131108563">停用轉譯器無障礙功能</translation>
 <translation id="7055022222176591388">禁止執行過期的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">系統可能會將網域可靠性資料傳送給 Google，實際情況取決於 Chrome 使用者指標 (UMA) 政策</translation>
 <translation id="7062803946218028349">允許啟用 Phone Hub</translation>
@@ -9865,6 +9890,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果啟用這項政策，網站可能會容易遭受某些類型的跨網站攻擊。不肖人士只要透過網址中內嵌的憑證，就能在 HTTP 驗證快取中新增項目來追蹤使用者，而不必用到 Cookie。
 
       這項政策旨在讓採用舊版行為的企業有機會更新登入程序，並將於日後移除。</translation>
+<translation id="7322231030019184787">允許使用語音輸入功能，但不收集資料。</translation>
 <translation id="7322825363493984512">用於向遠端網路 Proxy 驗證系統服務的密碼。</translation>
 <translation id="7323773727263636287">啟用色彩校正無障礙功能。
 
@@ -10050,12 +10076,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7446978687387327623">允許透過 Proxy 執行安全瀏覽即時檢查</translation>
 <translation id="7448430478749155471">在登入畫面上啟用隨選朗讀功能</translation>
 <translation id="7455912144588577399">如果將這項政策設為 True，使用者可以透過文字轉語音功能，讓系統朗讀符合條件的網頁。內容擷取和語音合成作業是由伺服器端完成。如果設為 False，系統會停用這項功能。如果將這項政策設為預設值或不設定，系統會啟用朗讀功能。</translation>
-<translation id="7456922722153109956">這項政策可控管新分頁上中間版位公告的顯示設定。
-
-      如果將這項政策設為啟用，一旦有中間版位公告時，新分頁就會加以顯示。
-
-      如果將這項政策設為啟用，即使有中間版位公告，新分頁還是不會加以顯示。
-      </translation>
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7459633275230216698">允許顯示檔案選取對話方塊</translation>
 <translation id="7462256705280836453">選擇是否可停用 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定</translation>
@@ -10291,6 +10311,7 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 這項政策應用於逐步輪換存取碼設定。新設定一律會加到 |future_config| 中，同時
       現有值會移到 |current_config| 中。|current_config| 先前的值則會移到 |old_configs|，並在輪換結束後移除。這項政策只適用於兒童使用者。如果設定這項政策，系統將可在兒童使用者裝置上驗證家長存取碼。如果不設定這項政策，系統將無法在兒童使用者裝置上驗證家長存取碼。</translation>
 <translation id="7623431489198474050">停用內容保護遠端認證</translation>
+<translation id="7624832415093566709">允許使用語音輸入功能。</translation>
 <translation id="7625858205605842562">設定這項政策後，你可以使用網址模式清單，指定哪些網站不得要求使用者授予 USB 裝置存取權。
 
       如果未設定這項政策，系統會將 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策套用至所有網站 (如果已設定)，否則會套用使用者的個人設定。
@@ -10966,6 +10987,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
   - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">啟用裝置背光資訊回報功能</translation>
 <translation id="8062485064082966327">使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
+<translation id="8064875716442437829">啟用轉譯器無障礙功能</translation>
 <translation id="8066428282805800713">傳送 ChromeOS Flex 上的其他硬體資料</translation>
 <translation id="8069233292746468045">這項政策會設定 <ph name="PRODUCT_NAME" /> 在 TLS 1.3 中偏好的金鑰協議演算法 (支援的群組) 順序，優先採用特定法規遵循標準核准的演算法。
 
@@ -12081,6 +12103,13 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
       如果不設定這項政策，系統會使用網路沙箱的預設設定。這可能會因 <ph name="PRODUCT_NAME" /> 版本、目前執行的實測和平台而異。
       設置這項政策是為了讓企業能彈性停用網路沙箱，避免第三方軟體干擾網路服務沙箱運作。</translation>
 <translation id="8840243776706727185">NewBaseUrlInheritanceBehavior 功能已停用</translation>
+<translation id="8841125674413543406">控管轉譯器程序中的無障礙樹狀結構生成作業。
+
+如果將這項政策設為啟用或未設定，<ph name="PRODUCT_NAME" /> 會允許為網頁產生無障礙樹狀結構。
+
+如果將這項政策設為停用，系統就不會再生成轉譯器無障礙樹狀結構，無障礙功能也無法與轉譯器互動。
+
+設好這項政策後，使用者即無法變更或覆寫設定。</translation>
 <translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
 <translation id="8843331294082716286">不要向使用者顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示。</translation>
 <translation id="884855199714673326">允許遠端存取主機決定</translation>

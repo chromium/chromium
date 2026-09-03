@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
-<translation id="1035560095760914532">যেকোনও সময় অ্যাক্সেস করতে Chrome-কে নিচের দিকে রেখে দিন</translation>
 <translation id="1076643793026027628">Chrome ছদ্মবেশী মোডে, অটোমেটিক YouTube ছদ্মবেশী লিঙ্ক খোলে।</translation>
 <translation id="1081114897601629648">এইসব পাসওয়ার্ড Google Password Manager-এ ইমপোর্ট করা হয়নি কারণ তা প্রয়োজনীয়তার সাথে মেলেনি।</translation>
 <translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">Chrome-এ নতুন ছদ্মবেশী ট্যাব খোলে।</translation>
 <translation id="1605168141396675642">কপি করার ঝামেলা এড়ান। সরাসরি Chrome-এ লিঙ্ক লঞ্চ করুন।</translation>
 <translation id="1646463005043273333">Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করার জন্য Chrome সেটিং খোলে।</translation>
+<translation id="1668930590094369898">ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="1670609221633730681">Chrome সম্পর্কিত পরামর্শ: আপনার অ্যাড্রেস বারের অবস্থান বেছে নিন</translation>
 <translation id="1683863426423719967">Chrome থেকে ট্যাবের রিমাইন্ডার পেতে, iOS সেটিংসে গিয়ে বিজ্ঞপ্তি পাওয়ার বিকল্প চালু করুন।</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" সেটিংস থেকে টগল করে "Chrome" চালু করুন</translation>
 <translation id="1984705450038014246">আপনার Chrome ডেটা সিঙ্ক করুন</translation>
 <translation id="1987779152850321833">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
+<translation id="2049569996960148258">ডিফল্ট হিসেবে Chrome ব্যবহার করুন বিকল্প লুকান</translation>
 <translation id="2055826352861631739">iPad-এর জন্য ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="2056123005618757196">সহজ, সুরক্ষিত ও এখনও পর্যন্ত উপলভ্য সবচেয়ে দ্রুত ভার্সনের Google Chrome-এর সাহায্যে আরও কাজ করুন।</translation>
 <translation id="2120238739383482109">Chrome-এর বুকমার্ক খোলে।</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">আপনি Google Chrome-এর <ph name="LIMIT" />টি বুকমার্কের সীমায় পৌঁছে গেছেন, তাই আপনার কিছু বুকমার্ক এখনও Google অ্যাকাউন্টে সেভ করা হয়নি।
 
 আপনি কিছু বুকমার্ক না মোছা পর্যন্ত আপনার অ্যাকাউন্টে নতুন বুকমার্ক সেভ করা যাবে না। আপনি এখন সাইন-আউট করলে, সেভ না করা বুকমার্ক মুছে যাবে।</translation>
-<translation id="2901621928549457170">আপনার iPad ব্যবহারের সময় ইনস্ট্যান্ট Chrome খুলুন</translation>
 <translation id="2922914028977213693">আপনার iPad-এ Chrome-এর সবচেয়ে বেশি সুবিধা পেতে, এখানে ট্যাপ করুন।</translation>
 <translation id="292371311537977079">Chrome সেটিংস</translation>
 <translation id="2923827943290349720">আপনি Chrome বন্ধ করলে, ছদ্মবেশী ট্যাব লক হয়ে যায়</translation>
@@ -175,8 +175,6 @@
 <translation id="5119391094379141756">Chrome বেছে নিন</translation>
 <translation id="5123188916260706415">Chrome-এ ভয়েসের মাধ্যমে সার্চ করুন</translation>
 <translation id="5162467219239570114">Chrome-এর এই ভার্সন পুরনো হয়ে গেছে। যদি <ph name="BEGIN_LINK" />অ্যাপ স্টোরে<ph name="END_LINK" /> কোনও আপডেট উপলভ্য না থাকে, তাহলে এমন হতে পারে যে আপনার ডিভাইস Chrome-এর নতুন ভার্সনের সাথে আর কাজ করতে পারবে না।</translation>
-<translation id="5172049865623113551">আপনার iPhone ব্যবহারের সময় ইনস্ট্যান্ট Chrome খুলুন</translation>
-<translation id="5179095426828744632">আপনার ডক থেকেও দ্রুত Chrome অ্যাক্সেস করুন</translation>
 <translation id="5184329579814168207">Chrome এ খুলুন</translation>
 <translation id="5190139289262548459">আপনার সাইন-ইন করে থাকা অ্যাকাউন্ট এবং Chrome কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে।</translation>
 <translation id="5209238444239954363">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
@@ -262,8 +260,8 @@
 আপনার Chrome ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="6922332667202044570">Chrome-এ ব্রাউজ করা ডেটা মুছুন।</translation>
 <translation id="6924922227983877439">সাধারণত Chrome-এ লিঙ্ক খুলুন</translation>
+<translation id="6926395711547387358">ডিফল্ট হিসেবে Chrome সেট করুন</translation>
 <translation id="6975725306479268850">অটোফিলের জন্য Chrome বেছে নিন</translation>
-<translation id="7001031184470316752">আপনার ডকে Chrome সরান</translation>
 <translation id="7038674195294813388">iOS-এ ডিফল্ট অ্যাপ সেটিংস খুলুন, তারপর "ব্রাউজার অ্যাপ" বিকল্পে ট্যাপ করে Chrome বেছে নিন।</translation>
 <translation id="7056826488869329999">Chrome-এ 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার খুলে রান করায়।</translation>
 <translation id="7061455974939528301">Chrome আইকন প্রেস করে ধরে রাখুন ও "হোম স্ক্রিন এডিট করুন" বিকল্পে ক্লিক করুন</translation>

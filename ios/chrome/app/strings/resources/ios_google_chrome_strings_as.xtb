@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
-<translation id="1035560095760914532">যিকোনো সময়তে এক্সেছ কৰিবলৈ Chromeক একেবাৰে তলৰ অংশত ৰাখক</translation>
 <translation id="1076643793026027628">Chromeএ স্বয়ংক্ৰিয়ভাৱে Youtubeৰ ইনক’গনিট’ লিংকসমূহ ইনক’গনিট’ত খোলে।</translation>
 <translation id="1081114897601629648">তলত উল্লেখিত পাছৱৰ্ডসমূহ Google Password Managerলৈ আমদানি কৰা হোৱা নাছিল, কাৰণ সেইসমূহে প্ৰয়োজনীয়তা পূৰণ কৰা নাই।</translation>
 <translation id="1086486568852410168">Google Lensৰে সন্ধান কৰক</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">এটা নতুন Chrome ইনক’গনিট’ টেব খোলে।</translation>
 <translation id="1605168141396675642">প্ৰতিলিপি কৰাৰ অসুবিধাৰ পৰা হাত সাৰক। লিংকসমূহ পোনপটীয়াকৈ Chromeত লঞ্চ কৰক।</translation>
 <translation id="1646463005043273333">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰিবলৈ Chromeৰ ছেটিং খোলে।</translation>
+<translation id="1668930590094369898">Chromeক ডিফ’ল্ট হিচাপে ব্যৱহাৰ কৰক</translation>
 <translation id="1670609221633730681">Chromeৰ কিটিপ: আপোনাৰ ঠিকনাৰ বাৰৰ স্থান বাছনি কৰক</translation>
 <translation id="1683863426423719967">Chromeৰ পৰা টেবৰ ৰিমাইণ্ডাৰ লাভ কৰিবলৈ, আপোনাৰ iOS ছেটিঙত জাননী অন কৰক।</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ছেটিঙৰ পৰা, "Chrome" অনলৈ ট’গল কৰক</translation>
 <translation id="1984705450038014246">আপোনাৰ Chrome ডেটা ছিংক কৰক</translation>
 <translation id="1987779152850321833">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ তলত পৰামৰ্শ দিয়া কাৰ্যসমূহ সম্পূৰ্ণ কৰক।</translation>
+<translation id="2049569996960148258">Chromeক ডিফ’ল্ট হিচাপে ব্যৱহাৰ কৰাৰ সুবিধাটো লুকুৱাওক</translation>
 <translation id="2055826352861631739">ডিফ’ল্ট হিচাপে iPadৰ বাবে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="2056123005618757196">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Google Chromeৰ জৰিয়তে অধিক কাম কৰক।</translation>
 <translation id="2120238739383482109">Chromeৰ বুকমাৰ্কসমূহ খোলে।</translation>
@@ -90,7 +91,6 @@
 <translation id="288992067439702510">আপুনি Google Chromeৰ বুকমাৰ্কৰ সীমা <ph name="LIMIT" />ত উপনীত হৈছে, সেয়েহে আপোনাৰ কিছুমান বুকমাৰ্ক এতিয়াও আপোনাৰ Google একাউণ্টত ছেভ কৰা হোৱা নাই।
 
 আপুনি কিছুমান বুকমাৰ্ক মচি নেপেলোৱালৈকে আপোনাৰ একাউণ্টত নতুন বুকমাৰ্ক ছেভ কৰিব নোৱাৰি। যদি আপুনি এতিয়াই ছাইন আউট কৰে, ছেভ নকৰা বুকমাৰ্কসমূহ মচি পেলোৱা হ’ব।</translation>
-<translation id="2901621928549457170">আপুনি আপোনাৰ iPadত থাকিলে তাৎক্ষণিকভাৱে Chrome খোলক</translation>
 <translation id="2922914028977213693">আপোনাৰ iPadত Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ইয়াত টিপক।</translation>
 <translation id="292371311537977079">Chromeৰ ছেটিং</translation>
 <translation id="2923827943290349720">আপুনি Chrome বন্ধ কৰিলে ইনক’গনিট’ টেবসমূহ লক কৰক</translation>
@@ -175,8 +175,6 @@
 <translation id="5119391094379141756">Chrome বাছনি কৰক</translation>
 <translation id="5123188916260706415">Chromeত ভইচৰ দ্বাৰা সন্ধান কৰক</translation>
 <translation id="5162467219239570114">Chrome পুৰণি হৈছে। <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />ত কোনো আপডে’ট নাথাকিলে এয়া সম্ভৱ যে আপোনাৰ ডিভাইচটোৱে Chromeৰ নতুন সংস্কৰণসমূহ আৰু সমৰ্থন নকৰে।</translation>
-<translation id="5172049865623113551">আপুনি আপোনাৰ iPhoneত থাকিলে তাৎক্ষণিকভাৱে Chrome খোলক</translation>
-<translation id="5179095426828744632">আপোনাৰ ড’কৰ পৰা দ্ৰুততাৰে Chrome এক্সেছ কৰক</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
 <translation id="5190139289262548459">আপোনাৰ প্ৰতিষ্ঠানে, <ph name="DOMAIN" />, আপুনি ছাইন ইন কৰা একাউণ্টটো আৰু Chrome কেনেকৈ ব্যৱহাৰ কৰা হয় পৰিচালনা কৰে।</translation>
 <translation id="5209238444239954363">Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
@@ -262,8 +260,8 @@
 আপোনাৰ Chromeৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ ডেটা ব্যৱহাৰ কৰা অধিক ছেটিং পাবলৈ <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="6922332667202044570">Chromeত ব্ৰাউজিঙৰ ডেটা মচক।</translation>
 <translation id="6924922227983877439">ডিফ’ল্ট হিচাপে Chromeত লিংকসমূহ খোলক</translation>
+<translation id="6926395711547387358">Chromeক ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="6975725306479268850">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chrome বাছনি কৰক</translation>
-<translation id="7001031184470316752">আপোনাৰ ড’কলৈ Chrome স্থানান্তৰ কৰক</translation>
 <translation id="7038674195294813388">iOSত ডিফ’ল্ট এপৰ ছেটিং খোলক আৰু তাৰ পাছত "ব্ৰাউজাৰৰ এপ"ত টিপক আৰু Chrome বাছনি কৰক।</translation>
 <translation id="7056826488869329999">Chromeত সুৰক্ষা পৰীক্ষা খোলে আৰু চলায়।</translation>
 <translation id="7061455974939528301">Chromeৰ চিহ্নটো টিপি হেঁচি ৰাখক আৰু "গৃহ স্ক্ৰীন সম্পাদনা কৰক"ত ক্লিক কৰক</translation>

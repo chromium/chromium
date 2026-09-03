@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1035560095760914532">Placer Chrome i det nederste område for at få adgang til appen når som helst</translation>
 <translation id="1076643793026027628">Chrome åbner automatisk YouTube-inkognitolinks i inkognitotilstand.</translation>
 <translation id="1081114897601629648">Følgende adgangskoder blev ikke importeret til Google Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
@@ -41,6 +40,7 @@ Vær opmærksom på følgende:
 <translation id="1580570086594302477">Åbner en ny inkognitofane i Chrome.</translation>
 <translation id="1605168141396675642">Undgå besværet med at kopiere. Åbn links direkte i Chrome.</translation>
 <translation id="1646463005043273333">Åbner indstillingen for Chrome, så du kan angive Chrome som standardbrowser.</translation>
+<translation id="1668930590094369898">Brug Chrome som standard</translation>
 <translation id="1670609221633730681">Tip til Chrome: Vælg, hvor din adresselinje skal placeres</translation>
 <translation id="1683863426423719967">Hvis du vil modtage fanepåmindelser fra Chrome, skal du aktivere notifikationer i iOS-indstillingerne.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@ Vær opmærksom på følgende:
 <translation id="1973910962341002002">Aktivér "Chrome" i indstillingerne for "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"</translation>
 <translation id="1984705450038014246">Synkroniser dine Chrome-data</translation>
 <translation id="1987779152850321833">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chrome.</translation>
+<translation id="2049569996960148258">Skjul Brug Chrome som standard</translation>
 <translation id="2055826352861631739">Brug Chrome til iPad som standard</translation>
 <translation id="2056123005618757196">Få mere fra hånden med Google Chrome, der er enkelt, sikkert og hurtigere end nogensinde.</translation>
 <translation id="2120238739383482109">Åbner Chrome-bogmærkerne.</translation>
@@ -90,7 +91,6 @@ Vær opmærksom på følgende:
 <translation id="288992067439702510">Du har nået Google Chromes grænse på <ph name="LIMIT" /> bogmærker, så nogle af dine bogmærker er endnu ikke gemt på din Google-konto.
 
 Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
-<translation id="2901621928549457170">Åbn Chrome med det samme, når du bruger din iPad</translation>
 <translation id="2922914028977213693">Tryk her for at få mest muligt ud af Chrome på din iPad.</translation>
 <translation id="292371311537977079">Indstillinger for Chrome</translation>
 <translation id="2923827943290349720">Lås inkognitofaner, når du lukker Chrome</translation>
@@ -175,8 +175,6 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5123188916260706415">Søg med stemmen i Chrome</translation>
 <translation id="5162467219239570114">Chrome er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chrome-versioner.</translation>
-<translation id="5172049865623113551">Åbn Chrome med det samme, når du bruger din iPhone</translation>
-<translation id="5179095426828744632">Få hurtigere adgang til Chrome via din dock</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chrome bruges.</translation>
 <translation id="5209238444239954363">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
@@ -262,8 +260,8 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-oplevelse, ved at gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Slet browserdata i Chrome.</translation>
 <translation id="6924922227983877439">Åbn links i Chrome som standard</translation>
+<translation id="6926395711547387358">Indstil Chrome som standard</translation>
 <translation id="6975725306479268850">Vælg Chrome for Autofyld</translation>
-<translation id="7001031184470316752">Flyt Chrome til din dock</translation>
 <translation id="7038674195294813388">Åbn indstillingen Standardapps i iOS, tryk på "Browserapp", og vælg Chrome.</translation>
 <translation id="7056826488869329999">Åbner og kører et sikkerhedstjek i Chrome.</translation>
 <translation id="7061455974939528301">Hold Chrome-ikonet nede, og klik på "Rediger hjemmeskærm"</translation>

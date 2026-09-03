@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Inicie sessão para ter acesso às suas informações guardadas e muito mais em todos os seus dispositivos</translation>
 <translation id="1381838868249179644">Para ajudar a manter a sua segurança, foram removidas as autorizações de alguns sites</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1384568202352682721">Guardar como…</translation>
 <translation id="1384704387250346179">Traduzir imagem com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Pode ver o histórico de outras apps que abrem links no Chrome. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Secção inferior das estatísticas de preços aberta à altura total</translation>
@@ -133,6 +134,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="147982357559798527">Alterado</translation>
 <translation id="1480287803138246127">Algum do seu histórico pode não ser apresentado aqui. Para ver todo o Histórico do Chrome, abra o Histórico do Chrome completo.</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1485343711570311792">Abrir na app <ph name="NATIVE_APP_NAME" /> • De <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
 <translation id="1496514951988037011">nome de utilizador</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
@@ -327,6 +329,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="232137538351753795">Deslize a partir da extremidade esquerda para retroceder</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Guardar página como…</translation>
 <translation id="2328474416100889417">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e todos os links de convite vão ser desativados</translation>
 <translation id="2329500425421091035">Apresentamos o Modo IA no Chrome</translation>
 <translation id="2330186936255788117">Mais marcadores</translation>
@@ -1874,6 +1877,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8313599942510782709">A sua tarefa ainda está em curso</translation>
 <translation id="8317318757008452355">Abrir opções para imprimir</translation>
 <translation id="8320212361750431956">Atividade recente</translation>
+<translation id="8322452989119079156">Abrir na app <ph name="NATIVE_APP_NAME" /> – Enviado do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Marcadores e listas</translation>
 <translation id="8342727528718219152">O Chrome indica-lhe os sites que podem estar a enviar demasiadas notificações</translation>

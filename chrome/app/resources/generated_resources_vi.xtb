@@ -132,6 +132,7 @@
 Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">S&amp;ao chép địa chỉ liên kết</translation>
 <translation id="1085064499066015002">Cho phép trên tất cả trang web</translation>
+<translation id="1085340215550339505">Để đưa ra đề xuất đổi mật khẩu kịp thời, nội dung và URL của những trang bạn truy cập có thể được xử lý trong một không gian riêng tư trên đám mây</translation>
 <translation id="1085558727130096638">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUM_OTHER_MEMBERS" /> người khác</translation>
 <translation id="1085618740036066768">Chưa chọn <ph name="ITEM" />. <ph name="INDEX" />/<ph name="COUNT" />. Hãy nhấn phím Tìm kiếm + Phím cách để chọn.</translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
@@ -1132,6 +1133,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1871131409931646355">Toàn bộ nhật ký tải xuống</translation>
 <translation id="187145082678092583">Ẩn bớt ứng dụng</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> của bạn đã cập nhật</translation>
+<translation id="1872846000961079826">Trong quá trình đổi mật khẩu, nội dung trên các trang được bảo vệ bằng mật khẩu và thông tin liên quan sẽ được gửi đến Google và có thể được nhân viên xem xét nhằm cải thiện chất lượng của tính năng này</translation>
 <translation id="1873513359268939357">Lịch Outlook</translation>
 <translation id="1873920700418191231">Cấp lại quyền cho <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Được phép hiển thị quảng cáo bất kỳ</translation>
@@ -2859,6 +2861,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3184536091884214176">Thiết lập hoặc quản lý máy in CUPS. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Hãy dùng mã PIN này để thay đổi chế độ kiểm soát của cha mẹ.
     Nếu bạn quên mã PIN, hãy định dạng lại thiết bị này rồi thiết lập lại.</translation>
+<translation id="3184916134413175521">Xếp hạng tiện ích này</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ứng dụng này đã bị chặn}other{Một số ứng dụng đã bị chặn}}</translation>
 <translation id="3185454065699440434">Cho phép các tiện ích hoạt động trên <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Bạn có thấy thiết bị truyền của mình trong
@@ -2928,6 +2931,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3241680850019875542">Chọn thư mục gốc của tiện ích để đóng gói. Để cập nhật tiện ích, bạn cũng chọn tệp khóa cá nhân để sử dụng lại.</translation>
 <translation id="3241810535741601486">Thay đổi này là vĩnh viễn và không thể huỷ được. Bản cập nhật mở rộng sẽ áp dụng cho tất cả người dùng trên thiết bị này. <ph name="LINK_START" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Hình đại diện của bạn</translation>
+<translation id="3242764115495920926">Đề xuất tự động đổi mật khẩu</translation>
 <translation id="3243017971870859287">Đọc số sê-ri của linh kiện và thiết bị ChromeOS Flex</translation>
 <translation id="324366796737464147">Khử tiếng ồn</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4153,6 +4157,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4167924027691268367">Thao tác khác cho lối tắt <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Một số cài đặt thuộc về <ph name="PRIMARY_EMAIL" /> đang được chia sẻ với bạn. Những cài đặt này chỉ ảnh hưởng đến tài khoản của bạn khi sử dụng đăng nhập nhiều tài khoản.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> kết thúc bằng <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Xếp hạng tiện ích này...</translation>
 <translation id="4169535189173047238">Không cho phép</translation>
 <translation id="4170314459383239649">Xóa khi thoát</translation>
 <translation id="4170685671197375581">Bật lối tắt</translation>
@@ -4454,6 +4459,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4401912261345737180">Kết nối bằng một mã để truyền</translation>
 <translation id="4403012369005671154">Chuyển lời nói thành văn bản</translation>
 <translation id="4403775189117163360">Chọn một thư mục khác</translation>
+<translation id="440411460180511551">Nếu Chromium phát hiện một trong những mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu công khai, Trình quản lý mật khẩu của Google có thể đề xuất đổi mật khẩu đó khi bạn đăng nhập.</translation>
 <translation id="4404843640767531781">Cha mẹ bạn đã chặn <ph name="APP_NAME" />. Hãy xin phép cha mẹ cấp quyền sử dụng ứng dụng này.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Chuyển tới...</translation>
@@ -5062,7 +5068,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4872192066608821120">Để nhập mật khẩu, hãy chọn một tệp CSV</translation>
 <translation id="4872212987539553601">Thiết lập quy trình mã hoá trên thiết bị</translation>
 <translation id="4875690134140862902">Thẻ</translation>
-<translation id="4876273079589074638">Giúp các kỹ sư của chúng tôi điều tra và khắc phục trục trặc này. Liệt kê các bước chính xác nếu bạn có thể. Không cần liệt kê quá chi tiết!</translation>
 <translation id="4876305945144899064">Không có tên người dùng</translation>
 <translation id="4876327226315760474">Điều này có nghĩa là các tính năng của trang web sẽ hoạt động như mong đợi, nhưng khả năng bảo vệ khi duyệt web có thể bị giảm.</translation>
 <translation id="4876895919560854374">Khóa và mở khóa màn hình</translation>
@@ -6589,6 +6594,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6099766472403716061">Luôn cho phép <ph name="HOST" /> điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="6100736666660498114">Menu Start</translation>
 <translation id="6100737823178787570">Tăng kích thước cửa sổ để tiếp tục việc cần làm</translation>
+<translation id="6101170451607354234">Nếu Chrome phát hiện một trong những mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu công khai, Trình quản lý mật khẩu của Google có thể đề xuất đổi mật khẩu đó khi bạn đăng nhập.</translation>
 <translation id="6101226222197207147">Đã thêm ứng dụng mới (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Chương trình Bảo vệ nâng cao đã chặn tệp này.</translation>
 <translation id="6103681770816982672">Cảnh báo: bạn đang chuyển sang kênh nhà phát triển</translation>
@@ -6794,6 +6800,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6254892857036829079">Hoàn hảo</translation>
 <translation id="6257602895346497974">Bật tính năng đồng bộ hóa...</translation>
 <translation id="625827534921607067">Mạng này sẽ được ưu tiên nếu có nhiều mạng đã kết nối hoặc định cấu hình trước đó</translation>
+<translation id="6258818697161346451">Sử dụng khoá truy cập trên thiết bị này</translation>
 <translation id="6259776178973198997">Làm mới thông tin về chủ sở hữu trực tiếp của Wi-Fi</translation>
 <translation id="6261688934280090835">Nhật ký ứng dụng Kiosk trên ChromeOS</translation>
 <translation id="6263082573641595914">Phiên bản CA của Microsoft</translation>
@@ -10345,6 +10352,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9003185744423389627">Không kết nối được với Máy chủ quản lý thiết bị do trạng thái "<ph name="STATUS_TEXT" />" vào <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Tự động quét tìm hồ sơ eSIM hiện có?</translation>
 <translation id="9003647077635673607">Cho phép trên tất cả các trang web</translation>
+<translation id="9004279470320280717">Xếp hạng tiện ích này...</translation>
 <translation id="9005774573776346118">Để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Tổ chức của bạn</translation>
 <translation id="900733896273558337">Chỉnh sửa kỹ năng</translation>

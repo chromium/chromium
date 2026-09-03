@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
-<translation id="1035560095760914532">將 Chrome 放在底部，方便隨時存取</translation>
 <translation id="1076643793026027628">在無痕模式下，Chrome 會自動開啟 YouTube 無痕模式連結。</translation>
 <translation id="1081114897601629648">以下密碼不符合規定，因此未匯入 Google 密碼管理工具。</translation>
 <translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
@@ -41,6 +40,7 @@
 <translation id="1580570086594302477">開啟新的 Chrome 無痕分頁。</translation>
 <translation id="1605168141396675642">免去複製的麻煩，直接在 Chrome 中開啟連結。</translation>
 <translation id="1646463005043273333">開啟 Chrome 設定，將 Chrome 設為預設瀏覽器。</translation>
+<translation id="1668930590094369898">將 Chrome 設為預設瀏覽器</translation>
 <translation id="1670609221633730681">Chrome 提示：選擇網址列位置</translation>
 <translation id="1683863426423719967">如要接收 Chrome 的分頁提醒，請前往 iOS 設定開啟通知。</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +57,7 @@
 <translation id="1973910962341002002">前往「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」設定，將「Chrome」切換為開啟</translation>
 <translation id="1984705450038014246">同步處理你的 Chrome 資料</translation>
 <translation id="1987779152850321833">完成下列建議動作，充分運用 Chrome 的各項功能。</translation>
+<translation id="2049569996960148258">隱藏「將 Chrome 設為預設瀏覽器」</translation>
 <translation id="2055826352861631739">在 iPad 上預設使用 Chrome</translation>
 <translation id="2056123005618757196">Google Chrome 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="2120238739383482109">開啟 Chrome 書籤。</translation>
@@ -88,7 +89,6 @@
 <translation id="2788811701191021538">使用 Chrome 開啟「付款方式設定」頁面。</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
 <translation id="288992067439702510">已達到 Google Chrome 的書籤數量上限 (<ph name="LIMIT" /> 個)，因此部分書籤尚未儲存到 Google 帳戶。請先刪除一些書籤，才能將新書籤儲存到帳戶。如果現在登出，系統會刪除未儲存的書籤。</translation>
-<translation id="2901621928549457170">在 iPad 上秒開 Chrome</translation>
 <translation id="2922914028977213693">輕觸這裡即可在 iPad 上充分運用 Chrome 的各項功能。</translation>
 <translation id="292371311537977079">Chrome 設定</translation>
 <translation id="2923827943290349720">關閉 Chrome 時鎖定無痕分頁</translation>
@@ -173,8 +173,6 @@
 <translation id="5119391094379141756">選取「Chrome」</translation>
 <translation id="5123188916260706415">在 Chrome 中使用語音搜尋</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chrome。</translation>
-<translation id="5172049865623113551">在 iPhone 上秒開 Chrome</translation>
-<translation id="5179095426828744632">從 Dock 更快存取 Chrome</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5190139289262548459">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
 <translation id="5209238444239954363">Chrome 無法檢查更新，請稍後再試。</translation>
@@ -260,8 +258,8 @@
 如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6922332667202044570">刪除 Chrome 的瀏覽資料。</translation>
 <translation id="6924922227983877439">預設在 Chrome 中開啟連結</translation>
+<translation id="6926395711547387358">將 Chrome 設為預設瀏覽器</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
-<translation id="7001031184470316752">將 Chrome 移到 Dock</translation>
 <translation id="7038674195294813388">在 iOS 中開啟「預設 App」設定，然後依序輕觸「瀏覽器 App」和「Chrome」。</translation>
 <translation id="7056826488869329999">在 Chrome 中開啟並執行安全檢查。</translation>
 <translation id="7061455974939528301">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>

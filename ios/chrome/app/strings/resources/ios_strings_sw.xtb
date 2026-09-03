@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Kichupo fiche</translation>
 <translation id="1053651653201045802">Umeondoka kwenye akaunti. Ingia tena katika akaunti ili utumie alamisho, manenosiri na zaidi kwenye akaunti yako.</translation>
 <translation id="1054745118061919935">Kwa kuendelea, unakubali <ph name="BEGIN_LINK" />Sheria na Masharti<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Ninunue ipi?</translation>
 <translation id="10614374240317010">Haijahifadhiwa kamwe</translation>
 <translation id="1062138828266376352">PIN yako haikubadilishwa. Kagua muunganisho wako wa intaneti kisha ujaribu tena</translation>
 <translation id="1063070031224282617">Chagua utakakohifadhi "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5898848375214731122">Uzito</translation>
 <translation id="5899314093904173337">Ili ushiriki na watu walio karibu, waruhusu wachanganue msimbo huu wa QR wakitumia kamera zao au programu ya kuchanganua QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{Kichupo {count} kipya}other{Vichupo {count} vipya}}</translation>
+<translation id="5906163261248594192">Siku ya Kuzaliwa ya Dan</translation>
 <translation id="5911030830365207728">Google Tafsiri</translation>
 <translation id="5912796581727968237">Fungua Pochi ya Google</translation>
 <translation id="5922999516621365983">Buruta kichupo hapa ili ukibandike.</translation>
@@ -1924,6 +1926,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="720399613139435155">Imeshindwa kutafsiri</translation>
 <translation id="7204922488054642675">Habari zilizolingana na mapendeleo yako</translation>
 <translation id="7206979415662233817">Sheria na masharti</translation>
+<translation id="721218676460477064">Andaa muhtasari wa makala haya</translation>
 <translation id="7215621211572884440">Madirisha ibukizi yanaruhusiwa</translation>
 <translation id="7218491361283758048">Msimbo wa eneo</translation>
 <translation id="7221173315674413369">Gundua vipengele na vidokezo vipya kwenye sehemu ya Vipengele Vipya</translation>
@@ -2185,6 +2188,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8035133914807600019">Folda mpya…</translation>
 <translation id="8035412398498507358">Picha</translation>
 <translation id="8037713009824540257">Ongeza Tovuti</translation>
+<translation id="8038078082340255234">Ripoti ya Soko</translation>
 <translation id="8040407350301524547">Kwa chaguo za kupata njia, gusa “Pata maelekezo.”</translation>
 <translation id="804427445359061970">Utapata vichupo vyako kwenye vifaa vingine hapa</translation>
 <translation id="8058655154417507695">Mwaka wa kuisha kwa muda wa matumizi</translation>
@@ -2242,6 +2246,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8232956427053453090">Hifadhi data</translation>
 <translation id="8233237502828137700">Funga bango la tangazo</translation>
 <translation id="823339794112333264">Washa maikrofoni</translation>
+<translation id="8240217649914883113">Weka tukio hili kwenye kalenda yangu</translation>
 <translation id="8250920743982581267">Hati</translation>
 <translation id="8252980988000695656">Umekamilisha hatua ya Lenzi ya Google!</translation>
 <translation id="8258734532103758067">Nimehamisha data yangu</translation>
@@ -2286,6 +2291,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8368198938968349418">Washa kipengele cha Kujaza Kiotomatiki…</translation>
 <translation id="8370406443343902172">Nenda kwenye Mipangilio...</translation>
 <translation id="8370929854657845191">Panua hadi Wastani</translation>
+<translation id="8371494817541821097">Ufunguo wa siri ulibuniwa tarehe <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Futa anwani}other{Futa anwani}}</translation>
 <translation id="8378714024927312812">Inasimamiwa na shirika lako</translation>
 <translation id="8385363453480067273">Tafuta unachokiona ukitumia Lenzi ya Google</translation>

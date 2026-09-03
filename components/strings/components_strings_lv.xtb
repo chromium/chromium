@@ -1457,6 +1457,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3495081129428749620">Meklēt lapā
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Algas konts</translation>
+<translation id="3496531230994554300">Lietotnes Maks paziņojums ir atvērts pilnā augstumā.</translation>
 <translation id="3497627066518778351">Pārskatīt ierīcē saglabāto vietņu datu sarakstu jaunā logā</translation>
 <translation id="3498215018399854026">Mēs nevarējām sasniegt jūsu māti/tēvu. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="350069200438440499">Faila vārds:</translation>
@@ -1558,7 +1559,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Ja šo redzat bieži, izmēģiniet šos <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Pārskatīšana</translation>
 <translation id="3659521826520353662">Administratora definētās vietnes, kuras tiek apmeklētas un to apmeklēšanas laiks: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Šis IBAN ir saglabāts lietotnē Google maks, tādējādi varat to izmantot Google pakalpojumos.</translation>
 <translation id="3664479564786885722">Meklējiet citas iegādes iespējas citos veikalos, kuros tiek pārdots šis produkts.</translation>
 <translation id="3664782872746246217">Atslēgvārdi:</translation>
 <translation id="3670030362669914947">Numurs</translation>
@@ -2667,6 +2667,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5499229993630251170">Vai turpināt šo pavedienu?</translation>
 <translation id="5506286895894263601">Sarakstā nav nevienas derīgas saīsnes.</translation>
 <translation id="5507756662695126555">Neatteikšanās</translation>
+<translation id="5508515366054931524">E-pasta adreses verifikācijas uzvedne ir atvērta pilnā augstumā.</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Pārvaldītās grāmatzīmes</translation>
 <translation id="5510766032865166053">Iespējams, tas ir pārvietots vai izdzēsts.</translation>
@@ -3449,6 +3450,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6860888819347870819">Drīkst pieprasīt atļauju aktivizēt režīmu “Attēls attēlā”</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Pašlaik nevar verificēt šo karti.</translation>
+<translation id="6871073333584947219">Lietotnes Maks paziņojums ir aizvērts.</translation>
 <translation id="6871813064737840684">Šīs iespējas cenas vēsture tīmeklī</translation>
 <translation id="6873456682041376666">Augšējā paplāte</translation>
 <translation id="6874604403660855544">&amp;Atcelt pievienošanas atsaukšanu</translation>
@@ -3904,7 +3906,6 @@ Papildu informācija:
 <translation id="7615932826417658001">Identifikācijas kartes pievienošana</translation>
 <translation id="7616390733770379387">Meklētājprogrammas tiek rādītas nejaušā secībā.</translation>
 <translation id="7616645509853975347">Administrators ir ieslēdzis savienotāju kolekciju Chrome Enterprise Connectors jūsu pārlūkā. Šie savienotāji var piekļūt daļai jūsu datu.</translation>
-<translation id="7616747402308801775">Šī karte ir saglabāta lietotnē Google maks, tādējādi varat to izmantot Google pakalpojumos.</translation>
 <translation id="7617825962482469577">Aploksne C7/C6</translation>
 <translation id="7619838219691048931">Beigu lapa</translation>
 <translation id="7621546470643449009">Izveido iesācēja ceļvedi par zvaigžņu vērošanu, lai palīdzētu man uzzināt, ko meklēt nakts debesīs, tostarp trīs viegli identificējamus zvaigznājus.</translation>
@@ -3969,6 +3970,7 @@ Papildu informācija:
 <translation id="7705085181312584869">Palīdzība rakstīšanā</translation>
 <translation id="7705992072972338699">Optiskais disks (augsti glancēts)</translation>
 <translation id="7706689436519265630">Jūsu kopētie vai pārvietotie faili tiek nosūtīti uz Google mākoni vai trešajām pusēm, lai veiktu analīzi. Piemēram, saturs var tikt pārmeklēts, lai konstatētu, vai tajā nav ietverti sensitīvi dati vai ļaunprātīga programmatūra, un tas var tikt glabāts saskaņā ar uzņēmuma politikām.</translation>
+<translation id="7709934467582922028">E-pasta adreses verifikācijas uzvedne ir aizvērta.</translation>
 <translation id="7714351089363296478">Jūs tikko apmeklējāt</translation>
 <translation id="7714404809393719981">Fotopapīrs (pusglancēts)</translation>
 <translation id="7714464543167945231">Sertifikāts</translation>

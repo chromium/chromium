@@ -860,7 +860,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="243815215670139125">Diese Karte konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert.</translation>
 <translation id="2438874542388153331">Vierfache Lochung rechts</translation>
 <translation id="2441854154602066476">Zahlungsmethoden, die bei Berührung ausgefüllt werden. Tastatur ausgeblendet.</translation>
-<translation id="2442865686365739754">Chrome speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
+<translation id="2442865686365739754">Folgende Daten werden <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" /> von Chrome gespeichert:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Den Browserverlauf
             <ph name="LIST_ITEM" />Cookies und Websitedaten
@@ -1557,7 +1557,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3655670868607891010">Sollte dir diese Meldung häufiger angezeigt werden, sieh dir unsere <ph name="HELP_LINK" /> an.</translation>
 <translation id="3658742229777143148">Überarbeitung</translation>
 <translation id="3659521826520353662">Welche vom Administrator festgelegten Websites zu welchem Zeitpunkt besucht werden: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Diese IBAN wurde in Google Wallet gespeichert, damit du sie auch in anderen Google-Diensten verwenden kannst.</translation>
 <translation id="3664479564786885722">Weitere Kaufoptionen in anderen Geschäften suchen, die dieses Produkt verkaufen.</translation>
 <translation id="3664782872746246217">Suchbegriffe:</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -3904,7 +3903,6 @@ Weitere Details:
 <translation id="7615932826417658001">Amtlichen Ausweis hinzufügen</translation>
 <translation id="7616390733770379387">Die Suchmaschinen werden in zufälliger Reihenfolge angezeigt.</translation>
 <translation id="7616645509853975347">Dein Administrator hat Chrome Enterprise Connectors für deinen Browser aktiviert. Diese Connectors haben Zugriff auf einen Teil deiner Daten.</translation>
-<translation id="7616747402308801775">Diese Karte wurde in Google Wallet gespeichert, damit du sie auch in anderen Google-Diensten verwenden kannst</translation>
 <translation id="7617825962482469577">Umschlag C7/C6</translation>
 <translation id="7619838219691048931">Endblatt</translation>
 <translation id="7621546470643449009">Erstelle eine Anfängeranleitung für die Sternbeobachtung, damit ich lerne, wonach ich am Nachthimmel suchen muss, einschließlich 3 leicht identifizierbarer Sternbilder</translation>

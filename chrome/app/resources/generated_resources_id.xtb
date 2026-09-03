@@ -132,6 +132,7 @@
 Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Salin ala&amp;mat link</translation>
 <translation id="1085064499066015002">Selalu di semua situs</translation>
+<translation id="1085340215550339505">Agar dapat memberikan saran perubahan sandi secara tepat waktu, konten dan URL halaman yang Anda kunjungi dapat diproses di ruang privasi di cloud</translation>
 <translation id="1085558727130096638">Gabung ke Grup Tab dengan <ph name="OWNER_FIRST_NAME" /> dan <ph name="NUM_OTHER_MEMBERS" /> Anggota Lainnya</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> tidak dipilih. <ph name="INDEX" /> dari <ph name="COUNT" />. Tekan tombol Penelusuran dan Spasi untuk memilih.</translation>
 <translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
@@ -1132,6 +1133,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1871131409931646355">Histori Download Lengkap</translation>
 <translation id="187145082678092583">Lebih sedikit aplikasi</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> Anda adalah versi terbaru</translation>
+<translation id="1872846000961079826">Selama proses perubahan sandi, konten dari halaman sandi serta info terkait akan dikirim ke Google dan mungkin ditinjau secara manual untuk meningkatkan kualitas fitur ini</translation>
 <translation id="1873513359268939357">Kalender Outlook</translation>
 <translation id="1873920700418191231">Berikan izin lagi untuk <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Diizinkan menampilkan iklan apa pun</translation>
@@ -2858,6 +2860,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3184536091884214176">Siapkan atau kelola printer CUPS. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Gunakan PIN ini untuk mengubah setelan kontrol orang tua.
     Jika Anda lupa PIN, powerwash perangkat ini dan siapkan lagi.</translation>
+<translation id="3184916134413175521">Beri rating</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Aplikasi ini diblokir}other{Beberapa aplikasi diblokir}}</translation>
 <translation id="3185454065699440434">Izinkan ekstensi di <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Bisakah Anda melihat perangkat transmisi Anda di
@@ -2927,6 +2930,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3241680850019875542">Pilih direktori akar ekstensi untuk dipaket. Untuk memperbarui ekstensi, pilih juga file kunci pribadi untuk dipakai ulang.</translation>
 <translation id="3241810535741601486">Perubahan ini bersifat permanen dan tidak dapat dibatalkan. Update yang diperpanjang berlaku untuk semua pengguna perangkat ini. <ph name="LINK_START" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Avatar Anda</translation>
+<translation id="3242764115495920926">Tawarkan untuk otomatis mengubah sandi</translation>
 <translation id="3243017971870859287">Membaca nomor seri perangkat dan komponen ChromeOS Flex</translation>
 <translation id="324366796737464147">Peredam bising</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4152,6 +4156,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4167924027691268367">Tindakan lainnya untuk pintasan <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Beberapa setelan milik <ph name="PRIMARY_EMAIL" /> digunakan bersama dengan Anda. Setelan ini akan memengaruhi akun Anda hanya jika memakai fitur masuk banyak akun.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> diakhiri dengan <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Beri rating...</translation>
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4170314459383239649">Hapus Saat Keluar</translation>
 <translation id="4170685671197375581">Aktifkan pintasan</translation>
@@ -4453,6 +4458,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4401912261345737180">Hubungkan dengan kode untuk mentransmisikan</translation>
 <translation id="4403012369005671154">Speech-to-text</translation>
 <translation id="4403775189117163360">Pilih folder yang berbeda</translation>
+<translation id="440411460180511551">Jika Chromium menemukan salah satu sandi Anda dalam pelanggaran data publik, Pengelola Sandi Google dapat menawarkan untuk mengubahnya jika Anda sedang login.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> diblokir oleh orang tuamu. Minta izin orang tuamu untuk menggunakan aplikasi ini.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Pindahkan ke…</translation>
@@ -5061,7 +5067,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4872192066608821120">Untuk mengimpor sandi, pilih file CSV</translation>
 <translation id="4872212987539553601">Siapkan enkripsi di perangkat</translation>
 <translation id="4875690134140862902">Tab</translation>
-<translation id="4876273079589074638">Bantu engineer kami menyelidiki dan memperbaiki error ini. Cantumkan langkah-langkah yang tepat jika Anda bisa. Tidak ada detail yang sepele.</translation>
 <translation id="4876305945144899064">Tidak ada nama pengguna</translation>
 <translation id="4876327226315760474">Artinya, fitur situs akan berfungsi seperti yang diharapkan, tetapi Anda mungkin memiliki lebih sedikit perlindungan terhadap penjelajahan.</translation>
 <translation id="4876895919560854374">Kunci dan buka kunci layar</translation>
@@ -6588,6 +6593,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6099766472403716061">Selalu izinkan <ph name="HOST" /> mengontrol dan memprogram ulang perangkat MIDI Anda</translation>
 <translation id="6100736666660498114">Menu mulai</translation>
 <translation id="6100737823178787570">Perbesar ukuran jendela untuk melanjutkan tugas</translation>
+<translation id="6101170451607354234">Jika Chrome menemukan salah satu sandi Anda dalam pelanggaran data publik, Pengelola Sandi Google dapat menawarkan untuk mengubahnya jika Anda sedang login.</translation>
 <translation id="6101226222197207147">Aplikasi baru ditambahkan (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">File ini diblokir oleh Perlindungan Lanjutan.</translation>
 <translation id="6103681770816982672">Perhatian: Anda beralih ke saluran pengembang</translation>
@@ -6793,6 +6799,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6254892857036829079">Sempurna</translation>
 <translation id="6257602895346497974">Aktifkan sinkronisasi...</translation>
 <translation id="625827534921607067">Jaringan ini akan dipilih jika tersedia lebih dari satu jaringan yang sebelumnya terhubung atau dikonfigurasi</translation>
+<translation id="6258818697161346451">Gunakan kunci sandi Anda di perangkat ini</translation>
 <translation id="6259776178973198997">Muat Ulang Info Pemilik Wi-Fi Langsung</translation>
 <translation id="6261688934280090835">Log Aplikasi Kios ChromeOS</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
@@ -10341,6 +10348,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9003185744423389627">Koneksi ke Server Pengelolaan Perangkat gagal dengan status '<ph name="STATUS_TEXT" />' pada <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Pindai profil eSIM yang tersedia secara otomatis?</translation>
 <translation id="9003647077635673607">Izinkan di semua situs web</translation>
+<translation id="9004279470320280717">Beri Rating...</translation>
 <translation id="9005774573776346118">Untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda, login sebagai <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Organisasi Anda</translation>
 <translation id="900733896273558337">Edit keahlian</translation>

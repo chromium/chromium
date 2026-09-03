@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Logga in om du vill få din sparade information med mera på alla dina enheter</translation>
 <translation id="1381838868249179644">För att skydda dig har behörigheter tagits bort från vissa webbplatser</translation>
 <translation id="1383876407941801731">Sök</translation>
+<translation id="1384568202352682721">Spara som …</translation>
 <translation id="1384704387250346179">Översätta bild med Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Historiken från andra appar som öppnar länkar kan visas i Chrome. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Ark för prisinsikter på nedre delen av skärmen har öppnats över hela skärmen</translation>
@@ -133,6 +134,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="147982357559798527">Ändrade</translation>
 <translation id="1480287803138246127">En del av din historik kanske inte visas här. Öppna fullständig Chrome-historik om du vill se all Chrome-historik.</translation>
 <translation id="1483493594462132177">Skicka</translation>
+<translation id="1485343711570311792">Öppna i <ph name="NATIVE_APP_NAME" /> • Från <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1496514951988037011">användarnamn</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
@@ -327,6 +329,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="232137538351753795">Återgå genom att svepa från vänster kant</translation>
 <translation id="2323763861024343754">Webbplatslagring</translation>
 <translation id="2327445548174191329">Från <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Spara sida som …</translation>
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
 <translation id="2329500425421091035">Vi presenterar AI-läget i Chrome</translation>
 <translation id="2330186936255788117">Fler bokmärken</translation>
@@ -1875,6 +1878,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8313599942510782709">Uppgiften pågår fortfarande</translation>
 <translation id="8317318757008452355">Öppna alternativ för att skriva ut</translation>
 <translation id="8320212361750431956">Senaste aktiviteter</translation>
+<translation id="8322452989119079156">Öppna i <ph name="NATIVE_APP_NAME" /> – skickades från <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Bokmärken och listor</translation>
 <translation id="8342727528718219152">Chrome meddelar dig om webbplatser som kanske skickar för många aviseringar</translation>

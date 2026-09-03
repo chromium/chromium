@@ -132,6 +132,7 @@
 Проверувајте ги лозинките во секое време во <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Копирај адр&amp;еса на врска</translation>
 <translation id="1085064499066015002">Секогаш на сите сајтови</translation>
+<translation id="1085340215550339505">За да се даваат навремени предлози за промена на лозинките, содржините и URL-адресите на страниците што ги посетувате може да се обработуваат во приватен простор во облакот</translation>
 <translation id="1085558727130096638">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="1085618740036066768">Не е избрано: <ph name="ITEM" />. <ph name="INDEX" /> од <ph name="COUNT" />. Притиснете ги копчињата Search и Space за да изберете.</translation>
 <translation id="1086486568852410168">Пребарај со Google Lens</translation>
@@ -1131,6 +1132,7 @@
 <translation id="1871131409931646355">Целосна историја на преземања</translation>
 <translation id="187145082678092583">Помалку апликации</translation>
 <translation id="1871615898038944731">Вашиот <ph name="DEVICE_TYPE" /> е ажуриран</translation>
+<translation id="1872846000961079826">При промената на лозинката, содржините од страниците со лозинки и поврзаните податоци се испраќаат до Google и може да ги прегледуваат луѓе за да се подобри квалитетот на функцијава</translation>
 <translation id="1873513359268939357">Outlook Calendar</translation>
 <translation id="1873920700418191231">Повторно одобрете ги дозволите за <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Дозволено им е да прикажуваат секакви реклами</translation>
@@ -2858,6 +2860,7 @@
 <translation id="3184536091884214176">Поставете ги или управувајте со печатачите за CUPS. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Користете го овој PIN за да ги промените поставките за родителски контроли.
     Ако го заборавите PIN-кодот, извршете фабричко ресетирање на уредов, па поставете го повторно.</translation>
+<translation id="3184916134413175521">Оценете</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Апликацијава е блокирана}one{Некои апликации се блокирани}other{Некои апликации се блокирани}}</translation>
 <translation id="3185454065699440434">Дозволи екстензии на <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Дали може да го видите вашиот уред со Cast во
@@ -2927,6 +2930,7 @@
 <translation id="3241680850019875542">Изберете го основниот директориум на наставката за пакување. За да ажурирате наставка, изберете ја и датотеката со приватен клуч за повторно да се употреби.</translation>
 <translation id="3241810535741601486">Променава е трајна и не може да се врати. Проширените ажурирања важат за сите корисници на уредов. <ph name="LINK_START" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Вашиот аватар</translation>
+<translation id="3242764115495920926">Нудење автоматско променување на лозинките</translation>
 <translation id="3243017971870859287">да чита сериски броеви на уред со ChromeOS Flex и на компоненти</translation>
 <translation id="324366796737464147">Исклучи бучава</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4152,6 +4156,7 @@
 <translation id="4167924027691268367">Повеќе дејства за кратенката <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Некои поставки кои припаѓаат на <ph name="PRIMARY_EMAIL" /> се споделуваат со вас. Тие поставки влијаат врз вашата сметка само кога користите повеќе пријавувања.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> што завршува на <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Оценете…</translation>
 <translation id="4169535189173047238">Не дозволувај</translation>
 <translation id="4170314459383239649">Исчисти на излез</translation>
 <translation id="4170685671197375581">Вклучи ја кратенката</translation>
@@ -4453,6 +4458,7 @@
 <translation id="4401912261345737180">Поврзете со код за емитување</translation>
 <translation id="4403012369005671154">Од говор во текст</translation>
 <translation id="4403775189117163360">Одберете друга папка</translation>
+<translation id="440411460180511551">Ако Chromium најде некоја од вашите лозинки во јавен упад во податоци, Google Password Manager може да ви понуди да ја промени за вас кога сте најавени.</translation>
 <translation id="4404843640767531781">Твојот родител ја блокирал <ph name="APP_NAME" />. Побарај дозвола од родителот за користење на апликацијава.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Премести во…</translation>
@@ -5061,7 +5067,6 @@
 <translation id="4872192066608821120">За да ги увезете лозинките, изберете CSV-датотека</translation>
 <translation id="4872212987539553601">Поставете шифрирање на уредот</translation>
 <translation id="4875690134140862902">Картичка</translation>
-<translation id="4876273079589074638">Помогнете им на нашите инженери да го истражат и поправат падот. Наведете ги прецизните чекори ако можете. Сите детали се важни.</translation>
 <translation id="4876305945144899064">Нема корисничко име</translation>
 <translation id="4876327226315760474">Тоа значи дека функциите на сајтот би требало да функционираат според очекувањата, но можно е да бидете помалку заштитени при прелистување.</translation>
 <translation id="4876895919560854374">Заклучи го и отклучи го екранот</translation>
@@ -6588,6 +6593,7 @@
 <translation id="6099766472403716061">Секогаш дозволувај <ph name="HOST" /> да ги контролира и репрограмира MIDI-уредите</translation>
 <translation id="6100736666660498114">Почетно мени</translation>
 <translation id="6100737823178787570">Зголемете ја големината на прозорецот за да ја отпаузирате задачата</translation>
+<translation id="6101170451607354234">Ако Chrome најде некоја од вашите лозинки во јавен упад во податоци, Google Password Manager може да ви понуди да ја промени за вас кога сте најавени.</translation>
 <translation id="6101226222197207147">Додадена е нова апликација (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Оваа датотека беше блокирана од „Напредна заштита“.</translation>
 <translation id="6103681770816982672">Предупредување: се префрлате на канал за програмери</translation>
@@ -6793,6 +6799,7 @@
 <translation id="6254892857036829079">Совршено</translation>
 <translation id="6257602895346497974">Вклучете синхронизација…</translation>
 <translation id="625827534921607067">Оваа мрежа ќе има предност ако е достапна повеќе од една претходно поврзана или конфигурирана мрежа</translation>
+<translation id="6258818697161346451">Користете ги вашите криптографски клучеви на уредов</translation>
 <translation id="6259776178973198997">Освежи ги информациите за сопствениците на Wi-Fi Direct:</translation>
 <translation id="6261688934280090835">Евиденција на киоск-апликацијата на ChromeOS</translation>
 <translation id="6263082573641595914">Microsoft CA верзија</translation>
@@ -10343,6 +10350,7 @@
 <translation id="9003185744423389627">Поврзувањето со серверот на „Управник со уреди“ не успеа и има статус „<ph name="STATUS_TEXT" />“ во <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Да се скенира автоматски за достапни профили на eSIM?</translation>
 <translation id="9003647077635673607">Дозволи на сите веб-локации</translation>
+<translation id="9004279470320280717">Оценете…</translation>
 <translation id="9005774573776346118">За да ги добиете лозинките, обележувачите и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Вашата организација</translation>
 <translation id="900733896273558337">Изменете ја вештината</translation>

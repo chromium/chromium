@@ -132,6 +132,7 @@
 你可以隨時在 <ph name="GOOGLE_PASSWORD_MANAGER" />中檢查密碼。</translation>
 <translation id="1084824384139382525">複製連結網址(&amp;E)</translation>
 <translation id="1085064499066015002">一律在所有網站上執行</translation>
+<translation id="1085340215550339505">系統可能會在雲端私人空間處理你瀏覽的網頁內容和網址，以便及時提供密碼變更建議</translation>
 <translation id="1085558727130096638">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
 <translation id="1085618740036066768">未選取<ph name="ITEM" />。第 <ph name="INDEX" /> 個，共 <ph name="COUNT" /> 個。按下搜尋鍵加空白鍵即可選取。</translation>
 <translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
@@ -1122,6 +1123,7 @@
 <translation id="1871131409931646355">完整下載記錄</translation>
 <translation id="187145082678092583">較少應用程式</translation>
 <translation id="1871615898038944731">你的 <ph name="DEVICE_TYPE" /> 已搭載最新版本的作業系統</translation>
+<translation id="1872846000961079826">變更密碼時，系統會將密碼頁面的內容和相關資訊傳送給 Google，並可能交由人工審查，以提升功能品質</translation>
 <translation id="1873513359268939357">Outlook 行事曆</translation>
 <translation id="1873920700418191231">重新授權給 <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">可以顯示任何廣告</translation>
@@ -2845,6 +2847,7 @@
 <translation id="3183944777708523606">顯示器排列位置</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 印表機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">你可以使用這個 PIN 碼變更家長監護設定。如果忘記 PIN 碼，請將裝置恢復原廠設定，然後重新設定。</translation>
+<translation id="3184916134413175521">評分</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
 <translation id="3185454065699440434">允許在 <ph name="SITE_NAME" /> 上使用擴充功能</translation>
 <translation id="3187556136478864255">你可以在 <ph name="BEGIN_LINK" />Google Home 應用程式<ph name="END_LINK" />中看到自己的投放裝置嗎？</translation>
@@ -2912,6 +2915,7 @@
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的秘密金鑰。</translation>
 <translation id="3241810535741601486">這項變更無法復原。延展的更新會套用到這部裝置的所有使用者。<ph name="LINK_START" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">你的顯示圖片</translation>
+<translation id="3242764115495920926">自動顯示變更密碼的選項</translation>
 <translation id="3243017971870859287">讀取 ChromeOS Flex 裝置序號和元件序號</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3244271242291266297">月</translation>
@@ -4136,6 +4140,7 @@
 <translation id="4167924027691268367">其他「<ph name="SHORTCUT_TITLE" />」搜尋捷徑動作</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與你共用。不過只有使用多重登入時，這些設定才會影響你的帳戶。</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，末四碼為 <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">評分...</translation>
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="4170685671197375581">啟用捷徑</translation>
@@ -4437,6 +4442,7 @@
 <translation id="4401912261345737180">透過代碼連結即可投放</translation>
 <translation id="4403012369005671154">語音轉文字</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
+<translation id="440411460180511551">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。</translation>
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -5041,7 +5047,6 @@
 <translation id="4872192066608821120">如要匯入密碼，請選取所需 CSV 檔案</translation>
 <translation id="4872212987539553601">設定裝置端加密功能</translation>
 <translation id="4875690134140862902">分頁</translation>
-<translation id="4876273079589074638">協助我們的工程師調查這項當機問題並予以修正。請儘可能列出所有確切步驟，鉅細靡遺！</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4876327226315760474">這表示網站功能應可正常運作，但瀏覽防護的強度可能會降低。</translation>
 <translation id="4876895919560854374">鎖定及解鎖螢幕</translation>
@@ -6564,6 +6569,7 @@
 <translation id="6099766472403716061">一律允許 <ph name="HOST" /> 控制 MIDI 裝置及重設程式</translation>
 <translation id="6100736666660498114">開始功能表</translation>
 <translation id="6100737823178787570">請放大視窗以繼續執行工作</translation>
+<translation id="6101170451607354234">如果 Chrome 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。</translation>
 <translation id="6101226222197207147">已新增以下應用程式：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6102043788063419338">進階保護功能已封鎖這個檔案。</translation>
 <translation id="6103681770816982672">警告：你即將切換為開發人員版</translation>
@@ -6769,6 +6775,7 @@
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">開啟同步功能...</translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網路，系統會優先使用這個網路</translation>
+<translation id="6258818697161346451">在這部裝置上使用密碼金鑰</translation>
 <translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資訊</translation>
 <translation id="6261688934280090835">ChromeOS 資訊站應用程式記錄</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
@@ -10317,6 +10324,7 @@
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
 <translation id="90033698482696970">要自動掃描可用的 eSIM 設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>
+<translation id="9004279470320280717">評分...</translation>
 <translation id="9005774573776346118">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">貴機構</translation>
 <translation id="900733896273558337">編輯技能</translation>

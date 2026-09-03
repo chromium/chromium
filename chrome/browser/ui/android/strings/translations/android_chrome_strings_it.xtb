@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Accedi per avere a disposizione le tue informazioni salvate e altri dati su tutti i dispositivi</translation>
 <translation id="1381838868249179644">Per contribuire alla tua sicurezza, sono state rimosse le autorizzazioni di alcuni siti</translation>
 <translation id="1383876407941801731">Cerca</translation>
+<translation id="1384568202352682721">Salva come…</translation>
 <translation id="1384704387250346179">Traduci l'immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Potresti vedere la cronologia di altre app che aprono link in Chrome. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Riquadro inferiore di insight sul prezzo aperto a schermo intero</translation>
@@ -133,6 +134,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="147982357559798527">Modificata</translation>
 <translation id="1480287803138246127">Parte della tua cronologia potrebbe non essere visualizzata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser.</translation>
 <translation id="1483493594462132177">Invia</translation>
+<translation id="1485343711570311792">Apri in <ph name="NATIVE_APP_NAME" /> • Da <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1496514951988037011">nome utente</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
@@ -327,6 +329,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="232137538351753795">Scorri dal bordo sinistro per tornare indietro</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
 <translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Salva pagina come…</translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
 <translation id="2329500425421091035">Ti presentiamo AI Mode in Chrome</translation>
 <translation id="2330186936255788117">Altri preferiti</translation>
@@ -1874,6 +1877,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8313599942510782709">L'attività è ancora in corso</translation>
 <translation id="8317318757008452355">Apri le opzioni per stampare</translation>
 <translation id="8320212361750431956">Attività recente</translation>
+<translation id="8322452989119079156">Apri in <ph name="NATIVE_APP_NAME" /> - Inviato da <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Preferiti ed elenchi</translation>
 <translation id="8342727528718219152">Chrome ti avviserà quando dei siti potrebbero inviare troppe notifiche</translation>

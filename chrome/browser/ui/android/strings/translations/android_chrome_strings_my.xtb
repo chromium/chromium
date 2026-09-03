@@ -105,6 +105,7 @@
 <translation id="138181280295369883">သင့်စက်အားလုံးတွင် သိမ်းထားသော အချက်အလက်နှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1381838868249179644">သင့်လုံခြုံရေးအတွက် ကူညီရန် ဝဘ်ဆိုက်အချို့မှ ခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
+<translation id="1384568202352682721">သိမ်းမည့်ပုံစံ…</translation>
 <translation id="1384704387250346179">Google Lens ဖြင့် ပုံကိုပြန်ဆိုရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Chrome တွင် လင့်ခ်များဖွင့်သော အခြားအက်ပ်များမှ မှတ်တမ်းများကို မြင်ရနိုင်သည်။ သင့် Google Account သည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုခြင်းမှတ်တမ်းများ ရှိနေနိုင်သည်။</translation>
 <translation id="139752016751285248">မြင်ကွင်းအပြည့်ဖွင့်ထားသည့် ဈေးနှုန်းသိကောင်းစရာများ အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">ပြောင်းထားသည်</translation>
 <translation id="1480287803138246127">သင်၏ မှတ်တမ်းအချို့ကို ဤနေရာတွင် ပြမည်မဟုတ်ပါ။ သင့် Chrome မှတ်တမ်းအားလုံးကြည့်ရန် Chrome မှတ်တမ်းအပြည့်အစုံကို ဖွင့်ပါ။</translation>
 <translation id="1483493594462132177">ပို့ရန်</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> တွင် ဖွင့်ရန် • <ph name="DEVICE_NAME" /> မှ</translation>
 <translation id="1495677929897281669">တဘ်သို့ ပြန်သွားရန်</translation>
 <translation id="1496514951988037011">အသုံးပြုသူအမည်</translation>
 <translation id="1501480321619201731">အဖွဲ့ကို ဖျက်ရန်</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">နောက်သို့ပြန်သွားရန် ဘယ်ဘက်အစွန်းမှ ပွတ်ဆွဲပါ</translation>
 <translation id="2323763861024343754">ဆိုက် သိုလှောင်ခန်း</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> မှ</translation>
+<translation id="232757965409810352">စာမျက်နှာ သိမ်းမည့်ပုံစံ…</translation>
 <translation id="2328474416100889417">လူတိုင်းသည် “<ph name="GROUP_NAME" />” တဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ဖိတ်ကြားချက်လင့်ခ်အားလုံးကို ပိတ်လိုက်ပါမည်</translation>
 <translation id="2329500425421091035">Chrome ရှိ AI မုဒ် မိတ်ဆက်</translation>
 <translation id="2330186936255788117">နောက်ထပ် လိပ်စာများ</translation>
@@ -1873,6 +1876,7 @@
 <translation id="8313599942510782709">သင့်လုပ်ဆောင်စရာကို လုပ်နေဆဲဖြစ်သည်</translation>
 <translation id="8317318757008452355">ပုံနှိပ်ရန်အတွက် ရွေးစရာများဖွင့်ရန်</translation>
 <translation id="8320212361750431956">မကြာသေးမီက လုပ်ဆောင်ချက်</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> တွင် ဖွင့်ရန် - <ph name="DEVICE_NAME" /> မှ ပို့ထားသည်</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">လိပ်စာနှင့် စာရင်းများ</translation>
 <translation id="8342727528718219152">အကြောင်းကြားချက်များစွာ ပို့နိုင်သည့် ဝဘ်ဆိုက်များနှင့် ပတ်သက်ပြီး Chrome က အသိပေးပါမည်</translation>

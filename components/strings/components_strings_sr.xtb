@@ -1457,6 +1457,7 @@
 <translation id="3495081129428749620">Пронађите на страници
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Плата</translation>
+<translation id="3496531230994554300">Обавештење Новчаника отворено је у пуној висини.</translation>
 <translation id="3497627066518778351">Прегледајте листу података о сајтовима на уређају у новом прозору</translation>
 <translation id="3498215018399854026">Тренутно не можемо да контактирамо родитеља. Пробај поново.</translation>
 <translation id="350069200438440499">Име датотеке:</translation>
@@ -1559,7 +1560,6 @@
 <translation id="3655670868607891010">Ако вам се ово често приказује, можда вам помогну следећи <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3659521826520353662">Који веб-сајтови које је дефинисао администратор се посећују и када: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">Овај IBAN се чува у Google новчанику да бисте могли да га користите у свим Google услугама.</translation>
 <translation id="3664479564786885722">Претражите још опција куповине у другим продавницама које продају овај производ.</translation>
 <translation id="3664782872746246217">Кључне речи:</translation>
 <translation id="3670030362669914947">Број</translation>
@@ -2669,6 +2669,7 @@
 <translation id="5499229993630251170">Желите да наставите ову конверзацију?</translation>
 <translation id="5506286895894263601">Листа не садржи важеће пречице.</translation>
 <translation id="5507756662695126555">Немогућност порицања</translation>
+<translation id="5508515366054931524">Упит за верификацију имејла отворен је у пуној висини</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Обележивачи којим се управља</translation>
 <translation id="5510766032865166053">Можда је премештен или избрисан.</translation>
@@ -2791,7 +2792,7 @@
 <translation id="5707154300732650394">Наставите пут</translation>
 <translation id="57094364128775171">Предложи јаку лозинку…</translation>
 <translation id="570953204696852961">Црвена 3</translation>
-<translation id="5710907191777451677">Уместо тога упитајте Gemini у Chrome-у</translation>
+<translation id="5710907191777451677">Уместо тога питајте Gemini у Chrome-у</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5715150588940290235">Желите да избришете сачуване безбедносне кодове?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> из <ph name="WINDOW_COUNT" /> на овом уређају</translation>
@@ -3450,6 +3451,7 @@
 <translation id="6860888819347870819">Може да затражи да унесе слику у слици</translation>
 <translation id="6864189428899665393">267×389 mm</translation>
 <translation id="6865412394715372076">Тренутно не можемо да верификујемо ову картицу</translation>
+<translation id="6871073333584947219">Обавештење Новчаника је затворено.</translation>
 <translation id="6871813064737840684">Историја цена широм веба за ову опцију</translation>
 <translation id="6873456682041376666">Горња фиока</translation>
 <translation id="6874604403660855544">&amp;Понови додавање</translation>
@@ -3905,7 +3907,6 @@
 <translation id="7615932826417658001">Додајте идентификациони документ</translation>
 <translation id="7616390733770379387">Приказују се насумичним редоследом.</translation>
 <translation id="7616645509853975347">Администратор је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
-<translation id="7616747402308801775">Ова картица се чува у Google новчанику да бисте могли да је користите у свим Google услугама.</translation>
 <translation id="7617825962482469577">Коверта C7/C6</translation>
 <translation id="7619838219691048931">Последњи лист</translation>
 <translation id="7621546470643449009">Направи водич за почетнике о посматрању звезда који ће ми помоћи да научим шта да тражим на ноћном небу, укључујући 3 лако препознатљива сазвежђа</translation>
@@ -3970,6 +3971,7 @@
 <translation id="7705085181312584869">Помоћ при писању</translation>
 <translation id="7705992072972338699">Оптички диск (висок сјај)</translation>
 <translation id="7706689436519265630">Фајлови које копирате или преместите се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скенирани у потрази за осетљивим подацима или малвером и могу да се чувају на основу смерница предузећа.</translation>
+<translation id="7709934467582922028">Упит за верификацију имејла је затворен</translation>
 <translation id="7714351089363296478">Управо сте посетили</translation>
 <translation id="7714404809393719981">Слика (полусјајна)</translation>
 <translation id="7714464543167945231">Сертификат</translation>

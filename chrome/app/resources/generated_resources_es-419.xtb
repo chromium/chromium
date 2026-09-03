@@ -132,6 +132,7 @@
 Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copiar dir&amp;ección del vínculo</translation>
 <translation id="1085064499066015002">Siempre en todos los sitios</translation>
+<translation id="1085340215550339505">Para hacer sugerencias oportunas de cambio de contraseña, el contenido y las URLs de las páginas que visitas se pueden procesar en un espacio privado en la nube</translation>
 <translation id="1085558727130096638">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> persona más</translation>
 <translation id="1085618740036066768">No se seleccionó <ph name="ITEM" />. <ph name="INDEX" /> de <ph name="COUNT" />. Presiona la tecla de búsqueda + barra espaciadora para seleccionar.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
@@ -1122,6 +1123,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1871131409931646355">Historial de descargas completo</translation>
 <translation id="187145082678092583">Menos apps</translation>
 <translation id="1871615898038944731">Tu <ph name="DEVICE_TYPE" /> está actualizado</translation>
+<translation id="1872846000961079826">Durante el cambio de contraseña, el contenido de las páginas de contraseñas y la información relacionada se envían a Google y es posible que los revisen personas para mejorar la calidad de esta función</translation>
 <translation id="1873513359268939357">Calendario de Outlook</translation>
 <translation id="1873920700418191231">Volver a otorgar permisos para <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Puede mostrar cualquier anuncio</translation>
@@ -2846,6 +2848,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3184536091884214176">Configura o administra impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Usa este PIN para cambiar la configuración de los controles parentales.
     Si olvidas el PIN, aplica Powerwash en el dispositivo y vuelve a configurarlo.</translation>
+<translation id="3184916134413175521">Calificarla</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Se bloqueó esta app}other{Se bloquearon algunas apps.}}</translation>
 <translation id="3185454065699440434">Permitir extensiones en <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">¿Puedes ver tu dispositivo de transmisión en la
@@ -2915,6 +2918,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3241810535741601486">Este cambio es permanente y no se puede revertir. Las actualizaciones extendidas se aplican a todos los usuarios de este dispositivo. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Tu avatar</translation>
+<translation id="3242764115495920926">Ofrecer cambiar las contraseñas automáticamente</translation>
 <translation id="3243017971870859287">Leer los números de serie del componente y del dispositivo ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelación de ruido</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4140,6 +4144,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4167924027691268367">Más acciones para el acceso directo de <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Algunas opciones de configuración que pertenecen a <ph name="PRIMARY_EMAIL" /> están compartidas contigo. Estas opciones solo se aplican a tu cuenta cuando se utiliza el acceso múltiple.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que termina en <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Calificarla…</translation>
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
 <translation id="4170685671197375581">Activar atajo</translation>
@@ -4441,6 +4446,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4401912261345737180">Conéctate con un código para transmitir</translation>
 <translation id="4403012369005671154">Voz a texto</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
+<translation id="440411460180511551">Si Chromium encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -5049,7 +5055,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4872192066608821120">Para importar contraseñas, selecciona un archivo CSV.</translation>
 <translation id="4872212987539553601">Configurar la encriptación integrada en el dispositivo</translation>
 <translation id="4875690134140862902">Pestaña</translation>
-<translation id="4876273079589074638">¡Ayuda a que nuestros ingenieros investiguen y solucionen este fallo! Enumera los pasos exactos si es posible. No omitas ningún detalle.</translation>
 <translation id="4876305945144899064">Sin nombre de usuario</translation>
 <translation id="4876327226315760474">Esto significa que las funciones de los sitios deberían poder usarse como se espera, pero es posible que tengas menos protección de navegación.</translation>
 <translation id="4876895919560854374">Bloquear y desbloquear la pantalla</translation>
@@ -6576,6 +6581,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6099766472403716061">Permitir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú Inicio</translation>
 <translation id="6100737823178787570">Aumenta el tamaño de la ventana para reanudar la tarea</translation>
+<translation id="6101170451607354234">Si Chrome encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="6101226222197207147">Se agregó una aplicación nueva (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="6102043788063419338">La "Protección avanzada" bloqueó este archivo.</translation>
 <translation id="6103681770816982672">Advertencia: vas a cambiar al canal de programadores</translation>
@@ -6781,6 +6787,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6254892857036829079">Perfecta</translation>
 <translation id="6257602895346497974">Activar la sincronización…</translation>
 <translation id="625827534921607067">Se preferirá esta red si hay disponible más de una red conectada o configurada anteriormente</translation>
+<translation id="6258818697161346451">Usa tus llaves de acceso en este dispositivo</translation>
 <translation id="6259776178973198997">Actualizar información de los propietarios de Wi-Fi directo</translation>
 <translation id="6261688934280090835">Registros de aplicaciones de kiosco de ChromeOS</translation>
 <translation id="6263082573641595914">Versión de entidad de certificación de Microsoft</translation>
@@ -10330,6 +10337,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9003185744423389627">No se pudo establecer la conexión al servidor de Administrador de dispositivos con el estado "<ph name="STATUS_TEXT" />" a las <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">¿Quieres buscar perfiles de eSIM disponibles automáticamente?</translation>
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>
+<translation id="9004279470320280717">Calificarla…</translation>
 <translation id="9005774573776346118">Para ver tus contraseñas, favoritos y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Tu organización</translation>
 <translation id="900733896273558337">Editar habilidades</translation>

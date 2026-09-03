@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1053651653201045802">Одјавени сте. Најавете се повторно за да ги користите обележувачите, лозинките и друго во вашата сметка.</translation>
 <translation id="1054745118061919935">Ако продолжите, се согласувате со <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Кои да ги купам?</translation>
 <translation id="10614374240317010">Никогаш не е зачувано</translation>
 <translation id="1062138828266376352">Вашиот PIN не е променет. Проверете ја интернет-врската и обидете се повторно</translation>
 <translation id="1063070031224282617">Изберете каде да се зачува „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“ (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">За споделување со луѓето во близина, дозволете им да го скенираат овој QR-код со нивната камера или апликацијата QR-скенер</translation>
 <translation id="5902752768726620872">{count,plural, =1{Нови картички: {count}}one{Нови картички: {count}}other{Нови картички: {count}}}</translation>
+<translation id="5906163261248594192">Роденден на Дано</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Отворете ја Google Wallet</translation>
 <translation id="5922999516621365983">Повлечете ја картичката тука за да ја закачите.</translation>
@@ -1924,6 +1926,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="720399613139435155">Не можеше да се преведе</translation>
 <translation id="7204922488054642675">Персонализирани вести</translation>
 <translation id="7206979415662233817">Услови за користење</translation>
+<translation id="721218676460477064">Резимирај ја статијава</translation>
 <translation id="7215621211572884440">Скокачките прозорци се дозволени</translation>
 <translation id="7218491361283758048">Поштенски број</translation>
 <translation id="7221173315674413369">Истражете нови функции и совети во „Што има ново“</translation>
@@ -2185,6 +2188,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8035412398498507358">Фотографии</translation>
 <translation id="8037713009824540257">Додај страница</translation>
+<translation id="8038078082340255234">Извештај за пазарот</translation>
 <translation id="8040407350301524547">За опции за маршрути, допрете „Добијте насоки“.</translation>
 <translation id="804427445359061970">Картичките од другите уреди ќе ги најдете тука</translation>
 <translation id="8058655154417507695">Година на истекување</translation>
@@ -2242,6 +2246,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8232956427053453090">Задржи ги податоците</translation>
 <translation id="8233237502828137700">Затвори го промотивниот банер</translation>
 <translation id="823339794112333264">Вклучи го микрофонот</translation>
+<translation id="8240217649914883113">Додај го ова во мојот календар</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8252980988000695656">Задачата „Пребарување со Google Lens“ е завршена!</translation>
 <translation id="8258734532103758067">Ги извезов моите податоци</translation>
@@ -2286,6 +2291,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8368198938968349418">Вклучете AutoFill…</translation>
 <translation id="8370406443343902172">Одете во „Поставки“…</translation>
 <translation id="8370929854657845191">Прошири на средна висина</translation>
+<translation id="8371494817541821097">Криптографскиот клуч е создаден на <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Избриши ја адресата}one{Избриши ги адресите}other{Избриши ги адресите}}</translation>
 <translation id="8378714024927312812">Управувано од вашата организација</translation>
 <translation id="8385363453480067273">Пребарувајте го она што го гледате со Google Lens</translation>

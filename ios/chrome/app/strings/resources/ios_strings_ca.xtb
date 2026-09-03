@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="1053651653201045802">Has tancat la sessió. Torna-la a iniciar per utilitzar les adreces d'interès, les contrasenyes i més al teu compte.</translation>
 <translation id="1054745118061919935">En continuar, acceptes les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Quins hauria de comprar?</translation>
 <translation id="10614374240317010">Contrasenyes que no es desen mai</translation>
 <translation id="1062138828266376352">No s'ha canviat el PIN. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="1063070031224282617">Tria on vols desar <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR amb la càmera o l'aplicació d'escaneig QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} pestanya nova}other{{count} pestanyes noves}}</translation>
+<translation id="5906163261248594192">Aniversari d'en Dan</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5912796581727968237">Obre Google Wallet</translation>
 <translation id="5922999516621365983">Arrossega la pestanya aquí per fixar-la.</translation>
@@ -1924,6 +1926,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="720399613139435155">Ha fallat la traducció</translation>
 <translation id="7204922488054642675">Notícies personalitzades</translation>
 <translation id="7206979415662233817">Condicions del servei</translation>
+<translation id="721218676460477064">Resumeix aquest article</translation>
 <translation id="7215621211572884440">Finestres emergents permeses</translation>
 <translation id="7218491361283758048">Codi postal</translation>
 <translation id="7221173315674413369">Explora noves funcions i consells a Novetats</translation>
@@ -2185,6 +2188,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8035133914807600019">Carpeta nova…</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8037713009824540257">Afegeix un lloc</translation>
+<translation id="8038078082340255234">Informe de mercat</translation>
 <translation id="8040407350301524547">Per veure les opcions de ruta, toca Obtén indicacions.</translation>
 <translation id="804427445359061970">Trobaràs les teves pestanyes d'altres dispositius aquí</translation>
 <translation id="8058655154417507695">Any de caducitat</translation>
@@ -2242,6 +2246,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8232956427053453090">Conserva les dades</translation>
 <translation id="8233237502828137700">Tanca la promoció del bàner</translation>
 <translation id="823339794112333264">Activa el micròfon</translation>
+<translation id="8240217649914883113">Afegeix-ho al meu calendari</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8252980988000695656">S'ha completat Google Lens.</translation>
 <translation id="8258734532103758067">He exportat les meves dades</translation>
@@ -2286,6 +2291,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8368198938968349418">Activa l'Emplenament automàtic…</translation>
 <translation id="8370406443343902172">Ves a Configuració...</translation>
 <translation id="8370929854657845191">Amplia a alçada mitjana</translation>
+<translation id="8371494817541821097">La clau d'accés es va crear el dia <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Suprimeix l'adreça}other{Suprimeix les adreces}}</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8385363453480067273">Cerca el que veus amb Google Lens</translation>

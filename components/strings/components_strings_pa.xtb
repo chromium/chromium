@@ -1455,6 +1455,7 @@
 <translation id="3495081129428749620">ਪੰਨੇ ਵਿੱਚ ਲੱਭੋ
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">ਤਨਖਾਹ</translation>
+<translation id="3496531230994554300">Wallet ਨੋਟਿਸ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਿਆ ਹੈ।</translation>
 <translation id="3497627066518778351">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਟ ਡਾਟਾ ਦੀ ਸੂਚੀ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="3498215018399854026">ਇਸ ਇਸ ਵੇਲੇ ਤੁਹਾਡੇ ਮਾਤਾ ਜਾਂ ਪਿਤਾ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਕਰ ਸਕੇ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="350069200438440499">ਫ਼ਾਈਲ ਦਾ ਨਾਮ:</translation>
@@ -1556,7 +1557,6 @@
 <translation id="3655670868607891010">ਜੇਕਰ ਤੁਸੀਂ ਇਸਨੂੰ ਵਾਰ-ਵਾਰ ਦੇਖ ਰਹੇ ਹੋ, ਇਹਨਾਂ <ph name="HELP_LINK" /> ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3658742229777143148">ਸੁਧਾਈ</translation>
 <translation id="3659521826520353662">ਕਿਹੜੀਆਂ ਪ੍ਰਸ਼ਾਸਕ-ਪਰਿਭਾਸ਼ਿਤ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਦੇਖਿਆ ਗਿਆ ਹੈ ਅਤੇ ਕਦੋਂ: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3662040827609932717">ਇਸ IBAN ਨੂੰ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਇਸਨੂੰ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਵਰਤ ਸਕੋ।</translation>
 <translation id="3664479564786885722">ਇਸ ਉਤਪਾਦ ਨੂੰ ਵੇਚਣ ਵਾਲੇ ਹੋਰ ਸਟੋਰਾਂ ਤੋਂ ਖਰੀਦਣ ਸੰਬੰਧੀ ਹੋਰ ਵਿਕਲਪ ਖੋਜੋ।</translation>
 <translation id="3664782872746246217">ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ:</translation>
 <translation id="3670030362669914947">ਨੰਬਰ</translation>
@@ -2666,6 +2666,7 @@
 <translation id="5499229993630251170">ਕੀ ਇਸ ਥ੍ਰੈੱਡ ਨੂੰ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="5506286895894263601">ਸੂਚੀ ਵਿੱਚ ਕੋਈ ਵੈਧ ਸ਼ਾਰਟਕੱਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5507756662695126555">ਗ਼ੈਰ-repudiation</translation>
+<translation id="5508515366054931524">ਈਮੇਲ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰੋਂਪਟ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ਵਿਵਸਥਿਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="5510766032865166053">ਇਸ ਨੂੰ ਤਬਦੀਲ ਕੀਤਾ ਜਾਂ ਮਿਟਾਇਆ ਜਾ ਚੁੱਕਿਆ ਹੈ।</translation>
@@ -3447,6 +3448,7 @@
 <translation id="6860888819347870819">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਦਾਖਲ ਕਰਨ ਲਈ ਲਈ ਕਿਹਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6864189428899665393">267 x 389 ਮਿ.ਮੀ.</translation>
 <translation id="6865412394715372076">ਇਸ ਕਾਰਡ ਦੀ ਫਿਲਹਾਲ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
+<translation id="6871073333584947219">Wallet ਨੋਟਿਸ ਬੰਦ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="6871813064737840684">ਇਸ ਵਿਕਲਪ ਲਈ ਵੈੱਬ 'ਤੇ ਕੀਮਤ ਇਤਿਹਾਸ</translation>
 <translation id="6873456682041376666">ਸਿਖਰਲੀ ਟ੍ਰੇਅ</translation>
 <translation id="6874604403660855544">&amp;ਜੋੜੋ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
@@ -3901,7 +3903,6 @@
 <translation id="7615932826417658001">ਪਛਾਣ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7616390733770379387">ਇਹ ਬੇਤਰਤੀਬਵਾਰ ਕ੍ਰਮ ਵਿੱਚ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="7616645509853975347">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ Chrome Enterprise Connectors ਨੂੰ ਚਾਲੂ ਕੀਤਾ। ਇਹਨਾਂ ਕਨੈਕਟਰਾਂ ਦੀ ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੈ।</translation>
-<translation id="7616747402308801775">ਇਸ ਕਾਰਡ ਨੂੰ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਇਸਨੂੰ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਵਰਤ ਸਕੋ</translation>
 <translation id="7617825962482469577">C7/C6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="7619838219691048931">ਆਖਰੀ ਸ਼ੀਟ</translation>
 <translation id="7621546470643449009">ਤਾਰਾ-ਨਿਰੀਖਣ ਸੰਬੰਧੀ ਸ਼ੁਰੂਆਤੀ ਗਾਈਡ ਬਣਾਓ, ਤਾਂ ਜੋ ਮੈਨੂੰ ਰਾਤ ਦੇ ਅਸਮਾਨ ਵਿੱਚ ਦੇਖਣਯੋਗ ਚੀਜ਼ਾਂ ਬਾਰੇ ਪਤਾ ਲੱਗ ਸਕੇ, ਜਿਸ ਵਿੱਚ 3 ਆਸਾਨੀ ਨਾਲ ਪਛਾਣਨਯੋਗ ਤਾਰਾਮੰਡਲ ਸ਼ਾਮਲ ਹੋਣ</translation>
@@ -3966,6 +3967,7 @@
 <translation id="7705085181312584869">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="7705992072972338699">ਔਪਟੀਕਲ ਡਿਸਕ (ਹਾਈ-ਗਲੋਸ)</translation>
 <translation id="7706689436519265630">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤੀਆਂ ਜਾਂ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਲਿਜਾਈਆਂ ਜਾਣ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="7709934467582922028">ਈਮੇਲ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਵਾਲਾ ਪ੍ਰੋਂਪਟ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7714351089363296478">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਦੇਖੀ ਗਈ</translation>
 <translation id="7714404809393719981">ਫ਼ੋਟੋ (ਸੇਮੀ-ਗਲੋਸ)</translation>
 <translation id="7714464543167945231">ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>

@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, mots de passe et plus dans votre compte.</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Que dois-je acheter ?</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1062138828266376352">Votre code n'a pas été modifié. Vérifiez votre connexion Internet, puis réessayez</translation>
 <translation id="1063070031224282617">Choisissez où enregistrer "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5898848375214731122">Masse</translation>
 <translation id="5899314093904173337">Pour partager un contenu avec des personnes à proximité, laissez-les scanner ce QR code avec leur appareil photo ou leur application de lecture de QR codes</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nouvel onglet}one{{count} nouvel onglet}other{{count} nouveaux onglets}}</translation>
+<translation id="5906163261248594192">Anniversaire de Dan</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5912796581727968237">Ouvrir Google Wallet</translation>
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
@@ -1924,6 +1926,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="720399613139435155">Échec de la traduction</translation>
 <translation id="7204922488054642675">Actualités personnalisées</translation>
 <translation id="7206979415662233817">Conditions d'utilisation</translation>
+<translation id="721218676460477064">Résumer cet article</translation>
 <translation id="7215621211572884440">Pop-ups autorisés</translation>
 <translation id="7218491361283758048">Code postal</translation>
 <translation id="7221173315674413369">Découvrez de nouvelles fonctionnalités et des astuces dans "Nouveautés"</translation>
@@ -2185,6 +2188,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8035133914807600019">Nouveau dossier…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">Ajouter un site</translation>
+<translation id="8038078082340255234">Rapport sur le marché</translation>
 <translation id="8040407350301524547">Pour afficher les options d'itinéraire, appuyez sur "Obtenir un itinéraire".</translation>
 <translation id="804427445359061970">Les onglets ouverts sur d'autres appareils s'afficheront ici</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
@@ -2242,6 +2246,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8232956427053453090">Conserver les données</translation>
 <translation id="8233237502828137700">Fermer la bannière promotionnelle</translation>
 <translation id="823339794112333264">Activer le micro</translation>
+<translation id="8240217649914883113">Ajouter à mon agenda</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8252980988000695656">Tâche Google Lens terminée.</translation>
 <translation id="8258734532103758067">J'ai exporté mes données</translation>
@@ -2286,6 +2291,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8368198938968349418">Activer la saisie automatique</translation>
 <translation id="8370406443343902172">Accéder aux paramètres</translation>
 <translation id="8370929854657845191">Développer en hauteur moyenne</translation>
+<translation id="8371494817541821097">Clé d'accès créée le <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8385363453480067273">Recherchez ce que vous voyez grâce à Google Lens</translation>
