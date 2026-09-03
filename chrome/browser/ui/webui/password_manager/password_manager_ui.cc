@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/password_manager/notification_card.h"
 #include "chrome/browser/ui/webui/password_manager/notification_cards_handler.h"
+#include "chrome/browser/ui/webui/password_manager/password_manager_ui_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"

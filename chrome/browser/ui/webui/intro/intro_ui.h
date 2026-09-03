@@ -13,7 +13,6 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/webui/intro/finish_or_continue_handler.h"
 #include "chrome/browser/ui/webui/intro/intro.mojom.h"
-#include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/browser/ui/webui/intro/sign_in_celebration_handler.h"
 #include "chrome/browser/ui/webui/intro/sign_in_promo.mojom.h"
 #include "chrome/browser/ui/webui/intro/welcome.mojom.h"
@@ -26,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+class IntroHandler;
 class IntroUI;
 class SignInPromoHandler;
 

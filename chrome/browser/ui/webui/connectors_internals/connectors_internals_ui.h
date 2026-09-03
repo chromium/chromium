@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/connectors/connectors_internals.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
@@ -17,6 +16,7 @@
 
 namespace enterprise_connectors {
 
+class ConnectorsInternalsPageHandler;
 class ConnectorsInternalsUI;
 
 class ConnectorsInternalsUIConfig

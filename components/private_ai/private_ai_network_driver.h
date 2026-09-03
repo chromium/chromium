@@ -6,7 +6,7 @@
 #define COMPONENTS_PRIVATE_AI_PRIVATE_AI_NETWORK_DRIVER_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace private_ai {
 

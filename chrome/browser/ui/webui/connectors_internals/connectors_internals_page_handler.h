@@ -10,7 +10,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/enterprise/browser/reporting/report_request.h"
-#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,6 +18,7 @@ class Profile;
 
 namespace enterprise_reporting {
 class ChromeProfileRequestGenerator;
+enum class ReportGenerationError;
 }
 
 namespace enterprise_connectors {
@@ -47,6 +47,7 @@ class ConnectorsInternalsPageHandler
   void GetSignalsReportingState(
       GetSignalsReportingStateCallback callback) override;
   void GetProvisioningDomainState(GetProvisioningDomainStateCallback callback) override;
+
   void OnReportGenerated(
       GetSignalsReportingStateCallback callback,
       connectors_internals::mojom::SignalsReportingStatePtr state,

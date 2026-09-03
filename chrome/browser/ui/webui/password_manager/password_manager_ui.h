@@ -7,7 +7,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
-#include "chrome/browser/ui/webui/password_manager/password_manager_ui_handler.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -28,6 +27,7 @@ class PasswordsPrivateDelegate;
 }
 
 class PasswordManagerUI;
+class PasswordManagerUIHandler;
 
 class PasswordManagerUIConfig
     : public content::DefaultWebUIConfig<PasswordManagerUI> {

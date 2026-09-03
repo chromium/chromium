@@ -7,7 +7,7 @@
 
 #include "components/private_ai/private_ai_network_driver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace private_ai {
 
@@ -24,7 +24,6 @@ class PrivateAiNetworkDriverContent : public PrivateAiNetworkDriver {
   // PrivateAiNetworkDriver overrides:
   network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams()
       override;
-
   void CreateNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver,
       network::mojom::NetworkContextParamsPtr params) override;
