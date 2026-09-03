@@ -200,21 +200,70 @@ bool CanReconstructAsStruct(const blink::SafeUrlPattern& pattern) {
          !IsSimpleFullWildcardField(pattern.hash);
 }
 
+// Returns true if the pathname ends with a pattern token that requires escaping
+// the following '?' as "\\?" when appending a query string.
+//
+// In URLPattern syntax, '?' can represent either the start of a query string
+// or an optional modifier (matching 0 or 1 time). If the preceding pathname
+// ends with a wildcard ('*'), regex group (')'), custom group ('}'), or a
+// segment wildcard (e.g. ":id") without a suffix, the parser would mistakenly
+// interpret '?' as a modifier on the preceding token. Escaping as "\\?"
+// prevents this ambiguity.
+bool NeedsQueryEscape(const std::vector<liburlpattern::Part>& pathname_parts,
+                      std::string_view pathname_str) {
+  CHECK(!pathname_str.empty());
+  CHECK(!pathname_parts.empty());
+  char last_char = pathname_str.back();
+  if (last_char == '*' || last_char == '}' || last_char == ')') {
+    return true;
+  }
+  const liburlpattern::Part& last_part = pathname_parts.back();
+  if (last_part.type == liburlpattern::PartType::kSegmentWildcard &&
+      last_part.suffix.empty()) {
+    return true;
+  }
+  return false;
+}
+
+// Reconstructs the search and hash components (e.g. "?q=1#hash", "\?q=1", or
+// "#hash"). Returns an empty string if both search and hash are default
+// wildcards.
+std::string ReconstructSearchAndHash(const blink::SafeUrlPattern& pattern,
+                                     std::string_view pathname) {
+  const bool is_search_wildcard = IsSimpleFullWildcardField(pattern.search);
+  const bool is_hash_wildcard = IsSimpleFullWildcardField(pattern.hash);
+  if (is_search_wildcard && is_hash_wildcard) {
+    return "";
+  }
+
+  const std::string search =
+      ConvertToPatternString(pattern, URLPatternFieldType::kSearch);
+  const std::string hash =
+      ConvertToPatternString(pattern, URLPatternFieldType::kHash);
+
+  if (!is_hash_wildcard && search.empty()) {
+    return base::StrCat({"#", hash});
+  }
+
+  const std::string_view query_prefix =
+      NeedsQueryEscape(pattern.pathname, pathname) ? "\\?" : "?";
+  if (is_hash_wildcard) {
+    return base::StrCat({query_prefix, search});
+  }
+  return base::StrCat({query_prefix, search, "#", hash});
+}
+
+// Tries to reconstruct `pattern` as a simple "https://" URL string.
+// Returns std::nullopt if the pattern cannot be represented as a simple URL
+// (e.g. non-https, non-empty port, or specified credentials).
 std::optional<std::string> MaybeReconstructAsURLString(
     const blink::SafeUrlPattern& pattern) {
   if (!IsSimpleFullWildcardField(pattern.username) ||
-      !IsSimpleFullWildcardField(pattern.password) ||
-      !IsSimpleFullWildcardField(pattern.search) ||
-      !IsSimpleFullWildcardField(pattern.hash)) {
+      !IsSimpleFullWildcardField(pattern.password)) {
     return std::nullopt;
   }
   if (ConvertToPatternString(pattern, URLPatternFieldType::kProtocol) !=
       "https") {
-    return std::nullopt;
-  }
-  const std::string pathname =
-      ConvertToPatternString(pattern, URLPatternFieldType::kPathname);
-  if (pathname.empty() || pathname[0] != '/') {
     return std::nullopt;
   }
   // In a URLPattern string, `port` is parsed as an empty string unless
@@ -222,10 +271,15 @@ std::optional<std::string> MaybeReconstructAsURLString(
   if (!pattern.port.empty()) {
     return std::nullopt;
   }
+  const std::string pathname =
+      ConvertToPatternString(pattern, URLPatternFieldType::kPathname);
+  if (pathname.empty() || pathname[0] != '/') {
+    return std::nullopt;
+  }
   return base::StrCat(
       {"https://",
        ConvertToPatternString(pattern, URLPatternFieldType::kHostname),
-       pathname});
+       pathname, ReconstructSearchAndHash(pattern, pathname)});
 }
 
 base::Value OrConditionToValue(
