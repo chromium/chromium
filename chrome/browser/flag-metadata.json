@@ -8149,11 +8149,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "partition-visited-link-database-with-self-links",
-    "owners": ["miketaylr@chromium.org", "kyraseevers@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "passkey-unlock-error-ui",
     "owners": ["ylahodiuk@google.com", "izuzic@google.com", "anki-team@google.com"],
     "expiry_milestone": 154
