@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
-#include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
@@ -189,14 +189,12 @@ bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
 }
 
 static String FormatNumber(double number, const char* suffix) {
-#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
-  unsigned oldFormat = _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-  String result = UNSAFE_TODO(String::Format("%.6g%s", number, suffix));
-#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
-  _set_output_format(oldFormat);
-#endif
-  return result;
+  // https://www.w3.org/TR/cssom-1/#serialize-a-css-component-value specifies
+  // rounding, but does not specify the rounding mode.
+  // This function has historically used round-to-even, whereas blink::Format()
+  // rounds half away from zero. We use absl::StrFormat() for round-to-even
+  // to maintain compatibility.
+  return String(absl::StrFormat("%.6g%s", number, suffix));
 }
 
 static String FormatInfinityOrNaN(double number, StringView suffix) {

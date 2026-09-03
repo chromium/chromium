@@ -1331,6 +1331,13 @@ _CONFIG = [
         ],
     },
     {
+        'paths':
+        ['third_party/blink/renderer/core/css/css_numeric_literal_value.cc'],
+        'allowed': [
+            'absl::StrFormat',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/css/media_values.cc'],
         'allowed': [
             'color_space_utilities::GetColorSpaceGamut',
