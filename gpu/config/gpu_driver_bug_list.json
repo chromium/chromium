@@ -3843,6 +3843,18 @@
       "features": [
         "flush_queries_before_deleting_or_unbinding_fbo"
       ]
+    },
+    {
+      "id": 492,
+      "cr_bugs": [548127218],
+      "description": "Upload oversized nonzero mip levels via unpack buffer on PowerVR GPUs",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "upload_oversized_mip_levels_via_unpack_buffer"
+      ]
     }
   ]
 }
