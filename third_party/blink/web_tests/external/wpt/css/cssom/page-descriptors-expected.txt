@@ -1,5 +1,27 @@
 This is a testharness.js-based test.
-[FAIL] CSSPageDescriptors properties tests
-  assert_equals: computed style should not have size property expected (undefined) undefined but got (string) ""
+[FAIL] CSSPageDescriptors exposes "margin"
+  assert_own_property: CSSPageDescriptors should have property margin expected property "margin" missing
+[FAIL] CSSPageDescriptors exposes "page-orientation"
+  assert_own_property: CSSPageDescriptors should have property page-orientation expected property "page-orientation" missing
+[FAIL] CSSPageDescriptors exposes "size"
+  assert_own_property: CSSPageDescriptors should have property size expected property "size" missing
+[FAIL] CSSPageDescriptors exposes "margin-left"
+  assert_own_property: CSSPageDescriptors should have property margin-left expected property "margin-left" missing
+[FAIL] CSSPageDescriptors exposes "marginLeft"
+  assert_own_property: CSSPageDescriptors should have property marginLeft expected property "marginLeft" missing
+[FAIL] CSSPageDescriptors exposes "margin-right"
+  assert_own_property: CSSPageDescriptors should have property margin-right expected property "margin-right" missing
+[FAIL] CSSPageDescriptors exposes "marginRight"
+  assert_own_property: CSSPageDescriptors should have property marginRight expected property "marginRight" missing
+[FAIL] CSSPageDescriptors exposes "margin-top"
+  assert_own_property: CSSPageDescriptors should have property margin-top expected property "margin-top" missing
+[FAIL] CSSPageDescriptors exposes "marginTop"
+  assert_own_property: CSSPageDescriptors should have property marginTop expected property "marginTop" missing
+[FAIL] CSSPageDescriptors exposes "margin-bottom"
+  assert_own_property: CSSPageDescriptors should have property margin-bottom expected property "margin-bottom" missing
+[FAIL] CSSPageDescriptors exposes "marginBottom"
+  assert_own_property: CSSPageDescriptors should have property marginBottom expected property "marginBottom" missing
+[FAIL] CSSPageDescriptors does not expose properties that are not @page descriptors
+  assert_equals: expected (undefined) undefined but got (string) "left"
 Harness: the test ran to completion.
 

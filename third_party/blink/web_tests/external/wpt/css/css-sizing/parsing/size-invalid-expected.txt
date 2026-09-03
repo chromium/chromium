@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] e.style['size'] = "a4" should not set the property value
+  assert_equals: expected "" but got "a4"
+[FAIL] e.style['size'] = "jis-b5" should not set the property value
+  assert_equals: expected "" but got "jis-b5"
+[FAIL] e.style['size'] = "landscape" should not set the property value
+  assert_equals: expected "" but got "landscape"
+[FAIL] e.style['size'] = "letter" should not set the property value
+  assert_equals: expected "" but got "letter"
+[FAIL] e.style['size'] = "legal landscape" should not set the property value
+  assert_equals: expected "" but got "legal landscape"
+Harness: the test ran to completion.
+

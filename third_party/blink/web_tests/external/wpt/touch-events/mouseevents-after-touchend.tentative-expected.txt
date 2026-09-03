@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Multi tap should not cause mouse events
+  assert_equals: expected "[ { type: touchend, target: child, changedTouches: 2, touches: 0 } ]" but got "[ { type: touchend, target: child, changedTouches: 1, touches: 1 }, { type: touchend, target: child, changedTouches: 1, touches: 0 } ]"
+Harness: the test ran to completion.
+

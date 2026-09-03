@@ -2631,6 +2631,10 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch_simultaneous.py [ Failure ]
+[ Android ] external/wpt/webdriver/tests/classic/external/webauthn/set_credential_properties/invalid.py [ Failure ]
+[ Android ] external/wpt/webdriver/tests/classic/external/webauthn/set_credential_properties/set.py [ Failure ]
+external/wpt/webdriver/tests/classic/perform_actions/pointer_touch_simultaneous.py [ Failure ]
 crbug.com/555801460 external/wpt/css/css-anchor-position/position-anchor-match-parent-dynamic.html [ Failure ]
 crbug.com/555801460 external/wpt/css/css-anchor-position/position-anchor-match-parent-rendering.html [ Failure ]
 crbug.com/555801460 external/wpt/css/css-anchor-position/position-anchor-match-parent-shadow.html [ Failure ]

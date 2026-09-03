@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] justify-self: start on an item with an automatic width uses the fit-content size
-  assert_equals: used width expected 100 but got 70
-[FAIL] justify-self: center on an item with an automatic width uses the fit-content size
-  assert_equals: used width expected 100 but got 70
-[FAIL] justify-self: end on an item with an automatic width uses the fit-content size
-  assert_equals: used width expected 100 but got 70
-Harness: the test ran to completion.
-

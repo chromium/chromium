@@ -139,7 +139,7 @@
       a {
         & { --x:1; }
         width: 100px;
-        height: 200px;
+        z-index: 3;
         color:hover {}
         --y: 2;
       }
@@ -148,7 +148,7 @@
     let outer = s.cssRules[0];
     assert_equals(outer.cssRules.length, 4);
     assert_equals(outer.cssRules[0].cssText, `& { --x: 1; }`);
-    assert_equals(outer.cssRules[1].cssText, `width: 100px; height: 200px;`);
+    assert_equals(outer.cssRules[1].cssText, `width: 100px; z-index: 3;`);
     assert_equals(outer.cssRules[2].cssText, `& color:hover { }`);
     assert_equals(outer.cssRules[3].cssText, `--y: 2;`);
   }, 'Inner rule starting with an ident');
@@ -161,11 +161,11 @@
     assert_equals(a_rule.cssRules.length, 0);
     a_rule.insertRule(`
       width: 100px;
-      height: 200px;
+      z-index: 3;
     `);
     assert_equals(a_rule.cssRules.length, 1);
     assert_true(a_rule.cssRules[0] instanceof CSSNestedDeclarations);
-    assert_equals(a_rule.cssRules[0].cssText, `width: 100px; height: 200px;`);
+    assert_equals(a_rule.cssRules[0].cssText, `width: 100px; z-index: 3;`);
   }, 'Inserting a CSSNestedDeclaration rule into style rule');
 
   test(() => {
@@ -178,11 +178,11 @@
     assert_equals(media_rule.cssRules.length, 0);
     media_rule.insertRule(`
       width: 100px;
-      height: 200px;
+      z-index: 3;
     `);
     assert_equals(media_rule.cssRules.length, 1);
     assert_true(media_rule.cssRules[0] instanceof CSSNestedDeclarations);
-    assert_equals(media_rule.cssRules[0].cssText, `width: 100px; height: 200px;`);
+    assert_equals(media_rule.cssRules[0].cssText, `width: 100px; z-index: 3;`);
   }, 'Inserting a CSSNestedDeclaration rule into nested group rule');
 
   test(() => {

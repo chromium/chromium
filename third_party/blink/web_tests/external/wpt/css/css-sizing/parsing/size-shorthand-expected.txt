@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] e.style['size'] = "100px" should set height
+  assert_equals: height should be canonical expected "100px" but got ""
+[FAIL] e.style['size'] = "100px" should set width
+  assert_equals: width should be canonical expected "100px" but got ""
+[FAIL] e.style['size'] = "100px" should not set unrelated longhands
+  assert_equals: expected 0 but got 1
+[FAIL] e.style['size'] = "100px 100px" should set height
+  assert_equals: height should be canonical expected "100px" but got ""
+[FAIL] e.style['size'] = "100px 100px" should set width
+  assert_equals: width should be canonical expected "100px" but got ""
+[FAIL] e.style['size'] = "100px 100px" should not set unrelated longhands
+  assert_equals: expected 0 but got 1
+[FAIL] e.style['size'] = "100px 200px" should set height
+  assert_equals: height should be canonical expected "200px" but got ""
+[FAIL] e.style['size'] = "100px 200px" should set width
+  assert_equals: width should be canonical expected "100px" but got ""
+[FAIL] e.style['size'] = "100px 200px" should not set unrelated longhands
+  assert_equals: expected 0 but got 1
+[FAIL] e.style['size'] = "auto" should set height
+  assert_equals: height should be canonical expected "auto" but got ""
+[FAIL] e.style['size'] = "auto" should set width
+  assert_equals: width should be canonical expected "auto" but got ""
+[FAIL] e.style['size'] = "auto" should not set unrelated longhands
+  assert_equals: expected 0 but got 1
+Harness: the test ran to completion.
+

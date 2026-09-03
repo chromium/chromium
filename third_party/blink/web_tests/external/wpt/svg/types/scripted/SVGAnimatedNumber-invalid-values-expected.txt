@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SVGAnimatedNumber, invalid values, SVGComponentTransferFunctionElement.prototype.slope (empty string)
+  assert_equals: initial after expected 1 but got 0
+[FAIL] SVGAnimatedNumber, invalid values, SVGFEDropShadowElement.prototype.dx (empty string)
+  assert_equals: initial after expected 2 but got 0
+[FAIL] SVGAnimatedNumber, invalid values, SVGFEDiffuseLightingElement.prototype.surfaceScale (empty string)
+  assert_equals: initial after expected 1 but got 0
+Harness: the test ran to completion.
+
