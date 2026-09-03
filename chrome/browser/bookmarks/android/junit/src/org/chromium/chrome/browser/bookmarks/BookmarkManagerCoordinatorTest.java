@@ -216,8 +216,8 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
+        assertNotNull(ImprovedBookmarkRow.buildCompactRow(parent));
+        assertNotNull(ImprovedBookmarkRow.buildVisualRow(parent));
         assertNotNull(mCoordinator.buildSearchBoxRow(parent));
         assertNotNull(mCoordinator.buildSigninPromoView(parent));
     }

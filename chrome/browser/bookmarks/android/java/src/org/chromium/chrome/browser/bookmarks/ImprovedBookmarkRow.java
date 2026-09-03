@@ -90,6 +90,26 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     private boolean mIsSelected;
 
     /**
+     * Factory helper for building a visual improved bookmark row view.
+     *
+     * @param parent The parent ViewGroup used to obtain context.
+     * @return An instantiated visual ImprovedBookmarkRow.
+     */
+    public static ImprovedBookmarkRow buildVisualRow(ViewGroup parent) {
+        return buildView(parent.getContext(), true);
+    }
+
+    /**
+     * Factory helper for building a compact improved bookmark row view.
+     *
+     * @param parent The parent ViewGroup used to obtain context.
+     * @return An instantiated compact ImprovedBookmarkRow.
+     */
+    public static ImprovedBookmarkRow buildCompactRow(ViewGroup parent) {
+        return buildView(parent.getContext(), false);
+    }
+
+    /**
      * Factory constructor for building the view programmatically.
      *
      * @param context The calling context, usually the parent view.

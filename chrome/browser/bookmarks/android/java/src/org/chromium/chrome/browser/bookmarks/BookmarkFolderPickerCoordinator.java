@@ -67,11 +67,11 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.registerType(
                 ViewType.IMPROVED_BOOKMARK_VISUAL,
-                BookmarkManagerCoordinator::buildVisualImprovedBookmarkRow,
+                ImprovedBookmarkRow::buildVisualRow,
                 ImprovedBookmarkRowViewBinder::bind);
         mAdapter.registerType(
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
-                BookmarkManagerCoordinator::buildCompactImprovedBookmarkRow,
+                ImprovedBookmarkRow::buildCompactRow,
                 ImprovedBookmarkRowViewBinder::bind);
         mAdapter.registerType(
                 ViewType.SECTION_HEADER,

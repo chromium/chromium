@@ -7,11 +7,8 @@
 # questions or concerns.
 unmodularized_bookmarks_java_files = [
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonController.java",
-  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerCoordinator.java",
-  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerMediator.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinator.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediator.java",
-  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinder.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkPage.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkPane.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/TabBookmarker.java",

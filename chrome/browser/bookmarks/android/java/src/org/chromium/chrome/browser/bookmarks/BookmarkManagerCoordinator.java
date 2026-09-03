@@ -377,13 +377,13 @@ public class BookmarkManagerCoordinator
                 BookmarkManagerViewBinder::bindDividerView);
         dragReorderableRecyclerViewAdapter.registerDraggableType(
                 ViewType.IMPROVED_BOOKMARK_VISUAL,
-                BookmarkManagerCoordinator::buildVisualImprovedBookmarkRow,
+                ImprovedBookmarkRow::buildVisualRow,
                 ImprovedBookmarkRowViewBinder::bind,
                 this::bindDragProperties,
                 mMediator.getDraggabilityProvider());
         dragReorderableRecyclerViewAdapter.registerDraggableType(
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
-                BookmarkManagerCoordinator::buildCompactImprovedBookmarkRow,
+                ImprovedBookmarkRow::buildCompactRow,
                 ImprovedBookmarkRowViewBinder::bind,
                 this::bindDragProperties,
                 mMediator.getDraggabilityProvider());
@@ -579,16 +579,6 @@ public class BookmarkManagerCoordinator
 
     static @VisibleForTesting View buildDividerView(ViewGroup parent) {
         return inflate(parent, R.layout.list_section_divider);
-    }
-
-    static ImprovedBookmarkRow buildCompactImprovedBookmarkRow(ViewGroup parent) {
-        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), false);
-        return row;
-    }
-
-    static ImprovedBookmarkRow buildVisualImprovedBookmarkRow(ViewGroup parent) {
-        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), true);
-        return row;
     }
 
     BookmarkSearchBoxRow buildSearchBoxRow(ViewGroup parent) {
