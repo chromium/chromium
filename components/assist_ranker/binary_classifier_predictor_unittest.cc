@@ -73,8 +73,7 @@ PredictorConfig BinaryClassifierPredictorTest::GetConfig() {
 
 PredictorConfig BinaryClassifierPredictorTest::GetConfig(
     float predictor_threshold_replacement) {
-  PredictorConfig config("model_name", "logging_name", "uma_prefix", LOG_NONE,
-                         GetEmptyAllowlist(), &kTestRankerQuery,
+  PredictorConfig config("model_name", "uma_prefix", &kTestRankerQuery,
                          &kTestRankerUrl, predictor_threshold_replacement);
 
   return config;

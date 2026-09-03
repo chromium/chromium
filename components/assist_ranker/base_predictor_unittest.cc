@@ -24,13 +24,9 @@ namespace {
 
 // Predictor config for testing.
 const char kTestModelName[] = "test_model";
-// This name needs to be an entry in ukm.xml
-const char kTestLoggingName[] = "ContextualSearch";
 const char kTestUmaPrefixName[] = "Test.Ranker";
 const char kTestUrlParamName[] = "ranker-model-url";
 const char kTestDefaultModelUrl[] = "https://foo.bar/model.bin";
-
-const base::flat_set<std::string> kFeatureAllowlist;
 
 BASE_FEATURE(kTestRankerQuery,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -39,10 +35,8 @@ const base::FeatureParam<std::string> kTestRankerUrl{
     &kTestRankerQuery, kTestUrlParamName, kTestDefaultModelUrl};
 
 const PredictorConfig kTestPredictorConfig =
-    PredictorConfig{kTestModelName,     kTestLoggingName,
-                    kTestUmaPrefixName, LOG_UKM,
-                    &kFeatureAllowlist, &kTestRankerQuery,
-                    &kTestRankerUrl,    kNoPredictThresholdReplacement};
+    PredictorConfig{kTestModelName, kTestUmaPrefixName, &kTestRankerQuery,
+                    &kTestRankerUrl, kNoPredictThresholdReplacement};
 
 // Class that implements virtual functions of the base class.
 class FakePredictor : public BasePredictor {
@@ -132,9 +126,8 @@ TEST_F(BasePredictorTest, QueryDisabled) {
 TEST_F(BasePredictorTest, GetPredictThresholdReplacement) {
   float altered_threshold = 0.78f;  // Arbitrary value.
   const PredictorConfig altered_threshold_config{
-      kTestModelName,  kTestLoggingName,   kTestUmaPrefixName,
-      LOG_UKM,         &kFeatureAllowlist, &kTestRankerQuery,
-      &kTestRankerUrl, altered_threshold};
+      kTestModelName, kTestUmaPrefixName, &kTestRankerQuery, &kTestRankerUrl,
+      altered_threshold};
   auto predictor = FakePredictor::Create(altered_threshold_config);
   EXPECT_EQ(altered_threshold, predictor->GetPredictThresholdReplacement());
 }
