@@ -180,6 +180,12 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     transports = Transport::CreatePair(
         Transport::kBroker,
         for_broker_target ? Transport::kBroker : Transport::kNonBroker);
+    if (for_broker_target) {
+      // Cooperating broker test nodes explicitly trust each other so that
+      // each end may convey broker-destined transports to the other.
+      transports.first->set_is_peer_trusted(true);
+      transports.second->set_is_peer_trusted(true);
+    }
     return {
         .ours = Transport::ReleaseAsHandle(std::move(transports.first)),
         .theirs = Transport::ReleaseAsHandle(std::move(transports.second)),
@@ -225,10 +231,14 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     }
 #endif  // BUILDFLAG(IS_WIN)
     const bool is_broker = parent_process.IsValid();
-    return Transport::ReleaseAsHandle(Transport::Create(
+    scoped_refptr<Transport> transport = Transport::Create(
         {.source = is_broker ? Transport::kBroker : Transport::kNonBroker,
          .destination = Transport::kBroker},
-        std::move(endpoint), std::move(parent_process)));
+        std::move(endpoint), std::move(parent_process));
+    if (is_broker) {
+      transport->set_is_peer_trusted(true);
+    }
+    return Transport::ReleaseAsHandle(std::move(transport));
   }
 
  private:

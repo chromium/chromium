@@ -99,6 +99,17 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   void set_is_trusted_by_peer(bool trusted) { is_trusted_by_peer_ = trusted; }
   bool is_trusted_by_peer() const { return is_trusted_by_peer_; }
 
+  // Indicates whether the remote peer on this transport is trusted as a source
+  // of privileged objects (e.g. HandleOwner::kRecipient handles or
+  // broker-destined transports). A non-broker implicitly trusts its broker;
+  // otherwise the peer must be explicitly trusted via is_peer_trusted(). When
+  // both endpoints are brokers, the peer being a broker does not by itself
+  // confer any trust on this end.
+  bool is_source_trusted() const {
+    return is_peer_trusted_ ||
+           (destination_type() == kBroker && source_type() != kBroker);
+  }
+
   ProcessTrust remote_process_trust() const { return remote_process_trust_; }
 
   void SetErrorHandler(MojoProcessErrorHandler handler, uintptr_t context) {
