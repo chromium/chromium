@@ -10,6 +10,7 @@ load("@builtin//struct.star", "module")
 load("./ar.star", "ar")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./linux_sysroot.star", "linux_sysroot")
 load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
@@ -69,11 +70,33 @@ def __filegroups(ctx):
                 "clang_rt.profile*.lib",
             ],
         },
+        path.join(root, "third_party/llvm-build/Release+Asserts/bin:llddeps"): {
+            "type": "glob",
+            "includes": [
+                "clang*",
+                "ld.lld",
+                "ld64.lld",
+                "lld",
+                "llvm-nm",
+                "llvm-objcopy",
+                "llvm-objdump",
+                "llvm-otool",
+                "llvm-readelf",
+                "llvm-readobj",
+                "llvm-strip",
+            ],
+        },
+        path.join(root, "third_party/llvm-build/Release+Asserts/lib/clang:libs"): {
+            "type": "glob",
+            "includes": ["*/lib/*/*", "*/lib/*", "*/share/*"],
+        },
     }
     if win_sdk.enabled(ctx):
         fg.update(win_sdk.filegroups(ctx))
     if mac_sdk.enabled(ctx):
         fg.update(mac_sdk.filegroups(ctx))
+    if linux_sysroot.enabled(ctx):
+        fg.update(linux_sysroot.filegroups(ctx))
     return fg
 
 def __input_deps(ctx):
@@ -148,9 +171,18 @@ def __input_deps(ctx):
             "build/toolchain/apple/solink_driver.py",
             "build/toolchain/whole_archive.py",
         ],
+        "third_party/llvm-build/Release+Asserts/bin/clang++:link": [
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
+        ],
+        "third_party/llvm-build/Release+Asserts:link": [
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
+            "third_party/llvm-build/Release+Asserts/lib/clang:libs",
+        ],
     }
     if win_sdk.enabled(ctx):
         inputs.update(win_sdk.input_deps(ctx))
+    if linux_sysroot.enabled(ctx):
+        inputs.update(linux_sysroot.input_deps(ctx))
     return inputs
 
 def __lld_link(ctx, cmd):
