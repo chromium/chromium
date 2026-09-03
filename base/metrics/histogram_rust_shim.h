@@ -29,6 +29,9 @@ void record_counts_10000(::rust::Str name, int32_t sample);
 void record_counts_100000(::rust::Str name, int32_t sample);
 void record_counts_1m(::rust::Str name, int32_t sample);
 void record_counts_10m(::rust::Str name, int32_t sample);
+void record_memory_kb(::rust::Str name, int32_t sample_kb);
+void record_memory_mb(::rust::Str name, int32_t sample_mb);
+void record_memory_large_mb(::rust::Str name, int32_t sample_mb);
 
 }  // namespace base::rust
 

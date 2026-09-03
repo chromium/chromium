@@ -70,13 +70,26 @@ mod ffi {
         /// Records the integer `sample` to count histogram `name` with a
         /// maximum value of 10,000,000 (50 buckets).
         fn record_counts_10m(name: &str, sample: i32);
+
+        /// Records the memory size `sample_kb` (in kilobytes) to memory
+        /// histogram `name`. The valid range is 1,000kb to 500mb (50
+        /// buckets).
+        fn record_memory_kb(name: &str, sample_kb: i32);
+
+        /// Records the memory size `sample_mb` (in megabytes) to memory
+        /// histogram `name`. The valid range is 1mb to 1,000mb (50 buckets).
+        fn record_memory_mb(name: &str, sample_mb: i32);
+
+        /// Records the memory size `sample_mb` (in megabytes) to memory
+        /// histogram `name`. The valid range is 1mb to 64,000MB (100 buckets).
+        fn record_memory_large_mb(name: &str, sample_mb: i32);
     }
 }
 
 pub use ffi::{
     record_bool, record_counts_100, record_counts_1000, record_counts_10000, record_counts_100000,
     record_counts_10m, record_counts_1m, record_custom_counts, record_exact_linear,
-    record_percentage, record_sparse,
+    record_memory_kb, record_memory_large_mb, record_memory_mb, record_percentage, record_sparse,
 };
 
 chromium::import! {

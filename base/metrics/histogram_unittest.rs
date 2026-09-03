@@ -141,3 +141,16 @@ fn test_uma_histogram_counts() {
     histogram::record_counts_10m("Test.Rust.Counts10M", 4200000);
     tester.expect_unique_sample("Test.Rust.Counts10M", 4200000, 1);
 }
+
+#[gtest(RustHistogramTest, UmaHistogramMemory)]
+fn test_uma_histogram_memory() {
+    let tester = HistogramTester::new();
+    histogram::record_memory_kb("Test.Rust.MemoryKB", 2048);
+    tester.expect_unique_sample("Test.Rust.MemoryKB", 2048, 1);
+
+    histogram::record_memory_mb("Test.Rust.MemoryMB", 256);
+    tester.expect_unique_sample("Test.Rust.MemoryMB", 256, 1);
+
+    histogram::record_memory_large_mb("Test.Rust.MemoryLargeMB", 10240);
+    tester.expect_unique_sample("Test.Rust.MemoryLargeMB", 10240, 1);
+}

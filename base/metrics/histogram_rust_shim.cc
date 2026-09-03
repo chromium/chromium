@@ -64,4 +64,16 @@ void record_counts_10m(::rust::Str name, int32_t sample) {
   UmaHistogramCounts10M(std::string_view(name), sample);
 }
 
+void record_memory_kb(::rust::Str name, int32_t sample_kb) {
+  UmaHistogramMemoryKB(std::string_view(name), sample_kb);
+}
+
+void record_memory_mb(::rust::Str name, int32_t sample_mb) {
+  UmaHistogramMemoryMB(std::string_view(name), sample_mb);
+}
+
+void record_memory_large_mb(::rust::Str name, int32_t sample_mb) {
+  UmaHistogramMemoryLargeMB(std::string_view(name), sample_mb);
+}
+
 }  // namespace base::rust
