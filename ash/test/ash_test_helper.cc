@@ -301,8 +301,8 @@ void AshTestHelper::TearDown() {
   // because window/Aura teardown may trigger IME-related cleanups.
   // TODO(crbug.com/332481586): Revisit teardown ordering.
   if (input_method_manager_) {
-    input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
+    input_method::InputMethodManager::Shutdown();
   }
 }
 

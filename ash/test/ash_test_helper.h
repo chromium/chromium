@@ -275,8 +275,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
-  raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
-      input_method_manager_ = nullptr;
+  raw_ptr<input_method::MockInputMethodManagerImpl> input_method_manager_ =
+      nullptr;
 
   // True if a fake global `CrasAudioHandler` should be created.
   bool create_global_cras_audio_handler_ = true;
