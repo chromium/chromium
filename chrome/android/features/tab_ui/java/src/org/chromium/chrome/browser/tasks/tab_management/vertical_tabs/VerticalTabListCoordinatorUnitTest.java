@@ -159,7 +159,6 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.RectProvider;
@@ -4355,17 +4354,9 @@ public class VerticalTabListCoordinatorUnitTest {
         downEvent.recycle();
     }
 
-    // TODO(crbug.com/509226293): Add TAB_ACTION_STATE to ALL_KEYS_VERTICAL_TAB in TabProperties
-    // instead.
     /** Creates a {@link PropertyModel} with keys needed for drag shadow binding. */
     private PropertyModel createTabPropertyModel() {
-        return new PropertyModel.Builder(
-                        PropertyModel.concatKeys(
-                                TabProperties.ALL_KEYS_VERTICAL_TAB,
-                                new PropertyKey[] {
-                                    TabProperties.TAB_ACTION_STATE,
-                                    TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER
-                                }))
+        return new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
                 .with(TabProperties.TAB_ACTION_STATE, TabActionState.CLOSABLE)
                 .build();
     }
