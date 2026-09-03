@@ -414,16 +414,14 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
   // Ensure the Mojo callback is posted back to the task runner. Running
   // it directly on the GPU sequence can violate Mojo's sequence checks,
   // even if executing on the same thread.
-  auto mojo_callback_wrapper = base::BindPostTask(
-      context_->mojo_task_runner(),
-      base::BindOnce(
-          [](ExportTensorSyncCallback callback, ScopedTrace scoped_trace,
-             uint64_t flow_id) {
-            TRACE_EVENT("webnn", "TensorImplCoreml::ExportTensorSync",
-                        perfetto::TerminatingFlow::Global(flow_id));
-            std::move(callback).Run();
-          },
-          std::move(callback), std::move(scoped_trace), flow_id));
+  auto mojo_callback_wrapper = WrapCallbackOnMojoSequence(base::BindOnce(
+      [](ExportTensorSyncCallback callback, ScopedTrace scoped_trace,
+         uint64_t flow_id) {
+        TRACE_EVENT("webnn", "TensorImplCoreml::ExportTensorSync",
+                    perfetto::TerminatingFlow::Global(flow_id));
+        std::move(callback).Run();
+      },
+      std::move(callback), std::move(scoped_trace), flow_id));
 
   context_->RunOrScheduleTask(base::BindOnce(
       [](TensorImplCoreml* self, base::OnceCallback<void()> callback,
@@ -466,7 +464,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
         task->Enqueue();
       },
       base::RetainedRef(this), std::move(mojo_callback_wrapper),
-      GetMojoReceiver().GetBadMessageCallback(), release));
+      GetBadMessageCallbackOnMojoSequence(), release));
 }
 
 }  // namespace webnn::coreml

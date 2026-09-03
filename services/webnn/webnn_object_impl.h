@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
@@ -91,6 +92,23 @@ class WebNNObjectBase : public MojoInterface {
   MojoReceiverType& GetMojoReceiver() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return mojo_receiver_;
+  }
+
+  // Like GetMojoReceiver().GetBadMessageCallback(), but returns a callback
+  // that is safe to run from any sequence (e.g. a GPU scheduler task).
+  // Must be called within the stack frame of a message dispatch.
+  mojo::ReportBadMessageCallback GetBadMessageCallbackOnMojoSequence() {
+    return WrapCallbackOnMojoSequence(
+        GetMojoReceiver().GetBadMessageCallback());
+  }
+
+  // Wraps `callback` so it's safe to run from any sequence (e.g. a GPU
+  // scheduler task); invoking it posts the call back to `task_runner_`.
+  template <typename... Args>
+  base::OnceCallback<void(Args...)> WrapCallbackOnMojoSequence(
+      base::OnceCallback<void(Args...)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return base::BindPostTask(task_runner_, std::move(callback));
   }
 
  protected:

@@ -79,12 +79,6 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
     return;
   }
 
-  // Ensure the Mojo callback is posted back to the task runner. Running
-  // it directly on the GPU sequence can violate Mojo's sequence checks,
-  // even if executing on the same thread.
-  auto mojo_callback_wrapper =
-      base::BindPostTask(context_->mojo_task_runner(), std::move(callback));
-
   // Call ReadTensorImpl() implemented by a backend.
   context_->RunOrScheduleTask(base::BindOnce(
       [](WebNNTensorImpl* self, ReadTensorCallback callback,
@@ -97,8 +91,8 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
         }
         self->ReadTensorImpl(std::move(callback));
       },
-      base::RetainedRef(this), std::move(mojo_callback_wrapper),
-      std::move(scoped_trace), GetMojoReceiver().GetBadMessageCallback()));
+      base::RetainedRef(this), WrapCallbackOnMojoSequence(std::move(callback)),
+      std::move(scoped_trace), GetBadMessageCallbackOnMojoSequence()));
 }
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
@@ -131,7 +125,7 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
         self->WriteTensorImpl(std::move(src_buffer));
       },
       base::RetainedRef(this), std::move(src_buffer), std::move(scoped_trace),
-      GetMojoReceiver().GetBadMessageCallback()));
+      GetBadMessageCallbackOnMojoSequence()));
 }
 
 void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
@@ -173,7 +167,7 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
             }
           },
           base::RetainedRef(this), std::move(scoped_trace), flow_id,
-          GetMojoReceiver().GetBadMessageCallback()),
+          GetBadMessageCallbackOnMojoSequence()),
       {fence});
 }
 
@@ -222,7 +216,7 @@ void WebNNTensorImpl::ExportTensor(uint64_t flow_id, uint64_t release_count) {
             self->ExportTensorImpl(std::move(self->representation_access_));
           },
           base::RetainedRef(this), std::move(scoped_trace), flow_id,
-          GetMojoReceiver().GetBadMessageCallback()),
+          GetBadMessageCallbackOnMojoSequence()),
       {}, release);
 }
 
@@ -266,7 +260,7 @@ void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
             self->ExportTensorImpl(std::move(self->representation_access_));
           },
           base::RetainedRef(this), std::move(scoped_trace), flow_id,
-          GetMojoReceiver().GetBadMessageCallback()),
+          GetBadMessageCallbackOnMojoSequence()),
       {}, release);
 
   std::move(callback).Run();

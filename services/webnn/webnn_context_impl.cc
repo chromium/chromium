@@ -463,12 +463,6 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
     return;
   }
 
-  // Ensure the Mojo callback is posted back to the task runner. Running
-  // it directly on the GPU sequence can violate Mojo's sequence checks,
-  // even if executing on the same thread.
-  auto mojo_callback_wrapper =
-      base::BindPostTask(mojo_task_runner(), std::move(callback));
-
   // Must be a scheduled task since this depends on shared image creation task.
   RunOrScheduleTaskWithThisContext(
       base::BindOnce(
@@ -521,7 +515,8 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                 mojom::CreateTensorResult::NewSuccess(std::move(success)));
             self.tensor_impls_.emplace(*std::move(result));
           },
-          std::move(tensor_info), mailbox, std::move(mojo_callback_wrapper),
+          std::move(tensor_info), mailbox,
+          WrapCallbackOnMojoSequence(std::move(callback)),
           std::move(scoped_trace)),
       fence);
 }
@@ -594,7 +589,7 @@ void WebNNContextImpl::Dispatch(
 
   graph_impl->RunDispatch(
       std::move(name_to_input_tensor_map), std::move(name_to_output_tensor_map),
-      std::move(scoped_trace), GetMojoReceiver().GetBadMessageCallback());
+      std::move(scoped_trace), GetBadMessageCallbackOnMojoSequence());
 }
 
 void WebNNContextImpl::DestroyGraph(
