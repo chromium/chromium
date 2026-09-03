@@ -26,7 +26,9 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -485,6 +487,30 @@ TEST_F(EmailVerificationPopupViewTest, DismissalDoesNotIncrementDeclineCount) {
   EXPECT_EQ(strike_db.GetStrikes(
                 EmailVerificationStrikeDatabase::GetId("test@example.com")),
             0);
+}
+
+// Verifies that neither button receives initial focus upon appearance.
+// For non-blocking popups, no button receives initial focus to prevent
+// unexpected focus shifts and eliminate UI keyjacking vectors.
+TEST_F(EmailVerificationPopupViewTest, NoInitialButtonFocus) {
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupView>(
+      controller->GetWeakPtr(), widget_.get(),
+      net::SchemefulSite(GURL("https://issuer.com")), u"user@example.com",
+      base::DoNothing());
+
+  views::MdTextButton* cancel_button = views::AsViewClass<views::MdTextButton>(
+      view->GetViewByID(static_cast<int>(
+          EmailVerificationPopupView::PopupViewId::kCancelButton)));
+  ASSERT_THAT(cancel_button, testing::NotNull());
+
+  views::MdTextButton* confirm_button = views::AsViewClass<views::MdTextButton>(
+      view->GetViewByID(static_cast<int>(
+          EmailVerificationPopupView::PopupViewId::kConfirmButton)));
+  ASSERT_THAT(confirm_button, testing::NotNull());
+
+  EXPECT_EQ(view->GetInitiallyFocusedView(), nullptr);
 }
 
 }  // namespace

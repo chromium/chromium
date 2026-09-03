@@ -157,7 +157,7 @@ EmailVerificationPopupView::EmailVerificationPopupView(
           .SetID(static_cast<int>(PopupViewId::kCancelButton))
           .Build());
 
-  auto* allow_button = controls->AddChildView(
+  controls->AddChildView(
       views::Builder<views::MdTextButton>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_VERIFY))
@@ -166,8 +166,6 @@ EmailVerificationPopupView::EmailVerificationPopupView(
               &EmailVerificationPopupView::OnConfirm, base::Unretained(this)))
           .SetID(static_cast<int>(PopupViewId::kConfirmButton))
           .Build());
-
-  SetInitiallyFocusedView(allow_button);
 }
 
 EmailVerificationPopupView::~EmailVerificationPopupView() = default;
