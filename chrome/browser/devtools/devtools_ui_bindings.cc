@@ -2056,10 +2056,20 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                       std::move(ai_assistance_file_agent_dict));
   }
 
-  response_dict.Set("devToolsAiV2Architecture",
-                    base::DictValue().Set(
-                        "enabled", base::FeatureList::IsEnabled(
-                                       ::features::kDevToolsAiV2Architecture)));
+  if (base::FeatureList::IsEnabled(::features::kDevToolsAiV2Architecture)) {
+    base::DictValue ai_v2_architecture_dict;
+    ai_v2_architecture_dict.Set(
+        "enabled",
+        base::FeatureList::IsEnabled(::features::kDevToolsAiV2Architecture));
+    ai_v2_architecture_dict.Set(
+        "userTier", features::kDevToolsAiV2ArchitectureUserTier.GetName(
+                        features::kDevToolsAiV2ArchitectureUserTier.Get()));
+    response_dict.Set("devToolsAiV2Architecture",
+                      std::move(ai_v2_architecture_dict));
+  } else {
+    response_dict.Set("devToolsAiV2Architecture",
+                      base::DictValue().Set("enabled", false));
+  }
 
   response_dict.Set(
       "devToolsComments",

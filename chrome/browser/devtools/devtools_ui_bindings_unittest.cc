@@ -1179,6 +1179,7 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
       result.FindDict("devToolsAiV2Architecture");
   ASSERT_TRUE(aiv2_arch);
   EXPECT_TRUE(aiv2_arch->FindBool("enabled").value_or(false));
+  EXPECT_EQ("PUBLIC", *aiv2_arch->FindString("userTier"));
 
   const base::DictValue* instrumentation_breakpoints =
       result.FindDict("devToolsInstrumentationBreakpoints");

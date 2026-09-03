@@ -128,6 +128,8 @@ extern const base::FeatureParam<bool>
     kDevToolsConsoleInsightsTeasersAllowWithoutGpu;
 
 BASE_DECLARE_FEATURE(kDevToolsAiV2Architecture);
+extern const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiV2ArchitectureUserTier;
 
 BASE_DECLARE_FEATURE(kDevToolsComments);
 

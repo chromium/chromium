@@ -228,6 +228,11 @@ const base::FeatureParam<bool> kDevToolsConsoleInsightsTeasersAllowWithoutGpu{
     /*default_value=*/false};
 
 BASE_FEATURE(kDevToolsAiV2Architecture, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiV2ArchitectureUserTier{
+        &kDevToolsAiV2Architecture, "user_tier",
+        /*default_value=*/DevToolsFreestylerUserTier::kPublic,
+        &devtools_freestyler_user_tier_options};
 
 BASE_FEATURE(kDevToolsComments, base::FEATURE_DISABLED_BY_DEFAULT);
 
