@@ -87,6 +87,9 @@ struct CONTENT_EXPORT DesktopMediaID {
   bool audio_share = false;
   // This records the type of audio share, if any.
   AudioType window_audio_type = AudioType::kNone;
+
+  // This determines whether or not the tab is shareable with GetDisplayMedia.
+  bool is_sharing_blocked = false;
 };
 
 }  // namespace content

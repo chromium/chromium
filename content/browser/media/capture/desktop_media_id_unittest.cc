@@ -45,4 +45,9 @@ TEST(DesktopMediaIDTest, ParseInvalid) {
             DesktopMediaID::Parse("window:1:2:x").type);
 }
 
+TEST(DesktopMediaIDTest, IsSharingBlockedDefault) {
+  DesktopMediaID id(DesktopMediaID::TYPE_WEB_CONTENTS, 1);
+  EXPECT_FALSE(id.is_sharing_blocked);
+}
+
 }  // namespace content
