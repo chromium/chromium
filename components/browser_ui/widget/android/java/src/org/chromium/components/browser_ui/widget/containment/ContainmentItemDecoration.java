@@ -59,7 +59,13 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
+        // Zero outRect directly instead of calling super.getItemOffsets(). The default
+        // implementation in RecyclerView.ItemDecoration casts view.getLayoutParams() to
+        // RecyclerView.LayoutParams, which can throw ClassCastException if the view has generic
+        // LayoutParams (e.g. in unit tests or before attachment), so just zero it directly.
+        // Furthermore, item containment spacing is applied as child view margins in
+        // ContainmentViewStyler rather than decoration offsets.
+        outRect.set(0, 0, 0, 0);
         mUpdateBackgrounds = true;
 
         int position = parent.getChildAdapterPosition(view);
@@ -76,7 +82,8 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         if (!mUpdateBackgrounds || mPreferenceStyles == null) return;
 
-        for (int i = 0; i < parent.getChildCount(); i++) {
+        int childCount = parent.getChildCount();
+        for (int i = 0; i < childCount; i++) {
             View childView = parent.getChildAt(i);
             int position = parent.getChildAdapterPosition(childView);
             if (position == RecyclerView.NO_POSITION || position >= mPreferenceStyles.size()) {
@@ -86,12 +93,22 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
             ContainmentViewStyler.applyBackgroundStyle(childView, mPreferenceStyles.get(position));
             ContainmentViewStyler.styleChildViews(childView, mStylingController);
         }
+
+        // Clear the update flag once visible attached children have been styled.
+        // Subsequent layout passes (e.g. when new views scroll into view or are attached)
+        // will invoke getItemOffsets() which resets mUpdateBackgrounds to true.
         mUpdateBackgrounds = false;
         super.onDraw(c, parent, state);
     }
 
     /** Returns the {@link ContainerStyle} object for a given position. */
     public @Nullable ContainerStyle getContainerStyle(int position) {
-        return mPreferenceStyles != null ? mPreferenceStyles.get(position) : null;
+        return (mPreferenceStyles != null && position >= 0 && position < mPreferenceStyles.size())
+                ? mPreferenceStyles.get(position)
+                : null;
+    }
+
+    boolean getUpdateBackgroundsForTesting() {
+        return mUpdateBackgrounds;
     }
 }

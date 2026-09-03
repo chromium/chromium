@@ -81,34 +81,57 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     }
 
     /**
-     * Updates the containment styling immediately if a decoration is already present. This avoids a
-     * full re-inflation in SettingsActivity.
+     * Updates the containment styling for this fragment.
+     *
+     * <p>Delegating through {@link #notifyPreferencesUpdated()} ensures that the host container
+     * (such as {@code SettingsHostFragment} or {@code SettingsActivity}) defers containment styling
+     * until the next layout completion pass via {@code
+     * SettingsContainmentHelper.postUpdateContainmentOnLayout()}. This guarantees that
+     * asynchronously populated preferences (e.g. in {@code AllSiteSettings}) are fully measured,
+     * bound, and attached in the RecyclerView hierarchy before item decoration styles and card
+     * backgrounds are calculated and drawn.
+     *
+     * <p>If no host observer is attached (e.g. in standalone fragment tests), fallback scheduling
+     * via {@link View#post(Runnable)} defers decoration invalidation to avoid styling before views
+     * are laid out.
      */
     protected void updateContainment() {
         if (!getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
             return;
         }
-        RecyclerView listView = getListView();
-        ContainmentItemDecoration decoration = null;
-        if (listView != null) {
-            for (int i = 0; i < listView.getItemDecorationCount(); i++) {
-                RecyclerView.ItemDecoration item = listView.getItemDecorationAt(i);
-                if (item instanceof ContainmentItemDecoration containmentItemDecoration) {
-                    decoration = containmentItemDecoration;
-                    break;
-                }
-            }
+
+        if (mPreferenceUpdateObserver != null) {
+            notifyPreferencesUpdated();
+            return;
         }
 
-        if (decoration != null) {
-            decoration.updatePreferenceStyles(
-                    decoration
-                            .getStylingController()
-                            .generatePreferenceStyles(
-                                    SettingsUtils.getVisiblePreferences(getPreferenceScreen())));
-            listView.invalidateItemDecorations();
-        } else {
-            notifyPreferencesUpdated();
+        RecyclerView listView = getListView();
+        if (listView == null) {
+            return;
         }
+
+        listView.post(
+                () -> {
+                    if (getView() == null) return;
+
+                    ContainmentItemDecoration decoration = null;
+                    for (int i = 0; i < listView.getItemDecorationCount(); i++) {
+                        RecyclerView.ItemDecoration item = listView.getItemDecorationAt(i);
+                        if (item instanceof ContainmentItemDecoration containmentItemDecoration) {
+                            decoration = containmentItemDecoration;
+                            break;
+                        }
+                    }
+
+                    if (decoration != null) {
+                        decoration.updatePreferenceStyles(
+                                decoration
+                                        .getStylingController()
+                                        .generatePreferenceStyles(
+                                                SettingsUtils.getVisiblePreferences(
+                                                        getPreferenceScreen())));
+                        listView.invalidateItemDecorations();
+                    }
+                });
     }
 }

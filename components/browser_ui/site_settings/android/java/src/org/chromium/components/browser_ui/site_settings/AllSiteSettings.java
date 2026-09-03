@@ -131,9 +131,12 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
             boolean hasEntries = addWebsites(sites);
 
-            if (mEmptyView == null) return;
-
-            mEmptyView.setVisibility(hasEntries ? View.GONE : View.VISIBLE);
+            if (mEmptyView != null) {
+                mEmptyView.setVisibility(hasEntries ? View.GONE : View.VISIBLE);
+            }
+            // Always update containment even when mEmptyView is null. In ALL_SITES mode,
+            // mEmptyView is not inflated, but the newly populated website rows still
+            // require containment styles, margins, and card backgrounds to be calculated.
             updateContainment();
         }
     }

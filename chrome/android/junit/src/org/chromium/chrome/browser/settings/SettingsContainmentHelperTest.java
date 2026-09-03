@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -139,6 +140,69 @@ public class SettingsContainmentHelperTest {
         callbacks.onFragmentViewCreated(mFragmentManager, mPreferenceFragment, mView, null);
 
         verify(mViewTreeObserver).addOnGlobalLayoutListener(any());
+    }
+
+    @Test
+    public void testPostUpdateContainmentOnLayout_addsLayoutListener() {
+        when(mPreferenceFragment.getView()).thenReturn(mView);
+        when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
+
+        mContainmentHelper.postUpdateContainmentOnLayout(mPreferenceFragment);
+
+        verify(mViewTreeObserver).addOnGlobalLayoutListener(any());
+    }
+
+    @Test
+    public void testPostUpdateContainmentOnLayout_removesExistingListenerBeforeAddingNew() {
+        when(mPreferenceFragment.getView()).thenReturn(mView);
+        when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
+
+        ArgumentCaptor<ViewTreeObserver.OnGlobalLayoutListener> listenerCaptor =
+                ArgumentCaptor.forClass(ViewTreeObserver.OnGlobalLayoutListener.class);
+
+        // First call registers an initial layout listener.
+        mContainmentHelper.postUpdateContainmentOnLayout(mPreferenceFragment);
+        verify(mViewTreeObserver).addOnGlobalLayoutListener(listenerCaptor.capture());
+        ViewTreeObserver.OnGlobalLayoutListener firstListener = listenerCaptor.getValue();
+
+        // Second call must unregister the previous listener before registering a new one
+        // to prevent duplicate triggers and listener leaks on rapid successive updates.
+        mContainmentHelper.postUpdateContainmentOnLayout(mPreferenceFragment);
+        verify(mViewTreeObserver).removeOnGlobalLayoutListener(firstListener);
+        verify(mViewTreeObserver, times(2)).addOnGlobalLayoutListener(any());
+    }
+
+    @Test
+    public void testPostUpdateContainmentOnLayout_onGlobalLayoutTriggersUpdateAndCleansUp() {
+        when(mPreferenceFragment.getView()).thenReturn(mView);
+        when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
+        when(mPreferenceFragment.getContext()).thenReturn(mContext);
+
+        RecyclerView recyclerView = createRecyclerView();
+        RecyclerView.Adapter expectedAdapter = recyclerView.getAdapter();
+        setFragmentList(mPreferenceFragment, recyclerView);
+
+        PreferenceManager preferenceManager = new PreferenceManager(mContext);
+        PreferenceScreen preferenceScreen = preferenceManager.createPreferenceScreen(mContext);
+        when(mPreferenceFragment.getPreferenceScreen()).thenReturn(preferenceScreen);
+
+        ArgumentCaptor<ViewTreeObserver.OnGlobalLayoutListener> listenerCaptor =
+                ArgumentCaptor.forClass(ViewTreeObserver.OnGlobalLayoutListener.class);
+
+        mContainmentHelper.postUpdateContainmentOnLayout(mPreferenceFragment);
+        verify(mViewTreeObserver).addOnGlobalLayoutListener(listenerCaptor.capture());
+        ViewTreeObserver.OnGlobalLayoutListener listener = listenerCaptor.getValue();
+
+        // Simulate global layout completion pass.
+        listener.onGlobalLayout();
+
+        // Verify listener removes itself to prevent redundant future invocations,
+        // attaches ContainmentItemDecoration, and preserves adapter without view re-inflation.
+        verify(mViewTreeObserver).removeOnGlobalLayoutListener(listener);
+        assertEquals(1, recyclerView.getItemDecorationCount());
+        assertEquals(
+                ContainmentItemDecoration.class, recyclerView.getItemDecorationAt(0).getClass());
+        assertEquals(expectedAdapter, recyclerView.getAdapter());
     }
 
     @Test
