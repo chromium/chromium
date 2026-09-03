@@ -70,6 +70,9 @@ class StreamingWebSocketClient
     // Called when the Mojo pipe disconnects.
     virtual void OnClose() = 0;
 
+    // Called when the WebSocket connection is successfully established.
+    virtual void OnConnected();
+
     // Called when establishing the connection to get additional HTTP headers.
     virtual std::vector<network::mojom::HttpHeaderPtr> GetAdditionalHeaders();
   };
@@ -83,14 +86,24 @@ class StreamingWebSocketClient
   StreamingWebSocketClient(const StreamingWebSocketClient&) = delete;
   StreamingWebSocketClient& operator=(const StreamingWebSocketClient&) = delete;
 
+  // Initiates the WebSocket handshake if not already connected or connecting.
+  // Virtual for testing.
+  virtual void Connect();
+
   // Sends a binary request to the server. If not connected, initiates the
   // connection automatically and queues the request.
-  void Send(std::vector<uint8_t> request);
+  // Virtual for testing.
+  virtual void Send(std::vector<uint8_t> request);
 
   // Closes the connection and resets internal state.
-  void Close();
+  // Virtual for testing.
+  virtual void Close();
 
   const GURL& service_url() const { return service_url_; }
+
+  // TODO(crbug.com/553134125): Refactor to be test-only.
+  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
+  Delegate* delegate_for_testing() const { return delegate_; }
 
  private:
   enum class State {
@@ -100,7 +113,6 @@ class StreamingWebSocketClient
     kDisconnected,
   };
 
-  void Connect();
   void InternalWrite(base::span<const uint8_t> data);
   void ReadFromDataPipe(MojoResult result,
                         const mojo::HandleSignalsState& state);
@@ -136,7 +148,7 @@ class StreamingWebSocketClient
   const GURL service_url_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-  const raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   std::vector<uint8_t> pending_read_data_;
   size_t pending_read_data_index_ = 0;

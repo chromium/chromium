@@ -10,6 +10,7 @@ include_rules = [
   "+components/private_ai",
   "+components/services/unzip",
   "+components/signin/public",
+  "+components/streaming_client",
   "+components/policy/core",
   "+components/ukm/test_ukm_recorder.h",
   "+components/variations",

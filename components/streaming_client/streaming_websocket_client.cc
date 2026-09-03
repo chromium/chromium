@@ -34,6 +34,8 @@ StreamingWebSocketClient::Delegate::GetAdditionalHeaders() {
   return {};
 }
 
+void StreamingWebSocketClient::Delegate::OnConnected() {}
+
 StreamingWebSocketClient::StreamingWebSocketClient(
     const GURL& service_url,
     network::mojom::NetworkContext* network_context,
@@ -43,10 +45,7 @@ StreamingWebSocketClient::StreamingWebSocketClient(
       network_context_(network_context),
       traffic_annotation_(traffic_annotation),
       delegate_(delegate),
-      readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
-  CHECK(network_context_);
-  CHECK(delegate_);
-}
+      readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
 StreamingWebSocketClient::~StreamingWebSocketClient() = default;
 
@@ -77,6 +76,14 @@ void StreamingWebSocketClient::Close() {
 }
 
 void StreamingWebSocketClient::Connect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(network_context_);
+  CHECK(delegate_);
+
+  if (state_ == State::kConnecting || state_ == State::kOpen) {
+    return;
+  }
+
   // A disconnect handler is used so that the request can be completed in the
   // event of an unexpected disconnection from the network service.
   auto handshake_remote = handshake_receiver_.BindNewPipeAndPassRemote();
@@ -184,6 +191,10 @@ void StreamingWebSocketClient::OnConnectionEstablished(
     }
     pending_write_data_.pop();
   }
+
+  if (state_ == State::kOpen) {
+    delegate_->OnConnected();
+  }
 }
 
 void StreamingWebSocketClient::OnDataFrame(
@@ -278,6 +289,10 @@ void StreamingWebSocketClient::ClosePipe() {
     return;
   }
   state_ = State::kDisconnected;
+  websocket_.reset();
+  readable_watcher_.Cancel();
+  readable_.reset();
+  writable_.reset();
   client_receiver_.reset();
   handshake_receiver_.reset();
   pending_write_data_ = {};

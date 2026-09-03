@@ -3,6 +3,7 @@ include_rules = [
   "+components/multistep_filter/core/annotation_index/proto",
   "+components/prefs",
   "+components/sync_preferences",
+  "+components/streaming_client",
   "+components/unified_consent",
   "+components/variations",
   "+components/version_info",
