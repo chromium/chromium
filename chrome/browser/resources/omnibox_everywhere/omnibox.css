@@ -15,7 +15,7 @@
   -webkit-app-region: drag;
   /* Embedders should define --cr-searchbox-min-width. */
   --cr-searchbox-width: var(--cr-searchbox-min-width);
-  --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
+  --cr-searchbox-border-radius: 16px;
   --cr-searchbox-icon-width: 26px;
   --cr-searchbox-inner-icon-margin: 8px;
   --cr-searchbox-voice-icon-offset: 16px;
@@ -188,7 +188,7 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 }
 
 :host([is-fusebox-enabled]) {
-  --cr-searchbox-border-radius: 28px;
+  --cr-searchbox-border-radius: 16px;
   --cr-searchbox-dropdown-padding-bottom: 10px;
   --cr-searchbox-dropdown-padding-top: 10px;
   --cr-searchbox-height: 48px;
@@ -209,7 +209,7 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 }
 
 :host-context([energy-effect-enabled_]):host([is-fusebox-enabled]) {
-  --cr-searchbox-border-radius: 28px;
+  --cr-searchbox-border-radius: 16px;
   --cr-searchbox-border: 1px solid var(--color-searchbox-border);
 }
 
