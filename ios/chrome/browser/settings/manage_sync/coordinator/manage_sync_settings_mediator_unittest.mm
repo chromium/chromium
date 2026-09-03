@@ -654,3 +654,39 @@ TEST_F(ManageSyncSettingsMediatorTest,
   EXPECT_FALSE(
       [model hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]);
 }
+
+// Tests that fetching local data descriptions for batch upload dynamically
+// adds the batch upload section without causing a crash when the view is
+// attached to a window.
+TEST_F(ManageSyncSettingsMediatorTest,
+       LocalDataDescriptionsFetchedBatchUploadInsertDoesNotCrash) {
+  ScopedKeyWindow scoped_window;
+  CreateManageSyncSettingsMediator();
+
+  scoped_window.Get().rootViewController = consumer_;
+
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+
+  std::map<syncer::DataType, syncer::LocalDataDescription> descriptions;
+  syncer::LocalDataDescription pass_desc;
+  pass_desc.item_count = 5;
+  descriptions[syncer::PASSWORDS] = pass_desc;
+  sync_service_->SetLocalDataDescriptions(descriptions);
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Force UIKit to perform layout.
+  [consumer_.view layoutIfNeeded];
+
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]);
+
+  // Clear the local data descriptions and trigger a sync state change.
+  std::map<syncer::DataType, syncer::LocalDataDescription> empty_descriptions;
+  sync_service_->SetLocalDataDescriptions(empty_descriptions);
+  [mediator_ onSyncStateChanged];
+  [consumer_.view layoutIfNeeded];
+
+  EXPECT_FALSE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]);
+}

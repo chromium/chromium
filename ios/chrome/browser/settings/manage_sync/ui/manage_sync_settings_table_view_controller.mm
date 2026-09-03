@@ -37,6 +37,8 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     PopoverLabelViewControllerDelegate>
 @end
 
+// TODO(crbug.com/556090278): Migrate the class to inherits
+// `ChromeTableViewController`.
 @implementation ManageSyncSettingsTableViewController
 
 #pragma mark - UIViewController
@@ -92,39 +94,6 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 #pragma mark - ManageSyncSettingsConsumer
 
-- (void)insertSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  if (rowAnimation) {
-    [self.tableView insertSections:sections
-                  withRowAnimation:UITableViewRowAnimationMiddle];
-  } else {
-    [UIView performWithoutAnimation:^{
-      [self.tableView insertSections:sections
-                    withRowAnimation:UITableViewRowAnimationNone];
-    }];
-  }
-}
-
-- (void)deleteSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  if (rowAnimation) {
-    [self.tableView deleteSections:sections
-                  withRowAnimation:UITableViewRowAnimationMiddle];
-  } else {
-    // To avoid animation glitches related to crbug.com/1469539.
-    [UIView performWithoutAnimation:^{
-      [self.tableView deleteSections:sections
-                    withRowAnimation:UITableViewRowAnimationNone];
-    }];
-  }
-}
-
 - (void)reloadItem:(TableViewItem*)item {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
@@ -148,15 +117,6 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                           withRowAnimation:UITableViewRowAnimationNone];
   }];
-}
-
-- (void)reloadSections:(NSIndexSet*)sections {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  [self.tableView reloadSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
