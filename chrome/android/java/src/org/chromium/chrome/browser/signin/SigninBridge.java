@@ -58,7 +58,6 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.ExternalEntryPoint;
 import org.chromium.components.signin.base.SigninDeepLinkPayload;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -511,8 +510,7 @@ final class SigninBridge {
             SigninDeepLinkPayload payload) {
         ThreadUtils.assertOnUiThread();
 
-        final @Nullable CoreAccountInfo primaryAccountInfo =
-                identityManager.getPrimaryAccountInfo();
+        final AccountInfo primaryAccountInfo = identityManager.getPrimaryAccountInfo();
 
         final @Nullable AccountInfo targetAccountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(payload.getEmail());
@@ -559,7 +557,7 @@ final class SigninBridge {
 
     private static void recordCrossDeviceFlowStart(
             @ExternalEntryPoint int entryPoint,
-            @Nullable CoreAccountInfo primaryAccountInfo,
+            @Nullable AccountInfo primaryAccountInfo,
             @Nullable AccountInfo targetAccountInfo) {
         @CrossDeviceInitialState int initialState;
         if (primaryAccountInfo != null) {
