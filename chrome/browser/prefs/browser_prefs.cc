@@ -134,7 +134,6 @@
 #include "components/feature_engagement/public/pref_names.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
-#include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/language/content/browser/geo_language_provider.h"
 #include "components/language/content/browser/ulp_language_code_locator/ulp_language_code_locator.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -1042,6 +1041,12 @@ constexpr char kNSSCertsMigratedToServerCertDb[] =
     "certificates.nss_certs_migrated_to_server_cert_db";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 09/2026.
+inline constexpr char kInvalidationPerSenderRegisteredForInvalidation[] =
+    "invalidation.per_sender_registered_for_invalidation";
+inline constexpr char kInvalidationPerSenderActiveRegistrationTokens[] =
+    "invalidation.per_sender_active_registration_tokens";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1146,6 +1151,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 07/2026.
   registry->RegisterTimePref(kObsoleteManagementPlatformLastLogTime,
                              base::Time());
+
+  // Deprecated 09/2026.
+  registry->RegisterDictionaryPref(
+      kInvalidationPerSenderRegisteredForInvalidation);
+  registry->RegisterDictionaryPref(
+      kInvalidationPerSenderActiveRegistrationTokens);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1447,6 +1458,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 09/2026.
   registry->RegisterIntegerPref(kNSSCertsMigratedToServerCertDb, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 09/2026.
+  registry->RegisterDictionaryPref(
+      kInvalidationPerSenderRegisteredForInvalidation);
+  registry->RegisterDictionaryPref(
+      kInvalidationPerSenderActiveRegistrationTokens);
 }
 
 }  // namespace
@@ -1491,7 +1508,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   GpuModeManager::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
-  invalidation::PerUserTopicSubscriptionManager::RegisterPrefs(registry);
   language::GeoLanguageProvider::RegisterLocalStatePrefs(registry);
   language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
   memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
@@ -1837,7 +1853,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
   site_engagement::ImportantSitesUtil::RegisterProfilePrefs(registry);
   IncognitoModePrefs::RegisterProfilePrefs(registry);
-  invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   login_detection::prefs::RegisterProfilePrefs(registry);
   lookalikes::RegisterProfilePrefs(registry);
@@ -2493,6 +2508,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 07/2026.
   local_state->ClearPref(kObsoleteManagementPlatformLastLogTime);
 
+  // Added 09/2026.
+  local_state->ClearPref(kInvalidationPerSenderRegisteredForInvalidation);
+  local_state->ClearPref(kInvalidationPerSenderActiveRegistrationTokens);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2801,6 +2820,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 09/2026.
   profile_prefs->ClearPref(kNSSCertsMigratedToServerCertDb);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 09/2026.
+  profile_prefs->ClearPref(kInvalidationPerSenderRegisteredForInvalidation);
+  profile_prefs->ClearPref(kInvalidationPerSenderActiveRegistrationTokens);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
