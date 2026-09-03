@@ -133,8 +133,7 @@ NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   [collectionView deselectItemAtIndexPath:indexPath animated:YES];
-  if (!IsAimHistoryThreadsManagementEnabled() ||
-      static_cast<size_t>(indexPath.row) >= _items.size()) {
+  if (static_cast<size_t>(indexPath.row) >= _items.size()) {
     return;
   }
   const AssistantAIMHistoryItem& item = _items[indexPath.row];
