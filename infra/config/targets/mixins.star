@@ -764,7 +764,7 @@ targets.mixin(
             "device_os": "CD1A.260714.001.A9",
             "device_type": "kodiak",
             "os": "Android",
-            "pool": "chromium.tests.gpu",
+            "pool": "chromium.tests.gpu.experimental",
         },
     ),
 )
