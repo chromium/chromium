@@ -334,7 +334,6 @@ public class TabListEditorCoordinator {
     private final TabListEditorMediator mTabListEditorMediator;
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
 
-    private final @TabListMode int mTabListMode;
     private final @TabListLayoutType int mLayoutType;
     private final TabContentManager mTabContentManager;
     private final @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider;
@@ -364,7 +363,6 @@ public class TabListEditorCoordinator {
      * @param currentTabModelSupplier Supplies the current TabModel.
      * @param tabContentManager Provides thumbnails for tabs.
      * @param clientTabListRecyclerViewPositionSetter Allows setting the recycler view position.
-     * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
      * @param layoutType The {@link TabListLayoutType} of the tab list editor.
      * @param snackbarManager Used to display snackbar messages.
      * @param bottomSheetController Used to display bottom sheets.
@@ -394,7 +392,6 @@ public class TabListEditorCoordinator {
             NullableObservableSupplier<TabModel> currentTabModelSupplier,
             TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
-            @TabListMode int mode,
             @TabListLayoutType int layoutType,
             SnackbarManager snackbarManager,
             @Nullable BottomSheetController bottomSheetController,
@@ -416,12 +413,10 @@ public class TabListEditorCoordinator {
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mCurrentTabModelSupplier = currentTabModelSupplier;
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
-            mTabListMode = mode;
             mLayoutType = layoutType;
             mSnackbarManager = snackbarManager;
             mTabActionState = initialTabActionState;
             mTabContentManager = tabContentManager;
-            assert mode == TabListMode.GRID;
             mTabListItemOnClickListenerProvider = tabListItemOnClickListenerProvider;
             mModalDialogManager = modalDialogManager;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
@@ -637,7 +632,7 @@ public class TabListEditorCoordinator {
         if (emptyViewParent == null) emptyViewParent = mTabListEditorLayout;
         mTabListCoordinator =
                 new TabListCoordinator(
-                        mTabListMode,
+                        TabListMode.GRID,
                         mActivity,
                         mBrowserControlsStateProvider,
                         mModalDialogManager,
@@ -699,8 +694,6 @@ public class TabListEditorCoordinator {
                         mModel, mTabListEditorLayout, TabListEditorLayoutBinder::bind);
 
         if (mEdgeToEdgeSupplier != null && mLayoutType == TabListLayoutType.GROUPED) {
-            assert mTabListMode != TabListMode.BOTTOM_STRIP
-                    : "STRIP tab lists should not be padded for edge-to-edge.";
             mEdgeToEdgePadAdjuster =
                     EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                             mTabListCoordinator.getContainerView(), mEdgeToEdgeSupplier);

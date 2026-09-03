@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
@@ -102,7 +101,6 @@ public class ArchivedTabsMessageService
     private final ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabContentManager mTabContentManager;
-    private final @TabListMode int mTabListMode;
     private final ViewGroup mRootView;
     private final SnackbarManager mSnackbarManager;
     private final TabCreator mRegularTabCreator;
@@ -141,7 +139,6 @@ public class ArchivedTabsMessageService
             ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
             BrowserControlsStateProvider browserControlStateProvider,
             TabContentManager tabContentManager,
-            @TabListMode int tabListMode,
             ViewGroup rootView,
             SnackbarManager snackbarManager,
             TabCreator regularTabCreator,
@@ -166,7 +163,6 @@ public class ArchivedTabsMessageService
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mBrowserControlsStateProvider = browserControlStateProvider;
         mTabContentManager = tabContentManager;
-        mTabListMode = tabListMode;
         mRootView = rootView;
         mSnackbarManager = snackbarManager;
         mRegularTabCreator = regularTabCreator;
@@ -318,7 +314,6 @@ public class ArchivedTabsMessageService
                         mArchivedTabModelOrchestrator,
                         mBrowserControlsStateProvider,
                         mTabContentManager,
-                        mTabListMode,
                         mRootView,
                         mRootView.findViewById(R.id.tab_switcher_view_holder),
                         mSnackbarManager,

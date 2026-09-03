@@ -587,7 +587,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabContentManager,
                             tabListCoordinator,
                             bottomSheetController,
-                            mode,
                             onTabGroupCreation,
                             desktopWindowStateManager,
                             mEdgeToEdgeSupplier);

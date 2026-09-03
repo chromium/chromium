@@ -265,7 +265,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mModalDialogManager,
                             mBrowserControlsStateProvider,
                             mTabContentManager,
-                            mMode,
                             mActivity.findViewById(R.id.coordinator),
                             mTabCreatorManager.getTabCreator(/* incognito= */ false),
                             mBackPressManager,
@@ -276,8 +275,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mLayoutStateProviderSupplier);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
-                        assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile(),
-                        getTabListMode());
+                        assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile());
             } else {
                 mLifecycleDispatcher.register(
                         new NativeInitObserver() {
@@ -286,8 +284,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                                 if (mMessageManager != null) {
                                     mMessageManager.initWithNative(
                                             assumeNonNull(mProfileProviderSupplier.get())
-                                                    .getOriginalProfile(),
-                                            getTabListMode());
+                                                    .getOriginalProfile());
                                 }
                                 mLifecycleDispatcher.unregister(this);
                             }

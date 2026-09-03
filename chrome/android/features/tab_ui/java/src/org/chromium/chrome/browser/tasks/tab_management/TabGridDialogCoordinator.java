@@ -361,7 +361,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mCurrentTabModelSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
-                            TabListMode.GRID,
                             TabListLayoutType.FLAT,
                             mSnackbarManager,
                             mBottomSheetController,

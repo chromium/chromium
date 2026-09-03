@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.SuggestionLifecycleObserverHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -173,7 +172,6 @@ public class TabSwitcherMessageManagerUnitTest {
                         mModalDialogManager,
                         mBrowserControlsStateProvider,
                         mTabContentManager,
-                        TabListMode.GRID,
                         mRootView,
                         mRegularTabCreator,
                         mBackPressManager,
@@ -190,7 +188,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 mPriceWelcomeMessageReviewActionProvider,
                 mOnTabSelectingListener);
         mMessageManager.addObserver(mMessageUpdateObserver);
-        mMessageManager.initWithNative(mProfile, TabListMode.GRID);
+        mMessageManager.initWithNative(mProfile);
         verify(mTabModel, times(2)).addObserver(mTabModelObserverCaptor.capture());
 
         assertTrue(mCurrentTabModelSupplier.hasObservers());

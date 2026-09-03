@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
-import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -167,7 +166,6 @@ public class TabSwitcherMessageManager {
             mTabListCoordinatorSupplier = ObservableSuppliers.createNullable();
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabContentManager mTabContentManager;
-    private final @TabListMode int mTabListMode;
     private final ViewGroup mRootView;
     private final TabCreator mRegularTabCreator;
     private final BackPressManager mBackPressManager;
@@ -193,7 +191,6 @@ public class TabSwitcherMessageManager {
      * @param modalDialogManager The {@link ModalDialogManager} for the activity.
      * @param browserControlStateProvider Provides the state of browser controls.
      * @param tabContentManager Serves tab content to UI components.
-     * @param tabListMode The {@link TabListMode} determining how the TabList will be displayed.
      * @param rootView The root {@link ViewGroup} to attach dialogs to.
      * @param regularTabCreator Manages the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers in the app.
@@ -213,7 +210,6 @@ public class TabSwitcherMessageManager {
             ModalDialogManager modalDialogManager,
             BrowserControlsStateProvider browserControlStateProvider,
             TabContentManager tabContentManager,
-            @TabListMode int tabListMode,
             ViewGroup rootView,
             TabCreator regularTabCreator,
             BackPressManager backPressManager,
@@ -230,7 +226,6 @@ public class TabSwitcherMessageManager {
         mModalDialogManager = modalDialogManager;
         mBrowserControlsStateProvider = browserControlStateProvider;
         mTabContentManager = tabContentManager;
-        mTabListMode = tabListMode;
         mRootView = rootView;
         mRegularTabCreator = regularTabCreator;
         mBackPressManager = backPressManager;
@@ -313,7 +308,7 @@ public class TabSwitcherMessageManager {
     }
 
     /** Post-native initialization. */
-    public void initWithNative(Profile profile, @TabListMode int mode) {
+    public void initWithNative(Profile profile) {
         assert profile != null;
         mProfile = profile;
 
@@ -323,7 +318,6 @@ public class TabSwitcherMessageManager {
                         ArchivedTabModelOrchestrator.getForProfile(mProfile),
                         mBrowserControlsStateProvider,
                         mTabContentManager,
-                        mTabListMode,
                         mRootView,
                         mSnackbarManager,
                         mRegularTabCreator,

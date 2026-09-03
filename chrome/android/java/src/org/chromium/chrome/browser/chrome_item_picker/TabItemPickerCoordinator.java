@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadIfNeededC
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadResult;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -710,7 +709,6 @@ public class TabItemPickerCoordinator {
                         tabModelSupplier,
                         tabContentManager,
                         CallbackUtils.emptyCallback(),
-                        TabListMode.GRID,
                         TabListLayoutType.FLAT,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,

@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -420,7 +419,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final TabModel mArchivedTabModel;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabContentManager mTabContentManager;
-    private final @TabListMode int mMode;
     private final ViewGroup mRootView;
     private final SnackbarManager mSnackbarManager;
     private final TabCreator mRegularTabCreator;
@@ -454,10 +452,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     /**
      * @param activity The android activity.
      * @param archivedTabModelOrchestrator The TabModelOrchestrator for archived tabs.
-     * @param browserControlsStateProvider Used as a dependency to TabListEditorCoordiantor.
-     * @param tabContentManager Used as a dependency to TabListEditorCoordiantor.
-     * @param mode Used as a dependency to TabListEditorCoordiantor.
-     * @param rootView Used as a dependency to TabListEditorCoordiantor.
+     * @param browserControlsStateProvider Used as a dependency to TabListEditorCoordinator.
+     * @param tabContentManager Used as a dependency to TabListEditorCoordinator.
+     * @param rootView Used as a dependency to TabListEditorCoordinator.
      * @param snackbarManager Manages snackbars shown in the app.
      * @param regularTabCreator Handles the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers throughout the app.
@@ -475,7 +472,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
             BrowserControlsStateProvider browserControlsStateProvider,
             TabContentManager tabContentManager,
-            @TabListMode int mode,
             ViewGroup rootView,
             ViewGroup tabSwitcherView,
             SnackbarManager snackbarManager,
@@ -492,7 +488,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mActivity = activity;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
-        mMode = mode;
         mRootView = rootView;
         mSnackbarManager = snackbarManager;
         mRegularTabCreator = regularTabCreator;
@@ -827,7 +822,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ CallbackUtils
                                 .emptyCallback(),
-                        mMode,
                         TabListLayoutType.GROUPED,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
