@@ -10,8 +10,11 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
@@ -160,6 +163,35 @@ public class FuseboxPopupUnitTest {
         mFuseboxPopup.setPopupState(PopupState.FLOATING);
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mDynamicRectProvider).setPopupState(PopupState.FLOATING);
+        verify(mPopupWindow).show();
+    }
+
+    @Test
+    public void testSetPopupState_firstShow_updatesDesiredWidthBeforeShowing() {
+        doReturn(250).when(mDynamicRectProvider).getPopupWidth(eq(PopupState.FLOATING), any());
+
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
+
+        // Desired width is updated synchronously on first show before the show task runs.
+        verify(mPopupWindow)
+                .updateDesiredContentSize(
+                        /* width= */ 250, /* height= */ 0, /* updateLayout= */ true);
+        verify(mPopupWindow, never()).show();
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mPopupWindow).show();
+    }
+
+    @Test
+    public void testSetPopupState_subsequentShow_showsImmediately() {
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mFuseboxPopup.setPopupState(PopupState.HIDDEN);
+        clearInvocations(mPopupWindow);
+
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
+        // On subsequent show, show() is invoked immediately without needing task posting.
         verify(mPopupWindow).show();
     }
 
