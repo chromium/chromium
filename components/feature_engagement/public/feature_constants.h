@@ -516,7 +516,8 @@ enum class SearchPromotionAction {
 };
 
 // Target engagement cohorts for the Windows search promotion feature.
-// Defaults to `kAll` if omitted or if an unrecognized cohort is specified.
+// Supports comma-separated lists of cohorts (e.g. "low,medium").
+// Defaults to "all" if omitted or if no recognized cohorts are specified.
 enum class SearchPromotionCohort {
   kAll = 0,
   kLow = 1,
@@ -528,7 +529,7 @@ enum class SearchPromotionCohort {
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(SearchPromotionAction, kSearchPromotionAction);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
-BASE_DECLARE_FEATURE_PARAM(SearchPromotionCohort, kSearchPromotionCohort);
+BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionCohort);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionStoreUrl);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)

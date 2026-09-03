@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -92,7 +93,7 @@ SearchPromotionManager::SearchPromotionManager(
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHSearchPromotionFeature)) {
     action_ = feature_engagement::kSearchPromotionAction.Get();
-    cohort_ = feature_engagement::kSearchPromotionCohort.Get();
+    ParseCohorts(feature_engagement::kSearchPromotionCohort.Get());
   }
 
   if (action_ != feature_engagement::SearchPromotionAction::kDisabled) {
@@ -245,6 +246,11 @@ std::optional<bool> SearchPromotionManager::IsPehEligibleForTesting() const {
   return is_peh_eligible_;
 }
 
+const base::flat_set<feature_engagement::SearchPromotionCohort>&
+SearchPromotionManager::GetAllowedCohortsForTesting() const {
+  return allowed_cohorts_;
+}
+
 void SearchPromotionManager::QueryPehEligibility(
     CreatePehLauncherCallback create_peh_launcher_callback) {
   auto launcher = create_peh_launcher_callback
@@ -265,18 +271,52 @@ void SearchPromotionManager::OnPehEligibilityRetrieved(
                                 eligibility);
 }
 
-bool SearchPromotionManager::IsEngagementEligible() const {
-  switch (cohort_) {
-    case feature_engagement::SearchPromotionCohort::kAll:
-      return true;
-    case feature_engagement::SearchPromotionCohort::kLow:
-      return engagement_label_ == kEngagementLabelOneDay ||
-             engagement_label_ == kEngagementLabelLow;
-    case feature_engagement::SearchPromotionCohort::kMedium:
-      return engagement_label_ == kEngagementLabelMedium;
-    case feature_engagement::SearchPromotionCohort::kPower:
-      return engagement_label_ == kEngagementLabelPower;
+void SearchPromotionManager::ParseCohorts(std::string_view cohort_param) {
+  for (std::string_view token :
+       base::SplitStringPiece(cohort_param, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    if (token == feature_engagement::kSearchPromotionCohortAll) {
+      allowed_cohorts_.insert(feature_engagement::SearchPromotionCohort::kAll);
+    } else if (token == feature_engagement::kSearchPromotionCohortLow) {
+      allowed_cohorts_.insert(feature_engagement::SearchPromotionCohort::kLow);
+    } else if (token == feature_engagement::kSearchPromotionCohortMedium) {
+      allowed_cohorts_.insert(
+          feature_engagement::SearchPromotionCohort::kMedium);
+    } else if (token == feature_engagement::kSearchPromotionCohortPower) {
+      allowed_cohorts_.insert(
+          feature_engagement::SearchPromotionCohort::kPower);
+    }
   }
+
+  // If empty, omitted, or if all tokens are unrecognized, safely default to
+  // targeting all cohorts.
+  if (allowed_cohorts_.empty()) {
+    allowed_cohorts_.insert(feature_engagement::SearchPromotionCohort::kAll);
+  }
+}
+
+bool SearchPromotionManager::IsEngagementEligible() const {
+  if (allowed_cohorts_.contains(
+          feature_engagement::SearchPromotionCohort::kAll)) {
+    return true;
+  }
+  if (allowed_cohorts_.contains(
+          feature_engagement::SearchPromotionCohort::kLow) &&
+      (engagement_label_ == kEngagementLabelOneDay ||
+       engagement_label_ == kEngagementLabelLow)) {
+    return true;
+  }
+  if (allowed_cohorts_.contains(
+          feature_engagement::SearchPromotionCohort::kMedium) &&
+      engagement_label_ == kEngagementLabelMedium) {
+    return true;
+  }
+  if (allowed_cohorts_.contains(
+          feature_engagement::SearchPromotionCohort::kPower) &&
+      engagement_label_ == kEngagementLabelPower) {
+    return true;
+  }
+  return false;
 }
 
 void SearchPromotionManager::QueryEngagementLevel() {

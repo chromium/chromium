@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -96,7 +97,13 @@ class SearchPromotionManager : public KeyedService {
   // is still pending / in flight.
   std::optional<bool> IsPehEligibleForTesting() const;
 
+  // Returns the allowed cohorts for testing.
+  const base::flat_set<feature_engagement::SearchPromotionCohort>&
+  GetAllowedCohortsForTesting() const;
+
  private:
+  void ParseCohorts(std::string_view cohort_param);
+
   // Checks whether the user's engagement matches the requirements of the
   // configured experiment cohort.
   bool IsEngagementEligible() const;
@@ -124,8 +131,7 @@ class SearchPromotionManager : public KeyedService {
 
   feature_engagement::SearchPromotionAction action_ =
       feature_engagement::SearchPromotionAction::kDisabled;
-  feature_engagement::SearchPromotionCohort cohort_ =
-      feature_engagement::SearchPromotionCohort::kAll;
+  base::flat_set<feature_engagement::SearchPromotionCohort> allowed_cohorts_;
   std::string engagement_label_;
   bool was_accepted_ = false;
   std::optional<bool> is_peh_eligible_;

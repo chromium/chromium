@@ -1148,18 +1148,8 @@ constinit const base::FeatureParam<SearchPromotionAction>
                            SearchPromotionAction::kDisabled,
                            &kSearchPromotionActionOptions};
 
-constexpr base::FeatureParam<SearchPromotionCohort>::Option
-    kSearchPromotionCohortOptions[] = {
-        {SearchPromotionCohort::kAll, kSearchPromotionCohortAll},
-        {SearchPromotionCohort::kLow, kSearchPromotionCohortLow},
-        {SearchPromotionCohort::kMedium, kSearchPromotionCohortMedium},
-        {SearchPromotionCohort::kPower, kSearchPromotionCohortPower},
-};
-
-constinit const base::FeatureParam<SearchPromotionCohort>
-    kSearchPromotionCohort{&kIPHSearchPromotionFeature, "cohort",
-                           SearchPromotionCohort::kAll,
-                           &kSearchPromotionCohortOptions};
+constinit const base::FeatureParam<std::string> kSearchPromotionCohort{
+    &kIPHSearchPromotionFeature, "cohort", kSearchPromotionCohortAll};
 constinit const base::FeatureParam<std::string> kSearchPromotionStoreUrl{
     &kIPHSearchPromotionFeature, "store_url",
     "https://microsoftedge.microsoft.com/addons/detail/google-search-for-edge/"
