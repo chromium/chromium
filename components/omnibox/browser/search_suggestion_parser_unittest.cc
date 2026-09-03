@@ -243,6 +243,15 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     ASSERT_EQ("http://example.com/a.png",
               suggestion_result.entity_info().image_url());
     ASSERT_EQ(suggestion_result.navigational_intent(), omnibox::NAV_INTENT_LOW);
+    // Verify the translation layer synthesized suggest_template_info.
+    ASSERT_TRUE(suggestion_result.suggest_template_info().has_value());
+    const auto& suit = suggestion_result.suggest_template_info().value();
+    ASSERT_EQ("Christopher Doe", suit.primary_text().text());
+    ASSERT_EQ("American author", suit.secondary_text().text());
+    ASSERT_EQ("http://example.com/a.png", suit.image().url());
+    ASSERT_EQ("#424242", suit.image().dominant_color());
+    ASSERT_TRUE(suit.default_search_parameters().contains("gs_ssp"));
+    ASSERT_EQ("abc", suit.default_search_parameters().at("gs_ssp"));
   }
   {
     const auto& navigation_result = results.navigation_results[0];
@@ -677,6 +686,10 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
     first_entity_info.set_name("The Menu");
     first_entity_info.set_entity_id("/g/11qprvnvhw");
 
+    auto* action = first_entity_info.add_action_suggestions();
+    action->set_action_uri("https://example.com/action");
+    action->set_action_type(omnibox::ActionInfo::CALL);
+    (*action->mutable_search_parameters())["key"] = "value";
     omnibox::EntityInfo second_entity_info;
     second_entity_info.set_annotation("Thriller series");
     second_entity_info.set_dominant_color("#283e75");
@@ -746,6 +759,20 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
     ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
     ASSERT_TRUE(ProtosAreEqual(results.suggest_results[1].entity_info(),
                                first_entity_info));
+    ASSERT_TRUE(results.suggest_results[1].suggest_template_info().has_value());
+    const auto& template_info =
+        *results.suggest_results[1].suggest_template_info();
+    ASSERT_EQ(template_info.style(), omnibox::SuggestTemplateInfo::ENRICHED);
+    ASSERT_EQ(template_info.primary_text().text(), "The Menu");
+    ASSERT_EQ(template_info.image().url(),
+              "https://encrypted-tbn0.gstatic.com/images?q=the+menu");
+    ASSERT_EQ(template_info.action_suggestions_size(), 1);
+    ASSERT_EQ(template_info.action_suggestions(0).action_uri(),
+              "https://example.com/action");
+    ASSERT_EQ(template_info.action_suggestions(0).action_type(),
+              omnibox::SuggestTemplateInfo::TemplateAction::CALL);
+    ASSERT_EQ(template_info.action_suggestions(0).search_parameters().at("key"),
+              "value");
 
     ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
     ASSERT_TRUE(ProtosAreEqual(results.suggest_results[2].entity_info(),

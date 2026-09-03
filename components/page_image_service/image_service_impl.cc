@@ -131,7 +131,9 @@ class ImageServiceImpl::SuggestEntityImageURLFetcher {
     for (const auto& result : results.suggest_results) {
       // TODO(tommycli): `entity_id_` is not used yet, because it's always
       // empty right now.
-      GURL url(result.entity_info().image_url());
+      GURL url(result.suggest_template_info()
+                   ? result.suggest_template_info()->image().url()
+                   : "");
       if (url.is_valid() &&
           base::i18n::ToLower(result.match_contents()) == search_query_) {
         UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
