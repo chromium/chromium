@@ -145,8 +145,9 @@ bool IsNTPRedesignEnabled();
 // all color, sizing, and padding updates.
 bool IsNewTabPageUICleanupEnabled();
 
-// Whether only the fakebox background color and shadow updates are enabled.
-bool IsNewTabPageUICleanupFakeboxOnlyEnabled();
+// Returns whether the updated fakebox background color and shadow should be
+// applied.
+bool ShouldApplyFakeboxBackgroundAndShadow();
 
 // Returns the enabled variation of feature kNewTabPageUICleanup.
 NTPUICleanupVariation GetNewTabPageUICleanupVariation();

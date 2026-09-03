@@ -4,6 +4,10 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/ntp/shared/metrics",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h",
   "+ios/chrome/browser/shared/coordinator/scene/state/layout_state.h",
   # keep-sorted end
 ]
