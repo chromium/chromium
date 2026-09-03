@@ -95,6 +95,9 @@ BASE_DECLARE_FEATURE(kOmniboxWebUIPopupMarkAsHidden);
 BASE_DECLARE_FEATURE(kOmniboxWebUIEvictOnHide);
 BASE_DECLARE_FEATURE(kOmniboxAimEvictOnHide);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIEvictOnHide);
+BASE_DECLARE_FEATURE(kOmniboxAimSizeWebViewToPreferredHeight);
+BASE_DECLARE_FEATURE(kOmniboxWebUISizeWebViewToPreferredHeight);
+BASE_DECLARE_FEATURE(kOmniboxFullWebUISizeWebViewToPreferredHeight);
 BASE_DECLARE_FEATURE(kWebUISearchboxWithoutModelController);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the

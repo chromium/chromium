@@ -135,6 +135,10 @@ class OmniboxPopupPresenterBase
   // hidden.
   virtual bool ShouldEvictOnHide() const = 0;
 
+  // Returns if the child WebView bounds should be sized to its preferred
+  // height in RoundedOmniboxResultsFrame.
+  virtual bool ShouldSizeWebViewToPreferredHeight() const = 0;
+
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 
   OmniboxPopupPresenterDelegate& delegate() const {

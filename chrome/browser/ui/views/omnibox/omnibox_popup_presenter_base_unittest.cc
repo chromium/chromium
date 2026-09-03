@@ -27,6 +27,7 @@ class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   bool ShouldApplyHeightWorkarounds() const override { return true; }
   bool ShouldDetachWebContentsOnHide() const override { return true; }
   bool ShouldEvictOnHide() const override { return false; }
+  bool ShouldSizeWebViewToPreferredHeight() const override { return true; }
 
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";
@@ -45,6 +46,7 @@ class TestDeferredOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   bool ShouldApplyHeightWorkarounds() const override { return true; }
   bool ShouldDetachWebContentsOnHide() const override { return true; }
   bool ShouldEvictOnHide() const override { return false; }
+  bool ShouldSizeWebViewToPreferredHeight() const override { return true; }
 
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";

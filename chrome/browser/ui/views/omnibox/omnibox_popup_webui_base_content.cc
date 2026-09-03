@@ -496,5 +496,10 @@ bool OmniboxPopupWebUIBaseContent::ShouldApplyHeightWorkarounds() const {
   return !popup_presenter_ || popup_presenter_->ShouldApplyHeightWorkarounds();
 }
 
+bool OmniboxPopupWebUIBaseContent::ShouldSizeWebViewToPreferredHeight() const {
+  return popup_presenter_ &&
+         popup_presenter_->ShouldSizeWebViewToPreferredHeight();
+}
+
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)
 END_METADATA

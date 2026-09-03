@@ -90,7 +90,23 @@ TEST_F(OmniboxPopupFullPresenterTest, ResetsContentHeightOnHideWhenEnabled) {
 TEST_F(OmniboxPopupFullPresenterTest,
        PreservesContentHeightOnHideWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(omnibox::kOmniboxFullWebUIHeightWorkarounds);
+  feature_list.InitAndDisableFeature(
+      omnibox::kOmniboxFullWebUIHeightWorkarounds);
+
+  presenter_->set_content_height(400);
+  EXPECT_EQ(presenter_->content_height(), 400);
+
+  presenter_->Hide();
+  EXPECT_EQ(presenter_->content_height(), 400);
+}
+
+TEST_F(OmniboxPopupFullPresenterTest,
+       PreservesContentHeightOnHideWhenSizedToPreferredHeight) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{omnibox::
+                                kOmniboxFullWebUISizeWebViewToPreferredHeight},
+      /*disabled_features=*/{omnibox::kOmniboxFullWebUIHeightWorkarounds});
 
   presenter_->set_content_height(400);
   EXPECT_EQ(presenter_->content_height(), 400);

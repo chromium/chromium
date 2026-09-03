@@ -180,6 +180,11 @@ bool OmniboxPopupFullPresenter::ShouldEvictOnHide() const {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFullWebUIEvictOnHide);
 }
 
+bool OmniboxPopupFullPresenter::ShouldSizeWebViewToPreferredHeight() const {
+  return base::FeatureList::IsEnabled(
+      omnibox::kOmniboxFullWebUISizeWebViewToPreferredHeight);
+}
+
 bool OmniboxPopupFullPresenter::ShouldHideForInitialLayout() const {
   return false;
 }

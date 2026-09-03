@@ -91,6 +91,11 @@ bool OmniboxPopupAimPresenter::ShouldEvictOnHide() const {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxAimEvictOnHide);
 }
 
+bool OmniboxPopupAimPresenter::ShouldSizeWebViewToPreferredHeight() const {
+  return base::FeatureList::IsEnabled(
+      omnibox::kOmniboxAimSizeWebViewToPreferredHeight);
+}
+
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
   if (active) {

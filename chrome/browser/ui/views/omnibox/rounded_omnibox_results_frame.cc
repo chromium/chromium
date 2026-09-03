@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -236,6 +237,9 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
     : contents_(contents), forward_mouse_events_(forward_mouse_events) {
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
+  auto* webui_content = GetOmniboxPopupWebUIBaseContent();
+  const bool masks_to_bounds =
+      webui_content && webui_content->ShouldSizeWebViewToPreferredHeight();
   // Host the contents in its own View to simplify layout and customization.
   auto contents_host_builder =
       views::Builder<views::View>()
@@ -244,14 +248,18 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
               views::CreateSolidBackground(kColorOmniboxResultsBackground))
           .SetPaintToLayer()
           .CustomConfigure(base::BindOnce(
-              [](const int corner_radius, views::View* view) {
+              [](const int corner_radius, const bool masks_to_bounds,
+                 views::View* view) {
                 view->layer()->SetFillsBoundsOpaquely(false);
+                if (masks_to_bounds) {
+                  view->layer()->SetMasksToBounds(true);
+                }
                 // Use rounded corners.
                 view->layer()->SetRoundedCornerRadius(
                     gfx::RoundedCornersF(corner_radius));
                 view->layer()->SetIsFastRoundedCorner(true);
               },
-              corner_radius))
+              corner_radius, masks_to_bounds))
           .AddChild(views::Builder<TopBackgroundView>(
                         std::make_unique<TopBackgroundView>(location_bar))
                         .CopyAddressTo(&top_background_));
@@ -392,18 +400,26 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   results_bounds.set_x(0);
   results_bounds.set_width(contents_host_->GetContentsBounds().width());
 
-  // Workaround for 1px visual artifact. The WebUI requests a 1px minimum height
-  // when empty, creating a visual artifact. Clamping to 0 hides the widget and
-  // breaks future resize events. Instead, clamp to a 1x1 centered rect to keep
-  // the widget active while making the artifact unnoticeable.
-  // TODO(crbug.com/460908495) WebUI should not be sending min height resize
-  // requests.
-  auto* content = GetOmniboxPopupWebUIBaseContent();
-  const bool should_apply_workarounds =
-      !content || content->ShouldApplyHeightWorkarounds();
-  if (should_apply_workarounds && results_bounds.height() <= 1) {
-    results_bounds.ClampToCenteredSize(gfx::Size(1, 1));
+  auto* webui_content = GetOmniboxPopupWebUIBaseContent();
+  if (webui_content && webui_content->ShouldSizeWebViewToPreferredHeight()) {
+    const int preferred_height = webui_content->GetPreferredSize().height();
+    if (preferred_height > 0) {
+      results_bounds.set_height(preferred_height);
+    }
+  } else {
+    // Workaround for 1px visual artifact. The WebUI requests a 1px minimum
+    // height when empty, creating a visual artifact. Clamping to 0 hides the
+    // widget and breaks future resize events. Instead, clamp to a 1x1 centered
+    // rect to keep the widget active while making the artifact unnoticeable.
+    // TODO(crbug.com/460908495) WebUI should not be sending min height resize
+    // requests.
+    const bool should_apply_workarounds =
+        !webui_content || webui_content->ShouldApplyHeightWorkarounds();
+    if (should_apply_workarounds && results_bounds.height() <= 1) {
+      results_bounds.ClampToCenteredSize(gfx::Size(1, 1));
+    }
   }
+
   contents_->SetBoundsRect(results_bounds);
 }
 
