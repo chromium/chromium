@@ -16,13 +16,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_block_view.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
-#include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -185,12 +186,14 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
 
   // Check that the container contains child block buttons.
   ASSERT_EQ(block_item->children().size(), 1u);
-  views::View* row_view = block_item->children()[0];
-  ASSERT_EQ(row_view->children().size(), 3u);
+  auto* block_section_view =
+      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_section_view);
+  ASSERT_EQ(block_section_view->children().size(), 3u);
 
   // Verify text override is applied for incognito button.
-  auto* incognito_button =
-      views::AsViewClass<BlockMenuEntryButton>(row_view->children()[2]);
+  auto* incognito_button = views::AsViewClass<ActionAppMenuBlockButton>(
+      block_section_view->children()[2]);
   ASSERT_TRUE(incognito_button);
   views::Label* incognito_label = nullptr;
   for (views::View* child : incognito_button->children()) {
@@ -204,8 +207,8 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
             l10n_util::GetStringUTF16(IDS_INCOGNITO));
 
   // Verify icon override is applied for new tab button.
-  auto* new_tab_button =
-      views::AsViewClass<BlockMenuEntryButton>(row_view->children()[0]);
+  auto* new_tab_button = views::AsViewClass<ActionAppMenuBlockButton>(
+      block_section_view->children()[0]);
   ASSERT_TRUE(new_tab_button);
   views::ImageView* new_tab_icon = nullptr;
   for (views::View* child : new_tab_button->children()) {
@@ -261,7 +264,8 @@ TEST_F(ActionAppMenuTest, BlockActionsInvocation) {
 }
 
 // Tests that changing the enabled state of a delegate action item
-// dynamically synchronizes and updates the BlockMenuEntryButton view state.
+// dynamically synchronizes and updates the ActionAppMenuBlockButton view
+// state.
 TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -272,11 +276,12 @@ TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
 
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
-  views::View* row_view = block_item->children()[0];
-  ASSERT_TRUE(row_view);
+  auto* block_section_view =
+      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_section_view);
 
-  auto* new_tab_button =
-      views::AsViewClass<BlockMenuEntryButton>(row_view->children()[0]);
+  auto* new_tab_button = views::AsViewClass<ActionAppMenuBlockButton>(
+      block_section_view->children()[0]);
   ASSERT_TRUE(new_tab_button);
   EXPECT_TRUE(new_tab_button->GetEnabled());
 
@@ -414,15 +419,15 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
 
   views::View* left_container = footer_container->children()[0];
   ASSERT_EQ(left_container->children().size(), 2u);  // Settings, Help
-  EXPECT_TRUE(
-      views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
-  EXPECT_TRUE(
-      views::IsViewClass<AppMenuFooterButton>(left_container->children()[1]));
+  EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterButton>(
+      left_container->children()[0]));
+  EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterButton>(
+      left_container->children()[1]));
 
   views::View* right_container = footer_container->children()[2];
   if (browser_defaults::kShowExitMenuItem) {
     ASSERT_EQ(right_container->children().size(), 1u);  // Exit
-    EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
+    EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterButton>(
         right_container->children()[0]));
   } else {
     EXPECT_EQ(right_container->children().size(), 0u);

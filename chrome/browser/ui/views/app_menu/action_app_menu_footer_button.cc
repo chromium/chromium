@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
 
 #include <memory>
 #include <string_view>
@@ -31,7 +31,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-AppMenuFooterButton::AppMenuFooterButton(PressedCallback callback)
+ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
     : views::Button(std::move(callback)) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int icon_size =
@@ -76,9 +76,9 @@ AppMenuFooterButton::AppMenuFooterButton(PressedCallback callback)
   submenu_arrow_view_->SetVisible(false);
 }
 
-AppMenuFooterButton::~AppMenuFooterButton() = default;
+ActionAppMenuFooterButton::~ActionAppMenuFooterButton() = default;
 
-void AppMenuFooterButton::OnPaintBackground(gfx::Canvas* canvas) {
+void ActionAppMenuFooterButton::OnPaintBackground(gfx::Canvas* canvas) {
   // Paint a rounded background highlight when hovered, pressed, or
   // keyboard-focused.
   if (GetState() == ButtonState::STATE_HOVERED ||
@@ -94,22 +94,22 @@ void AppMenuFooterButton::OnPaintBackground(gfx::Canvas* canvas) {
   }
 }
 
-void AppMenuFooterButton::StateChanged(ButtonState old_state) {
+void ActionAppMenuFooterButton::StateChanged(ButtonState old_state) {
   views::Button::StateChanged(old_state);
   SchedulePaint();
 }
 
-void AppMenuFooterButton::OnFocus() {
+void ActionAppMenuFooterButton::OnFocus() {
   views::Button::OnFocus();
   SchedulePaint();
 }
 
-void AppMenuFooterButton::OnBlur() {
+void ActionAppMenuFooterButton::OnBlur() {
   views::Button::OnBlur();
   SchedulePaint();
 }
 
-void AppMenuFooterButton::SetText(std::u16string_view text) {
+void ActionAppMenuFooterButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));
   if (!text.empty()) {
     GetViewAccessibility().SetName(std::u16string(text));
@@ -117,7 +117,8 @@ void AppMenuFooterButton::SetText(std::u16string_view text) {
   }
 }
 
-void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
+void ActionAppMenuFooterButton::SetImageModel(
+    const ui::ImageModel& image_model) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_ICON_SIZE);
   if (image_model.IsEmpty()) {
@@ -133,7 +134,7 @@ void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
   }
 }
 
-void AppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
+void ActionAppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
   if (!has_submenu) {
     submenu_arrow_view_->SetVisible(false);
     return;
@@ -151,11 +152,12 @@ void AppMenuFooterButton::SetHasSubmenu(bool has_submenu) {
 }
 
 // ActionViewInterface implementation to sync ActionItem properties to the
-// AppMenuFooterButton.
-class AppMenuFooterButtonViewInterface
+// ActionAppMenuFooterButton.
+class ActionAppMenuFooterButtonViewInterface
     : public views::ButtonActionViewInterface {
  public:
-  explicit AppMenuFooterButtonViewInterface(AppMenuFooterButton* action_view)
+  explicit ActionAppMenuFooterButtonViewInterface(
+      ActionAppMenuFooterButton* action_view)
       : views::ButtonActionViewInterface(action_view),
         action_view_(action_view) {}
 
@@ -169,13 +171,13 @@ class AppMenuFooterButtonViewInterface
   }
 
  private:
-  raw_ptr<AppMenuFooterButton> action_view_;
+  raw_ptr<ActionAppMenuFooterButton> action_view_;
 };
 
 std::unique_ptr<views::ActionViewInterface>
-AppMenuFooterButton::GetActionViewInterface() {
-  return std::make_unique<AppMenuFooterButtonViewInterface>(this);
+ActionAppMenuFooterButton::GetActionViewInterface() {
+  return std::make_unique<ActionAppMenuFooterButtonViewInterface>(this);
 }
 
-BEGIN_METADATA(AppMenuFooterButton)
+BEGIN_METADATA(ActionAppMenuFooterButton)
 END_METADATA

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
 
 #include <memory>
 #include <string_view>
@@ -29,7 +29,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-BlockMenuEntryButton::BlockMenuEntryButton(PressedCallback callback)
+ActionAppMenuBlockButton::ActionAppMenuBlockButton(PressedCallback callback)
     : views::Button(std::move(callback)) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int width =
@@ -70,9 +70,9 @@ BlockMenuEntryButton::BlockMenuEntryButton(PressedCallback callback)
   label_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
-BlockMenuEntryButton::~BlockMenuEntryButton() = default;
+ActionAppMenuBlockButton::~ActionAppMenuBlockButton() = default;
 
-void BlockMenuEntryButton::OnPaintBackground(gfx::Canvas* canvas) {
+void ActionAppMenuBlockButton::OnPaintBackground(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
@@ -89,22 +89,22 @@ void BlockMenuEntryButton::OnPaintBackground(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()), corner_radius, flags);
 }
 
-void BlockMenuEntryButton::StateChanged(ButtonState old_state) {
+void ActionAppMenuBlockButton::StateChanged(ButtonState old_state) {
   views::Button::StateChanged(old_state);
   SchedulePaint();
 }
 
-void BlockMenuEntryButton::OnFocus() {
+void ActionAppMenuBlockButton::OnFocus() {
   views::Button::OnFocus();
   SchedulePaint();
 }
 
-void BlockMenuEntryButton::OnBlur() {
+void ActionAppMenuBlockButton::OnBlur() {
   views::Button::OnBlur();
   SchedulePaint();
 }
 
-void BlockMenuEntryButton::SetText(std::u16string_view text) {
+void ActionAppMenuBlockButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));
   if (!text.empty()) {
     GetViewAccessibility().SetName(std::u16string(text));
@@ -112,7 +112,8 @@ void BlockMenuEntryButton::SetText(std::u16string_view text) {
   }
 }
 
-void BlockMenuEntryButton::SetImageModel(const ui::ImageModel& image_model) {
+void ActionAppMenuBlockButton::SetImageModel(
+    const ui::ImageModel& image_model) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE);
   if (image_model.IsVectorIcon()) {
@@ -124,11 +125,11 @@ void BlockMenuEntryButton::SetImageModel(const ui::ImageModel& image_model) {
   }
 }
 
-class BlockMenuEntryButtonActionViewInterface
+class ActionAppMenuBlockButtonActionViewInterface
     : public views::ButtonActionViewInterface {
  public:
-  explicit BlockMenuEntryButtonActionViewInterface(
-      BlockMenuEntryButton* action_view)
+  explicit ActionAppMenuBlockButtonActionViewInterface(
+      ActionAppMenuBlockButton* action_view)
       : views::ButtonActionViewInterface(action_view),
         action_view_(action_view) {}
 
@@ -147,13 +148,13 @@ class BlockMenuEntryButtonActionViewInterface
   }
 
  private:
-  raw_ptr<BlockMenuEntryButton> action_view_;
+  raw_ptr<ActionAppMenuBlockButton> action_view_;
 };
 
 std::unique_ptr<views::ActionViewInterface>
-BlockMenuEntryButton::GetActionViewInterface() {
-  return std::make_unique<BlockMenuEntryButtonActionViewInterface>(this);
+ActionAppMenuBlockButton::GetActionViewInterface() {
+  return std::make_unique<ActionAppMenuBlockButtonActionViewInterface>(this);
 }
 
-BEGIN_METADATA(BlockMenuEntryButton)
+BEGIN_METADATA(ActionAppMenuBlockButton)
 END_METADATA

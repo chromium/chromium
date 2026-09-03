@@ -10,11 +10,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
-#include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
@@ -28,7 +28,6 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -308,39 +307,6 @@ void ActionAppMenu::PopulateBlockMenuItem(
   auto* block_item = view_parent->AppendMenuItem(0);
   block_item->SetTriggerActionWithNonIconChildViews(false);
   block_item->set_children_use_full_width(true);
-
-  const auto* provider = ChromeLayoutProvider::Get();
-  auto row_view = std::make_unique<views::BoxLayoutView>();
-  row_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  row_view->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
-  row_view->SetInsideBorderInsets(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ROW));
-  row_view->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING));
-  row_view->SetDefaultFlex(1);
-
-  for (const auto& block_child : block_action_item->GetChildren().children()) {
-    actions::ActionItem* block_child_ptr = block_child->GetActionItem();
-    std::optional<actions::ActionId> action_id = block_child_ptr->GetActionId();
-    CHECK(action_id.has_value());
-
-    auto button = std::make_unique<BlockMenuEntryButton>();
-    action_view_controller_.CreateActionViewRelationship(
-        button.get(), block_child_ptr->GetAsWeakPtr());
-    command_to_action_map_[action_id.value()] = block_child_ptr;
-
-    if (std::u16string* text_override =
-            block_child->GetProperty(ActionAppMenuManager::kTextOverrideKey)) {
-      button->SetText(*text_override);
-    }
-
-    if (ui::ImageModel* icon_override =
-            block_child->GetProperty(ActionAppMenuManager::kIconOverrideKey)) {
-      button->SetImageModel(*icon_override);
-    }
-
-    row_view->AddChildView(std::move(button));
-  }
-  block_item->AddChildView(std::move(row_view));
+  block_item->AddChildView(std::make_unique<ActionAppMenuBlockView>(
+      block_action_item, &action_view_controller_, &command_to_action_map_));
 }

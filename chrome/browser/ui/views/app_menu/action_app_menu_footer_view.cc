@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -60,7 +60,7 @@ ActionAppMenuFooterView::ActionAppMenuFooterView(
         footer_child_ptr->GetActionId();
     CHECK(action_id.has_value());
 
-    auto button = std::make_unique<AppMenuFooterButton>();
+    auto button = std::make_unique<ActionAppMenuFooterButton>();
     action_view_controller->CreateActionViewRelationship(
         button.get(), footer_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = footer_child_ptr;

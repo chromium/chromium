@@ -9,12 +9,13 @@ import("//build/config/ui.gni")
 source_set("app_menu") {
   public = [
     "action_app_menu.h",
+    "action_app_menu_block_button.h",
+    "action_app_menu_block_view.h",
+    "action_app_menu_footer_button.h",
     "action_app_menu_footer_view.h",
     "action_app_menu_manager.h",
     "action_app_menu_search_bar_view.h",
     "action_app_menu_zoom_view.h",
-    "app_menu_footer_button.h",
-    "block_menu_entry_button.h",
     "bookmarks_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
     "tab_group_dynamic_menu.h",
@@ -43,12 +44,13 @@ source_set("app_menu") {
 source_set("impl") {
   sources = [
     "action_app_menu.cc",
+    "action_app_menu_block_button.cc",
+    "action_app_menu_block_view.cc",
+    "action_app_menu_footer_button.cc",
     "action_app_menu_footer_view.cc",
     "action_app_menu_manager.cc",
     "action_app_menu_search_bar_view.cc",
     "action_app_menu_zoom_view.cc",
-    "app_menu_footer_button.cc",
-    "block_menu_entry_button.cc",
     "bookmarks_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
     "tab_group_dynamic_menu.cc",
