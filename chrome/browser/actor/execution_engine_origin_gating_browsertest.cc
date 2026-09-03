@@ -1795,7 +1795,6 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 class ExecutionEngineOriginGatingParamBrowserTest
     : public ExecutionEngineOriginGatingBrowserTestBase,
       public testing::WithParamInterface<std::tuple<
-          /*prompt_user_for_sensitive_navigations_enabled=*/bool,
           /*confirm_navigation_to_new_origins_enabled=*/bool,
           /*prompt_user_for_navigation_to_new_origins_enabled=*/bool,
           /*allow_implicit_tool_origin_grants=*/bool>> {
@@ -1806,9 +1805,6 @@ class ExecutionEngineOriginGatingParamBrowserTest
         {
             {kGlicCrossOriginNavigationGating,
              {{
-                 {"prompt_user_for_sensitive_navigations",
-                  prompt_user_for_sensitive_navigations_enabled() ? "true"
-                                                                  : "false"},
                  {"confirm_navigation_to_new_origins",
                   confirm_navigation_to_new_origins_enabled() ? "true"
                                                               : "false"},
@@ -1824,81 +1820,17 @@ class ExecutionEngineOriginGatingParamBrowserTest
   }
   ~ExecutionEngineOriginGatingParamBrowserTest() override = default;
 
-  bool prompt_user_for_sensitive_navigations_enabled() {
+  bool confirm_navigation_to_new_origins_enabled() {
     return std::get<0>(GetParam());
   }
-  bool confirm_navigation_to_new_origins_enabled() {
+  bool prompt_user_for_navigation_to_new_origins_enabled() {
     return std::get<1>(GetParam());
   }
-  bool prompt_user_for_navigation_to_new_origins_enabled() {
-    return std::get<2>(GetParam());
-  }
-  bool allow_implicit_tool_origin_grants() { return std::get<3>(GetParam()); }
+  bool allow_implicit_tool_origin_grants() { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
-                       ConfirmSensitiveOriginWithUserDisabled) {
-  if (prompt_user_for_sensitive_navigations_enabled()) {
-    GTEST_SKIP() << "prompt_user_for_sensitive_navigations enabled already "
-                    "tested in ExecutionEngineOriginGatingBrowserTest.";
-  }
-
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL sensitive_url = embedded_https_test_server().GetURL(
-      "sensitive.example.com", "/actor/blank.html");
-
-  OpenGlicAndCreateTask();
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
-
-  // Start on example.com.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", start_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
-                       NavigationConfirmation) {
-  if (prompt_user_for_navigation_to_new_origins_enabled()) {
-    GTEST_SKIP() << "This feature param is tested in "
-                    "ExecutionEngineOriginGatingParamBrowserTest."
-                    "PromptUserForNewOrigin.";
-  }
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL second_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  // Have navigation confirmations reject new origins. This should not stop the
-  // navigation when confirm_navigation_to_new_origins is disabled.
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", start_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", second_url)));
-  if (confirm_navigation_to_new_origins_enabled()) {
-    ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  } else {
-    ClickTarget("#link", mojom::ActionResultCode::kOk);
-  }
-}
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
                        PromptUserForNewOrigin) {
@@ -1961,24 +1893,17 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(click_link), result.GetCallback());
-  if (prompt_user_for_sensitive_navigations_enabled()) {
-    ExpectOkResult(result);
-  } else {
-    ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
-  }
+  ExpectOkResult(result);
 
   // Trigger ExecutionEngine destructor for metrics.
   StopAllTasks();
 
-  // If prompting is enabled, there should be a single confirmation.
-  histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.PermissionGranted", true,
-      prompt_user_for_sensitive_navigations_enabled() ? 1 : 0);
-  // If prompting is enabled, the allow-list should have 1 entry at the end of
-  // the task.
-  histogram_tester.ExpectBucketCount(
-      "Actor.NavigationGating.AllowListSize", 1,
-      prompt_user_for_sensitive_navigations_enabled() ? 1 : 0);
+  // There should be a single confirmation.
+  histogram_tester.ExpectBucketCount("Actor.NavigationGating.PermissionGranted",
+                                     true, 1);
+  // The allow-list should have 1 entry at the end of the task.
+  histogram_tester.ExpectBucketCount("Actor.NavigationGating.AllowListSize", 1,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
@@ -2061,32 +1986,26 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 }
 
 // Tuple values are:
-// (prompt_user_for_sensitive_navigations,
-//  confirm_navigation_to_new_origins,
+// (confirm_navigation_to_new_origins,
 //  prompt_user_for_navigation_to_new_origins,
 //  allow_implicit_tool_origin_grants).
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExecutionEngineOriginGatingParamBrowserTest,
-    testing::Values(std::make_tuple(false, true, false, true),
-                    std::make_tuple(true, false, false, true),
-                    std::make_tuple(true, true, true, true),
-                    std::make_tuple(true, true, false, false)),
-    [](auto& info) {
-      if (!std::get<0>(info.param)) {
-        return "UserConfirmDisabled";
-      }
-      if (!std::get<1>(info.param)) {
-        return "NavigationConfirmDisabled";
-      }
-      if (std::get<2>(info.param)) {
-        return "PromptToConfirmNavigation";
-      }
-      if (!std::get<3>(info.param)) {
-        return "ImplicitToolOriginGrantsDisabled";
-      }
-      NOTREACHED();
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineOriginGatingParamBrowserTest,
+                         testing::Values(std::make_tuple(false, false, true),
+                                         std::make_tuple(true, true, true),
+                                         std::make_tuple(true, false, false)),
+                         [](auto& info) {
+                           if (!std::get<0>(info.param)) {
+                             return "NavigationConfirmDisabled";
+                           }
+                           if (std::get<1>(info.param)) {
+                             return "PromptToConfirmNavigation";
+                           }
+                           if (!std::get<2>(info.param)) {
+                             return "ImplicitToolOriginGrantsDisabled";
+                           }
+                           NOTREACHED();
+                         });
 
 class ExecutionEngineOriginGatingSafetyDisabledBrowserTest
     : public ExecutionEngineOriginGatingBrowserTestBase {

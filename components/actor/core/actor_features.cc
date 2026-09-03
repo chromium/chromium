@@ -31,11 +31,6 @@ BASE_FEATURE(kGlicActorLocalhostIsSensitive, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
-                   kGlicPromptUserForSensitiveNavigations,
-                   &kGlicCrossOriginNavigationGating,
-                   "prompt_user_for_sensitive_navigations",
-                   true);
-BASE_FEATURE_PARAM(bool,
                    kGlicConfirmNavigationToNewOrigins,
                    &kGlicCrossOriginNavigationGating,
                    "confirm_navigation_to_new_origins",

@@ -119,7 +119,6 @@ namespace actor {
 enum class ActorCustomPredicate {
   kSafetyList,
   kSensitiveUrl,
-  kSensitiveUrlPromptsDisabled,
   kLookalikeUrl,
   kSafeBrowsing,
   kSafetyChecksDisabled,
@@ -144,8 +143,6 @@ constexpr std::string_view ActorCustomPredicateToString(
       return "actor_safety_list_check";
     case ActorCustomPredicate::kSensitiveUrl:
       return "actor_sensitive_url_check";
-    case ActorCustomPredicate::kSensitiveUrlPromptsDisabled:
-      return "actor_sensitive_url_prompts_disabled_check";
     case ActorCustomPredicate::kLookalikeUrl:
       return "actor_lookalike_url_check";
     case ActorCustomPredicate::kSafeBrowsing:
@@ -424,20 +421,6 @@ void BlockSensitiveUrlWhenNavigationGatingDisabled(
   BlockSensitiveUrl(profile, context, source, destination, std::move(callback));
 }
 
-void BlockSensitiveUrlWhenPromptsDisabled(
-    Profile* profile,
-    origin_gating::GatingDecisionContext* context,
-    const GURL& source,
-    const GURL& destination,
-    base::OnceCallback<void(origin_gating::Decision)> callback) {
-  if (kGlicPromptUserForSensitiveNavigations.Get()) {
-    std::move(callback).Run(origin_gating::Decision::kNoDecision);
-    return;
-  }
-
-  BlockSensitiveUrl(profile, context, source, destination, std::move(callback));
-}
-
 origin_gating::Decision BlockLookalikeUrl(
     Profile* profile,
     origin_gating::GatingDecisionContext* context,
@@ -555,8 +538,6 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
           return decision.is_allowed
                      ? ExecutionEngine::GatingDecision::kAllowByStaticList
                      : ExecutionEngine::GatingDecision::kBlockByStaticList;
-        case ActorCustomPredicate::kSensitiveUrlPromptsDisabled:
-          return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
         case ActorCustomPredicate::kDangerousMimeType:
           return ExecutionEngine::GatingDecision::kBlockByDangerousMimeType;
         case ActorCustomPredicate::kSensitiveUrl:
@@ -618,7 +599,6 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
         case ActorCustomPredicate::kDangerousMimeType:
           return MayActOnUrlBlockReason::kDangerousMimeType;
         case ActorCustomPredicate::kSensitiveUrl:
-        case ActorCustomPredicate::kSensitiveUrlPromptsDisabled:
           return MayActOnUrlBlockReason::kOptimizationGuideBlock;
         case ActorCustomPredicate::kLookalikeUrl:
           return MayActOnUrlBlockReason::kLookalikeDomain;
@@ -803,13 +783,6 @@ ExecutionEngine::ExecutionEngine(
                    {GateableEvent::kNavigationRequest}},
                   {DecisionSource::kCacheWithoutUserConfirmation,
                    {GateableEvent::kNavigationResponse}},
-                  {CustomPredicate(
-                       base::BindRepeating(
-                           &BlockSensitiveUrlWhenPromptsDisabled,
-                           task_->GetProfile()),
-                       ActorCustomPredicate::kSensitiveUrlPromptsDisabled),
-                   {GateableEvent::kNavigationResponse,
-                    GateableEvent::kPageAction}},
               },
               kGlicNavigationGatingUseSiteNotOrigin.Get())),
       dark_launch_origin_gating_cache_(

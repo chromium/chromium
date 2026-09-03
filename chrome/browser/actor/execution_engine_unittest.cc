@@ -1534,10 +1534,7 @@ TEST_F(ExecutionEngineUrlGatingTest,
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGlicCrossOriginNavigationGating,
-        {{"prompt_user_for_sensitive_navigations", "true"}}}},
-      {});
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
 
   SetExpectedOptimizationGuideCall(
       url, optimization_guide::OptimizationGuideDecision::kFalse);
@@ -1567,10 +1564,7 @@ TEST_F(ExecutionEngineUrlGatingTest,
   const GURL destination_url("https://b.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGlicCrossOriginNavigationGating,
-        {{"prompt_user_for_sensitive_navigations", "false"}}}},
-      {});
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
 
   SetExpectedOptimizationGuideCall(
       destination_url, optimization_guide::OptimizationGuideDecision::kTrue);
