@@ -147,7 +147,7 @@ public class StatusView extends LinearLayout {
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
         setCornerRadiusRes(R.dimen.omnibox_search_engine_logo_composed_half_size);
-        mIconView.setClipToOutline(true);
+        mIconView.setClipToOutline(/* clipToOutline= */ true);
 
         configureAccessibilityDescriptions();
     }
@@ -312,7 +312,7 @@ public class StatusView extends LinearLayout {
                     // Finish any running animations in the existing drawable because we're going to
                     // reuse it. Concurrent animations could clobber each other's changes and cause
                     // inconsistent states.
-                    transitionDrawable.finishTransition(true);
+                    transitionDrawable.finishTransition(/* resolveToFinalDrawable= */ true);
                     existingDrawable = transitionDrawable.getFinalDrawable();
                 }
 
@@ -322,8 +322,10 @@ public class StatusView extends LinearLayout {
                                 transitionType == IconTransitionType.ROTATE
                                         ? getRotatedIcon(targetIcon)
                                         : targetIcon);
-                newImage.setLayerSize(0, mStatusIconSize, mStatusIconSize);
-                newImage.setLayerSize(1, mStatusIconSize, mStatusIconSize);
+                newImage.setLayerSize(
+                        /* index= */ 0, /* w= */ mStatusIconSize, /* h= */ mStatusIconSize);
+                newImage.setLayerSize(
+                        /* index= */ 1, /* w= */ mStatusIconSize, /* h= */ mStatusIconSize);
 
                 mIconView.setImageDrawable(newImage);
 
@@ -334,7 +336,7 @@ public class StatusView extends LinearLayout {
                     if (duration > 0) {
                         keepControlsShownForAnimation();
                     }
-                    newImage.setCrossFadeEnabled(true);
+                    newImage.setCrossFadeEnabled(/* crossFade= */ true);
                     newImage.startTransition()
                             .setDuration(duration)
                             .withEndAction(this::resetAnimationStatus);
