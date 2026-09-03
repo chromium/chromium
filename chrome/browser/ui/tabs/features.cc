@@ -30,6 +30,8 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE(kTabSearchCjkWordBoundary, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabSearchPerformanceImprovements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kVerticalTabsNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabsExpandOnHover, base::FEATURE_DISABLED_BY_DEFAULT);

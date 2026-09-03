@@ -31,6 +31,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectTabAccess);
 // Enables CJK word boundary detection in Tab Search.
 BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
 
+// Enables performance optimizations for Tab Search when large numbers of tabs
+// are open, including asynchronous favicon loading.
+BASE_DECLARE_FEATURE(kTabSearchPerformanceImprovements);
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
