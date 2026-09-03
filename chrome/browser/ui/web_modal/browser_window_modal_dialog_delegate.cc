@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 
+#include "base/functional/bind.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
@@ -20,6 +21,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
 DEFINE_USER_DATA(BrowserWindowModalDialogDelegate);
@@ -73,7 +76,14 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
       if (content_settings->GetContentSetting(
               url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
           CONTENT_SETTING_ALLOW) {
-        web_contents->ExitFullscreen(true);
+        // Defer exiting fullscreen to prevent synchronous window management
+        // messages (e.g. direct WndProc calls on Windows) from destroying the
+        // WebContents or callers while modal dialog presentation is on the
+        // stack.
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(&content::WebContents::ExitFullscreen,
+                                      web_contents->GetWeakPtr(),
+                                      /*will_cause_resize=*/true));
       }
     }
   }
