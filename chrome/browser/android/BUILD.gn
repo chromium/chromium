@@ -971,16 +971,43 @@ if (is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "webapps/twa_launch_queue_tab_helper_unittest.cc" ]
+  sources = [
+    "recently_closed_tabs_bridge_unittest.cc",
+    "tab_android_unittest.cc",
+    "tab_web_contents_destroyer_unittest.cc",
+    "webapps/twa_launch_queue_tab_helper_unittest.cc",
+  ]
   deps = [
     ":android",
+    ":tabs_public",
+    "//cc/slim",
+    "//chrome/android:chrome_jni_headers",
     "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/actor/ui:test_support",
     "//chrome/browser/renderer_host",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui/android/tab_model",
+    "//chrome/browser/ui/javascript_dialogs",
     "//chrome/browser/ui/tabs:page_context_eligibility_helper_unit_tests",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
+    "//components/actor/core",
+    "//components/javascript_dialogs",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/sessions",
+    "//components/sessions:session_id",
+    "//components/tab_groups",
+    "//components/tabs:public",
     "//components/webapps/browser",
     "//content/test:test_support",
+    "//net",
+    "//services/network/public/mojom",
     "//testing/gtest",
+    "//ui/android",
+    "//ui/base",
     "//url",
   ]
 }

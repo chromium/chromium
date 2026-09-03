@@ -354,6 +354,26 @@ if (enable_printing) {
           "//pdf",
         ]
       }
+
+      if (enable_print_preview) {
+        sources += [
+          "print_browsertest.cc",
+          "print_browsertest.h",
+          "print_preview_browsertest.cc",
+          "print_preview_browsertest.h",
+          "print_preview_dialog_controller_browsertest.cc",
+        ]
+        deps += [
+          ":test_support",
+          "//chrome/browser/ui/webui/print_preview",
+          "//chrome/browser/ui/webui/print_preview:browser_tests",
+          "//printing:test_support",
+        ]
+
+        if (!is_chromeos) {
+          sources += [ "system_access_process_print_browsertest.cc" ]
+        }
+      }
     }
   }
 }
