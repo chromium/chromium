@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -462,11 +464,11 @@ public class MultiInstanceManagerApi31Test {
     public void testNewWindow_RestoreOnStartup_NewTabPref() throws Exception {
         // Setup.
         DeviceInfo.setIsDesktopForTesting(true);
-        // Note: Window 0 was launched by startOnBlankPage() in setUp() when the preference was
-        // still PREF_UNSET, so Window 0 did not claim the startup policy. Thus, when newActivity
-        // (Window 1) initializes, it acts as the first window to claim NEW_TAB.
+        // Note: Reset policy so that newActivity (Window 1) acts as the first window to claim
+        // NEW_TAB, since Window 0 already initialized during setUp().
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
                     ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                             SessionStartupPref.NEW_TAB);
                 });
@@ -504,11 +506,11 @@ public class MultiInstanceManagerApi31Test {
         // Setup.
         DeviceInfo.setIsDesktopForTesting(true);
         List<String> startupUrls = List.of(UrlConstants.GOOGLE_URL, "https://www.yahoo.com/");
-        // Note: Window 0 was launched by startOnBlankPage() in setUp() when the preference was
-        // still PREF_UNSET, so Window 0 did not claim the startup policy. Thus, when newActivity
-        // (Window 1) initializes, it acts as the first window to claim URLS.
+        // Note: Reset policy so that newActivity (Window 1) acts as the first window to claim and
+        // evaluate URLS, since Window 0 already initialized during setUp().
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
                     ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                             SessionStartupPref.URLS);
                     ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(startupUrls);
@@ -537,6 +539,69 @@ public class MultiInstanceManagerApi31Test {
                             UrlConstants.GOOGLE_URL, model.getTabAt(0).getOriginalUrl().getSpec());
                     assertEquals(
                             "https://www.yahoo.com/", model.getTabAt(1).getOriginalUrl().getSpec());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ON_STARTUP_WINDOW_POLICY,
+        ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF
+    })
+    public void testNewWindow_RestoreOnStartup_UrlsPref_WithUrlIntent() throws Exception {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        List<String> startupUrls = List.of(UrlConstants.GOOGLE_URL, "https://www.yahoo.com/");
+        // Note: Reset policy so that newActivity (Window 1) acts as the first window to claim and
+        // evaluate URLS, since Window 0 already initialized during setUp().
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                            SessionStartupPref.URLS);
+                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(startupUrls);
+                });
+
+        // Act.
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        context,
+                        /* windowId= */ -1,
+                        /* preferNew= */ true,
+                        /* openAdjacently= */ false,
+                        NewWindowAppSource.UNKNOWN);
+        intent.setData(Uri.parse("https://www.youtube.com/"));
+        intent.setAction(Intent.ACTION_VIEW);
+        // Explicitly set the launch type to FROM_EXTERNAL_APP to simulate an intent from an
+        // external application.
+        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_EXTERNAL_APP);
+        ChromeTabbedActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () -> ContextUtils.getApplicationContext().startActivity(intent));
+        mExtraActivities.add(newActivity);
+
+        // Verify.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(newActivity.getTabModelSelector().getTotalTabCount(), is(3));
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel model = newActivity.getTabModelSelector().getModel(false);
+                    assertEquals(
+                            UrlConstants.GOOGLE_URL, model.getTabAt(0).getOriginalUrl().getSpec());
+                    assertEquals(
+                            "https://www.yahoo.com/", model.getTabAt(1).getOriginalUrl().getSpec());
+                    assertEquals(
+                            "https://www.youtube.com/",
+                            model.getTabAt(2).getOriginalUrl().getSpec());
+                    assertEquals(
+                            "https://www.youtube.com/",
+                            newActivity.getActivityTab().getOriginalUrl().getSpec());
                 });
     }
 

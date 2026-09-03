@@ -2545,10 +2545,29 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             boolean isMainIntentFromLauncher = false;
             boolean isLaunchingDraggedTabOrGroup = false;
 
+            if (getSavedInstanceState() == null
+                    && mTabModelOrchestrator.getRestoredTabCount() == 0) {
+                boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
+                List<String> startupUrls =
+                        TabbedStartupWindowPolicyDelegate.getInstance()
+                                .resolveStartupUrls(incognito);
+                if (!startupUrls.isEmpty()) {
+                    LoadUrlParams loadUrlParams = new LoadUrlParams(startupUrls.get(0));
+                    getTabCreator(incognito)
+                            .createNewTabs(
+                                    loadUrlParams,
+                                    startupUrls.subList(1, startupUrls.size()),
+                                    TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF,
+                                    /* parent= */ null,
+                                    /* openInTabGroup= */ false,
+                                    /* intent= */ null);
+                }
+            }
+
             if (getSavedInstanceState() == null && intent != null) {
                 if (!shouldIgnoreIntent()) {
                     isLaunchingDraggedTabOrGroup = maybeLaunchDraggedTabOrGroupInWindow(intent);
-                    // If launching tab or group drag was successful, ignore handling url intent
+                    // If launching tab or group drag was successful, ignore handling url intent.
                     isIntentWithEffect =
                             isLaunchingDraggedTabOrGroup || maybeHandleUrlIntent(intent);
                     maybeHandleOpenTabGroupIntent(intent);
@@ -2614,10 +2633,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             mTabModelOrchestrator.restoreTabs(activeTabBeingRestored);
 
-            // Only create an initial tab if no tabs were restored and no intent was handled.
-            // Also, check whether the active tab was supposed to be restored and that the total
-            // tab count is now non zero.  If this is not the case, tab restore failed and we need
-            // to create a new tab as well.
+            // Only create an initial tab if no tabs were restored, no startup URLs were loaded, and
+            // no intent was handled. Also, check whether the active tab was supposed to be restored
+            // and that the total tab count is now non zero.  If this is not the case, tab restore
+            // failed and we need to create a new tab as well.
             if (!mCreatedTabOnStartup
                     || (!hasTabWaitingForReparenting
                             && activeTabBeingRestored
@@ -2746,43 +2765,28 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         mPendingInitialTabCreation = false;
         boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
 
-        List<String> startupUrls =
-                TabbedStartupWindowPolicyDelegate.getInstance().resolveStartupUrls(incognito);
-        if (!startupUrls.isEmpty()) {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(startupUrls.get(0));
-            getTabCreator(incognito)
-                    .createNewTabs(
-                            loadUrlParams,
-                            startupUrls.subList(1, startupUrls.size()),
-                            TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF,
-                            /* parent= */ null,
-                            /* openInTabGroup= */ false,
-                            /* intent= */ null);
-        } else {
-            String url = null;
-            GURL homepageGurl = HomepageManager.getInstance().getHomepageGurlForZeroTabs(incognito);
+        String url = null;
+        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurlForZeroTabs(incognito);
 
-            ProfileProvider profileProvider = getProfileProviderSupplier().get();
-            Profile profile =
-                    incognito
-                            ? profileProvider.getOffTheRecordProfile()
-                            : profileProvider.getOriginalProfile();
-            UrlConstantResolver urlConstantResolver =
-                    UrlConstantResolverFactory.getForProfile(profile);
-            // Migrate legacy NTP URLs (chrome://newtab) to the newer format
-            // (chrome-native://newtab).
-            if (homepageGurl.isEmpty() || UrlUtilities.isNtpUrl(homepageGurl)) {
-                url = urlConstantResolver.getNtpUrl();
-            } else {
-                url = homepageGurl.getSpec();
-            }
-            getTabCreator(incognito).launchUrl(url, TabLaunchType.FROM_STARTUP);
-            PartnerBrowserCustomizations.getInstance()
-                    .onCreateInitialTab(
-                            url,
-                            getLifecycleDispatcher(),
-                            HomepageManager::getHomepageCharacterizationHelper);
+        ProfileProvider profileProvider = getProfileProviderSupplier().get();
+        Profile profile =
+                incognito
+                        ? profileProvider.getOffTheRecordProfile()
+                        : profileProvider.getOriginalProfile();
+        UrlConstantResolver urlConstantResolver = UrlConstantResolverFactory.getForProfile(profile);
+        // Migrate legacy NTP URLs (chrome://newtab) to the newer format
+        // (chrome-native://newtab).
+        if (homepageGurl.isEmpty() || UrlUtilities.isNtpUrl(homepageGurl)) {
+            url = urlConstantResolver.getNtpUrl();
+        } else {
+            url = homepageGurl.getSpec();
         }
+        getTabCreator(incognito).launchUrl(url, TabLaunchType.FROM_STARTUP);
+        PartnerBrowserCustomizations.getInstance()
+                .onCreateInitialTab(
+                        url,
+                        getLifecycleDispatcher(),
+                        HomepageManager::getHomepageCharacterizationHelper);
 
         // If we didn't call setInitialOverviewState() in onStartWithNative() because
         // mPendingInitialTabCreation was true then do so now.
