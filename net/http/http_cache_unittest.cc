@@ -13398,6 +13398,21 @@ TEST_F(HttpCacheTest, CacheEntryStatusNotInCache) {
             response_info.cache_entry_status);
 }
 
+TEST_F(HttpCacheTest, CacheEntryStatusNotInCacheExternalCondition) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.request_headers = "If-None-Match: \"foo\"\r\n";
+
+  HttpResponseInfo response_info;
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response_info);
+
+  EXPECT_FALSE(response_info.was_cached);
+  EXPECT_TRUE(response_info.network_accessed);
+  EXPECT_EQ(CacheEntryStatus::ENTRY_NOT_IN_CACHE,
+            response_info.cache_entry_status);
+}
+
 TEST_F(HttpCacheTest, CacheEntryStatusUsed) {
   MockHttpCache cache;
   RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
@@ -14767,6 +14782,7 @@ TEST_P(HttpCacheNoVarySearchTest, ExternalValidatorDoesNotMatch) {
   RunTransactionTestWithRequest(cache(), transaction, request, &info);
   EXPECT_FALSE(info.was_cached);
   EXPECT_TRUE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_NOT_IN_CACHE);
   EXPECT_EQ(info.headers->response_code(), 200);
 
   MockTransaction& probe = CreateMockTransaction("q=fred&a=3", "");

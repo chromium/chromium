@@ -1351,6 +1351,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
     case UPDATE:
       // There is no cache entry to update; proceed without caching.
       DCHECK(!partial_);
+      UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_NOT_IN_CACHE);
       mode_ = NONE;
       TransitionToState(STATE_SEND_REQUEST);
       break;
