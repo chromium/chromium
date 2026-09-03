@@ -851,6 +851,10 @@
     "META": {"sizes": {"includes": [90]}},
     "includes": [5040],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_search/shared/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5050],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [5060],

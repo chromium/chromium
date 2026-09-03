@@ -4,13 +4,13 @@
 
 import './app.js';
 
+export type {OptionKeyObject, Range, SearchOptions} from '/tab_search/shared/search.js';
+export {search} from '/tab_search/shared/search.js';
+export type {SearchApiProxy} from '/tab_search/shared/search_api_proxy.js';
+export {SearchApiProxyImpl} from '/tab_search/shared/search_api_proxy.js';
 export {getInstance as getAnnouncerInstance, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
-export type {OptionKeyObject, Range, SearchOptions} from './search.js';
-export {search} from './search.js';
-export type {SearchApiProxy} from './search_api_proxy.js';
-export {SearchApiProxyImpl} from './search_api_proxy.js';
 export {SelectableLazyListElement} from './selectable_lazy_list.js';
 export {SplitNewTabPageAppElement} from './split_view/app.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, SplitViewData, TabData, TabItemType, tokenToString} from './tab_data.js';

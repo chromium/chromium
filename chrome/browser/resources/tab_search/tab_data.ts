@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {Range} from '/tab_search/shared/search.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {Range} from './search.js';
 import type {RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
 import {SplitTabLayout} from './tab_search.mojom-webui.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';

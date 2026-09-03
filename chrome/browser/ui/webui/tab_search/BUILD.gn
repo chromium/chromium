@@ -47,6 +47,7 @@ source_set("tab_search") {
     "//chrome/browser/glic/resources:grit",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/tab_search:resources",
+    "//chrome/browser/resources/tab_search/shared:resources",
     "//chrome/browser/sessions",
     "//chrome/browser/signin",
     "//chrome/browser/sync",

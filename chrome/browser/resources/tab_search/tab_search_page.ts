@@ -12,6 +12,8 @@ import './tab_search_split_item.js';
 import './title_item.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {SearchOptions} from '/tab_search/shared/search.js';
+import {search} from '/tab_search/shared/search.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrSearchFieldMixinLit} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin_lit.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -23,8 +25,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {SearchOptions} from './search.js';
-import {search} from './search.js';
 import type {SelectableLazyListElement} from './selectable_lazy_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './selectable_lazy_list.js';
 import {ariaLabel, getDisplayHostnameForUrl, getHostname, getTabGroupTitle, getTitle, normalizeURL, SplitViewData, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';

@@ -27,8 +27,6 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
-    "search.ts",
-    "search_api_proxy.ts",
     "selectable_lazy_list.ts",
     "split_new_tab_page.ts",
     "split_view/app.html.ts",
@@ -78,6 +76,7 @@ build_webui("build") {
     "//tools/typescript/definitions/pending.d.ts",
   ]
   ts_deps = [
+    "//chrome/browser/resources/tab_search/shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
@@ -85,6 +84,11 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "/tab_search/shared/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/tab_search/shared/tsc/*",
+            target_gen_dir) ]
 
   webui_context_type = "trusted"
   optimize = optimize_webui
@@ -94,5 +98,9 @@ build_webui("build") {
       "split_new_tab_page.js",
       "tab_search.js",
     ]
+    optimize_webui_external_paths =
+        [ "/tab_search/shared|" + rebase_path(
+              "$root_gen_dir/chrome/browser/resources/tab_search/shared/tsc",
+              root_build_dir) ]
   }
 }
