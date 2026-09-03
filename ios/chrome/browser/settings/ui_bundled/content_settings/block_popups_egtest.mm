@@ -230,9 +230,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleBlockPopupsRequest(
         performAction:grey_tap()];
 
     // Make sure that the "example.com" exception is listed.
-    [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                            allowedPattern))]
-        assertWithMatcher:grey_sufficientlyVisible()];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_text(base::SysUTF8ToNSString(allowedPattern))];
 
     // Toggle the switch off via the UI and make sure the exceptions are not
     // visible.
@@ -240,9 +239,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleBlockPopupsRequest(
         selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                      @"blockPopupsContentView_switch", YES)]
         performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-    [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                            allowedPattern))]
-        assertWithMatcher:grey_notVisible()];
+    [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                        grey_text(base::SysUTF8ToNSString(allowedPattern))];
     [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
         assertWithMatcher:grey_notVisible()];
     [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -254,11 +252,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleBlockPopupsRequest(
         selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                      @"blockPopupsContentView_switch", NO)]
         performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
-    [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                            allowedPattern))]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_text(base::SysUTF8ToNSString(allowedPattern))];
+    [ChromeEarlGrey
+        waitForSufficientlyVisibleElementWithMatcher:NavigationBarEditButton()];
 
     // Disable EarlGrey synchronization to avoid infinite spinner loop.
     ScopedSynchronizationDisabler synchronizationDisabler;
