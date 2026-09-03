@@ -109,7 +109,7 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataThemeCollection other) {
             return super.equals(obj)
                     && Objects.equals(mCustomBackgroundInfo, other.mCustomBackgroundInfo);

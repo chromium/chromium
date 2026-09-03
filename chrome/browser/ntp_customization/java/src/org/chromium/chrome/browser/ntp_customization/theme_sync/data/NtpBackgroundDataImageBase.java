@@ -192,7 +192,7 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataImageBase other) {
             return super.equals(obj) && Objects.equals(mPrimaryColor, other.mPrimaryColor);
         }

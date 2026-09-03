@@ -71,7 +71,7 @@ public class NtpBackgroundDataBase {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataBase other) {
             return mPlatformType == other.getPlatformType()
                     && getBackgroundType() == other.getBackgroundType();

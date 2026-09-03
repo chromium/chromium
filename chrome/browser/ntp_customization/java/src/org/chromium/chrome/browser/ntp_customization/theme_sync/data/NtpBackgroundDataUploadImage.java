@@ -53,7 +53,7 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataImageBase {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataUploadImage other) {
             return super.equals(obj)
                     && Objects.equals(getFileIdHash(), other.getFileIdHash())

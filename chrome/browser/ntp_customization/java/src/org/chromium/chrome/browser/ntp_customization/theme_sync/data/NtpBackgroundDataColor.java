@@ -100,7 +100,7 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataColor other) {
             return super.equals(obj) && getThemeColorId() == other.getThemeColorId();
         }
