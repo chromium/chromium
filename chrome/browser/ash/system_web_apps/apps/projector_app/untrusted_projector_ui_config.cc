@@ -8,18 +8,22 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/common/features.h"
 
-ChromeUntrustedProjectorUIDelegate::ChromeUntrustedProjectorUIDelegate() =
+ChromeUntrustedProjectorUIDelegate::ChromeUntrustedProjectorUIDelegate(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+
+ChromeUntrustedProjectorUIDelegate::~ChromeUntrustedProjectorUIDelegate() =
     default;
 
 void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
@@ -43,19 +47,22 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isInternalServerSideSpeechRecognitionEnabled",
       ash::features::IsInternalServerSideSpeechRecognitionEnabled());
-  source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+  source->AddString("appLocale", application_locale_storage_->Get());
 }
 
-UntrustedProjectorUIConfig::UntrustedProjectorUIConfig()
+UntrustedProjectorUIConfig::UntrustedProjectorUIConfig(
+    const ApplicationLocaleStorage* application_locale_storage)
     : SystemWebAppUntrustedUIConfig(ash::kChromeUIProjectorAppHost,
-                                    ash::SystemWebAppType::PROJECTOR) {}
+                                    ash::SystemWebAppType::PROJECTOR),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 UntrustedProjectorUIConfig::~UntrustedProjectorUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
 UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                   const GURL& url) {
-  ChromeUntrustedProjectorUIDelegate delegate;
+  ChromeUntrustedProjectorUIDelegate delegate(
+      &application_locale_storage_.get());
   Profile* profile = Profile::FromWebUI(web_ui);
   // Projector is only enabled for profiles with a GAIA account (see
   // IsProjectorAllowedForProfile()), so this profile is guaranteed to have

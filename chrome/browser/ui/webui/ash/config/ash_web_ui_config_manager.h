@@ -8,8 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "url/gurl.h"
+
+class ApplicationLocaleStorage;
 
 namespace content {
 class WebUIConfig;
@@ -27,7 +30,9 @@ class AshWebUIConfigManager {
   // Returns the singleton instance pointer or nullptr (e.g., in unit tests).
   static AshWebUIConfigManager* GetInstance();
 
-  AshWebUIConfigManager();
+  // `application_locale_storage` must not be null and must outlive `this`.
+  explicit AshWebUIConfigManager(
+      const ApplicationLocaleStorage* application_locale_storage);
   AshWebUIConfigManager(const AshWebUIConfigManager&) = delete;
   AshWebUIConfigManager& operator=(const AshWebUIConfigManager&) = delete;
   ~AshWebUIConfigManager();
@@ -50,6 +55,8 @@ class AshWebUIConfigManager {
   // Unregisters all tracked WebUI configs from content::WebUIConfigMap in
   // reverse order.
   void Unregister();
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::vector<GURL> registered_urls_to_unregister_;
 

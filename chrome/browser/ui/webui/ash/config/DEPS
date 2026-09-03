@@ -79,5 +79,8 @@ include_rules = [
 specific_include_rules = {
   "ash_web_ui_config_manager\\.cc": [
     "+chrome/browser/consent_auditor/consent_auditor_factory.h",
-  ]
+  ],
+  "ash_web_ui_config_manager_unittest\\.cc": [
+    "+chrome/test/base/testing_browser_process.h",
+  ],
 }

@@ -322,7 +322,9 @@ AshWebUIConfigManager* AshWebUIConfigManager::GetInstance() {
   return g_instance;
 }
 
-AshWebUIConfigManager::AshWebUIConfigManager() {
+AshWebUIConfigManager::AshWebUIConfigManager(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
@@ -466,7 +468,8 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
   AddUntrustedWebUIConfig(
       std::make_unique<HelpAppKidsMagazineUntrustedUIConfig>());
-  AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>(
+      &application_locale_storage_.get()));
   AddUntrustedWebUIConfig(std::make_unique<UntrustedAnnotatorUIConfig>());
   AddUntrustedWebUIConfig(
       std::make_unique<file_manager::FileManagerUntrustedUIConfig>());

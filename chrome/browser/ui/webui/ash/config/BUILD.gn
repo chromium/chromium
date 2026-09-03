@@ -132,6 +132,8 @@ source_set("unit_tests") {
     ":config",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//url",
