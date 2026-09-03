@@ -10,10 +10,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Typeface;
 import android.text.Spannable;
@@ -27,6 +27,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -40,14 +41,16 @@ import java.util.List;
 public class BaseSuggestionViewProcessorUnitTest {
     private static final int FAKE_STRING_LENGTH = 10;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private Spannable mText;
 
     private ArgumentMatcher<StyleSpan> mIsHighlightStyle;
 
     @Before
     public void setUp() {
-        when(mText.length()).thenReturn(FAKE_STRING_LENGTH);
+        lenient().when(mText.length()).thenReturn(FAKE_STRING_LENGTH);
 
         mIsHighlightStyle = (StyleSpan style) -> style.getStyle() == Typeface.BOLD;
     }
