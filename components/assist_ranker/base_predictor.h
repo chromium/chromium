@@ -10,13 +10,8 @@
 
 #include "components/assist_ranker/predictor_config.h"
 #include "components/assist_ranker/ranker_model_loader.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
-
-namespace ukm {
-class UkmEntryBuilder;
-}
 
 namespace assist_ranker {
 
@@ -24,7 +19,6 @@ namespace assist_ranker {
 // See |GetPredictThresholdReplacement| method.
 const float kNoPredictThresholdReplacement = 0.0;
 
-class Feature;
 class RankerExample;
 class RankerModel;
 
@@ -49,9 +43,6 @@ class BasePredictor {
   bool IsReady();
   // Returns true if the base::Feature associated with this model is enabled.
   bool is_query_enabled() const { return is_query_enabled_; }
-
-  // Logs the features of |example| to UKM using the given source_id.
-  void LogExampleToUkm(const RankerExample& example, ukm::SourceId source_id);
 
   // Returns the model URL.
   GURL GetModelUrl() const;
@@ -79,10 +70,6 @@ class BasePredictor {
   std::unique_ptr<RankerModel> ranker_model_;
 
  private:
-  void LogFeatureToUkm(const std::string& feature_name,
-                       const Feature& feature,
-                       ukm::UkmEntryBuilder* ukm_builder);
-
   bool is_ready_ = false;
   bool is_query_enabled_ = false;
   PredictorConfig config_;

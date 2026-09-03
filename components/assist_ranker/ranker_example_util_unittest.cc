@@ -4,12 +4,9 @@
 
 #include "components/assist_ranker/ranker_example_util.h"
 
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace assist_ranker {
-
-using ::testing::ElementsAreArray;
 
 class RankerExampleUtilTest : public ::testing::Test {
  protected:
@@ -29,9 +26,7 @@ class RankerExampleUtilTest : public ::testing::Test {
   const std::string float_name_ = "float_feature";
   const float float_value_ = 3.0f;
   const std::string one_hot_name_ = "one_hot_feature";
-  const std::string elem1_ = "elem1";
-  const std::string elem2_ = "elem2";
-  const std::string one_hot_value_ = elem1_;
+  const std::string one_hot_value_ = "elem1";
   const float epsilon_ = 0.00000001f;
 };
 
@@ -101,58 +96,6 @@ TEST_F(RankerExampleUtilTest, GetOneHotValue) {
 
   EXPECT_FALSE(GetOneHotValue("", example_, &value));
   EXPECT_FALSE(GetOneHotValue("foo", example_, &value));
-}
-
-TEST_F(RankerExampleUtilTest, ScalarFeatureInt64Conversion) {
-  Feature feature;
-  int64_t int64_value;
-
-  feature.set_bool_value(true);
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 72057594037927937LL);
-
-  feature.set_int32_value(std::numeric_limits<int32_t>::max());
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 216172784261267455LL);
-
-  feature.set_int32_value(std::numeric_limits<int32_t>::lowest());
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 216172784261267456LL);
-
-  feature.set_string_value("foo");
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 288230377439557724LL);
-}
-
-TEST_F(RankerExampleUtilTest, FloatFeatureInt64Conversion) {
-  Feature feature;
-  int64_t int64_value;
-
-  feature.set_float_value(std::numeric_limits<float>::epsilon());
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 144115188948271104LL);
-
-  feature.set_float_value(-std::numeric_limits<float>::epsilon());
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 144115191095754752LL);
-
-  feature.set_float_value(std::numeric_limits<float>::max());
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 144115190214950911LL);
-
-  feature.set_float_value(std::numeric_limits<float>::lowest());
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value));
-  EXPECT_EQ(int64_value, 144115192362434559LL);
-}
-
-TEST_F(RankerExampleUtilTest, StringListInt64Conversion) {
-  Feature feature;
-  int64_t int64_value;
-
-  feature.mutable_string_list()->add_string_value("");
-  feature.mutable_string_list()->add_string_value("TEST");
-  EXPECT_TRUE(FeatureToInt64(feature, &int64_value, 1));
-  EXPECT_EQ(int64_value, 360287974776690660LL);
 }
 
 TEST_F(RankerExampleUtilTest, HashExampleFeatureNames) {

@@ -4,15 +4,12 @@
 
 #include "components/assist_ranker/base_predictor.h"
 
-#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
 #include "components/assist_ranker/ranker_example_util.h"
 #include "components/assist_ranker/ranker_model.h"
-#include "services/metrics/public/cpp/ukm_entry_builder.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace assist_ranker {
@@ -53,64 +50,6 @@ bool BasePredictor::IsReady() {
     model_loader_->NotifyOfRankerActivity();
 
   return is_ready_;
-}
-
-void BasePredictor::LogFeatureToUkm(const std::string& feature_name,
-                                    const Feature& feature,
-                                    ukm::UkmEntryBuilder* ukm_builder) {
-  DCHECK(ukm_builder);
-
-  if (!config_.feature_allowlist->contains(feature_name)) {
-    DVLOG(1) << "Feature not allowed: " << feature_name;
-    return;
-  }
-
-  switch (feature.feature_type_case()) {
-    case Feature::kBoolValue:
-    case Feature::kFloatValue:
-    case Feature::kInt32Value:
-    case Feature::kStringValue: {
-      int64_t feature_int64_value = -1;
-      FeatureToInt64(feature, &feature_int64_value);
-      DVLOG(3) << "Logging: " << feature_name << ": " << feature_int64_value;
-      ukm_builder->SetMetric(feature_name, feature_int64_value);
-      break;
-    }
-    case Feature::kStringList: {
-      for (int i = 0; i < feature.string_list().string_value_size(); ++i) {
-        int64_t feature_int64_value = -1;
-        FeatureToInt64(feature, &feature_int64_value, i);
-        DVLOG(3) << "Logging: " << feature_name << ": " << feature_int64_value;
-        ukm_builder->SetMetric(feature_name, feature_int64_value);
-      }
-      break;
-    }
-    default:
-      DVLOG(0) << "Could not convert feature to int: " << feature_name;
-  }
-}
-
-void BasePredictor::LogExampleToUkm(const RankerExample& example,
-                                    ukm::SourceId source_id) {
-  if (config_.log_type != LOG_UKM) {
-    DVLOG(0) << "Wrong log type in predictor config: " << config_.log_type;
-    return;
-  }
-
-  if (!config_.feature_allowlist) {
-    DVLOG(0) << "No allowlist specified.";
-    return;
-  }
-  if (config_.feature_allowlist->empty()) {
-    DVLOG(0) << "Empty allowlist, examples will not be logged.";
-    return;
-  }
-
-  ukm::UkmEntryBuilder builder(source_id, config_.logging_name);
-  for (const auto& feature_kv : example.features()) {
-    LogFeatureToUkm(feature_kv.first, feature_kv.second, &builder);
-  }
-  builder.Record(ukm::UkmRecorder::Get());
 }
 
 std::string BasePredictor::GetModelName() const {
