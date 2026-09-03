@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.DragObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -427,7 +428,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             mModalDialogManager,
                             tabModelSupplier,
                             mMultiThumbnailCardProvider,
-                            /* actionOnRelatedTabs= */ true,
+                            TabListLayoutType.GROUPED,
                             dataSharingTabManager,
                             getTabListItemOnClickListenerProvider(),
                             /* ungroupBarStatusHandler= */ null,

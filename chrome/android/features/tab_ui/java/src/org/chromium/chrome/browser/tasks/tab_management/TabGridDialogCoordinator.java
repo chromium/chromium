@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.An
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
@@ -239,7 +240,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mModalDialogManager,
                             currentTabModelSupplier,
                             new TabContentManagerThumbnailProvider(tabContentManager),
-                            /* actionOnRelatedTabs= */ false,
+                            TabListLayoutType.FLAT,
                             dataSharingTabManager,
                             tabListItemOnClickListenerProvider,
                             mMediator::updateUngroupBarStatus,

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
@@ -642,7 +643,7 @@ public class TabListEditorCoordinator {
                         mModalDialogManager,
                         mCurrentTabModelSupplier,
                         thumbnailProvider,
-                        mDisplayGroups,
+                        mDisplayGroups ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT,
                         /* dataSharingTabManager= */ null,
                         mTabListItemOnClickListenerProvider,
                         /* ungroupBarStatusHandler= */ null,

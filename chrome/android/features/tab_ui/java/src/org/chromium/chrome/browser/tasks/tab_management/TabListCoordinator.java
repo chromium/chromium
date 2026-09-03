@@ -160,8 +160,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param modalDialogManager Used for managing the modal dialogs.
      * @param tabModelSupplier The supplier for the current tab model.
      * @param thumbnailProvider Provider to provide screenshot related details.
-     * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
-     *     tabs.
+     * @param layoutType The {@link TabListLayoutType} of the tab list.
      * @param dataSharingTabManager The service used to initiate data sharing.
      * @param tabListItemOnClickListenerProvider Provides click listeners for regular tabs and tab
      *     group cards.
@@ -193,7 +192,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             ModalDialogManager modalDialogManager,
             NullableObservableSupplier<TabModel> tabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
-            boolean actionOnRelatedTabs,
+            @TabListLayoutType int layoutType,
             @Nullable DataSharingTabManager dataSharingTabManager,
             @Nullable TabListItemOnClickListenerProvider tabListItemOnClickListenerProvider,
             @Nullable UngroupBarStatusHandler ungroupBarStatusHandler,
@@ -324,8 +323,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     }
                 };
 
-        @TabListLayoutType
-        int layoutType = actionOnRelatedTabs ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT;
         @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
         boolean isGridMode = mMode == TabListMode.GRID;
         boolean isGridOrDialogComponent =
