@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -16,12 +17,18 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -79,6 +86,8 @@ class ScriptPromiseResolverBaseTest : public testing::Test {
         GetIsolate());
   }
 };
+
+using ScriptPromiseResolverBaseDeathTest = ScriptPromiseResolverBaseTest;
 
 TEST_F(ScriptPromiseResolverBaseTest, construct) {
   ASSERT_FALSE(GetExecutionContext()->IsContextDestroyed());
@@ -310,6 +319,93 @@ TEST_F(ScriptPromiseResolverBaseTest, OverrideScriptStateToCurrentContext) {
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
+}
+
+TEST_F(ScriptPromiseResolverBaseTest, ExceptionStateRecordsLastException) {
+  ScriptState* script_state = GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ScriptState::Scope scope(script_state);
+
+  auto* isolate_data = V8PerIsolateData::From(isolate);
+  ASSERT_TRUE(isolate_data);
+
+  const V8PerIsolateData::LastExceptionInfo& orig_exception =
+      isolate_data->GetLastExceptionInfo();
+  EXPECT_EQ(orig_exception.context_type, v8::ExceptionContext::kUnknown);
+  EXPECT_EQ(orig_exception.code, 0);
+  EXPECT_EQ(orig_exception.interface_name, String());
+  EXPECT_EQ(orig_exception.property_name, String());
+
+  v8::TryCatch try_catch(isolate);
+  ExceptionContext context(v8::ExceptionContext::kOperation, "TestInterface",
+                           "testMethod");
+  {
+    ExceptionState exception_state(isolate, context);
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "test error message");
+  }
+
+  const V8PerIsolateData::LastExceptionInfo& last_exception =
+      isolate_data->GetLastExceptionInfo();
+  EXPECT_EQ(last_exception.context_type, v8::ExceptionContext::kOperation);
+  EXPECT_EQ(last_exception.code,
+            ToExceptionCode(DOMExceptionCode::kInvalidStateError));
+  EXPECT_EQ(last_exception.interface_name, "TestInterface");
+  EXPECT_EQ(last_exception.property_name, "testMethod");
+
+  try_catch.Reset();
+
+  // LastExceptionInfo should outlive the try/catch block.
+  EXPECT_EQ(isolate_data->GetLastExceptionInfo(), last_exception);
+}
+
+TEST_F(ScriptPromiseResolverBaseTest, AssertNoPendingException_NoException) {
+  ScriptState* script_state = GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ScriptState::Scope scope(script_state);
+
+  // AssertNoPendingException should not crash when there is no exception.
+  ExceptionState::AssertNoPendingException(isolate);
+}
+
+TEST_F(ScriptPromiseResolverBaseTest,
+       AssertNoPendingException_ClearedException) {
+  ScriptState* script_state = GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ScriptState::Scope scope(script_state);
+
+  {
+    v8::TryCatch try_catch(isolate);
+    ExceptionContext context(v8::ExceptionContext::kOperation, "TestInterface",
+                             "testMethod");
+    {
+      ExceptionState exception_state(isolate, context);
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "test error message");
+    }
+  }
+
+  // AssertNoPendingException should not crash when the exception was cleared.
+  ExceptionState::AssertNoPendingException(isolate);
+}
+
+TEST_F(ScriptPromiseResolverBaseDeathTest,
+       AssertNoPendingException_PendingException) {
+  ScriptState* script_state = GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ScriptState::Scope scope(script_state);
+
+  v8::TryCatch try_catch(isolate);
+  ExceptionContext context(v8::ExceptionContext::kOperation, "TestInterface",
+                           "testMethod");
+  {
+    ExceptionState exception_state(isolate, context);
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "test error message");
+  }
+
+  EXPECT_CHECK_DEATH_WITH(ExceptionState::AssertNoPendingException(isolate),
+                          "TestInterface:testMethod");
 }
 
 }  // namespace

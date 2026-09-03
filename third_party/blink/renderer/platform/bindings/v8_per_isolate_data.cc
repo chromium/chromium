@@ -359,6 +359,28 @@ void V8PerIsolateData::InitializeTaskAttributionTrackerOnWorkerThread() {
   }
 }
 
+void V8PerIsolateData::SetLastExceptionInfo(const ExceptionContext& context,
+                                            ExceptionCode code) {
+  last_exception_info_ = LastExceptionInfo{
+      .context_type = context.GetType(),
+      .interface_name = context.GetClassName(),
+      .property_name = context.GetPropertyName(),
+      .code = code,
+  };
+}
+
+void V8PerIsolateData::SetLastExceptionInfo(v8::ExceptionContext context_type,
+                                            const String& interface_name,
+                                            const String& property_name,
+                                            ExceptionCode code) {
+  last_exception_info_ = LastExceptionInfo{
+      .context_type = context_type,
+      .interface_name = interface_name,
+      .property_name = property_name,
+      .code = code,
+  };
+}
+
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
   // Each histogram has an implicit '0' bucket (for underflow), so we can always
   // bump the minimum to 1.

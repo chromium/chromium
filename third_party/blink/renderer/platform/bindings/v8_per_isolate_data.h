@@ -33,6 +33,8 @@
 #include "base/containers/span.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-forward.h"
@@ -264,6 +267,31 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   bool InWrapperConstructor() const { return is_in_wrapper_constructor_; }
 
+  // Details of the last exception that was thrown, for crash keys.
+  struct LastExceptionInfo {
+    v8::ExceptionContext context_type = v8::ExceptionContext::kUnknown;
+    String interface_name;
+    String property_name;
+    ExceptionCode code = 0;
+
+    friend constexpr bool operator==(const LastExceptionInfo&,
+                                     const LastExceptionInfo&) = default;
+  };
+
+  const LastExceptionInfo& GetLastExceptionInfo() const {
+    return last_exception_info_;
+  }
+
+  void SetLastExceptionInfo(const ExceptionContext& context,
+                            ExceptionCode code);
+
+  void SetLastExceptionInfo(v8::ExceptionContext context_type,
+                            const String& interface_name,
+                            const String& property_name,
+                            ExceptionCode code);
+
+  void ClearLastExceptionInfo() { last_exception_info_ = {}; }
+
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
@@ -342,6 +370,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   raw_ptr<DictionaryConversionContext> top_of_dictionary_stack_ = nullptr;
   bool omit_exception_context_information_ = false;
+
+  LastExceptionInfo last_exception_info_;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

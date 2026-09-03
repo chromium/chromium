@@ -126,9 +126,7 @@ class PLATFORM_EXPORT ExceptionState {
 
   // A helper for correctly asserting no pending v8 exception (which,
   // as it happens, involved properly excluding a termination exception).
-  static void AssertNoPendingException(v8::Isolate* isolate) {
-    CHECK(!isolate->HasPendingException() || isolate->IsExecutionTerminating());
-  }
+  static void AssertNoPendingException(v8::Isolate* isolate);
 
  protected:
   // Delegated constructor for NonThrowableExceptionState
