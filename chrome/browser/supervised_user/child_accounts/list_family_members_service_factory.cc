@@ -47,16 +47,8 @@ ListFamilyMembersServiceFactory::BuildServiceInstanceForBrowserContext(
       CHECK_DEREF(profile->GetPrefs()));
 }
 
-// This is a leaf service, and this value ensures that it's created within
-// the browser context. It is required to gather information family
-// information specific to the profile.
 bool ListFamilyMembersServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
-}
-
-// Do not create this service in unit tests unless explicitly needed.
-bool ListFamilyMembersServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 

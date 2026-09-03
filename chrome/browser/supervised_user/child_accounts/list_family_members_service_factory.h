@@ -36,8 +36,9 @@ class ListFamilyMembersServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
+  // This is a leaf background service that must be implicitly created. It is
+  // required to gather family information specific to the profile.
   bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace supervised_user

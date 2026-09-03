@@ -162,9 +162,12 @@ class SupervisedUserTestEnvironment {
   // test environment, while static methods are suitable for heavier testing
   // profile use.
   void EnableSupervisedAccount();
-  void DisableSupervisedAccount();
   static void EnableSupervisedAccount(
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      network::TestURLLoaderFactory& test_url_loader_factory,
+      PrefService& pref_service);
+
+  void DisableSupervisedAccount();
 
   // SetWebFilterType methods simulate the custodian modifying "Google Chrome
   // and Web" settings.

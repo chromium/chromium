@@ -46,6 +46,8 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -79,6 +81,8 @@ class ClassifyUrlNavigationThrottleTestBase
         base::BindRepeating(&ClassifyUrlNavigationThrottleTestBase::
                                 BuildTestSupervisedUserUrlFilteringService,
                             base::Unretained(this)));
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     return builder.Build();
   }
 
@@ -150,6 +154,9 @@ class ClassifyUrlNavigationThrottleTestBase
     navigation_handle_->set_redirect_chain(redirect_chain);
   }
 
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -178,6 +185,7 @@ class ClassifyUrlNavigationThrottleTestBase
                 mock_url_checker_client_)));
   }
 
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_;
   base::HistogramTester histogram_tester_;
   bool resume_called_ = false;
@@ -204,7 +212,8 @@ class ClassifyUrlNavigationThrottleTest
   void SetUp() override {
     ClassifyUrlNavigationThrottleTestBase::SetUp();
     SupervisedUserTestEnvironment::EnableSupervisedAccount(
-        IdentityManagerFactory::GetForProfile(profile()));
+        IdentityManagerFactory::GetForProfile(profile()),
+        test_url_loader_factory(), *profile()->GetPrefs());
   }
 };
 
@@ -305,7 +314,8 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
 
     if (GetTestCase().family_link_filter_enabled) {
       SupervisedUserTestEnvironment::EnableSupervisedAccount(
-            IdentityManagerFactory::GetForProfile(profile()));
+          IdentityManagerFactory::GetForProfile(profile()),
+          test_url_loader_factory(), *profile()->GetPrefs());
     }
     if (GetTestCase().device_parental_controls_filter_enabled) {
 #if BUILDFLAG(IS_ANDROID)
@@ -509,7 +519,8 @@ class ClassifyUrlNavigationThrottleParallelizationTest
   void SetUp() override {
     ClassifyUrlNavigationThrottleTestBase::SetUp();
     SupervisedUserTestEnvironment::EnableSupervisedAccount(
-        IdentityManagerFactory::GetForProfile(profile()));
+        IdentityManagerFactory::GetForProfile(profile()),
+        test_url_loader_factory(), *profile()->GetPrefs());
   }
 
   static const std::vector<GURL> GetRedirectChain() {
