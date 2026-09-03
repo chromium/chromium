@@ -204,6 +204,11 @@ public class BrowserUiListMenuUnitTest {
         // Need to shadow the list views and populate them manually
         populateListView(headerView);
         populateListView(contentView);
+        int width = mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
+        mView.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY));
+        mView.layout(0, 0, width, 300);
         headerView.getChildAt(0).requestFocus();
         // Hit tab and now the content view should have focus.
         headerView.onKeyDown(KEYCODE_TAB, new KeyEvent(ACTION_DOWN, KEYCODE_TAB));
