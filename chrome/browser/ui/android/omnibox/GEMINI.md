@@ -45,6 +45,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Alphabetical Sorting**: Properties listed in `*Properties.java` files must be sorted alphabetically for easier lookup (both within field declarations and in `ALL_KEYS` / `ALL_UNIQUE_KEYS` arrays).
 - **Semantic Grouping & Naming**: Properties listed in `*Properties.java` files must be grouped semantically by prefix (e.g. `BTN_ADD_VISIBLE`, `BTN_ADD_ENABLED`, `BTN_ADD_CALLBACK`) so alphabetical sorting naturally groups related properties together.
 - **ViewBinder Order Consistency**: `ViewBinder` binding logic (`bind(...)` method's `if/else if` chain or dispatch logic) must follow the exact same order as `*Properties.java` for all new code.
+- **Direct Reference Equality (`propertyKey == FooProperties.KEY_NAME`)**: In `ViewBinder.bind(...)` methods, always use direct reference equality (`propertyKey == FooProperties.BAR`) rather than `FooProperties.BAR.equals(propertyKey)` or `propertyKey.equals(...)`. Property keys are unique singleton instances, and equality is never overridden for them; calling `equals()` is unnecessary, incurs virtual method invocation overhead, and is inefficient on hot UI update paths.
 - **`@IntDef` Properties**: Properties representing an `@IntDef` **MUST** use `WritableIntDefPropertyKey<T>` or `ReadableIntDefPropertyKey<T>` (typed with the `@IntDef` annotation interface) rather than generic `WritableIntPropertyKey` / `ReadableIntPropertyKey` for clarity, documentation, and compile-time safety.
 - **Prefer `ReadablePropertyKey`s**: Where applicable (such as fixed callbacks, listeners, immutable values, or delegates set only during model instantiation and never mutated afterward), `ReadablePropertyKey`s (`ReadableObjectPropertyKey`, `ReadableIntDefPropertyKey`, `ReadableBooleanPropertyKey`, etc.) should be preferred over `WritablePropertyKey`s.
 
@@ -66,6 +67,48 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - **Boolean Parameter Annotations**: Call-site boolean literals must be documented with a `/* paramName= */` comment unless the parameter's meaning is unmistakably clear from the method name (e.g., `setVisible(true)` is fine, but `open(view, /* animated= */ true)` is not). Note that ErrorProne strictly verifies that `paramName` matches the exact formal parameter name in the method declaration (`[ParameterName]`). Always check the target method declaration, or use `/* comment */` without `=` if not matching.
   - **Repeated Plain-Old-Data (POD) Parameters**: Repeated primitive / POD parameters (e.g., consecutive `int`, `long`, `float`, `boolean` values) unconditionally must be documented at call sites with `/* paramName= */` comments unless the parameter order is self-evident from the method name (e.g., `new Rect(...)` is fine, but `MotionEvent.obtain(/* downTime= */ 0, /* eventTime= */ 0, /* action= */ ACTION_DOWN, /* x= */ 0, /* y= */ 0, /* metaState= */ 0)` is not). Exact formal parameter names are required by ErrorProne.
 - **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
+- **Prefer Switch Expressions (`return switch (...)` / `variable = switch (...)`)**:
+  - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `enum`, or state values to a result.
+  - Using `return switch (key) { ... }` or assigning directly via `variable = switch (key) { ... }`:
+    - Eliminates mutable temporary variables and repetitive branching boilerplate.
+    - Eliminates fallthrough bugs (no `break` statements required) and enforces exhaustiveness at compile time.
+    - Avoids heap allocation, primitive boxing, and `<clinit>` overhead compared to static lookup collections (e.g. `Map.of()`).
+    - Substantially reduces cyclomatic complexity and visual nesting.
+- **Method Length & Single Responsibility**:
+  - The optimal size of a method is **<50 lines of code (LOC)**.
+  - Methods longer than 50 LOC should be divided assuming they do more than one thing.
+  - Methods longer than 80 lines of code are strongly discouraged.
+  - Highlight this guideline only when encountering long methods during inspection or refactoring.
+  - **Decomposition Pattern (Pipeline & Top-Down Orchestration)**:
+    When dividing long multi-step methods (e.g. loading content, processing it, and updating a view):
+    - **Top-Down Orchestration**: A high-level coordinator method should orchestrate the pipeline by invoking distinct stages in order (e.g. `d() { a(); b(); c(); }` where `a()` loads data, `b()` processes data, and `c()` updates the view/model). The coordinator may perform trivial tail operations (e.g. 1–2 lines setting a property on the model) directly without needing an artificial single-line helper. Sub-orchestrators for complex sub-phases are encouraged where appropriate.
+    - **Workers Must Not Pull Upstream Dependencies**: Downstream worker methods (e.g. formatters, processors, or updaters like `c()`) must receive required data as explicit parameters rather than calling upstream loaders/processors themselves (i.e. `c()` must not call `a()` or `b()`). Letting workers call upstream stages inverts control, hides heavy I/O or compute side effects behind innocent-sounding worker names, and violates the Single Level of Abstraction Principle (SLAP).
+    - **Testability Benefits (Unit vs. Integration)**: Decomposing strictly into pure workers and top-down coordinators enables clean test separation:
+      - Worker methods (`a()`, `b()`, `c()`) can be unit tested in isolation as focused, deterministic units with zero mocks, minimal fixtures, and no UI overhead.
+      - The coordinator (`d()`) can be tested via unit or integration tests focusing strictly on sequencing, branching, and interaction boundaries.
+  - **Empirical Codebase Distribution**:
+    Across production Omnibox Java code, method length naturally adheres to this ceiling:
+    - $\le$ 30 LOC: ~95.2%
+    - 31–50 LOC: ~2.8%
+    - 51–80 LOC: ~1.4%
+    - \> 80 LOC: ~0.6%
+    Over 98% of production methods naturally sit at $\le$ 50 LOC.
+  - **Permitted Exceptions in the 50–80 LOC Range (False Positives)**:
+    Certain structural patterns may exceed 50 LOC without violating single responsibility or introducing high cognitive load. These are permitted provided they satisfy specific criteria:
+    1. **Flat `ViewBinder.bind(...)` Dispatch Chains**:
+       - *Permitted*: An `if / else if` chain routing model properties to view setters in alphabetical order using direct reference equality (`propertyKey == FooProperties.KEY`), where each branch consists of a concise 1-to-2 line call on the view.
+       - *Justification*: Method length is purely a linear function of property count in the model. Fragmenting a pure router into artificial sub-binders breaks alphabetical ordering, disrupts searchability, and introduces indirection without reducing complexity.
+       - *Constraint*: Multi-line view manipulation logic, animations, or view hierarchy adjustments must *not* be inlined inside `bind()` branches; they must be extracted to private helper methods.
+    2. **Pure Lookup / Mapping Switch Statements & Expressions**:
+       - *Permitted*: Linear `switch` statements or expressions mapping an enum, `@IntDef`, or `@PageClassification` to a resource ID, constant, or histogram name (e.g. `getFallbackIconFromIconType()`).
+       - *Best Practice*: Prefer switch expressions (`return switch (...)` or `variable = switch (...)`) with arrow syntax (`case X -> Y;`) over legacy statement switches or chained `if / else if` blocks to minimize visual line count and eliminate intermediate mutable variables.
+       - *Justification*: Cyclomatic complexity per branch is 1 with zero state mutation or side effects; splitting into sub-switches obscures the lookup table without architectural benefit.
+    3. **Android View Constructors Parsing Attributes**:
+       - *Permitted*: Custom view constructors reading styling from `AttributeSet` / `TypedArray` (e.g. `obtainStyledAttributes()`) and initializing default drawables, colors, or paddings.
+       - *Justification*: Sequential extraction of XML attributes followed by `recycle()` is standard Android idiom and tightly scoped to view instantiation.
+- **Isolating Repetitive Statements**:
+  - Non-trivial repetitive statements (encompassing at least 2 operations, e.g., `a && b || c`, or `a == x && b == y && c == z`) used more than 2 times in a file should be isolated to helper methods and reused.
+  - If used across multiple files, isolate them to an appropriate separate utility/helper file so that everyone uses the same logic.
 - **Avoid `instanceof` Checks**: Avoid using `instanceof` and explicit downcasting. `instanceof` is typically a code smell indicating that concrete implementation details are being shoehorned into code that should be properly abstracted. Prefer polymorphism, interface contracts, or delegating behavior directly to the class hierarchy rather than type-checking and branching on concrete types.
 - **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
 - **Reusability**: Structure components and logic to be reusable where applicable.
@@ -101,9 +144,22 @@ When introducing or modifying Omnibox feature flags:
   - In all scenarios, class-level `@Config(manifest = ...)` annotations are completely redundant no-ops and should be omitted from new tests and dropped from existing tests.
 - **Avoid Test Size Annotations in Unit Tests**: Do not annotate unit tests (`*UnitTest.java`) with size annotations such as `@SmallTest`, `@MediumTest`, or `@LargeTest`. These annotations are only relevant for on-device instrumentation tests (`*Test.java`) where the runner uses them to enforce timeouts and shard batches. In host-based Robolectric unit tests, they have no effect, carry no meaning, and are purely redundant boilerplate.
 - **Test Length**: Unit tests should be kept concise.
-  - The ideal test case is **10 ± 5 lines of code**.
+  - The *target* size of a test function is **<30 lines of code (LOC)** (ideal: **10 ± 5 lines of code**).
   - Test cases longer than **30 lines of code** are strongly discouraged.
 - **Isolating Setup Logic**: Isolate complex initialization and mock configurations inside helper methods or `@Before` setup blocks. The test method itself should focus solely on setting up the specific scenario, triggering the target behavior, and asserting the expected outcomes in a few clear lines.
+- **Consolidating Tests with Heavy Setup**: Tests where setup is longer than validation should be considered to be merged together where it makes sense, e.g.:
+  ```java
+  testA() {
+    // lots of setup, taking most of the time
+    assertTrue(someResult);
+  }
+
+  testB() {
+    // same setup, taking most of the time
+    assertFalse(someOtherResult());
+  }
+  ```
+- **Remove Redundant and Zombie Tests**: Redundant and zombie tests need to be removed.
 - **Use `@UiThreadTest` over `runOnUiThreadBlocking()`**:
   - Tests that wrap their entire logic with `runOnUiThreadBlocking()` should be rewritten as `@UiThreadTest`.
   - Wrapping whole test bodies in `runOnUiThreadBlocking()` introduces gratuitous lambda nesting, obscures failure stack traces, and incurs unnecessary thread-hopping overhead. Annotate the test method directly with `@UiThreadTest` (from `androidx.test.annotation.UiThreadTest`) instead.
