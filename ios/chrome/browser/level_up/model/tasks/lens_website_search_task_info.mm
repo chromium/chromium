@@ -69,10 +69,9 @@ class LensWebsiteSearchTaskTabHelper
     if (dispatcher_) {
       id<LensOverlayCommands> lensOverlayHandler =
           HandlerForProtocol(dispatcher_, LensOverlayCommands);
-      [lensOverlayHandler
-          createAndShowLensUI:YES
-                   entrypoint:LensOverlayEntrypoint::kLocationBar
-                   completion:nil];
+      [lensOverlayHandler createAndShowLensUI:YES
+                                   entrypoint:LensOverlayEntrypoint::kLevelUp
+                                   completion:nil];
     }
   }
 

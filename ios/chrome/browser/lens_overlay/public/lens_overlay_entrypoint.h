@@ -25,6 +25,8 @@ enum class LensOverlayEntrypoint {
   kFREPromo,
   // The App Bar Lens button.
   kAppBar,
+  // The Level Up onboarding task.
+  kLevelUp,
 };
 
 namespace lens {

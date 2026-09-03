@@ -77,6 +77,7 @@ bool IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint entrypoint,
       return is_portrait || portrait_override;
     }
     case LensOverlayEntrypoint::kAppBar:
+    case LensOverlayEntrypoint::kLevelUp:
       return true;
     case LensOverlayEntrypoint::kSearchImageContextMenu:
     case LensOverlayEntrypoint::kLVFCameraCapture:

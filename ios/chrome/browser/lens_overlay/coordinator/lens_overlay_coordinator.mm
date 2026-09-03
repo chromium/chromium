@@ -1298,6 +1298,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Returns whether or not the consent dialog should be shown.
 - (BOOL)shouldShowConsentFlow {
+  // The Level Up feature always wants to show the consent/user education
+  // dialog, as the point is to educate users.
+  if (_entrypoint == LensOverlayEntrypoint::kLevelUp) {
+    return YES;
+  }
   if (!lens::EntrypointRequiresUserConsent(_entrypoint)) {
     return NO;
   }
