@@ -15,7 +15,8 @@ class FuzzySearchItem;
 // Represents a search match returned by FuzzyFinder, containing the matching
 // item and associated metadata for UI rendering.
 struct FuzzySearchResult {
-  raw_ptr<FuzzySearchItem> item;
+  raw_ptr<FuzzySearchItem> item = nullptr;
+  double score = 0.0;
 };
 
 // Performs fuzzy search over a collection of FuzzySearchItems (matching against
@@ -43,6 +44,16 @@ class FuzzyFinder {
   // - searchable_items_ is empty or max_results is 0.
   std::vector<FuzzySearchResult> Find(const std::u16string& query,
                                       size_t max_results);
+
+  // Performs a fuzzy search / string approximation over `searchable_items_`
+  // which takes into account typos, letter transpositions, and word boundary
+  // tolerances. Each field in a `FuzzySearchItem` is weighted differently (i.e.
+  // titles may have a higher influence on an items score than its synonyms).
+  //
+  // Returns up to max_results matching items ordered by descending score.
+  std::vector<FuzzySearchResult> FuzzyFind(const std::u16string& query,
+                                           size_t max_results);
+
  private:
   std::vector<FuzzySearchItem*> searchable_items_;
 };
