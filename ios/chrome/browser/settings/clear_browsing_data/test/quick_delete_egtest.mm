@@ -264,6 +264,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGreyUI
       tapPrivacyMenuButton:ButtonWithAccessibilityLabel(l10n_util::GetNSString(
                                IDS_IOS_CLEAR_BROWSING_DATA_TITLE))];
+
+  // Wait for Quick Delete to be presented.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:ClearBrowsingDataView()];
 }
 
 // Opens Quick Delete from the three dot menu.
@@ -349,22 +353,18 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   [self openQuickDeleteFromPrivacySettings];
 
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
-
   // Swipe the bottom sheet down.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
 
   // Check that the privacy table is in view.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_SETTINGS_PRIVACY_TITLE))]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_text(l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE))];
 
   // Assert that the Delete Browsing Data dialog metric is populated.
   ExpectDeleteBrowsingDataDialogHistogram(
