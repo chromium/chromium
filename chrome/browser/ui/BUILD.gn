@@ -2290,7 +2290,6 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
-        "views/profiles/cross_device_signin_qr_bubble_views.cc",
         "views/profiles/first_run_flow_controller.cc",
         "views/profiles/first_run_flow_controller.h",
         "views/profiles/profile_picker_reauth_provider.cc",
@@ -2298,6 +2297,7 @@ static_library("ui") {
       ]
       deps += [
         "webui/signin/batch_upload:mojo_bindings",
+        "//chrome/browser/ui/views/profiles:cross_device_signin_qr_bubble_views",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
         "//chrome/browser/ui/views/profiles:profile_management_flow_controller",
@@ -2318,6 +2318,7 @@ static_library("ui") {
       allow_circular_includes_from += [
         # TODO(crbug.com/353332589): dice_web_signin_interception_bubble_view.cc
         # includes browser_view.h.
+        "//chrome/browser/ui/views/profiles:cross_device_signin_qr_bubble_views",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
         "//chrome/browser/ui/webui/signin:batch_upload",
       ]
@@ -2511,7 +2512,6 @@ static_library("ui") {
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
-      "views/constrained_web_dialog_delegate_views.cc",
       "views/extensions/extension_view_utils.cc",
       "views/extensions/extensions_menu_coordinator.cc",
       "views/extensions/extensions_menu_coordinator.h",
@@ -2523,10 +2523,6 @@ static_library("ui") {
       "views/extensions/extensions_toolbar_desktop.h",
       "views/extensions/extensions_toolbar_desktop_view_controller.cc",
       "views/extensions/extensions_toolbar_desktop_view_controller.h",
-      "views/find_bar_host.cc",
-      "views/find_bar_host.h",
-      "views/find_bar_view.cc",
-      "views/find_bar_view.h",
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/base_tab_strip_region_view.cc",
@@ -2580,11 +2576,8 @@ static_library("ui") {
       "views/frame/vertical_tab_strip_background_blur_backdrop.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
-      "views/idle_bubble.cc",
       "views/intent_picker_bubble_view.cc",
       "views/intent_picker_bubble_view.h",
-      "views/session_crashed_bubble_view.cc",
-      "views/session_crashed_bubble_view.h",
       "views/tab_search_bubble_host.cc",
       "views/tab_search_bubble_host.h",
       "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.cc",
@@ -2653,14 +2646,17 @@ static_library("ui") {
       "//chrome/browser/ui/views:chrome_web_dialog_view_impl",
       "//chrome/browser/ui/views:color_provider_browser_helper",
       "//chrome/browser/ui/views:confirm_bubble",
+      "//chrome/browser/ui/views:constrained_web_dialog_delegate_views",
       "//chrome/browser/ui/views:content_setting_bubble_contents",
       "//chrome/browser/ui/views:content_setting_site_row_view",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:dotted_icon",
       "//chrome/browser/ui/views:elevation_icon_setter",
       "//chrome/browser/ui/views:external_protocol_dialog",
+      "//chrome/browser/ui/views:find_bar_views",
       "//chrome/browser/ui/views:flying_indicator",
       "//chrome/browser/ui/views:global_error_bubble_view",
+      "//chrome/browser/ui/views:idle_bubble",
       "//chrome/browser/ui/views:incognito_clear_browsing_data_dialog",
       "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
       "//chrome/browser/ui/views:layout_provider_impl",
@@ -2668,6 +2664,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:login_view",
       "//chrome/browser/ui/views:media_picker_utils",
       "//chrome/browser/ui/views:message_box_dialog",
+      "//chrome/browser/ui/views:session_crashed_bubble_view",
       "//chrome/browser/ui/views:simple_web_view_dialog",
       "//chrome/browser/ui/views:ssl_client_certificate_selector",
       "//chrome/browser/ui/views:status_bubble",
@@ -2978,6 +2975,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_apps:web_app_simple_install_dialog",
       "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view_impl",
       "//chrome/browser/ui/views/web_apps:web_app_update_review_dialog_impl",
+      "//chrome/browser/ui/views:find_bar_views",
+      "//chrome/browser/ui/views:idle_bubble",
+      "//chrome/browser/ui/views:session_crashed_bubble_view",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
@@ -4146,6 +4146,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/ui/frame",
+      "//chrome/browser/ui/views:find_bar_views",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/test:test_support",
       "//content/test:test_support",

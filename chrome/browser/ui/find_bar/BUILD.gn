@@ -86,6 +86,7 @@ if (!is_android) {
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views:find_bar_views",
       "//chrome/test:test_support",
     ]
 

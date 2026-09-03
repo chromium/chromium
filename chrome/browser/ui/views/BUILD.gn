@@ -1382,3 +1382,119 @@ source_set("task_manager_view") {
     ]
   }
 }
+
+source_set("find_bar_views") {
+  public = [
+    "find_bar_host.h",
+    "find_bar_view.h",
+  ]
+  sources = [
+    "find_bar_host.cc",
+    "find_bar_view.cc",
+  ]
+  public_deps = [
+    ":find_bar_owner",
+    "//base",
+    "//chrome/browser/ui/find_bar",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    ":theme_copying_widget",
+    "//base:i18n",
+    "//build:buildflag_header_h",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/user_education",
+    "//components/find_in_page",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//skia",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+  ]
+}
+
+source_set("idle_bubble") {
+  sources = [ "idle_bubble.cc" ]
+  deps = [
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:idle_bubble",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/toolbar",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("constrained_web_dialog_delegate_views") {
+  sources = [ "constrained_web_dialog_delegate_views.cc" ]
+  deps = [
+    "//base",
+    "//chrome/browser:renderer_preferences_util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/blocked_content",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:chrome_web_contents_handler",
+    "//components/constrained_window",
+    "//components/input",
+    "//components/web_modal",
+    "//components/zoom",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("session_crashed_bubble_view") {
+  public = [ "session_crashed_bubble_view.h" ]
+  sources = [ "session_crashed_bubble_view.cc" ]
+  public_deps = [
+    "//chrome/browser/ui:session_crashed_bubble",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/metrics",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:bubble_anchor_util",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/installer/util:with_no_strings",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+}

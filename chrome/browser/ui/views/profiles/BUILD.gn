@@ -397,6 +397,33 @@ if (toolkit_views) {
 }
 
 if (enable_dice_support) {
+  source_set("cross_device_signin_qr_bubble_views") {
+    sources = [ "cross_device_signin_qr_bubble_views.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":avatar_toolbar_button",
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/common:constants",
+      "//components/input",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//skia",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+  }
+
   source_set("profile_picker_toolbar") {
     public = [ "profile_picker_toolbar.h" ]
     sources = [ "profile_picker_toolbar.cc" ]
