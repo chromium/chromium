@@ -38,6 +38,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/page_transition_types.h"
 
 class CommentsSidePanelCoordinatorInteractiveUiTest
     : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {

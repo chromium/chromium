@@ -42,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/bubble/bubble_border.h"

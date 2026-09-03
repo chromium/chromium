@@ -4,7 +4,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/run_until.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"

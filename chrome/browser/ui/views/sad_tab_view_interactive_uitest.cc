@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"

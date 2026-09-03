@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"

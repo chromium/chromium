@@ -19,6 +19,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/border.h"

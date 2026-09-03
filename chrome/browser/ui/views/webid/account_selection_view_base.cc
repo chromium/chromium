@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"

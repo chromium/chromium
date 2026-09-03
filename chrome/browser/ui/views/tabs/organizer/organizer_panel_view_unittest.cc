@@ -21,6 +21,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"

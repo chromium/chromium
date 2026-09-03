@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_provider_utils.h"

@@ -20,6 +20,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"

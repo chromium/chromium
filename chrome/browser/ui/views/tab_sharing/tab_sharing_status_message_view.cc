@@ -13,6 +13,7 @@
 #include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/separator.h"

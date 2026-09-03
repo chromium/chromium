@@ -69,6 +69,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"

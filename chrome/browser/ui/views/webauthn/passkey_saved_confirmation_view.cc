@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

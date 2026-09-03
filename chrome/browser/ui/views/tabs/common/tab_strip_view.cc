@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"

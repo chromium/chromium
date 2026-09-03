@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
+
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
@@ -18,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/polling_view_observer.h"

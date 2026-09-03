@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"

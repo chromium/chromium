@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"

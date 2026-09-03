@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/polling_state_observer.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 class ReloadButtonBrowserTest : public InteractiveBrowserTest,

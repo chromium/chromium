@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"

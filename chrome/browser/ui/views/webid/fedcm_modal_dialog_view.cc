@@ -13,6 +13,8 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"

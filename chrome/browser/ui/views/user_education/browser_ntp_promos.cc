@@ -35,6 +35,8 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_urls.h"
 #include "ui/actions/actions.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 using user_education::NtpPromoContent;
 using user_education::NtpPromoSpecification;

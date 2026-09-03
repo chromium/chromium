@@ -27,6 +27,7 @@
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/link.h"

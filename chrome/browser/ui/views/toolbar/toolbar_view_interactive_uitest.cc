@@ -48,6 +48,8 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

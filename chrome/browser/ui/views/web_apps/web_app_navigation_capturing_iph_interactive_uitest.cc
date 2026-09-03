@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/window_open_disposition.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"

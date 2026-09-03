@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_title.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/view_utils.h"

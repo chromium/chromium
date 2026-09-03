@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/views/view_utils.h"
 
 FakeTabSlotController::FakeTabSlotController(

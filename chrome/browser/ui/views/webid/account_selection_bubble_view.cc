@@ -27,6 +27,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/common/content_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"

@@ -29,6 +29,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace webid {

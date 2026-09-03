@@ -31,6 +31,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

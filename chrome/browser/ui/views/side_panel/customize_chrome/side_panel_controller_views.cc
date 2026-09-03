@@ -15,6 +15,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/search/ntp_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

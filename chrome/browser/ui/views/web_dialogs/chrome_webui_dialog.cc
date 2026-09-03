@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

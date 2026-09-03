@@ -12,7 +12,6 @@
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"

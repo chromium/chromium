@@ -34,6 +34,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"

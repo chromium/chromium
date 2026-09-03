@@ -58,6 +58,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"

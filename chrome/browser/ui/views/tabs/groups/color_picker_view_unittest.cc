@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"

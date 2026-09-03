@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"

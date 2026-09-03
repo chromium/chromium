@@ -26,6 +26,7 @@
 #include "content/public/common/referrer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"

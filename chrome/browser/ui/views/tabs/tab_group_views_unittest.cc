@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"

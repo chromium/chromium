@@ -30,6 +30,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/focus/focus_manager.h"
