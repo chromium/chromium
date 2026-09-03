@@ -2676,8 +2676,6 @@ crbug.com/543877472 external/wpt/html/semantics/scripting-1/the-script-element/t
 crbug.com/543877472 external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.worker.html [ Failure ]
 crbug.com/543877472 external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.sharedworker.html [ Failure ]
 crbug.com/540322301 [ Win ] external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/audiobuffersource-output-channel-count.html [ Pass Timeout ]
-crbug.com/538228192 external/wpt/fetch/compression-dictionary/compressed-large-resources-002.tentative.https.html [ Skip Timeout ]
-crbug.com/538228192 virtual/produce-compile-hints/external/wpt/fetch/compression-dictionary/compressed-large-resources-002.tentative.https.html [ Skip Timeout ]
 crbug.com/536952793 [ Mac ] external/wpt/css/css-overflow/text-overflow-with-selection.html [ Failure ]
 crbug.com/536952791 external/wpt/digital-credentials/get-opaque-origin-combinations.https.html [ Failure Pass ]
 crbug.com/536952619 [ Win ] external/wpt/dom/nodes/node-creation-realm.html [ Pass Timeout ]
