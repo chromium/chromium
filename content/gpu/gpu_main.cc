@@ -195,7 +195,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
     media::PreSandboxMediaFoundationInitialization();
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-    webnn::PreSandboxWebNNInitialization();
+    webnn::PreSandboxWebNNInitialization(/*is_gpu_process=*/true);
 #endif
 
     // On Linux, reading system memory doesn't work through the GPU sandbox.

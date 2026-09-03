@@ -443,7 +443,7 @@ void PreSandboxInit() {
   PreloadLibraryCdms();
 #endif
   InitializeWebRtcModuleBeforeSandbox();
-  webnn::PreSandboxWebNNInitialization();
+  webnn::PreSandboxWebNNInitialization(/*is_gpu_process=*/false);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // cpuinfo needs to parse /proc/cpuinfo, or its equivalent.

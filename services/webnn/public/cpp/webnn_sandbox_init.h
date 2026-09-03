@@ -13,7 +13,7 @@ namespace webnn {
 // Preloads WebNN LiteRT libraries (like the GPU accelerator DLL/so) before the
 // sandbox is locked down.
 COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-void PreSandboxWebNNInitialization();
+void PreSandboxWebNNInitialization(bool is_gpu_process);
 
 }  // namespace webnn
 

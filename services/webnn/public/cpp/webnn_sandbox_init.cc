@@ -18,14 +18,15 @@
 
 namespace webnn {
 
-void PreSandboxWebNNInitialization() {
+void PreSandboxWebNNInitialization(bool is_gpu_process) {
 #if BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
 #if BUILDFLAG(IS_WIN)
   // On Windows, loading the accelerator DLL in every renderer process before
   // sandbox lockdown causes a startup CPU and idle power regression
-  // (b/553778325). Gate preloading behind the feature flag so that
-  // unconfigured renderers do not load the library.
-  if (!base::FeatureList::IsEnabled(
+  // (crbug.com/553778325). Gate preloading behind the feature flag for renderer
+  // processes. For the GPU process, load it directly without gating.
+  if (!is_gpu_process &&
+      !base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebNNLiteRTGpuInRenderer)) {
     return;
   }
