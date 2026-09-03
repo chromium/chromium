@@ -2149,14 +2149,13 @@ void BrowserAutofillManager::RequestRefillImpl(const FillId& fill_id) {
 
 void BrowserAutofillManager::DidShowSuggestions(
     base::span<const Suggestion> suggestions,
-    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
-        parent_suggestion_metadata,
+    const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     AutofillExternalDelegate::UpdateSuggestionsCallback
         update_suggestions_callback,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!parent_suggestion_metadata) {
+  if (!metadata.is_subpopup()) {
     // `OnSuggestionsHidden` does not (yet) get notified when a sub-popup (or
     // equivalent mobile UI) is shown. To keep the observer event symmetric,
     // we only emit it for root popups.
@@ -2167,11 +2166,11 @@ void BrowserAutofillManager::DidShowSuggestions(
       FindMutableFormAndField(form_id, field_id);
 
   if (AtMemoryManager* amm = client().GetAtMemoryManager()) {
-    amm->OnPopupShown(*this, form_id, field_id, trigger_source,
-                      parent_suggestion_metadata, update_suggestions_callback,
+    amm->OnPopupShown(*this, form_id, field_id, trigger_source, metadata,
+                      update_suggestions_callback,
                       driver().GetPageUkmSourceId());
   }
-  if (parent_suggestion_metadata.has_value()) {
+  if (metadata.is_subpopup()) {
     // The shown suggestions were in a sub-popup and the code below is not
     // relevant for those.
     return;

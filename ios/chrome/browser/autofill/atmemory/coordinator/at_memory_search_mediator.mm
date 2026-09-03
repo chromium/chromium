@@ -98,7 +98,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
         /*field_id=*/autofill::FieldGlobalId(),
         /*trigger_source=*/
         autofill::AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
-        /*parent_suggestion_metadata=*/std::nullopt,
+        /*metadata=*/{},
         /*update_callback=*/std::move(updateCallback),
         /*ukm_source_id=*/ukmSourceId);
   }

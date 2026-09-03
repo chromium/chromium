@@ -206,8 +206,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   void DidShowSuggestions(
       base::span<const Suggestion> suggestions,
-      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
-          parent_suggestion_metadata,
+      const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       AutofillExternalDelegate::UpdateSuggestionsCallback

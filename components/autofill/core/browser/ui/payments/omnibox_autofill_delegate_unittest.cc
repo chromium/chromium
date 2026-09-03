@@ -985,7 +985,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_ForwardToObserver) {
 
   EXPECT_CALL(observer, OnSuggestionsShown(::testing::Ref(autofill_manager()),
                                            testing::_));
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   autofill_manager().RemoveObserver(&observer);
 }
@@ -1003,7 +1003,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogFormEvents) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kCreditCardEntry)};
 
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   // Verify interaction and shown form events.
   histogram_tester.ExpectBucketCount(
@@ -1042,7 +1042,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogTimingMetrics) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kCreditCardEntry)};
 
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   // Verify timing metrics logging.
   histogram_tester.ExpectTotalCount(
@@ -1062,7 +1062,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogFunnelMetrics) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kCreditCardEntry)};
 
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   // Reset the manager to trigger logger destruction and metrics logging.
   test_api(autofill_manager()).Reset();
@@ -1092,7 +1092,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_DoesNotLogKeyMetrics) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kCreditCardEntry)};
 
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   // Reset the manager to trigger logger destruction and metrics logging.
   test_api(autofill_manager()).Reset();
@@ -1123,7 +1123,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kCreditCardEntry)};
 
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
                                      OmniboxAutofillEvents::kChipClicked, 1);
@@ -1230,7 +1230,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   // prerequisite for logging submission metrics.
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kCreditCardEntry)};
-  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+  delegate->OnSuggestionsShown(suggestions, /*metadata=*/{});
 
   // Fill the form synchronously using the local card.
   AutofillForm(form, local_card);

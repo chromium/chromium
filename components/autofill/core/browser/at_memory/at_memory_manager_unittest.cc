@@ -281,14 +281,13 @@ class AtMemoryManagerTestBase : public Test,
   std::pair<FormGlobalId, FieldGlobalId> SeeFormAndShowPopup(
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
-          parent_suggestion_metadata = std::nullopt,
+      const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata = {},
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId) {
     auto [form_id, field_id] = SeeForm();
     manager().GetStateForField(field_id, form_origin());
     manager().OnPopupShown(autofill_manager(), form_id, field_id,
-                           trigger_source, parent_suggestion_metadata,
-                           update_callback_.Get(), ukm_source_id);
+                           trigger_source, metadata, update_callback_.Get(),
+                           ukm_source_id);
     return {form_id, field_id};
   }
 
@@ -1714,7 +1713,7 @@ TEST_P(AtMemoryManagerTest, FillOverlappingPopups) {
   manager().GetStateForField(field_id, form_origin());
   manager().OnPopupShown(autofill_manager(), form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
-                         std::nullopt, update_callback_2.Get(),
+                         /*metadata=*/{}, update_callback_2.Get(),
                          ukm::kInvalidSourceId);
 
   // 5. Hide Popup 2 (without accepting suggestions).
@@ -2274,8 +2273,8 @@ TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   auto [form_id, field_id] = SeeFormAndShowPopup();
 
   // 2. Show sub-popup. This should NOT reset the recorder.
-  AutofillSuggestionDelegate::SuggestionMetadata metadata;
-  metadata.multi_index = {0, 0};  // sub-popup
+  AutofillSuggestionDelegate::SuggestionUiMetadata metadata;
+  metadata.multi_index = {0};  // sub-popup
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString, metadata,
@@ -2545,7 +2544,7 @@ TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}},
+      AutofillSuggestionDelegate::SuggestionUiMetadata{.multi_index = {2}},
       update_callback_.Get(), ukm::kInvalidSourceId);
   EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
 }
@@ -2569,8 +2568,7 @@ TEST_P(AtMemoryManagerTest,
   manager().OnPopupShown(
       autofill_manager(), uncached_form_id, uncached_field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -2618,8 +2616,7 @@ TEST_P(AtMemoryManagerTest,
   manager().OnPopupShown(
       autofill_manager(), uncached_form_id, uncached_field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -2672,8 +2669,7 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_PersistsAndResetsState) {
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
   manager().OnPopupHidden();
   EXPECT_TRUE(manager()
                   .GetStateForField(field_id, form_origin())
@@ -2682,8 +2678,7 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_PersistsAndResetsState) {
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
 
   // 2. Perform a search query on field_id.
   std::vector<Suggestion> final_suggestions;
@@ -2732,8 +2727,7 @@ TEST_F(AtMemoryManagerTestBase,
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
 
   std::vector<Suggestion> final_suggestions;
   MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
@@ -2768,8 +2762,7 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_HistoryDeletionResetsState) {
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
 
   std::vector<Suggestion> final_suggestions;
   MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
@@ -2912,8 +2905,7 @@ TEST_F(AtMemoryManagerTestBase,
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
 
   std::vector<Suggestion> final_suggestions;
   MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");

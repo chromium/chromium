@@ -31,8 +31,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
 
   // AutofillExternalDelegate overrides.
   void OnSuggestionsShown(base::span<const Suggestion> suggestions,
-                          base::optional_ref<const SuggestionMetadata>
-                              parent_suggestion_metadata) override;
+                          const SuggestionUiMetadata& metadata) override;
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;
   void OnQuery(const FormData& form,
                const FormFieldData& field,
