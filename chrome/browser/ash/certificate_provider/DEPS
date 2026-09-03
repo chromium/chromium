@@ -10,7 +10,6 @@ include_rules = [
 specific_include_rules = {
   "test_certificate_provider_extension\\.cc": [
     "+chrome/common/chrome_paths.h",
-    "+chrome/common/extensions/api/certificate_provider.h",
   ],
   "test_certificate_provider_extension_mixin\\.(cc|h)": [
     "+chrome/browser/policy/extension_force_install_mixin.h",

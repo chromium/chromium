@@ -23,9 +23,6 @@ specific_include_rules = {
     "+chromeos/ash/experiences/arc/test/fake_arc_icon_cache.h",
     "+chromeos/ash/experiences/arc/test/fake_arc_intent_helper_mojo.h",
   ],
-  "open_with_menu\\.cc": [
-    "+chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h",
-  ],
   "start_smart_selection_action_menu\\.cc": [
     "+chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h",
   ],

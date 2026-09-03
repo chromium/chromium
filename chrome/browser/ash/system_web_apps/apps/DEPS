@@ -99,9 +99,6 @@ specific_include_rules = {
   ],
 
   # Tests.
-  ".*test.*\\.cc": [
-    "+chrome/browser/ui/browser_window/public",
-  ],
   "boca_app_integration_browsertest\\.cc": [
     "+chrome/app/chrome_command_ids.h",
     "+chrome/browser/extensions/chrome_test_extension_loader.h",
@@ -123,7 +120,6 @@ specific_include_rules = {
   "personalization_app_utils_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/global_features.h",
-    "+chrome/browser/signin/identity_manager_factory.h",
   ],
   "media_app_integration_browsertest\\.cc": [
     "+chrome/browser/ui/browser_init_state.h",
