@@ -754,6 +754,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private ListItem createMoveToTabGroupItem(List<Tab> tabs, boolean isIncognito) {
+        assumeNonNull(mMultiInstanceManager);
         // Available tab groups.
         @Nullable Token groupToNotBeIncluded = tabs.get(0).getTabGroupId();
         List<ListItem> potentialGroups = getTabGroups(tabs, groupToNotBeIncluded, isIncognito);
@@ -1104,6 +1105,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
+    @RequiresNonNull("mMultiInstanceManager")
     private List<ListItem> getTabGroups(
             List<Tab> tabs, @Nullable Token groupToNotBeIncluded, boolean isIncognito) {
         GroupWindowChecker windowChecker =
@@ -1143,12 +1145,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             OnClickListener clickListener =
                     (v) -> {
                         recordMenuAction(menuId, tabs.size() > 1, isIncognito, mTabStripLayout);
-                        TabGroupUiUtils.addTabsToGroup(
-                                getTabModel(),
-                                tabs,
-                                tabGroup,
-                                /* tabMovedCallback= */ null,
-                                /* bringToFront= */ true);
+                        moveAndCleanupSource(
+                                mMultiInstanceManager,
+                                () ->
+                                        TabGroupUiUtils.addTabsToGroup(
+                                                getTabModel(),
+                                                tabs,
+                                                tabGroup,
+                                                /* tabMovedCallback= */ null,
+                                                /* bringToFront= */ true));
                     };
             result.add(
                     new ListItemBuilder()

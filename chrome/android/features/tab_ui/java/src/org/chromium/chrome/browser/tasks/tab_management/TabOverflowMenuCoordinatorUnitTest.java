@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -22,10 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -47,6 +45,10 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabOverflowMenuCoordinator} UI changes. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -151,6 +153,19 @@ public class TabOverflowMenuCoordinatorUnitTest {
                 R.string.menu_new_incognito_window,
                 newWindowItem.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.drawable.ic_domain, newWindowItem.model.get(ListMenuItemProperties.START_ICON_ID));
+                R.drawable.ic_domain,
+                newWindowItem.model.get(ListMenuItemProperties.START_ICON_ID));
+    }
+
+    @Test
+    public void testMoveAndCleanupSource_withMultiInstanceManager() {
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(1);
+        boolean[] actionExecuted = new boolean[1];
+
+        TabOverflowMenuCoordinator.moveAndCleanupSource(
+                mMultiInstanceManager, () -> actionExecuted[0] = true);
+
+        assertTrue(actionExecuted[0]);
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(1);
     }
 }

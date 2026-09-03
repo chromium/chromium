@@ -1284,6 +1284,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         eq(TabList.INVALID_TAB_INDEX),
                         anyInt(),
                         eq(true));
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 
     @Test
