@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
@@ -48,14 +47,6 @@ kidsmanagement::ClassifyUrlResponse ClassifyUrlResponse(
   return response;
 }
 }  // namespace
-
-void SetHttpEndpointsForKidsManagementApis(
-    base::test::ScopedFeatureList& feature_list,
-    std::string_view hostname) {
-  feature_list.InitAndEnableFeatureWithParameters(
-      kSupervisedUserProtoFetcherConfig,
-      {{"service_endpoint", base::StrCat({"http://", hostname})}});
-}
 
 KidsManagementClassifyUrlMock::KidsManagementClassifyUrlMock() {
   ON_CALL(*this, ClassifyUrl)

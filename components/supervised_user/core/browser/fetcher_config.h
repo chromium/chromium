@@ -11,8 +11,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -21,8 +19,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace supervised_user {
-
-BASE_DECLARE_FEATURE(kSupervisedUserProtoFetcherConfig);
 
 namespace annotations {
 // Traffic annotations can only live in cc/mm files.
@@ -60,11 +56,6 @@ struct FetcherConfig {
       base::StrongAlias<class PathTemplateTag, std::string_view>;
 
   enum class Method { kUndefined, kGet, kPost };
-
-  // Primary endpoint of the fetcher. May be overridden with feature flags.
-  base::FeatureParam<std::string> service_endpoint{
-      &kSupervisedUserProtoFetcherConfig, "service_endpoint",
-      "https://kidsmanagement-pa.googleapis.com"};
 
   // Path of the service or a template of such path.
   //

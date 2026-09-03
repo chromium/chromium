@@ -32,6 +32,9 @@
     },
     "people_api_origin_url": {
       "url": "https://people.exampleapis.com"
+    },
+    "kids_management_api_origin_url": {
+      "url": "https://kidsmanagement.exampleapis.com"
     }
   }
 }

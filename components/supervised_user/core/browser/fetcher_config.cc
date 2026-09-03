@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -19,9 +18,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace supervised_user {
-
-BASE_FEATURE(kSupervisedUserProtoFetcherConfig,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace annotations {
 

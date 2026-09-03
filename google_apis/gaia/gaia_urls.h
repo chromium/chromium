@@ -72,6 +72,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& classroom_api_origin_url() const;
   const GURL& tasks_api_origin_url() const;
   const GURL& people_api_origin_url() const;
+  const GURL& kids_management_api_origin_url() const;
 
   // URL to a blank page on the Gaia domain.
   const GURL& blank_page_url() const;
@@ -111,6 +112,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL classroom_api_origin_url_;
   GURL tasks_api_origin_url_;
   GURL people_api_origin_url_;
+  GURL kids_management_api_origin_url_;
 
   GURL embedded_setup_chromeos_url_;
   GURL embedded_setup_chromeos_kid_signup_url_;

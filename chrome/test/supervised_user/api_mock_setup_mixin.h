@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
@@ -21,8 +20,6 @@ namespace supervised_user {
 // KidsManagementApiServerMock.
 class KidsManagementApiMockSetupMixin : public InProcessBrowserTestMixin {
  public:
-  static void SetApiHostname(std::string_view hostname);
-
   KidsManagementApiMockSetupMixin() = delete;
   KidsManagementApiMockSetupMixin(InProcessBrowserTestMixinHost& host,
                                   InProcessBrowserTest* test_base);
@@ -48,11 +45,6 @@ class KidsManagementApiMockSetupMixin : public InProcessBrowserTestMixin {
 
   // Mocks server functionalities.
   KidsManagementApiServerMock api_mock_;
-
-  // Hosts kSupervisedUserProtoFetcherConfig feature parameter value, which
-  // alters the behavior of api clients (Kids Api Proto Fetchers) to connect to
-  // the embedded test server which is running this mock.
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace supervised_user

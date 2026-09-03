@@ -10,8 +10,11 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,13 +25,11 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
-#include "net/dns/mock_host_resolver.h"
+#include "google_apis/gaia/gaia_switches.h"
 
 namespace supervised_user {
 
 namespace {
-constexpr std::string_view kKidsManagementServiceEndpoint{
-    "kidsmanagement.googleapis.com"};
 
 // Waits until the browser is in intended state. Specifically, for supervised
 // user, either waits for the family member to be loaded (by inspecting if a
@@ -69,10 +70,7 @@ void WaitUntilReady(InProcessBrowserTest* test_base,
 KidsManagementApiMockSetupMixin::KidsManagementApiMockSetupMixin(
     InProcessBrowserTestMixinHost& host,
     InProcessBrowserTest* test_base)
-    : InProcessBrowserTestMixin(&host), test_base_(test_base) {
-  SetHttpEndpointsForKidsManagementApis(feature_list_,
-                                        kKidsManagementServiceEndpoint);
-}
+    : InProcessBrowserTestMixin(&host), test_base_(test_base) {}
 KidsManagementApiMockSetupMixin::~KidsManagementApiMockSetupMixin() = default;
 
 void KidsManagementApiMockSetupMixin::SetUp() {
@@ -82,8 +80,22 @@ void KidsManagementApiMockSetupMixin::SetUp() {
 
 void KidsManagementApiMockSetupMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
-  AddHostResolverRule(command_line, kKidsManagementServiceEndpoint,
-                      embedded_test_server_);
+  base::DictValue config_dict;
+  if (command_line->HasSwitch(switches::kGaiaConfigContents)) {
+    std::optional<base::DictValue> existing_dict = base::JSONReader::ReadDict(
+        command_line->GetSwitchValueASCII(switches::kGaiaConfigContents),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (existing_dict) {
+      config_dict = std::move(*existing_dict);
+    }
+    command_line->RemoveSwitch(switches::kGaiaConfigContents);
+  }
+  base::DictValue* urls_dict = config_dict.EnsureDict("urls");
+  urls_dict->Set(
+      "kids_management_api_origin_url",
+      base::DictValue().Set("url", embedded_test_server_.base_url().spec()));
+  command_line->AppendSwitchASCII(switches::kGaiaConfigContents,
+                                  base::WriteJson(config_dict).value_or(""));
 }
 
 void KidsManagementApiMockSetupMixin::SetUpOnMainThread() {

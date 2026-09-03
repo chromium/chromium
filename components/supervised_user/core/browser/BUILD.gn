@@ -256,6 +256,7 @@ source_set("unit_tests") {
     "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
+    "//google_apis:test_support",
     "//google_apis/common:test_support",
     "//services/network:test_support",
     "//testing/gmock",

@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -24,6 +23,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "google_apis/common/api_key_request_test_util.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_errors.h"
@@ -204,9 +204,10 @@ class Receiver {
 class ProtoFetcherTestBase {
  public:
   ProtoFetcherTestBase() = delete;
-  explicit ProtoFetcherTestBase(const FetcherConfig& config) : config_(config) {
-    SetHttpEndpointsForKidsManagementApis(feature_list_, kMockEndpointDomain);
-  }
+  explicit ProtoFetcherTestBase(const FetcherConfig& config)
+      : config_(config),
+        gaia_urls_overrider_("kids_management_api_origin_url",
+                             "http://" + std::string(kMockEndpointDomain)) {}
 
  protected:
   using Fetcher = ProtoFetcher<ClassifyUrlResponse>;
@@ -295,7 +296,7 @@ class ProtoFetcherTestBase {
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
   IdentityTestEnvironment identity_test_env_;
-  base::test::ScopedFeatureList feature_list_;
+  GaiaUrlsOverriderForTesting gaia_urls_overrider_;
 };
 
 class ProtoFetcherTest : public ProtoFetcherTestBase,

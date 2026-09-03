@@ -25,6 +25,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/common/api_key_request_util.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -90,8 +91,6 @@ constexpr std::string_view kSystemParameters("alt=proto");
 GURL CreateRequestUrl(const FetcherConfig& config,
                       const FetcherConfig::PathArgs& args,
                       std::string_view query_string) {
-  CHECK(!config.service_endpoint.Get().empty())
-      << "Service endpoint is required";
   // kSystemParameters is unconditionally concatenated with the path. If it can
   // be empty, handle it in the code below.
   CHECK(!kSystemParameters.empty());
@@ -101,7 +100,8 @@ GURL CreateRequestUrl(const FetcherConfig& config,
   if (!query_string.empty()) {
     base::StrAppend(&path_with_query, {"&", query_string});
   }
-  return GURL(config.service_endpoint.Get()).Resolve(path_with_query);
+  return GaiaUrls::GetInstance()->kids_management_api_origin_url().Resolve(
+      path_with_query);
 }
 
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
