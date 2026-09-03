@@ -7,8 +7,6 @@
 #include "ash/public/cpp/back_gesture_contextual_nudge_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -16,7 +14,9 @@
 
 BackGestureContextualNudgeDelegate::BackGestureContextualNudgeDelegate(
     ash::BackGestureContextualNudgeController* controller)
-    : controller_(controller) {}
+    : controller_(controller) {
+  tab_observation_.Observe(ash::BrowserController::GetInstance());
+}
 
 BackGestureContextualNudgeDelegate::~BackGestureContextualNudgeDelegate() {
   StopTrackingNavigation();
@@ -40,9 +40,6 @@ void BackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
   window_ = window;
   window_->AddObserver(this);
 
-  TabStripModel* tab_strip_model = browser->GetBrowser().GetTabStripModel();
-  tab_strip_model->AddObserver(this);
-
   Observe(browser->GetActiveWebContents());
 }
 
@@ -62,16 +59,13 @@ void BackGestureContextualNudgeDelegate::DidFinishNavigation(
   }
 }
 
-void BackGestureContextualNudgeDelegate::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  const bool active_tab_changed = selection.active_tab_changed();
-  if (active_tab_changed) {
-    DCHECK(window_);
+void BackGestureContextualNudgeDelegate::OnActiveWebContentsChanged(
+    ash::BrowserDelegate* browser,
+    content::WebContents* /*old_contents*/,
+    content::WebContents* new_contents) {
+  if (window_ && browser->GetNativeWindow() == window_) {
     controller_->NavigationEntryChanged(window_);
-    content::WebContents* contents = tab_strip_model->GetActiveWebContents();
-    Observe(contents);
+    Observe(new_contents);
   }
 }
 
@@ -83,12 +77,6 @@ void BackGestureContextualNudgeDelegate::OnWindowDestroying(
 
 void BackGestureContextualNudgeDelegate::StopTrackingNavigation() {
   if (window_) {
-    ash::BrowserDelegate* browser =
-        ash::BrowserController::GetInstance()->GetBrowserForWindow(window_);
-    if (browser) {
-      browser->GetBrowser().GetTabStripModel()->RemoveObserver(this);
-    }
-
     window_->RemoveObserver(this);
     window_ = nullptr;
   }

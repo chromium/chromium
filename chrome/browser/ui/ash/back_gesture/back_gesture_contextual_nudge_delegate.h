@@ -7,7 +7,8 @@
 
 #include "ash/public/cpp/back_gesture_contextual_nudge_delegate.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
 
@@ -17,6 +18,7 @@ class Window;
 
 namespace ash {
 class BackGestureContextualNudgeController;
+class BrowserDelegate;
 }
 
 // BackGestureContextualNudgeDelegate observes |window_|'s active webcontent and
@@ -25,7 +27,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate
     : public ash::BackGestureContextualNudgeDelegate,
       public content::WebContentsObserver,
-      public TabStripModelObserver,
+      public ash::BrowserController::TabObserver,
       public aura::WindowObserver {
  public:
   explicit BackGestureContextualNudgeDelegate(
@@ -44,11 +46,10 @@ class BackGestureContextualNudgeDelegate
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
+  // ash::BrowserController::TabObserver:
+  void OnActiveWebContentsChanged(ash::BrowserDelegate* browser,
+                                  content::WebContents* old_contents,
+                                  content::WebContents* new_contents) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -60,6 +61,10 @@ class BackGestureContextualNudgeDelegate
   raw_ptr<aura::Window> window_ = nullptr;  // Current observed window.
   const raw_ptr<ash::BackGestureContextualNudgeController>
       controller_;  // Not owned.
+
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::TabObserver>
+      tab_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_BACK_GESTURE_BACK_GESTURE_CONTEXTUAL_NUDGE_DELEGATE_H_
