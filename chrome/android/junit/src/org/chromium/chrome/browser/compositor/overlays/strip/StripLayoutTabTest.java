@@ -289,8 +289,8 @@ public class StripLayoutTabTest {
                 Resources.ID_NULL,
                 tab.getAlertIndicatorOverlayRes());
         assertEquals(
-                "Should return recording media color for tint",
-                mContext.getColor(R.color.tab_recording_media_color),
+                "Should return recording alert color for tint",
+                mContext.getColor(R.color.tab_recording_alert_color),
                 tab.getAlertIndicatorTint());
         assertEquals(
                 "Should return default 16dp width for recording indicator",

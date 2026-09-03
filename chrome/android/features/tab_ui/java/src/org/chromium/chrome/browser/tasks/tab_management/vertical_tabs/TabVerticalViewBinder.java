@@ -646,7 +646,7 @@ class TabVerticalViewBinder {
 
     /**
      * Updates the selected visual/accessibility state, background color tints, website favicon, and
-     * media indicator for both standard and pinned vertical tab rows.
+     * alert indicator for both standard and pinned vertical tab rows.
      *
      * <p>If active tab selection or multi-selection is enabled on this tab row, resolves and
      * mutates the background drawable with the selection color matching the current incognito

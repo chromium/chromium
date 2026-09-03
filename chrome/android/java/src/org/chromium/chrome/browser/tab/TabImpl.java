@@ -3235,20 +3235,19 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
+    @Deprecated
     public @MediaState int getMediaState() {
         return mMediaState;
     }
 
     @Override
+    @Deprecated
     @CalledByNative
     public void setMediaState(@MediaState int mediaState) {
         if (mMediaState == mediaState) return;
         mMediaState = mediaState;
         RecordHistogram.recordEnumeratedHistogram(
                 "Tab.Android.MediaState", mediaState, MediaState.MAX_VALUE + 1);
-        for (TabObserver observer : mObservers) {
-            observer.onMediaStateChanged(this, mediaState);
-        }
     }
 
     @Override

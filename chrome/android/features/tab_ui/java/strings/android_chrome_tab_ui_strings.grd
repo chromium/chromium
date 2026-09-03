@@ -1235,7 +1235,7 @@
         }
       </message>
 
-      <!-- Tab group media indicator accessibility strings -->
+      <!-- Tab group alert indicator accessibility strings -->
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_AUDIBLE" desc="Accessibility description for a tab group that contains a tab that is playing audio.">
         Playing audio
       </message>

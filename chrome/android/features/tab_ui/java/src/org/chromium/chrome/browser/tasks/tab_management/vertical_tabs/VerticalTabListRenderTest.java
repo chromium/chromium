@@ -442,7 +442,7 @@ public class VerticalTabListRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testStandardTab_MediaIndicator() throws IOException {
+    public void testStandardTab_AlertIndicator() throws IOException {
         if (mIsIncognito) return;
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(

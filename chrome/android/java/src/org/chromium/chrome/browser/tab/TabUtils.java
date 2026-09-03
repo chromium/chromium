@@ -368,10 +368,10 @@ public class TabUtils {
                     TabAlert.GLIC_SHARING ->
                     SemanticColorUtils.getColorPrimary(context);
             case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
-                    context.getColor(R.color.tab_recording_media_color);
+                    context.getColor(R.color.tab_recording_alert_color);
             case TabAlert.DESKTOP_CAPTURING, TabAlert.TAB_CAPTURING ->
-                    context.getColor(R.color.tab_sharing_media_color);
-            case TabAlert.PIP_PLAYING -> context.getColor(R.color.tab_pip_media_color);
+                    context.getColor(R.color.tab_sharing_alert_color);
+            case TabAlert.PIP_PLAYING -> context.getColor(R.color.tab_pip_alert_color);
             default -> defaultTint;
         };
     }
