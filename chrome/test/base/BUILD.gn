@@ -147,7 +147,7 @@ source_set("chrome_render_view_host_test_harness") {
   }
 }
 
-source_set("scoped_metrics_service_for_synthetic_trials") {
+source_set("scoped_metrics_service") {
   testonly = true
   sources = [
     "scoped_metrics_service_for_synthetic_trials.cc",

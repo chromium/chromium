@@ -842,7 +842,7 @@ source_set("unit_tests") {
       "//chrome/browser/prefs",
       "//chrome/browser/status_icons",
       "//chrome/common:chrome_features",
-      "//chrome/test:test_support",
+      "//chrome/test/base:scoped_metrics_service",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/skills:features",
