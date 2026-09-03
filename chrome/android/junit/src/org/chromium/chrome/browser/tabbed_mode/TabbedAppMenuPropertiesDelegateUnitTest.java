@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
@@ -139,7 +140,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
@@ -154,6 +154,8 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -255,6 +257,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
     @Mock private AppMenuDelegate mAppMenuDelegate;
     @Mock private ModalDialogManager mDialogManager;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -322,6 +325,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Before
     public void setUp() {
+        TrackerFactory.setTrackerForTests(mTracker);
         Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
@@ -481,9 +485,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(false);
         BookmarkUtils.setReadingListSupportedForTesting(null);
         WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT);
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     @Nullable
@@ -1035,8 +1038,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testPageMenuItems_Tablet_RegularPage() {
-        // Suppress the New badge for full-menu structural tests so they expect standard titles.
-        VerticalTabUtils.markNewBadgeAsDismissed();
         testPageMenuItems_RegularPage();
     }
 
@@ -1356,8 +1357,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testPageMenuItems_Tablet_IncognitoPage() {
-        // Suppress the New badge for full-menu structural tests so they expect standard titles.
-        VerticalTabUtils.markNewBadgeAsDismissed();
         testPageMenuItems_IncognitoPage();
     }
 
@@ -2772,7 +2771,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         CharSequence title = item.model.get(AppMenuItemProperties.TITLE);
         assertNotNull("Title should not be null", title);
 
-        // Verify the title text contains "Show tabs vertically" and the "New" badge.
+        // Verify the title text contains "Show tabs vertically".
         assertTrue(
                 "Title should contain 'Show tabs vertically'",
                 title.toString()
@@ -2781,7 +2780,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         .getString(
                                                 org.chromium.chrome.tab_ui.R.string
                                                         .show_tabs_vertically)));
-        assertTrue("Title should carry New badge spans", title instanceof Spannable);
     }
 
     @Test
@@ -2830,9 +2828,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     @Config(qualifiers = "sw600dp")
-    public void tabLayoutToggleItem_showsNewBadgeAndIncrementsCount() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
+    public void tabLayoutToggleItem_showsNewBadge() {
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL))
+                .thenReturn(true);
 
         ModelList moreToolsSubmenu =
                 setUpPageMenuAndGetMoreToolsSubmenu(/* isVerticalTabsEnabled= */ false);
@@ -2852,18 +2850,18 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                                         .show_tabs_vertically)));
 
         assertTrue("Title should carry New badge spans", title instanceof Spannable);
+        Spannable spannableTitle = (Spannable) title;
+        Object[] spans = spannableTitle.getSpans(0, spannableTitle.length(), Object.class);
+        assertTrue("Spannable title should carry badge style spans", spans.length > 0);
 
-        // Verify shared count incremented from 0 to 1.
-        assertEquals(1, VerticalTabUtils.getNewBadgeViewCount());
+        verify(mTracker).shouldTriggerHelpUi(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_VERTICAL_TABS_NEW_LABEL);
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     @Config(qualifiers = "sw600dp")
     public void tabLayoutToggleItem_suppressesBadgeWhenVerticalActive() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
-
         // When vertical tabs are active, the option switches to horizontal, so the "New" badge
         // should not show.
         ModelList moreToolsSubmenu =
@@ -2884,17 +2882,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         // Verify the title is a plain String without the badge spans attached.
         assertFalse("Title should not contain New text", title.toString().contains("New"));
-        // View count remains 0 because switching to horizontal does not trigger the badge.
-        assertEquals(0, VerticalTabUtils.getNewBadgeViewCount());
+        assertFalse("Title should not carry badge spans", title instanceof Spannable);
+        verify(mTracker, never()).shouldTriggerHelpUi(any());
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     @Config(qualifiers = "sw600dp")
     public void tabLayoutToggleItem_DesktopDevice_SuppressesNewBadge() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_LAYOUT_TOGGLE_VIEW_COUNT, 0);
-
         // Mock device form factor as Desktop.
         DeviceInfo.setIsDesktopForTesting(true);
 
@@ -2917,12 +2912,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         // Verify the title is a plain String without the badge spans attached.
         assertFalse(
                 "Title should not contain New text on Desktop", title.toString().contains("New"));
-        assertFalse(
-                "Title should not carry badge spans on Desktop",
-                title instanceof android.text.Spannable);
-
-        // View count should remain 0 because Desktop suppresses the badge.
-        assertEquals(0, VerticalTabUtils.getNewBadgeViewCount());
+        assertFalse("Title should not carry badge spans on Desktop", title instanceof Spannable);
+        verify(mTracker, never()).shouldTriggerHelpUi(any());
     }
 
     @Test

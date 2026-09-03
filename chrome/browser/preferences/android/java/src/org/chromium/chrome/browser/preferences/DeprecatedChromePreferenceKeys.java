@@ -97,6 +97,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.TipsNotifications.OptInShown",
                 "Chrome.UMA.OnPreCreateCounter",
                 "Chrome.UMA.OnResumeCounter",
+                "Chrome.VerticalTabs.LayoutToggleViewCount",
                 "Chrome.VideoTutorials.ShareUrls",
                 "Chrome.WebFeed.IntroLastShownTimeMs",
                 "Chrome.WebFeed.IntroWebFeedIdShownTimeMs.*",
