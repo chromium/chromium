@@ -981,12 +981,6 @@ bool WebLocalFrameImpl::IsAdScriptInStack() const {
   return GetFrame()->IsAdScriptInStack();
 }
 
-bool WebLocalFrameImpl::IsExtensionScriptInStack() const {
-  DCHECK(GetFrame());
-  return GetFrame()->GetExtensionScriptTracker() &&
-         GetFrame()->GetExtensionScriptTracker()->IsExtensionScriptInStack();
-}
-
 void WebLocalFrameImpl::SetAdEvidence(
     const blink::FrameAdEvidence& ad_evidence) {
   DCHECK(GetFrame());
@@ -1149,12 +1143,12 @@ void WebLocalFrameImpl::RequestExecuteScript(
     BackForwardCacheAware back_forward_cache_aware,
     mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_behavior,
-    bool is_injected_extension_script) {
+    const WebString& script_injector_id) {
   DCHECK(GetFrame());
   GetFrame()->RequestExecuteScript(
       world_id, sources, user_gesture, evaluation_timing, blocking_option,
       std::move(callback), back_forward_cache_aware, want_result_option,
-      promise_behavior, is_injected_extension_script);
+      promise_behavior, script_injector_id);
 }
 
 bool WebLocalFrameImpl::IsInspectorConnected() {

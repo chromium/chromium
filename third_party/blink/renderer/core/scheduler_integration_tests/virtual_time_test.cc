@@ -62,7 +62,7 @@ class VirtualTimeTest : public SimTest {
         BackForwardCacheAware::kAllow,
         mojom::blink::WantResultOption::kWantResult,
         mojom::blink::PromiseResultOption::kDoNotWait,
-        /*is_injected_extension_script=*/false);
+        /*script_injector_id=*/WebString());
 
     return callback_helper.Result();
   }

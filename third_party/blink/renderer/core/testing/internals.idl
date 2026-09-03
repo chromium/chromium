@@ -451,6 +451,6 @@ interface Internals {
     DOMString lastCompiledScriptFileName(Document document);
     boolean lastCompiledScriptUsedCodeCache(Document document);
 
-    boolean isExtensionScriptInStack();
+    DOMString extensionScriptInStack();
     boolean isExtensionScriptUrl(DOMString url);
 };

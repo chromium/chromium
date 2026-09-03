@@ -341,7 +341,8 @@ class Internals final : public ScriptWrappable {
 
   unsigned numberOfScrollableAreas(Document*);
 
-  bool isExtensionScriptInStack() const;
+  // ExtensionScriptTracker testing APIs.
+  String extensionScriptInStack() const;
   bool isExtensionScriptUrl(const String& url) const;
 
   InternalSettings* settings() const;

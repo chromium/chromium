@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/ad_tracker/script_ancestry_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -31,8 +32,10 @@ class CORE_EXPORT ExtensionScriptTracker : public ScriptAncestryTracker {
   ExtensionScriptTracker& operator=(const ExtensionScriptTracker&) = delete;
   ~ExtensionScriptTracker() override;
 
-  // Returns true if any script in the call stack is an extension script.
-  bool IsExtensionScriptInStack(
+  // If an extension script is in the call stack, returns the ID of the
+  // extension that injected or initiated the script, or an empty String if no
+  // extension script was found.
+  String ExtensionScriptInStack(
       StackType stack_type = StackType::kTopOnly,
       MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone);
 
@@ -56,7 +59,9 @@ class CORE_EXPORT ExtensionScriptTracker : public ScriptAncestryTracker {
  private:
   friend class ExtensionScriptTrackerTest;
 
-  HashSet<V8ScriptId> extension_scripts_;
+  String GetExtensionIdForScript(std::optional<V8ScriptId> script_id) const;
+
+  HashMap<V8ScriptId, String> extension_scripts_;
   // Test-only set of extension script URLs, populated when
   // ExtensionScriptTaggingTestingAPI is enabled.
   HashSet<String> extension_script_urls_;

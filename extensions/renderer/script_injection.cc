@@ -317,6 +317,11 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       break;
   }
 
+  blink::WebString script_injector_id;
+  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions) {
+    script_injector_id = blink::WebString::FromUtf8(host_string_id);
+  }
+
   render_frame_->GetWebFrame()->RequestExecuteScript(
       blink_world_id, sources, injector_->IsUserGesture(), execution_option,
       blink::mojom::LoadEventBlockingOption::kBlock,
@@ -324,7 +329,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
                      weak_ptr_factory_.GetWeakPtr()),
       blink::BackForwardCacheAware::kPossiblyDisallow,
       injector_->ExpectsResults(), injector_->ShouldWaitForPromise(),
-      /*is_injected_extension_script=*/true);
+      script_injector_id);
 }
 
 void ScriptInjection::OnJsInjectionCompleted(std::optional<base::Value> value,

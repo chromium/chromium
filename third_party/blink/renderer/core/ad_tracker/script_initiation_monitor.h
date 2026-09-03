@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace v8 {
 class Context;
@@ -122,14 +124,17 @@ class CORE_EXPORT ScriptInitiationMonitor
   // current thread isolate if the window is unavailable.
   v8::Isolate* GetIsolate() const;
 
+  // Stack-allocated RAII scope used to tag synchronous script
+  // compilation/execution initiated by extension injectors.
   class ScopedInjectedExtensionScriptExecution {
     STACK_ALLOCATED();
 
    public:
-    explicit ScopedInjectedExtensionScriptExecution(
-        ScriptInitiationMonitor* monitor)
+    ScopedInjectedExtensionScriptExecution(ScriptInitiationMonitor* monitor,
+                                           const String& script_injector_id)
         : monitor_(CHECK_DEREF(monitor)) {
-      monitor_.EnterInjectedExtensionScriptExecution();
+      CHECK(!script_injector_id.empty());
+      monitor_.EnterInjectedExtensionScriptExecution(script_injector_id);
     }
     ScopedInjectedExtensionScriptExecution(
         const ScopedInjectedExtensionScriptExecution&) = delete;
@@ -145,25 +150,29 @@ class CORE_EXPORT ScriptInitiationMonitor
     ScriptInitiationMonitor& monitor_;
   };
 
-  bool IsExecutingInjectedExtensionScript() const {
-    return executing_injected_extension_script_count_ > 0;
+  // Returns the extension/injector ID for the currently executing injected
+  // script, or an empty String if none.
+  String CurrentScriptInjectorId() const {
+    return injected_script_injector_ids_.empty()
+               ? String()
+               : injected_script_injector_ids_.back();
   }
 
   void Trace(Visitor*) const;
 
  private:
-  void EnterInjectedExtensionScriptExecution() {
-    executing_injected_extension_script_count_++;
+  void EnterInjectedExtensionScriptExecution(const String& script_injector_id) {
+    injected_script_injector_ids_.emplace_back(script_injector_id);
   }
   void ExitInjectedExtensionScriptExecution() {
-    CHECK_GT(executing_injected_extension_script_count_, 0);
-    executing_injected_extension_script_count_--;
+    CHECK(!injected_script_injector_ids_.empty());
+    injected_script_injector_ids_.pop_back();
   }
 
  private:
   Member<LocalFrame> local_root_;
   HeapHashSet<WeakMember<Observer>> observers_;
-  int executing_injected_extension_script_count_ = 0;
+  Vector<String> injected_script_injector_ids_;
 };
 
 }  // namespace blink

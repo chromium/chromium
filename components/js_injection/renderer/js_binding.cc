@@ -272,7 +272,7 @@ void JsBinding::OnExecuteJavaScript(const std::u16string& javascript,
           ? blink::mojom::WantResultOption::kWantResultDateAndRegExpAllowed
           : blink::mojom::WantResultOption::kNoResult,
       blink::mojom::PromiseResultOption::kDoNotWait,
-      /*is_injected_extension_script=*/false);
+      /*script_injector_id=*/blink::WebString());
 }
 
 void JsBinding::ReleaseV8GlobalObjects() {

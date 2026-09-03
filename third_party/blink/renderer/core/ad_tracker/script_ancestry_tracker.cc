@@ -97,6 +97,9 @@ void ScriptAncestryTracker::WillExecuteScript(
                        url});
   }
 
+  CHECK(v8_context.IsEmpty() || !execution_context.GetIsolate() ||
+        v8_context == execution_context.GetIsolate()->GetCurrentContext());
+
   OnScriptRegistered(execution_context, script_id, url, marked_script_id);
 
   if (!bottom_most_script_.has_value() && IsMarkedScript(script_id)) {

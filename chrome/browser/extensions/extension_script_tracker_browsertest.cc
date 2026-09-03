@@ -72,11 +72,11 @@ class ExtensionScriptTrackerBrowserTest : public ExtensionBrowserTest {
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     EXPECT_TRUE(template_url);
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-    return GetDseSearchUrl(host, path);
+    return GetDefaultSearchResultUrl(host, path);
   }
 
-  GURL GetDseSearchUrl(const std::string& host = "example.com",
-                       const std::string& path = "/empty.html") {
+  GURL GetDefaultSearchResultUrl(const std::string& host = "example.com",
+                                 const std::string& path = "/empty.html") {
     return embedded_test_server()->GetURL(host, path + "?q=test");
   }
 
@@ -169,19 +169,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   )");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("page_script.js"), R"(
-    window.contentScriptTracked = window.internals.isExtensionScriptInStack();
+    window.contentScriptTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.contentScriptTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.contentScriptTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "page_script.js"));
   EXPECT_TRUE(
@@ -223,19 +225,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   test_dir.WriteFile(FILE_PATH_LITERAL("page_script.js"), R"(
     window.programmaticScriptTracked =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.programmaticScriptTracked === true");
+  WaitForJsCondition(
+      web_contents,
+      base::StringPrintf("window.programmaticScriptTracked === '%s'",
+                         extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "page_script.js"));
 }
@@ -272,19 +277,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   // Level 2: Web Script loaded by Content Script
   RegisterScriptResponse("extension.com", "/web_script.js", R"(
     window.transitiveScriptTracked =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.transitiveScriptTracked === true");
+  WaitForJsCondition(
+      web_contents,
+      base::StringPrintf("window.transitiveScriptTracked === '%s'",
+                         extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
   EXPECT_TRUE(IsScriptUrlMarked(web_contents, web_script_url.spec()));
@@ -321,19 +329,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   )");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("main_script.js"), R"(
-    window.mainWorldTracked = window.internals.isExtensionScriptInStack();
+    window.mainWorldTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.mainWorldTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.mainWorldTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "main_script.js"));
 }
@@ -371,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -402,14 +412,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
     document.addEventListener('click', () => {
       window.eventListenerScriptTracked =
-          window.internals.isExtensionScriptInStack();
+          window.internals.extensionScriptInStack();
     });
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -418,8 +428,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.dispatchEvent(new Event('click'));"));
 
-  WaitForJsCondition(web_contents,
-                     "window.eventListenerScriptTracked === true");
+  WaitForJsCondition(
+      web_contents,
+      base::StringPrintf("window.eventListenerScriptTracked === '%s'",
+                         extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
@@ -441,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   GURL web_script_url =
       RegisterScriptResponse("extension.com", "/iframe_web_script.js", R"(
-    window.iframeScriptTracked = window.internals.isExtensionScriptInStack();
+    window.iframeScriptTracked = window.internals.extensionScriptInStack();
   )");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
@@ -459,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -472,7 +484,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       }));
   ASSERT_TRUE(iframe_rfh);
 
-  WaitForJsCondition(iframe_rfh, "window.iframeScriptTracked === true");
+  WaitForJsCondition(iframe_rfh,
+                     base::StringPrintf("window.iframeScriptTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(IsScriptUrlMarked(iframe_rfh, web_script_url.spec()));
 }
 
@@ -481,10 +495,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   GURL vanilla_script_url =
       RegisterScriptResponse("example.com", "/vanilla_script.js", R"(
     window.vanillaScriptInStack =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -498,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       )",
                                                  vanilla_script_url.spec())));
 
-  WaitForJsCondition(web_contents, "window.vanillaScriptInStack === false");
+  WaitForJsCondition(web_contents, "window.vanillaScriptInStack === ''");
   EXPECT_FALSE(IsScriptUrlMarked(web_contents, vanilla_script_url.spec()));
 }
 
@@ -525,13 +539,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   GURL vanilla_script_url =
       RegisterScriptResponse("example.com", "/vanilla_script.js", R"(
     window.subsequentScriptInStack =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -548,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       )",
                                                  vanilla_script_url.spec())));
 
-  WaitForJsCondition(web_contents, "window.subsequentScriptInStack === false");
+  WaitForJsCondition(web_contents, "window.subsequentScriptInStack === ''");
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
   EXPECT_FALSE(IsScriptUrlMarked(web_contents, vanilla_script_url.spec()));
@@ -599,19 +613,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   // Level 3: Web Script 2 loaded by Web Script 1
   RegisterScriptResponse("thirdparty.com", "/web_script_2.js", R"(
     window.multiLevelScriptTracked =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.multiLevelScriptTracked === true");
+  WaitForJsCondition(
+      web_contents,
+      base::StringPrintf("window.multiLevelScriptTracked === '%s'",
+                         extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
   EXPECT_TRUE(IsScriptUrlMarked(web_contents, web_script_1_url.spec()));
@@ -638,20 +655,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
     img.setAttribute(
         'onerror',
         'window.inlineErrorTracked = ' +
-        'window.internals.isExtensionScriptInStack();');
+        'window.internals.extensionScriptInStack();');
     document.body.appendChild(img);
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.inlineErrorTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.inlineErrorTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
@@ -682,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   )");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("page_script.js"), R"(
-    window.subframeScriptTracked = window.internals.isExtensionScriptInStack();
+    window.subframeScriptTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
@@ -697,7 +716,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child_rfh);
 
-  WaitForJsCondition(child_rfh, "window.subframeScriptTracked === true");
+  WaitForJsCondition(child_rfh,
+                     base::StringPrintf("window.subframeScriptTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(child_rfh, extension, "page_script.js"));
   EXPECT_TRUE(
@@ -723,20 +744,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
     const script = document.createElement('script');
     script.textContent =
         'window.inlineTextTracked = ' +
-        'window.internals.isExtensionScriptInStack();';
+        'window.internals.extensionScriptInStack();';
     document.body.appendChild(script);
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.inlineTextTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.inlineTextTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
@@ -757,19 +780,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   })");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
-    eval('window.evalTracked = window.internals.isExtensionScriptInStack();');
+    eval('window.evalTracked = window.internals.extensionScriptInStack();');
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.evalTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.evalTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
@@ -794,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       document.write(
           '<script>' +
           'window.docWriteTracked = ' +
-          'window.internals.isExtensionScriptInStack();' +
+          'window.internals.extensionScriptInStack();' +
           '</script>');
     };
   )");
@@ -802,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -810,7 +835,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents, "window.runDocWrite();"));
 
-  WaitForJsCondition(web_contents, "window.docWriteTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.docWriteTracked === '%s'",
+                                        extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
@@ -832,20 +859,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
     window.directContentScriptTracked =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents,
-                     "window.directContentScriptTracked === true");
+  WaitForJsCondition(
+      web_contents,
+      base::StringPrintf("window.directContentScriptTracked === '%s'",
+                         extension->id().c_str()));
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
@@ -871,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
           target: { tabId: tabId },
           world: 'MAIN',
           func: () => {
-            window.funcTracked = window.internals.isExtensionScriptInStack();
+            window.funcTracked = window.internals.extensionScriptInStack();
           }
         });
       }
@@ -881,13 +910,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.funcTracked === true");
+  WaitForJsCondition(web_contents,
+                     base::StringPrintf("window.funcTracked === '%s'",
+                                        extension->id().c_str()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
@@ -907,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   GURL web_script_url =
       RegisterScriptResponse("example.com", "/injected_web_script.js", R"(
     window.injectedWebScriptTracked =
-        window.internals.isExtensionScriptInStack();
+        window.internals.extensionScriptInStack();
   )");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
@@ -932,13 +963,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  WaitForJsCondition(web_contents, "window.injectedWebScriptTracked === true");
+  WaitForJsCondition(
+      web_contents,
+      base::StringPrintf("window.injectedWebScriptTracked === '%s'",
+                         extension->id().c_str()));
   EXPECT_TRUE(IsScriptUrlMarked(web_contents, web_script_url.spec()));
 }
 
@@ -962,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
     iframe.srcdoc =
         '<script>' +
         'window.srcdocScriptTracked = ' +
-        'window.internals.isExtensionScriptInStack();' +
+        'window.internals.extensionScriptInStack();' +
         '</script>';
     document.body.appendChild(iframe);
   )");
@@ -970,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = GetDseSearchUrl();
+  GURL url = GetDefaultSearchResultUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -983,26 +1017,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       }));
   ASSERT_TRUE(iframe_rfh);
 
-  WaitForJsCondition(iframe_rfh, "window.srcdocScriptTracked !== undefined");
-  EXPECT_TRUE(
-      content::EvalJs(iframe_rfh, "window.srcdocScriptTracked").ExtractBool());
+  WaitForJsCondition(iframe_rfh,
+                     base::StringPrintf("window.srcdocScriptTracked === '%s'",
+                                        extension->id().c_str()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
-                       TrackingDisabledOnNonDsePage) {
+                       TrackingDisabledOnNonDefaultSearchResultPage) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
-    "name": "Extension Script Tracker Non-DSE Test",
+    "name": "Extension Script Tracker Non-Search Page Test",
     "version": "0.1",
     "manifest_version": 3,
     "content_scripts": [{
-      "matches": ["http://non-dse.com/*"],
+      "matches": ["http://non-search.com/*"],
       "js": ["content_script.js"],
       "run_at": "document_end"
     }],
     "web_accessible_resources": [{
       "resources": ["page_script.js"],
-      "matches": ["http://non-dse.com/*"]
+      "matches": ["http://non-search.com/*"]
     }]
   })");
 
@@ -1014,30 +1048,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   test_dir.WriteFile(FILE_PATH_LITERAL("page_script.js"), R"(
     window.scriptRan = true;
-    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+    window.isExtensionTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL non_dse_url =
-      embedded_test_server()->GetURL("non-dse.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_dse_url));
+  GURL non_search_url =
+      embedded_test_server()->GetURL("non-search.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_search_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   WaitForJsCondition(web_contents, "window.scriptRan === true");
-  EXPECT_FALSE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ("", content::EvalJs(web_contents, "window.isExtensionTracked")
+                    .ExtractString());
   EXPECT_FALSE(
       IsExtensionScriptUrlMarked(web_contents, extension, "page_script.js"));
   EXPECT_FALSE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
-                       TrackingDisabledAfterNavigationToNonDsePage) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionScriptTrackerBrowserTest,
+    TrackingDisabledAfterNavigationToNonDefaultSearchResultPage) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
     "name": "Extension Script Tracker Navigation Test",
@@ -1053,45 +1088,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
     window.contentScriptRan = true;
-    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+    window.isExtensionTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // 1. Navigate to DSE SRP: tracking should be enabled.
-  GURL dse_url = GetDseSearchUrl();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dse_url));
+  // 1. Navigate to default search result page: tracking should be enabled.
+  GURL search_url = GetDefaultSearchResultUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   WaitForJsCondition(web_contents, "window.contentScriptRan === true");
-  EXPECT_TRUE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ(extension->id(),
+            content::EvalJs(web_contents, "window.isExtensionTracked")
+                .ExtractString());
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 
-  // 2. Navigate to same-site non-DSE page in the same tab: tracking should now
-  // be disabled.
-  GURL non_dse_url =
+  // 2. Navigate to same-site non-default search result page in the same tab:
+  // tracking should now be disabled.
+  GURL non_search_url =
       embedded_test_server()->GetURL("example.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_dse_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_search_url));
 
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   WaitForJsCondition(web_contents, "window.contentScriptRan === true");
-  EXPECT_FALSE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ("", content::EvalJs(web_contents, "window.isExtensionTracked")
+                    .ExtractString());
   EXPECT_FALSE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
-                       TrackingEnabledForPrerenderedDsePage) {
+                       TrackingEnabledForPrerenderedDefaultSearchResultPage) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
-    "name": "Extension Script Tracker Prerender DSE Test",
+    "name": "Extension Script Tracker Prerender Default Search Test",
     "version": "0.1",
     "manifest_version": 3,
     "content_scripts": [{
@@ -1104,44 +1140,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
     window.contentScriptRan = true;
-    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+    window.isExtensionTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // 1. Navigate to initial non-DSE page.
-  GURL non_dse_url =
+  // 1. Navigate to initial non-default search result page.
+  GURL non_search_url =
       embedded_test_server()->GetURL("example.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_dse_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_search_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   WaitForJsCondition(web_contents, "window.contentScriptRan === true");
-  EXPECT_FALSE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ("", content::EvalJs(web_contents, "window.isExtensionTracked")
+                    .ExtractString());
 
-  // 2. Prerender DSE SRP.
-  GURL dse_url = GetDseSearchUrl();
-  const auto host_id = prerender_helper().AddPrerender(dse_url);
+  // 2. Prerender default search result page.
+  GURL search_url = GetDefaultSearchResultUrl();
+  const auto host_id = prerender_helper().AddPrerender(search_url);
   EXPECT_TRUE(prerender_helper().GetPrerenderedMainFrameHost(host_id));
 
-  // 3. Activate the prerendered DSE page.
-  prerender_helper().NavigatePrimaryPage(dse_url);
+  // 3. Activate the prerendered default search result page.
+  prerender_helper().NavigatePrimaryPage(search_url);
 
   WaitForJsCondition(web_contents, "window.contentScriptRan === true");
-  EXPECT_TRUE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ(extension->id(),
+            content::EvalJs(web_contents, "window.isExtensionTracked")
+                .ExtractString());
   EXPECT_TRUE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
-                       TrackingDisabledForPrerenderedNonDsePage) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionScriptTrackerBrowserTest,
+    TrackingDisabledForPrerenderedNonDefaultSearchResultPage) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
-    "name": "Extension Script Tracker Prerender Non-DSE Test",
+    "name": "Extension Script Tracker Prerender Non-Default Search Test",
     "version": "0.1",
     "manifest_version": 3,
     "content_scripts": [{
@@ -1154,35 +1192,37 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
     window.contentScriptRan = true;
-    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+    window.isExtensionTracked = window.internals.extensionScriptInStack();
   )");
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // 1. Navigate to initial DSE page: tracking should be enabled.
-  GURL dse_url = GetDseSearchUrl();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dse_url));
+  // 1. Navigate to initial default search result page: tracking should be
+  // enabled.
+  GURL search_url = GetDefaultSearchResultUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   WaitForJsCondition(web_contents, "window.contentScriptRan === true");
-  EXPECT_TRUE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ(extension->id(),
+            content::EvalJs(web_contents, "window.isExtensionTracked")
+                .ExtractString());
 
-  // 2. Prerender a non-DSE page.
-  GURL non_dse_url =
+  // 2. Prerender a non-default search result page.
+  GURL non_search_url =
       embedded_test_server()->GetURL("example.com", "/empty.html");
-  const auto host_id = prerender_helper().AddPrerender(non_dse_url);
+  const auto host_id = prerender_helper().AddPrerender(non_search_url);
   EXPECT_TRUE(prerender_helper().GetPrerenderedMainFrameHost(host_id));
 
-  // 3. Activate the prerendered non-DSE page.
-  prerender_helper().NavigatePrimaryPage(non_dse_url);
+  // 3. Activate the prerendered non-default search result page.
+  prerender_helper().NavigatePrimaryPage(non_search_url);
 
   WaitForJsCondition(web_contents, "window.contentScriptRan === true");
-  EXPECT_FALSE(
-      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_EQ("", content::EvalJs(web_contents, "window.isExtensionTracked")
+                    .ExtractString());
   EXPECT_FALSE(
       IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
 }

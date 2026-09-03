@@ -252,7 +252,7 @@ void PausableScriptExecutor::CreateAndRun(
           std::move(callback),
           MakeGarbageCollected<V8FunctionExecutor>(isolate, function, receiver,
                                                    argc, argv),
-          /*is_injected_extension_script=*/false);
+          /*script_injector_id=*/String());
   executor->Run();
 }
 
@@ -266,13 +266,13 @@ void PausableScriptExecutor::CreateAndRun(
     mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_result_option,
     WebScriptExecutionCallback callback,
-    bool is_injected_extension_script) {
+    const String& script_injector_id) {
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
       script_state, user_activation_option, blocking_option, want_result_option,
       promise_result_option, std::move(callback),
       MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
                                               execute_script_policy),
-      is_injected_extension_script);
+      script_injector_id);
   switch (evaluation_timing) {
     case mojom::blink::EvaluationTiming::kAsynchronous:
       executor->RunAsync();
@@ -303,7 +303,7 @@ PausableScriptExecutor::PausableScriptExecutor(
     mojom::blink::PromiseResultOption promise_result_option,
     WebScriptExecutionCallback callback,
     Executor* executor,
-    bool is_injected_extension_script)
+    const String& script_injector_id)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
       callback_(std::move(callback)),
@@ -311,7 +311,7 @@ PausableScriptExecutor::PausableScriptExecutor(
       blocking_option_(blocking_option),
       want_result_option_(want_result_option),
       wait_for_promise_(promise_result_option),
-      is_injected_extension_script_(is_injected_extension_script),
+      script_injector_id_(script_injector_id),
       executor_(executor) {
   CHECK(script_state_);
   CHECK(script_state_->ContextIsValid());
@@ -369,11 +369,11 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
     std::optional<
         ScriptInitiationMonitor::ScopedInjectedExtensionScriptExecution>
         extension_script_scope;
-    if (is_injected_extension_script_) {
+    if (!script_injector_id_.empty()) {
       if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
         if (LocalFrame* frame = window->GetFrame()) {
           extension_script_scope.emplace(
-              frame->GetOrCreateScriptInitiationMonitor());
+              frame->GetOrCreateScriptInitiationMonitor(), script_injector_id_);
         }
       }
     }

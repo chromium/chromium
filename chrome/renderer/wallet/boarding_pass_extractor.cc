@@ -156,7 +156,7 @@ void BoardingPassExtractor::ExtractBoardingPassWithScript(
       blink::BackForwardCacheAware::kAllow,
       blink::mojom::WantResultOption::kWantResult,
       blink::mojom::PromiseResultOption::kAwait,
-      /*is_injected_extension_script=*/false);
+      /*script_injector_id=*/blink::WebString());
 }
 
 void BoardingPassExtractor::OnBoardingPassExtracted(

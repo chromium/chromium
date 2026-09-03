@@ -3396,7 +3396,7 @@ void LocalFrame::RequestExecuteScript(
     BackForwardCacheAware back_forward_cache_aware,
     mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_behavior,
-    bool is_injected_extension_script) {
+    const String& script_injector_id) {
   DOMWrapperWorld* world;
   ExecuteScriptPolicy execute_script_policy;
   CHECK(!IsProvisional());
@@ -3452,7 +3452,7 @@ void LocalFrame::RequestExecuteScript(
   PausableScriptExecutor::CreateAndRun(
       script_state, std::move(script_sources), execute_script_policy,
       user_gesture, evaluation_timing, blocking_option, want_result_option,
-      promise_behavior, std::move(callback), is_injected_extension_script);
+      promise_behavior, std::move(callback), script_injector_id);
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
