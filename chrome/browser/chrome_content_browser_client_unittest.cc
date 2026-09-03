@@ -351,12 +351,10 @@ TEST_F(ChromeContentBrowserClientTest, ShouldAssignSiteForURL) {
       GURL("https://www.google.com")));
 }
 
-// BrowserWithTestWindowTest doesn't work on Android.
-#if !BUILDFLAG(IS_ANDROID)
-
 using ChromeContentBrowserClientTestWithWebContents =
     ChromeRenderViewHostTestHarness;
 
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/40447789): Remove the need for
 // ShouldStayInParentProcessForNTP()
 //    and associated test.
@@ -519,10 +517,12 @@ TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams_FlagDisabled) {
   EXPECT_TRUE(
       ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK, transition));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that automatic beacon credentials (automatic beacons sent with cookie
 // data) are disallowed if the 3PCs are blocked.
-TEST_F(ChromeContentBrowserClientTest, AutomaticBeaconCredentials) {
+TEST_F(ChromeContentBrowserClientTestWithWebContents,
+       AutomaticBeaconCredentials) {
   ChromeContentBrowserClient client;
 
   EXPECT_TRUE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
@@ -660,6 +660,9 @@ TEST_F(
       navigation_handle, /*render_frame_host=*/nullptr, profile(),
       net::ERR_PROXY_AUTH_REQUESTED));
 }
+
+// Desktop Auto-Pip feature only.
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeContentBrowserClientTestWithWebContents,
        GetAutoPipInfo_AutoPipReason) {
