@@ -3296,9 +3296,14 @@ targets.bundle(
 targets.bundle(
     name = "gpu_android_arm_release_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
+        "trace_test",
     ],
 )
 
@@ -3368,29 +3373,42 @@ targets.bundle(
 targets.bundle(
     name = "gpu_angle_linux_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
+        "trace_test",
     ],
 )
 
 targets.bundle(
     name = "gpu_angle_mac_telemetry_tests",
     targets = [
-        "gpu_info_collection_telemetry_tests",
         "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
     ],
 )
 
 targets.bundle(
     name = "gpu_angle_win_intel_nvidia_telemetry_tests",
     targets = [
-        "gpu_info_collection_telemetry_tests",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
     ],
 )
 
@@ -3526,9 +3544,14 @@ targets.bundle(
 targets.bundle(
     name = "gpu_common_metal_passthrough_graphite_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
+        "trace_test",
     ],
 )
 
@@ -4350,7 +4373,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_webrtc_telemetry_test",
         "gpu_webcodecs_telemetry_test",
 
@@ -4359,10 +4381,12 @@ targets.bundle(
         # directly included.
         "context_lost_passthrough_tests",
         "expected_color_pixel_passthrough_test",
-        "hardware_accelerated_feature_tests",
         "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
+        "info_collection_tests",
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_tests",
+        "trace_test",
         "webgl2_conformance_gles_passthrough_tests",
         "webgl_conformance_gles_passthrough_tests",
     ],
@@ -4558,25 +4582,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_info_collection_telemetry_tests",
-    targets = [
-        "info_collection_tests",
-    ],
-    per_test_modifications = {
-        "info_collection_tests": [
-            targets.mixin(
-                args = [
-                    targets.magic_args.GPU_EXPECTED_VENDOR_ID,
-                    targets.magic_args.GPU_EXPECTED_DEVICE_ID,
-                    "--extra-browser-args=--force_high_performance_gpu",
-                ],
-            ),
-            "gpu_integration_test_common_args",
-        ],
-    },
-)
-
-targets.bundle(
     name = "gpu_linux_debug_gtests",
     targets = [
         "gpu_desktop_passthrough_gtests",
@@ -4586,9 +4591,14 @@ targets.bundle(
 targets.bundle(
     name = "gpu_linux_debug_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl_conformance_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
+        "trace_test",
     ],
 )
 
@@ -4602,7 +4612,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_linux_release_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_webgl_conformance_telemetry_tests",
 
         # Migrated individual tests below.
@@ -4610,10 +4619,12 @@ targets.bundle(
         # directly included.
         "context_lost_passthrough_tests",
         "expected_color_pixel_passthrough_test",
-        "hardware_accelerated_feature_tests",
         "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
+        "info_collection_tests",
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_tests",
+        "trace_test",
     ],
 )
 
@@ -4655,9 +4666,14 @@ targets.bundle(
 targets.bundle(
     name = "gpu_mac_release_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "info_collection_tests",
+        "trace_test",
     ],
 )
 
@@ -4812,7 +4828,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_win_release_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
@@ -4820,10 +4835,12 @@ targets.bundle(
         # directly included.
         "context_lost_passthrough_tests",
         "expected_color_pixel_passthrough_test",
-        "hardware_accelerated_feature_tests",
         "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
+        "info_collection_tests",
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_tests",
+        "trace_test",
     ],
 )
 

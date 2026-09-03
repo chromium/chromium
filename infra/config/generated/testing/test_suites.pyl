@@ -1623,37 +1623,6 @@
       'base_unittests': {},
     },
 
-    'gpu_common_and_optional_telemetry_tests': {
-      'info_collection_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'info_collection',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId',
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
-          '--extra-browser-args=--force_high_performance_gpu',
-        ],
-      },
-      'trace_test': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-          'module_scheme': 'flat',
-        },
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-      },
-    },
-
     'gpu_metal_passthrough_graphite_telemetry_tests': {
       'context_lost_metal_passthrough_graphite_tests': {
         'test_common': {
@@ -2215,6 +2184,36 @@
       },
     },
 
+    'legacy_info_collection_tests': {
+      'info_collection_tests': {
+        'test_common': {
+          'mixins': [
+            'gpu_integration_test_common_args',
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId',
+            '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
+            '--extra-browser-args=--force_high_performance_gpu',
+          ],
+          'module_scheme': 'flat',
+        },
+        'telemetry_test_name': 'info_collection',
+      },
+    },
+
+    'legacy_trace_test': {
+      'trace_test': {
+        'test_common': {
+          'mixins': [
+            'gpu_integration_test_common_args',
+            'has_native_resultdb_integration',
+          ],
+          'module_scheme': 'flat',
+        },
+      },
+    },
+
     'legacy_webgl_conformance_gles_passthrough_tests': {
       'webgl_conformance_gles_passthrough_tests': {
         'test_common': {
@@ -2770,33 +2769,35 @@
     ],
 
     'gpu_all_linux_release_vulkan_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'legacy_info_collection_tests',
+      'legacy_trace_test',
     ],
 
     'gpu_fyi_only_mac_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
       'gpu_metal_passthrough_graphite_telemetry_tests',
       'gpu_webcodecs_metal_passthrough_graphite_telemetry_test',
       'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
       'gpu_webrtc_metal_passthrough_graphite_telemetry_test',
+      'legacy_info_collection_tests',
+      'legacy_trace_test',
     ],
 
     'gpu_telemetry_tests_v8': [
-      'gpu_common_and_optional_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
+      'legacy_info_collection_tests',
+      'legacy_trace_test',
       'legacy_webgl_conformance_gles_passthrough_tests',
     ],
 
     'gpu_v8_win_release_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_graphite_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
@@ -2804,6 +2805,8 @@
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
       'gpu_webrtc_telemetry_test',
+      'legacy_info_collection_tests',
+      'legacy_trace_test',
     ],
 
     'linux_chromeos_gtests': [

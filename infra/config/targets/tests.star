@@ -1499,7 +1499,14 @@ targets.tests.gpu_telemetry_test(
     name = "info_collection_tests",
     telemetry_test_name = "info_collection",
     mixins = [
+        "gpu_integration_test_common_args",
         "has_native_resultdb_integration",
+    ],
+    args = [
+        targets.magic_args.GPU_EXPECTED_VENDOR_ID,
+        targets.magic_args.GPU_EXPECTED_DEVICE_ID,
+        # On dual-GPU devices we want the high-performance GPU to be active
+        "--extra-browser-args=--force_high_performance_gpu",
     ],
     module_scheme = "flat",
 )
@@ -2507,6 +2514,7 @@ targets.tests.isolated_script_test(
 targets.tests.gpu_telemetry_test(
     name = "trace_test",
     mixins = [
+        "gpu_integration_test_common_args",
         "has_native_resultdb_integration",
     ],
     module_scheme = "flat",

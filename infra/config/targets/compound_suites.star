@@ -52,25 +52,35 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "gpu_all_linux_release_vulkan_telemetry_tests",
     basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "legacy_info_collection_tests",
+        "legacy_trace_test",
     ],
 )
 
 targets.legacy_compound_suite(
     name = "gpu_fyi_only_mac_release_telemetry_tests",
     basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_metal_passthrough_graphite_telemetry_tests",
         "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
         "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
         "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "legacy_info_collection_tests",
+        "legacy_trace_test",
     ],
 )
 
@@ -79,7 +89,6 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "gpu_v8_win_release_telemetry_tests",
     basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_graphite_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
@@ -87,15 +96,26 @@ targets.legacy_compound_suite(
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "legacy_info_collection_tests",
+        "legacy_trace_test",
     ],
 )
 
 targets.legacy_compound_suite(
     name = "gpu_telemetry_tests_v8",
     basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "legacy_info_collection_tests",
+        "legacy_trace_test",
         "legacy_webgl_conformance_gles_passthrough_tests",
     ],
 )

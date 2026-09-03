@@ -880,24 +880,20 @@ targets.legacy_basic_suite(
 # BEGIN tests which run on the GPU bots
 
 targets.legacy_basic_suite(
-    name = "gpu_common_and_optional_telemetry_tests",
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_info_collection_tests",
     tests = {
-        "info_collection_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                targets.magic_args.GPU_EXPECTED_VENDOR_ID,
-                targets.magic_args.GPU_EXPECTED_DEVICE_ID,
-                # On dual-GPU devices we want the high-performance GPU to be active
-                "--extra-browser-args=--force_high_performance_gpu",
-            ],
-        ),
-        "trace_test": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
+        "info_collection_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_trace_test",
+    tests = {
+        "trace_test": targets.legacy_test_config(),
     },
 )
 
