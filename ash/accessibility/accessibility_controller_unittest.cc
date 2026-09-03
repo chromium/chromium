@@ -2288,9 +2288,6 @@ class AccessibilityControllerDisableTouchpadTest : public AshTestBase {
   ~AccessibilityControllerDisableTouchpadTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityDisableTouchpad);
-
     AshTestBase::SetUp();
 
     EventRewriterController::Get()->Initialize(nullptr, nullptr);
@@ -2315,9 +2312,6 @@ class AccessibilityControllerDisableTouchpadTest : public AshTestBase {
   }
 
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AccessibilityControllerDisableTouchpadTest,

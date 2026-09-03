@@ -35,8 +35,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   let page: SettingsCursorAndTouchpadPageElement;
   let deviceBrowserProxy: TestDevicePageBrowserProxy;
   let prefElement: SettingsPrefsElement;
-  const disableInternalTouchpadFeatureEnabled =
-      loadTimeData.getBoolean('isAccessibilityDisableTouchpadEnabled');
 
   async function initPage() {
     prefElement = document.createElement('settings-prefs');
@@ -699,122 +697,102 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertTrue(page.getPref<boolean>('settings.a11y.mouse_keys.enabled').value);
   });
 
-  if (disableInternalTouchpadFeatureEnabled) {
-    test(
-        'Disable touchpad dropdown and pref sync in default mode', async () => {
-          await initPage();
-          const disableInternalTouchpadSelectElement =
-              await getDisableInternalTouchpadSelectElement();
-          // Make sure disable touchpad dropdown is set to never disabled,
-          // matching default pref state.
-          assertEquals(
-              String(DisableTouchpadMode.NEVER),
-              disableInternalTouchpadSelectElement.value);
-        });
+  test(
+      'Disable touchpad dropdown and pref sync in default mode', async () => {
+        await initPage();
+        const disableInternalTouchpadSelectElement =
+            await getDisableInternalTouchpadSelectElement();
+        // Make sure disable touchpad dropdown is set to never disabled,
+        // matching default pref state.
+        assertEquals(
+            String(DisableTouchpadMode.NEVER),
+            disableInternalTouchpadSelectElement.value);
+      });
 
-    test(
-        'Disable touchpad dropdown and pref sync when always disabled',
-        async () => {
-          await initPage();
-          const disableInternalTouchpadSelectElement =
-              await getDisableInternalTouchpadSelectElement();
-          assert(disableInternalTouchpadSelectElement);
-          await waitAfterNextRender(disableInternalTouchpadSelectElement);
-          // Change disable internal touchpad dropdown to always disabled,
-          // and verify the pref is also set to always disabled.
-          disableInternalTouchpadSelectElement.value =
-              String(DisableTouchpadMode.ALWAYS);
-          disableInternalTouchpadSelectElement.dispatchEvent(
-              new CustomEvent('change'));
-          const disableInternalTouchpadModePref =
-              page.getPref('settings.a11y.disable_trackpad_mode');
-          await waitAfterNextRender(page);
-          assertEquals(
-              DisableTouchpadMode.ALWAYS,
-              disableInternalTouchpadModePref.value);
-          assertTrue(isVisible(
-              page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
-        });
+  test(
+      'Disable touchpad dropdown and pref sync when always disabled',
+      async () => {
+        await initPage();
+        const disableInternalTouchpadSelectElement =
+            await getDisableInternalTouchpadSelectElement();
+        assert(disableInternalTouchpadSelectElement);
+        await waitAfterNextRender(disableInternalTouchpadSelectElement);
+        // Change disable internal touchpad dropdown to always disabled,
+        // and verify the pref is also set to always disabled.
+        disableInternalTouchpadSelectElement.value =
+            String(DisableTouchpadMode.ALWAYS);
+        disableInternalTouchpadSelectElement.dispatchEvent(
+            new CustomEvent('change'));
+        const disableInternalTouchpadModePref =
+            page.getPref('settings.a11y.disable_trackpad_mode');
+        await waitAfterNextRender(page);
+        assertEquals(
+            DisableTouchpadMode.ALWAYS,
+            disableInternalTouchpadModePref.value);
+        assertTrue(isVisible(
+            page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
+      });
 
-    test(
-        'Disable touchpad dropdown and pref sync in mouse connected mode',
-        async () => {
-          await initPage();
-          const disableInternalTouchpadSelectElement =
-              await getDisableInternalTouchpadSelectElement();
+  test(
+      'Disable touchpad dropdown and pref sync in mouse connected mode',
+      async () => {
+        await initPage();
+        const disableInternalTouchpadSelectElement =
+            await getDisableInternalTouchpadSelectElement();
 
-          // Change disable internal touchpad dropdown to disable when mouse is
-          // connected, and verify the pref is also set to always disabled.
-          disableInternalTouchpadSelectElement.value =
-              String(DisableTouchpadMode.ON_MOUSE_CONNECTED);
-          disableInternalTouchpadSelectElement.dispatchEvent(
-              new CustomEvent('change'));
-          const disableInternalTouchpadModePref =
-              page.getPref('settings.a11y.disable_trackpad_mode');
+        // Change disable internal touchpad dropdown to disable when mouse is
+        // connected, and verify the pref is also set to always disabled.
+        disableInternalTouchpadSelectElement.value =
+            String(DisableTouchpadMode.ON_MOUSE_CONNECTED);
+        disableInternalTouchpadSelectElement.dispatchEvent(
+            new CustomEvent('change'));
+        const disableInternalTouchpadModePref =
+            page.getPref('settings.a11y.disable_trackpad_mode');
 
-          await waitAfterNextRender(page);
-          assertEquals(
-              DisableTouchpadMode.ON_MOUSE_CONNECTED,
-              disableInternalTouchpadModePref.value);
-          assertTrue(isVisible(
-              page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
-        });
+        await waitAfterNextRender(page);
+        assertEquals(
+            DisableTouchpadMode.ON_MOUSE_CONNECTED,
+            disableInternalTouchpadModePref.value);
+        assertTrue(isVisible(
+            page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
+      });
 
-    test(
-        'Disable touchpad dropdown and pref sync when never disabled',
-        async () => {
-          await initPage();
-          const disableInternalTouchpadSelectElement =
-              await getDisableInternalTouchpadSelectElement();
+  test(
+      'Disable touchpad dropdown and pref sync when never disabled',
+      async () => {
+        await initPage();
+        const disableInternalTouchpadSelectElement =
+            await getDisableInternalTouchpadSelectElement();
 
-          // Change disable internal touchpad dropdown to Never,
-          // and verify pref is also set to Never.
-          disableInternalTouchpadSelectElement.value =
-              String(DisableTouchpadMode.NEVER);
-          disableInternalTouchpadSelectElement.dispatchEvent(
-              new CustomEvent('change'));
-          const disableInternalTouchpadModePref =
-              page.getPref('settings.a11y.disable_trackpad_mode');
+        // Change disable internal touchpad dropdown to Never,
+        // and verify pref is also set to Never.
+        disableInternalTouchpadSelectElement.value =
+            String(DisableTouchpadMode.NEVER);
+        disableInternalTouchpadSelectElement.dispatchEvent(
+            new CustomEvent('change'));
+        const disableInternalTouchpadModePref =
+            page.getPref('settings.a11y.disable_trackpad_mode');
 
-          await waitAfterNextRender(page);
-          assertEquals(
-              DisableTouchpadMode.NEVER, disableInternalTouchpadModePref.value);
-          assertFalse(isVisible(
-              page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
-        });
+        await waitAfterNextRender(page);
+        assertEquals(
+            DisableTouchpadMode.NEVER, disableInternalTouchpadModePref.value);
+        assertFalse(isVisible(
+            page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
+      });
 
-    test('Disable touchpad dropdown is deep linkable', async () => {
-      await initPage();
-      const params = new URLSearchParams();
-      const settingId = settingMojom.Setting.kDisableTouchpad.toString();
-      params.append('settingId', settingId);
-      Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
-      flush();
+  test('Disable touchpad dropdown is deep linkable', async () => {
+    await initPage();
+    const params = new URLSearchParams();
+    const settingId = settingMojom.Setting.kDisableTouchpad.toString();
+    params.append('settingId', settingId);
+    Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
+    flush();
 
-      const dropdown = getDisableInternalTouchpadDropdown();
-      await waitAfterNextRender(dropdown);
-      assertEquals(
-          dropdown, page.shadowRoot!.activeElement,
-          `Disable touchpad dropdown should be focused for settingId=${
-              settingId}.`);
-    });
-  } else {
-    test('disable internal touchpad feature disabled', async () => {
-      await initPage();
-      const disableInternalTouchpadDropdown =
-          page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-              '#disableInternalTouchpadDropdown');
-
-      // No setting visible.
-      assertNull(disableInternalTouchpadDropdown);
-
-      // Pref has default value.
-      assertEquals(
-          page.getPref('settings.a11y.disable_trackpad_mode').value,
-          DisableTouchpadMode.NEVER);
-      assertFalse(
-          page.getPref<boolean>('settings.a11y.disable_trackpad_enabled')
-              .value);
-    });
-  }
+    const dropdown = getDisableInternalTouchpadDropdown();
+    await waitAfterNextRender(dropdown);
+    assertEquals(
+        dropdown, page.shadowRoot!.activeElement,
+        `Disable touchpad dropdown should be focused for settingId=${
+            settingId}.`);
+  });
 });

@@ -268,11 +268,6 @@ bool IsAccessibilityMouseKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
 }
 
-BASE_FEATURE(kAccessibilityDisableTouchpad, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityDisableTouchpadEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityDisableTouchpad);
-}
 
 BASE_FEATURE(kAccessibilityInvertedMouseCursor,
              base::FEATURE_ENABLED_BY_DEFAULT);

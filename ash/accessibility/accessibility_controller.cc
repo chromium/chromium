@@ -2778,13 +2778,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateFlashNotificationsFromPrefs,
           base::Unretained(this)));
-  if (::features::IsAccessibilityDisableTouchpadEnabled()) {
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityDisableTrackpadMode,
-        base::BindRepeating(
-            &AccessibilityController::UpdateDisableTouchpadFromPrefs,
-            base::Unretained(this), /*notify*/ true));
-  }
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityDisableTrackpadMode,
+      base::BindRepeating(
+          &AccessibilityController::UpdateDisableTouchpadFromPrefs,
+          base::Unretained(this), /*notify*/ true));
 
   for (const std::unique_ptr<Feature>& feature : features_) {
     // Log previous duration and clear duration metric if necessary
@@ -2835,9 +2833,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
                           prefs::kAccessibilityFaceGazeActionsEnabled));
 
   UpdateFlashNotificationsFromPrefs();
-  if (::features::IsAccessibilityDisableTouchpadEnabled()) {
-    UpdateDisableTouchpadFromPrefs(/*notify=*/false);
-  }
+  UpdateDisableTouchpadFromPrefs(/*notify=*/false);
 }
 
 void AccessibilityController::UpdateAutoclickDelayFromPref() {
@@ -3126,8 +3122,7 @@ void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
 }
 
 void AccessibilityController::UpdateDisableTouchpadFromPrefs(bool notify) {
-  if (!disable_touchpad_event_rewriter_ ||
-      !::features::IsAccessibilityDisableTouchpadEnabled()) {
+  if (!disable_touchpad_event_rewriter_) {
     return;
   }
 
@@ -3834,8 +3829,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       }
       break;
     case FeatureType::kDisableTouchpad:
-      if (!::features::IsAccessibilityDisableTouchpadEnabled() ||
-          !disable_touchpad_event_rewriter_) {
+      if (!disable_touchpad_event_rewriter_) {
         return;
       }
 

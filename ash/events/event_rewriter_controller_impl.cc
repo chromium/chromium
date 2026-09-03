@@ -21,7 +21,6 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/command_line.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
@@ -125,15 +124,13 @@ void EventRewriterControllerImpl::Initialize(
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
   // EventRewriters are notified in the order they are added.
-  if (::features::IsAccessibilityDisableTouchpadEnabled()) {
-    std::unique_ptr<DisableTouchpadEventRewriter>
-        disable_touchpad_event_rewriter =
-            std::make_unique<DisableTouchpadEventRewriter>();
-    disable_touchpad_event_rewriter_ = disable_touchpad_event_rewriter.get();
-    // The DisableTouchpadEventRewriter needs to be notified first, as it
-    // should stop all touchpad events from propagating further into the system.
-    AddEventRewriter(std::move(disable_touchpad_event_rewriter));
-  }
+  std::unique_ptr<DisableTouchpadEventRewriter>
+      disable_touchpad_event_rewriter =
+          std::make_unique<DisableTouchpadEventRewriter>();
+  disable_touchpad_event_rewriter_ = disable_touchpad_event_rewriter.get();
+  // The DisableTouchpadEventRewriter needs to be notified first, as it
+  // should stop all touchpad events from propagating further into the system.
+  AddEventRewriter(std::move(disable_touchpad_event_rewriter));
 
   std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =
       std::make_unique<FilterKeysEventRewriter>();

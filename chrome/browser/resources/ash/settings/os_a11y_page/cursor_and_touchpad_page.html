@@ -178,29 +178,27 @@
     label="$i18n{overscrollHistoryNavigationTitle}"
     deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isAccessibilityDisableTouchpadEnabled_]]">
-  <div class="settings-box start-padding">
-    <div class="flex start settings-box-text">
-      <div id="disableInternalTouchpadLabel">
-          $i18n{disableTouchpadLabel}
-      </div>
-      <template is="dom-if" if="[[showTouchpadEnableMessage_(
-            prefs.settings.a11y.disable_trackpad_mode.value
-          )]]">
-        <div class="cr-secondary-text sub-label" id="reEnableTouchpadLabel" >
-           <span class="sub-label-text">$i18n{reEnableTouchpadLabel}</span>
-        </div>
-      </template>
+<div class="settings-box start-padding">
+  <div class="flex start settings-box-text">
+    <div id="disableInternalTouchpadLabel">
+        $i18n{disableTouchpadLabel}
     </div>
-    <settings-dropdown-menu id="disableInternalTouchpadDropdown"
-          aria-labelledby="disableInternalTouchpadLabel"
-          pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
-          menu-options="[[disableTouchpadOptions_]]"
-          deep-link-focus-id$="[[Setting.kDisableTouchpad]]"
-          >
-    </settings-dropdown-menu>
+    <template is="dom-if" if="[[showTouchpadEnableMessage_(
+          prefs.settings.a11y.disable_trackpad_mode.value
+        )]]">
+      <div class="cr-secondary-text sub-label" id="reEnableTouchpadLabel" >
+         <span class="sub-label-text">$i18n{reEnableTouchpadLabel}</span>
+      </div>
+    </template>
   </div>
-</template>
+  <settings-dropdown-menu id="disableInternalTouchpadDropdown"
+        aria-labelledby="disableInternalTouchpadLabel"
+        pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
+        menu-options="[[disableTouchpadOptions_]]"
+        deep-link-focus-id$="[[Setting.kDisableTouchpad]]"
+        >
+  </settings-dropdown-menu>
+</div>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
   <!-- If shelf navigation buttons are implicitly enabled by other a11y
       settings (e.g. by spoken feedback), the toggle control should be

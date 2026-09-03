@@ -2185,11 +2185,6 @@ inline constexpr char kAccessibilityAcceleratorName[] =
 inline constexpr char kAccessibilityAcceleratorDescription[] =
     "This option enables the Accessibility accelerator.";
 
-inline constexpr char kAccessibilityDisableTouchpadName[] =
-    "Accessibility disable trackpad";
-inline constexpr char kAccessibilityDisableTouchpadDescription[] =
-    "Adds a setting that allows the user to disable the built-in trackpad.";
-
 inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectName[] =
     "Google TTS Automatic Reconnect";
 inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectDescription[] =

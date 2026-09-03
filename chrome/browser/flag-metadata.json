@@ -3145,11 +3145,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "enable-accessibility-disable-touchpad",
-    "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "enable-accessibility-extended-selection",
     "owners": ["rhalavati@chromium.org", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 170

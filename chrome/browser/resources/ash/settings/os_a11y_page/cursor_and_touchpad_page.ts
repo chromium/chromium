@@ -248,17 +248,6 @@ export class SettingsCursorAndTouchpadPageElement extends
             'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled)',
       },
 
-      /**
-       * Whether the controlling the mouse cursor with the keyboard feature is
-       * enabled.
-       */
-      isAccessibilityDisableTouchpadEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityDisableTouchpadEnabled');
-        },
-      },
 
       /**
        * Whether the controlling the mouse cursor with the keyboard feature is
@@ -324,7 +313,6 @@ export class SettingsCursorAndTouchpadPageElement extends
       chrome.settingsPrivate.PrefObject<boolean>;
   declare private showFaceGazeRow_: boolean;
   declare private showShelfNavigationButtonsSettings_: boolean;
-  declare private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   declare private readonly isAccessibilityMouseKeysEnabled_: boolean;
   declare private hasMouse_: boolean;
   declare private hasTouchpad_: boolean;

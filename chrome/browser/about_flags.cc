@@ -8339,11 +8339,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityAcceleratorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityAccelerator)},
 
-    {"enable-accessibility-disable-touchpad",
-     flag_descriptions::kAccessibilityDisableTouchpadName,
-     flag_descriptions::kAccessibilityDisableTouchpadDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityDisableTouchpad)},
-
     {"enable-accessibility-google-tts-automatic-reconnect",
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectName,
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectDescription,
