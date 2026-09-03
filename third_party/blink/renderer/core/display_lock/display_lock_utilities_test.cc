@@ -291,7 +291,7 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(ChildDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+      LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver);
   observer->observe(target);
   UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();

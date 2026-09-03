@@ -449,7 +449,7 @@ void AnchorElementViewportPositionTracker::InitializeIntersectionObserver() {
       *GetSupplementable(),
       BindRepeating(&AnchorElementViewportPositionTracker::UpdateVisibleAnchors,
                     WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
+      LocalFrameMetricsAggregator::kAnchorElementMetricsIntersectionObserver,
       {.thresholds = {kIntersectionRatioThreshold},
        .delay = intersection_observer_delay_});
 

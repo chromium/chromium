@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -902,7 +902,7 @@ class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
     observer_ = IntersectionObserver::Create(
         element_->GetDocument(),
         BindRepeating(&VisibilityObserver::Deliver, WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kIntersectionObservationInternalCount,
+        LocalFrameMetricsAggregator::kIntersectionObservationInternalCount,
         std::move(params));
   }
 

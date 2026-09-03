@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_METRICS_AGGREGATOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_METRICS_AGGREGATOR_H_
 
 #include <stdint.h>
 
@@ -68,15 +68,15 @@ enum class DocumentUpdateReason;
 // such that any given frame is equally likely to be the final sample.
 //
 // Sample usage (see also SCOPED_UMA_AND_UKM_TIMER):
-//   std::unique_ptr<LocalFrameUkmAggregator> aggregator(
-//      new LocalFrameUkmAggregator(
+//   std::unique_ptr<LocalFrameMetricsAggregator> aggregator(
+//      new LocalFrameMetricsAggregator(
 //              GetSourceId(),
 //              GetUkmRecorder());
 //   ...
 //   {
 //     auto timer =
 //         aggregator->GetScopedTimer(static_cast<size_t>(
-//             LocalFrameUkmAggregator::MetricNames::kMetric2));
+//             LocalFrameMetricsAggregator::MetricNames::kMetric2));
 //     ...
 //   }
 //   // At this point data for kMetric2 is recorded.
@@ -102,7 +102,7 @@ enum class DocumentUpdateReason;
 // and histograms.xml file. Runtime errors indicate missing or mis-named
 // metrics.
 //
-// If the source_id/recorder changes then a new  LocalFrameUkmAggregator has to
+// If the source_id/recorder changes then a new  LocalFrameMetricsAggregator has to
 // be created.
 
 // Defines a UKM that is part of a hierarchical ukm, recorded in
@@ -115,15 +115,15 @@ enum class DocumentUpdateReason;
 //
 // }
 //
-// |ukm_enum| should be an entry in LocalFrameUkmAggregator's enum of
+// |ukm_enum| should be an entry in LocalFrameMetricsAggregator's enum of
 // metric names (which in turn corresponds to names from ukm.xml).
 #define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum)                      \
-  std::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer; \
+  std::optional<LocalFrameMetricsAggregator::ScopedUkmHierarchicalTimer> timer; \
   if (aggregator)                                                           \
     timer.emplace(aggregator->GetScopedTimer(static_cast<size_t>(ukm_enum)));
 
-class CORE_EXPORT LocalFrameUkmAggregator
-    : public RefCounted<LocalFrameUkmAggregator> {
+class CORE_EXPORT LocalFrameMetricsAggregator
+    : public RefCounted<LocalFrameMetricsAggregator> {
  public:
   // Changing these values requires changing the names of metrics specified
   // below. For every metric name added here, add an entry in the array in
@@ -176,8 +176,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
   } MetricInitializationData;
 
  private:
-  friend class LocalFrameUkmAggregatorTest;
-  friend class LocalFrameUkmAggregatorSimTest;
+  friend class LocalFrameMetricsAggregatorTest;
+  friend class LocalFrameMetricsAggregatorSimTest;
 
   // Primary metric name
   static const char* primary_metric_name() { return "MainFrame"; }
@@ -238,13 +238,13 @@ class CORE_EXPORT LocalFrameUkmAggregator
     ~ScopedUkmHierarchicalTimer();
 
    private:
-    friend class LocalFrameUkmAggregator;
+    friend class LocalFrameMetricsAggregator;
 
-    ScopedUkmHierarchicalTimer(scoped_refptr<LocalFrameUkmAggregator>,
+    ScopedUkmHierarchicalTimer(scoped_refptr<LocalFrameMetricsAggregator>,
                                size_t metric_index,
                                const base::TickClock* clock);
 
-    scoped_refptr<LocalFrameUkmAggregator> aggregator_;
+    scoped_refptr<LocalFrameMetricsAggregator> aggregator_;
     const size_t metric_index_;
     const base::TickClock* clock_;
     const base::TimeTicks start_time_;
@@ -260,7 +260,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     STACK_ALLOCATED();
 
    public:
-    IterativeTimer(LocalFrameUkmAggregator&);
+    explicit IterativeTimer(LocalFrameMetricsAggregator&);
     ~IterativeTimer();
     // Start a time interval measurement for the given metric, completing the
     // prior interval measurement if necessary.
@@ -268,7 +268,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
    private:
     void Record(bool should_record_prev_metric, bool should_record_next_metric);
-    scoped_refptr<LocalFrameUkmAggregator> aggregator_;
+    scoped_refptr<LocalFrameMetricsAggregator> aggregator_;
     base::TimeTicks start_time_;
     int64_t metric_index_ = -1;
   };
@@ -276,10 +276,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Scoped helper class for timing forced style and layout updates.
   // Encapsulates the TimeTicks::Now() calls which are expensive on arm. The
   // time from object creation to destruction is recorded and aggregated within
-  // LocalFrameUkmAggregator.
+  // LocalFrameMetricsAggregator.
   class CORE_EXPORT ScopedForcedLayoutTimer {
    public:
-    ScopedForcedLayoutTimer(LocalFrameUkmAggregator& aggregator,
+    ScopedForcedLayoutTimer(LocalFrameMetricsAggregator& aggregator,
                             DocumentUpdateReason update_reason,
                             bool is_potentially_clean,
                             bool avoid_unnecessary_forced_layout_measurements,
@@ -295,7 +295,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     ScopedForcedLayoutTimer& operator=(ScopedForcedLayoutTimer&& other);
 
    private:
-    scoped_refptr<LocalFrameUkmAggregator> aggregator_;
+    scoped_refptr<LocalFrameMetricsAggregator> aggregator_;
     DocumentUpdateReason update_reason_;
     base::TimeTicks start_time_;
     bool is_potentially_clean_;
@@ -304,10 +304,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
     bool is_pre_fcp_;
   };
 
-  LocalFrameUkmAggregator();
-  LocalFrameUkmAggregator(const LocalFrameUkmAggregator&) = delete;
-  LocalFrameUkmAggregator& operator=(const LocalFrameUkmAggregator&) = delete;
-  ~LocalFrameUkmAggregator();
+  LocalFrameMetricsAggregator();
+  LocalFrameMetricsAggregator(const LocalFrameMetricsAggregator&) = delete;
+  LocalFrameMetricsAggregator& operator=(const LocalFrameMetricsAggregator&) = delete;
+  ~LocalFrameMetricsAggregator();
 
   const base::TickClock* GetClock() const { return clock_; }
 
@@ -442,7 +442,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   void DoNotChooseNextFrameForTest();
 
   // The caller is the owner of the |clock|. The |clock| must outlive the
-  // LocalFrameUkmAggregator.
+  // LocalFrameMetricsAggregator.
   void SetTickClockForTesting(const base::TickClock* clock);
 
   bool IsBeforeFCPForTesting() const;
@@ -491,7 +491,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   SampleControlForTest next_frame_sample_control_for_test_ = kNoPreference;
 
   // When they are collected, the overhead of granular IntersectionObserver
-  // metrics is a large part of overall LocalFrameUkmAggregator overhead. The
+  // metrics is a large part of overall LocalFrameMetricsAggregator overhead. The
   // granular metrics are useful for pinpointing regressions, but we can get
   // most of the benefit even if we downsample them. This value controls how
   // frequently we collect granular IntersectionObserver metrics.
@@ -504,4 +504,4 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_METRICS_AGGREGATOR_H_

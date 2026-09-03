@@ -52,10 +52,10 @@ specific_include_rules = {
   "local_frame_test\\.cc": [
     "+base/callback_list.h",
   ],
-  "local_frame_ukm_aggregator\\.cc": [
+  "local_frame_metrics_aggregator\\.cc": [
     "+base/cpu_reduction_experiment.h",
   ],
-  "local_frame_ukm_aggregator_test\\.cc": [
+  "local_frame_metrics_aggregator_test\\.cc": [
     "+base/metrics/statistics_recorder.h"
   ],
   "local_frame_view\\.cc": [

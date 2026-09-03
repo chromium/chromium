@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 
 namespace blink {
@@ -39,10 +39,11 @@ SyncScrollAttemptHeuristic::~SyncScrollAttemptHeuristic() {
     // This will not cover cases where |frame_| is remote.
     if (LocalFrame* local_frame = DynamicTo<LocalFrame>(frame_)) {
       if (local_frame->View()) {
-        if (LocalFrameUkmAggregator* ukm_aggregator =
-                local_frame->View()->GetUkmAggregator()) {
-          ukm_aggregator->RecordCountSample(
-              LocalFrameUkmAggregator::kPossibleSynchronizedScrollCount2, 1);
+        if (LocalFrameMetricsAggregator* metrics_aggregator =
+                local_frame->View()->GetMetricsAggregator()) {
+          metrics_aggregator->RecordCountSample(
+              LocalFrameMetricsAggregator::kPossibleSynchronizedScrollCount2,
+              1);
         }
       }
     }

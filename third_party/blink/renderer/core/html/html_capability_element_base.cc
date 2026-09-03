@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -341,7 +341,7 @@ void HTMLCapabilityElementBase::AttachLayoutTree(AttachContext& context) {
         GetDocument(),
         BindRepeating(&HTMLCapabilityElementBase::OnIntersectionChanged,
                       WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
+        LocalFrameMetricsAggregator::kPermissionElementIntersectionObserver,
         IntersectionObserver::Params{
             .margin = {Length::Fixed(kMarginVisibleContent)},
             .margin_target = IntersectionObserver::kApplyMarginToTarget,

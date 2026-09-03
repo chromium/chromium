@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 
 #include "base/metrics/statistics_recorder.h"
 #include "base/numerics/safe_conversions.h"
@@ -25,10 +25,10 @@
 
 namespace blink {
 
-class LocalFrameUkmAggregatorTest : public testing::Test {
+class LocalFrameMetricsAggregatorTest : public testing::Test {
  public:
-  LocalFrameUkmAggregatorTest() = default;
-  ~LocalFrameUkmAggregatorTest() override = default;
+  LocalFrameMetricsAggregatorTest() = default;
+  ~LocalFrameMetricsAggregatorTest() override = default;
 
   void SetUp() override {
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
@@ -42,7 +42,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
   int64_t source_id() const { return source_id_; }
 
-  LocalFrameUkmAggregator& aggregator() {
+  LocalFrameMetricsAggregator& aggregator() {
     CHECK(aggregator_);
     return *aggregator_;
   }
@@ -59,17 +59,17 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
   void RestartAggregator() {
     source_id_ = ukm::UkmRecorder::GetNewSourceID();
-    aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>();
+    aggregator_ = base::MakeRefCounted<LocalFrameMetricsAggregator>();
     aggregator_->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   }
 
   std::string GetPrimaryMetricName() {
-    return LocalFrameUkmAggregator::primary_metric_name();
+    return LocalFrameMetricsAggregator::primary_metric_name();
   }
 
   std::string GetMetricName(int index) {
     std::string name =
-        LocalFrameUkmAggregator::metrics_data()[base::checked_cast<size_t>(
+        LocalFrameMetricsAggregator::metrics_data()[base::checked_cast<size_t>(
                                                     index)]
             .name;
 
@@ -125,8 +125,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     // All tests using this method check through kForcedStyleAndLayout because
     // kForcedStyleAndLayout and subsequent metrics report and record
     // differently.
-    for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
-      if (!LocalFrameUkmAggregator::metrics_data()[i].has_ukm) {
+    for (int i = 0; i < LocalFrameMetricsAggregator::kForcedStyleAndLayout; ++i) {
+      if (!LocalFrameMetricsAggregator::metrics_data()[i].has_ukm) {
         continue;
       }
       EXPECT_TRUE(
@@ -134,7 +134,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       const int64_t* metric_value =
           ukm::TestUkmRecorder::GetEntryMetric(entry, GetMetricName(i));
       EXPECT_NEAR(*metric_value,
-                  LocalFrameUkmAggregator::ApplyBucketIfNecessary(
+                  LocalFrameMetricsAggregator::ApplyBucketIfNecessary(
                       expected_sub_metric * 1e3, i),
                   1);
 
@@ -144,7 +144,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
           ukm::TestUkmRecorder::GetEntryMetric(entry,
                                                GetBeginMainFrameMetricName(i));
       EXPECT_NEAR(*metric_begin_main_frame,
-                  LocalFrameUkmAggregator::ApplyBucketIfNecessary(
+                  LocalFrameMetricsAggregator::ApplyBucketIfNecessary(
                       expected_begin_main_frame * 1e3, i),
                   1);
     }
@@ -173,8 +173,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       // All tests using this method check through kForcedStyleAndLayout because
       // kForcedStyleAndLayout and subsequent metrics report and record
       // differently.
-      for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
-        if (!LocalFrameUkmAggregator::metrics_data()[i].has_ukm) {
+      for (int i = 0; i < LocalFrameMetricsAggregator::kForcedStyleAndLayout; ++i) {
+        if (!LocalFrameMetricsAggregator::metrics_data()[i].has_ukm) {
           continue;
         }
         EXPECT_TRUE(
@@ -182,7 +182,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
         const int64_t* metric_value =
             ukm::TestUkmRecorder::GetEntryMetric(entry, GetMetricName(i));
         EXPECT_NEAR(*metric_value,
-                    LocalFrameUkmAggregator::ApplyBucketIfNecessary(
+                    LocalFrameMetricsAggregator::ApplyBucketIfNecessary(
                         expected_sub_metric * 1e3, i),
                     1);
       }
@@ -197,9 +197,9 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     // All tests using this method run through kForcedStyleAndLayout because
     // kForcedStyleAndLayout is not reported using a ScopedTimer and the
     // subsequent metrics are reported as part of kForcedStyleAndLayout.
-    for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+    for (int i = 0; i < LocalFrameMetricsAggregator::kForcedStyleAndLayout; ++i) {
       auto timer = aggregator().GetScopedTimer(i);
-      if (mark_fcp && i == static_cast<int>(LocalFrameUkmAggregator::kPaint))
+      if (mark_fcp && i == static_cast<int>(LocalFrameMetricsAggregator::kPaint))
         aggregator().DidReachFirstContentfulPaint();
       test_task_runner_->FastForwardBy(
           base::Milliseconds(millisecond_per_step));
@@ -212,7 +212,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     // All tests using this method run through kForcedStyleAndLayout because
     // kForcedStyleAndLayout is not reported using a ScopedTimer and the
     // subsequent metrics are reported as part of kForcedStyleAndLayout.
-    for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+    for (int i = 0; i < LocalFrameMetricsAggregator::kForcedStyleAndLayout; ++i) {
       auto timer = aggregator().GetScopedTimer(i);
       test_task_runner_->FastForwardBy(
           base::Milliseconds(millisecond_per_step));
@@ -221,12 +221,12 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
   void SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason reason,
-      LocalFrameUkmAggregator::MetricId target_metric,
+      LocalFrameMetricsAggregator::MetricId target_metric,
       unsigned expected_num_entries) {
     base::TimeTicks start_time = Now();
     aggregator().BeginMainFrame();
     {
-      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
+      LocalFrameMetricsAggregator::ScopedForcedLayoutTimer timer =
           aggregator().GetScopedForcedLayoutTimer(
               reason, /*is_potentially_clean=*/false);
       test_task_runner_->FastForwardBy(base::Milliseconds(10));
@@ -241,22 +241,22 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     auto* entry = entries[expected_num_entries - 1].get();
 
     EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
-        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));
+        entry, GetMetricName(LocalFrameMetricsAggregator::kForcedStyleAndLayout)));
     const int64_t* metric_value = ukm::TestUkmRecorder::GetEntryMetric(
-        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout));
+        entry, GetMetricName(LocalFrameMetricsAggregator::kForcedStyleAndLayout));
     EXPECT_NEAR(*metric_value, 10000, 1);
 
-    if (target_metric != LocalFrameUkmAggregator::kCount) {
+    if (target_metric != LocalFrameMetricsAggregator::kCount) {
       EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
           entry, GetMetricName(target_metric)));
       metric_value = ukm::TestUkmRecorder::GetEntryMetric(
           entry, GetMetricName(target_metric));
       EXPECT_NEAR(*metric_value, 10000, 1);
     }
-    for (int i = LocalFrameUkmAggregator::kForcedStyleAndLayout + 1;
-         i < LocalFrameUkmAggregator::kCount; ++i) {
+    for (int i = LocalFrameMetricsAggregator::kForcedStyleAndLayout + 1;
+         i < LocalFrameMetricsAggregator::kCount; ++i) {
       if (i != target_metric) {
-        if (!LocalFrameUkmAggregator::metrics_data()[i].has_ukm) {
+        if (!LocalFrameMetricsAggregator::metrics_data()[i].has_ukm) {
           continue;
         }
         EXPECT_TRUE(
@@ -279,11 +279,11 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 
   int64_t source_id_;
-  scoped_refptr<LocalFrameUkmAggregator> aggregator_;
+  scoped_refptr<LocalFrameMetricsAggregator> aggregator_;
   ukm::TestUkmRecorder recorder_;
 };
 
-TEST_F(LocalFrameUkmAggregatorTest, EmptyEventsNotRecorded) {
+TEST_F(LocalFrameMetricsAggregatorTest, EmptyEventsNotRecorded) {
   // Although the tests use a mock clock, the UKM aggregator checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -298,7 +298,7 @@ TEST_F(LocalFrameUkmAggregatorTest, EmptyEventsNotRecorded) {
   EXPECT_EQ(recorder().entries_count(), 0u);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, FirstFrameIsRecorded) {
+TEST_F(LocalFrameMetricsAggregatorTest, FirstFrameIsRecorded) {
   // Verifies that we always get a sample when we report at least one frame.
 
   // Although the tests use a mock clock, the UKM aggregator checks if the
@@ -321,7 +321,7 @@ TEST_F(LocalFrameUkmAggregatorTest, FirstFrameIsRecorded) {
   EXPECT_EQ(recorder().entries_count(), 1u);
 
   float expected_primary_metric =
-      millisecond_for_step * LocalFrameUkmAggregator::kForcedStyleAndLayout;
+      millisecond_for_step * LocalFrameMetricsAggregator::kForcedStyleAndLayout;
   float expected_sub_metric = millisecond_for_step;
   float expected_begin_main_frame = millisecond_for_step;
 
@@ -329,7 +329,7 @@ TEST_F(LocalFrameUkmAggregatorTest, FirstFrameIsRecorded) {
                     expected_begin_main_frame, 12, true);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, PreFrameWorkIsRecorded) {
+TEST_F(LocalFrameMetricsAggregatorTest, PreFrameWorkIsRecorded) {
   // Verifies that we correctly account for work done before the begin
   // main frame, and then within the begin main frame.
 
@@ -344,7 +344,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreFrameWorkIsRecorded) {
   unsigned millisecond_for_step = 1;
   base::TimeTicks start_time =
       Now() + base::Milliseconds(millisecond_for_step) *
-                  LocalFrameUkmAggregator::kForcedStyleAndLayout;
+                  LocalFrameMetricsAggregator::kForcedStyleAndLayout;
   SimulatePreFrame(millisecond_for_step);
   SimulateFrame(start_time, millisecond_for_step, 12);
 
@@ -356,7 +356,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreFrameWorkIsRecorded) {
   EXPECT_EQ(recorder().entries_count(), 1u);
 
   float expected_primary_metric =
-      millisecond_for_step * LocalFrameUkmAggregator::kForcedStyleAndLayout;
+      millisecond_for_step * LocalFrameMetricsAggregator::kForcedStyleAndLayout;
   float expected_sub_metric = millisecond_for_step * 2;
   float expected_begin_main_frame = millisecond_for_step;
 
@@ -364,7 +364,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreFrameWorkIsRecorded) {
                     expected_begin_main_frame, 12, true);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, PreAndPostFCPAreRecorded) {
+TEST_F(LocalFrameMetricsAggregatorTest, PreAndPostFCPAreRecorded) {
   // Confirm that we get at least one frame pre-FCP and one post-FCP.
 
   // Although the tests use a mock clock, the UKM aggregator checks if the
@@ -377,7 +377,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreAndPostFCPAreRecorded) {
   // for the initial frame, regardless of the initial interval.
   base::TimeTicks start_time = Now();
   unsigned millisecond_per_step =
-      50 / (LocalFrameUkmAggregator::kForcedStyleAndLayout + 1);
+      50 / (LocalFrameMetricsAggregator::kForcedStyleAndLayout + 1);
   SimulateFrame(start_time, millisecond_per_step, 4, true);
 
   // We marked FCP when we simulated, so we should report something. There
@@ -385,7 +385,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreAndPostFCPAreRecorded) {
   EXPECT_EQ(recorder().entries_count(), 2u);
 
   float expected_primary_metric =
-      millisecond_per_step * LocalFrameUkmAggregator::kForcedStyleAndLayout;
+      millisecond_per_step * LocalFrameMetricsAggregator::kForcedStyleAndLayout;
   float expected_sub_metric = millisecond_per_step;
   float expected_begin_main_frame = millisecond_per_step;
 
@@ -396,7 +396,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreAndPostFCPAreRecorded) {
   // fcp frame. A failure here iundicates that we did not reset the frame,
   // or that we are incorrectly tracking pre/post fcp.
   unsigned millisecond_per_frame =
-      millisecond_per_step * LocalFrameUkmAggregator::kForcedStyleAndLayout;
+      millisecond_per_step * LocalFrameMetricsAggregator::kForcedStyleAndLayout;
 
   start_time = Now();
   SimulateFrame(start_time, millisecond_per_step, 4);
@@ -414,7 +414,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreAndPostFCPAreRecorded) {
                     expected_begin_main_frame, 4, false);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, AggregatedPreFCPEventRecorded) {
+TEST_F(LocalFrameMetricsAggregatorTest, AggregatedPreFCPEventRecorded) {
   // Although the tests use a mock clock, the UKM aggregator checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -427,9 +427,9 @@ TEST_F(LocalFrameUkmAggregatorTest, AggregatedPreFCPEventRecorded) {
   // UpdateTime metric in order to record an aggregated metric.
   DoNotChooseNextFrameForTest();
   unsigned millisecond_per_step =
-      50 / (LocalFrameUkmAggregator::kForcedStyleAndLayout + 1);
+      50 / (LocalFrameMetricsAggregator::kForcedStyleAndLayout + 1);
   unsigned millisecond_per_frame =
-      millisecond_per_step * (LocalFrameUkmAggregator::kForcedStyleAndLayout);
+      millisecond_per_step * (LocalFrameMetricsAggregator::kForcedStyleAndLayout);
 
   base::TimeTicks start_time = Now();
   SimulateFrame(start_time, millisecond_per_step, 3);
@@ -450,7 +450,7 @@ TEST_F(LocalFrameUkmAggregatorTest, AggregatedPreFCPEventRecorded) {
   ResetAggregator();
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutReasonsReportOnlyMetric) {
+TEST_F(LocalFrameMetricsAggregatorTest, ForcedLayoutReasonsReportOnlyMetric) {
   // Although the tests use a mock clock, the UKM aggregator checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -460,93 +460,93 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutReasonsReportOnlyMetric) {
   // Test that every layout reason reports the expected UKM metric.
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kContextMenu,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 1u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 1u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kEditing,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 2u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 2u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kEditing,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 3u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 3u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kFindInPage,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 4u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 4u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kFocus,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 5u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 5u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kForm,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 6u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 6u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kInput,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 7u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 7u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kInspector,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 8u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 8u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kPrinting,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 9u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 9u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kSelection,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 10u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 10u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kSpatialNavigation,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 11u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 11u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kTapHighlight,
-      LocalFrameUkmAggregator::kUserDrivenDocumentUpdate, 12u);
+      LocalFrameMetricsAggregator::kUserDrivenDocumentUpdate, 12u);
 
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kAccessibility,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 13u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 13u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kBaseColor,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 14u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 14u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kDisplayLock,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 15u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 15u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kIntersectionObservation,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 16u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 16u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kOverlay,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 17u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 17u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kPagePopup,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 18u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 18u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kSizeChange,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 19u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 19u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kSpellCheck,
-      LocalFrameUkmAggregator::kServiceDocumentUpdate, 20u);
+      LocalFrameMetricsAggregator::kServiceDocumentUpdate, 20u);
 
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kCanvas,
-      LocalFrameUkmAggregator::kContentDocumentUpdate, 21u);
+      LocalFrameMetricsAggregator::kContentDocumentUpdate, 21u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kPlugin,
-      LocalFrameUkmAggregator::kContentDocumentUpdate, 22u);
+      LocalFrameMetricsAggregator::kContentDocumentUpdate, 22u);
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kSVGImage,
-      LocalFrameUkmAggregator::kContentDocumentUpdate, 23u);
+      LocalFrameMetricsAggregator::kContentDocumentUpdate, 23u);
 
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kHitTest,
-      LocalFrameUkmAggregator::kHitTestDocumentUpdate, 24u);
+      LocalFrameMetricsAggregator::kHitTestDocumentUpdate, 24u);
 
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kJavaScript,
-      LocalFrameUkmAggregator::kJavascriptDocumentUpdate, 25u);
+      LocalFrameMetricsAggregator::kJavascriptDocumentUpdate, 25u);
 
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kBeginMainFrame,
-                                      LocalFrameUkmAggregator::kCount, 26u);
+                                      LocalFrameMetricsAggregator::kCount, 26u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kTest,
-                                      LocalFrameUkmAggregator::kCount, 27u);
+                                      LocalFrameMetricsAggregator::kCount, 27u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kUnknown,
-                                      LocalFrameUkmAggregator::kCount, 28u);
+                                      LocalFrameMetricsAggregator::kCount, 28u);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
+TEST_F(LocalFrameMetricsAggregatorTest, MetricConfigurationFlags) {
   if (!base::TimeTicks::IsHighResolution()) {
     return;
   }
@@ -565,7 +565,7 @@ TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
   auto* entry = entries[0].get();
 
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
-      entry, GetMetricName(LocalFrameUkmAggregator::kUpdateLayers)));
+      entry, GetMetricName(LocalFrameMetricsAggregator::kUpdateLayers)));
   histogram_tester.ExpectTotalCount("Blink.UpdateLayers.UpdateTime.PreFCP", 0);
   histogram_tester.ExpectTotalCount("Blink.UpdateLayers.UpdateTime.PostFCP", 0);
   histogram_tester.ExpectTotalCount(
@@ -574,7 +574,7 @@ TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
   // kLayout has has_uma = true, has_ukm = true.
   // Verify that it is recorded in both UKM and UMA.
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
-      entry, GetMetricName(LocalFrameUkmAggregator::kLayout)));
+      entry, GetMetricName(LocalFrameMetricsAggregator::kLayout)));
   histogram_tester.ExpectTotalCount("Blink.Layout.UpdateTime.PreFCP", 1);
   histogram_tester.ExpectTotalCount("Blink.Layout.UpdateTime.AggregatedPreFCP",
                                     0);
@@ -584,9 +584,9 @@ TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
   RestartAggregator();
   start_time = Now();
   aggregator().BeginMainFrame();
-  for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+  for (int i = 0; i < LocalFrameMetricsAggregator::kForcedStyleAndLayout; ++i) {
     auto timer = aggregator().GetScopedTimer(i);
-    if (i == static_cast<int>(LocalFrameUkmAggregator::kPaint)) {
+    if (i == static_cast<int>(LocalFrameMetricsAggregator::kPaint)) {
       aggregator().DidReachFirstContentfulPaint();
     }
     test_task_runner_->FastForwardBy(base::Milliseconds(10));
@@ -604,7 +604,7 @@ TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
       "Blink.UpdateLayers.UpdateTime.AggregatedPreFCP", 0);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
+TEST_F(LocalFrameMetricsAggregatorTest, ForcedLayoutPotentiallyClean) {
   if (!base::TimeTicks::IsHighResolution()) {
     return;
   }
@@ -617,7 +617,7 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
     base::TimeTicks start_time = Now();
     aggregator().BeginMainFrame();
     {
-      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
+      LocalFrameMetricsAggregator::ScopedForcedLayoutTimer timer =
           aggregator().GetScopedForcedLayoutTimer(
               DocumentUpdateReason::kJavaScript, /*is_potentially_clean=*/true);
       test_task_runner_->FastForwardBy(base::Milliseconds(10));
@@ -632,16 +632,16 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
     auto* entry = entries[0].get();
 
     EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
-        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));
+        entry, GetMetricName(LocalFrameMetricsAggregator::kForcedStyleAndLayout)));
     const int64_t* forced_val = ukm::TestUkmRecorder::GetEntryMetric(
-        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout));
+        entry, GetMetricName(LocalFrameMetricsAggregator::kForcedStyleAndLayout));
     EXPECT_NEAR(*forced_val, 10000, 1);
 
     // ForcedStyleAndLayoutPotentiallyClean is UMA-only (has_ukm = false).
     EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
         entry,
         GetMetricName(
-            LocalFrameUkmAggregator::kForcedStyleAndLayoutPotentiallyClean)));
+            LocalFrameMetricsAggregator::kForcedStyleAndLayoutPotentiallyClean)));
 
     histogram_tester.ExpectTotalCount(
         "Blink.ForcedStyleAndLayout.UpdateTime.PreFCP", 1);
@@ -656,7 +656,7 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
     base::TimeTicks start_time = Now();
     aggregator().BeginMainFrame();
     {
-      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
+      LocalFrameMetricsAggregator::ScopedForcedLayoutTimer timer =
           aggregator().GetScopedForcedLayoutTimer(
               DocumentUpdateReason::kJavaScript,
               /*is_potentially_clean=*/false);
@@ -672,15 +672,15 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
     auto* entry = entries[1].get();
 
     EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
-        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));
+        entry, GetMetricName(LocalFrameMetricsAggregator::kForcedStyleAndLayout)));
     const int64_t* forced_val = ukm::TestUkmRecorder::GetEntryMetric(
-        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout));
+        entry, GetMetricName(LocalFrameMetricsAggregator::kForcedStyleAndLayout));
     EXPECT_NEAR(*forced_val, 10000, 1);
 
     EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
         entry,
         GetMetricName(
-            LocalFrameUkmAggregator::kForcedStyleAndLayoutPotentiallyClean)));
+            LocalFrameMetricsAggregator::kForcedStyleAndLayoutPotentiallyClean)));
 
     histogram_tester.ExpectTotalCount(
         "Blink.ForcedStyleAndLayout.UpdateTime.PreFCP", 2);
@@ -690,7 +690,7 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
   }
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {
+TEST_F(LocalFrameMetricsAggregatorTest, LatencyDataIsPopulated) {
   // Although the tests use a mock clock, the UKM aggregator checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -701,9 +701,9 @@ TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {
   // because we need to populate before the end of the frame.
   unsigned millisecond_for_step = 1;
   aggregator().BeginMainFrame();
-  for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+  for (int i = 0; i < LocalFrameMetricsAggregator::kForcedStyleAndLayout; ++i) {
     auto timer = aggregator().GetScopedTimer(
-        i % LocalFrameUkmAggregator::kForcedStyleAndLayout);
+        i % LocalFrameMetricsAggregator::kForcedStyleAndLayout);
     test_task_runner_->FastForwardBy(base::Milliseconds(millisecond_for_step));
   }
 
@@ -726,7 +726,7 @@ TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {
   ResetAggregator();
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, SampleDoesChange) {
+TEST_F(LocalFrameMetricsAggregatorTest, SampleDoesChange) {
   // To write a test that the sample eventually changes we need to let it very
   // occasionally time out or fail. We'll go up to 100,000 tries for an update,
   // so this should not hit on average once every 100,000 test runs. One flake
@@ -747,24 +747,24 @@ TEST_F(LocalFrameUkmAggregatorTest, SampleDoesChange) {
   EXPECT_LT(iteration_count, 100000u);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, IterativeTimer) {
+TEST_F(LocalFrameMetricsAggregatorTest, IterativeTimer) {
   {
-    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
-    timer.StartInterval(LocalFrameUkmAggregator::kStyle);
+    LocalFrameMetricsAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameMetricsAggregator::kStyle);
     test_task_runner_->AdvanceMockTickClock(base::Microseconds(5));
-    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    timer.StartInterval(LocalFrameMetricsAggregator::kLayout);
     test_task_runner_->AdvanceMockTickClock(base::Microseconds(7));
-    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    timer.StartInterval(LocalFrameMetricsAggregator::kLayout);
     test_task_runner_->AdvanceMockTickClock(base::Microseconds(11));
-    timer.StartInterval(LocalFrameUkmAggregator::kPrePaint);
+    timer.StartInterval(LocalFrameMetricsAggregator::kPrePaint);
     test_task_runner_->AdvanceMockTickClock(base::Microseconds(13));
   }
-  EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kStyle), 5);
-  EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kLayout), 18);
-  EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kPrePaint), 13);
+  EXPECT_EQ(GetIntervalCount(LocalFrameMetricsAggregator::kStyle), 5);
+  EXPECT_EQ(GetIntervalCount(LocalFrameMetricsAggregator::kLayout), 18);
+  EXPECT_EQ(GetIntervalCount(LocalFrameMetricsAggregator::kPrePaint), 13);
 }
 
-TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
+TEST_F(LocalFrameMetricsAggregatorTest, IntersectionObserverSamplePeriod) {
   if (!base::TimeTicks::IsHighResolution())
     return;
   SetIntersectionObserverSamplePeriodForTesting(2);
@@ -777,11 +777,11 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
   auto start_time = Now();
   aggregator().BeginMainFrame();
   {
-    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
-    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    LocalFrameMetricsAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameMetricsAggregator::kLayout);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
     timer.StartInterval(
-        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+        LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
   }
   aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers, source_id(),
@@ -796,11 +796,11 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
   start_time = Now();
   aggregator().BeginMainFrame();
   {
-    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
-    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    LocalFrameMetricsAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameMetricsAggregator::kLayout);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
     timer.StartInterval(
-        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+        LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
   }
   aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers, source_id(),
@@ -815,11 +815,11 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
   start_time = Now();
   aggregator().BeginMainFrame();
   {
-    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
-    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    LocalFrameMetricsAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameMetricsAggregator::kLayout);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
     timer.StartInterval(
-        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+        LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
   }
   aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers, source_id(),
@@ -830,14 +830,14 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
       "Blink.DisplayLockIntersectionObserver.UpdateTime.PreFCP", 1000, 2);
 }
 
-class LocalFrameUkmAggregatorSimTest : public SimTest {
+class LocalFrameMetricsAggregatorSimTest : public SimTest {
  protected:
-  explicit LocalFrameUkmAggregatorSimTest(
+  explicit LocalFrameMetricsAggregatorSimTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
       : SimTest(time_source) {}
-  LocalFrameUkmAggregator& local_root_aggregator() {
-    return *LocalFrameRoot().GetFrame()->View()->GetUkmAggregator();
+  LocalFrameMetricsAggregator& local_root_aggregator() {
+    return *LocalFrameRoot().GetFrame()->View()->GetMetricsAggregator();
   }
 
   void ChooseNextFrameForTest() {
@@ -863,7 +863,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         MakeGarbageCollected<TestIntersectionObserverDelegate>(document);
     IntersectionObserver* internal_observer = IntersectionObserver::Create(
         observer_init, *internal_delegate,
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+        LocalFrameMetricsAggregator::kLazyLoadIntersectionObserver);
     DCHECK(!Compositor().NeedsBeginFrame());
     internal_observer->observe(target1);
     internal_observer->observe(target2);
@@ -881,7 +881,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         MakeGarbageCollected<TestIntersectionObserverDelegate>(document);
     IntersectionObserver* javascript_observer = IntersectionObserver::Create(
         observer_init, *javascript_delegate,
-        LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+        LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
     javascript_observer->observe(target1);
     javascript_observer->observe(target2);
     Compositor().BeginFrame();
@@ -895,10 +895,10 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         2);
 
     // Simulate the first contentful paint in the main frame.
-    document.View()->GetUkmAggregator()->BeginMainFrame();
+    document.View()->GetMetricsAggregator()->BeginMainFrame();
     PaintTiming::From(GetDocument()).MarkFirstContentfulPaint();
     Document* root_document = LocalFrameRoot().GetFrame()->GetDocument();
-    document.View()->GetUkmAggregator()->RecordEndOfFrameMetrics(
+    document.View()->GetMetricsAggregator()->RecordEndOfFrameMetrics(
         base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0,
         root_document->UkmSourceID(), root_document->UkmRecorder());
 
@@ -927,7 +927,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 };
 
-TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, GetMetricsAggregator) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
   LoadURL("https://example.com/");
@@ -935,19 +935,19 @@ TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {
   frame_resource.Complete("");
 
   auto* root_view = GetDocument().View();
-  root_view->ResetUkmAggregatorForTesting();
+  root_view->ResetMetricsAggregatorForTesting();
   auto* subframe_view = To<HTMLFrameOwnerElement>(
                             GetDocument().getElementById(AtomicString("frame")))
                             ->contentDocument()
                             ->View();
-  auto* aggregator_from_subframe = subframe_view->GetUkmAggregator();
-  auto* aggregator_from_root = root_view->GetUkmAggregator();
+  auto* aggregator_from_subframe = subframe_view->GetMetricsAggregator();
+  auto* aggregator_from_root = root_view->GetMetricsAggregator();
   EXPECT_EQ(aggregator_from_root, aggregator_from_subframe);
-  EXPECT_EQ(aggregator_from_root, subframe_view->GetUkmAggregator());
-  EXPECT_EQ(aggregator_from_root, root_view->GetUkmAggregator());
+  EXPECT_EQ(aggregator_from_root, subframe_view->GetMetricsAggregator());
+  EXPECT_EQ(aggregator_from_root, root_view->GetMetricsAggregator());
 }
 
-TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, IntersectionObserverCounts) {
   std::unique_ptr<base::StatisticsRecorder> statistics_recorder =
       base::StatisticsRecorder::CreateTemporaryForTesting();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -967,7 +967,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
   TestIntersectionObserverCounts(GetDocument());
 }
 
-TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCountsInChildFrame) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, IntersectionObserverCountsInChildFrame) {
   std::unique_ptr<base::StatisticsRecorder> statistics_recorder =
       base::StatisticsRecorder::CreateTemporaryForTesting();
   base::HistogramTester histogram_tester;
@@ -993,7 +993,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCountsInChildFrame) {
            ->contentDocument());
 }
 
-TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
   InitializeRemote();
   LocalFrame& local_frame_root = *LocalFrameRoot().GetFrame();
   ASSERT_FALSE(local_frame_root.IsMainFrame());
@@ -1005,7 +1005,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
   EXPECT_FALSE(IsBeforeFCPForTesting());
 }
 
-TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
   base::HistogramTester histogram_tester;
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
@@ -1046,7 +1046,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 1);
 }
 
-TEST_F(LocalFrameUkmAggregatorSimTest, VisualUpdateDelay) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, VisualUpdateDelay) {
   base::HistogramTester histogram_tester;
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -1087,7 +1087,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, VisualUpdateDelay) {
       "Blink.VisualUpdateDelay.UpdateTime.PreFCP", delay, 1);
 }
 
-TEST_F(LocalFrameUkmAggregatorSimTest, SVGImageMetricsAreNotRecorded) {
+TEST_F(LocalFrameMetricsAggregatorSimTest, SVGImageMetricsAreNotRecorded) {
   base::HistogramTester histogram_tester;
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -1136,8 +1136,8 @@ using SyncScrollHeuristicTestConfig =
                      SyncScrollPositionAccess,
                      SyncScrollHandlerStrategy>;
 
-class LocalFrameUkmAggregatorSyncScrollTest
-    : public LocalFrameUkmAggregatorSimTest,
+class LocalFrameMetricsAggregatorSyncScrollTest
+    : public LocalFrameMetricsAggregatorSimTest,
       public ::testing::WithParamInterface<SyncScrollHeuristicTestConfig> {
  public:
   static std::string PrintTestName(
@@ -1203,8 +1203,8 @@ class LocalFrameUkmAggregatorSyncScrollTest
     return ::testing::get<2>(config);
   }
 
-  LocalFrameUkmAggregatorSyncScrollTest()
-      : LocalFrameUkmAggregatorSimTest(
+  LocalFrameMetricsAggregatorSyncScrollTest()
+      : LocalFrameMetricsAggregatorSimTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   bool ShouldTriggerSyncScrollHeuristic() const {
@@ -1291,7 +1291,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
-TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
+TEST_P(LocalFrameMetricsAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
   base::HistogramTester histogram_tester;
   const bool should_trigger = ShouldTriggerSyncScrollHeuristic();
 
@@ -1389,7 +1389,7 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
 
 INSTANTIATE_TEST_SUITE_P(
     P,
-    LocalFrameUkmAggregatorSyncScrollTest,
+    LocalFrameMetricsAggregatorSyncScrollTest,
     ::testing::Combine(
         ::testing::Values(
             SyncScrollMutation::kSyncScrollMutatesPosition,
@@ -1405,6 +1405,6 @@ INSTANTIATE_TEST_SUITE_P(
             SyncScrollHandlerStrategy::kSyncScrollWithEventHandlerSchedulingRAF,
             SyncScrollHandlerStrategy::kSyncScrollNoEventHandlerWithRAF,
             SyncScrollHandlerStrategy::kSyncScrollNoEventHandler)),
-    LocalFrameUkmAggregatorSyncScrollTest::PrintTestName);
+    LocalFrameMetricsAggregatorSyncScrollTest::PrintTestName);
 
 }  // namespace blink

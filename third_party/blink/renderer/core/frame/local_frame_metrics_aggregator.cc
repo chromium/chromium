@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 
 #include <memory>
 
@@ -40,7 +40,7 @@ BASE_FEATURE(kAvoidUnnecessaryForcedLayoutMeasurements,
 
 namespace blink {
 
-int64_t LocalFrameUkmAggregator::ApplyBucketIfNecessary(int64_t value,
+int64_t LocalFrameMetricsAggregator::ApplyBucketIfNecessary(int64_t value,
                                                         unsigned metric_id) {
   if (metric_id >= kIntersectionObservationInternalCount &&
       metric_id <= kIntersectionObservationJavascriptCount) {
@@ -49,8 +49,8 @@ int64_t LocalFrameUkmAggregator::ApplyBucketIfNecessary(int64_t value,
   return value;
 }
 
-LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
-    scoped_refptr<LocalFrameUkmAggregator> aggregator,
+LocalFrameMetricsAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
+    scoped_refptr<LocalFrameMetricsAggregator> aggregator,
     size_t metric_index,
     const base::TickClock* clock)
     : aggregator_(aggregator),
@@ -66,7 +66,7 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
   }
 }
 
-LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
+LocalFrameMetricsAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     ScopedUkmHierarchicalTimer&& other)
     : aggregator_(other.aggregator_),
       metric_index_(other.metric_index_),
@@ -75,7 +75,7 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
   other.aggregator_ = nullptr;
 }
 
-LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
+LocalFrameMetricsAggregator::ScopedUkmHierarchicalTimer::
     ~ScopedUkmHierarchicalTimer() {
   if (aggregator_ && !start_time_.is_null()) {
     if (base::TimeTicks::IsHighResolution()) {
@@ -87,17 +87,17 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
   }
 }
 
-LocalFrameUkmAggregator::IterativeTimer::IterativeTimer(
-    LocalFrameUkmAggregator& aggregator)
+LocalFrameMetricsAggregator::IterativeTimer::IterativeTimer(
+    LocalFrameMetricsAggregator& aggregator)
     : aggregator_(base::TimeTicks::IsHighResolution() ? &aggregator : nullptr) {
 }
 
-LocalFrameUkmAggregator::IterativeTimer::~IterativeTimer() {
+LocalFrameMetricsAggregator::IterativeTimer::~IterativeTimer() {
   if (aggregator_.get())
     Record(aggregator_->ShouldMeasureMetric(metric_index_), false);
 }
 
-void LocalFrameUkmAggregator::IterativeTimer::StartInterval(
+void LocalFrameMetricsAggregator::IterativeTimer::StartInterval(
     int64_t metric_index) {
   if (aggregator_.get() && metric_index != metric_index_) {
     bool should_record_prev_metric =
@@ -110,7 +110,7 @@ void LocalFrameUkmAggregator::IterativeTimer::StartInterval(
   }
 }
 
-void LocalFrameUkmAggregator::IterativeTimer::Record(
+void LocalFrameMetricsAggregator::IterativeTimer::Record(
     bool should_record_prev_metric,
     bool should_record_next_metric) {
   DCHECK(aggregator_.get());
@@ -125,8 +125,8 @@ void LocalFrameUkmAggregator::IterativeTimer::Record(
   metric_index_ = -1;
 }
 
-LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
-    LocalFrameUkmAggregator& aggregator,
+LocalFrameMetricsAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
+    LocalFrameMetricsAggregator& aggregator,
     DocumentUpdateReason update_reason,
     bool is_potentially_clean,
     bool avoid_unnecessary_forced_layout_measurements,
@@ -148,7 +148,7 @@ LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
   aggregator_->BeginForcedLayout();
 }
 
-LocalFrameUkmAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
+LocalFrameMetricsAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
   // aggregator_ will be null in a moved-from object.
   if (!aggregator_) {
     return;
@@ -164,19 +164,19 @@ LocalFrameUkmAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
       should_report_uma_this_frame_, is_pre_fcp_);
 }
 
-LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
+LocalFrameMetricsAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
     ScopedForcedLayoutTimer&&) = default;
 
-LocalFrameUkmAggregator::ScopedForcedLayoutTimer&
-LocalFrameUkmAggregator::ScopedForcedLayoutTimer::operator=(
+LocalFrameMetricsAggregator::ScopedForcedLayoutTimer&
+LocalFrameMetricsAggregator::ScopedForcedLayoutTimer::operator=(
     ScopedForcedLayoutTimer&&) = default;
 
-void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
+void LocalFrameMetricsAggregator::AbsoluteMetricRecord::reset() {
   interval_count = 0;
   main_frame_count = 0;
 }
 
-LocalFrameUkmAggregator::LocalFrameUkmAggregator()
+LocalFrameMetricsAggregator::LocalFrameMetricsAggregator()
     : clock_(base::DefaultTickClock::GetInstance()) {
   // All of these are assumed to have one entry per sub-metric.
   DCHECK_EQ(std::size(absolute_metric_records_), metrics_data().size());
@@ -238,15 +238,15 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator()
   }
 }
 
-LocalFrameUkmAggregator::~LocalFrameUkmAggregator() = default;
+LocalFrameMetricsAggregator::~LocalFrameMetricsAggregator() = default;
 
-void LocalFrameUkmAggregator::TransmitFinalSample(int64_t source_id,
+void LocalFrameMetricsAggregator::TransmitFinalSample(int64_t source_id,
                                                   ukm::UkmRecorder* recorder,
                                                   bool is_for_main_frame) {
   ReportUpdateTimeEvent(source_id, recorder);
 }
 
-bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
+bool LocalFrameMetricsAggregator::ShouldMeasureMetric(int64_t metric_id) const {
   if (metric_id < 0 || metric_id > kMainFrame)
     return false;
 
@@ -261,13 +261,13 @@ bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
   return true;
 }
 
-LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer
-LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
+LocalFrameMetricsAggregator::ScopedUkmHierarchicalTimer
+LocalFrameMetricsAggregator::GetScopedTimer(size_t metric_index) {
   return ScopedUkmHierarchicalTimer(this, metric_index, clock_);
 }
 
-LocalFrameUkmAggregator::ScopedForcedLayoutTimer
-LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
+LocalFrameMetricsAggregator::ScopedForcedLayoutTimer
+LocalFrameMetricsAggregator::GetScopedForcedLayoutTimer(
     DocumentUpdateReason update_reason,
     bool is_potentially_clean) {
   static const bool avoid_unnecessary_forced_layout_measurements =
@@ -292,7 +292,7 @@ LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
                                  record_ukm_for_current_frame_);
 }
 
-void LocalFrameUkmAggregator::BeginMainFrame() {
+void LocalFrameMetricsAggregator::BeginMainFrame() {
   DCHECK(!in_main_frame_update_);
   in_main_frame_update_ = true;
   request_timestamp_for_current_frame_ = animation_request_timestamp_;
@@ -300,7 +300,7 @@ void LocalFrameUkmAggregator::BeginMainFrame() {
 }
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
-LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
+LocalFrameMetricsAggregator::GetBeginMainFrameMetrics() {
   DCHECK(InMainFrameUpdate());
 
   // Use the main_frame_percentage_records_ because they are the ones that
@@ -344,23 +344,23 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
   return metrics_data;
 }
 
-void LocalFrameUkmAggregator::SetTickClockForTesting(
+void LocalFrameMetricsAggregator::SetTickClockForTesting(
     const base::TickClock* clock) {
   clock_ = clock;
 }
 
-void LocalFrameUkmAggregator::DidReachFirstContentfulPaint() {
+void LocalFrameMetricsAggregator::DidReachFirstContentfulPaint() {
   if (fcp_state_ == kBeforeFCPSignal)
     fcp_state_ = kThisFrameReachedFCP;
 }
 
-void LocalFrameUkmAggregator::RecordTimerSample(size_t metric_index,
+void LocalFrameMetricsAggregator::RecordTimerSample(size_t metric_index,
                                                 base::TimeTicks start,
                                                 base::TimeTicks end) {
   RecordCountSample(metric_index, (end - start).InMicroseconds());
 }
 
-void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
+void LocalFrameMetricsAggregator::RecordCountSample(size_t metric_index,
                                                 int64_t count) {
   // Always use EndForcedLayout for the kForcedStyleAndLayout metric id.
   DCHECK_NE(metric_index, static_cast<size_t>(kForcedStyleAndLayout));
@@ -395,7 +395,7 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
   }
 }
 
-void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
+void LocalFrameMetricsAggregator::RecordEndOfFrameMetrics(
     base::TimeTicks start,
     base::TimeTicks end,
     cc::ActiveFrameSequenceTrackers trackers,
@@ -458,7 +458,7 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
   record_ukm_for_current_frame_ = record_ukm_for_next_frame;
 }
 
-void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
+void LocalFrameMetricsAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
     cc::ActiveFrameSequenceTrackers trackers,
     bool& record_ukm_for_next_frame) {
   // Regardless of test requests always capture the first frame, since
@@ -481,7 +481,7 @@ void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
       base::RandDouble() < 1 / static_cast<double>(frames_since_last_report_);
 }
 
-void LocalFrameUkmAggregator::UpdateSample(
+void LocalFrameMetricsAggregator::UpdateSample(
     cc::ActiveFrameSequenceTrackers trackers) {
   current_sample_.primary_metric_count = primary_metric_.interval_count;
   for (size_t i = 0; i < metrics_data().size(); ++i) {
@@ -493,7 +493,7 @@ void LocalFrameUkmAggregator::UpdateSample(
   current_sample_.trackers = trackers;
 }
 
-void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
+void LocalFrameMetricsAggregator::ReportPreFCPEvent(int64_t source_id,
                                                 ukm::UkmRecorder* recorder) {
   if (primary_metric_.uma_aggregate_counter) {
     primary_metric_.uma_aggregate_counter->Count(
@@ -556,7 +556,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
 #undef RECORD_BUCKETED_METRIC
 }
 
-void LocalFrameUkmAggregator::ReportUpdateTimeEvent(
+void LocalFrameMetricsAggregator::ReportUpdateTimeEvent(
     int64_t source_id,
     ukm::UkmRecorder* recorder) {
   // Don't report if we haven't generated any samples.
@@ -618,19 +618,19 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent(
   frames_since_last_report_ = 0;
 }
 
-void LocalFrameUkmAggregator::ResetAllMetrics() {
+void LocalFrameMetricsAggregator::ResetAllMetrics() {
   primary_metric_.reset();
   for (auto& record : absolute_metric_records_)
     record.reset();
   request_timestamp_for_current_frame_.reset();
 }
 
-void LocalFrameUkmAggregator::BeginForcedLayout() {
+void LocalFrameMetricsAggregator::BeginForcedLayout() {
   TRACE_EVENT_BEGIN("blink", perfetto::StaticString(
                                  metrics_data()[kForcedStyleAndLayout].name));
 }
 
-void LocalFrameUkmAggregator::EndForcedLayout(
+void LocalFrameMetricsAggregator::EndForcedLayout(
     DocumentUpdateReason reason,
     base::TimeDelta duration,
     bool is_potentially_clean,
@@ -770,7 +770,7 @@ void LocalFrameUkmAggregator::EndForcedLayout(
   }
 }
 
-void LocalFrameUkmAggregator::RecordImplCompositorSample(
+void LocalFrameMetricsAggregator::RecordImplCompositorSample(
     base::TimeTicks requested,
     base::TimeTicks started,
     base::TimeTicks completed) {
@@ -789,22 +789,22 @@ void LocalFrameUkmAggregator::RecordImplCompositorSample(
   }
 }
 
-void LocalFrameUkmAggregator::ChooseNextFrameForTest() {
+void LocalFrameMetricsAggregator::ChooseNextFrameForTest() {
   next_frame_sample_control_for_test_ = kMustChooseNextFrame;
 }
 
-void LocalFrameUkmAggregator::DoNotChooseNextFrameForTest() {
+void LocalFrameMetricsAggregator::DoNotChooseNextFrameForTest() {
   next_frame_sample_control_for_test_ = kMustNotChooseNextFrame;
 }
 
-bool LocalFrameUkmAggregator::IsBeforeFCPForTesting() const {
+bool LocalFrameMetricsAggregator::IsBeforeFCPForTesting() const {
   return fcp_state_ == kBeforeFCPSignal;
 }
 
-void LocalFrameUkmAggregator::OnCommitRequested() {
+void LocalFrameMetricsAggregator::OnCommitRequested() {
   // This can't be a DCHECK because this method can be called during the early
   // stages of cc::ProxyMain::BeginMainFrame, before
-  // LocalFrameUkmAggregator::BeginMainFrame() has been invoked.
+  // LocalFrameMetricsAggregator::BeginMainFrame() has been invoked.
   if (!animation_request_timestamp_.has_value())
     animation_request_timestamp_.emplace(clock_->NowTicks());
 }

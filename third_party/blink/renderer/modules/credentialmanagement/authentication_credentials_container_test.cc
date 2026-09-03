@@ -765,7 +765,7 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyConditionalMediationUkm) {
                                           &mock_authenticator);
 
   ukm::TestAutoSetUkmRecorder recorder;
-  context.DomWindow().document()->View()->ResetUkmAggregatorForTesting();
+  context.DomWindow().document()->View()->ResetMetricsAggregatorForTesting();
 
   auto* request_options = CredentialRequestOptions::Create();
   request_options->setMediation(

@@ -221,7 +221,7 @@ void VideoWakeLock::StartIntersectionObserver() {
       VideoElement().GetDocument(),
       BindRepeating(&VideoWakeLock::OnVisibilityChanged,
                     WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      LocalFrameMetricsAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {visibility_threshold_},
           .delay = kIntersectionObserverDelay,
@@ -237,7 +237,7 @@ void VideoWakeLock::StartIntersectionObserver() {
   size_observer_ = IntersectionObserver::Create(
       VideoElement().GetDocument().TopDocument(),
       BindRepeating(&VideoWakeLock::OnSizeChanged, WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      LocalFrameMetricsAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {kSizeThreshold},
           .semantics = IntersectionObserver::kFractionOfRoot,

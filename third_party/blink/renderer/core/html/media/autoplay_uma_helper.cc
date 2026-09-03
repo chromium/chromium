@@ -214,7 +214,7 @@ void AutoplayUmaHelper::MaybeStartRecordingMutedVideoPlayMethodBecomeVisible() {
           &AutoplayUmaHelper::
               OnIntersectionChangedForMutedVideoPlayMethodBecomeVisible,
           WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      LocalFrameMetricsAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {IntersectionObserver::kMinimumThreshold}});
   muted_video_play_method_intersection_observer_->observe(element_);
@@ -248,7 +248,7 @@ void AutoplayUmaHelper::MaybeStartRecordingMutedVideoOffscreenDuration() {
           BindRepeating(&AutoplayUmaHelper::
                             OnIntersectionChangedForMutedVideoOffscreenDuration,
                         WrapWeakPersistent(this)),
-          LocalFrameUkmAggregator::kMediaIntersectionObserver,
+          LocalFrameMetricsAggregator::kMediaIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {IntersectionObserver::kMinimumThreshold}});
   muted_video_offscreen_duration_intersection_observer_->observe(element_);

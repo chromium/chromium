@@ -673,7 +673,7 @@ void HTMLVideoElement::OnLoadFinished() {
         GetDocument(),
         BindRepeating(&HTMLVideoElement::OnIntersectionChangedForLazyLoad,
                       WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kMediaIntersectionObserver,
+        LocalFrameMetricsAggregator::kMediaIntersectionObserver,
         IntersectionObserver::Params{
             .thresholds = {IntersectionObserver::kMinimumThreshold}});
     player_lazy_load_intersection_observer_->observe(this);

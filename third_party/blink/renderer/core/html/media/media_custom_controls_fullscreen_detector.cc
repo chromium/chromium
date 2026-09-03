@@ -95,7 +95,7 @@ void MediaCustomControlsFullscreenDetector::Attach() {
       BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      LocalFrameMetricsAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           // Ideally we'd like to monitor all minute intersection changes
           // here, because any change can potentially affect the fullscreen

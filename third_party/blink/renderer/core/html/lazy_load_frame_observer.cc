@@ -79,7 +79,7 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
       element_->GetDocument(),
       BindRepeating(&LazyLoadFrameObserver::LoadIfNearViewport,
                     WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+      LocalFrameMetricsAggregator::kLazyLoadIntersectionObserver,
       IntersectionObserver::Params{
           .scroll_margin = {Length::Fixed(
               GetLazyLoadingFrameMarginPx(element_->GetDocument()))},

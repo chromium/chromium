@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/dom/document_resize_options.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/layout_subtree_root_list.h"
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
@@ -789,10 +789,10 @@ class CORE_EXPORT LocalFrameView final
   }
   void RegisterTapEvent(Element* target);
 
-  // Returns the UKM aggregator for this frame's local root, creating it if
+  // Returns the metrics aggregator for this frame's local root, creating it if
   // necessary. Returns null if no aggregator is needed, such as for SVG images.
-  LocalFrameUkmAggregator* GetUkmAggregator();
-  void ResetUkmAggregatorForTesting();
+  LocalFrameMetricsAggregator* GetMetricsAggregator();
+  void ResetMetricsAggregatorForTesting();
 
   // Checks whether paint holding should be released without FCP.
   // If the page has been painted and the document has finished parsing,
@@ -1317,9 +1317,9 @@ class CORE_EXPORT LocalFrameView final
   Member<PaintControllerPersistentData> paint_controller_persistent_data_;
   Member<PaintArtifactCompositor> paint_artifact_compositor_;
 
-  scoped_refptr<LocalFrameUkmAggregator> ukm_aggregator_;
+  scoped_refptr<LocalFrameMetricsAggregator> metrics_aggregator_;
   unsigned forced_layout_stack_depth_;
-  std::optional<LocalFrameUkmAggregator::ScopedForcedLayoutTimer>
+  std::optional<LocalFrameMetricsAggregator::ScopedForcedLayoutTimer>
       forced_layout_timer_;
 
   // From the beginning of the document, how many frames have painted.

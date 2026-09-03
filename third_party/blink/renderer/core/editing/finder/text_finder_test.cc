@@ -733,7 +733,7 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUkm) {
     <div id=hiddenid hidden=until-found>hidden</div>
   )HTML");
   ukm::TestAutoSetUkmRecorder recorder;
-  GetDocument().View()->ResetUkmAggregatorForTesting();
+  GetDocument().View()->ResetMetricsAggregatorForTesting();
 
   Compositor().BeginFrame();
   EXPECT_EQ(recorder.entries_count(), 0u);

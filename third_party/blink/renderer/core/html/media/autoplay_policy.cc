@@ -205,7 +205,7 @@ void AutoplayPolicy::StartAutoplayMutedWhenVisible() {
       element_->GetDocument(),
       BindRepeating(&AutoplayPolicy::OnIntersectionChangedForAutoplay,
                     WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      LocalFrameMetricsAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {IntersectionObserver::kMinimumThreshold}});
   autoplay_intersection_observer_->observe(element_);

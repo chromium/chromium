@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_geometry.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -105,7 +105,7 @@ class CORE_EXPORT IntersectionObserver final
   static IntersectionObserver* Create(
       const IntersectionObserverInit*,
       IntersectionObserverDelegate&,
-      std::optional<LocalFrameUkmAggregator::MetricId> ukm_metric_id,
+      std::optional<LocalFrameMetricsAggregator::MetricId> ukm_metric_id,
       ExceptionState& = ASSERT_NO_EXCEPTION);
   static IntersectionObserver* Create(ScriptState*,
                                       V8IntersectionObserverCallback*,
@@ -157,12 +157,12 @@ class CORE_EXPORT IntersectionObserver final
   static IntersectionObserver* Create(
       const Document& document,
       EventCallback callback,
-      std::optional<LocalFrameUkmAggregator::MetricId> ukm_metric_id,
+      std::optional<LocalFrameMetricsAggregator::MetricId> ukm_metric_id,
       Params&& params);
 
   IntersectionObserver(
       IntersectionObserverDelegate& delegate,
-      std::optional<LocalFrameUkmAggregator::MetricId> ukm_metric_id,
+      std::optional<LocalFrameMetricsAggregator::MetricId> ukm_metric_id,
       Params&& params);
 
   // API methods.
@@ -215,7 +215,7 @@ class CORE_EXPORT IntersectionObserver final
   bool IsInternal() const;
   // The metric id for tracking update time via UpdateTime metrics, or null for
   // internal intersection observers without explicit metrics.
-  std::optional<LocalFrameUkmAggregator::MetricId> GetUkmMetricId() const {
+  std::optional<LocalFrameMetricsAggregator::MetricId> GetUkmMetricId() const {
     return ukm_metric_id_;
   }
 
@@ -249,7 +249,7 @@ class CORE_EXPORT IntersectionObserver final
   const Member<IntersectionObserverDelegate> delegate_;
 
   // See: `GetUkmMetricId()`.
-  const std::optional<LocalFrameUkmAggregator::MetricId> ukm_metric_id_;
+  const std::optional<LocalFrameMetricsAggregator::MetricId> ukm_metric_id_;
 
   // We use UntracedMember<> here to do custom weak processing.
   UntracedMember<Node> root_;

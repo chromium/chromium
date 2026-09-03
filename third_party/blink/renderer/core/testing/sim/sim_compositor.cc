@@ -42,8 +42,8 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   base::TimeTicks start =
       last_frame_time_ + base::Seconds(time_delta_in_seconds);
   // Depending on the value of time_delta_in_seconds, `start` might be ahead of
-  // the global clock, which can confuse LocalFrameUkmAggregator. So just sleep
-  // until `start` is definitely in the past.
+  // the global clock, which can confuse LocalFrameMetricsAggregator. So just
+  // sleep until `start` is definitely in the past.
   base::PlatformThread::Sleep(start - now);
   last_frame_time_ = start;
 

@@ -163,8 +163,9 @@ void IntersectionObserverController::ComputeIntersections(
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
 
-  std::optional<LocalFrameUkmAggregator::IterativeTimer> metrics_timer;
-  LocalFrameUkmAggregator* metrics_aggregator = frame_view.GetUkmAggregator();
+  std::optional<LocalFrameMetricsAggregator::IterativeTimer> metrics_timer;
+  LocalFrameMetricsAggregator* metrics_aggregator =
+      frame_view.GetMetricsAggregator();
   if (metrics_aggregator) {
     metrics_timer.emplace(*metrics_aggregator);
   }
@@ -238,10 +239,10 @@ void IntersectionObserverController::ComputeIntersections(
 
   if (metrics_aggregator) {
     metrics_aggregator->RecordCountSample(
-        LocalFrameUkmAggregator::kIntersectionObservationInternalCount,
+        LocalFrameMetricsAggregator::kIntersectionObservationInternalCount,
         internal_observation_count);
     metrics_aggregator->RecordCountSample(
-        LocalFrameUkmAggregator::kIntersectionObservationJavascriptCount,
+        LocalFrameMetricsAggregator::kIntersectionObservationJavascriptCount,
         javascript_observation_count);
   }
 

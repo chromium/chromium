@@ -69,7 +69,7 @@ class IntersectionObserverTest : public SimTest {
     IntersectionObserver* scroll_margin_observer =
         MakeGarbageCollected<IntersectionObserver>(
             *scroll_margin_delegate,
-            LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+            LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
             IntersectionObserver::Params{
                 .margin = {Length::Fixed(10)},
                 .scroll_margin = {Length::Fixed(scroll_margin)},
@@ -128,7 +128,7 @@ class IntersectionObserverTest : public SimTest {
     IntersectionObserver* scroll_margin_observer =
         MakeGarbageCollected<IntersectionObserver>(
             *scroll_margin_delegate,
-            LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+            LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
             IntersectionObserver::Params{
                 .margin = {Length::Fixed(10)},
                 .scroll_margin = {Length::Fixed(scroll_margin)},
@@ -164,7 +164,7 @@ class IntersectionObserverTest : public SimTest {
         MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
     IntersectionObserver* observer = IntersectionObserver::Create(
         observer_init, *observer_delegate,
-        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
         exception_state);
     ASSERT_FALSE(exception_state.HadException());
     observer->observe(target, exception_state);
@@ -250,7 +250,7 @@ TEST_F(IntersectionObserverTest, ObserveSchedulesFrame) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -290,7 +290,7 @@ TEST_F(IntersectionObserverTest, NotificationSentWhenRootRemoved) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -338,7 +338,7 @@ TEST_F(IntersectionObserverTest, DocumentRootClips) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = iframe_document->getElementById(AtomicString("target"));
@@ -393,7 +393,7 @@ TEST_F(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *target_observer_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {kExpectedFractionOfTarget / 2},
           });
@@ -408,7 +408,7 @@ TEST_F(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
   IntersectionObserver* root_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *root_observer_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {kExpectedFractionOfRoot / 2},
               .semantics = IntersectionObserver::kFractionOfRoot});
@@ -468,7 +468,7 @@ TEST_F(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *target_observer_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {std::numeric_limits<float>::min()},
           });
@@ -520,7 +520,7 @@ TEST_F(IntersectionObserverTest, DirectlyUpdateTransform) {
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *target_observer_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {std::numeric_limits<float>::min()},
           });
@@ -602,7 +602,7 @@ TEST_F(IntersectionObserverTest, VisibilityHiddenChangeSize) {
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *target_observer_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {std::numeric_limits<float>::min()},
           });
@@ -645,7 +645,7 @@ TEST_F(IntersectionObserverTest, ResumePostsTask) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -707,7 +707,7 @@ TEST_F(IntersectionObserverTest, HitTestAfterMutation) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -757,7 +757,7 @@ TEST_F(IntersectionObserverTest, DisconnectClearsNotifications) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -816,7 +816,7 @@ TEST_F(IntersectionObserverTest, RootIntersectionWithForceZeroLayoutHeight) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -864,11 +864,11 @@ TEST_F(IntersectionObserverTest, TrackedTargetBookkeeping) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer1 = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
   observer1->observe(target);
   IntersectionObserver* observer2 = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
   observer2->observe(target);
 
   ElementIntersectionObserverData* target_data =
@@ -917,7 +917,7 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   Persistent<IntersectionObserver> observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
 
   // For an explicit-root observer, the root element is tracked only when it
   // has observations and is connected. Target elements are not tracked.
@@ -986,7 +986,7 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
   target = GetDocument().getElementById(AtomicString("target2"));
   observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
   observer->observe(target);
   target_data = target->IntersectionObserverData();
   ASSERT_TRUE(target_data);
@@ -1021,7 +1021,7 @@ TEST_F(IntersectionObserverTest, InaccessibleTarget) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   Persistent<IntersectionObserver> observer = IntersectionObserver::Create(
       IntersectionObserverInit::Create(), *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
 
   Persistent<Element> target =
       GetDocument().getElementById(AtomicString("target"));
@@ -1074,7 +1074,7 @@ TEST_F(IntersectionObserverTest, InaccessibleTargetBeforeDelivery) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   Persistent<IntersectionObserver> observer = IntersectionObserver::Create(
       IntersectionObserverInit::Create(), *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver);
 
   Persistent<Element> target =
       GetDocument().getElementById(AtomicString("target"));
@@ -1135,7 +1135,7 @@ TEST_F(IntersectionObserverTest, RootMarginDevicePixelRatio) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -1193,7 +1193,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithScrollers) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target1, exception_state);
@@ -1312,7 +1312,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target1, exception_state);
@@ -1436,7 +1436,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target1, exception_state);
@@ -1500,7 +1500,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -1549,7 +1549,7 @@ TEST_F(IntersectionObserverTest, CachedRectsDisplayNone) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -1587,7 +1587,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithFixedPosition) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(fixed, exception_state);
@@ -1643,7 +1643,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateNotScrollable) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -1688,7 +1688,7 @@ TEST_F(IntersectionObserverTest,
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -1755,7 +1755,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateInlineLayout) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -1819,7 +1819,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -1927,7 +1927,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2017,7 +2017,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateImplicitRoot) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2169,7 +2169,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateMinimumThreshold) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2264,7 +2264,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateThreshold0_5) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2361,7 +2361,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOne) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2452,7 +2452,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 
   IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
       *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       IntersectionObserver::Params{
           .root = root,
           .thresholds = {1},
@@ -2537,7 +2537,7 @@ TEST_F(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdFilterOnRoot) {
   DummyExceptionStateForTesting exception_state;
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2582,11 +2582,11 @@ TEST_F(IntersectionObserverTest,
   DummyExceptionStateForTesting exception_state;
   IntersectionObserver* observer_js = IntersectionObserver::Create(
       observer_init, *observer_delegate_js,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   IntersectionObserver* observer_display_lock = IntersectionObserver::Create(
       observer_init, *observer_delegate_display_lock,
-      LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
+      LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer_js->observe(target, exception_state);
@@ -2639,7 +2639,7 @@ TEST_F(IntersectionObserverTest,
   DummyExceptionStateForTesting exception_state;
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
+      LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2685,7 +2685,7 @@ TEST_F(IntersectionObserverTest,
   DummyExceptionStateForTesting exception_state;
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
+      LocalFrameMetricsAggregator::kDisplayLockIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   observer->observe(target, exception_state);
@@ -2709,7 +2709,7 @@ TEST_F(IntersectionObserverV2Test, TrackVisibilityInit) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(observer->trackVisibility());
 
@@ -2719,7 +2719,7 @@ TEST_F(IntersectionObserverV2Test, TrackVisibilityInit) {
     observer_init->setTrackVisibility(true);
     observer = IntersectionObserver::Create(
         observer_init, *observer_delegate,
-        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
         exception_state);
     EXPECT_TRUE(exception_state.HadException());
   }
@@ -2730,7 +2730,7 @@ TEST_F(IntersectionObserverV2Test, TrackVisibilityInit) {
     observer_init->setDelay(99.9);
     observer = IntersectionObserver::Create(
         observer_init, *observer_delegate,
-        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
         exception_state);
     EXPECT_TRUE(exception_state.HadException());
   }
@@ -2740,7 +2740,7 @@ TEST_F(IntersectionObserverV2Test, TrackVisibilityInit) {
     observer_init->setDelay(101.);
     observer = IntersectionObserver::Create(
         observer_init, *observer_delegate,
-        LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+        LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
         exception_state);
     ASSERT_FALSE(exception_state.HadException());
     EXPECT_TRUE(observer->trackVisibility());
@@ -2774,7 +2774,7 @@ TEST_F(IntersectionObserverV2Test, BasicOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -2851,7 +2851,7 @@ TEST_F(IntersectionObserverV2Test, PartialOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
       *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {1.0f},
           .delay = base::Milliseconds(100),
@@ -2931,7 +2931,7 @@ TEST_F(IntersectionObserverV2Test, TableRowOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -2996,7 +2996,7 @@ TEST_F(IntersectionObserverV2Test, Preserve3DOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3057,7 +3057,7 @@ TEST_F(IntersectionObserverV2Test, TableCellOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3120,7 +3120,7 @@ TEST_F(IntersectionObserverV2Test, TableHeaderGroupOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3180,7 +3180,7 @@ TEST_F(IntersectionObserverV2Test, TableOcclusion) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3222,7 +3222,7 @@ TEST_F(IntersectionObserverV2Test, BasicOpacity) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3275,7 +3275,7 @@ TEST_F(IntersectionObserverV2Test, BasicTransform) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3339,7 +3339,7 @@ TEST_F(IntersectionObserverTest, ApplyMarginToTarget) {
   IntersectionObserver* root_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *root_margin_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .margin = {Length::Fixed(10)},
               .thresholds = {std::numeric_limits<float>::min()},
@@ -3355,7 +3355,7 @@ TEST_F(IntersectionObserverTest, ApplyMarginToTarget) {
   IntersectionObserver* target_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *target_margin_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .margin = {Length::Fixed(10)},
               .margin_target = IntersectionObserver::kApplyMarginToTarget,
@@ -3412,7 +3412,7 @@ TEST_F(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
   IntersectionObserver* target_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *target_margin_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .margin = {Length::Percent(10)},
               .margin_target = IntersectionObserver::kApplyMarginToTarget,
@@ -3511,7 +3511,7 @@ TEST_F(IntersectionObserverTest, ScrollMarginIntersectingNonScrollingRoot) {
   IntersectionObserver* scroll_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
           *scroll_margin_delegate,
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+          LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
           IntersectionObserver::Params{
               .root = root,
               .margin = {Length::Fixed(10)},
@@ -3552,7 +3552,7 @@ TEST_F(IntersectionObserverTest, InlineRoot) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -3578,7 +3578,7 @@ TEST_F(IntersectionObserverTest, ParseMarginExtraText) {
 
   IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -3596,7 +3596,7 @@ TEST_F(IntersectionObserverTest, ParseMarginUnsupportedUnitType) {
 
   IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -3614,7 +3614,7 @@ TEST_F(IntersectionObserverTest, ParseMarginUnsupportedUnit) {
 
   IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -3632,7 +3632,7 @@ TEST_F(IntersectionObserverTest, RootMarginString) {
 
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(observer->rootMargin(), "7px 7px 7px 7px");
@@ -3649,7 +3649,7 @@ TEST_F(IntersectionObserverTest, RootMarginPercentString) {
 
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(observer->rootMargin(), "7% 7% 7% 7%");
@@ -3666,7 +3666,7 @@ TEST_F(IntersectionObserverTest, ScrollMarginEmptyString) {
 
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(observer->scrollMargin(), "0px 0px 0px 0px");
@@ -4134,7 +4134,7 @@ TEST_F(IntersectionObserverTest, RootMarginPercentOverflow) {
 
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate,
-      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(observer->rootMargin(),

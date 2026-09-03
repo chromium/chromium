@@ -90,7 +90,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
@@ -574,15 +574,15 @@ void LocalFrameView::Dispose() {
   if (owner_element && owner_element->OwnedEmbeddedContentView() == this)
     owner_element->SetEmbeddedContentView(nullptr);
 
-  if (ukm_aggregator_) {
+  if (metrics_aggregator_) {
     LocalFrame& root_frame = GetFrame().LocalFrameRoot();
     Document* root_document = root_frame.GetDocument();
     if (root_document) {
-      ukm_aggregator_->TransmitFinalSample(root_document->UkmSourceID(),
-                                           root_document->UkmRecorder(),
-                                           root_frame.IsMainFrame());
+      metrics_aggregator_->TransmitFinalSample(root_document->UkmSourceID(),
+                                               root_document->UkmRecorder(),
+                                               root_frame.IsMainFrame());
     }
-    ukm_aggregator_.reset();
+    metrics_aggregator_.reset();
   }
   layout_shift_tracker_->Dispose();
 
@@ -936,7 +936,7 @@ void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason,
   forced_layout_stack_depth_++;
   if (forced_layout_stack_depth_ > 1)
     return;
-  if (auto* metrics_aggregator = GetUkmAggregator()) {
+  if (auto* metrics_aggregator = GetMetricsAggregator()) {
     DCHECK(!forced_layout_timer_.has_value());
     forced_layout_timer_ = metrics_aggregator->GetScopedForcedLayoutTimer(
         reason, is_potentially_clean);
@@ -1177,8 +1177,9 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::UpdateViewportIntersectionsForSubtree");
-  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                           LocalFrameUkmAggregator::kIntersectionObservation);
+  SCOPED_UMA_AND_UKM_TIMER(
+      GetMetricsAggregator(),
+      LocalFrameMetricsAggregator::kIntersectionObservation);
 
   ComputeIntersectionsContext context;
   UpdateViewportIntersectionsForSubtree(
@@ -2463,9 +2464,10 @@ bool LocalFrameView::UpdateLifecyclePhases(
   // Hit testing metrics include the entire time processing a document update
   // in preparation for a hit test.
   if (reason == DocumentUpdateReason::kHitTest) {
-    if (auto* metrics_aggregator = GetUkmAggregator()) {
+    if (auto* metrics_aggregator = GetMetricsAggregator()) {
       metrics_aggregator->RecordTimerSample(
-          static_cast<size_t>(LocalFrameUkmAggregator::kHitTestDocumentUpdate),
+          static_cast<size_t>(
+              LocalFrameMetricsAggregator::kHitTestDocumentUpdate),
           lifecycle_data_.start_time, base::TimeTicks::Now());
     }
   }
@@ -2932,8 +2934,8 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
 
-  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                           LocalFrameUkmAggregator::kCompositingInputs);
+  SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                           LocalFrameMetricsAggregator::kCompositingInputs);
   // TODO(pdr): This descendant dependent treewalk should be integrated into
   // the prepaint tree walk.
   {
@@ -3005,8 +3007,8 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
       kPostOrder);
 
   {
-    SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                             LocalFrameUkmAggregator::kPrePaint);
+    SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                             LocalFrameMetricsAggregator::kPrePaint);
 
     GetPage()->GetLinkHighlight().UpdateBeforePrePaint();
     PrePaintTreeWalk().WalkTree(*this);
@@ -3124,8 +3126,8 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 void LocalFrameView::RunAccessibilitySteps() {
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunAccessibilitySteps");
 
-  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                           LocalFrameUkmAggregator::kAccessibility);
+  SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                           LocalFrameMetricsAggregator::kAccessibility);
 
   // Reduce redundant ancestor chain walking for display lock computations.
   auto display_lock_memoization_scope =
@@ -3228,7 +3230,8 @@ void LocalFrameView::EnqueueScrollEvents() {
 void LocalFrameView::PaintTree(
     PaintBenchmarkMode benchmark_mode,
     std::optional<PaintController>& paint_controller) {
-  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
+  SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                           LocalFrameMetricsAggregator::kPaint);
 
   DCHECK(GetFrame().IsLocalRoot());
 
@@ -3369,8 +3372,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   paint_artifact_compositor_->SetDevicePixelRatio(
       frame_->GetDocument()->DevicePixelRatio());
 
-  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                           LocalFrameUkmAggregator::kCompositingCommit);
+  SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                           LocalFrameMetricsAggregator::kCompositingCommit);
   DEVTOOLS_TIMELINE_TRACE_EVENT("Layerize", inspector_layerize_event::Data,
                                 frame_.Get());
 
@@ -3647,8 +3650,8 @@ bool LocalFrameView::UpdateStyleAndLayoutInternal() {
     UpdateCanCompositeBackgroundAttachmentFixed();
 
     if (NeedsLayout()) {
-      SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                               LocalFrameUkmAggregator::kLayout);
+      SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                               LocalFrameMetricsAggregator::kLayout);
       UpdateLayout();
       layout_updated = true;
     }
@@ -4015,8 +4018,9 @@ void LocalFrameView::ScheduleAnimation(cc::BeginMainFrameReason reason,
 void LocalFrameView::OnCommitRequested() {
   DCHECK(frame_->IsLocalRoot());
   if (frame_->GetDocument() &&
-      !frame_->GetDocument()->IsInitialEmptyDocument() && GetUkmAggregator()) {
-    GetUkmAggregator()->OnCommitRequested();
+      !frame_->GetDocument()->IsInitialEmptyDocument() &&
+      GetMetricsAggregator()) {
+    GetMetricsAggregator()->OnCommitRequested();
   }
 }
 
@@ -4452,7 +4456,8 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
 
   UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kPrinting);
 
-  SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
+  SCOPED_UMA_AND_UKM_TIMER(GetMetricsAggregator(),
+                           LocalFrameMetricsAggregator::kPaint);
 
   // Ignore paint timing while painting outside of the normal lifecycle (e.g.
   // paint preview, printing, etc.), as it can change LCP and cause spurious
@@ -4774,8 +4779,8 @@ void LocalFrameView::UpdateViewportIntersectionsForSubtree(
 
   {
     SCOPED_UMA_AND_UKM_TIMER(
-        GetUkmAggregator(),
-        LocalFrameUkmAggregator::kUpdateViewportIntersection);
+        GetMetricsAggregator(),
+        LocalFrameMetricsAggregator::kUpdateViewportIntersection);
     UpdateViewportIntersection(flags, NeedsOcclusionTracking());
   }
 
@@ -5230,23 +5235,23 @@ void LocalFrameView::RegisterTapEvent(Element* target) {
   }
 }
 
-LocalFrameUkmAggregator* LocalFrameView::GetUkmAggregator() {
-  DCHECK(frame_->IsLocalRoot() || !ukm_aggregator_);
+LocalFrameMetricsAggregator* LocalFrameView::GetMetricsAggregator() {
+  DCHECK(frame_->IsLocalRoot() || !metrics_aggregator_);
   LocalFrameView* local_root = frame_->LocalFrameRoot().View();
 
   // TODO(crbug.com/1392462): Avoid checking whether we need to create the
   // aggregator on every access.
-  if (!local_root->ukm_aggregator_) {
+  if (!local_root->metrics_aggregator_) {
     if (!local_root->frame_->GetChromeClient().IsIsolatedSVGChromeClient()) {
-      local_root->ukm_aggregator_ =
-          base::MakeRefCounted<LocalFrameUkmAggregator>();
+      local_root->metrics_aggregator_ =
+          base::MakeRefCounted<LocalFrameMetricsAggregator>();
     }
   }
-  return local_root->ukm_aggregator_.get();
+  return local_root->metrics_aggregator_.get();
 }
 
-void LocalFrameView::ResetUkmAggregatorForTesting() {
-  ukm_aggregator_.reset();
+void LocalFrameView::ResetMetricsAggregatorForTesting() {
+  metrics_aggregator_.reset();
 }
 
 void LocalFrameView::MaybeStopDeferringCommitsWithoutContentfulPaint() {
@@ -5293,8 +5298,9 @@ void LocalFrameView::OnFirstContentfulPaint() {
       FontPerformance::MarkFirstContentfulPaint();
   }
 
-  if (auto* metrics_aggregator = GetUkmAggregator())
+  if (auto* metrics_aggregator = GetMetricsAggregator()) {
     metrics_aggregator->DidReachFirstContentfulPaint();
+  }
 
   if (auto* viewport_position_tracker =
           AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
