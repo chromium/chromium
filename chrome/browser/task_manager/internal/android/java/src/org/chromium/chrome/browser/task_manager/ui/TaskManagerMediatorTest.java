@@ -310,4 +310,30 @@ public class TaskManagerMediatorTest {
         assertEquals("Browser", mTasks.get(0).model.get(TASK_NAME));
         assertEquals("GPU Process", mTasks.get(1).model.get(TASK_NAME));
     }
+
+    @Test
+    @SmallTest
+    public void testSearchQueryFiltering() {
+        when(mBridge.getTitle(1)).thenReturn("Tab: Wikipedia");
+        when(mBridge.getProcessId(1)).thenReturn(1001L);
+        when(mBridge.getTitle(2)).thenReturn("Tab: GitHub");
+        when(mBridge.getProcessId(2)).thenReturn(1002L);
+
+        mObserver.onTaskAdded(1);
+        mObserver.onTaskAdded(2);
+
+        // Search by task name substring.
+        mMediator.setSearchQuery("Wiki");
+        assertEquals(1, mTasks.size());
+        assertEquals("Tab: Wikipedia", mTasks.get(0).model.get(TASK_NAME));
+
+        // Search by PID substring.
+        mMediator.setSearchQuery("1002");
+        assertEquals(1, mTasks.size());
+        assertEquals("Tab: GitHub", mTasks.get(0).model.get(TASK_NAME));
+
+        // Clear search query.
+        mMediator.setSearchQuery("");
+        assertEquals(2, mTasks.size());
+    }
 }

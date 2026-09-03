@@ -47,5 +47,15 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_data_table_fill_24dp"
             android:text="@string/task_manager_category_all_name" />
+
+        <!-- Spacer to push search box to the rightmost edge -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Search Box -->
+        <include layout="@layout/task_manager_search_box" />
     </LinearLayout>
+
 </HorizontalScrollView>

@@ -4867,6 +4867,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
           End process
         </message>
+        <message name="IDS_TASK_MANAGER_SEARCH_HINT" desc="The placeholder text for the Task Manager search box" formatter_data="android_java">
+          Search
+        </message>
         <message name="IDS_TASK_MANAGER_KILL_V2" desc="The caption of the Task Manager kill button">
           End task
         </message>

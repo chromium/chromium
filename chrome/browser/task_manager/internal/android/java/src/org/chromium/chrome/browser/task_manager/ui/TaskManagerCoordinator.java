@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.task_manager.ui;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -15,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewStub;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,6 +35,7 @@ import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.Categor
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -310,6 +316,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
         if (toolbarStub == null) return;
         View toolbarView = toolbarStub.inflate();
         initCategoryChips(toolbarView, headerModel);
+        initSearchBox(toolbarView);
     }
 
     private void initCategoryChips(View toolbar, PropertyModel headerModel) {
@@ -344,5 +351,42 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                 chip.setSelected(selected == category);
             }
         }
+    }
+
+    private void initSearchBox(View toolbar) {
+        EditText searchInput = toolbar.findViewById(R.id.search_input);
+        View clearSearchButton = toolbar.findViewById(R.id.clear_search_button);
+        if (searchInput == null || clearSearchButton == null) return;
+
+        searchInput.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        boolean isEmpty = TextUtils.isEmpty(s);
+                        clearSearchButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+                        mMediator.setSearchQuery(s != null ? s.toString() : "");
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
+
+        searchInput.setOnEditorActionListener(
+                (v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        KeyboardVisibilityDelegate.getInstance().hideKeyboard(v);
+                        return true;
+                    }
+                    return false;
+                });
+
+        clearSearchButton.setOnClickListener(
+                v -> {
+                    searchInput.setText("");
+                });
     }
 }

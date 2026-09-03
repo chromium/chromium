@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.NETWORK_USAGE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SEARCH_QUERY;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SELECTED_CATEGORY;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SORT_DESCRIPTOR;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ICON;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The class works as a mediator between the underlyning model (ModelList) and the task manager
@@ -80,6 +82,7 @@ class TaskManagerMediator {
         mHeader.set(COLUMNS, initialColumnKeys);
         mHeader.set(SORT_DESCRIPTOR, null);
         mHeader.set(SELECTED_CATEGORY, Category.ALL_TASKS);
+        mHeader.set(SEARCH_QUERY, "");
     }
 
     /** Start observing tasks to get the model updated. */
@@ -263,6 +266,11 @@ class TaskManagerMediator {
         updateFilteredTasks();
     }
 
+    void setSearchQuery(String query) {
+        mHeader.set(SEARCH_QUERY, query);
+        updateFilteredTasks();
+    }
+
     static @Category int getTaskCategory(@TaskType int taskType) {
         switch (taskType) {
             case TaskType.RENDERER:
@@ -277,10 +285,16 @@ class TaskManagerMediator {
         }
     }
 
+    private String getNormalizedSearchQuery() {
+        String searchQuery = mHeader.get(SEARCH_QUERY);
+        return searchQuery != null ? searchQuery.trim().toLowerCase(Locale.getDefault()) : "";
+    }
+
     private void updateFilteredTasks() {
         ArrayList<ListItem> filtered = new ArrayList<>();
+        String query = getNormalizedSearchQuery();
         for (ListItem task : mAllTasks) {
-            if (shouldKeepTask(task)) {
+            if (shouldKeepTask(task, query)) {
                 filtered.add(task);
             }
         }
@@ -293,14 +307,28 @@ class TaskManagerMediator {
         checkAndNotifyIfHasKillableSelectedTaskChanged();
     }
 
-    private boolean shouldKeepTask(ListItem task) {
+    private boolean shouldKeepTask(ListItem task, String query) {
         int selectedCategory = mHeader.get(SELECTED_CATEGORY);
         @Category int category = getTaskCategory(task.model.get(TASK_TYPE));
 
         if (selectedCategory != Category.ALL_TASKS && category != selectedCategory) {
             return false;
         }
+        return filterOnSearchQuery(task, query);
+    }
 
+    private boolean filterOnSearchQuery(ListItem task, String query) {
+        if (query == null || query.isEmpty()) {
+            return true;
+        }
+        String taskName = task.model.get(TASK_NAME);
+        String pid = String.valueOf(task.model.get(PROCESS_ID));
+        boolean nameMatches =
+                taskName != null && taskName.toLowerCase(Locale.getDefault()).contains(query);
+        boolean pidMatches = pid.contains(query);
+        if (!nameMatches && !pidMatches) {
+            return false;
+        }
         return true;
     }
 
@@ -312,7 +340,8 @@ class TaskManagerMediator {
                 updateTaskModel(task, taskId);
                 mAllTasks.add(task);
 
-                if (!shouldKeepTask(task)) {
+                String query = getNormalizedSearchQuery();
+                if (!shouldKeepTask(task, query)) {
                     return;
                 }
 

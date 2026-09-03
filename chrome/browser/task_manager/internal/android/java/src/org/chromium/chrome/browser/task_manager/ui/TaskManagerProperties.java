@@ -84,9 +84,12 @@ class TaskManagerProperties {
     /** Property key for active filter category. */
     static final WritableIntPropertyKey SELECTED_CATEGORY = new WritableIntPropertyKey();
 
+    /** Property key for search query entered by the user. */
+    static final WritableObjectPropertyKey<String> SEARCH_QUERY = new WritableObjectPropertyKey<>();
+
     /** All the property keys used by the header model. */
     static final PropertyKey[] HEADER_PROPERTY_KEYS =
-            new PropertyKey[] {COLUMNS, SORT_DESCRIPTOR, SELECTED_CATEGORY};
+            new PropertyKey[] {COLUMNS, SORT_DESCRIPTOR, SELECTED_CATEGORY, SEARCH_QUERY};
 
     /** Property key for task id. */
     static final ReadableLongPropertyKey TASK_ID = new ReadableLongPropertyKey();

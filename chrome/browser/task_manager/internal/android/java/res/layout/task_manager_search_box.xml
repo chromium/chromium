@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_box_container"
+    android:layout_width="@dimen/task_manager_search_box_width"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
+    android:background="@drawable/search_row_modern_bg"
+    android:padding="@dimen/task_manager_search_box_padding">
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/task_manager_search_icon_margin_start"
+        android:src="@drawable/ic_search_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        android:importantForAccessibility="no" />
+
+    <EditText
+        android:id="@+id/search_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/task_manager_search_input_margin_start"
+        android:background="@null"
+        android:hint="@string/task_manager_search_hint"
+        android:singleLine="true"
+        android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
+        android:inputType="text"
+        android:textAlignment="viewStart"
+        android:importantForAutofill="no"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textColorHint="@macro/search_box_hint" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/clear_search_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/btn_delete_24dp"
+        android:background="@drawable/search_box_icon_background"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
+        android:tooltipText="@string/accessibility_toolbar_btn_delete_url"
+        app:tint="@color/default_icon_color_tint_list" />
+</LinearLayout>
