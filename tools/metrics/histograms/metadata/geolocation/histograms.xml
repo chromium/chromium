@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationProvider.SessionResult"
-    enum="NetworkLocationRequestResult" expires_after="2026-09-06">
+    enum="NetworkLocationRequestResult" expires_after="2027-03-06">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
