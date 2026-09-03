@@ -7,28 +7,31 @@
 
 #import <Foundation/Foundation.h>
 
-// Parameters for configuring the backend promo custom UI modal.
-//
-// Copy strings are provided dynamically at runtime by a remote backend server
-// rather than loaded from local localized string resources.
+@class BackendPromoLottieParams;
+
+// Holds the parameters needed to configure a custom backend promo UI.
 @interface BackendPromoCustomUIParams : NSObject
 
-// Title text received from the backend server for the promo modal.
+// Title string displayed at the top of the promo.
 @property(nonatomic, copy) NSString* title;
 
-// Body text received from the backend server for the promo modal.
+// Body text explaining the promo details.
 @property(nonatomic, copy) NSString* body;
 
-// Title string received from the backend server for the primary action button.
+// Title string for the primary action button.
 @property(nonatomic, copy) NSString* primaryActionTitle;
 
-// Title string received from the backend server for the secondary action
-// button.
+// Title string for the secondary action button.
 @property(nonatomic, copy) NSString* secondaryActionTitle;
 
-// Optional image URL string received from the backend server for the promo
-// image.
+// Image asset name or URL string for the promo image/animation.
 @property(nonatomic, copy) NSString* imageURL;
+
+// Lottie animation configuration parameters.
+@property(nonatomic, strong) BackendPromoLottieParams* lottieParams;
+
+// Ordered list of instruction step strings displayed below the title.
+@property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
 
 @end
 

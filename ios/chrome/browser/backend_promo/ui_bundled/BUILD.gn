@@ -9,24 +9,34 @@ source_set("ui_bundled") {
     "backend_promo_custom_ui_coordinator_delegate.h",
     "backend_promo_custom_ui_params.h",
     "backend_promo_custom_ui_params.mm",
+    "backend_promo_custom_ui_view_controller.h",
+    "backend_promo_custom_ui_view_controller.mm",
+    "backend_promo_lottie_params.h",
+    "backend_promo_lottie_params.mm",
     "backend_promo_user_action.h",
   ]
   public_deps = [
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/animated_promo",
     "//ios/chrome/common/ui/confirmation_alert",
   ]
   deps = [
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/instruction_view",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "backend_promo_custom_ui_coordinator_unittest.mm" ]
+  sources = [
+    "backend_promo_custom_ui_coordinator_unittest.mm",
+    "backend_promo_custom_ui_view_controller_unittest.mm",
+  ]
   deps = [
     ":ui_bundled",
     "//base",
@@ -35,6 +45,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
