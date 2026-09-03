@@ -278,6 +278,7 @@ android_library("chrome_java_transit") {
     "//chrome/android:chrome_test_util_java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui:test_support_javalib",
+    "//chrome/browser/bookmarks/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/browsing_data/android:java",
     "//chrome/browser/collaboration:factory_java",

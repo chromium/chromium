@@ -33,7 +33,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkMetrics.BookmarkManagerFilter;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -45,6 +44,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.Image
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1699,7 +1699,7 @@ class BookmarkManagerMediator
                 (item, view) -> {
                     int textId = item.get(ListMenuItemProperties.TITLE_ID);
                     Bundle extras = new Bundle();
-                    extras.putBoolean(IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
+                    extras.putBoolean(BrowserIntentUtils.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
 
                     if (textId == R.string.contextmenu_open_in_new_tab) {
                         mBookmarkOpener.openBookmarksInNewTabs(

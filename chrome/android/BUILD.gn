@@ -29,8 +29,6 @@ if (_is_default_toolchain) {
   import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
   import("//chrome/android/feed/feed_java_sources.gni")
   import("//chrome/android/modules/chrome_bundle_tmpl.gni")
-  import(
-      "//chrome/browser/bookmarks/android/unmodularized_bookmarks_java_files.gni")
   import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
   import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
   import("//chrome/browser/page_info/buildflags.gni")
@@ -928,11 +926,6 @@ if (_is_default_toolchain) {
     # separate dependency when circular deps is resolved.
     sources += commerce_subscriptions_java_sources
     deps += commerce_subscriptions_java_deps
-
-    # TODO(crbug.com/395908100): Some bookmark files aren't able to be
-    # modularized, include them directly in chrome_java in the meantime and
-    # refactor one-by-one.
-    sources += unmodularized_bookmarks_java_files
 
     if (enable_extensions_core) {
       deps += [ "//chrome/browser/extensions/api/messaging/android:java" ]

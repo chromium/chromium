@@ -107,7 +107,9 @@ import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModule
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -232,6 +234,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -1399,7 +1402,17 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getSnackbarManager(),
                 mRootUiCoordinator.getBottomSheetControllerSupplier(),
                 getActivityResultTracker(),
-                getProfileProviderSupplier());
+                getProfileProviderSupplier(),
+                (profile) ->
+                        new BookmarkOpenerImpl(
+                                () -> BookmarkModel.getForProfile(profile),
+                                this,
+                                getComponentName(),
+                                /* multiInstanceManager= */ null),
+                new BookmarkManagerOpenerImpl(),
+                PriceDropNotificationManagerFactory::create,
+                SigninAndHistorySyncActivityLauncherImpl.get(),
+                DeviceLockActivityLauncherImpl.get());
     }
 
     private Pane createCrossDevicePane() {

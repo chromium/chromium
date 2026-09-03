@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.ComponentName;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -17,18 +16,21 @@ import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneBase;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.actions.button.ResourceButtonData;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** A {@link Pane} representing history. */
@@ -42,6 +44,12 @@ public class BookmarkPane extends PaneBase {
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ActivityResultTracker mActivityResultTracker;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private final Function<Profile, BookmarkOpener> mBookmarkOpenerFactory;
+    private final BookmarkManagerOpener mBookmarkManagerOpener;
+    private final Function<Profile, PriceDropNotificationManager>
+            mPriceDropNotificationManagerFactory;
+    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     private @Nullable BookmarkManagerCoordinator mBookmarkManager;
     private @Nullable BookmarkOpener mBookmarkOpener;
@@ -58,6 +66,11 @@ public class BookmarkPane extends PaneBase {
      *     bottom sheet.
      * @param activityResultTracker Tracker of activity results.
      * @param profileProviderSupplier Used as a dependency to BookmarkManager.
+     * @param bookmarkOpenerFactory Factory to create BookmarkOpener for a profile.
+     * @param bookmarkManagerOpener Used to open the bookmark manager.
+     * @param priceDropNotificationManagerFactory Factory to create PriceDropNotificationManager.
+     * @param signinAndHistorySyncActivityLauncher Launcher for signin and history sync activities.
+     * @param deviceLockActivityLauncher Launcher for device lock activities.
      */
     public BookmarkPane(
             DoubleConsumer onToolbarAlphaChange,
@@ -66,7 +79,12 @@ public class BookmarkPane extends PaneBase {
             SnackbarManager snackbarManager,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
             ActivityResultTracker activityResultTracker,
-            OneshotSupplier<ProfileProvider> profileProviderSupplier) {
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            Function<Profile, BookmarkOpener> bookmarkOpenerFactory,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            Function<Profile, PriceDropNotificationManager> priceDropNotificationManagerFactory,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         super(PaneId.BOOKMARKS, activity, onToolbarAlphaChange);
         mReferenceButtonDataSupplier.set(
                 new ResourceButtonData(
@@ -78,6 +96,11 @@ public class BookmarkPane extends PaneBase {
         mProfileProviderSupplier = profileProviderSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mActivityResultTracker = activityResultTracker;
+        mBookmarkOpenerFactory = bookmarkOpenerFactory;
+        mBookmarkManagerOpener = bookmarkManagerOpener;
+        mPriceDropNotificationManagerFactory = priceDropNotificationManagerFactory;
+        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
     }
 
     @Override
@@ -88,15 +111,9 @@ public class BookmarkPane extends PaneBase {
     @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
         if (loadHint == LoadHint.HOT && mBookmarkManager == null) {
-            ComponentName componentName = ((Activity) mContext).getComponentName();
             Profile originalProfile =
                     assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile();
-            mBookmarkOpener =
-                    new BookmarkOpenerImpl(
-                            () -> BookmarkModel.getForProfile(originalProfile),
-                            mContext,
-                            componentName,
-                            /* multiInstanceManager= */ null);
+            mBookmarkOpener = mBookmarkOpenerFactory.apply(originalProfile);
             mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
             mBookmarkManager =
                     new BookmarkManagerCoordinator(
@@ -109,11 +126,13 @@ public class BookmarkPane extends PaneBase {
                             originalProfile,
                             mBookmarkUiPrefs,
                             mBookmarkOpener,
-                            new BookmarkManagerOpenerImpl(),
-                            PriceDropNotificationManagerFactory.create(originalProfile),
+                            mBookmarkManagerOpener,
+                            mPriceDropNotificationManagerFactory.apply(originalProfile),
                             // TODO(crbug.com/427776544): make bookmark pane support edge to edge.
                             /* edgeToEdgePadAdjusterGenerator= */ null,
-                            /* backPressManager= */ null);
+                            /* backPressManager= */ null,
+                            mSigninAndHistorySyncActivityLauncher,
+                            mDeviceLockActivityLauncher);
             UrlConstantResolver resolver =
                     UrlConstantResolverFactory.getForProfile(originalProfile);
             mBookmarkManager.updateForUrl(resolver.getBookmarksPageUrl());

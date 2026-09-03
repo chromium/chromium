@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.pdf.PdfUtils;
@@ -337,7 +338,7 @@ public class IntentHandler {
 
     /** An extra to disable initialization of the renderer when creating a new tab context. */
     public static final String EXTRA_DISABLE_INITIALIZE_RENDERER =
-            "org.chromium.chrome.browser.disable_initialize_renderer";
+            BrowserIntentUtils.EXTRA_DISABLE_INITIALIZE_RENDERER;
 
     public static final String EXTRA_CCT_EARLY_NAV = "org.chromium.chrome.browser.cct_early_nav";
 

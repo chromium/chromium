@@ -35,23 +35,23 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.signin_promo.BookmarkSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
@@ -169,6 +169,8 @@ public class BookmarkManagerCoordinator
      * @param priceDropNotificationManager Manages price drop notifications.
      * @param edgeToEdgePadAdjusterGenerator Generator for the edge to edge pad adjuster.
      * @param backPressManager BackPressManager for processing back press events.
+     * @param signinAndHistorySyncActivityLauncher Launcher for signin and history sync activities.
+     * @param deviceLockActivityLauncher Launcher for device lock activities.
      */
     public BookmarkManagerCoordinator(
             WindowAndroid windowAndroid,
@@ -183,7 +185,9 @@ public class BookmarkManagerCoordinator
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager,
             @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator,
-            @Nullable BackPressManager backPressManager) {
+            @Nullable BackPressManager backPressManager,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mContext = activity;
         mProfile = profile;
         mImageFetcher =
@@ -345,15 +349,15 @@ public class BookmarkManagerCoordinator
                         activity,
                         mProfile.getOriginalProfile(),
                         activityResultTracker,
-                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        signinAndHistorySyncActivityLauncher,
                         bottomSheetControllerSupplier,
                         mModalDialogManager,
                         snackbarManager,
-                        DeviceLockActivityLauncherImpl.get(),
+                        deviceLockActivityLauncher,
                         new BookmarkSigninPromoDelegate(
                                 activity,
                                 mProfile.getOriginalProfile(),
-                                SigninAndHistorySyncActivityLauncherImpl.get(),
+                                signinAndHistorySyncActivityLauncher,
                                 mMediator::onPromoVisibilityChange,
                                 this::openSettings));
         dragReorderableRecyclerViewAdapter.registerType(
@@ -780,7 +784,7 @@ public class BookmarkManagerCoordinator
 
     private void openSettings() {
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mContext, ManageSyncSettings.class);
+                .startSettings(mContext, SettingsFragment.MANAGE_SYNC);
     }
 
     @Nullable BackPressManager getBackPressManagerForTesting() {

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -41,7 +42,9 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -93,6 +96,11 @@ public class BookmarkPaneUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private IdentityServicesProvider.Natives mIdentityServicesProvider;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeNatives;
     @Mock private FaviconHelper.Natives mFaviconHelperNatives;
     @Mock private SyncService mSyncService;
@@ -134,7 +142,12 @@ public class BookmarkPaneUnitTest {
                         mSnackbarManager,
                         () -> mBottomSheetController,
                         mActivityResultTracker,
-                        mProfileProviderSupplier);
+                        mProfileProviderSupplier,
+                        (profile) -> mBookmarkOpener,
+                        mBookmarkManagerOpener,
+                        (profile) -> mPriceDropNotificationManager,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mDeviceLockActivityLauncher);
     }
 
     @Test

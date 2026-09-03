@@ -35,6 +35,8 @@ public class BrowserIntentUtils {
             "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_WINDOW";
     public static final String EXTRA_TAB_LAUNCH_TYPE =
             "org.chromium.chrome.browser.tab_launch_type";
+    public static final String EXTRA_DISABLE_INITIALIZE_RENDERER =
+            "org.chromium.chrome.browser.disable_initialize_renderer";
 
     /**
      * Adds the current realtime and uptime timestamps to an intent.
