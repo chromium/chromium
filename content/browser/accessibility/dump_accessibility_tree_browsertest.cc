@@ -2199,7 +2199,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // TODO(crbug.com/40943250): Fix failure on android
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/372910798): Flaky on Linux with ASan and LSan.
+#if BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_LINUX) &&  \
+     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)))
 #define MAYBE_AccessibilityAudio DISABLED_AccessibilityAudio
 #else
 #define MAYBE_AccessibilityAudio AccessibilityAudio
