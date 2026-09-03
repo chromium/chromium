@@ -935,9 +935,7 @@ bool PopupViewViews::RemoveSelectedCell() {
     return false;
   }
 
-  if (!controller_->RemoveSuggestion(index->first,
-                                     AutofillMetrics::SingleEntryRemovalMethod::
-                                         kKeyboardShiftDeletePressed)) {
+  if (!controller_->RemoveSuggestion(index->first)) {
     return false;
   }
 

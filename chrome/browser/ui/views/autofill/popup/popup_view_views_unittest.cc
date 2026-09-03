@@ -1659,9 +1659,7 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
     EXPECT_CALL(controller(), RemoveSuggestion).Times(0);
     EXPECT_CALL(check, Call("2: verify no RemoveSuggestion calls"));
 
-    EXPECT_CALL(controller(),
-                RemoveSuggestion(1, AutofillMetrics::SingleEntryRemovalMethod::
-                                        kKeyboardShiftDeletePressed));
+    EXPECT_CALL(controller(), RemoveSuggestion(1));
   }
 
   // If no cell is selected, pressing delete has no effect.
@@ -1690,10 +1688,7 @@ TEST_F(PopupViewViewsTest, RemoveAutofillInvokesController) {
                          PopupCellSelectionSource::kNonUserInput);
 
   // No metrics are recorded if the entry is not an Autocomplete entry.
-  EXPECT_CALL(controller(),
-              RemoveSuggestion(1, AutofillMetrics::SingleEntryRemovalMethod::
-                                      kKeyboardShiftDeletePressed))
-      .WillOnce(Return(true));
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
 }
 

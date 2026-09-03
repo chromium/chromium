@@ -458,11 +458,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
                       .multi_index = {static_cast<size_t>(index)}});
 }
 
-bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
-    int index,
-    AutofillMetrics::SingleEntryRemovalMethod removal_method) {
-  CHECK_EQ(removal_method,
-           AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(int index) {
   if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
     return false;
   }
@@ -521,8 +517,8 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
       // recorded even if user canceled the dialog.
       break;
     case FillingProduct::kAutocomplete:
-      AutofillMetrics::OnAutocompleteSuggestionDeleted(
-          AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+      AutofillMetrics::LogAutocompleteEvent(
+          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
       break;
     case FillingProduct::kCreditCard:
       // TODO(crbug.com/41482065): Add metrics for credit cards.

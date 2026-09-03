@@ -80,10 +80,7 @@ class MockAutofillPopupController : public AutofillPopupController {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD(bool,
-              RemoveSuggestion,
-              (int, AutofillMetrics::SingleEntryRemovalMethod),
-              (override));
+  MOCK_METHOD(bool, RemoveSuggestion, (int), (override));
   MOCK_METHOD(void, SelectSuggestion, (int), (override));
   MOCK_METHOD(void, UnselectSuggestion, (), (override));
   MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const override));

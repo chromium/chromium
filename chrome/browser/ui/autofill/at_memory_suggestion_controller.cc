@@ -105,9 +105,7 @@ void AtMemorySuggestionController::UnselectSuggestion() {
   NOTREACHED();
 }
 
-bool AtMemorySuggestionController::RemoveSuggestion(
-    int index,
-    AutofillMetrics::SingleEntryRemovalMethod removal_method) {
+bool AtMemorySuggestionController::RemoveSuggestion(int index) {
   NOTREACHED();
 }
 

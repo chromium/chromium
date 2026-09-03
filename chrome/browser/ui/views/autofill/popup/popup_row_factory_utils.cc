@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -637,8 +636,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   // for it.
   base::RepeatingClosure deletion_action = base::BindRepeating(
       base::IgnoreResult(&AutofillPopupController::RemoveSuggestion),
-      controller, line_number,
-      AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked);
+      controller, line_number);
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
           CreateExecuteSoonWrapper(std::move(deletion_action)),

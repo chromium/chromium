@@ -65,11 +65,8 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // Unselect currently selected suggestion, noop if nothing is selected.
   virtual void UnselectSuggestion() = 0;
 
-  // Removes the suggestion at the given `index`. `removal_method`specifies the
-  // UI entry point for removal, e.g. clicking on a delete button.
-  virtual bool RemoveSuggestion(
-      int index,
-      AutofillMetrics::SingleEntryRemovalMethod removal_method) = 0;
+  // Removes the suggestion at the given `index`.
+  virtual bool RemoveSuggestion(int index) = 0;
 
   // Returns the number of lines of data that there are.
   virtual int GetLineCount() const = 0;

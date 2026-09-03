@@ -272,9 +272,7 @@ void PopupNoticeView::OnAcceptButtonClicked() {
     base::UmaHistogramEnumeration(
         notice_interaction_histogram_name_,
         AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
-    controller_->RemoveSuggestion(
-        line_number_,
-        AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked);
+    controller_->RemoveSuggestion(line_number_);
   }
 }
 

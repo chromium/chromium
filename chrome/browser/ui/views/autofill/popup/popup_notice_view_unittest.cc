@@ -259,11 +259,7 @@ TEST_F(PopupNoticeViewTest, AcceptButtonTriggersRemoveSuggestionAndMetric) {
   widget().LayoutRootViewIfNecessary();
   views::MdTextButton* accept_button = test_api(view()).accept_button();
 
-  EXPECT_CALL(
-      controller(),
-      RemoveSuggestion(
-          kNoticePosition,
-          AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
+  EXPECT_CALL(controller(), RemoveSuggestion(kNoticePosition))
       .WillOnce(Return(true));
 
   generator().MoveMouseTo(accept_button->GetBoundsInScreen().CenterPoint());
@@ -485,11 +481,7 @@ TEST_F(PopupNoticeViewTest, PressReturnOnAcceptButtonFocused) {
   EXPECT_TRUE(view().HandleKeyPressEvent(right_event));
   ASSERT_TRUE(test_api(view()).is_accept_button_focused());
 
-  EXPECT_CALL(
-      controller(),
-      RemoveSuggestion(
-          kNoticePosition,
-          AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
+  EXPECT_CALL(controller(), RemoveSuggestion(kNoticePosition))
       .WillOnce(Return(true));
 
   input::NativeWebKeyboardEvent return_event = right_event;

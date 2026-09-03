@@ -65,9 +65,7 @@ class AutofillKeyboardAccessoryControllerImpl
   void AcceptSuggestion(
       int index,
       AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
-  bool RemoveSuggestion(
-      int index,
-      AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
+  bool RemoveSuggestion(int index) override;
   int GetLineCount() const override;
   const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;

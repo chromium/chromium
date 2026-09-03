@@ -100,22 +100,6 @@ class AutofillMetrics {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PopupNoticeInteractions)
 
-  // The user action that triggered the deletion of a suggestion entry.
-  // These values are used in enums.xml; do not reorder or renumber entries!
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SingleEntryRemovalMethod {
-    // The user pressed shift delete while an Autofill popup menu entry was
-    // selected.
-    kKeyboardShiftDeletePressed = 0,
-    // The user clicked the delete button in the Autofill popup menu.
-    kDeleteButtonClicked = 1,
-    // The user confirmed the entry deletion via the dialog shown by the
-    // keyboard accessory.
-    kKeyboardAccessory = 2,
-    kMaxValue = kKeyboardAccessory
-  };
-
   // The user action that triggered the acceptance of a suggestion entry.
   // These values are used in enums.xml; do not reorder or renumber entries!
   // These values are persisted to logs. Entries should not be renumbered and
@@ -771,11 +755,6 @@ class AutofillMetrics {
 
   // Logs the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
-
-  // Logs that an autocomplete suggestion was deleted directly from the popup
-  // menu.
-  static void OnAutocompleteSuggestionDeleted(
-      SingleEntryRemovalMethod removal_method);
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);

@@ -2712,17 +2712,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.Autocomplete.SingleEntryRemovalMethod"
-    enum="AutofillSingleEntryRemovalMethod" expires_after="2026-09-06">
-  <owner>jkeitel@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records how a user removed a single Autocomplete entry (i.e. via the
-    keyboard or via a delete button in the Autofill popup). Emitted on
-    Autocomplete entry deletion.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStats2"
     enum="FieldFillingStatus" expires_after="2027-02-14">
   <owner>jihadghanna@google.com</owner>

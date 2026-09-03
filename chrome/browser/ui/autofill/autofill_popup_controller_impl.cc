@@ -668,9 +668,7 @@ const Suggestion& AutofillPopupControllerImpl::GetSuggestionAt(int row) const {
   return GetSuggestions()[row];
 }
 
-bool AutofillPopupControllerImpl::RemoveSuggestion(
-    int list_index,
-    AutofillMetrics::SingleEntryRemovalMethod removal_method) {
+bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);
     return false;
@@ -695,21 +693,12 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   SuggestionType suggestion_type = GetSuggestions()[list_index].type;
   switch (GetFillingProductFromSuggestionType(suggestion_type)) {
     case FillingProduct::kAddress:
-      switch (removal_method) {
-        case AutofillMetrics::SingleEntryRemovalMethod::
-            kKeyboardShiftDeletePressed: {
-          MaybeRecordAddressDeletedMetric(web_contents_.get(),
-                                          GetSuggestions()[list_index]);
-          break;
-        }
-        case AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory:
-          NOTREACHED();
-        case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
-          NOTREACHED();
-      }
+      MaybeRecordAddressDeletedMetric(web_contents_.get(),
+                                      GetSuggestions()[list_index]);
       break;
     case FillingProduct::kAutocomplete:
-      AutofillMetrics::OnAutocompleteSuggestionDeleted(removal_method);
+      AutofillMetrics::LogAutocompleteEvent(
+          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
       if (view_) {
         view_->AxAnnounce(l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,

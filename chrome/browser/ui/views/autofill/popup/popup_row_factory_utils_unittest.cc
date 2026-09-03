@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -130,11 +129,7 @@ TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
   // In test env we have to manually set the bounds when a view becomes visible.
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
 
-  EXPECT_CALL(
-      controller(),
-      RemoveSuggestion(
-          0, AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
-      .WillOnce(Return(true));
+  EXPECT_CALL(controller(), RemoveSuggestion(0)).WillOnce(Return(true));
 
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();

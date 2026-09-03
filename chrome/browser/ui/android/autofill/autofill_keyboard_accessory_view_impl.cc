@@ -284,9 +284,7 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionSelectionStateChanged(
 void AutofillKeyboardAccessoryViewImpl::DeletionRequested(JNIEnv* env,
                                                           int32_t list_index) {
   if (controller_) {
-    controller_->RemoveSuggestion(
-        list_index,
-        AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+    controller_->RemoveSuggestion(list_index);
   }
 }
 

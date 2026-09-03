@@ -4329,14 +4329,6 @@ Called by update_autofill_enums.py.-->
              only and empty to non-empty update"/>
 </enum>
 
-<enum name="AutofillSingleEntryRemovalMethod">
-  <int value="0" label="Keyboard shift + delete pressed"/>
-  <int value="1" label="Delete button clicked"/>
-  <int value="2"
-      label="Keyboard accessory suggestion long pressed and deletion dialog
-             confirmed"/>
-</enum>
-
 <!-- LINT.IfChange(FieldPredictionOverlapXml) -->
 
 <enum name="AutofillSourcesSupersetEnum">

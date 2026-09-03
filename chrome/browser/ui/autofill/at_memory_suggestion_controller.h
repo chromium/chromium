@@ -55,9 +55,7 @@ class AtMemorySuggestionController : public AutofillSuggestionController {
       AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
-  bool RemoveSuggestion(
-      int index,
-      AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
+  bool RemoveSuggestion(int index) override;
   int GetLineCount() const override;
   const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;

@@ -426,8 +426,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+      /*index=*/0));
 }
 
 // Tests that if suggestions are updated while a deletion confirmation dialog is
@@ -456,8 +455,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   // User long-presses suggestion at index 0
   EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+      /*index=*/0));
   ASSERT_FALSE(captured_deletion_callback.is_null());
 
   // While dialog is pending, suggestions list changes
@@ -648,9 +646,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Simulate user accepting deletion dialog.
   EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
       .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/true));
-  client().suggestion_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+  client().suggestion_controller(manager()).RemoveSuggestion(/*index=*/0);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 1);
@@ -674,9 +670,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Simulate user cancelling deletion dialog.
   EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
       .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/false));
-  client().suggestion_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+  client().suggestion_controller(manager()).RemoveSuggestion(/*index=*/0);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileDeleted.KeyboardAccessory.Total", 0, 1);

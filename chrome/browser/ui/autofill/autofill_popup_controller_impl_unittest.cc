@@ -55,8 +55,6 @@ using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Return;
 
-using SingleEntryRemovalMethod = AutofillMetrics::SingleEntryRemovalMethod;
-
 Matcher<const AutofillSuggestionDelegate::SuggestionMetadata&>
 EqualsSuggestionMetadata(
     AutofillSuggestionDelegate::SuggestionMetadata metadata) {
@@ -772,9 +770,7 @@ TEST_F(AutofillPopupControllerImplTest,
   // changed.
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   Mock::VerifyAndClearExpectations(client().popup_view());
 
   EXPECT_TRUE(client()
@@ -942,8 +938,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion)
       .WillOnce(Return(true));
-  controller.RemoveSuggestion(
-      0, AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked);
+  controller.RemoveSuggestion(0);
   EXPECT_EQ(controller.GetSuggestions().size(), 1u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 1u);
 
@@ -1211,16 +1206,14 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   // changed.
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   Mock::VerifyAndClearExpectations(client().popup_view());
 
   // Remove the next entry. The popup should then be hidden since there are
   // no Autofill entries left.
   EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kNoSuggestions));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
 }
 
 // Tests that removing the last manual/actionable Autocomplete suggestion will
@@ -1242,8 +1235,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kNoSuggestions));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1264,8 +1256,7 @@ TEST_F(AutofillPopupControllerImplTest,
       .Times(0);
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1280,8 +1271,7 @@ TEST_F(AutofillPopupControllerImplTest,
       .WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(),
               AxAnnounce(Eq(u"Entry main text has been deleted")));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1294,11 +1284,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   Field(&Suggestion::type, SuggestionType::kAutocompleteEntry)))
       .WillOnce(Return(false));
 
-  EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
+  EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   histogram_tester.ExpectUniqueSample(
       "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
@@ -1314,11 +1300,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   Field(&Suggestion::type, SuggestionType::kAutocompleteEntry)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 1);
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   histogram_tester.ExpectUniqueSample(
       "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
@@ -1341,8 +1323,7 @@ TEST_F(AutofillPopupControllerImplTest,
       RemoveSuggestion(Field(&Suggestion::type, SuggestionType::kAddressEntry)))
       .WillOnce(Return(false));
 
-  EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total", 1,
                                       0);
   histogram_tester.ExpectUniqueSample(
@@ -1368,8 +1349,7 @@ TEST_F(AutofillPopupControllerImplTest,
       RemoveSuggestion(Field(&Suggestion::type, SuggestionType::kAddressEntry)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
                                       1);
   histogram_tester.ExpectUniqueSample(
@@ -1397,9 +1377,6 @@ TEST_F(AutofillPopupControllerImplTest,
   }
   // No autocomplete deletion metrics are emitted.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
-  histogram_tester.ExpectUniqueSample(
       "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
@@ -1414,11 +1391,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   Field(&Suggestion::type, SuggestionType::kCreditCardEntry)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
-      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
   histogram_tester.ExpectUniqueSample(
       "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
