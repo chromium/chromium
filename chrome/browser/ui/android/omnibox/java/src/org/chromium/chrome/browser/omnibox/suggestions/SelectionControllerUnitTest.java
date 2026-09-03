@@ -46,21 +46,21 @@ public class SelectionControllerUnitTest {
     }
 
     private void verifyPositionReset(SelectionController c, int position) {
-        verify(c).setItemState(position, false);
+        verify(c).setItemState(position, /* isSelected= */ false);
         assertEquals(null, c.getPosition());
         assertTrue(c.isParkedAtSentinel());
         clearInvocations(c);
     }
 
     private void verifyPositionSet(SelectionController c, int position) {
-        verify(c).setItemState(position, true);
+        verify(c).setItemState(position, /* isSelected= */ true);
         assertEquals(Integer.valueOf(position), c.getPosition());
         assertFalse(c.isParkedAtSentinel());
         clearInvocations(c);
     }
 
     private void verifyPositionChanged(SelectionController c, int from, int to) {
-        verify(c).setItemState(from, false);
+        verify(c).setItemState(from, /* isSelected= */ false);
         verifyPositionSet(c, to);
     }
 
@@ -72,10 +72,10 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 1, 2);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 2);
 
         // Cannot move any further. We've reached the limit.
         assertFalse(c.selectNextItem());
@@ -96,10 +96,10 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 1, 2);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 2);
 
         assertFalse(c.selectNextItem());
         verifyPositionReset(c, 2);
@@ -114,13 +114,13 @@ public class SelectionControllerUnitTest {
         c.reset();
 
         c.setPosition(DEFAULT_NUM_ITEMS);
-        verifyPositionChanged(c, 0, 2);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 2);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 2, 1);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 1);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
 
         // Cannot move any further. We've reached the limit.
         assertFalse(c.selectPreviousItem());
@@ -139,10 +139,10 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 2);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 2, 1);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 1);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
 
         assertFalse(c.selectPreviousItem());
         verifyPositionReset(c, 0);
@@ -161,8 +161,8 @@ public class SelectionControllerUnitTest {
 
         assertTrue(c.selectNextItem());
 
-        verify(c).setItemState(0, false);
-        verify(c).setItemState(2, true);
+        verify(c).setItemState(/* position= */ 0, /* isSelected= */ false);
+        verify(c).setItemState(/* position= */ 2, /* isSelected= */ true);
         assertEquals(Integer.valueOf(2), c.getPosition());
     }
 
@@ -173,14 +173,14 @@ public class SelectionControllerUnitTest {
         c.reset();
 
         c.setPosition(2);
-        verifyPositionChanged(c, 0, 2);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 2);
         assertTrue(c.selectPreviousItem());
 
         // This will try to move away from position 0 twice
         // - to advance to position 1, which will fail
         // - then, to advance to position 0, which should work.
-        verify(c).setItemState(2, false);
-        verify(c).setItemState(0, true);
+        verify(c).setItemState(/* position= */ 2, /* isSelected= */ false);
+        verify(c).setItemState(/* position= */ 0, /* isSelected= */ true);
         verify(c, times(2)).setItemState(anyInt(), anyBoolean());
         assertEquals(Integer.valueOf(0), c.getPosition());
     }
@@ -308,9 +308,9 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         c.selectNextItem(); // 1
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
         c.reset(); // back to default (0)
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
     }
 
     @Test
@@ -353,7 +353,7 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 0);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 0);
     }
 
     @Test
@@ -364,9 +364,9 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         c.selectNextItem();
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
         c.reset();
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
     }
 
     @Test
@@ -390,16 +390,16 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 1, 2);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 2);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 2, 0);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
     }
 
     @Test
@@ -413,10 +413,10 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 1, 2);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 2);
 
         assertFalse(c.selectNextItem());
         verifyPositionReset(c, 2);
@@ -433,13 +433,13 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 0, 2);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 2);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 2, 1);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 1);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
     }
 
     @Test
@@ -453,10 +453,10 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 2);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 2, 1);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 1);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
 
         assertFalse(c.selectPreviousItem());
         verifyPositionReset(c, 0);
@@ -489,16 +489,16 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 1, 2);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 2);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 2, 0);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 1);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 1);
     }
 
     @Test
@@ -512,16 +512,16 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 2);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 2, 1);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 1);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 1, 0);
+        verifyPositionChanged(c, /* from= */ 1, /* to= */ 0);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 0, 2);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 2);
 
         assertTrue(c.selectPreviousItem());
-        verifyPositionChanged(c, 2, 1);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 1);
     }
 
     @Test
@@ -533,10 +533,10 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 2);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 2);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 2, 0);
+        verifyPositionChanged(c, /* from= */ 2, /* to= */ 0);
     }
 
     @Test
@@ -549,7 +549,7 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         assertTrue(c.selectNextItem());
-        verifyPositionChanged(c, 0, 2);
+        verifyPositionChanged(c, /* from= */ 0, /* to= */ 2);
 
         assertFalse(c.selectNextItem());
         verifyPositionReset(c, 2);
