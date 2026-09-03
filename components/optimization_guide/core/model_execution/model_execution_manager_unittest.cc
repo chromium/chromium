@@ -35,6 +35,7 @@
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +65,10 @@ class MockDelegate : public ModelExecutionManager::Delegate {
  public:
   MOCK_METHOD(std::unique_ptr<ModelExecutionFetcher>,
               CreatePrivateAiFetcher,
+              (),
+              (override));
+  MOCK_METHOD(network::mojom::NetworkContext*,
+              GetNetworkContext,
               (),
               (override));
 };
@@ -324,6 +329,15 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequests) {
       "OptimizationGuide.ModelExecution.FetchLatency2.FormsClassifications", 2);
 }
 
+TEST_F(ModelExecutionManagerTest, StartStreamingSessionNoDelegate) {
+  base::test::TestFuture<OptimizationGuideModelStreamingResult>
+      streaming_future;
+  auto session = model_execution_manager()->StartStreamingSession(
+      ModelBasedCapabilityKey::kScamDetection, {},
+      streaming_future.GetRepeatingCallback());
+  EXPECT_EQ(session, nullptr);
+}
+
 class ModelExecutionManagerDelegateTest : public ModelExecutionManagerTest {
  public:
   void SetUp() override {
@@ -384,6 +398,33 @@ TEST_F(ModelExecutionManagerDelegateTest, HandlesNullFetcher) {
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kGenericFailure,
             response_holder.error());
+}
+
+TEST_F(ModelExecutionManagerDelegateTest,
+       StartStreamingSessionWithNetworkContext) {
+  network::TestNetworkContext test_network_context;
+  EXPECT_CALL(*delegate(), GetNetworkContext())
+      .WillOnce(testing::Return(&test_network_context));
+
+  base::test::TestFuture<OptimizationGuideModelStreamingResult>
+      streaming_future;
+  auto session = model_execution_manager()->StartStreamingSession(
+      ModelBasedCapabilityKey::kScamDetection, {},
+      streaming_future.GetRepeatingCallback());
+  EXPECT_NE(session, nullptr);
+}
+
+TEST_F(ModelExecutionManagerDelegateTest,
+       StartStreamingSessionNullNetworkContextReturned) {
+  EXPECT_CALL(*delegate(), GetNetworkContext())
+      .WillOnce(testing::Return(nullptr));
+
+  base::test::TestFuture<OptimizationGuideModelStreamingResult>
+      streaming_future;
+  auto session = model_execution_manager()->StartStreamingSession(
+      ModelBasedCapabilityKey::kScamDetection, {},
+      streaming_future.GetRepeatingCallback());
+  EXPECT_EQ(session, nullptr);
 }
 
 }  // namespace

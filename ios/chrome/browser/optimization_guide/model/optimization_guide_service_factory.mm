@@ -53,8 +53,8 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
   if (!profile->IsOffTheRecord()) {
     private_ai::PrivateAiService* private_ai_service =
         PrivateAiServiceFactory::GetForProfile(profile);
-    delegate =
-        std::make_unique<IOSModelExecutionManagerDelegate>(private_ai_service);
+    delegate = std::make_unique<IOSModelExecutionManagerDelegate>(
+        profile, private_ai_service);
   }
 #endif
 

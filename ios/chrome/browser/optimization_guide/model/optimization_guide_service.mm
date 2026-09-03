@@ -358,7 +358,9 @@ OptimizationGuideService::StartStreamingSession(
     optimization_guide::OptimizationGuideModelExecutionStreamingCallback
         callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  // TODO(crbug.com/553134125): Delegate streaming session creation to
-  // ModelExecutionManager.
-  return nullptr;
+  if (!model_execution_manager_) {
+    return nullptr;
+  }
+  return model_execution_manager_->StartStreamingSession(feature, options,
+                                                         std::move(callback));
 }

@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/optimization_guide/model/ios_model_execution_manager_delegate.h"
 
+#import "base/check.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 #import "components/optimization_guide/core/model_execution/private_ai_model_execution_fetcher.h"
@@ -13,8 +16,11 @@
 #endif
 
 IOSModelExecutionManagerDelegate::IOSModelExecutionManagerDelegate(
+    ProfileIOS* profile,
     private_ai::PrivateAiService* private_ai_service)
-    : private_ai_service_(private_ai_service) {}
+    : profile_(profile), private_ai_service_(private_ai_service) {
+  CHECK(profile_);
+}
 
 IOSModelExecutionManagerDelegate::~IOSModelExecutionManagerDelegate() = default;
 
@@ -30,4 +36,9 @@ IOSModelExecutionManagerDelegate::CreatePrivateAiFetcher() {
 #else
   return nullptr;
 #endif
+}
+
+network::mojom::NetworkContext*
+IOSModelExecutionManagerDelegate::GetNetworkContext() {
+  return profile_->GetNetworkContext();
 }

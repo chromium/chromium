@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_execution_session_impl.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -28,6 +29,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace optimization_guide {
 
@@ -246,6 +248,36 @@ void ModelExecutionManager::ExecuteModel(
                      weak_ptr_factory_.GetWeakPtr(), feature, fetcher_id,
                      std::move(log_ai_data_request), std::move(callback),
                      start_time));
+}
+
+std::unique_ptr<RemoteModelExecutionSession>
+ModelExecutionManager::StartStreamingSession(
+    ModelBasedCapabilityKey feature,
+    const StreamingModelExecutionOptions& options,
+    OptimizationGuideModelExecutionStreamingCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!delegate_) {
+    return nullptr;
+  }
+
+  network::mojom::NetworkContext* network_context =
+      delegate_->GetNetworkContext();
+  if (!network_context) {
+    return nullptr;
+  }
+
+  if (optimization_guide_logger_ &&
+      optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_logger_)
+        << "StartStreamingSession: " << ProtoName(feature);
+  }
+
+  return std::make_unique<RemoteModelExecutionSessionImpl>(
+      feature, options, std::move(callback), network_context, identity_manager_,
+      optimization_guide_logger_);
 }
 
 std::unique_ptr<ModelExecutionFetcher>

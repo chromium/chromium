@@ -24,6 +24,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace network::mojom {
+class NetworkContext;
+}  // namespace network::mojom
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -47,6 +51,9 @@ class ModelExecutionManager final {
 
     // Used to provide alternative fetcher implementations.
     virtual std::unique_ptr<ModelExecutionFetcher> CreatePrivateAiFetcher() = 0;
+
+    // Returns the network context to be used for streaming connections.
+    virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
   };
 
   ModelExecutionManager(
@@ -73,6 +80,12 @@ class ModelExecutionManager final {
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       ModelExecutionServiceType service_type,
       OptimizationGuideModelExecutionResultCallback callback);
+
+  // Establishes a persistent streaming session for execution.
+  std::unique_ptr<RemoteModelExecutionSession> StartStreamingSession(
+      ModelBasedCapabilityKey feature,
+      const StreamingModelExecutionOptions& options,
+      OptimizationGuideModelExecutionStreamingCallback callback);
 
   // Records a fake model execution response to be returned when ExecuteModel is
   // called for the given feature.
