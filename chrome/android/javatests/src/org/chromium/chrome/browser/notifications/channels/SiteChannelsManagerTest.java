@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import android.app.NotificationChannel;
+import android.app.NotificationManager;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -23,15 +24,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
+import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager.ChannelMigrationResult;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -108,6 +114,44 @@ public class SiteChannelsManagerTest {
         assertThat(channel.getOrigin(), is("https://example-enabled.org"));
         assertThat(channel.getStatus(), matchesChannelStatus(NotificationChannelStatus.ENABLED));
         assertThat(channel.getTimestamp(), is(62102180000L));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testCreateSiteChannel_highPriorityEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSiteChannelsManager.createSiteChannel("https://example-highpri.org", 62102180000L, true);
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        NotificationSettingsBridge.SiteChannel channel = siteChannels.get(0);
+        assertThat(channel.toChannel().getImportance(), is(NotificationManager.IMPORTANCE_HIGH));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testCreateSiteChannel_highPriorityEnabled_nonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        mSiteChannelsManager.createSiteChannel(
+                "https://example-nondesktop.org", 62102180000L, true);
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        NotificationSettingsBridge.SiteChannel channel = siteChannels.get(0);
+        assertThat(channel.toChannel().getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testCreateSiteChannel_highPriorityDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSiteChannelsManager.createSiteChannel(
+                "https://example-defaultpri.org", 62102180000L, true);
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        NotificationSettingsBridge.SiteChannel channel = siteChannels.get(0);
+        assertThat(channel.toChannel().getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
     }
 
     @Test
@@ -287,6 +331,8 @@ public class SiteChannelsManagerTest {
     @MediumTest
     public void testGetChannelIdForOrigin_unknownOrigin() {
         CallbackHelper callbackHelper = new CallbackHelper();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Notifications.Android.SitesChannel", true);
         mSiteChannelsManager.getChannelIdForOriginAsync(
                 "https://unknown.com",
                 (channelId) -> {
@@ -300,10 +346,136 @@ public class SiteChannelsManagerTest {
             fail("Callback timed out: " + e.getMessage());
         }
 
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testMigrateSiteChannel_upgradeToHighPriority() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        SiteChannel initialChannel =
+                mSiteChannelsManager.createSiteChannel("https://upgrade-test.org", 1000L, true);
+        assertThat(initialChannel.getId().startsWith("web:"), is(true));
         assertThat(
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Notifications.Android.SitesChannel"),
-                is(1));
+                initialChannel.toChannel().getImportance(),
+                is(NotificationManager.IMPORTANCE_DEFAULT));
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Android.ChannelMigration.Result",
+                        ChannelMigrationResult.MIGRATED_TO_HIGH_PRIORITY);
+        String migratedChannelId = getChannelIdForOrigin("https://upgrade-test.org");
+
+        assertThat(migratedChannelId.startsWith("web_high:"), is(true));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        SiteChannel migratedChannel = siteChannels.get(0);
+        assertThat(migratedChannel.getId(), is(migratedChannelId));
+        assertThat(
+                migratedChannel.toChannel().getImportance(),
+                is(NotificationManager.IMPORTANCE_HIGH));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testMigrateSiteChannel_downgradeToDefault() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        SiteChannel initialChannel =
+                mSiteChannelsManager.createSiteChannel("https://downgrade-test.org", 2000L, true);
+        assertThat(initialChannel.getId().startsWith("web_high:"), is(true));
+        assertThat(
+                initialChannel.toChannel().getImportance(),
+                is(NotificationManager.IMPORTANCE_HIGH));
+
+        DeviceInfo.setIsDesktopForTesting(false);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Android.ChannelMigration.Result",
+                        ChannelMigrationResult.MIGRATED_TO_DEFAULT_PRIORITY);
+        String migratedChannelId = getChannelIdForOrigin("https://downgrade-test.org");
+
+        assertThat(migratedChannelId.startsWith("web:"), is(true));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        SiteChannel migratedChannel = siteChannels.get(0);
+        assertThat(migratedChannel.getId(), is(migratedChannelId));
+        assertThat(
+                migratedChannel.toChannel().getImportance(),
+                is(NotificationManager.IMPORTANCE_DEFAULT));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testMigrateSiteChannel_noMigrationNeeded_alreadyHighPriority() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        SiteChannel initialChannel =
+                mSiteChannelsManager.createSiteChannel(
+                        "https://steady-state-high.org", 4000L, true);
+        assertThat(initialChannel.getId().startsWith("web_high:"), is(true));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Android.ChannelMigration.Result",
+                        ChannelMigrationResult.NO_MIGRATION_NEEDED);
+        String channelId = getChannelIdForOrigin("https://steady-state-high.org");
+
+        assertThat(channelId, is(initialChannel.getId()));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testMigrateSiteChannel_noMigrationNeeded_alreadyDefaultPriority() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        SiteChannel initialChannel =
+                mSiteChannelsManager.createSiteChannel(
+                        "https://steady-state-default.org", 5000L, true);
+        assertThat(initialChannel.getId().startsWith("web:"), is(true));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Android.ChannelMigration.Result",
+                        ChannelMigrationResult.NO_MIGRATION_NEEDED);
+        String channelId = getChannelIdForOrigin("https://steady-state-default.org");
+
+        assertThat(channelId, is(initialChannel.getId()));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIGH_PRIORITY_SITE_NOTIFICATIONS)
+    public void testMigrateSiteChannel_preservesBlockedStatus() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        SiteChannel initialChannel =
+                mSiteChannelsManager.createSiteChannel("https://blocked-migrate.org", 3000L, false);
+        assertThat(initialChannel.getId().startsWith("web:"), is(true));
+        assertThat(
+                getChannelStatus(initialChannel.getId()),
+                matchesChannelStatus(NotificationChannelStatus.BLOCKED));
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        String migratedChannelId = getChannelIdForOrigin("https://blocked-migrate.org");
+
+        assertThat(migratedChannelId.startsWith("web_high:"), is(true));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        assertThat(
+                getChannelStatus(migratedChannelId),
+                matchesChannelStatus(NotificationChannelStatus.BLOCKED));
+    }
+
+    private String getChannelIdForOrigin(String origin) {
+        PayloadCallbackHelper<String> helper = new PayloadCallbackHelper<>();
+        mSiteChannelsManager.getChannelIdForOriginAsync(origin, helper::notifyCalled);
+        return helper.getOnlyPayloadBlocking();
     }
 
     private static @NotificationChannelStatus int getChannelStatus(String channelId) {

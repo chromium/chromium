@@ -210,6 +210,7 @@ BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);
 BASE_DECLARE_FEATURE(kGestureUserEducationBackSwipe);
 BASE_DECLARE_FEATURE(kGmsCoreBindServiceOptimization);
 BASE_DECLARE_FEATURE(kGridTabSwitcherSurfaceColorUpdate);
+BASE_DECLARE_FEATURE(kHighPrioritySiteNotifications);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kHomeButtonRemoval);
 BASE_DECLARE_FEATURE(kImprovedA2HS);

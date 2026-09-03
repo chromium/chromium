@@ -12,8 +12,10 @@ import android.text.TextUtils;
 import androidx.annotation.StringDef;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.channels.ChannelDefinitions;
 
@@ -63,6 +65,11 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * org.chromium.webapk.shell_apk.WebApkServiceImplWrapper#DEFAULT_NOTIFICATION_CHANNEL_ID}.
      */
     public static final String CHANNEL_ID_WEBAPKS = "default_channel_id";
+
+    public static boolean isHighPrioritySiteNotificationsEnabled() {
+        return DeviceInfo.isDesktop()
+                && ChromeFeatureList.sHighPrioritySiteNotifications.isEnabled();
+    }
 
     /**
      * To define a new channel, add the channel ID to this StringDef and add a new entry to

@@ -134,6 +134,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.ChannelMigration.Result"
+    enum="ChannelMigrationResult" expires_after="2027-09-02">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
+  <summary>
+    Recorded when notification channels for a site are queried on Android (e.g.
+    when displaying a notification or requesting notification permissions).
+    Measures the migration result of the channel from default priority to high
+    priority, or vice versa, or whether no migration was needed.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.ImageMemorySizeInKB2" units="KB"
     expires_after="2027-05-31">
   <owner>peilinwang@google.com</owner>

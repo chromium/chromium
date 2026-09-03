@@ -36,6 +36,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Using system notifications"/>
 </enum>
 
+<!-- LINT.IfChange(ChannelMigrationResult) -->
+
+<enum name="ChannelMigrationResult">
+  <int value="0" label="Migrated to high priority channel"/>
+  <int value="1" label="Migrated to default priority channel"/>
+  <int value="2" label="No migration was needed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManager.java:ChannelMigrationResult) -->
+
 <enum name="ChimeEvent">
   <int value="0" label="Register"/>
   <int value="1" label="UnRegister"/>
