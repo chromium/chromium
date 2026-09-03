@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data_builder.h"
 
+#import <LinkPresentation/LinkPresentation.h>
+
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
@@ -17,14 +19,17 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
+#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
 using ui::test::uiimage_utils::UIImagesAreEqual;
@@ -61,16 +66,35 @@ class ShareToDataBuilderTest : public PlatformTest {
     web_state_->SetTitle(kExpectedTitle);
 
     // Add a fake view to the FakeWebState. This will be used to capture the
-    // snapshot. By default the WebState is not ready for taking snapshot.
+    // snapshot.
     CGRect frame = {CGPointZero, CGSizeMake(300, 400)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor blueColor];
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:delegate_.view];
+    [window makeKeyAndVisible];
+
+    // Forcefully render the view to successfully capture a snapshot.
+    // See LegacySnapshotGeneratorTest for reference.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
 
   ShareToDataBuilderTest(const ShareToDataBuilderTest&) = delete;
   ShareToDataBuilderTest& operator=(const ShareToDataBuilderTest&) = delete;
 
+  void TearDown() override {
+    [delegate_.view removeFromSuperview];
+    PlatformTest::TearDown();
+  }
+
   web::WebState* web_state() { return web_state_.get(); }
+  web::FakeWebState* fake_web_state() { return web_state_.get(); }
+  TestProfileIOS* profile() {
+    return static_cast<TestProfileIOS*>(profile_.get());
+  }
 
  private:
   FakeSnapshotGeneratorDelegate* delegate_ = nil;
@@ -92,6 +116,7 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingWithShareUrl) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(kExpectedTitle), actual_data.title);
   EXPECT_TRUE(actual_data.isOriginalTitle);
   EXPECT_FALSE(actual_data.isPagePrintable);
+  EXPECT_TRUE(actual_data.thumbnail);
 }
 
 // Verifies that ShareToData is constructed properly for a given Tab when the
@@ -122,6 +147,29 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingInvalidUrl) {
   EXPECT_FALSE(actual_data.isPagePrintable);
 }
 
+// Tests that `ShareToDataForWebState` provides favicon iconProvider in
+// linkMetadata but does not generate snapshot thumbnail when in incognito mode.
+TEST_F(ShareToDataBuilderTest, TestSharePageIncognito) {
+  TestProfileIOS* otr_profile =
+      profile()->CreateOffTheRecordProfileWithTestingFactories({});
+  fake_web_state()->SetBrowserState(otr_profile);
+
+  web::FaviconStatus favicon_status;
+  favicon_status.valid = true;
+  favicon_status.image = gfx::Image(UIImageWithSizeAndSolidColorAndScale(
+      CGSizeMake(16, 16), [UIColor whiteColor], 1.0));
+  fake_web_state()->SetFaviconStatus(favicon_status);
+
+  ShareToData* actual_data =
+      activity_services::ShareToDataForWebState(web_state(), GURL());
+
+  ASSERT_TRUE(actual_data);
+  EXPECT_FALSE(actual_data.thumbnail);
+  ASSERT_TRUE(actual_data.linkMetadata);
+  EXPECT_FALSE(actual_data.linkMetadata.imageProvider);
+  EXPECT_TRUE(actual_data.linkMetadata.iconProvider);
+}
+
 // Tests that `ShareToDataForURL` enables Send Tab to Self when the sync service
 // provides an entry point display reason (such as offering the feature).
 TEST_F(ShareToDataBuilderTest,
@@ -146,7 +194,8 @@ TEST_F(ShareToDataBuilderTest,
   EXPECT_FALSE(data.isPageSearchable);
   EXPECT_TRUE(data.canSendTabToSelf);
   EXPECT_EQ(web::UserAgentType::NONE, data.userAgent);
-  EXPECT_FALSE(data.thumbnailGenerator);
+  EXPECT_FALSE(data.thumbnail);
+  EXPECT_FALSE(data.linkMetadata);
 }
 
 // Tests that `ShareToDataForURL` enables Send Tab to Self when the user is

@@ -9,7 +9,7 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
-#import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/chrome_activity_item_thumbnail_generator.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 
 namespace {
 // Feature flag to restore sharing just the data instead of an Extension Item.
@@ -108,7 +108,11 @@ BASE_FEATURE(kShareNSExtensionItemKillSwitch,
                 (UIActivityViewController*)activityViewController
      thumbnailImageForActivityType:(UIActivityType)activityType
                      suggestedSize:(CGSize)size {
-  return [self.thumbnailGenerator thumbnailWithSize:size];
+  if (!self.thumbnail) {
+    return nil;
+  }
+  return ResizeImage(self.thumbnail, size, ProjectionMode::kAspectFillAlignTop,
+                     /*opaque=*/YES);
 }
 
 - (LPLinkMetadata*)activityViewControllerLinkMetadata:

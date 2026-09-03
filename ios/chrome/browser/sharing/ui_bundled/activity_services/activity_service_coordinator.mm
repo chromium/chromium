@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
@@ -288,6 +289,9 @@ constexpr CGFloat kAppIconPointSize = 80;
     return;
   }
 
+  const GURL initialURL = currentWebState->GetVisibleURL();
+  NSString* initialTitle = tab_util::GetTabTitle(currentWebState);
+
   // Retrieve the current page's URL.
   __weak __typeof(self) weakSelf = self;
   activity_services::RetrieveCanonicalUrl(
@@ -295,6 +299,8 @@ constexpr CGFloat kAppIconPointSize = 80;
       base::BindOnce(
           ^(base::WeakPtr<web::WebState> weak_web_state, const GURL& url) {
             [weakSelf sharePageWithCanonicalURL:url
+                                     initialURL:initialURL
+                                   initialTitle:initialTitle
                                        webState:weak_web_state.get()];
           },
           currentWebState->GetWeakPtr()));
@@ -302,6 +308,8 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 // Shares the current page using its `canonicalURL`.
 - (void)sharePageWithCanonicalURL:(const GURL&)canonicalURL
+                       initialURL:(const GURL&)initialURL
+                     initialTitle:(NSString*)initialTitle
                          webState:(web::WebState*)webState {
   if (!webState) {
     return;
@@ -311,8 +319,24 @@ constexpr CGFloat kAppIconPointSize = 80;
     return;
   }
 
-  ShareToData* data =
-      activity_services::ShareToDataForWebState(webState, canonicalURL);
+  ShareToData* data = nil;
+  if (webState->GetVisibleURL() == initialURL) {
+    data = activity_services::ShareToDataForWebState(webState, canonicalURL);
+  } else {
+    // If the URL changed while retrieving the canonical URL, the connection
+    // with the current page in the WebState is broken. Fall back to sharing the
+    // URL instead of the WebState. If the canonical URL exists, still use it as
+    // it was the initial intention.
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(webState->GetBrowserState());
+    send_tab_to_self::SendTabToSelfSyncService* sendTabToSelfService =
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+    const GURL& URLToShare =
+        canonicalURL.is_valid() ? canonicalURL : initialURL;
+    data = activity_services::ShareToDataForURL(
+        URLToShare, initialTitle, /*additional_text=*/nil,
+        /*link_metadata=*/nil, sendTabToSelfService);
+  }
 
   NSArray<ChromeActivityURLSource*>* items =
       [self.mediator activityItemsForDataItems:@[ data ]];
@@ -352,6 +376,9 @@ constexpr CGFloat kAppIconPointSize = 80;
     return;
   }
 
+  const GURL initialURL = currentWebState->GetVisibleURL();
+  NSString* initialTitle = tab_util::GetTabTitle(currentWebState);
+
   // Retrieve the current page's URL.
   __weak __typeof(self) weakSelf = self;
   activity_services::RetrieveCanonicalUrl(
@@ -359,6 +386,8 @@ constexpr CGFloat kAppIconPointSize = 80;
       base::BindOnce(
           ^(base::WeakPtr<web::WebState> weak_web_state, const GURL& url) {
             [weakSelf shareFileWithCanonicalURL:url
+                                     initialURL:initialURL
+                                   initialTitle:initialTitle
                                        webState:weak_web_state.get()];
           },
           currentWebState->GetWeakPtr()));
@@ -366,6 +395,8 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 // Shares the current PDF using its `canonicalURL`.
 - (void)shareFileWithCanonicalURL:(const GURL&)canonicalURL
+                       initialURL:(const GURL&)initialURL
+                     initialTitle:(NSString*)initialTitle
                          webState:(web::WebState*)webState {
   if (!webState) {
     return;
@@ -375,8 +406,24 @@ constexpr CGFloat kAppIconPointSize = 80;
     return;
   }
 
-  ShareToData* URLData =
-      activity_services::ShareToDataForWebState(webState, canonicalURL);
+  ShareToData* URLData = nil;
+  if (webState->GetVisibleURL() == initialURL) {
+    URLData = activity_services::ShareToDataForWebState(webState, canonicalURL);
+  } else {
+    // If the URL changed while retrieving the canonical URL, the connection
+    // with the current page in the WebState is broken. Fall back to sharing the
+    // URL instead of the WebState. If the canonical URL exists, still use it as
+    // it was the initial intention.
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(webState->GetBrowserState());
+    send_tab_to_self::SendTabToSelfSyncService* sendTabToSelfService =
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+    const GURL& URLToShare =
+        canonicalURL.is_valid() ? canonicalURL : initialURL;
+    URLData = activity_services::ShareToDataForURL(
+        URLToShare, initialTitle, /*additional_text=*/nil,
+        /*link_metadata=*/nil, sendTabToSelfService);
+  }
 
   // As giving a PDF file to the UIActivityViewController will add the "Print"
   // activity from Apple, Chrome's print activity is disabled to avoid

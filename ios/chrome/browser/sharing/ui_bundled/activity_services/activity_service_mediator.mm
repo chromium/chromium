@@ -131,7 +131,7 @@
     ChromeActivityURLSource* activityURLSource =
         [[ChromeActivityURLSource alloc] initWithShareURL:data.shareNSURL
                                                   subject:data.title];
-    activityURLSource.thumbnailGenerator = data.thumbnailGenerator;
+    activityURLSource.thumbnail = data.thumbnail;
     activityURLSource.linkMetadata = data.linkMetadata;
     [items addObject:activityURLSource];
   }

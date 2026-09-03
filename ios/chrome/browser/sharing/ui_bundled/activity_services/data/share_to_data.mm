@@ -28,7 +28,7 @@
       isPageSearchable:(BOOL)isPageSearchable
       canSendTabToSelf:(BOOL)canSendTabToSelf
              userAgent:(web::UserAgentType)userAgent
-    thumbnailGenerator:(ChromeActivityItemThumbnailGenerator*)thumbnailGenerator
+             thumbnail:(UIImage*)thumbnail
           linkMetadata:(LPLinkMetadata*)linkMetadata {
   DCHECK(shareURL.is_valid());
   DCHECK(visibleURL.is_valid());
@@ -44,7 +44,7 @@
     _isPageSearchable = isPageSearchable;
     _canSendTabToSelf = canSendTabToSelf;
     _userAgent = userAgent;
-    _thumbnailGenerator = thumbnailGenerator;
+    _thumbnail = thumbnail;
     _linkMetadata = linkMetadata;
   }
   return self;

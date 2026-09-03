@@ -36,7 +36,7 @@ class PrintActivityTest : public PlatformTest {
                                 isPageSearchable:YES
                                 canSendTabToSelf:YES
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil
+                                       thumbnail:nil
                                     linkMetadata:nil];
   }
 

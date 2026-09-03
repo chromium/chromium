@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/chrome_activity_item_source.h"
 
-@class ChromeActivityItemThumbnailGenerator;
-
 // This UIActivityItemSource-conforming object conforms to UTType public.url so
 // it can be used with other Social Sharing Extensions as well. The `shareURL`
 // is the URL shared with Social Sharing Extensions. The `subject` is used by
@@ -20,10 +18,8 @@
 // Default initializer. `shareURL` and `subject` must not be nil.
 - (instancetype)initWithShareURL:(NSURL*)shareURL subject:(NSString*)subject;
 
-// Thumbnail generator used to provide thumbnails to extensions that request
-// one.
-@property(nonatomic, strong)
-    ChromeActivityItemThumbnailGenerator* thumbnailGenerator;
+// Thumbnail image used to provide thumbnails to extensions that request one.
+@property(nonatomic, strong) UIImage* thumbnail;
 
 // Prefillled link metadata that can be displayed in the share sheet.
 @property(nonatomic, strong) LPLinkMetadata* linkMetadata;

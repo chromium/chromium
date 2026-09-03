@@ -9,8 +9,6 @@ source_set("data") {
     "chrome_activity_image_source.h",
     "chrome_activity_image_source.mm",
     "chrome_activity_item_source.h",
-    "chrome_activity_item_thumbnail_generator.h",
-    "chrome_activity_item_thumbnail_generator.mm",
     "chrome_activity_text_source.h",
     "chrome_activity_text_source.mm",
     "chrome_activity_url_source.h",
@@ -54,7 +52,7 @@ source_set("data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "chrome_activity_item_thumbnail_generator_unittest.mm",
+    "chrome_activity_url_source_unittest.mm",
     "share_to_data_builder_unittest.mm",
   ]
   deps = [
@@ -72,8 +70,11 @@ source_set("unit_tests") {
     "//ios/web/common:uikit",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//net",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base:test_support",
+    "//ui/gfx",
   ]
+  frameworks = [ "LinkPresentation.framework" ]
 }

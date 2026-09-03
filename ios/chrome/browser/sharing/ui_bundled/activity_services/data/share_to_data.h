@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/sharing/ui_bundled/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 #include "ios/web/common/user_agent.h"
 #include "url/gurl.h"
 
@@ -23,7 +22,7 @@
       isPageSearchable:(BOOL)isPageSearchable
       canSendTabToSelf:(BOOL)canSendTabToSelf
              userAgent:(web::UserAgentType)userAgent
-    thumbnailGenerator:(ChromeActivityItemThumbnailGenerator*)thumbnailGenerator
+             thumbnail:(UIImage*)thumbnail
           linkMetadata:(LPLinkMetadata*)linkMetadata;
 
 // The URL to be shared with share extensions. This URL is the canonical URL of
@@ -52,8 +51,7 @@
 // Whether the current tab can be sent via Send-Tab-To-Self.
 @property(nonatomic, readonly, assign) BOOL canSendTabToSelf;
 @property(nonatomic, readonly, assign) web::UserAgentType userAgent;
-@property(nonatomic, readonly)
-    ChromeActivityItemThumbnailGenerator* thumbnailGenerator;
+@property(nonatomic, readonly) UIImage* thumbnail;
 @property(nonatomic, readonly) LPLinkMetadata* linkMetadata;
 
 @end

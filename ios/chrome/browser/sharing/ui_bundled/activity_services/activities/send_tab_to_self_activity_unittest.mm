@@ -36,7 +36,7 @@ class SendTabToSelfActivityTest : public PlatformTest {
                                 isPageSearchable:YES
                                 canSendTabToSelf:can_send_tab_to_self
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil
+                                       thumbnail:nil
                                     linkMetadata:nil];
   }
 
@@ -196,7 +196,7 @@ TEST_F(SendTabToSelfActivityTest,
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:nil
+                                  thumbnail:nil
                                linkMetadata:nil];
 
   NSArray<UIActivity*>* activities =
