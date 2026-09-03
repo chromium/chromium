@@ -21,7 +21,7 @@ import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
-// Next ID: 9
+// Next ID: 11
 message SuggestTemplateInfo {
   enum StandardSuggestStyle {
     SUGGEST_STYLE_UNSPECIFIED = 0;
@@ -51,6 +51,7 @@ message SuggestTemplateInfo {
     // A sub arrow right icon.
     SUB_ARROW_RIGHT = 5;
     // A globe with a search loop icon, typically used for deep search.
+    // Icon: Google Symbols:travel_explore
     GLOBE_WITH_SEARCH_LOOP = 6;
     // Banana icon, typically used for nano banana suggestions.
     // Uses the banana emoji.
@@ -59,22 +60,31 @@ message SuggestTemplateInfo {
     // is from.
     FAVICON = 8;
     // Notes spark icon, used for AIM More Threads suggestions.
+    // Icon: Google Symbols:notes_spark
     NOTES_SPARK = 9;
     // Draft spark icon, typically used for AIM canvas suggestions.
+    // Icon: Google Symbols:draft_spark
     DRAFT_SPARK = 10;
     // A light bulb icon, used for the Brainstorm suggestions.
+    // Icon: Google Symbols:lightbulb
     LIGHTBULB = 11;
     // Attach file icon, used in suggestions that ask the user to attach a file.
+    // Icon: Google Symbols:attach_file
     ATTACH_FILE = 12;
     // School icon, used in EDU suggestions.
+    // Icon: Google Symbols:school
     SCHOOL = 13;
     // Ink pen icon, used for writing suggestions.
+    // Icon: Google Symbols:ink_pen
     INK_PEN = 14;
     // Tab icon, used for "Ask about tabs" suggestions.
+    // Icon: Google Symbols:tab
     TAB = 15;
     // Photo spark icon, used for create image suggestions.
+    // Icon: Google Symbols:photo_spark
     PHOTO_SPARK = 16;
     // Bolt icon, may be used for brainstorm suggestions.
+    // Icon: Google Symbols:bolt
     BOLT = 17;
   }
 
@@ -197,4 +207,12 @@ message SuggestTemplateInfo {
   }
 
   optional FuseboxAction fusebox_action = 8;
+
+  // The entity id for ENTITY suggestions, used for logging when there is
+  // deduplication.
+  optional string entity_id = 9;
+
+  // The entity's official website uri, used to omit the thumbnail from the
+  // suggestion in case there is an entity similar to a website.
+  optional string website_uri = 10;
 }
