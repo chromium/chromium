@@ -4,6 +4,7 @@
 
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
+import("//chrome/services/file_util/public/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//crypto/features.gni")
@@ -37,6 +38,7 @@ static_library("utility") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/services/file_util:buildflags",
     "//chrome/services/speech/buildflags",
     "//components/heap_profiling/in_process",
     "//components/metrics:child_call_stack_profile_builder",
@@ -241,11 +243,12 @@ static_library("utility") {
     }
   }
 
+  if (safe_browsing_mode == 1 || enable_extractors) {
+    deps += [ "//chrome/services/file_util" ]
+  }
+
   if (safe_browsing_mode == 1) {
-    deps += [
-      "//chrome/services/file_util",
-      "//chrome/utility/safe_browsing",
-    ]
+    deps += [ "//chrome/utility/safe_browsing" ]
   }
 
   if (enable_media_remoting_redirection) {
