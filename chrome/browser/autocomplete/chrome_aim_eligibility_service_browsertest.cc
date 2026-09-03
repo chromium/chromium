@@ -35,6 +35,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -809,6 +810,41 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Omnibox.AimEligibility.EligibilityRequestStatus.Startup",
       AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       RequestSendsFullVersionListHeader) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  base::test::TestFuture<std::optional<std::string>> full_version_list_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.path() == "/async/folae") {
+              full_version_list_future.SetValue(
+                  params->url_request.headers.GetHeader(
+                      "Sec-CH-UA-Full-Version-List"));
+            }
+            return OnRequest(params, std::make_optional(response),
+                             base::DoNothing());
+          }));
+
+  // Given the user is online at startup and contextual tasks is disabled.
+  auto* service = GetAimEligibilityService(GetProfile());
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  // When the service is initialized, then an eligibility request is sent.
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  // The Sec-CH-UA-Full-Version-List header should be present and populated.
+  std::optional<std::string> full_version_list =
+      full_version_list_future.Take();
+  ASSERT_TRUE(full_version_list.has_value());
+  EXPECT_EQ(
+      *full_version_list,
+      embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,

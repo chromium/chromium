@@ -27,6 +27,8 @@ AimEligibilityService::Configuration CreateConfiguration(
     bool is_off_the_record) {
   AimEligibilityService::Configuration config;
   config.is_off_the_record = is_off_the_record;
+  config.full_version_list =
+      embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList();
   if (!contextual_tasks::IsContextualTasksUIEnabled()) {
     return config;
   }
@@ -34,8 +36,6 @@ AimEligibilityService::Configuration CreateConfiguration(
   config.user_agent_with_cobrowse_suffix =
       base::StrCat({embedder_support::GetUserAgent(), " ",
                     contextual_tasks::GetContextualTasksUserAgentSuffix()});
-  config.full_version_list =
-      embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList();
   return config;
 }
 
