@@ -81,10 +81,6 @@ NSString* GetContextMenuTitle(web::ContextMenuParams params) {
   return GetContextMenuTitleAndOrigin(params).first;
 }
 
-NSString* GetContextMenuSubtitle(web::ContextMenuParams params) {
-  return base::SysUTF8ToNSString(params.link_url.spec());
-}
-
 bool IsImageTitle(web::ContextMenuParams params) {
   return GetContextMenuTitleAndOrigin(params).second ==
          ContextMenuTitleOrigin::kImageTitle;
