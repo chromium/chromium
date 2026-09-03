@@ -84,6 +84,11 @@ void AudioServiceAudioProcessorProxy::SetVoiceIsolation(bool enabled) {
   }
 }
 
+std::optional<bool> AudioServiceAudioProcessorProxy::VoiceIsolation() const {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  return voice_isolation_enabled_;
+}
+
 void AudioServiceAudioProcessorProxy::RequestStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (processor_controls_) {
