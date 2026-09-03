@@ -9,59 +9,18 @@
 #include <thread>
 #include <vector>
 
-#include "base/base_paths.h"
-#include "base/path_service.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
-#include "chrome/common/request_header_integrity/buildflags.h"
+#include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/http_request_headers.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
-#include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
-
 namespace request_header_integrity {
 
 class ChromeCompaneroLoaderTest : public testing::Test {
  protected:
-  class TestLoader : public ChromeCompaneroLoader {
-   public:
-    TestLoader() = default;
-    ~TestLoader() = default;
-  };
-
-  class SynchronizedTestLoader : public TestLoader {
-   public:
-    SynchronizedTestLoader()
-        : init_started_(base::WaitableEvent::ResetPolicy::MANUAL,
-                        base::WaitableEvent::InitialState::NOT_SIGNALED),
-          allow_init_completion_(
-              base::WaitableEvent::ResetPolicy::MANUAL,
-              base::WaitableEvent::InitialState::NOT_SIGNALED) {}
-
-    void BrowserProcessInitialize() {
-      init_started_.Signal();
-      allow_init_completion_.Wait();
-      TestLoader::BrowserProcessInitialize();
-    }
-
-    base::WaitableEvent init_started_;
-    base::WaitableEvent allow_init_completion_;
-  };
-
-  std::optional<std::string> TestGetHeaderName(ChromeCompaneroLoader& loader) {
-    return loader.GetHeaderNameFromLib();
-  }
-
-  std::optional<std::string> TestGetHeaderValue(ChromeCompaneroLoader& loader) {
-    return loader.GetHeaderValueFromLib("test_seed", "test_key", "test_ua");
-  }
-
   static void ResetLoaderForTesting() {
     auto& instance = ChromeCompaneroLoader::GetInstance();
     base::AutoLock lock(instance.cache_lock_);
@@ -70,103 +29,17 @@ class ChromeCompaneroLoaderTest : public testing::Test {
     instance.cached_value_time_ = base::TimeTicks();
     instance.companero_remote_.reset();
     instance.refresh_timer_.Stop();
-    instance.init_called_.store(false, std::memory_order_release);
-    instance.init_succeeded_.store(false, std::memory_order_release);
+  }
+
+  static void SetCacheForTesting(const std::string& name,
+                                 const std::string& value) {
+    auto& instance = ChromeCompaneroLoader::GetInstance();
+    base::AutoLock lock(instance.cache_lock_);
+    instance.cached_header_name_ = name;
+    instance.cached_value_ = value;
+    instance.cached_value_time_ = base::TimeTicks::Now();
   }
 };
-
-TEST_F(ChromeCompaneroLoaderTest, ChromeCompaneroDynamicLoading) {
-  // Verify that ChromeCompaneroLoader successfully loads the dynamic shared
-  // library libchromecompaneros.so at runtime and resolves the companero
-  // values.
-  ChromeCompaneroLoader::GetInstance().BrowserProcessInitialize();
-  auto header_name = TestGetHeaderName(ChromeCompaneroLoader::GetInstance());
-  ASSERT_TRUE(header_name.has_value());
-  EXPECT_THAT(*header_name, testing::Not(testing::IsEmpty()));
-
-  ASSERT_OK_AND_ASSIGN(
-      auto result,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ(result.name, *header_name);
-  EXPECT_EQ(result.value.length(), 32u);
-}
-
-TEST_F(ChromeCompaneroLoaderTest, LibraryAbsentGracefulFailure) {
-  // Override paths to a temp directory to simulate the library being missing.
-  base::ScopedPathOverride exe_override(base::DIR_EXE);
-  base::ScopedPathOverride module_override(base::DIR_MODULE);
-
-  // Bypasses GetInstance() to instantiate a private, total isolation stack
-  // instance:
-  TestLoader stack_loader;
-  stack_loader.BrowserProcessInitialize();
-
-  EXPECT_EQ(TestGetHeaderName(stack_loader), std::nullopt);
-  EXPECT_EQ(TestGetHeaderValue(stack_loader), std::nullopt);
-  EXPECT_EQ(stack_loader.GetHeaderNameAndValue(), std::nullopt);
-}
-
-TEST_F(ChromeCompaneroLoaderTest, UninitializedLookupsBailOutSafely) {
-  // 1. Instantiate a fresh, uninitialized stack instance (init_succeeded_ ==
-  // false)
-  TestLoader stack_loader;
-
-  // 2. Verify that network lookups return nullopt without attempting to load
-  // DLL
-  EXPECT_EQ(TestGetHeaderName(stack_loader), std::nullopt);
-  EXPECT_EQ(TestGetHeaderValue(stack_loader), std::nullopt);
-  EXPECT_EQ(stack_loader.GetHeaderNameAndValue(), std::nullopt);
-}
-
-TEST_F(ChromeCompaneroLoaderTest, SingleShotContractEnforcement) {
-  TestLoader stack_loader;
-  stack_loader.BrowserProcessInitialize();
-  EXPECT_DEATH_IF_SUPPORTED(stack_loader.BrowserProcessInitialize(), "");
-}
-
-TEST_F(ChromeCompaneroLoaderTest, ConcurrentInitializationAndExtraction) {
-  SynchronizedTestLoader stack_loader;
-
-  // 1. Launch background startup thread executing BrowserProcessInitialize().
-  // It will pause immediately after starting until allow_init_completion_ is
-  // signaled.
-  std::thread init_thread(
-      [&stack_loader]() { stack_loader.BrowserProcessInitialize(); });
-
-  // 2. Wait until BrowserProcessInitialize has started executing.
-  stack_loader.init_started_.Wait();
-
-  // 3. While initialization is deterministically suspended, verify worker calls
-  // block or return nullopt cleanly without crashing or racing.
-  std::vector<std::thread> worker_threads;
-  for (int i = 0; i < 5; ++i) {
-    worker_threads.emplace_back([&stack_loader]() {
-      auto result = stack_loader.GetHeaderNameAndValue();
-      EXPECT_FALSE(result.has_value());
-    });
-  }
-  for (auto& t : worker_threads) {
-    t.join();
-  }
-  worker_threads.clear();
-
-  // 4. Unblock initialization and allow DSO loading to complete.
-  stack_loader.allow_init_completion_.Signal();
-  init_thread.join();
-
-  // 5. Simultaneously launch worker threads now that initialization has
-  // completed.
-  for (int i = 0; i < 10; ++i) {
-    worker_threads.emplace_back([&stack_loader]() {
-      auto result = stack_loader.GetHeaderNameAndValue();
-      ASSERT_TRUE(result.has_value());
-      EXPECT_EQ(32u, result->value.length());
-    });
-  }
-  for (auto& t : worker_threads) {
-    t.join();
-  }
-}
 
 class MockChromeCompanero
     : public request_header_integrity::mojom::ChromeCompanero {
@@ -229,11 +102,10 @@ TEST_F(RequestHeaderIntegrityRendererTest, MojoSuccess) {
 
   EXPECT_EQ(1, mock_companero_.call_count());
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ("X-Integrity-Header", result.name);
-  EXPECT_EQ("mocked_token_value_12345678", result.value);
+  auto result = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ("X-Integrity-Header", result->name);
+  EXPECT_EQ("mocked_token_value_12345678", result->value);
 }
 
 TEST_F(RequestHeaderIntegrityRendererTest, MojoFailureEmptyResponse) {
@@ -267,10 +139,9 @@ TEST_F(RequestHeaderIntegrityRendererTest, MojoTimerRefresh) {
 
   EXPECT_EQ(1, mock_companero_.call_count());
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result1,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ("token_1", result1.value);
+  auto result1 = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+  ASSERT_TRUE(result1.has_value());
+  EXPECT_EQ("token_1", result1->value);
 
   // Set new response for the next refresh.
   mock_companero_.set_response("X-Integrity-Header", "token_2");
@@ -281,10 +152,9 @@ TEST_F(RequestHeaderIntegrityRendererTest, MojoTimerRefresh) {
   // The timer should have fired and requested a new token.
   EXPECT_EQ(2, mock_companero_.call_count());
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result2,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ("token_2", result2.value);
+  auto result2 = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+  ASSERT_TRUE(result2.has_value());
+  EXPECT_EQ("token_2", result2->value);
 }
 
 TEST_F(RequestHeaderIntegrityRendererTest,
@@ -298,10 +168,9 @@ TEST_F(RequestHeaderIntegrityRendererTest,
 
   EXPECT_EQ(1, mock_companero_.call_count());
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result1,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ("token_1", result1.value);
+  auto result1 = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+  ASSERT_TRUE(result1.has_value());
+  EXPECT_EQ("token_1", result1->value);
 
   // Disconnect the Mojo binding to simulate connection loss.
   receiver_.reset();
@@ -311,34 +180,40 @@ TEST_F(RequestHeaderIntegrityRendererTest,
   // valid.
   task_environment_.FastForwardBy(base::Seconds(90));
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result2,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ("token_1", result2.value);
+  auto result2 = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+  ASSERT_TRUE(result2.has_value());
+  EXPECT_EQ("token_1", result2->value);
 
   // Fast-forward by 1 more minute (total 2.5 minutes). Even though
   // cached_value_time_ has exceeded kCacheTtl, helper processes fall back to
   // returning the stale cached token.
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  ASSERT_OK_AND_ASSIGN(
-      auto result3,
-      ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue());
-  EXPECT_EQ("token_1", result3.value);
+  auto result3 = ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+  ASSERT_TRUE(result3.has_value());
+  EXPECT_EQ("token_1", result3->value);
+}
+
+TEST_F(RequestHeaderIntegrityRendererTest, ConcurrentCacheReads) {
+  SetCacheForTesting("X-Integrity-Header", "initial_token");
+
+  // Concurrently query GetHeaderNameAndValue() across multiple threads.
+  std::vector<std::thread> reader_threads;
+  for (int i = 0; i < 8; ++i) {
+    reader_threads.emplace_back([]() {
+      for (int j = 0; j < 100; ++j) {
+        auto result =
+            ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue();
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ("X-Integrity-Header", result->name);
+        EXPECT_EQ("initial_token", result->value);
+      }
+    });
+  }
+
+  for (auto& t : reader_threads) {
+    t.join();
+  }
 }
 
 }  // namespace request_header_integrity
-
-#else  // BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
-
-namespace request_header_integrity {
-
-TEST(ChromeCompaneroLoaderStubTest, PublicInterfaceStub) {
-  ChromeCompaneroLoader::GetInstance().BrowserProcessInitialize();
-  EXPECT_EQ(ChromeCompaneroLoader::GetInstance().GetHeaderNameAndValue(),
-            std::nullopt);
-}
-
-}  // namespace request_header_integrity
-
-#endif  // BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)

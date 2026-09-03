@@ -61,10 +61,8 @@ source_set("request_header_integrity") {
 
   if (is_chrome_branded) {
     sources += [ "internal/google_header_names.h" ]
-    deps += [
-      "internal:build_derived_values",
-      "internal:internal_header_integrity_seed",
-    ]
+    deps += [ "internal:build_derived_values" ]
+    public_deps += [ "internal:internal_header_integrity_seed" ]
   }
 }
 

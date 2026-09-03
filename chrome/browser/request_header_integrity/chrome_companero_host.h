@@ -5,35 +5,44 @@
 #ifndef CHROME_BROWSER_REQUEST_HEADER_INTEGRITY_CHROME_COMPANERO_HOST_H_
 #define CHROME_BROWSER_REQUEST_HEADER_INTEGRITY_CHROME_COMPANERO_HOST_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace request_header_integrity {
 
 // Browser-process host for Request Header Integrity.
-// Owned by GlobalFeatures on BrowserProcess. Manages background library
-// loading and serves token requests from sandboxed child renderers over Mojo.
-class ChromeCompaneroHost : public mojom::ChromeCompanero {
+//
+// Owned by GlobalFeatures on the browser UI thread. Serves header integrity
+// tokens to child processes (such as Renderers) over Mojo.
+//
+// Native dynamic library loading (libchromecompaneros) and C function execution
+// are offloaded to base::ThreadPool via a SequenceBound Backend object to avoid
+// blocking the browser UI thread and to guarantee shutdown safety.
+class ChromeCompaneroHost {
  public:
   ChromeCompaneroHost();
   ChromeCompaneroHost(const ChromeCompaneroHost&) = delete;
   ChromeCompaneroHost& operator=(const ChromeCompaneroHost&) = delete;
-  ~ChromeCompaneroHost() override;
+  ~ChromeCompaneroHost();
 
-  // Binds an incoming Mojo receiver from a child process.
+  // Binds an incoming Mojo receiver from a child process (typically via
+  // BrowserInterfaceBroker).
   void BindReceiver(mojo::PendingReceiver<mojom::ChromeCompanero> receiver);
 
-  // mojom::ChromeCompanero implementation:
-  void GetHeaderNameAndValue(GetHeaderNameAndValueCallback callback) override;
+  // Asynchronously generates or fetches a header name and token pair on the
+  // thread pool, returning nullptr on error or if the feature is disabled.
+  using GetHeaderNameAndValueCallback =
+      mojom::ChromeCompanero::GetHeaderNameAndValueCallback;
+  void GetHeaderNameAndValue(GetHeaderNameAndValueCallback callback);
 
  private:
-  // Receivers connected from child processes.
-  mojo::ReceiverSet<mojom::ChromeCompanero> receivers_;
+  friend class ChromeCompaneroHostTest;
 
-  base::WeakPtrFactory<ChromeCompaneroHost> weak_factory_{this};
+  class Backend;
+
+  // Backend worker living on a sequenced ThreadPool runner.
+  base::SequenceBound<Backend> backend_;
 };
 
 }  // namespace request_header_integrity

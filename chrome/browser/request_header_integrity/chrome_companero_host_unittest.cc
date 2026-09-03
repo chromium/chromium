@@ -6,7 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
+#include "base/base_paths.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
@@ -22,6 +25,39 @@ class ChromeCompaneroHostTest : public testing::Test {
 };
 
 TEST_F(ChromeCompaneroHostTest, BindReceiverAndGetHeaderNameAndValue) {
+  auto host = std::make_unique<ChromeCompaneroHost>();
+
+  mojo::Remote<mojom::ChromeCompanero> remote;
+  host->BindReceiver(remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<network::mojom::HttpRequestHeaderKeyValuePairPtr>
+      future;
+  remote->GetHeaderNameAndValue(future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_FALSE(result->key.empty());
+  EXPECT_FALSE(result->value.empty());
+}
+
+TEST_F(ChromeCompaneroHostTest, HostDirectGetHeaderNameAndValue) {
+  auto host = std::make_unique<ChromeCompaneroHost>();
+
+  base::test::TestFuture<network::mojom::HttpRequestHeaderKeyValuePairPtr>
+      future;
+  host->GetHeaderNameAndValue(future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_FALSE(result->key.empty());
+  EXPECT_FALSE(result->value.empty());
+}
+
+TEST_F(ChromeCompaneroHostTest, LibraryAbsentGracefulFailure) {
+  // Override DIR_MODULE to an empty directory to simulate a missing dynamic
+  // library, ensuring the host gracefully returns nullptr without crashing.
+  base::ScopedPathOverride module_override(base::DIR_MODULE);
+
   auto host = std::make_unique<ChromeCompaneroHost>();
 
   mojo::Remote<mojom::ChromeCompanero> remote;

@@ -12,12 +12,17 @@ if (enable_request_header_integrity) {
 
     public_deps = [
       "//base",
-      "//chrome/common/request_header_integrity:buildflags",
       "//chrome/common/request_header_integrity:mojom",
       "//mojo/public/cpp/bindings",
     ]
 
-    deps = [ "//chrome/common/request_header_integrity" ]
+    deps = [
+      "//chrome/common/request_header_integrity",
+      "//components/embedder_support:user_agent",
+      "//google_apis",
+      "//net",
+      "//services/network/public/mojom",
+    ]
   }
 
   source_set("unit_tests") {
@@ -28,8 +33,11 @@ if (enable_request_header_integrity) {
     deps = [
       ":request_header_integrity",
       "//base/test:test_support",
-      "//testing/gmock",
+      "//services/network/public/mojom",
       "//testing/gtest",
     ]
+
+    data_deps =
+        [ "//chrome/common/request_header_integrity/internal:chromecompaneros" ]
   }
 }
