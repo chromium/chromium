@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check_deref.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
@@ -16,13 +18,11 @@ namespace fake_server {
 
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
     FakeServer* fake_server)
-    : fake_server_(fake_server) {
-  CHECK(fake_server_);
-  fake_server_->AddObserver(this);
+    : fake_server_(CHECK_DEREF(fake_server)) {
+  fake_server_observation_.Observe(fake_server);
 }
 
 FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
-  fake_server_->RemoveObserver(this);
   for (const base::WeakPtr<instance_id::FakeGCMDriverForInstanceID>&
            fake_gcm_driver : fake_gcm_drivers_) {
     fake_gcm_driver->RemoveConnectionObserver(this);
@@ -174,7 +174,7 @@ FakeServerSyncInvalidationSender::GetFakeGCMDriverByToken(
 }
 
 void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
-  std::map<std::string, base::Time> token_to_mtime;
+  base::flat_map<std::string, base::Time> token_to_mtime;
   for (const sync_pb::SyncEntity& entity :
        fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO)) {
     const sync_pb::InvalidationSpecificFields& invalidation_fields =
@@ -190,8 +190,8 @@ void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
     // TODO(crbug.com/40225423): remove once fixed.
     const base::Time last_updated = syncer::ProtoTimeToTime(
         entity.specifics().device_info().last_updated_timestamp());
-    if (token_to_mtime.find(token) != token_to_mtime.end() &&
-        token_to_mtime[token] >= last_updated) {
+    auto it = token_to_mtime.find(token);
+    if (it != token_to_mtime.end() && it->second >= last_updated) {
       continue;
     }
 

@@ -5,12 +5,21 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_INVALIDATIONS_FAKE_SERVER_SYNC_INVALIDATION_SENDER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_INVALIDATIONS_FAKE_SERVER_SYNC_INVALIDATION_SENDER_H_
 
-#include "base/memory/raw_ptr.h"
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/test/fake_server.h"
+
+namespace net {
+class IPEndPoint;
+}  // namespace net
 
 namespace instance_id {
 class FakeGCMDriverForInstanceID;
@@ -29,7 +38,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   static constexpr char kSyncInvalidationsAppId[] =
       "com.google.chrome.sync.invalidations";
 
-  // |fake_server| must not be nullptr, and must outlive this object.
+  // `fake_server` must not be nullptr, and must outlive this object.
   explicit FakeServerSyncInvalidationSender(FakeServer* fake_server);
   ~FakeServerSyncInvalidationSender() override;
   FakeServerSyncInvalidationSender(const FakeServerSyncInvalidationSender&) =
@@ -37,11 +46,11 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   FakeServerSyncInvalidationSender& operator=(
       const FakeServerSyncInvalidationSender&) = delete;
 
-  // Add |fake_gcm_driver| to send invalidations to from the fake server.
+  // Add `fake_gcm_driver` to send invalidations to from the fake server.
   void AddFakeGCMDriver(
       instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver);
 
-  // Remove |fake_gcm_driver| to stop sending invalidations.
+  // Remove `fake_gcm_driver` to stop sending invalidations.
   void RemoveFakeGCMDriver(
       instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver);
 
@@ -60,22 +69,25 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   // Messages for FCM tokens which are not registered will be kept.
   void DeliverInvalidationsToHandlers();
 
-  // Updates |token_to_interested_data_types_map_before_commit_| from DeviceInfo
-  // data type.
+  // Updates `token_to_interested_data_types_` from DeviceInfo data type.
   void UpdateTokenToInterestedDataTypesMap();
 
-  const raw_ptr<FakeServer> fake_server_;
+  const base::raw_ref<FakeServer> fake_server_;
+
+  base::ScopedObservation<FakeServer, FakeServer::Observer>
+      fake_server_observation_{this};
 
   // Cache of invalidations to be dispatched by
   // DeliverInvalidationsToHandlers(), keyed by FCM registration token. If no
   // handler is registered for a token, then the corresponding invalidations
   // will remain here until a handler is added.
-  std::map<std::string, std::vector<sync_pb::SyncInvalidationsPayload>>
+  base::flat_map<std::string, std::vector<sync_pb::SyncInvalidationsPayload>>
       invalidations_to_deliver_;
 
   // List of tokens with a list of interested data types. Used to send
   // invalidations to a corresponding client.
-  std::map<std::string, syncer::DataTypeSet> token_to_interested_data_types_;
+  base::flat_map<std::string, syncer::DataTypeSet>
+      token_to_interested_data_types_;
 
   // TODO(crbug.com/539790080): Remove base::WeakPtr usage once it is figured
   // out why the invalidation sender doesn't remove Fake GCM server in tests.
