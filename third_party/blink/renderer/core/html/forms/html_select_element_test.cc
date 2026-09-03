@@ -154,7 +154,7 @@ TEST_F(HTMLSelectElementTest, ListBoxSuggestedOptionScrollTargetGroup) {
     FormatTo(html, "<a id='a{}' href='#o{}'></a>", i, i);
   }
   html.Append("</nav>");
-  SetHtmlInnerHTML(html.ToString().Utf8());
+  SetHtmlInnerHTML(html.Utf8());
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
 
@@ -190,7 +190,7 @@ TEST_F(HTMLSelectElementTest,
     FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
   }
   html.Append("</select>");
-  SetHtmlInnerHTML(html.ToString().Utf8());
+  SetHtmlInnerHTML(html.Utf8());
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
 
@@ -245,7 +245,7 @@ TEST_F(HTMLSelectElementTest,
     FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
   }
   html.Append("</select>");
-  SetHtmlInnerHTML(html.ToString().Utf8());
+  SetHtmlInnerHTML(html.Utf8());
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
 
@@ -289,7 +289,7 @@ TEST_F(HTMLSelectElementTest, ListBoxAutofillPreviewDisabledFallback) {
     FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
   }
   html.Append("</select>");
-  SetHtmlInnerHTML(html.ToString().Utf8());
+  SetHtmlInnerHTML(html.Utf8());
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
 

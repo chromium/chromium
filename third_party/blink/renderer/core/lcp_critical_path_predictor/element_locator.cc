@@ -297,8 +297,7 @@ void TokenStreamMatcher::DumpHTMLStack() {
     dump.Append("}");
   }
 
-  LOG(ERROR) << "TokenStreamMatcher::html_stack_: "
-             << dump.ReleaseString().Utf8();
+  LOG(ERROR) << "TokenStreamMatcher::html_stack_: " << dump.Utf8();
 }
 
 #endif

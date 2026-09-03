@@ -732,4 +732,19 @@ TEST(StringBuilderTest, AppendRange) {
   }
 }
 
+TEST(StringBuilderTest, Utf8) {
+  {
+    StringBuilder builder;
+    builder.Append("Hello, world!");
+    EXPECT_EQ("Hello, world!", builder.Utf8());
+  }
+  {
+    StringBuilder builder;
+    builder.Append(String(u"Hello, \u3053\u3093\u306b\u3061\u306f!"));
+    EXPECT_EQ(
+        "Hello, \xe3\x81\x93\xe3\x82\x93\xe3\x81\xab\xe3\x81\xa1\xe3\x81\xaf!",
+        builder.Utf8());
+  }
+}
+
 }  // namespace blink

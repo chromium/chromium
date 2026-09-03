@@ -35,7 +35,7 @@ class CounterStyleTest : public PageTestBase {
     declaration.Append("{");
     declaration.Append(descriptors);
     declaration.Append("}");
-    InsertStyleElement(declaration.ToString().Utf8());
+    InsertStyleElement(declaration.Utf8());
     UpdateAllLifecyclePhasesForTest();
     return GetCounterStyle(name);
   }

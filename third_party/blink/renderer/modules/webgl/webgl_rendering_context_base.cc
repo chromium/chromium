@@ -4643,8 +4643,8 @@ ScriptValue WebGLRenderingContextBase::getUniform(
         name_builder.Append(']');
       }
       // Now need to look this up by name again to find its location
-      GLint loc = ContextGL()->GetUniformLocation(
-          ObjectOrZero(program), name_builder.ToString().Utf8().c_str());
+      GLint loc = ContextGL()->GetUniformLocation(ObjectOrZero(program),
+                                                  name_builder.Utf8().c_str());
       if (loc == location) {
         // Found it. Use the type in the ActiveInfo to determine the return
         // type.

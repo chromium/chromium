@@ -148,7 +148,7 @@ TEST_F(NonMainThreadImplTest, TestTaskObserver) {
   // Sometimes we get an internal scheduler task running before or after
   // TestTask as well. This is not a bug, and we need to make sure the test
   // doesn't fail when that happens.
-  EXPECT_THAT(calls.ToString().Utf8(),
+  EXPECT_THAT(calls.Utf8(),
               testing::HasSubstr("willProcessTask run didProcessTask"));
 }
 

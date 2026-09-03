@@ -261,6 +261,12 @@ class WTF_EXPORT StringBuilder {
   String Substring(unsigned start, unsigned length) const;
   StringView SubstringView(unsigned start, unsigned length) const;
 
+  // Returns a UTF-8 encoded std::string. This is more efficient than
+  // ReleaseString().Utf8() or ToString().Utf8() because it avoids creating
+  // a temporary String instance.
+  [[nodiscard]] std::string Utf8(
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const;
+
   operator StringView() const {
     if (Is8Bit()) {
       return StringView(Span8());

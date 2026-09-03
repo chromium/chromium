@@ -37,7 +37,7 @@ class SimplifiedBackwardsTextIteratorTest : public EditingTestBase {
       is_first = false;
       builder.Append(iterator.GetTextState().GetTextForTesting());
     }
-    return builder.ToString().Utf8();
+    return builder.Utf8();
   }
 };
 

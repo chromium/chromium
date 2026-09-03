@@ -208,7 +208,7 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
         if (!tree_data->metadata.has_value()) {
           tree_data->metadata.emplace();
         }
-        tree_data->metadata->push_back(html.ReleaseString().Utf8());
+        tree_data->metadata->push_back(html.Utf8());
       }
     }
   }

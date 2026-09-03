@@ -1402,7 +1402,7 @@ void DocumentMarkerController::ShowMarkers() const {
     }
     builder.Append("\n");
   }
-  LOG(INFO) << builder.ToString().Utf8();
+  LOG(INFO) << builder.Utf8();
 }
 #endif
 

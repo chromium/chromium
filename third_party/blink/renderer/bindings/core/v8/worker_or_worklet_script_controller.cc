@@ -166,7 +166,7 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
       ot_feature_string.Resize(255);
     }
     SCOPED_CRASH_KEY_STRING256("shared-storage", "context-empty",
-                               ot_feature_string.ReleaseString().Utf8());
+                               ot_feature_string.Utf8());
     NOTREACHED() << "V8 context is empty";
   }
   CHECK(!context.IsEmpty());

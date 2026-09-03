@@ -272,7 +272,7 @@ void DumpTextEncodingNameMap() {
       builder << "\n\t" << it.key << "\t=> " << it.value;
     }
   }
-  LOG(INFO) << builder.ReleaseString().Utf8();
+  LOG(INFO) << builder.Utf8();
 }
 #endif
 

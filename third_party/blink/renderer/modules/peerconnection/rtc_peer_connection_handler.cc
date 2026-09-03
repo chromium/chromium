@@ -1101,7 +1101,7 @@ void RTCPeerConnectionHandler::SetLocalDescription(
     // https://crbug.com/1005251.
     if (request) {
       request->RequestFailed(webrtc::RTCError(
-          webrtc::RTCErrorType::INTERNAL_ERROR, reason_str.ToString().Utf8()));
+          webrtc::RTCErrorType::INTERNAL_ERROR, reason_str.Utf8()));
     }
     return;
   }
@@ -1176,9 +1176,8 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
     // possible for |this| to be deleted after this line. See
     // https://crbug.com/1005251.
     if (request) {
-      request->RequestFailed(
-          webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION,
-                           reason_str.ToString().Utf8()));
+      request->RequestFailed(webrtc::RTCError(
+          webrtc::RTCErrorType::UNSUPPORTED_OPERATION, reason_str.Utf8()));
     }
     return;
   }

@@ -262,7 +262,7 @@ void DumpBlockFragmentationData(const FragmentItems* fragment_items,
           sb.Append(")");
         }
     }
-    VLOG(2) << sb.ToString().Utf8();
+    VLOG(2) << sb.Utf8();
     const PhysicalBoxFragment* box_fragment = item.BoxFragment();
     if (box_fragment) {
       DumpBlockFragmentationData(box_fragment->Items(), indent + 2);

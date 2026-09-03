@@ -97,6 +97,10 @@ StringView StringBuilder::SubstringView(unsigned start, unsigned length) const {
   return StringView(Span16().subspan(start, length));
 }
 
+std::string StringBuilder::Utf8(Utf8ConversionMode mode) const {
+  return StringView(*this).Utf8(mode);
+}
+
 void StringBuilder::Swap(StringBuilder& builder) {
   std::optional<Buffer8> buffer8;
   std::optional<Buffer16> buffer16;
