@@ -111,7 +111,7 @@ SearchSuggestionParser::SuggestResult CreateSuggestion(
       options.suggest_type, options.subtypes,
       base::UTF8ToUTF16(options.match_contents),
       /*match_contents_prefix=*/u"", base::UTF8ToUTF16(options.annotation),
-      omnibox::EntityInfo::default_instance(), /*deletion_url=*/"",
+      /*deletion_url=*/"",
       /*from_keyword=*/false, omnibox::NavigationalIntent::NAV_INTENT_NONE,
       /*relevance=*/100, /*relevance_from_server=*/true,
       /*should_prefetch=*/false,

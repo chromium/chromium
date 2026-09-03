@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "third_party/omnibox_proto/entity_info.pb.h"
 
 namespace base {
 class TimeDelta;

@@ -148,36 +148,32 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
     return match;
   match.keyword = template_url->keyword();
   bool is_google = search::TemplateURLIsGoogle(template_url, search_terms_data);
-  // If SuggestTemplateInfo is available, use it. Otherwise, continue
-  // populating information from EntityInfo.
   const auto& suggest_template_info = suggestion.suggest_template_info();
   if (suggest_template_info) {
     match.suggest_template = suggest_template_info;
   }
   if (is_google) {
     if (suggest_template_info) {
-      if (suggest_template_info->has_image()) {
-        match.image_dominant_color =
-            suggest_template_info->image().dominant_color();
-        match.image_url = GURL(suggest_template_info->image().url());
-      }
-    } else {
-      match.image_dominant_color = suggestion.entity_info().dominant_color();
-      match.image_url = GURL(suggestion.entity_info().image_url());
+      match.image_dominant_color =
+          suggest_template_info->image().dominant_color();
+      match.image_url = GURL(suggest_template_info->image().url());
     }
     match.answer_template = suggestion.answer_template();
-  } else {
+  } else if (suggest_template_info) {
     // Non-Google engines can also provide an entity image, but only ones they
     // hosted on the same domain. Answers (template, type) aren't handled as
     // they are Google-only.
-    const GURL image_url(suggestion.entity_info().image_url());
+    const GURL image_url(suggest_template_info->image().url());
     if (CanFetchSuggestionImage(image_url, *template_url, search_terms_data)) {
-      match.image_dominant_color = suggestion.entity_info().dominant_color();
+      match.image_dominant_color =
+          suggest_template_info->image().dominant_color();
       match.image_url = image_url;
     }
   }
-  match.entity_id = suggestion.entity_info().entity_id();
-  match.website_uri = suggestion.entity_info().website_uri();
+  if (suggest_template_info) {
+    match.entity_id = suggest_template_info->entity_id();
+    match.website_uri = suggest_template_info->website_uri();
+  }
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();
@@ -248,9 +244,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
     match.search_terms_args->additional_query_params =
         CreateQueryParamStringFromMap(
             suggest_template_info->default_search_parameters());
-  } else {
-    match.search_terms_args->additional_query_params =
-        suggestion.entity_info().suggest_search_parameters();
   }
   match.search_terms_args->append_extra_query_params_from_command_line =
       append_extra_query_params_from_command_line;
@@ -272,26 +265,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
            suggest_template_info->action_suggestions()) {
         auto suggest_action = CreateActionInSuggest(
             action, search_url, *match.search_terms_args, search_terms_data);
-        if (suggest_action) {
-          match.actions.emplace_back(std::move(suggest_action));
-        }
-      }
-    } else {
-      // TODO(crbug.com/417745802): Remove once actions are migrated from
-      // EntityInfo to SuggestTemplateInfo.
-      for (const omnibox::ActionInfo& action_info :
-           suggestion.entity_info().action_suggestions()) {
-        omnibox::SuggestTemplateInfo::TemplateAction template_action;
-        template_action.set_action_uri(action_info.action_uri());
-        template_action.set_logs_action_type(action_info.logs_action_type());
-        template_action.set_action_type(
-            static_cast<omnibox::SuggestTemplateInfo_TemplateAction_ActionType>(
-                action_info.action_type()));
-        *template_action.mutable_search_parameters() =
-            action_info.search_parameters();
-        auto suggest_action =
-            CreateActionInSuggest(template_action, search_url,
-                                  *match.search_terms_args, search_terms_data);
         if (suggest_action) {
           match.actions.emplace_back(std::move(suggest_action));
         }
@@ -395,7 +368,6 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
       /*subtypes=*/{omnibox::SUBTYPE_SUGGEST_2G_LITE}, match_contents,
       match_contents_prefix,
       /*annotation=*/std::u16string(),
-      /*entity_info=*/omnibox::EntityInfo(),
       /*deletion_url=*/"",
       /*from_keyword=*/false,
       /*navigational_intent=*/omnibox::NAV_INTENT_NONE, relevance,

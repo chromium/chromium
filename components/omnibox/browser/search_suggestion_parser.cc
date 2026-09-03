@@ -230,16 +230,11 @@ bool DecodeProtoFromBase64(const std::string* encoded_data, T& result_proto) {
 // return the same URL if no formatting is necessary.
 
 std::u16string GetAnnotation(
-    const omnibox::EntityInfo& entity_info,
     base::optional_ref<const omnibox::SuggestTemplateInfo>
         suggest_template_info) {
   if (suggest_template_info.has_value() &&
       !suggest_template_info->secondary_text().text().empty()) {
     return base::UTF8ToUTF16(suggest_template_info->secondary_text().text());
-  }
-
-  if (!entity_info.annotation().empty()) {
-    return base::UTF8ToUTF16(entity_info.annotation());
   }
   return u"";
 }
@@ -254,18 +249,12 @@ bool SuggestTemplateInfoHasPrimaryText(
 
 // Update `match_contents` if there is any input that has a higher precedence.
 void MaybeUpdateMatchContents(
-    const omnibox::EntityInfo& entity_info,
     base::optional_ref<const omnibox::SuggestTemplateInfo>
         suggest_template_info,
     std::u16string& match_contents) {
   if (SuggestTemplateInfoHasPrimaryText(suggest_template_info)) {
     match_contents =
         base::UTF8ToUTF16(suggest_template_info->primary_text().text());
-    return;
-  }
-
-  if (!entity_info.name().empty()) {
-    match_contents = base::UTF8ToUTF16(entity_info.name());
     return;
   }
 }
@@ -464,6 +453,14 @@ void PopulateSuggestTemplateInfoFromEntityInfo(
     }
   }
 
+  if (entity_info.has_entity_id()) {
+    suggest_template_info->set_entity_id(entity_info.entity_id());
+  }
+
+  if (entity_info.has_website_uri()) {
+    suggest_template_info->set_website_uri(entity_info.website_uri());
+  }
+
   if (entity_info.has_suggest_search_parameters()) {
     base::StringPairs kv_pairs;
     base::SplitStringIntoKeyValuePairs(entity_info.suggest_search_parameters(),
@@ -548,7 +545,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                     suggestion,
                     /*match_contents_prefix=*/std::u16string(),
                     /*annotation=*/std::u16string(),
-                    /*entity_info=*/omnibox::EntityInfo(),
                     /*deletion_url=*/"",
                     from_keyword,
                     navigational_intent,
@@ -566,7 +562,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& match_contents,
     const std::u16string& match_contents_prefix,
     const std::u16string& annotation,
-    omnibox::EntityInfo entity_info,
     const std::string& deletion_url,
     bool from_keyword,
     omnibox::NavigationalIntent navigational_intent,
@@ -582,7 +577,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                     match_contents,
                     match_contents_prefix,
                     annotation,
-                    std::move(entity_info),
                     deletion_url,
                     from_keyword,
                     navigational_intent,
@@ -601,7 +595,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& match_contents,
     const std::u16string& match_contents_prefix,
     const std::u16string& annotation,
-    omnibox::EntityInfo entity_info,
     const std::string& deletion_url,
     bool from_keyword,
     omnibox::NavigationalIntent navigational_intent,
@@ -621,7 +614,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
              navigational_intent),
       suggestion_(suggestion),
       match_contents_prefix_(match_contents_prefix),
-      entity_info_(std::move(entity_info)),
       suggest_template_info_(std::move(suggest_template_info)),
       should_prefetch_(should_prefetch),
       should_prerender_(should_prerender) {
@@ -705,11 +697,6 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
 void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
     const omnibox::RichAnswerTemplate& answer_template) {
   answer_template_ = answer_template;
-}
-
-void SearchSuggestionParser::SuggestResult::SetEntityInfo(
-    const omnibox::EntityInfo& entity_info) {
-  entity_info_ = entity_info;
 }
 
 void SearchSuggestionParser::SuggestResult::SetSuggestTemplateInfo(
@@ -1180,19 +1167,17 @@ bool SearchSuggestionParser::ParseSuggestResults(
       const base::optional_ref<const omnibox::SuggestTemplateInfo>
           maybe_suggest_template_info =
               has_suggest_template ? &suggest_template_info : nullptr;
-      MaybeUpdateMatchContents(entity_info, maybe_suggest_template_info,
-                               match_contents);
+      MaybeUpdateMatchContents(maybe_suggest_template_info, match_contents);
       const std::u16string annotation =
-          GetAnnotation(entity_info, maybe_suggest_template_info);
-      results->suggest_results.push_back(SuggestResult(
+          GetAnnotation(maybe_suggest_template_info);
+      results->suggest_results.emplace_back(
           suggestion, match_type, suggest_type, subtypes[index], match_contents,
-          match_contents_prefix, annotation, std::move(entity_info),
-          deletion_url, is_keyword_result, nav_intent, relevance,
-          response_metadata.relevances != nullptr, should_prefetch,
-          should_prerender, trimmed_input,
+          match_contents_prefix, annotation, deletion_url, is_keyword_result,
+          nav_intent, relevance, response_metadata.relevances != nullptr,
+          should_prefetch, should_prerender, trimmed_input,
           has_suggest_template
               ? std::make_optional(std::move(suggest_template_info))
-              : std::nullopt));
+              : std::nullopt);
 
       if (answer_parsed_successfully) {
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
