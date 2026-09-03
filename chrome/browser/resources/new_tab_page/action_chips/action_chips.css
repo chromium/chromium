@@ -16,6 +16,11 @@
   --chip-slide-duration: 1000ms;
   --chip-fade-duration: 850ms;
   --chip-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
+  min-height: 236px;
+}
+
+:host([small-chips-enabled]) {
+  min-height: 176px;
 }
 
 @keyframes chips-slide {
@@ -324,10 +329,12 @@
  *   - >=900px (1 row):  56px + 40px = 96px.
  *   - >=672px (2 rows): (56px * 2) + 14px + 40px = 166px.
  *   - >=560px (3 rows): (56px * 3) + (14px * 2) + 40px = 236px.
+ *   - <560px (3 rows, same 449px cap): (56px * 3) + (14px * 2) + 40px = 236px.
  * - Small chips: height 40px, row-gap 8px, margin-bottom 40px.
  *   - >=900px (1 row):  40px + 40px = 80px.
  *   - >=672px (2 rows): (40px * 2) + 8px + 40px = 128px.
  *   - >=560px (3 rows): (40px * 3) + (8px * 2) + 40px = 176px.
+ *   - <560px (3 rows): (40px * 3) + (8px * 2) + 40px = 176px.
  */
 @media (min-width: 560px) {
   :host {
