@@ -788,7 +788,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="218940509700321686">Hodnoty oddelené čiarkou</translation>
 <translation id="2190094353033916816">Tieto pravidlá majú rôzne hodnoty uplatňované na úrovni počítača a používateľa. Pravidlá fungujú podľa očakávaní.</translation>
 <translation id="219061769324072544">Kreditná,Karta,Debetná</translation>
-<translation id="2191980191135734720">V ďalšom kroku odomknite obrazovku (zvyčajne odtlačkom prsta). Okrem toho môžete <ph name="LINK_TEXT" />.</translation>
+<translation id="2191980191135734720">V ďalšom kroku odomknite obrazovku. Zvyčajne sa používa odtlačok prsta, ale môžete <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
 <translation id="2198183835992354675">Číslo Known Traveler Number</translation>
@@ -837,7 +837,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2256721673839268919">Televízne seriály</translation>
 <translation id="2258928405015593961">Zadajte dátum vypršania platnosti v budúcnosti a skúste to znova</translation>
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
-<translation id="2262183267184054286">overiť iným spôsobom</translation>
+<translation id="2262183267184054286">overiť svoju totožnosť aj inak</translation>
 <translation id="2262243747453050782">Chyba protokolu HTTP</translation>
 <translation id="2265192657948645752">Práca v maloobchode</translation>
 <translation id="2265356434276802347">Toto pravidlo by nemalo mať viac ako tento počet vstupov: <ph name="MAX_ITEMS_LIMIT" />.</translation>

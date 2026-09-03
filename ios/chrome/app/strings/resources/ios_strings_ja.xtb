@@ -1468,7 +1468,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} 個の新しいタブ}other{{count} 個の新しいタブ}}</translation>
 <translation id="5911030830365207728">Google 翻訳</translation>
 <translation id="5912796581727968237">Google ウォレットを開く</translation>
-<translation id="5922999516621365983">ここにタブをドラッグして固定します。</translation>
+<translation id="5922999516621365983">タブをここにドラッグすると固定されます。</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{追加できるファイル、タブ、または画像は最大 1 個です}other{追加できるファイル、タブ、または画像は最大 {COUNT} 個です}}</translation>
 <translation id="5936006948844852401">ストレージを管理</translation>
 <translation id="5936065461722368675">ページ全体を翻訳</translation>

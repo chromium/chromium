@@ -144,7 +144,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1095879482467973146">Google menadžer lozinki na vebu</translation>
 <translation id="1097016918605049747">Prevođenje ove stranice nije uspelo</translation>
 <translation id="1099962274138857708">Slika je kopirana sa uređaja <ph name="DEVICE_NAME" /></translation>
-<translation id="1100040363679327583">Pregledajte zadatak. Upitajte Gemini</translation>
+<translation id="1100040363679327583">Pregledajte zadatak. Pitajte Gemini</translation>
 <translation id="1100504063505580045">Aktuelna ikona</translation>
 <translation id="1101267749138963680">Proverava se bezbednost...</translation>
 <translation id="1102759278139578486">Preuzimanje fajlova sa komentarima o glavnom čvoru nije uspelo. Probajte ponovo kasnije.</translation>
@@ -1938,7 +1938,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2498539833203011245">Umanji</translation>
 <translation id="2498765460639677199">Ogromna</translation>
 <translation id="2500471369733289700">Blokirano radi zaštite vaše privatnosti</translation>
-<translation id="2500915336169200382">Upitajte Gemini o: <ph name="SELECTION" /></translation>
+<translation id="2500915336169200382">Pitajte Gemini o: <ph name="SELECTION" /></translation>
 <translation id="2501173422421700905">Sertifikat na čekanju</translation>
 <translation id="2501797496290880632">Unesite prečicu</translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
@@ -2186,7 +2186,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2692503699962701720">Promeni intonaciju prilikom izgovora tipova elemenata i formatiranog teksta</translation>
 <translation id="2692901429679246677">Tirkizna</translation>
 <translation id="2693134906590795721">Zvukovi punjenja</translation>
-<translation id="2694330288297637442">Radim na zadatku. Upitajte Gemini</translation>
+<translation id="2694330288297637442">Radim na zadatku. Pitajte Gemini</translation>
 <translation id="2695943520968279338">Otkrijte dodatke</translation>
 <translation id="2696675923413008404">Sadržaj sa ovog sajta, uključujući URL, šalje se Google-u i osobe koje pregledaju mogu da ga vide radi poboljšanja ove funkcije</translation>
 <translation id="269941332914175387">Ponovo pokrenite pregledač da biste učitali podatke profila i zadržali njihovo šifrovanje</translation>
@@ -6994,7 +6994,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6418481728190846787">Trajno ukloni pristup za sve aplikacije</translation>
 <translation id="641899100123938294">Skeniraj u potrazi za novim uređajima</translation>
 <translation id="6419546358665792306">Učitajte otpakovano</translation>
-<translation id="642022784593557216">Zadatak je završen. Upitajte Gemini</translation>
+<translation id="642022784593557216">Zadatak je završen. Pitajte Gemini</translation>
 <translation id="6425556984042222041">Brzina pretvaranja teksta u govor</translation>
 <translation id="642729974267661262">Nije im dozvoljeno da puštaju zvuk</translation>
 <translation id="6427752304227226701">Prijavi nebezbedan sajt...</translation>

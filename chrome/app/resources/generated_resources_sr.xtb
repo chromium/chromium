@@ -144,7 +144,7 @@
 <translation id="1095879482467973146">Google менаџер лозинки на вебу</translation>
 <translation id="1097016918605049747">Превођење ове странице није успело</translation>
 <translation id="1099962274138857708">Слика је копирана са уређаја <ph name="DEVICE_NAME" /></translation>
-<translation id="1100040363679327583">Прегледајте задатак. Упитајте Gemini</translation>
+<translation id="1100040363679327583">Прегледајте задатак. Питајте Gemini</translation>
 <translation id="1100504063505580045">Актуелна икона</translation>
 <translation id="1101267749138963680">Проверава се безбедност...</translation>
 <translation id="1102759278139578486">Преузимање фајлова са коментарима о главном чвору није успело. Пробајте поново касније.</translation>
@@ -1938,7 +1938,7 @@
 <translation id="2498539833203011245">Умањи</translation>
 <translation id="2498765460639677199">Огромна</translation>
 <translation id="2500471369733289700">Блокирано ради заштите ваше приватности</translation>
-<translation id="2500915336169200382">Упитајте Gemini о: <ph name="SELECTION" /></translation>
+<translation id="2500915336169200382">Питајте Gemini о: <ph name="SELECTION" /></translation>
 <translation id="2501173422421700905">Сертификат на чекању</translation>
 <translation id="2501797496290880632">Унесите пречицу</translation>
 <translation id="2501920221385095727">Лепљиви тастери</translation>
@@ -2186,7 +2186,7 @@
 <translation id="2692503699962701720">Промени интонацију приликом изговора типова елемената и форматираног текста</translation>
 <translation id="2692901429679246677">Тиркизна</translation>
 <translation id="2693134906590795721">Звукови пуњења</translation>
-<translation id="2694330288297637442">Радим на задатку. Упитајте Gemini</translation>
+<translation id="2694330288297637442">Радим на задатку. Питајте Gemini</translation>
 <translation id="2695943520968279338">Откријте додатке</translation>
 <translation id="2696675923413008404">Садржај са овог сајта, укључујући URL, шаље се Google-у и особе које прегледају могу да га виде ради побољшања ове функције</translation>
 <translation id="269941332914175387">Поново покрените прегледач да бисте учитали податке профила и задржали њихово шифровање</translation>
@@ -6994,7 +6994,7 @@
 <translation id="6418481728190846787">Трајно уклони приступ за све апликације</translation>
 <translation id="641899100123938294">Скенирај у потрази за новим уређајима</translation>
 <translation id="6419546358665792306">Учитајте отпакованo</translation>
-<translation id="642022784593557216">Задатак је завршен. Упитајте Gemini</translation>
+<translation id="642022784593557216">Задатак је завршен. Питајте Gemini</translation>
 <translation id="6425556984042222041">Брзина претварања текста у говор</translation>
 <translation id="642729974267661262">Није им дозвољено да пуштају звук</translation>
 <translation id="6427752304227226701">Пријави небезбедан сајт...</translation>
