@@ -5,6 +5,7 @@
 import 'chrome://iwa-dev/update_options_dialog.js';
 
 import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest, VersionEntry} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
+import {isValidIwaVersion} from 'chrome://iwa-dev/update_options_dialog.js';
 import type {IwaDevUpdateOptionsDialogElement} from 'chrome://iwa-dev/update_options_dialog.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -56,8 +57,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
     channelInput =
         dialog.shadowRoot.querySelector<HTMLInputElement>('#channelInput')!;
     assertTrue(!!channelInput);
-    pinnedVersionInput = dialog.shadowRoot.querySelector<HTMLInputElement>(
-        '#pinnedVersionInput')!;
+    pinnedVersionInput = dialog.$.pinnedVersionInput;
     assertTrue(!!pinnedVersionInput);
     allowDowngradesToggle = dialog.shadowRoot.querySelector<CrToggleElement>(
         '#allowDowngradesToggle')!;
@@ -162,9 +162,9 @@ suite('<iwa-dev-update-options-dialog>', () => {
 
         const versionOptions = getPinnedVersionOptions();
         assertEquals(3, versionOptions.length);
-        assertEquals('1.0.0', versionOptions[0]!.value);
+        assertEquals('3.0.0', versionOptions[0]!.value);
         assertEquals('2.0.0', versionOptions[1]!.value);
-        assertEquals('3.0.0', versionOptions[2]!.value);
+        assertEquals('1.0.0', versionOptions[2]!.value);
 
         assertTrue(saveButton.hasAttribute('disabled'));
       });
@@ -506,5 +506,94 @@ suite('<iwa-dev-update-options-dialog>', () => {
     const versionOptions = getPinnedVersionOptions();
     assertEquals(1, versionOptions.length);
     assertEquals('2.0.0', versionOptions[0]!.value);
+  });
+
+  test(
+      'displays error and prevents saving when version validation fails',
+      async () => {
+        await openDialog({currentPinnedVersion: '1.0.0'});
+        pinnedVersionInput.value = 'invalid-version';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        assertFalse(saveButton.hasAttribute('disabled'));
+
+        let eventFired = false;
+        dialog.addEventListener('update-options-saved', () => {
+          eventFired = true;
+        });
+
+        saveButton.click();
+        await microtasksFinished();
+
+        assertFalse(eventFired);
+        assertTrue(dialog.$.dialog.open);
+
+        const errorDiv =
+            dialog.shadowRoot.querySelector<HTMLElement>('#pinnedVersionError');
+        assertTrue(!!errorDiv);
+        assertEquals('Invalid version format.', errorDiv.textContent?.trim());
+        assertEquals('true', pinnedVersionInput.getAttribute('aria-invalid'));
+        assertEquals(
+            'pinnedVersionError',
+            pinnedVersionInput.getAttribute('aria-errormessage'));
+        assertEquals(pinnedVersionInput, dialog.shadowRoot.activeElement);
+        assertTrue(saveButton.hasAttribute('disabled'));
+
+        // Modifying input clears the error
+        pinnedVersionInput.value = '2.0.0';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        assertFalse(!!dialog.shadowRoot.querySelector('#pinnedVersionError'));
+        assertEquals('false', pinnedVersionInput.getAttribute('aria-invalid'));
+        assertFalse(pinnedVersionInput.hasAttribute('aria-errormessage'));
+        assertFalse(saveButton.hasAttribute('disabled'));
+
+        const savedPromise = eventToPromise('update-options-saved', dialog);
+        saveButton.click();
+        const savedEvent = await savedPromise as CustomEvent<{
+                             pinnedVersion?: string | null,
+                           }>;
+        assertEquals('2.0.0', savedEvent.detail.pinnedVersion);
+        assertFalse(dialog.$.dialog.open);
+      });
+});
+
+suite('isValidIwaVersion', () => {
+  test('valid versions', () => {
+    assertTrue(isValidIwaVersion('1'));
+    assertTrue(isValidIwaVersion('0'));
+    assertTrue(isValidIwaVersion('1.2'));
+    assertTrue(isValidIwaVersion('1.2.3'));
+    assertTrue(isValidIwaVersion('1.2.3.4'));
+    assertTrue(isValidIwaVersion('0.0.0'));
+    assertTrue(isValidIwaVersion('10.20.30'));
+    assertTrue(isValidIwaVersion('4294967295'));
+    assertTrue(isValidIwaVersion('4294967295.4294967294.4294967293'));
+    assertTrue(isValidIwaVersion('1.2.0.3'));
+  });
+
+  test('invalid versions', () => {
+    assertFalse(isValidIwaVersion(''));
+    assertFalse(isValidIwaVersion('  '));
+    assertFalse(isValidIwaVersion('1.2.3.4.5'));
+    assertFalse(isValidIwaVersion('4294967296'));
+    assertFalse(isValidIwaVersion('999994294967295.2.3'));
+    assertFalse(isValidIwaVersion('1.-2.3'));
+    assertFalse(isValidIwaVersion('1..2.3'));
+    assertFalse(isValidIwaVersion('.1'));
+    assertFalse(isValidIwaVersion('1.'));
+    assertFalse(isValidIwaVersion('1.--2.3'));
+    assertFalse(isValidIwaVersion('1.+2.3'));
+    assertFalse(isValidIwaVersion('a.2.3'));
+    assertFalse(isValidIwaVersion('1.a.3'));
+    assertFalse(isValidIwaVersion('1.2.a'));
+    assertFalse(isValidIwaVersion('1.2.3-a'));
+    assertFalse(isValidIwaVersion('1.2.3+a'));
+    assertFalse(isValidIwaVersion('1.2.3-a+a'));
+    assertFalse(isValidIwaVersion('01.2.3'));
+    assertFalse(isValidIwaVersion('1.02.3'));
+    assertFalse(isValidIwaVersion('1.2.03'));
   });
 });

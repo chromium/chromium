@@ -24,9 +24,15 @@ export interface UpdateOptionsSavedEventDetail {
   allowDowngrades?: boolean;
 }
 
+export function isValidIwaVersion(version: string): boolean {
+  return /^(0|[1-9]\d*)(\.(0|[1-9]\d*)){0,3}$/.test(version) &&
+      version.split('.').every(p => Number(p) <= 4294967295);
+}
+
 export interface IwaDevUpdateOptionsDialogElement {
   $: {
     dialog: CrDialogElement,
+    pinnedVersionInput: HTMLInputElement,
   };
 }
 
@@ -57,6 +63,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
       versions_: {type: Array, state: true},
       selectedPinnedVersion_: {type: String, state: true},
       selectedAllowDowngrades_: {type: Boolean, state: true},
+      pinnedVersionError_: {type: String, state: true},
     };
   }
 
@@ -77,6 +84,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   protected accessor versions_: VersionEntry[] = [];
   protected accessor selectedPinnedVersion_: string = '';
   protected accessor selectedAllowDowngrades_: boolean = false;
+  protected accessor pinnedVersionError_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -100,11 +108,13 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
 
   protected onPinnedVersionInput_(e: Event) {
     this.selectedPinnedVersion_ = (e.target as HTMLInputElement).value;
+    this.pinnedVersionError_ = '';
   }
 
   protected onClearPinnedVersionClick_() {
     this.selectedPinnedVersion_ = '';
-    this.shadowRoot.querySelector<HTMLElement>('#pinnedVersionInput')?.focus();
+    this.pinnedVersionError_ = '';
+    this.$.pinnedVersionInput.focus();
   }
 
   protected onAllowDowngradesChange_(e: CustomEvent<boolean>) {
@@ -120,8 +130,9 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   }
 
   protected isSaveDisabled_(): boolean {
-    return !this.hasChannelChange_() && !this.hasPinnedVersionChange_() &&
-        !this.hasAllowDowngradesChange_();
+    return !!this.pinnedVersionError_ ||
+        (!this.hasChannelChange_() && !this.hasPinnedVersionChange_() &&
+         !this.hasAllowDowngradesChange_());
   }
 
   protected onSaveClick_() {
@@ -129,15 +140,25 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
       return;
     }
 
+    this.pinnedVersionError_ = '';
+    const version = this.selectedPinnedVersion_.trim();
     const detail: UpdateOptionsSavedEventDetail = {app: this.app};
+
+    if (this.hasPinnedVersionChange_()) {
+      if (version.length > 0) {
+        if (!isValidIwaVersion(version)) {
+          this.pinnedVersionError_ = 'Invalid version format.';
+          this.$.pinnedVersionInput.focus();
+          return;
+        }
+        detail.pinnedVersion = version;
+      } else {
+        detail.pinnedVersion = null;
+      }
+    }
 
     if (this.hasChannelChange_()) {
       detail.selectedChannel = this.selectedChannel_.trim();
-    }
-
-    if (this.hasPinnedVersionChange_()) {
-      const version = this.selectedPinnedVersion_.trim();
-      detail.pinnedVersion = version.length === 0 ? null : version;
     }
 
     if (this.hasAllowDowngradesChange_()) {
@@ -161,10 +182,16 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
               'Failed to fetch suggestions from update manifest.';
         } else if (result.success) {
           this.channels_ = result.success.channels || [];
-          this.versions_ = result.success.versions || [];
+          this.versions_ = [...(result.success.versions || [])].sort(
+              (a, b) => this.compareVersions_(b.version, a.version));
         }
       },
     });
+  }
+
+  private compareVersions_(v1: string, v2: string): number {
+    return v1.localeCompare(
+        v2, undefined, {numeric: true, sensitivity: 'base'});
   }
 
   private hasChannelChange_(): boolean {

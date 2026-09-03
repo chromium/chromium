@@ -12,6 +12,7 @@
   display: flex;
   font-size: 1rem;
   gap: 8px;
+  margin-bottom: 8px;
 }
 
 #app-icon {
@@ -23,8 +24,8 @@
 [slot='body'] {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-height: 160px;
+  gap: 8px;
+  min-height: 240px;
 }
 
 .input-container {
@@ -47,4 +48,13 @@
   align-items: center;
   display: flex;
   gap: 12px;
+}
+
+.dropdown-container:has(#channelInput),
+.dropdown-container:has(#pinnedVersionInput) {
+  margin-bottom: 28px;
+}
+
+.dropdown-container:has(#pinnedVersionError) {
+  margin-bottom: 0;
 }
