@@ -2764,5 +2764,196 @@ TEST_F(AccessibilityTest, DynamicScrollHeightUpdatesScrollMax) {
   EXPECT_TRUE(found_container_update);
 }
 
+TEST_F(AccessibilityTest, AriaActionsDeduplicatesTargetIds) {
+  ScopedAriaActionsForTest enable_aria_actions(true);
+  SetBodyInnerHTML(R"HTML(
+    <div role="group" id="main"
+         aria-actions="target1 target1 target2 invalid invalid target1 target2"></div>
+    <button id="target1">Target 1</button>
+    <button id="target2">Target 2</button>
+    <div id="invalid">Not a valid target</div>
+  )HTML");
+
+  AXObject* main = GetAXObjectByElementId("main");
+  ASSERT_NE(nullptr, main);
+  AXObject* target1 = GetAXObjectByElementId("target1");
+  ASSERT_NE(nullptr, target1);
+  AXObject* target2 = GetAXObjectByElementId("target2");
+  ASSERT_NE(nullptr, target2);
+
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    main->Serialize(&node_data, ui::kAXModeComplete);
+
+    const std::vector<int32_t> expected_actions_ids = {target1->AXObjectID(),
+                                                       target2->AXObjectID()};
+    EXPECT_EQ(node_data.GetIntListAttribute(
+                  ax::mojom::blink::IntListAttribute::kActionsIds),
+              expected_actions_ids);
+  }
+
+  // Dynamically update `aria-actions` to reverse order and include duplicates.
+  GetElementById("main")->setAttribute(
+      html_names::kAriaActionsAttr,
+      AtomicString("target2 target1 target2 invalid target2"));
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    main->Serialize(&node_data, ui::kAXModeComplete);
+
+    const std::vector<int32_t> expected_reversed_actions_ids = {
+        target2->AXObjectID(), target1->AXObjectID()};
+    EXPECT_EQ(node_data.GetIntListAttribute(
+                  ax::mojom::blink::IntListAttribute::kActionsIds),
+              expected_reversed_actions_ids);
+  }
+}
+
+TEST_F(AccessibilityTest, AriaActionsEmptyListAndMissingAttribute) {
+  ScopedAriaActionsForTest enable_aria_actions(true);
+  SetBodyInnerHTML(R"HTML(
+    <div role="group" id="node_invalid_target" aria-actions="invalid"></div>
+    <div role="group" id="node_nonexistent_target" aria-actions="nonexistent"></div>
+    <div role="group" id="node_empty" aria-actions=""></div>
+    <div role="group" id="node_no_attr"></div>
+    <button id="valid_target">Valid Target</button>
+    <div id="invalid">Not a valid target</div>
+  )HTML");
+
+  AXObject* node_invalid = GetAXObjectByElementId("node_invalid_target");
+  ASSERT_NE(nullptr, node_invalid);
+  AXObject* node_nonexistent =
+      GetAXObjectByElementId("node_nonexistent_target");
+  ASSERT_NE(nullptr, node_nonexistent);
+  AXObject* node_empty = GetAXObjectByElementId("node_empty");
+  ASSERT_NE(nullptr, node_empty);
+  AXObject* node_no_attr = GetAXObjectByElementId("node_no_attr");
+  ASSERT_NE(nullptr, node_no_attr);
+  AXObject* valid_target = GetAXObjectByElementId("valid_target");
+  ASSERT_NE(nullptr, valid_target);
+
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+    // In Blink AXObject serialization, relation attributes (including
+    // `kActionsIds`) are serialized via `AddIntListAttributeFromObjects`, which
+    // omits the intlist attribute when the list of valid targets is empty.
+    // Calling `GetIntListAttribute` returns an empty vector for all four cases
+    // below. However, the presence of author-defined actions is reflected by
+    // `ax::mojom::blink::State::kHasActions` per Core-AAM PR 1805.
+
+    // 1. `aria-actions` references a target in DOM that fails author MUSTs.
+    {
+      ui::AXNodeData node_data;
+      node_invalid->Serialize(&node_data, ui::kAXModeComplete);
+      EXPECT_FALSE(node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds));
+      EXPECT_TRUE(node_data
+                      .GetIntListAttribute(
+                          ax::mojom::blink::IntListAttribute::kActionsIds)
+                      .empty());
+      EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+    }
+
+    // 2. `aria-actions` references an ID not found in the DOM.
+    {
+      ui::AXNodeData node_data;
+      node_nonexistent->Serialize(&node_data, ui::kAXModeComplete);
+      EXPECT_FALSE(node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds));
+      EXPECT_TRUE(node_data
+                      .GetIntListAttribute(
+                          ax::mojom::blink::IntListAttribute::kActionsIds)
+                      .empty());
+      EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+    }
+
+    // 3. `aria-actions=""` is empty.
+    {
+      ui::AXNodeData node_data;
+      node_empty->Serialize(&node_data, ui::kAXModeComplete);
+      EXPECT_FALSE(node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds));
+      EXPECT_TRUE(node_data
+                      .GetIntListAttribute(
+                          ax::mojom::blink::IntListAttribute::kActionsIds)
+                      .empty());
+      EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+    }
+
+    // 4. Node has no `aria-actions` attribute at all.
+    {
+      ui::AXNodeData node_data;
+      node_no_attr->Serialize(&node_data, ui::kAXModeComplete);
+      EXPECT_FALSE(node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds));
+      EXPECT_TRUE(node_data
+                      .GetIntListAttribute(
+                          ax::mojom::blink::IntListAttribute::kActionsIds)
+                      .empty());
+      EXPECT_FALSE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+    }
+  }
+
+  // Dynamically removing `aria-actions` should clear `kHasActions`.
+  GetElementById("node_empty")->removeAttribute(html_names::kAriaActionsAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    node_empty->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_FALSE(node_data.HasIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kActionsIds));
+    EXPECT_TRUE(node_data
+                    .GetIntListAttribute(
+                        ax::mojom::blink::IntListAttribute::kActionsIds)
+                    .empty());
+    EXPECT_FALSE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+  }
+
+  // Dynamically setting `aria-actions` to empty should expose `kHasActions`.
+  GetElementById("node_no_attr")
+      ->setAttribute(html_names::kAriaActionsAttr, AtomicString(""));
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    node_no_attr->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_FALSE(node_data.HasIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kActionsIds));
+    EXPECT_TRUE(node_data
+                    .GetIntListAttribute(
+                        ax::mojom::blink::IntListAttribute::kActionsIds)
+                    .empty());
+    EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+  }
+
+  // Dynamically setting `aria-actions` with a valid target should serialize
+  // `kActionsIds`.
+  GetElementById("node_no_attr")
+      ->setAttribute(html_names::kAriaActionsAttr,
+                     AtomicString("valid_target"));
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    node_no_attr->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_TRUE(node_data.HasIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kActionsIds));
+    const std::vector<int32_t> expected_actions_ids = {
+        valid_target->AXObjectID()};
+    EXPECT_EQ(node_data.GetIntListAttribute(
+                  ax::mojom::blink::IntListAttribute::kActionsIds),
+              expected_actions_ids);
+    EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kHasActions));
+  }
+}
+
 }  // namespace test
 }  // namespace blink

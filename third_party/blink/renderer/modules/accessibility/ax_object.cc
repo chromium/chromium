@@ -2123,8 +2123,10 @@ void AXObject::SerializeRelationAttributes(ui::AXNodeData* node_data) const {
     AXObjectVector action_targets =
         RelationVectorFromAria(html_names::kAriaActionsAttr);
     AXObjectVector valid_targets;
+    HeapHashSet<Member<AXObject>> seen_targets;
     for (const auto& target : action_targets) {
-      if (IsValidAriaActionsTarget(*target)) {
+      if (seen_targets.insert(target).is_new_entry &&
+          IsValidAriaActionsTarget(*target)) {
         valid_targets.push_back(target);
       }
     }
