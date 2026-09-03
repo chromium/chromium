@@ -19,7 +19,6 @@ struct DistantSession;
 @protocol RecentTabsMenuProvider;
 @protocol RecentTabsPresentationDelegate;
 @protocol SceneCommands;
-@protocol SettingsCommands;
 @protocol TableViewFaviconDataSource;
 
 @interface RecentTabsTableViewController
@@ -30,7 +29,6 @@ struct DistantSession;
 @property(nonatomic, assign) Browser* browser;
 // The command handlers used by this ViewController.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
-@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;

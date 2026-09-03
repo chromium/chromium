@@ -26,7 +26,6 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
@@ -44,7 +43,6 @@
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -53,7 +51,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -1482,14 +1479,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - Private Helpers
 
-- (void)showPrimaryAccountReauth {
-  [self.presentationDelegate showPrimaryAccountReauth];
-}
-
-- (void)showSyncPassphraseSettings {
-  [self.settingsHandler showSyncPassphraseSettingsFromViewController:self];
-}
-
 // Disconnects the mediator.
 - (void)disconnectMediator {
   [self.signinPromoViewMediator disconnect];
@@ -1497,38 +1486,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)didTapPromoActionButton {
-  syncer::SyncService* const syncService = self.syncService;
-  if (!syncService) {
-    return;
-  }
-  syncer::SyncService::UserActionableError error =
-      syncService->GetUserActionableError();
-  if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
-    [self showPrimaryAccountReauth];
-  } else if ([self shouldShowHistorySyncOnPromoAction]) {
-    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
-  } else if (ShouldShowSyncSettings(error)) {
-    [self.settingsHandler showSyncSettingsFromViewController:self];
-  } else if (error ==
-             syncer::SyncService::UserActionableError::kNeedsPassphrase) {
-    [self showSyncPassphraseSettings];
-  }
-}
-
-// Returns YES if the History Sync Opt-In should be shown when the promo action
-// button is tapped.
-// TODO(crbug.com/40921836): This logic should be moved outside of the
-// ViewController.
-- (BOOL)shouldShowHistorySyncOnPromoAction {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(_profile);
-  // Check if History Sync Opt-In should be skipped.
-  // In case it's not necessary to show the history opt-in, but the promo action
-  // button is still available, sync errors should be checked to show the
-  // correct screen to handle the error (ex. passphrase screen).
-  return history_sync::GetSkipReason(self.syncService, authenticationService,
-                                     _profile->GetPrefs(), NO) ==
-         history_sync::HistorySyncSkipReason::kNone;
+  [self.presentationDelegate didTapPromoActionButton];
 }
 
 @end

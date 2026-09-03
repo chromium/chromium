@@ -41,6 +41,8 @@ struct DistantTab;
 - (void)showPrimaryAccountReauth;
 // Tells the receiver to delete the foreign session with `sessionTag`.
 - (void)deleteForeignSession:(const std::string&)sessionTag;
+// Tells the receiver that the promo / sync error action button was tapped.
+- (void)didTapPromoActionButton;
 @end
 
 #endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_RECENT_TABS_PRESENTATION_DELEGATE_H_

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -116,9 +117,6 @@
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
   self.recentTabsTableViewController.sceneHandler = sceneHandler;
-  id<SettingsCommands> settingsHandler =
-      HandlerForProtocol(dispatcher, SettingsCommands);
-  self.recentTabsTableViewController.settingsHandler = settingsHandler;
   self.recentTabsTableViewController.presentationDelegate = self;
 
   self.recentTabsContextMenuHelper =
@@ -368,6 +366,32 @@
       ->DeleteForeignSession(sessionTag);
 }
 
+- (void)didTapPromoActionButton {
+  if (!_syncService) {
+    return;
+  }
+  syncer::SyncService::UserActionableError error =
+      _syncService->GetUserActionableError();
+  if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
+    [self showPrimaryAccountReauth];
+  } else if ([self shouldShowHistorySyncOnPromoAction]) {
+    [self showHistorySyncOptInAfterDedicatedSignIn:NO];
+  } else if (ShouldShowSyncSettings(error)) {
+    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+    id<SettingsCommands> settingsHandler =
+        HandlerForProtocol(dispatcher, SettingsCommands);
+    [settingsHandler
+        showSyncSettingsFromViewController:self.recentTabsTableViewController];
+  } else if (error ==
+             syncer::SyncService::UserActionableError::kNeedsPassphrase) {
+    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+    id<SettingsCommands> settingsHandler =
+        HandlerForProtocol(dispatcher, SettingsCommands);
+    [settingsHandler showSyncPassphraseSettingsFromViewController:
+                         self.recentTabsTableViewController];
+  }
+}
+
 #pragma mark - RecentTabsContextMenuDelegate
 
 - (void)shareURL:(const GURL&)URL
@@ -414,6 +438,16 @@
 
 #pragma mark - Private
 
+// Returns YES if the History Sync Opt-In should be shown when the promo action
+// button is tapped.
+- (BOOL)shouldShowHistorySyncOnPromoAction {
+  // In case it's not necessary to show the history opt-in, but the promo action
+  // button is still available, sync errors should be checked to show the
+  // correct screen to handle the error (ex. passphrase screen).
+  return history_sync::GetSkipReason(_syncService, _authenticationService,
+                                     self.profile->GetPrefs(), NO) ==
+         history_sync::HistorySyncSkipReason::kNone;
+}
 
 - (void)dismissButtonTapped {
   base::RecordAction(base::UserMetricsAction("MobileRecentTabsClose"));
