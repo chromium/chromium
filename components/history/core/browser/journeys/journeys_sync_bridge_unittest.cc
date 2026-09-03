@@ -10,8 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/observer_list.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/journeys/history_backend_for_journeys_sync.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/journeys/journeys_sync_metadata_database.h"
@@ -149,6 +151,22 @@ class FakeHistoryBackendForJourneysSync : public HistoryBackendForJourneysSync {
     return true;
   }
 
+  void AddObserver(HistoryBackendObserver* observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(HistoryBackendObserver* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  void NotifyHistoryDeletions(bool all_history) {
+    for (HistoryBackendObserver& observer : observers_) {
+      observer.OnHistoryDeletions(/*history_backend=*/nullptr, all_history,
+                                  /*expired=*/false, /*deleted_rows=*/{},
+                                  /*favicon_urls=*/{});
+    }
+  }
+
   void set_fail_operations(bool fail) { fail_operations_ = fail; }
   const std::map<std::string, JourneyRow>& journeys() const {
     return journeys_;
@@ -157,6 +175,7 @@ class FakeHistoryBackendForJourneysSync : public HistoryBackendForJourneysSync {
  private:
   bool fail_operations_ = false;
   std::map<std::string, JourneyRow> journeys_;
+  base::ObserverList<HistoryBackendObserver>::Unchecked observers_;
 };
 
 class JourneysSyncDatabaseWrapper {
@@ -513,7 +532,7 @@ TEST_F(JourneysSyncBridgeTest, OnDatabaseErrorReportsError) {
   bridge.OnDatabaseError();
 }
 
-TEST_F(JourneysSyncBridgeTest, UntrackAndClearMetadataForAllEntities) {
+TEST_F(JourneysSyncBridgeTest, OnHistoryDeletionsClearsMetadataOnAllHistory) {
   JourneysSyncBridge bridge = CreateBridge();
 
   EntityMetadata metadata;
@@ -526,11 +545,28 @@ TEST_F(JourneysSyncBridgeTest, UntrackAndClearMetadataForAllEntities) {
 
   EXPECT_CALL(mock_processor_, UntrackEntityForStorageKey(kTestJourneyId));
 
-  bridge.UntrackAndClearMetadataForAllEntities();
+  fake_backend_.NotifyHistoryDeletions(/*all_history=*/true);
 
   syncer::MetadataBatch metadata_batch;
   EXPECT_TRUE(db_.GetAllSyncMetadata(&metadata_batch));
   EXPECT_EQ(metadata_batch.GetAllMetadata().size(), 0u);
+}
+
+TEST_F(JourneysSyncBridgeTest, OnHistoryDeletionsIgnoresPartialHistory) {
+  JourneysSyncBridge bridge = CreateBridge();
+
+  EntityMetadata metadata;
+  metadata.set_client_tag_hash("test_hash");
+  EXPECT_TRUE(
+      db_.UpdateEntityMetadata(syncer::JOURNEY, kTestJourneyId, metadata));
+
+  EXPECT_CALL(mock_processor_, UntrackEntityForStorageKey(testing::_)).Times(0);
+
+  fake_backend_.NotifyHistoryDeletions(/*all_history=*/false);
+
+  syncer::MetadataBatch metadata_batch;
+  EXPECT_TRUE(db_.GetAllSyncMetadata(&metadata_batch));
+  EXPECT_EQ(metadata_batch.GetAllMetadata().size(), 1u);
 }
 
 }  // namespace

@@ -1585,6 +1585,15 @@ HistoryService::GetHistorySyncControllerDelegate() {
                           base::Unretained(history_backend_.get())));
 }
 
+std::unique_ptr<syncer::DataTypeControllerDelegate>
+HistoryService::GetJourneysSyncControllerDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+      backend_task_runner_,
+      base::BindRepeating(&HistoryBackend::GetJourneysSyncControllerDelegate,
+                          base::Unretained(history_backend_.get())));
+}
+
 void HistoryService::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

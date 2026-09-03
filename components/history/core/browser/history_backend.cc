@@ -56,6 +56,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
+#include "components/history/core/browser/journeys/journeys_sync_bridge.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/page_usage_data.h"
@@ -435,6 +436,15 @@ void HistoryBackend::Init(
           syncer::HISTORY,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               history_database_params.channel)));
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
+    journeys_sync_bridge_ = std::make_unique<journeys::JourneysSyncBridge>(
+        this, db_ ? db_->GetJourneysMetadataDB() : nullptr,
+        std::make_unique<ClientTagBasedDataTypeProcessor>(
+            syncer::JOURNEY,
+            base::BindRepeating(&syncer::ReportUnrecoverableError,
+                                history_database_params.channel)));
+  }
 
   if (db_ && db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID) {
     // A deletion of foreign visits was still ongoing during the previous
@@ -1354,6 +1364,7 @@ void HistoryBackend::InitImpl(
 void HistoryBackend::CloseAllDatabases() {
   // Reset to avoid dangling pointers to the database.
   history_sync_bridge_.reset();
+  journeys_sync_bridge_.reset();
   expirer_.SetDatabases(/*main_db=*/nullptr, /*favicon_db=*/nullptr);
   if (db_) {
     CommitSingletonTransactionIfItExists();
@@ -2063,11 +2074,52 @@ HistoryBackend::GetHistorySyncControllerDelegate() {
   return nullptr;
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+HistoryBackend::GetJourneysSyncControllerDelegate() {
+  if (journeys_sync_bridge_) {
+    return journeys_sync_bridge_->change_processor()->GetControllerDelegate();
+  }
+  return nullptr;
+}
+
 void HistoryBackend::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
   if (history_sync_bridge_) {
     history_sync_bridge_->SetSyncTransportState(state);
   }
+}
+
+bool HistoryBackend::AddOrUpdateJourneys(
+    const std::vector<journeys::JourneyRow>& journeys) {
+  if (!db_) {
+    return false;
+  }
+  ScheduleCommit();
+  return db_->AddOrUpdateJourneys(journeys);
+}
+
+bool HistoryBackend::DeleteJourneys(
+    const std::vector<std::string>& journey_ids) {
+  if (!db_) {
+    return false;
+  }
+  ScheduleCommit();
+  return db_->DeleteJourneys(journey_ids);
+}
+
+std::vector<journeys::JourneyRow> HistoryBackend::GetAllJourneys() {
+  if (!db_) {
+    return {};
+  }
+  return db_->GetAllJourneys();
+}
+
+bool HistoryBackend::DeleteAllJourneys() {
+  if (!db_) {
+    return false;
+  }
+  ScheduleCommit();
+  return db_->DeleteAllJourneys();
 }
 
 // Statistics ------------------------------------------------------------------
@@ -3698,10 +3750,13 @@ void HistoryBackend::KillHistoryDatabase() {
     return;
   }
 
-  // Notify the sync bridge about storage error. It'll report failures to the
+  // Notify the sync bridges about storage error. It'll report failures to the
   // sync engine and stop accepting remote updates.
   if (history_sync_bridge_) {
     history_sync_bridge_->OnDatabaseError();
+  }
+  if (journeys_sync_bridge_) {
+    journeys_sync_bridge_->OnDatabaseError();
   }
 
   // Rollback transaction because Raze() cannot be called from within a

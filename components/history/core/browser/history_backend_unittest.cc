@@ -48,6 +48,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
+#include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/page_usage_data.h"
@@ -6705,6 +6706,52 @@ TEST_F(HistoryBackendTest, GetAnnotatedVisits_LongRedirectChain) {
       options, /*compute_redirect_chain_start_properties=*/true,
       /*get_unclustered_visits_only=*/false);
   EXPECT_EQ(annotated_visits.size(), static_cast<size_t>(kChainLength));
+}
+
+TEST_F(HistoryBackendTest, JourneysSyncDisabledByDefault) {
+  ASSERT_TRUE(backend_);
+  EXPECT_EQ(nullptr, backend_->GetJourneysSyncControllerDelegate());
+}
+
+class HistoryBackendJourneysSyncTest : public HistoryBackendTest {
+ public:
+  HistoryBackendJourneysSyncTest() {
+    scoped_feature_list_.InitAndEnableFeature(syncer::kSyncJourney);
+  }
+};
+
+TEST_F(HistoryBackendJourneysSyncTest, JourneysSyncBackendIntegration) {
+  ASSERT_TRUE(backend_);
+  EXPECT_NE(nullptr, backend_->GetJourneysSyncControllerDelegate());
+
+  journeys::JourneyRow journey1;
+  journey1.journey_id = "backend_journey_1";
+  journey1.title = "Trip to Tokyo";
+  journey1.creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+
+  journeys::JourneyRow journey2;
+  journey2.journey_id = "backend_journey_2";
+  journey2.title = "Trip to Kyoto";
+  journey2.creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+
+  EXPECT_TRUE(backend_->AddOrUpdateJourneys({journey1, journey2}));
+  EXPECT_EQ(2u, backend_->GetAllJourneys().size());
+
+  EXPECT_TRUE(backend_->DeleteJourneys({"backend_journey_1"}));
+  std::vector<journeys::JourneyRow> remaining = backend_->GetAllJourneys();
+  ASSERT_EQ(1u, remaining.size());
+  EXPECT_EQ("backend_journey_2", remaining[0].journey_id);
+
+  EXPECT_TRUE(backend_->DeleteAllJourneys());
+  EXPECT_TRUE(backend_->GetAllJourneys().empty());
+
+  // DeleteAllHistory should also clear all journeys.
+  EXPECT_TRUE(backend_->AddOrUpdateJourneys({journey1, journey2}));
+  EXPECT_EQ(2u, backend_->GetAllJourneys().size());
+  backend_->DeleteAllHistory();
+  EXPECT_TRUE(backend_->GetAllJourneys().empty());
 }
 
 }  // namespace history

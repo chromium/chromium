@@ -7,14 +7,22 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "components/history/core/browser/history_backend_observer.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "url/gurl.h"
+
+namespace history {
+class HistoryBackend;
+}  // namespace history
 
 namespace history::journeys {
 
@@ -22,7 +30,8 @@ class HistoryBackendForJourneysSync;
 class JourneysSyncMetadataDatabase;
 
 // DataTypeSyncBridge implementation for JOURNEY sync data.
-class JourneysSyncBridge : public syncer::DataTypeSyncBridge {
+class JourneysSyncBridge : public syncer::DataTypeSyncBridge,
+                           public HistoryBackendObserver {
  public:
   // `backend` must not be null.
   // `sync_metadata_database` may be null, but if non-null, must outlive this.
@@ -58,9 +67,20 @@ class JourneysSyncBridge : public syncer::DataTypeSyncBridge {
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
 
-  // Untracks all entities from the processor, and clears their (persisted)
-  // metadata. Called on history wipe.
-  void UntrackAndClearMetadataForAllEntities();
+  // HistoryBackendObserver:
+  void OnURLVisited(HistoryBackend* history_backend,
+                    const URLRow& url_row,
+                    const VisitRow& visit_row) override;
+  void OnURLsModified(HistoryBackend* history_backend,
+                      const URLRows& changed_urls,
+                      bool is_from_expiration) override;
+  void OnHistoryDeletions(HistoryBackend* history_backend,
+                          bool all_history,
+                          bool expired,
+                          const URLRows& deleted_rows,
+                          const std::set<GURL>& favicon_urls) override;
+  void OnVisitUpdated(const VisitRow& visit, VisitUpdateReason reason) override;
+  void OnVisitDeleted(const VisitRow& visit) override;
 
   // Called when the database encounters an error.
   void OnDatabaseError();
@@ -68,8 +88,14 @@ class JourneysSyncBridge : public syncer::DataTypeSyncBridge {
  private:
   void LoadMetadata();
 
+  // Untracks all entities from the processor, and clears their (persisted)
+  // metadata.
+  void UntrackAndClearMetadataForAllEntities();
+
   const raw_ref<HistoryBackendForJourneysSync> backend_;
   raw_ptr<JourneysSyncMetadataDatabase> sync_metadata_database_;
+  base::ScopedObservation<HistoryBackendForJourneysSync, HistoryBackendObserver>
+      history_backend_observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

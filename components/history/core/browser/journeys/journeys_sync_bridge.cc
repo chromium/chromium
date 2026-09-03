@@ -92,6 +92,7 @@ JourneysSyncBridge::JourneysSyncBridge(
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
       backend_(CHECK_DEREF(backend)),
       sync_metadata_database_(sync_metadata_database) {
+  history_backend_observation_.Observe(&backend_.get());
   LoadMetadata();
 }
 
@@ -244,6 +245,36 @@ void JourneysSyncBridge::ApplyDisableSyncChanges(
   }
   backend_->DeleteAllJourneys();
 }
+
+void JourneysSyncBridge::OnURLVisited(HistoryBackend* history_backend,
+                                      const URLRow& url_row,
+                                      const VisitRow& visit_row) {}
+
+void JourneysSyncBridge::OnURLsModified(HistoryBackend* history_backend,
+                                        const URLRows& changed_urls,
+                                        bool is_from_expiration) {}
+
+void JourneysSyncBridge::OnHistoryDeletions(
+    HistoryBackend* history_backend,
+    bool all_history,
+    bool expired,
+    const URLRows& deleted_rows,
+    const std::set<GURL>& favicon_urls) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Individual deletions do not require clearing all sync metadata. But if all
+  // history is cleared, there are no individual notifications, so handle that
+  // case here by untracking all entities and clearing their metadata.
+  if (!all_history) {
+    return;
+  }
+  UntrackAndClearMetadataForAllEntities();
+}
+
+void JourneysSyncBridge::OnVisitUpdated(const VisitRow& visit,
+                                        VisitUpdateReason reason) {}
+
+void JourneysSyncBridge::OnVisitDeleted(const VisitRow& visit) {}
 
 void JourneysSyncBridge::UntrackAndClearMetadataForAllEntities() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

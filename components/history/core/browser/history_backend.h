@@ -35,6 +35,7 @@
 #include "components/history/core/browser/expire_history_backend.h"
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/journeys/history_backend_for_journeys_sync.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
 #include "components/history/core/browser/visit_tracker.h"
@@ -61,6 +62,10 @@ class DataTypeControllerDelegate;
 }
 
 namespace history {
+namespace journeys {
+class JourneysSyncBridge;
+}  // namespace journeys
+
 struct DownloadRow;
 class HistoryBackendClient;
 class HistoryBackendDBBaseTest;
@@ -121,6 +126,7 @@ class QueuedHistoryDBTask {
 // here, see the history service for behavior.
 class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                        public HistoryBackendForSync,
+                       public journeys::HistoryBackendForJourneysSync,
                        public HistoryBackendNotifier,
                        public favicon::FaviconBackendDelegate {
  public:
@@ -751,8 +757,21 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
 
+  // Returns the sync controller delegate for syncing journeys, owned by
+  // `journeys_sync_bridge_`. The bridge is reset during database closing in
+  // backend teardown, in practice giving this a backend lifetime expectation.
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetJourneysSyncControllerDelegate();
+
   // Sends the SyncService's TransportState `state` to the HistorySyncBridge.
   void SetSyncTransportState(syncer::SyncService::TransportState state);
+
+  // HistoryBackendForJourneysSync:
+  bool AddOrUpdateJourneys(
+      const std::vector<journeys::JourneyRow>& journeys) override;
+  bool DeleteJourneys(const std::vector<std::string>& journey_ids) override;
+  std::vector<journeys::JourneyRow> GetAllJourneys() override;
+  bool DeleteAllJourneys() override;
 
   // Deleting ------------------------------------------------------------------
 
@@ -1153,6 +1172,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // HistoryBackend::Init() is called. Defined after `observers_` because
   // it unregisters itself as observer during destruction.
   std::unique_ptr<HistorySyncBridge> history_sync_bridge_;
+
+  // Used to manage syncing of the journeys datatype. It will be null before
+  // HistoryBackend::Init() is called.
+  std::unique_ptr<journeys::JourneysSyncBridge> journeys_sync_bridge_;
 
   // Contains device information for all syncing devices.
   SyncDeviceInfoMap sync_device_info_;

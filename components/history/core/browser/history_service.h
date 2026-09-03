@@ -808,6 +808,11 @@ class HistoryService : public KeyedService,
   std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
 
+  // For sync codebase only: instantiates a controller delegate to interact with
+  // JourneysSyncBridge. Must be called from the UI thread.
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
+  GetJourneysSyncControllerDelegate();
+
   // Sends the SyncService's TransportState `state` to the backend, which will
   // pass it on to the HistorySyncBridge.
   void SetSyncTransportState(syncer::SyncService::TransportState state);

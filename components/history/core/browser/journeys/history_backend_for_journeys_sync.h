@@ -10,6 +10,10 @@
 
 #include "components/history/core/browser/journeys/journey_row.h"
 
+namespace history {
+class HistoryBackendObserver;
+}  // namespace history
+
 namespace history::journeys {
 
 // Interface defining the subset of HistoryBackend required by
@@ -17,6 +21,11 @@ namespace history::journeys {
 class HistoryBackendForJourneysSync {
  public:
   virtual ~HistoryBackendForJourneysSync() = default;
+
+  // Observers -----------------------------------------------------------------
+
+  virtual void AddObserver(HistoryBackendObserver* observer) = 0;
+  virtual void RemoveObserver(HistoryBackendObserver* observer) = 0;
 
   // Persists or updates the given `journeys` in the local database.
   // Returns true on success, or false on database failure.
