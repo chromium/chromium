@@ -55,6 +55,7 @@
   margin-bottom: 28px;
 }
 
+.dropdown-container:has(#channelError),
 .dropdown-container:has(#pinnedVersionError) {
   margin-bottom: 0;
 }

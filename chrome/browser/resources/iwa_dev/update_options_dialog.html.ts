@@ -21,6 +21,9 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
       <input id="channelInput"
           list="channelList"
           class="dropdown-select"
+          aria-invalid="${this.channelError_ ? 'true' : 'false'}"
+          aria-errormessage="${
+              this.channelError_ ? 'channelError' : nothing}"
           .value="${this.selectedChannel_}"
           @input="${this.onChannelInput_}"
           placeholder="Select or enter channel">
@@ -31,6 +34,11 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
           </option>
         `)}
       </datalist>
+      ${this.channelError_ ? html`
+        <div id="channelError" class="error-message" aria-live="polite">
+          ${this.channelError_}
+        </div>
+      ` : ''}
     </div>
     <div class="dropdown-container">
       <label for="pinnedVersionInput">

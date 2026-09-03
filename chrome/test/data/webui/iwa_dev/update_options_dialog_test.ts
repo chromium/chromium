@@ -5,7 +5,7 @@
 import 'chrome://iwa-dev/update_options_dialog.js';
 
 import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest, VersionEntry} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
-import {isValidIwaVersion} from 'chrome://iwa-dev/update_options_dialog.js';
+import {isValidIwaVersion, isValidUpdateChannel} from 'chrome://iwa-dev/update_options_dialog.js';
 import type {IwaDevUpdateOptionsDialogElement} from 'chrome://iwa-dev/update_options_dialog.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -54,8 +54,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
     cancelButton =
         dialog.shadowRoot.querySelector<HTMLButtonElement>('.cancel-button')!;
     assertTrue(!!cancelButton);
-    channelInput =
-        dialog.shadowRoot.querySelector<HTMLInputElement>('#channelInput')!;
+    channelInput = dialog.$.channelInput;
     assertTrue(!!channelInput);
     pinnedVersionInput = dialog.$.pinnedVersionInput;
     assertTrue(!!pinnedVersionInput);
@@ -207,25 +206,12 @@ suite('<iwa-dev-update-options-dialog>', () => {
       });
 
   test(
-      'disables save button until a different valid channel is entered',
-      async () => {
+      'disables save button until a different channel is entered', async () => {
         await openDialog({
           currentChannel: 'default',
           channels: [{channel: 'beta', displayName: 'Beta'}],
         });
         assertEquals('default', channelInput.value);
-        assertTrue(saveButton.hasAttribute('disabled'));
-
-        // Clearing input keeps save disabled
-        channelInput.value = '';
-        channelInput.dispatchEvent(new Event('input'));
-        await microtasksFinished();
-        assertTrue(saveButton.hasAttribute('disabled'));
-
-        // Entering whitespace keeps save disabled
-        channelInput.value = '   ';
-        channelInput.dispatchEvent(new Event('input'));
-        await microtasksFinished();
         assertTrue(saveButton.hasAttribute('disabled'));
 
         // Entering a new channel enables save
@@ -558,6 +544,154 @@ suite('<iwa-dev-update-options-dialog>', () => {
         assertEquals('2.0.0', savedEvent.detail.pinnedVersion);
         assertFalse(dialog.$.dialog.open);
       });
+
+  test('displays error and prevents saving when channel is empty', async () => {
+    await openDialog({currentChannel: 'default'});
+    channelInput.value = '   ';
+    channelInput.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    assertFalse(saveButton.hasAttribute('disabled'));
+
+    let eventFired = false;
+    dialog.addEventListener('update-options-saved', () => {
+      eventFired = true;
+    });
+
+    saveButton.click();
+    await microtasksFinished();
+
+    assertFalse(eventFired);
+    assertTrue(dialog.$.dialog.open);
+
+    const errorDiv =
+        dialog.shadowRoot.querySelector<HTMLElement>('#channelError');
+    assertTrue(!!errorDiv);
+    assertEquals('Channel cannot be empty.', errorDiv.textContent?.trim());
+    assertEquals('true', channelInput.getAttribute('aria-invalid'));
+    assertEquals(
+        'channelError', channelInput.getAttribute('aria-errormessage'));
+    assertEquals(channelInput, dialog.shadowRoot.activeElement);
+    assertTrue(saveButton.hasAttribute('disabled'));
+
+    // Modifying input clears the error
+    channelInput.value = 'beta';
+    channelInput.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    assertFalse(!!dialog.shadowRoot.querySelector('#channelError'));
+    assertEquals('false', channelInput.getAttribute('aria-invalid'));
+    assertFalse(channelInput.hasAttribute('aria-errormessage'));
+    assertFalse(saveButton.hasAttribute('disabled'));
+
+    const savedPromise = eventToPromise('update-options-saved', dialog);
+    saveButton.click();
+    const savedEvent = await savedPromise as CustomEvent<{
+                         selectedChannel?: string,
+                       }>;
+    assertEquals('beta', savedEvent.detail.selectedChannel);
+    assertFalse(dialog.$.dialog.open);
+  });
+
+  test(
+      'displays error and prevents saving when channel is not valid UTF-8',
+      async () => {
+        await openDialog({currentChannel: 'default'});
+        channelInput.value = '\uD800';
+        channelInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        assertFalse(saveButton.hasAttribute('disabled'));
+
+        let eventFired = false;
+        dialog.addEventListener('update-options-saved', () => {
+          eventFired = true;
+        });
+
+        saveButton.click();
+        await microtasksFinished();
+
+        assertFalse(eventFired);
+        assertTrue(dialog.$.dialog.open);
+
+        const errorDiv =
+            dialog.shadowRoot.querySelector<HTMLElement>('#channelError');
+        assertTrue(!!errorDiv);
+        assertEquals('Invalid channel format.', errorDiv.textContent?.trim());
+        assertEquals('true', channelInput.getAttribute('aria-invalid'));
+        assertEquals(
+            'channelError', channelInput.getAttribute('aria-errormessage'));
+        assertEquals(channelInput, dialog.shadowRoot.activeElement);
+        assertTrue(saveButton.hasAttribute('disabled'));
+
+        // Modifying input clears the error
+        channelInput.value = 'beta';
+        channelInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        assertFalse(!!dialog.shadowRoot.querySelector('#channelError'));
+        assertEquals('false', channelInput.getAttribute('aria-invalid'));
+        assertFalse(channelInput.hasAttribute('aria-errormessage'));
+        assertFalse(saveButton.hasAttribute('disabled'));
+
+        const savedPromise = eventToPromise('update-options-saved', dialog);
+        saveButton.click();
+        const savedEvent = await savedPromise as CustomEvent<{
+                             selectedChannel?: string,
+                           }>;
+        assertEquals('beta', savedEvent.detail.selectedChannel);
+        assertFalse(dialog.$.dialog.open);
+      });
+
+  test(
+      'displays errors and highlights both fields when both are invalid',
+      async () => {
+        await openDialog({
+          currentChannel: 'default',
+          currentPinnedVersion: '1.0.0',
+        });
+        channelInput.value = '   ';
+        channelInput.dispatchEvent(new Event('input'));
+        pinnedVersionInput.value = 'invalid-version';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        assertFalse(saveButton.hasAttribute('disabled'));
+
+        let eventFired = false;
+        dialog.addEventListener('update-options-saved', () => {
+          eventFired = true;
+        });
+
+        saveButton.click();
+        await microtasksFinished();
+
+        assertFalse(eventFired);
+        assertTrue(dialog.$.dialog.open);
+
+        const channelErrorDiv =
+            dialog.shadowRoot.querySelector<HTMLElement>('#channelError');
+        assertTrue(!!channelErrorDiv);
+        assertEquals(
+            'Channel cannot be empty.', channelErrorDiv.textContent?.trim());
+        assertEquals('true', channelInput.getAttribute('aria-invalid'));
+        assertEquals(
+            'channelError', channelInput.getAttribute('aria-errormessage'));
+
+        const versionErrorDiv =
+            dialog.shadowRoot.querySelector<HTMLElement>('#pinnedVersionError');
+        assertTrue(!!versionErrorDiv);
+        assertEquals(
+            'Invalid version format.', versionErrorDiv.textContent?.trim());
+        assertEquals('true', pinnedVersionInput.getAttribute('aria-invalid'));
+        assertEquals(
+            'pinnedVersionError',
+            pinnedVersionInput.getAttribute('aria-errormessage'));
+
+        // First invalid input in DOM order (channelInput) is focused.
+        assertEquals(channelInput, dialog.shadowRoot.activeElement);
+        assertTrue(saveButton.hasAttribute('disabled'));
+      });
 });
 
 suite('isValidIwaVersion', () => {
@@ -595,5 +729,23 @@ suite('isValidIwaVersion', () => {
     assertFalse(isValidIwaVersion('01.2.3'));
     assertFalse(isValidIwaVersion('1.02.3'));
     assertFalse(isValidIwaVersion('1.2.03'));
+  });
+});
+
+suite('isValidUpdateChannel', () => {
+  test('valid channels', () => {
+    assertTrue(isValidUpdateChannel('default'));
+    assertTrue(isValidUpdateChannel('beta'));
+    assertTrue(isValidUpdateChannel('stable'));
+    assertTrue(isValidUpdateChannel('canary-123'));
+    assertTrue(isValidUpdateChannel('channel_🚀'));
+  });
+
+  test('invalid channels', () => {
+    assertFalse(isValidUpdateChannel(''));
+    assertFalse(isValidUpdateChannel('\uD800'));
+    assertFalse(isValidUpdateChannel('\uDFFF'));
+    assertFalse(isValidUpdateChannel('channel\uD800'));
+    assertFalse(isValidUpdateChannel('\uDC00\uD800'));
   });
 });

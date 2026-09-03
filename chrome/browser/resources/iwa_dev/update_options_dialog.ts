@@ -29,8 +29,13 @@ export function isValidIwaVersion(version: string): boolean {
       version.split('.').every(p => Number(p) <= 4294967295);
 }
 
+export function isValidUpdateChannel(channel: string): boolean {
+  return channel.length > 0 && channel.isWellFormed();
+}
+
 export interface IwaDevUpdateOptionsDialogElement {
   $: {
+    channelInput: HTMLInputElement,
     dialog: CrDialogElement,
     pinnedVersionInput: HTMLInputElement,
   };
@@ -63,6 +68,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
       versions_: {type: Array, state: true},
       selectedPinnedVersion_: {type: String, state: true},
       selectedAllowDowngrades_: {type: Boolean, state: true},
+      channelError_: {type: String, state: true},
       pinnedVersionError_: {type: String, state: true},
     };
   }
@@ -84,6 +90,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   protected accessor versions_: VersionEntry[] = [];
   protected accessor selectedPinnedVersion_: string = '';
   protected accessor selectedAllowDowngrades_: boolean = false;
+  protected accessor channelError_: string = '';
   protected accessor pinnedVersionError_: string = '';
 
   override connectedCallback() {
@@ -104,6 +111,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
 
   protected onChannelInput_(e: Event) {
     this.selectedChannel_ = (e.target as HTMLInputElement).value;
+    this.channelError_ = '';
   }
 
   protected onPinnedVersionInput_(e: Event) {
@@ -130,7 +138,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   }
 
   protected isSaveDisabled_(): boolean {
-    return !!this.pinnedVersionError_ ||
+    return !!this.channelError_ || !!this.pinnedVersionError_ ||
         (!this.hasChannelChange_() && !this.hasPinnedVersionChange_() &&
          !this.hasAllowDowngradesChange_());
   }
@@ -140,25 +148,45 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
       return;
     }
 
+    this.channelError_ = '';
     this.pinnedVersionError_ = '';
+    const channel = this.selectedChannel_.trim();
     const version = this.selectedPinnedVersion_.trim();
     const detail: UpdateOptionsSavedEventDetail = {app: this.app};
+    let hasError = false;
+
+    if (this.hasChannelChange_()) {
+      if (channel.length === 0) {
+        this.channelError_ = 'Channel cannot be empty.';
+        hasError = true;
+      } else if (!isValidUpdateChannel(channel)) {
+        this.channelError_ = 'Invalid channel format.';
+        hasError = true;
+      } else {
+        detail.selectedChannel = channel;
+      }
+    }
 
     if (this.hasPinnedVersionChange_()) {
       if (version.length > 0) {
         if (!isValidIwaVersion(version)) {
           this.pinnedVersionError_ = 'Invalid version format.';
-          this.$.pinnedVersionInput.focus();
-          return;
+          hasError = true;
+        } else {
+          detail.pinnedVersion = version;
         }
-        detail.pinnedVersion = version;
       } else {
         detail.pinnedVersion = null;
       }
     }
 
-    if (this.hasChannelChange_()) {
-      detail.selectedChannel = this.selectedChannel_.trim();
+    if (hasError) {
+      if (this.channelError_) {
+        this.$.channelInput.focus();
+      } else if (this.pinnedVersionError_) {
+        this.$.pinnedVersionInput.focus();
+      }
+      return;
     }
 
     if (this.hasAllowDowngradesChange_()) {
@@ -196,7 +224,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
 
   private hasChannelChange_(): boolean {
     const channel = this.selectedChannel_.trim();
-    return channel.length > 0 && channel !== this.getCurrentChannel_();
+    return channel !== this.getCurrentChannel_();
   }
 
   private hasPinnedVersionChange_(): boolean {
