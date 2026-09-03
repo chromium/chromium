@@ -20,7 +20,9 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
@@ -31,6 +33,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/atl.h"
+#include "base/win/pe_image.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
@@ -941,6 +944,54 @@ TEST_F(GcpSetupTest, DoInstallWritesUninstallStrings) {
   expected_uninstall_arguments.AppendSwitch(switches::kUninstall);
   EXPECT_EQ(uninstall_arguments,
             expected_uninstall_arguments.GetCommandLineString());
+}
+
+TEST_F(GcpSetupTest, SetupExeDllSecurityHardening) {
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  exe_path = exe_path.Append(kCredentialProviderSetupExe);
+
+  if (!base::PathExists(exe_path)) {
+    GTEST_SKIP() << "gcp_setup.exe not found in build directory";
+  }
+
+  base::MemoryMappedFile module_mmap;
+  ASSERT_TRUE(module_mmap.Initialize(exe_path));
+
+  base::win::PEImageAsData pe_image(
+      reinterpret_cast<HMODULE>(module_mmap.mutable_bytes().data()));
+
+  // 1. Verify DependentLoadFlags has LOAD_LIBRARY_SEARCH_SYSTEM32 (0x800).
+  const auto* load_config =
+      reinterpret_cast<const IMAGE_LOAD_CONFIG_DIRECTORY*>(
+          pe_image.GetImageDirectoryEntryAddr(
+              IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG));
+  ASSERT_NE(load_config, nullptr);
+  EXPECT_EQ(load_config->DependentLoadFlags,
+            static_cast<WORD>(LOAD_LIBRARY_SEARCH_SYSTEM32));
+
+  // 2. Verify static imports are limited to safe KnownDLLs (e.g. kernel32.dll,
+  // ntdll.dll).
+  std::vector<std::string> imports;
+  pe_image.EnumImportChunks(
+      [](const base::win::PEImage& image, LPCSTR module,
+         PIMAGE_THUNK_DATA name_table, PIMAGE_THUNK_DATA iat,
+         PVOID cookie) -> bool {
+        auto* import_list = reinterpret_cast<std::vector<std::string>*>(cookie);
+        import_list->push_back(base::ToLowerASCII(module));
+        return true;
+      },
+      &imports, nullptr);
+
+  const std::set<std::string> kAllowedStaticImports = {
+      "kernel32.dll",
+      "ntdll.dll",
+  };
+
+  for (const auto& import_name : imports) {
+    EXPECT_TRUE(kAllowedStaticImports.count(import_name) > 0)
+        << "Unexpected static import found in gcp_setup.exe: " << import_name;
+  }
 }
 
 // This test checks the expect success / failure of DLL registration when
