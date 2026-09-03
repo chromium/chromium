@@ -4,21 +4,26 @@
 
 #include "chrome/updater/tag.h"
 
+#include <array>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/updater/certificate_tag.h"
 #include "chrome/updater/pkg_tag.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/zlib.h"
 
 namespace {
 
@@ -1558,22 +1563,85 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
 }
 
 namespace {
-// Creates a mock buffer that mimics the end of a notarized Apple PKG file,
-// appending a fake notarization trailer identified by "t8lr" sentinels to
-// a copy of the provided prefix.
-std::vector<uint8_t> CreateMockPkgBuffer(base::span<const uint8_t> prefix) {
-  std::vector<uint8_t> buffer = base::ToVector(prefix);
-  buffer.append_range(std::to_array<uint8_t>({'t', '8', 'l', 'r'}));
-  buffer.insert(buffer.end(), 10, 0);  // trailer data
-  buffer.append_range(std::to_array<uint8_t>({'t', '8', 'l', 'r'}));
-  buffer.insert(buffer.end(), 12, 0);  // footer
+
+std::vector<uint8_t> ZlibCompress(base::span<const uint8_t> input) {
+  uLongf dest_len = compressBound(input.size());
+  std::vector<uint8_t> output(dest_len);
+  int zerr = compress(output.data(), &dest_len, input.data(), input.size());
+  EXPECT_EQ(zerr, Z_OK);
+  if (zerr != Z_OK) {
+    return {};
+  }
+  output.resize(dest_len);
+  return output;
+}
+
+std::vector<uint8_t> CreateXarPkgBufferWithToc(
+    std::string_view toc_xml,
+    base::span<const uint8_t> heap_data,
+    base::span<const uint8_t> tag = {},
+    bool include_trailer = true) {
+  std::vector<uint8_t> compressed_toc =
+      ZlibCompress(base::as_byte_span(toc_xml));
+  if (compressed_toc.empty()) {
+    return {};
+  }
+
+  std::vector<uint8_t> buffer;
+  buffer.append_range(
+      std::to_array<uint8_t>({'x', 'a', 'r', '!', 0, 28, 0, 1}));
+  uint64_t toc_c_len = compressed_toc.size();
+  for (int i = 7; i >= 0; --i) {
+    buffer.push_back(static_cast<uint8_t>((toc_c_len >> (i * 8)) & 0xFF));
+  }
+  uint64_t toc_u_len = toc_xml.size();
+  for (int i = 7; i >= 0; --i) {
+    buffer.push_back(static_cast<uint8_t>((toc_u_len >> (i * 8)) & 0xFF));
+  }
+  buffer.append_range(std::to_array<uint8_t>({0, 0, 0, 1}));
+
+  buffer.append_range(compressed_toc);
+  buffer.append_range(heap_data);
+  buffer.append_range(tag);
+
+  if (include_trailer) {
+    // Terminator trailer: version 1, type 1 (terminator), length 0.
+    buffer.append_range(std::to_array<uint8_t>(
+        {'t', '8', 'l', 'r', 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
+    // Ticket trailer: version 1, type 2 (ticket), length 0.
+    buffer.append_range(std::to_array<uint8_t>(
+        {'t', '8', 'l', 'r', 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
+  }
+
   return buffer;
 }
+
+std::vector<uint8_t> CreateMockXarPkgBuffer(base::span<const uint8_t> heap_data,
+                                            base::span<const uint8_t> tag = {},
+                                            bool include_trailer = true) {
+  std::string toc_xml =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<xar><toc>\n"
+      "  <checksum style=\"sha1\">\n"
+      "    <offset>0</offset>\n"
+      "    <size>" +
+      base::NumberToString(heap_data.size()) +
+      "</size>\n"
+      "  </checksum>\n"
+      "</toc></xar>";
+  return CreateXarPkgBufferWithToc(toc_xml, heap_data, tag, include_trailer);
+}
+
 }  // namespace
 
+TEST(PkgBinaryTest, InvalidXarHeader) {
+  std::vector<uint8_t> invalid_buffer = {'n', 'o', 't', 'x', 'a', 'r'};
+  EXPECT_EQ(tagging::CreatePkgBinary(invalid_buffer), nullptr);
+}
+
 TEST(PkgBinaryTest, NoTagFound) {
-  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
-  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix);
+  std::vector<uint8_t> heap = {'a', 'b', 'c', 'd'};
+  std::vector<uint8_t> buffer = CreateMockXarPkgBuffer(heap);
 
   std::unique_ptr<tagging::BinaryInterface> bin =
       tagging::CreatePkgBinary(buffer);
@@ -1584,22 +1652,13 @@ TEST(PkgBinaryTest, NoTagFound) {
   std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(tag);
   ASSERT_TRUE(updated_buffer.has_value());
 
-  // Expected structure: prefix + tag + trailer
-  std::vector<uint8_t> expected = prefix;
-  expected.append_range(tag);
-  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
-  expected.append_range(trailer);
-
-  EXPECT_EQ(*updated_buffer, expected);
+  EXPECT_EQ(*updated_buffer, CreateMockXarPkgBuffer(heap, tag));
 }
 
 TEST(PkgBinaryTest, ValidTagOverwrites) {
-  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> heap = {'a', 'b', 'c', 'd'};
   std::vector<uint8_t> old_tag = tagging::GetTagFromTagString("brand=QAQA");
-  std::vector<uint8_t> prefix_with_tag = prefix;
-  prefix_with_tag.append_range(old_tag);
-
-  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+  std::vector<uint8_t> buffer = CreateMockXarPkgBuffer(heap, old_tag);
 
   std::unique_ptr<tagging::BinaryInterface> bin =
       tagging::CreatePkgBinary(buffer);
@@ -1610,22 +1669,13 @@ TEST(PkgBinaryTest, ValidTagOverwrites) {
   std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
   ASSERT_TRUE(updated_buffer.has_value());
 
-  // Expected structure: prefix + new_tag + trailer
-  std::vector<uint8_t> expected = prefix;
-  expected.append_range(new_tag);
-  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
-  expected.append_range(trailer);
-
-  EXPECT_EQ(*updated_buffer, expected);
+  EXPECT_EQ(*updated_buffer, CreateMockXarPkgBuffer(heap, new_tag));
 }
 
 TEST(PkgBinaryTest, ValidEmptyTagOverwrites) {
-  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> heap = {'a', 'b', 'c', 'd'};
   std::vector<uint8_t> empty_tag = tagging::GetTagFromTagString("");
-  std::vector<uint8_t> prefix_with_tag = prefix;
-  prefix_with_tag.append_range(empty_tag);
-
-  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+  std::vector<uint8_t> buffer = CreateMockXarPkgBuffer(heap, empty_tag);
 
   std::unique_ptr<tagging::BinaryInterface> bin =
       tagging::CreatePkgBinary(buffer);
@@ -1636,56 +1686,33 @@ TEST(PkgBinaryTest, ValidEmptyTagOverwrites) {
   std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
   ASSERT_TRUE(updated_buffer.has_value());
 
-  // Expected structure: prefix + new_tag + trailer
-  std::vector<uint8_t> expected = prefix;
-  expected.append_range(new_tag);
-  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
-  expected.append_range(trailer);
-
-  EXPECT_EQ(*updated_buffer, expected);
+  EXPECT_EQ(*updated_buffer, CreateMockXarPkgBuffer(heap, new_tag));
 }
 
 TEST(PkgBinaryTest, InvalidTagOverwrites) {
-  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
-  // Create an invalid tag: magic + length 5, but only 2 bytes follow.
+  std::vector<uint8_t> heap = {'a', 'b', 'c', 'd'};
   std::vector<uint8_t> invalid_tag = base::ToVector(tagging::kTagMagicUtf8);
-  invalid_tag.push_back(0);
-  invalid_tag.push_back(5);  // length 5
-  invalid_tag.push_back('x');
-  invalid_tag.push_back('y');
+  invalid_tag.append_range(std::to_array<uint8_t>({0, 5, 'x', 'y'}));
 
-  std::vector<uint8_t> prefix_with_tag = prefix;
-  prefix_with_tag.append_range(invalid_tag);
-
-  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+  std::vector<uint8_t> buffer = CreateMockXarPkgBuffer(heap, invalid_tag);
 
   std::unique_ptr<tagging::BinaryInterface> bin =
       tagging::CreatePkgBinary(buffer);
   ASSERT_TRUE(bin);
-  EXPECT_EQ(bin->tag(), std::nullopt);  // Invalid tag returns nullopt
+  EXPECT_EQ(bin->tag(), std::nullopt);
 
   std::vector<uint8_t> new_tag = tagging::GetTagFromTagString("brand=QAQA");
   std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
   ASSERT_TRUE(updated_buffer.has_value());
 
-  // Expected structure: prefix + new_tag + trailer
-  // The invalid tag should have been completely replaced.
-  std::vector<uint8_t> expected = prefix;
-  expected.append_range(new_tag);
-  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
-  expected.append_range(trailer);
-
-  EXPECT_EQ(*updated_buffer, expected);
+  EXPECT_EQ(*updated_buffer, CreateMockXarPkgBuffer(heap, new_tag));
 }
 
 TEST(PkgBinaryTest, ValidTagOverwritesShorterZeroOut) {
-  std::vector<uint8_t> prefix = {'a', 'b', 'c'};
+  std::vector<uint8_t> heap = {'a', 'b', 'c', 'd'};
   std::vector<uint8_t> old_tag =
       tagging::GetTagFromTagString("brand=LONGTAGDATA12345");
-  std::vector<uint8_t> prefix_with_tag = prefix;
-  prefix_with_tag.append_range(old_tag);
-
-  std::vector<uint8_t> buffer = CreateMockPkgBuffer(prefix_with_tag);
+  std::vector<uint8_t> buffer = CreateMockXarPkgBuffer(heap, old_tag);
 
   std::unique_ptr<tagging::BinaryInterface> bin =
       tagging::CreatePkgBinary(buffer);
@@ -1696,14 +1723,224 @@ TEST(PkgBinaryTest, ValidTagOverwritesShorterZeroOut) {
   std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
   ASSERT_TRUE(updated_buffer.has_value());
 
-  // Expected structure: prefix + new_tag + zeroes + trailer
-  std::vector<uint8_t> expected = prefix;
-  expected.append_range(new_tag);
-  expected.insert(expected.end(), old_tag.size() - new_tag.size(), 0);
-  std::vector<uint8_t> trailer = CreateMockPkgBuffer({});
-  expected.append_range(trailer);
+  std::vector<uint8_t> expected_tag = new_tag;
+  expected_tag.insert(expected_tag.end(), old_tag.size() - new_tag.size(), 0);
+  EXPECT_EQ(*updated_buffer, CreateMockXarPkgBuffer(heap, expected_tag));
+}
 
-  EXPECT_EQ(*updated_buffer, expected);
+TEST(PkgBinaryTest, UnstapledPkgTagging) {
+  std::vector<uint8_t> heap = {'1', '2', '3'};
+  std::vector<uint8_t> buffer =
+      CreateMockXarPkgBuffer(heap, /*tag=*/{}, /*include_trailer=*/false);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), std::nullopt);
+
+  std::vector<uint8_t> tag = tagging::GetTagFromTagString("brand=UNSTAPLED");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  EXPECT_EQ(*updated_buffer,
+            CreateMockXarPkgBuffer(heap, tag, /*include_trailer=*/false));
+}
+
+TEST(PkgBinaryTest, TagContainingTrailerMagic) {
+  std::vector<uint8_t> heap = {'1', '2', '3', '4'};
+  std::vector<uint8_t> tag =
+      tagging::GetTagFromTagString("brand=t8lr_test_brand");
+  std::vector<uint8_t> buffer = CreateMockXarPkgBuffer(heap, tag);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), tag);
+
+  std::vector<uint8_t> new_tag =
+      tagging::GetTagFromTagString("brand=t8lr_new_brand");
+  std::optional<std::vector<uint8_t>> updated_buffer = bin->SetTag(new_tag);
+  ASSERT_TRUE(updated_buffer.has_value());
+
+  std::vector<uint8_t> expected_tag = new_tag;
+  expected_tag.insert(expected_tag.end(), tag.size() - new_tag.size(), 0);
+  EXPECT_EQ(*updated_buffer, CreateMockXarPkgBuffer(heap, expected_tag));
+}
+
+TEST(PkgBinaryTest, XmlSelfClosingAndPrefixTags) {
+  std::vector<uint8_t> heap = {'h', 'e', 'a', 'p'};
+  std::string toc_xml =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<xar><toc>\n"
+      "  <database name=\"test\"><entry>value</entry></database>\n"
+      "  <file id=\"1\">\n"
+      "    <data/>\n"
+      "    <data>\n"
+      "      <offset>0</offset>\n"
+      "      <length>4</length>\n"
+      "      <size>4</size>\n"
+      "    </data>\n"
+      "  </file>\n"
+      "</toc></xar>";
+
+  std::vector<uint8_t> tag = tagging::GetTagFromTagString("brand=ROBUST");
+  std::vector<uint8_t> buffer =
+      CreateXarPkgBufferWithToc(toc_xml, heap, tag, /*include_trailer=*/false);
+
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      tagging::CreatePkgBinary(buffer);
+  ASSERT_TRUE(bin);
+  EXPECT_EQ(bin->tag(), tag);
+}
+
+TEST(PkgBinaryTest, MissingHeapDescriptorNodesFail) {
+  std::vector<uint8_t> heap = {'h', 'e', 'a', 'p'};
+  std::vector<uint8_t> tag = tagging::GetTagFromTagString("brand=FAIL");
+
+  // <data> missing <offset>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <length>4</length>\n"
+        "      <size>4</size>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <data> missing <length>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <offset>0</offset>\n"
+        "      <size>4</size>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <data> missing <size>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <offset>0</offset>\n"
+        "      <length>4</length>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <checksum> missing <offset>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <checksum style=\"sha1\">\n"
+        "    <size>4</size>\n"
+        "  </checksum>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <checksum> missing <size>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <checksum style=\"sha1\">\n"
+        "    <offset>0</offset>\n"
+        "  </checksum>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <data> with duplicate <offset>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <offset>0</offset>\n"
+        "      <offset>0</offset>\n"
+        "      <length>4</length>\n"
+        "      <size>4</size>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <data> with duplicate <size>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <offset>0</offset>\n"
+        "      <length>4</length>\n"
+        "      <size>4</size>\n"
+        "      <size>4</size>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <data> with duplicate <length>
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <offset>0</offset>\n"
+        "      <length>4</length>\n"
+        "      <length>4</length>\n"
+        "      <size>4</size>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
+
+  // <data> with sub-element inside descriptor tag
+  {
+    std::string toc_xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<xar><toc>\n"
+        "  <file id=\"1\">\n"
+        "    <data>\n"
+        "      <offset>0<nested>1</nested></offset>\n"
+        "      <length>4</length>\n"
+        "      <size>4</size>\n"
+        "    </data>\n"
+        "  </file>\n"
+        "</toc></xar>";
+    std::vector<uint8_t> buffer = CreateXarPkgBufferWithToc(toc_xml, heap, tag);
+    EXPECT_EQ(tagging::CreatePkgBinary(buffer), nullptr);
+  }
 }
 
 }  // namespace updater

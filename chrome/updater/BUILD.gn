@@ -75,6 +75,7 @@ if (is_win || is_mac || is_linux) {
     ]
     outputs = [ _trimmed_license_path ]
   }
+
   action("generate_updater_license") {
     script = "//tools/licenses/licenses.py"
     _license_path = "$target_gen_dir/UNTRIMMED_LICENSE.$updater_product_full_name_dashed_lowercase"
@@ -594,6 +595,8 @@ if (is_win || is_mac || is_linux) {
     deps = [
       "//base",
       "//crypto",
+      "//services/data_decoder/public/cpp",
+      "//third_party/zlib",
     ]
   }
 
@@ -820,6 +823,7 @@ if (is_win || is_mac || is_linux) {
       _enterprise_companion_app_name =
           "${enterprise_companion_product_full_name}.app"
       _source_bundle_path = "$root_build_dir/EnterpriseCompanionTestApp/${_enterprise_companion_app_name}"
+
       copy("enterprise_companion_test_crx_exe") {
         sources = [ "${_source_bundle_path}/Contents/MacOS/${enterprise_companion_product_full_name}" ]
         outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/MacOS/{{source_file_part}}" ]
@@ -827,6 +831,7 @@ if (is_win || is_mac || is_linux) {
           "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
         ]
       }
+
       copy("enterprise_companion_test_crx_pkginfo") {
         sources = [ "${_source_bundle_path}/Contents/PkgInfo" ]
         outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
@@ -834,6 +839,7 @@ if (is_win || is_mac || is_linux) {
           "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
         ]
       }
+
       copy("enterprise_companion_test_crx_plist") {
         sources = [ "${_source_bundle_path}/Contents/Info.plist" ]
         outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
