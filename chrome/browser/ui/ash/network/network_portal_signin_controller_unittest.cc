@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/account_id/account_id.h"
@@ -111,9 +112,6 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   ~NetworkPortalSigninControllerTest() override = default;
 
   void SetUp() override {
-    // AshTestHelper is needed to call webui in one of the tests.
-    ash::AshTestHelper::InitParams params;
-    ash_test_helper_.SetUp(std::move(params));
     network_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     controller_ = std::make_unique<TestSigninController>(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
@@ -121,6 +119,10 @@ class NetworkPortalSigninControllerTest : public testing::Test {
     CHECK(test_profile_manager_.SetUp());
     user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();
+
+    // AshTestHelper is needed to call webui in one of the tests.
+    ash::AshTestHelper::InitParams params;
+    ash_test_helper_.SetUp(std::move(params));
     task_environment_.RunUntilIdle();
 
     // Initialize ProfileHelper.
@@ -140,11 +142,13 @@ class NetworkPortalSigninControllerTest : public testing::Test {
 
   void TearDown() override {
     controller_.reset();
+    ProfileHelper::Get()->ClearUserToProfileMappingForTesting();
     test_profile_manager_.DeleteAllTestingProfiles();
+    ash_test_helper_.TearDown();
     user_manager_->Shutdown();
     user_manager_->Destroy();
-    ash_test_helper_.TearDown();
     user_manager_.reset();
+    ash::network_config::OverrideInProcessInstanceForTesting(nullptr);
     network_helper_.reset();
   }
 

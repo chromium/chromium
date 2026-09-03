@@ -35,9 +35,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager_delegate.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -81,11 +78,6 @@ class BluetoothFeaturePodControllerTest
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        local_state()));
-    session_manager::SessionManager::Get()->OnUserManagerCreated(
-        user_manager_.Get());
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
 
@@ -103,7 +95,6 @@ class BluetoothFeaturePodControllerTest
     scoped_feature_list_.reset();
 
     AshTestBase::TearDown();
-    user_manager_.Reset();
   }
 
   DeviceBatteryInfoPtr CreateDefaultBatteryInfo() {
@@ -255,8 +246,6 @@ class BluetoothFeaturePodControllerTest
   ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
     return ash_test_helper()->bluetooth_config_test_helper();
   }
-
-  user_manager::ScopedUserManager user_manager_;
 
   std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
   std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;
