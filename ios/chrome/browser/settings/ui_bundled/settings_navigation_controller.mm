@@ -48,6 +48,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
@@ -109,6 +111,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     ManageSyncSettingsCoordinatorDelegate,
     NotificationsCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
+    PasswordSettingsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
     PrivacyCoordinatorDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
@@ -200,6 +203,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   BOOL _dismissalUserActionReported;
   // Autofill and Passwords coordinator.
   AutofillAndPasswordsCoordinator* _autofillAndPasswordsCoordinator;
+  // Coordinator for the Password Settings page.
+  PasswordSettingsCoordinator* _passwordSettingsCoordinator;
   // Coordinator for the Identity Docs settings page.
   IdentityDocsCoordinator* _identityDocsCoordinator;
   // Coordinator for the Shopping settings page.
@@ -848,6 +853,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
   [self stopAutofillAndPasswordsCoordinator];
+  [self stopPasswordSettingsCoordinator];
   [self stopSafetyCheckCoordinator];
   [self stopPrivacySafeBrowsingCoordinator];
   [self stopPrivacySettingsCoordinator];
@@ -1077,6 +1083,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.savedPasswordsCoordinator start];
 }
 
+// Shows the Password Settings.
+- (void)showPasswordSettings {
+  [self stopPasswordSettingsCoordinator];
+  _passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
+      initWithBaseViewController:self
+                         browser:self.browser];
+  _passwordSettingsCoordinator.delegate = self;
+  [_passwordSettingsCoordinator start];
+}
+
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
                               inEditMode:(BOOL)editMode {
@@ -1105,6 +1121,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [_autofillAndPasswordsCoordinator stop];
   _autofillAndPasswordsCoordinator.delegate = nil;
   _autofillAndPasswordsCoordinator = nil;
+}
+
+// Stops the underlying Password Settings coordinator if it exists.
+- (void)stopPasswordSettingsCoordinator {
+  [_passwordSettingsCoordinator stop];
+  _passwordSettingsCoordinator.delegate = nil;
+  _passwordSettingsCoordinator = nil;
 }
 
 - (void)stopIdentityDocsCoordinator {
@@ -1217,6 +1240,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   DCHECK_EQ(self.savedPasswordsCoordinator, coordinator);
   [self stopPasswordsCoordinator];
+}
+
+#pragma mark - PasswordSettingsCoordinatorDelegate
+
+- (void)passwordSettingsCoordinatorDidRemove:
+    (PasswordSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_passwordSettingsCoordinator, coordinator);
+  [self stopPasswordSettingsCoordinator];
 }
 
 #pragma mark - AutofillAndPasswordsCoordinatorDelegate
@@ -1488,6 +1519,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                          (BOOL)shouldShowLevelUpWalkthroughIPH {
   [self showSavedPasswordsWithLevelUpWalkthroughIPH:
             shouldShowLevelUpWalkthroughIPH];
+}
+
+- (void)showPasswordSettingsFromViewController:
+    (UIViewController*)baseViewController {
+  [self showPasswordSettings];
 }
 
 - (void)showAutofillAndPasswordsSettingsWithReferrer:

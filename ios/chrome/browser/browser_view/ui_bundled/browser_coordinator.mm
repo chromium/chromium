@@ -172,8 +172,6 @@
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/coordinator/quick_delete_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -317,7 +315,6 @@
     NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
-    PasswordSettingsCoordinatorDelegate,
     PrerenderBrowserAgentDelegate,
     PromosManagerCommands,
     QuickDeleteCommands,
@@ -408,10 +405,6 @@
 
 // Coordinator for new tab pages.
 @property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
-
-// Coordinator for the password settings UI presentation.
-@property(nonatomic, strong)
-    PasswordSettingsCoordinator* passwordSettingsCoordinator;
 
 // Coordinator for the popup menu.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
@@ -869,13 +862,6 @@
   self.recentTabsCoordinator = nil;
 }
 
-// Stops the coordinator for password manager settings.
-- (void)stopPasswordSettingsCoordinator {
-  [self.passwordSettingsCoordinator stop];
-  self.passwordSettingsCoordinator.delegate = nil;
-  self.passwordSettingsCoordinator = nil;
-}
-
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
   if (!self.profile || !self.started) {
     return;
@@ -1318,8 +1304,6 @@
 
   /* NetExportCoordinator is created and started by a delegate method */
 
-  /* passwordSettingsCoordinator is created and started by a delegate method */
-
   /* paymentsScanCoordinator is created and started by a BrowserCommand */
 
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
@@ -1429,10 +1413,6 @@
 
   [self.netExportCoordinator stop];
   self.netExportCoordinator = nil;
-
-  [self.passwordSettingsCoordinator stop];
-  self.passwordSettingsCoordinator.delegate = nil;
-  self.passwordSettingsCoordinator = nil;
 
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
@@ -2084,10 +2064,6 @@
 
   [self hideReaderModeBlurOverlay];
 
-  [self.passwordSettingsCoordinator stop];
-  self.passwordSettingsCoordinator.delegate = nil;
-  self.passwordSettingsCoordinator = nil;
-
   [self stopRepostFormCoordinator];
 
   [_formInputAccessoryCoordinator clearPresentedState];
@@ -2441,21 +2417,10 @@
       [HandlerForProtocol(self.dispatcher, SettingsCommands)
           showSavedPasswordsSettingsFromViewController:self.viewController];
       break;
-    case AutofillSettingsPage::kPasswordSettings: {
-      // Not an invariant due to possible race conditions. DCHECKing for
-      // debugging purposes. See crbug.com/40067451.
-      DCHECK(!self.passwordSettingsCoordinator);
-
-      // Use main browser to open the password settings.
-      SceneState* sceneState = self.sceneState;
-      self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:sceneState.browserProviderInterface
-                                         .mainBrowserProvider.browser];
-      self.passwordSettingsCoordinator.delegate = self;
-      [self.passwordSettingsCoordinator start];
+    case AutofillSettingsPage::kPasswordSettings:
+      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+          showPasswordSettingsFromViewController:self.viewController];
       break;
-    }
     case AutofillSettingsPage::kAddresses:
       [HandlerForProtocol(self.dispatcher, SettingsCommands)
           showProfileSettingsFromViewController:self.viewController];
@@ -3143,21 +3108,6 @@
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
   [_NTPCoordinator reload];
-}
-
-#pragma mark - PasswordSettingsCoordinatorDelegate
-
-- (void)passwordSettingsCoordinatorDidRemove:
-    (PasswordSettingsCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordSettingsCoordinator, coordinator);
-
-  [self stopPasswordSettingsCoordinator];
-}
-
-#pragma mark - PasswordManagerReauthenticationDelegate
-
-- (void)dismissPasswordManagerAfterFailedReauthentication {
-  [self stopPasswordSettingsCoordinator];
 }
 
 #pragma mark - ReadingListCoordinatorDelegate

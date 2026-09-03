@@ -81,6 +81,8 @@
 #import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -197,6 +199,7 @@ inline LayoutStateScenePassKey PassKey() {
                                 IncognitoInterstitialCoordinatorDelegate,
                                 ManagedProfileCreationCoordinatorDelegate,
                                 PasswordCheckupCoordinatorDelegate,
+                                PasswordSettingsCoordinatorDelegate,
                                 PolicyWatcherBrowserAgentObserving,
                                 SafariDataImportMainCoordinatorDelegate,
                                 SceneViewControllerDelegate,
@@ -238,6 +241,8 @@ inline LayoutStateScenePassKey PassKey() {
   GeminiEntryFlowCoordinator* _geminiEntryFlowCoordinator;
   // Coordinator for display of the Password Checkup.
   PasswordCheckupCoordinator* _passwordCheckupCoordinator;
+  // Coordinator for display of Password Settings.
+  PasswordSettingsCoordinator* _passwordSettingsCoordinator;
   // Coordinator for displaying history.
   HistoryCoordinator* _historyCoordinator;
   // Coordinator for the Youtube Incognito interstitial.
@@ -1436,6 +1441,16 @@ inline LayoutStateScenePassKey PassKey() {
   }];
 }
 
+// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
+- (void)showPasswordSettingsFromViewController:
+    (UIViewController*)baseViewController {
+  __weak SceneCoordinator* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showPasswordSettingsAfterModalDismissFromViewController:
+                  baseViewController];
+  }];
+}
+
 - (void)showAutofillAndPasswordsSettingsWithReferrer:
     (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
   __weak SceneCoordinator* weakSelf = self;
@@ -1860,6 +1875,14 @@ inline LayoutStateScenePassKey PassKey() {
   [self stopPasswordCheckupCoordinator];
 }
 
+#pragma mark - PasswordSettingsCoordinatorDelegate
+
+- (void)passwordSettingsCoordinatorDidRemove:
+    (PasswordSettingsCoordinator*)coordinator {
+  CHECK_EQ(_passwordSettingsCoordinator, coordinator);
+  [self stopPasswordSettingsCoordinator];
+}
+
 #pragma mark - HistoryCoordinatorDelegate
 
 - (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
@@ -2123,6 +2146,30 @@ inline LayoutStateScenePassKey PassKey() {
                                  completion:nil];
 }
 
+// Shows the Password Settings in the settings UI.
+- (void)showPasswordSettingsAfterModalDismissFromViewController:
+    (UIViewController*)baseViewController {
+  if (!baseViewController) {
+    // TODO(crbug.com/41352590): Don't pass base view controller through
+    // dispatched command.
+    baseViewController = self.activeViewController;
+  }
+  DCHECK(!self.isSigninInProgress);
+
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
+        showPasswordSettingsFromViewController:baseViewController];
+    return;
+  }
+
+  [self stopPasswordSettingsCoordinator];
+  _passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:_regularBrowser.get()];
+  _passwordSettingsCoordinator.delegate = self;
+  [_passwordSettingsCoordinator start];
+}
+
 // Shows the Autofill and Passwords settings in the settings UI.
 - (void)showAutofillAndPasswordsSettingsAfterModalDismissWithReferrer:
     (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
@@ -2379,6 +2426,13 @@ inline LayoutStateScenePassKey PassKey() {
   _passwordCheckupCoordinator = nil;
 }
 
+// Stops the PasswordSettingsCoordinator.
+- (void)stopPasswordSettingsCoordinator {
+  [_passwordSettingsCoordinator stop];
+  _passwordSettingsCoordinator.delegate = nil;
+  _passwordSettingsCoordinator = nil;
+}
+
 // Creates the settings navigation controller for the safety check if it doesn't
 // exist.
 - (void)createSafetyCheckSettingsWithReferrer:
@@ -2523,6 +2577,9 @@ inline LayoutStateScenePassKey PassKey() {
 
   // If the Safari data import workflow is active, stop it.
   [self stopSafariDataImportCoordinator];
+
+  // Stop the password settings.
+  [self stopPasswordSettingsCoordinator];
 
   // If the guided tour is active, stop it.
   FirstRunProfileAgent* firstRunAgent =

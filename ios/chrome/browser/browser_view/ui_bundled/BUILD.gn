@@ -270,7 +270,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/settings/clear_browsing_data/coordinator",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/ui_bundled/autofill",
-    "//ios/chrome/browser/settings/ui_bundled/password/password_settings",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",

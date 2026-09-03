@@ -186,6 +186,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/settings/ui_bundled/password",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_ui",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_settings",
     "//ios/chrome/browser/settings/ui_bundled/password/resources",
     "//ios/chrome/browser/settings/ui_bundled/privacy",
     "//ios/chrome/browser/settings/ui_bundled/privacy:ui",
