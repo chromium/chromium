@@ -96,7 +96,7 @@ class MockWalletReminderNoticeManager : public WalletReminderNoticeManager {
       : WalletReminderNoticeManager(client) {}
   ~MockWalletReminderNoticeManager() override = default;
 
-  MOCK_METHOD(void, ShowWalletReminderNotice, (), (override));
+  MOCK_METHOD(void, ShowWalletReminderNotice, (FlowType), (override));
 };
 
 class PaymentsFormDataImporterTest
@@ -1948,7 +1948,9 @@ TEST_F(
 
   EXPECT_CALL(reauth_manager(), ShouldOfferOptin).WillOnce(Return(false));
   EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(0);
-  EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
+  EXPECT_CALL(wallet_reminder_notice_manager(),
+              ShowWalletReminderNotice(
+                  WalletReminderNoticeManager::FlowType::kChromeDownstream))
       .Times(1);
 
   EXPECT_FALSE(
@@ -1999,7 +2001,9 @@ TEST_F(PaymentsFormDataImporterTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
+  EXPECT_CALL(wallet_reminder_notice_manager(),
+              ShowWalletReminderNotice(
+                  WalletReminderNoticeManager::FlowType::kChromeDownstream))
       .Times(1);
 
   EXPECT_FALSE(
@@ -2124,7 +2128,9 @@ TEST_F(PaymentsFormDataImporterTest,
 
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
       .WillOnce(Return(false));
-  EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
+  EXPECT_CALL(wallet_reminder_notice_manager(),
+              ShowWalletReminderNotice(
+                  WalletReminderNoticeManager::FlowType::kChromeDownstream))
       .Times(1);
 
   EXPECT_FALSE(

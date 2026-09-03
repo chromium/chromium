@@ -10,6 +10,8 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
@@ -19,10 +21,29 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
 namespace autofill::payments {
+
+namespace {
+
+int GetBillableServiceNumber(
+    RecordLegalReminderAcknowledgmentRequestDetails::FlowType flow_type) {
+  switch (flow_type) {
+    case RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
+        kWalletPass:
+      return kWalletPassBillableServiceNumber;
+    case RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
+        kChromeDownstream:
+      return kUnmaskPaymentMethodBillableServiceNumber;
+    case RecordLegalReminderAcknowledgmentRequestDetails::FlowType::kUnknown:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 WalletReminderNoticeManager::WalletReminderNoticeManager(AutofillClient* client)
     : client_(*client) {}
@@ -49,22 +70,48 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
   return true;
 }
 
-void WalletReminderNoticeManager::ShowWalletReminderNotice() {
+bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
+    const EntityInstance& entity_instance) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableWalletReminderNoticePublicPass)) {
+    return false;
+  }
+  // The notice applies to any entity that is a public pass upstreamed to
+  // wallet (e.g., Vehicles) and is not read-only. Note: The entity's
+  // `record_type` is determined based on Wallet sync permissions, so checking
+  // for `kPublic` here safely encapsulates both the type and permission checks.
+  if (GetWalletPassType(entity_instance.type(),
+                        entity_instance.record_type()) !=
+          EntityInstance::WalletPassType::kPublic ||
+      entity_instance.are_attributes_read_only()) {
+    return false;
+  }
+  if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {
+    autofill_metrics::LogWalletReminderNoticeShowResult(
+        autofill_metrics::WalletReminderNoticeShowResult::
+            kNotShownAlreadyAcknowledgedAccordingToPref);
+    return false;
+  }
+  return true;
+}
+
+void WalletReminderNoticeManager::ShowWalletReminderNotice(FlowType flow_type) {
   GetWalletReminderNoticeRequestDetails request_details;
   request_details.app_locale = client_->GetAppLocale();
   request_details.billing_customer_number = GetBillingCustomerId(
       GetPaymentsAutofillClient().GetPaymentsDataManager());
-  request_details.billable_service_number =
-      kUnmaskPaymentMethodBillableServiceNumber;
+  request_details.billable_service_number = GetBillableServiceNumber(flow_type);
 
   GetPaymentsNetworkInterface().GetWalletReminderNotice(
       request_details,
       base::BindOnce(
           &WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), flow_type));
 }
 
 void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
+    FlowType flow_type,
     PaymentsAutofillClient::PaymentsRpcResult result,
     const GetWalletReminderNoticeResponseDetails& response_details) {
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
@@ -93,11 +140,9 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
   request_details.app_locale = client_->GetAppLocale();
   request_details.billing_customer_number = GetBillingCustomerId(
       GetPaymentsAutofillClient().GetPaymentsDataManager());
-  request_details.billable_service_number =
-      kUnmaskPaymentMethodBillableServiceNumber;
+  request_details.billable_service_number = GetBillableServiceNumber(flow_type);
   request_details.legal_message_token = response_details.acknowledgement_token;
-  request_details.flow_type = RecordLegalReminderAcknowledgmentRequestDetails::
-      FlowType::kChromeDownstream;
+  request_details.flow_type = flow_type;
 
   GetPaymentsNetworkInterface().RecordLegalReminderAcknowledgment(
       request_details,

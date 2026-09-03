@@ -347,7 +347,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
       }
       return true;
     } else if (is_wallet_reminder_notice_eligible) {
-      wallet_reminder_notice_manager->ShowWalletReminderNotice();
+      wallet_reminder_notice_manager->ShowWalletReminderNotice(
+          WalletReminderNoticeManager::FlowType::kChromeDownstream);
     }
     return false;
   }
@@ -358,7 +359,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     // The Wallet reminder notice can still be applicable even for Google
     // domains.
     if (is_wallet_reminder_notice_eligible) {
-      wallet_reminder_notice_manager->ShowWalletReminderNotice();
+      wallet_reminder_notice_manager->ShowWalletReminderNotice(
+          WalletReminderNoticeManager::FlowType::kChromeDownstream);
     }
     return false;
   }
@@ -415,7 +417,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
 
   // Try to show the Wallet reminder notice as the last step.
   if (is_wallet_reminder_notice_eligible) {
-    wallet_reminder_notice_manager->ShowWalletReminderNotice();
+    wallet_reminder_notice_manager->ShowWalletReminderNotice(
+        WalletReminderNoticeManager::FlowType::kChromeDownstream);
   }
 
   return false;

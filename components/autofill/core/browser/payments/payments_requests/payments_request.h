@@ -29,6 +29,9 @@ namespace autofill::payments {
 inline constexpr int kUnmaskPaymentMethodBillableServiceNumber = 70154;
 inline constexpr int kUploadPaymentMethodBillableServiceNumber = 70073;
 inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
+// TODO(crbug.com/556547813): Replace the temporary placeholder when a
+// dedicated Billable Service Number is assigned for Wallet Passes.
+inline constexpr int kWalletPassBillableServiceNumber = -1;
 
 // Shared class for the various Payments request types.
 class PaymentsRequest {
