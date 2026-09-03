@@ -111,6 +111,19 @@ if (!window.internals) {
     assert_false(lookup('view'));
   }, 'crbug.com/553136688: Test that suggested values in a listbox select are not found by search');
 
+  test(() => {
+    // Verify that options with visibility:hidden are not found in a listbox select.
+    listbox.innerHTML = '<option value="value">option-text</option><option value="">preview</option>';
+    assert_false(lookup('option-text'));
+    assert_false(lookup('option'));
+    assert_false(lookup('preview'));
+
+    // Verify that 'preview' is not found if set as a suggested value even with an empty value.
+    internals.setSuggestedValue(listbox, '');
+    assert_false(lookup('preview'));
+    assert_false(lookup('view'));
+  }, 'crbug.com/556224075: Test that suggested values with an empty value in a listbox select are not found by search');
+
 }
 
 </script>

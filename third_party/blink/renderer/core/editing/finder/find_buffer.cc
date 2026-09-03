@@ -78,8 +78,8 @@ bool FindBuffer::ShouldIgnoreContents(const Node& node) {
     return true;
   }
   if (RuntimeEnabledFeatures::FindIgnoreSuggestionFixEnabled()) {
-    if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
-      if (!select->SuggestedValue().empty()) {
+    if (const auto* control = DynamicTo<HTMLFormControlElement>(element)) {
+      if (control->IsPreviewed()) {
         return true;
       }
     }
