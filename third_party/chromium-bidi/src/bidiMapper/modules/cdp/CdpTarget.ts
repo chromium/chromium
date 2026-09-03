@@ -650,7 +650,8 @@ export class CdpTarget {
       config.viewport !== undefined ||
       config.devicePixelRatio !== undefined ||
       config.screenOrientation !== undefined ||
-      config.screenArea !== undefined
+      config.screenArea !== undefined ||
+      config.scrollbarType !== undefined
     ) {
       promises.push(
         this.setDeviceMetricsOverride(

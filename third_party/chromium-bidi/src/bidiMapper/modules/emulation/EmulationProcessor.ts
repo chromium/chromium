@@ -279,6 +279,7 @@ export class EmulationProcessor {
     const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
       params.contexts,
       params.userContexts,
+      true,
     );
 
     for (const browsingContextId of params.contexts ?? []) {
@@ -291,6 +292,12 @@ export class EmulationProcessor {
     }
     for (const userContextId of params.userContexts ?? []) {
       this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        scrollbarType: params.scrollbarType,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
         scrollbarType: params.scrollbarType,
       });
     }

@@ -48,12 +48,16 @@ async def get_scrollbar_width(websocket, context_id):
     return _get_scrollbar_width
 
 
-@pytest.mark.asyncio
-async def test_scrollbar_type_overlay(websocket, context_id, get_scrollbar_width):
-    # 1. Measure initial scrollbar width.
-    initial_width = await get_scrollbar_width(context_id)
+@pytest_asyncio.fixture
+async def initial_scrollbar_width(context_id, get_scrollbar_width):
+    return await get_scrollbar_width(context_id)
 
-    # 2. Set scrollbar type to 'overlay'.
+
+@pytest.mark.asyncio
+async def test_scrollbar_type_per_browsing_context(
+    websocket, context_id, get_scrollbar_width, initial_scrollbar_width
+):
+    # 1. Set scrollbar type to 'overlay'.
     await execute_command(
         websocket,
         {
@@ -62,13 +66,10 @@ async def test_scrollbar_type_overlay(websocket, context_id, get_scrollbar_width
         },
     )
 
-    # 3. Verify scrollbar width becomes 0.
-    overlay_width = await get_scrollbar_width(context_id)
-    assert overlay_width == 0, (
-        f"Expected overlay scrollbar width to be 0, got {overlay_width}"
-    )
+    # 2. Verify scrollbar width becomes 0.
+    assert await get_scrollbar_width(context_id) == 0
 
-    # 4. Set scrollbar type to `classic`.
+    # 3. Set scrollbar type to `classic`.
     await execute_command(
         websocket,
         {
@@ -77,14 +78,11 @@ async def test_scrollbar_type_overlay(websocket, context_id, get_scrollbar_width
         },
     )
 
-    # 5. Verify scrollbar width matches initial (if the system default is overlay, then
+    # 4. Verify scrollbar width matches initial (if the system default is overlay, then
     # `classic` does not have effect).
-    default_width = await get_scrollbar_width(context_id)
-    assert default_width == initial_width, (
-        f"Expected default scrollbar width to be {initial_width}, got {default_width}"
-    )
+    assert await get_scrollbar_width(context_id) == initial_scrollbar_width
 
-    # 6. Reset override (null).
+    # 5. Reset override (null).
     await execute_command(
         websocket,
         {
@@ -93,7 +91,81 @@ async def test_scrollbar_type_overlay(websocket, context_id, get_scrollbar_width
         },
     )
 
-    default_width = await get_scrollbar_width(context_id)
-    assert default_width == initial_width, (
-        f"Expected scrollbar width to revert to {initial_width}, got {default_width}"
+    assert await get_scrollbar_width(context_id) == initial_scrollbar_width
+
+
+@pytest.mark.asyncio
+async def test_scrollbar_type_per_user_context(
+    websocket,
+    user_context_id,
+    create_context,
+    get_scrollbar_width,
+    initial_scrollbar_width,
+):
+    # Set scrollbar type to overlay for the user context.
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setScrollbarTypeOverride",
+            "params": {
+                "userContexts": [user_context_id],
+                "scrollbarType": "overlay",
+            },
+        },
     )
+
+    context_id = await create_context(user_context_id)
+    assert await get_scrollbar_width(context_id) == 0
+
+    default_context_id = await create_context()
+    assert await get_scrollbar_width(default_context_id) == initial_scrollbar_width
+
+    # Reset override
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setScrollbarTypeOverride",
+            "params": {
+                "userContexts": [user_context_id],
+                "scrollbarType": None,
+            },
+        },
+    )
+
+    assert await get_scrollbar_width(context_id) == initial_scrollbar_width
+
+
+@pytest.mark.asyncio
+async def test_scrollbar_type_globally(
+    websocket,
+    context_id,
+    create_context,
+    get_scrollbar_width,
+    initial_scrollbar_width,
+):
+    # Set scrollbar type to overlay globally.
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setScrollbarTypeOverride",
+            "params": {"scrollbarType": "overlay"},
+        },
+    )
+
+    # Verify existing context has overlay scrollbars.
+    assert await get_scrollbar_width(context_id) == 0
+
+    # Verify newly created context has overlay scrollbars.
+    new_context_id = await create_context()
+    assert await get_scrollbar_width(new_context_id) == 0
+
+    # Reset global override.
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setScrollbarTypeOverride",
+            "params": {"scrollbarType": None},
+        },
+    )
+
+    assert await get_scrollbar_width(context_id) == initial_scrollbar_width
