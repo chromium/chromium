@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -151,7 +152,7 @@ class InterpolableGapColorAutoRepeater final
 
   static InterpolableGapColorAutoRepeater* Create(
       const ValueRepeater<StyleColor>* repeater,
-      const ComputedStyle& style);
+      mojom::blink::ColorScheme color_scheme);
 
   bool IsGapColorAutoRepeater() const final { return true; }
 
@@ -164,7 +165,7 @@ class InterpolableGapColorAutoRepeater final
   GapData<StyleColor> CreateGapData(StyleResolverState& state) const;
 
   static InterpolableValue* CreateItem(const StyleColor& value,
-                                       const ComputedStyle& style);
+                                       mojom::blink::ColorScheme color_scheme);
 
   void Composite(const InterpolableGapColorAutoRepeater& other,
                  double fraction);

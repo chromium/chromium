@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/animation/css_gap_length_list_interpolation_type.h"
 
 #include "base/memory/raw_ref.h"
-#include "third_party/blink/renderer/core/animation/css_length_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/gap_data_list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/interpolable_gap_data_auto_repeater.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
@@ -146,7 +145,7 @@ void CSSGapLengthListInterpolationType::Composite(
     UnderlyingValueOwner& owner,
     double underlying_fraction,
     const InterpolationValue& value,
-    double interpolation_fraction) const {
+    double) const {
   auto& underlying_list =
       To<InterpolableList>(*owner.Value().interpolable_value);
   auto& incoming_list = To<InterpolableList>(*value.interpolable_value);
@@ -252,7 +251,7 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
-    ConversionCheckers& conversion_checkers) const {
+    ConversionCheckers&) const {
   GapDataList<int> initial_list =
       property_id_ == CSSPropertyID::kColumnRuleWidth
           ? ComputedStyleInitialValues::InitialColumnRuleWidth()
@@ -282,7 +281,7 @@ class InheritedGapLengthListChecker final
 
  private:
   bool IsValid(const StyleResolverState& state,
-               const InterpolationValue& underlying) const final {
+               const InterpolationValue&) const final {
     GapDataList<int> inherited_list =
         CSSGapLengthListInterpolationType::GetList(*property_,
                                                    *state.ParentStyle());
@@ -325,7 +324,7 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertInherit(
 InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers& conversion_checkers) const {
+    ConversionCheckers&) const {
   if (!value.IsBaseValueList()) {
     return nullptr;
   }
@@ -420,10 +419,7 @@ PairwiseInterpolationValue CSSGapLengthListInterpolationType::MaybeMergeSingles(
 
 GapDataList<int> CSSGapLengthListInterpolationType::GetProperty(
     const ComputedStyle& style) const {
-  if (property_id_ == CSSPropertyID::kColumnRuleWidth) {
-    return style.ColumnRuleWidth();
-  }
-  return style.RowRuleWidth();
+  return GetList(CssProperty(), style);
 }
 
 }  // namespace blink

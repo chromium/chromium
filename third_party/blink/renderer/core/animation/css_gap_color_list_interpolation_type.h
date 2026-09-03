@@ -46,7 +46,7 @@ class CORE_EXPORT CSSGapColorListInterpolationType
   void Composite(UnderlyingValueOwner& owner,
                  double underlying_fraction,
                  const InterpolationValue& value,
-                 double interpolation_fraction) const final;
+                 double) const final;
 
   void ApplyStandardPropertyValue(
       const InterpolableValue& interpolable_value,
@@ -61,18 +61,16 @@ class CORE_EXPORT CSSGapColorListInterpolationType
       const InterpolationValue& underlying,
       ConversionCheckers& conversion_checkers) const final;
 
-  InterpolationValue MaybeConvertInitial(
-      const StyleResolverState& state,
-      ConversionCheckers& conversion_checkers) const final;
+  InterpolationValue MaybeConvertInitial(const StyleResolverState& state,
+                                         ConversionCheckers&) const final;
 
   InterpolationValue MaybeConvertInherit(
       const StyleResolverState& state,
       ConversionCheckers& conversion_checkers) const final;
 
-  InterpolationValue MaybeConvertValue(
-      const CSSValue& value,
-      const StyleResolverState& state,
-      ConversionCheckers& conversion_checkers) const final;
+  InterpolationValue MaybeConvertValue(const CSSValue& value,
+                                       const StyleResolverState& state,
+                                       ConversionCheckers&) const final;
 
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,

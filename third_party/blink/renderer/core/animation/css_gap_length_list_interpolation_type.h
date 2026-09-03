@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_GAP_LENGTH_LIST_INTERPOLATION_TYPE_H_
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
-#include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace blink {
 
@@ -47,7 +47,7 @@ class CORE_EXPORT CSSGapLengthListInterpolationType
   void Composite(UnderlyingValueOwner& owner,
                  double underlying_fraction,
                  const InterpolationValue& value,
-                 double interpolation_fraction) const final;
+                 double) const final;
 
   void ApplyStandardPropertyValue(
       const InterpolableValue& interpolable_value,
@@ -62,18 +62,16 @@ class CORE_EXPORT CSSGapLengthListInterpolationType
       const InterpolationValue& underlying,
       ConversionCheckers& conversion_checkers) const final;
 
-  InterpolationValue MaybeConvertInitial(
-      const StyleResolverState& state,
-      ConversionCheckers& conversion_checkers) const final;
+  InterpolationValue MaybeConvertInitial(const StyleResolverState& state,
+                                         ConversionCheckers&) const final;
 
   InterpolationValue MaybeConvertInherit(
       const StyleResolverState& state,
       ConversionCheckers& conversion_checkers) const final;
 
-  InterpolationValue MaybeConvertValue(
-      const CSSValue& value,
-      const StyleResolverState& state,
-      ConversionCheckers& conversion_checkers) const final;
+  InterpolationValue MaybeConvertValue(const CSSValue& value,
+                                       const StyleResolverState& state,
+                                       ConversionCheckers&) const final;
 
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
