@@ -59,15 +59,6 @@ specific_include_rules = {
     "+net/url_request/redirect_info.h",
   ],
 
-  # The following could be hoisted up (they don't violate any conceptual
-  # layering), but they're really only needed here, and localization_peer is
-  # a bit unique.
-  "localization_peer.cc": [
-    "+net/http/http_response_headers.h",
-  ],
-  "localization_peer_unittest.cc": [
-    "+net/url_request/redirect_info.h",
-  ],
 
   "native_extension_bindings_system.cc": [
     "+third_party/blink/public/common/features_generated.h",
