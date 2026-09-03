@@ -9,11 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -95,6 +93,8 @@ public class NetLogsFragment extends DevUiBaseFragment {
             deleteAllNetLogsButton.requestFocus();
         }
         netLogListView.setItemsCanFocus(true);
+
+        registerDownPressToFocusOnFirstItem(deleteAllNetLogsButton, netLogListView);
 
         registerBackPressToNavBarCallback(navBarButton);
     }
@@ -257,21 +257,12 @@ public class NetLogsFragment extends DevUiBaseFragment {
 
         private void setupTvFocusForNetLogEntry(View view, TextView fileNameView, int position) {
             view.setOnClickListener(v -> fileNameView.post(() -> fileNameView.performClick()));
+            if (position == 0) {
+                view.setNextFocusUpId(R.id.delete_all_net_logs_button);
+            }
 
             // Without this, the focus escape to the nav bar when pressing down on the last item.
-            preventFocusEscapeFromLastItem(view, position);
-        }
-
-        private void preventFocusEscapeFromLastItem(View view, int position) {
-            view.setOnKeyListener(
-                    (v, keyCode, event) -> {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN
-                                && keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-                                && position == getCount() - 1) {
-                            return true;
-                        }
-                        return false;
-                    });
+            preventFocusEscapeFromLastItem(view, position == getCount() - 1);
         }
 
         private void showPopupMenu(View view, final int position) {

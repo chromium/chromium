@@ -112,6 +112,7 @@ public class HomeFragment extends DevUiBaseFragment {
         mInfoListView.setAdapter(itemsArrayAdapter);
 
         if (isTV()) {
+            mInfoListView.setItemsCanFocus(true);
             setupTvFocusOnResume();
         }
     }
@@ -120,8 +121,11 @@ public class HomeFragment extends DevUiBaseFragment {
         if (!shouldRequestFocus()) return;
         mInfoListView.post(
                 () -> {
-                    mInfoListView.requestFocus();
-                    mInfoListView.setSelection(0);
+                    if (mInfoListView.getChildCount() > 0) {
+                        mInfoListView.getChildAt(0).requestFocus();
+                    } else {
+                        mInfoListView.requestFocus();
+                    }
                 });
     }
 
@@ -169,7 +173,15 @@ public class HomeFragment extends DevUiBaseFragment {
             title.setText(item.title);
             subtitle.setText(item.subtitle);
 
+            if (isTV()) {
+                setupTvFocusForInfoItem(view, position);
+            }
+
             return view;
+        }
+
+        private void setupTvFocusForInfoItem(View view, int position) {
+            preventFocusEscapeFromLastItem(view, position == getCount() - 1);
         }
     }
 }

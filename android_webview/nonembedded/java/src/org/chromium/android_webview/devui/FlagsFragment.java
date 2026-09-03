@@ -189,33 +189,10 @@ public class FlagsFragment extends DevUiBaseFragment {
         flagsListView.setItemsCanFocus(true);
 
         // Without forcing this, the focus will focus on a random item in the list.
-        registerDownPressToFocusOnFirstFlag(searchBar, flagsListView);
-        registerDownPressToFocusOnFirstFlag(resetFlagsButton, flagsListView);
+        registerDownPressToFocusOnFirstItem(searchBar, flagsListView);
+        registerDownPressToFocusOnFirstItem(resetFlagsButton, flagsListView);
 
         registerBackPressToNavBarCallback(navBarButton);
-    }
-
-    private void registerDownPressToFocusOnFirstFlag(View view, ListView flagsListView) {
-        // When the user presses the down key, force the focus to the first item in the list.
-        View.OnKeyListener forceFocusToTopListener =
-                (v, keyCode, event) -> {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN
-                            && keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN) {
-                        if (mListAdapter.getCount() > 0) {
-                            flagsListView.setSelection(0);
-                            flagsListView.post(
-                                    () -> {
-                                        View firstChild = flagsListView.getChildAt(0);
-                                        if (firstChild != null) {
-                                            firstChild.requestFocus();
-                                        }
-                                    });
-                            return true;
-                        }
-                    }
-                    return false;
-                };
-        view.setOnKeyListener(forceFocusToTopListener);
     }
 
     private static void hideKeyboard(Context context, View view) {
@@ -558,6 +535,9 @@ public class FlagsFragment extends DevUiBaseFragment {
                         // view. We need to trigger the toggle when the flag view is clicked.
                         flagToggle.post(() -> flagToggle.performClick());
                     });
+            if (position == 0) {
+                view.setNextFocusUpId(R.id.flag_search_bar);
+            }
             // Without this, the focus escape to the nav bar when pressing down on the last item.
             preventFocusEscapeFromLastItem(view, position == getCount() - 1);
         }
@@ -574,6 +554,10 @@ public class FlagsFragment extends DevUiBaseFragment {
                     "By enabling these features, you could lose app data or compromise your"
                         + " security or privacy. Enabled features apply to WebViews across all apps"
                         + " on the device.");
+
+            if (isTV()) {
+                view.setNextFocusUpId(R.id.flag_search_bar);
+            }
 
             return view;
         }

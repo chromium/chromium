@@ -181,21 +181,6 @@ public class CrashesListFragment extends DevUiBaseFragment {
         }
     }
 
-    private void registerDownPressToFocusOnFirstItem(
-            View sourceView, android.widget.ListView targetListView) {
-        sourceView.setOnKeyListener(
-                (v, keyCode, event) -> {
-                    if (event.getAction() == android.view.MotionEvent.ACTION_DOWN
-                            && keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN) {
-                        if (targetListView.getChildCount() > 0) {
-                            targetListView.getChildAt(0).requestFocus();
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -280,6 +265,9 @@ public class CrashesListFragment extends DevUiBaseFragment {
         }
 
         private void setupTvFocusForGroupView(View view, int position, boolean isExpanded) {
+            if (position == 0) {
+                view.setNextFocusUpId(R.id.crashes_summary_textview);
+            }
             view.setOnKeyListener(
                     (v, keyCode, event) -> {
                         if (event.getAction() == MotionEvent.ACTION_DOWN) {
