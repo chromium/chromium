@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 // <if expr="not is_macosx">
@@ -16,15 +16,17 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="_google_chrome">
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+// </if>
+
+// <if expr="_google_chrome or not is_macosx">
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
 
 // <if expr="not is_macosx">
 import type {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-// </if>
 
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+// </if>
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -53,18 +55,18 @@ suite('SpellCheck', function() {
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
-    languageHelper = settingsLanguages;
+    LanguageHelperImpl.resetInstanceForTesting();
+    languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     spellcheckPage = document.createElement('settings-spell-check-page');
-
-    spellcheckPage.languages = settingsLanguages.languages;
-    fakeDataBind(settingsLanguages, spellcheckPage, 'languages');
+    spellcheckPage.languages = languageHelper.languages;
+    languageHelper.addEventListener('languages-changed', (e: Event) => {
+      spellcheckPage.languages = (e as CustomEvent).detail;
+    });
 
     document.body.appendChild(spellcheckPage);
     flush();
-    return languageHelper.whenReady();
   });
 
   teardown(function() {
@@ -114,7 +116,7 @@ suite('SpellCheck', function() {
           spellcheckLanguageRow.querySelector('cr-toggle');
       assertTrue(!!spellcheckLanguageToggle);
       spellcheckLanguageToggle.click();
-      await spellcheckLanguageToggle.updateComplete;
+      await microtasksFinished();
       assertFalse(spellcheckLanguageToggle.checked);
       assertEquals(
           0,

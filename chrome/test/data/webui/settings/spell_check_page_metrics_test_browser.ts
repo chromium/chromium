@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {LanguageSettingsMetricsProxy, LanguageSettingsPageImpressionType, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {LanguageHelper, LanguageSettingsMetricsProxy, LanguageSettingsPageImpressionType, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
+import {getLanguageHelperInstance, LanguageHelperImpl, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
@@ -33,6 +32,7 @@ class TestSpellCheckSettingsMetricsProxy extends TestBrowserProxy implements
 }
 
 suite('SpellCheckPageMetricsBrowser', function() {
+  let languageHelper: LanguageHelper;
   let spellCheckPage: SettingsSpellCheckPageElement;
   let browserProxy: TestLanguagesBrowserProxy;
   let languageSettingsMetricsProxy: TestSpellCheckSettingsMetricsProxy;
@@ -56,16 +56,17 @@ suite('SpellCheckPageMetricsBrowser', function() {
     languageSettingsMetricsProxy = new TestSpellCheckSettingsMetricsProxy();
     LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
+    LanguageHelperImpl.resetInstanceForTesting();
+    languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     spellCheckPage = document.createElement('settings-spell-check-page');
-
-    spellCheckPage.languages = settingsLanguages.languages;
-    fakeDataBind(settingsLanguages, spellCheckPage, 'languages');
+    spellCheckPage.languages = languageHelper.languages;
+    languageHelper.addEventListener('languages-changed', (e: Event) => {
+      spellCheckPage.languages = (e as CustomEvent).detail;
+    });
 
     document.body.appendChild(spellCheckPage);
-    return settingsLanguages.whenReady();
   });
 
   teardown(function() {

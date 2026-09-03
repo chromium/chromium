@@ -93,7 +93,7 @@ export class SettingsSpellCheckPageElement extends
   // <if expr="not is_macosx">
   static get observers() {
     return [
-      'updateSpellcheckLanguages_(languages.enabled.*, ' +
+      'updateSpellcheckLanguages_(languages, languages.enabled.*, ' +
           'languages.spellCheckOnLanguages.*)',
       'updateSpellcheckEnabled_(enableSpellcheckingPref_)',
     ];
@@ -271,13 +271,12 @@ export class SettingsSpellCheckPageElement extends
       return;
     }
 
-    this.languageHelper_.toggleSpellCheck(
-        item.language.code, !item.spellCheckEnabled);
+    const enable = !item.spellCheckEnabled;
+    this.languageHelper_.toggleSpellCheck(item.language.code, enable);
 
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
-        item.spellCheckEnabled ?
-            LanguageSettingsActionType.ENABLE_SPELL_CHECK_FOR_LANGUAGE :
-            LanguageSettingsActionType.DISABLE_SPELL_CHECK_FOR_LANGUAGE);
+        enable ? LanguageSettingsActionType.ENABLE_SPELL_CHECK_FOR_LANGUAGE :
+                 LanguageSettingsActionType.DISABLE_SPELL_CHECK_FOR_LANGUAGE);
   }
 
   /**

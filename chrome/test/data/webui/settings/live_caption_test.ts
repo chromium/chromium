@@ -4,7 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CaptionsBrowserProxyImpl, getLanguageHelperInstance, LanguageHelperImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
@@ -75,8 +75,9 @@ suite('LiveCaptionSection', function() {
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
+    LanguageHelperImpl.resetInstanceForTesting();
+    const languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     // Set up test browser proxy.
     browserProxy = new TestCaptionsBrowserProxy();
@@ -84,8 +85,6 @@ suite('LiveCaptionSection', function() {
 
     liveCaptionSection = document.createElement('settings-live-caption');
     document.body.appendChild(liveCaptionSection);
-
-    return settingsLanguages.whenReady();
   });
 
   test('caption.enable toggle', function() {

@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from 'chrome://settings/lazy_load.js';
+import {getLanguageHelperInstance, LanguageHelperImpl, LanguagesBrowserProxyImpl, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 // <if expr="is_win">
 import {LanguageSettingsActionType} from 'chrome://settings/lazy_load.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
 // </if>
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 import {TestLanguageSettingsMetricsProxy} from './test_languages_settings_metrics_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+// clang-format on
 
 suite('LanguagesPageMetricsBrowser', function() {
   let languageHelper: LanguageHelper;
@@ -39,18 +41,17 @@ suite('LanguagesPageMetricsBrowser', function() {
     languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
     LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
-    languageHelper = settingsLanguages;
+    LanguageHelperImpl.resetInstanceForTesting();
+    languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     languagesPage = document.createElement('settings-languages-page');
-
-    languagesPage.languages = settingsLanguages.languages;
-    fakeDataBind(settingsLanguages, languagesPage, 'languages');
+    languagesPage.languages = languageHelper.languages;
+    languageHelper.addEventListener('languages-changed', (e: Event) => {
+      languagesPage.languages = (e as CustomEvent).detail;
+    });
 
     document.body.appendChild(languagesPage);
-
-    return settingsLanguages.whenReady();
   });
 
   test('records when adding languages', async () => {

@@ -4,10 +4,9 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
+import {getLanguageHelperInstance, LanguageHelperImpl, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
@@ -55,17 +54,17 @@ suite('TranslatePageMetricsBrowser', function() {
     languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
     LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
-    languageHelper = settingsLanguages;
+    LanguageHelperImpl.resetInstanceForTesting();
+    languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     translatePage = document.createElement('settings-translate-page');
-
-    translatePage.languages = settingsLanguages.languages;
-    fakeDataBind(settingsLanguages, translatePage, 'languages');
+    translatePage.languages = languageHelper.languages;
+    languageHelper.addEventListener('languages-changed', (e: Event) => {
+      translatePage.languages = (e as CustomEvent).detail;
+    });
 
     document.body.appendChild(translatePage);
-    await settingsLanguages.whenReady();
   });
 
   test('records when translate target is changed', async () => {

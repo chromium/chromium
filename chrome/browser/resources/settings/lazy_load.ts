@@ -110,7 +110,6 @@ import './downloads_page/downloads_page.js';
 import './languages_page/languages_page_index_cros.js';
 // </if>
 // <if expr="not is_chromeos">
-import './languages_page/languages.js';
 import './languages_page/languages_page_index.js';
 // </if>
 import './reset_page/reset_page.js';
@@ -231,7 +230,7 @@ export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_
 export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
 // </if>
 
-export {getLanguageHelperInstance} from './languages_page/languages.js';
+export {getLanguageHelperInstance, LanguageHelperImpl} from './languages_page/languages.js';
 export {LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 export type {LanguagesBrowserProxy} from './languages_page/languages_browser_proxy.js';
 export {kMenuCloseDelay, SettingsLanguagesPageElement} from './languages_page/languages_page.js';

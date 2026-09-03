@@ -6,11 +6,10 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -42,19 +41,18 @@ suite('TranslatePage', function() {
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
-    languageHelper = settingsLanguages;
+    LanguageHelperImpl.resetInstanceForTesting();
+    languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     translatePage = document.createElement('settings-translate-page');
-
-    translatePage.languages = settingsLanguages.languages;
-    fakeDataBind(settingsLanguages, translatePage, 'languages');
+    translatePage.languages = languageHelper.languages;
+    languageHelper.addEventListener('languages-changed', (e: Event) => {
+      translatePage.languages = (e as CustomEvent).detail;
+    });
 
     document.body.appendChild(translatePage);
     flush();
-
-    return settingsLanguages.whenReady();
   });
 
   teardown(function() {

@@ -42,11 +42,6 @@
   <managed-footnote></managed-footnote>
 </template>
 
-<if expr="not is_chromeos">
-  <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]">
-    <settings-languages languages="{{languages_}}"></settings-languages>
-  </template>
-</if>
 
 <template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
   <settings-reset-profile-banner on-close="onResetProfileBannerClose_">

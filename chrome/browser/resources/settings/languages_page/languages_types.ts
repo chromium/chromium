@@ -66,7 +66,7 @@ export interface LanguagesModel {
 /**
  * Helper methods for reading and writing language settings.
  */
-export interface LanguageHelper {
+export interface LanguageHelper extends EventTarget {
   languages?: LanguagesModel|undefined;
 
   whenReady(): Promise<void>;

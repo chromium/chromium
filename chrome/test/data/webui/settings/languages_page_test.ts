@@ -6,13 +6,12 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrCheckboxElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
-import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {CrCheckboxElement, LanguageHelper, LanguagesModel, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import type {CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -58,20 +57,19 @@ suite('LanguagesPage', function() {
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-    const settingsLanguages = document.createElement('settings-languages');
-    document.body.appendChild(settingsLanguages);
-    languageHelper = settingsLanguages;
+    LanguageHelperImpl.resetInstanceForTesting();
+    languageHelper = getLanguageHelperInstance();
+    await languageHelper.whenReady();
 
     languagesPage = document.createElement('settings-languages-page');
-
-    languagesPage.languages = settingsLanguages.languages;
-    fakeDataBind(settingsLanguages, languagesPage, 'languages');
+    languagesPage.languages = languageHelper.languages;
+    languageHelper.addEventListener('languages-changed', (e: Event) => {
+      languagesPage.set('languages', (e as CustomEvent<LanguagesModel>).detail);
+    });
 
     document.body.appendChild(languagesPage);
     flush();
     actionMenu = languagesPage.$.menu.get();
-
-    return settingsLanguages.whenReady();
   });
 
   suite('AddLanguagesDialog', function() {
