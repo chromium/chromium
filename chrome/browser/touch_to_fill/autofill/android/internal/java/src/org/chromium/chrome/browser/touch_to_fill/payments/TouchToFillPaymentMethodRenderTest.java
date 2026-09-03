@@ -741,6 +741,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS})
     public void testShowsBnplSuggestion() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
@@ -759,6 +760,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS})
     public void testShowsDeactivatedBnplSuggestion() throws IOException {
         runOnUiThreadBlocking(
                 () -> {

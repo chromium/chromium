@@ -2324,13 +2324,10 @@
             ]
         }
     ],
-    "AutofillEnablePayNowPayLaterTabs": [
+    "AutofillEnablePayNowPayLaterTabsAndroid": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {

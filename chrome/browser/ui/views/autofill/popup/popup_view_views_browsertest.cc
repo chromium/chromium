@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -533,27 +535,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_TabbedPane_PayNow) {
-  PrepareSuggestions(CreateCreditCardSuggestions());
-  ShowAndVerifyUi(/*popup_has_parent=*/false,
-                  /*search_bar_config=*/std::nullopt,
-                  AutofillPopupView::TabbedPaneConfig(
-                      {{TabbedPaneTabType::kPayNow, u"Pay now"},
-                       {TabbedPaneTabType::kPayLater, u"Pay later"}}));
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_TabbedPane_PayLater) {
-  PrepareSuggestions(
-      {CreateBnplEntrySuggestion(), CreateBnplFootnoteSuggestion()});
-  PrepareSelectedTab(1);
-  ShowAndVerifyUi(/*popup_has_parent=*/false,
-                  /*search_bar_config=*/std::nullopt,
-                  AutofillPopupView::TabbedPaneConfig(
-                      {{TabbedPaneTabType::kPayNow, u"Pay now"},
-                       {TabbedPaneTabType::kPayLater, u"Pay later"}}));
-}
-
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AtMemoryFetching) {
   PrepareSuggestions({CreateAtMemoryFetchingSuggestion()});
   ShowAndVerifyUi(
@@ -660,6 +641,40 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                         Combine(Bool(), Bool()),
+                         PopupViewViewsBrowsertestBase::GetTestSuffix);
+
+class PopupViewViewsPayNowPayLaterTabsBrowsertest
+    : public PopupViewViewsBrowsertestBase {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnablePayNowPayLaterTabs};
+};
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPayNowPayLaterTabsBrowsertest,
+                       InvokeUi_TabbedPane_PayNow) {
+  PrepareSuggestions(CreateCreditCardSuggestions());
+  ShowAndVerifyUi(/*popup_has_parent=*/false,
+                  /*search_bar_config=*/std::nullopt,
+                  AutofillPopupView::TabbedPaneConfig(
+                      {{TabbedPaneTabType::kPayNow, u"Pay now"},
+                       {TabbedPaneTabType::kPayLater, u"Pay later"}}));
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPayNowPayLaterTabsBrowsertest,
+                       InvokeUi_TabbedPane_PayLater) {
+  PrepareSuggestions(
+      {CreateBnplEntrySuggestion(), CreateBnplFootnoteSuggestion()});
+  PrepareSelectedTab(1);
+  ShowAndVerifyUi(/*popup_has_parent=*/false,
+                  /*search_bar_config=*/std::nullopt,
+                  AutofillPopupView::TabbedPaneConfig(
+                      {{TabbedPaneTabType::kPayNow, u"Pay now"},
+                       {TabbedPaneTabType::kPayLater, u"Pay later"}}));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupViewViewsPayNowPayLaterTabsBrowsertest,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 
