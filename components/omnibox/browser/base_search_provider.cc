@@ -45,6 +45,7 @@
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace {
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
@@ -53,6 +54,25 @@ constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 bool MatchTypeAndContentsAreEqual(const AutocompleteMatch& lhs,
                                   const AutocompleteMatch& rhs) {
   return lhs.contents == rhs.contents && lhs.type == rhs.type;
+}
+
+// Ensure an image returned by the the search suggestion API (`image_url`) is
+// valid for a given search engine (`template_url`).
+//
+// Images for an entity in the search suggestion are expected to be coming from
+// the same domain as the search engine. The hosting for those images could be
+// on a dedicated subdomain (img.domain.com), so this compares registrable
+// domains rather than origins. Private registries are included so that engines
+// sharing a hosting suffix are still treated as separate sites.
+bool CanFetchSuggestionImage(const GURL& image_url,
+                             const TemplateURL& template_url,
+                             const SearchTermsData& search_terms_data) {
+  if (!image_url.is_valid() || !image_url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+  return net::registry_controlled_domains::SameDomainOrHost(
+      image_url, template_url.GenerateSearchURL(search_terms_data),
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 std::u16string GetMatchContentsForOnDeviceTailSuggestion(
@@ -146,6 +166,15 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
       match.image_url = GURL(suggestion.entity_info().image_url());
     }
     match.answer_template = suggestion.answer_template();
+  } else {
+    // Non-Google engines can also provide an entity image, but only ones they
+    // hosted on the same domain. Answers (template, type) aren't handled as
+    // they are Google-only.
+    const GURL image_url(suggestion.entity_info().image_url());
+    if (CanFetchSuggestionImage(image_url, *template_url, search_terms_data)) {
+      match.image_dominant_color = suggestion.entity_info().dominant_color();
+      match.image_url = image_url;
+    }
   }
   match.entity_id = suggestion.entity_info().entity_id();
   match.website_uri = suggestion.entity_info().website_uri();
