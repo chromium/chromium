@@ -62,7 +62,22 @@
     return a.name.localeCompare(b.name);
   });
 
-  for (const event of matchedEvents) {
+  // V8 emits multiple CacheHit trace markers during streaming compilation
+  // (GetStreamingCompilationOwnership and MaybeGetNativeModule). On heavily
+  // loaded bots, GC or thread scheduling can cause the second marker to not
+  // fire if the module in NativeModuleCache is evicted before the stream ends.
+  // We only require at least one CacheHit event to verify the cache path.
+  let seenCacheHit = false;
+  const filteredEvents = matchedEvents.filter(event => {
+    if (event.name === 'CacheHit') {
+      if (seenCacheHit)
+        return false;
+      seenCacheHit = true;
+    }
+    return true;
+  });
+
+  for (const event of filteredEvents) {
     testRunner.log(`Event name: ${event.name}`);
     testRunner.log('Event shape:');
     tracingHelper.logEventShape(event);

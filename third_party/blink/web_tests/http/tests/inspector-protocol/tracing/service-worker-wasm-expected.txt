@@ -15,20 +15,6 @@ Object: {
 	ts: number
 }
 
-Event name: CacheHit
-Event shape:
-Object: {
-	args: {
-	}
-	cat: string
-	dur: number
-	name: string
-	ph: string
-	pid: number
-	tid: number
-	ts: number
-}
-
 Event name: wasm.GetNativeModuleFromCache
 Event shape:
 Object: {
