@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,7 +41,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Trave
 /** Tests for {@link RecyclerViewSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class RecyclerViewSelectionControllerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private LayoutManager mLayoutManager;
     @Mock private View mChildView1;
@@ -323,14 +325,12 @@ public class RecyclerViewSelectionControllerUnitTest {
 
         // Pretend that the View 1 is now reused as View 3.
         // We should see that the Selected state is cleared.
-        when(mLayoutManager.findViewByPosition(3)).thenReturn(mChildView2);
         mSelectionControllerWithSentinel.onChildViewAttachedToWindow(mChildView2);
         verifyNoMoreInteractions(mChildView2);
 
         // Finally, pretend that the view 1 is back on screen.
         // This happens in 2 steps:
         // - 1. the view is removed from last position
-        when(mLayoutManager.findViewByPosition(3)).thenReturn(null);
         mSelectionControllerWithSentinel.onChildViewDetachedFromWindow(mChildView2);
         // - 2. the view is inserted at position 1.
         when(mLayoutManager.findViewByPosition(1)).thenReturn(mChildView2);

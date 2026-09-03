@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.intThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -47,7 +49,9 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class OmniboxSuggestionsContainerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private OmniboxSuggestionsDropdown mDropdown;
     @Mock private RecyclerView.RecycledViewPool mRecycledViewPool;
 
@@ -130,9 +134,10 @@ public class OmniboxSuggestionsContainerUnitTest {
         mContainer.setSuggestionsDropdownForTest(mDropdown);
 
         // Replace the view created via inflation with a mock.
-        when(mDropdown.getId()).thenReturn(R.id.omnibox_suggestions_dropdown);
-        when(mDropdown.getRecycledViewPool()).thenReturn(mRecycledViewPool);
-        when(mDropdown.getLayoutParams())
+        lenient().when(mDropdown.getId()).thenReturn(R.id.omnibox_suggestions_dropdown);
+        lenient().when(mDropdown.getRecycledViewPool()).thenReturn(mRecycledViewPool);
+        lenient()
+                .when(mDropdown.getLayoutParams())
                 .thenReturn(
                         new LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -240,9 +245,6 @@ public class OmniboxSuggestionsContainerUnitTest {
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        when(mDropdown.getPaddingTop()).thenReturn(1);
-        when(mDropdown.getPaddingLeft()).thenReturn(2);
-        when(mDropdown.getPaddingRight()).thenReturn(3);
         when(mDropdown.getPaddingBottom()).thenReturn(4);
         when(mDropdown.getBaseBottomPadding()).thenReturn(4);
 
@@ -269,9 +271,6 @@ public class OmniboxSuggestionsContainerUnitTest {
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         when(mDropdown.getPaddingTop()).thenReturn(1);
-        when(mDropdown.getPaddingLeft()).thenReturn(2);
-        when(mDropdown.getPaddingRight()).thenReturn(3);
-        when(mDropdown.getPaddingBottom()).thenReturn(4);
         when(mDropdown.getBaseTopPadding()).thenReturn(1);
 
         int topPadding = 40;
