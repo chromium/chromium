@@ -76,8 +76,8 @@ class AccountConsistencyBrowserAgent
   // that's in a different profile).
   void ShowAccountMenu(const GURL& url);
 
-  // Whether `web_state` is the active one.
-  bool IsActiveWebstate(web::WebState* web_state);
+  // Whether `web_state` is the active one in the active browser.
+  bool IsActiveWebState(web::WebState* web_state);
 
   UIViewController* base_view_controller_;
   id<SceneCommands> application_handler_;
