@@ -409,6 +409,12 @@
       "86D63D90308742AA65B8B29AE2D39FED2D6DC310"  // b/361094242 Dev SEB Extension
     ]
   },
+  "enterprise.webrtc": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "location": "policy",
+    "feature_flag": "ApiEnterpriseWebrtc"
+  },
   "experimental": {
     "channel": "stable",
     "command_line_switch": "experimental-extension-apis",

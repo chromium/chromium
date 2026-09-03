@@ -2310,6 +2310,7 @@ source_set("browser_tests") {
     "api/devtools/devtools_apitest.cc",
     "api/dns/dns_apitest.cc",
     "api/downloads/downloads_api_browsertest.cc",
+    "api/enterprise_webrtc/enterprise_webrtc_apitest.cc",
     "api/extension_action/extension_action_apitest.cc",
     "api/extension_action/test_icon_image_observer.cc",
     "api/extension_action/test_icon_image_observer.h",

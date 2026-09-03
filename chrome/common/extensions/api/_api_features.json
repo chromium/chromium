@@ -486,6 +486,10 @@
     "contexts": ["privileged_extension"],
     "feature_flag": "ApiProxyOverrideRulesPrivate"
   },
+  "enterprise.webrtc": {
+    "dependencies": ["permission:enterprise.webrtc"],
+    "contexts": ["privileged_extension"]
+  },
   "experimental.devtools.audits": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],

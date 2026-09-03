@@ -2048,6 +2048,8 @@ enum HistogramValue {
   TABS_CREATESPLIT = 1983,
   RUNTIME_MARKLISTENERREGISTRATIONCOMPLETE = 1984,
   TABS_UNSPLIT = 1985,
+  ENTERPRISE_WEBRTC_STARTCAPTURE = 1986,
+  ENTERPRISE_WEBRTC_GETCAPTURESTATUS = 1987,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

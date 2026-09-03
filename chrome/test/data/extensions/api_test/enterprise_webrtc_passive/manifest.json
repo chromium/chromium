@@ -1,0 +1,13 @@
+{
+  "name": "enterprise.webrtc API test alt",
+  "description": "Holds the enterprise.webrtc permission but runs nothing itself; tests inject scripts into its service worker.",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "test.js"
+  },
+  "permissions": [
+    "enterprise.webrtc"
+  ],
+  "incognito": "split"
+}

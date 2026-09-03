@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+source_set("enterprise_webrtc") {
+  sources = [
+    "enterprise_webrtc_api.cc",
+    "enterprise_webrtc_api.h",
+    "enterprise_webrtc_api_observer.cc",
+    "enterprise_webrtc_api_observer.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:chrome_features",
+    "//chrome/common/extensions/api",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common:mojom",
+    "//extensions/common/api",
+  ]
+}

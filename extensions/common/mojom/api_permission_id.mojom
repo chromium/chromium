@@ -298,6 +298,7 @@ enum APIPermissionID {
   kBluetoothLowEnergy = 271,
   kBluetoothPeripheral = 272,
   kPublicSuffix = 273,
+  kEnterpriseWebrtc = 274,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in

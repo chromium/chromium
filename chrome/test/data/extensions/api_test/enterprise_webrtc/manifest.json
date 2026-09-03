@@ -1,0 +1,11 @@
+{
+  "name": "enterprise.webrtc API test",
+  "description": "Runs its own chrome.test suite (test.js) against the enterprise.webrtc API on load.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["enterprise.webrtc"],
+  "incognito": "split",
+  "background": {
+    "service_worker": "test.js"
+  }
+}

@@ -91,6 +91,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kEnterprisePlatformKeys, "enterprise.platformKeys",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kEnterpriseWebrtc, "enterprise.webrtc",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kFavicon, "favicon"},
     {APIPermissionID::kFileBrowserHandler, "fileBrowserHandler",
      APIPermissionInfo::kFlagCannotBeOptional |

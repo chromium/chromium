@@ -2916,6 +2916,8 @@ Called by update_extension_histograms.py.-->
   <int value="1983" label="TABS_CREATESPLIT"/>
   <int value="1984" label="RUNTIME_MARKLISTENERREGISTRATIONCOMPLETE"/>
   <int value="1985" label="TABS_UNSPLIT"/>
+  <int value="1986" label="ENTERPRISE_WEBRTC_STARTCAPTURE"/>
+  <int value="1987" label="ENTERPRISE_WEBRTC_GETCAPTURESTATUS"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
@@ -3310,6 +3312,7 @@ Called by update_extension_permission.py.-->
   <int value="271" label="kBluetoothLowEnergy"/>
   <int value="272" label="kBluetoothPeripheral"/>
   <int value="273" label="kPublicSuffix"/>
+  <int value="274" label="kEnterpriseWebrtc"/>
 </enum>
 
 <enum name="ExtensionPinReason">
