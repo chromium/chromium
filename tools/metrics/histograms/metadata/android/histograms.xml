@@ -2536,21 +2536,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.FontLookup.Blink.GetTableLatency" units="ms"
-    expires_after="2023-11-12">
-  <owner>drott@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Records the latency of fetching the font name lookup table from the browser.
-    The table is cached by the renderer so will usually only be fetched once per
-    renderer startup. This is recorded when an attempt is made to fetch the
-    table, typically once per renderer on the first font lookup for that
-    process. If the original fetch fails, this will be recorded the next time a
-    font lookup is requested.
-  </summary>
-</histogram>
-
 <histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
     expires_after="2023-08-08">
   <owner>twellington@chromium.org</owner>
