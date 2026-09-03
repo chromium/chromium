@@ -825,8 +825,8 @@ public class TabBottomSheetManagerTest {
         // 1. Show the bottom sheet starting in peek mode.
         showBottomSheetAndBlockUntilReady(
                 mockDelegate, /* animate= */ false, /* startsExpanded= */ false);
-        assertTrue(mManager.isSheetShowing());
-        assertTrue(mManager.isInPeekMode());
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+        CriteriaHelper.pollUiThread(() -> mManager.isInPeekMode());
 
         // 2. Call tryToShowBottomSheet again with the same delegate to expand the sheet.
         ThreadUtils.runOnUiThreadBlocking(

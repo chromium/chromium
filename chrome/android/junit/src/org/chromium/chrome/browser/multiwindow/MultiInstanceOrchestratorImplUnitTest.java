@@ -48,7 +48,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -558,15 +557,10 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
-    public void
-            testMoveTabsToWindowByIdChecked_withDestroyedActivity_sourceWindowEmpty_opensFullScreen() {
+    public void testMoveTabsToWindowByIdChecked_withDestroyedActivity_sourceWindowEmpty() {
         // Setup.
         List<Tab> tabs = List.of(mTab1, mTab2);
         MultiWindowUtils.setActivityByWindowIdForTesting(DEST_WINDOW_ID, /* activity= */ null);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
         when(mTabModelSelector1.getTotalTabCount()).thenReturn(2);
 
         // Act.

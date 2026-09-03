@@ -18565,24 +18565,6 @@
             ]
         }
     ],
-    "SplitscreenVersusFullScreenForNewWindows": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "open_adjacently": "false"
-                    },
-                    "enable_features": [
-                        "RobustWindowManagementExperimental"
-                    ]
-                }
-            ]
-        }
-    ],
     "StandardizedBrowserZoom": [
         {
             "platforms": [
