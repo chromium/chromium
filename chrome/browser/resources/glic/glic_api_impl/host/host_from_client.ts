@@ -8,12 +8,11 @@
 import {assertNotReached} from '//resources/js/assert.js';
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
-import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import {CaptureRegionObserverReceiver, PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import {CaptureRegionObserverReceiver, PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
+import type {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureScreenshotErrorReason, ClientCapabilities, ResponseStopCause} from '../../glic_api/glic_api.js';
-import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ExperimentalTriggeringUpdate, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, OpenSettingsOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ExperimentalTriggeringUpdate, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
 import {getGuestLoadTimeData} from '../guest_load_time_data.js';
@@ -169,21 +168,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
             payload.observationId);
       }
     }
-  }
-
-  openGlicSettingsPage(request: {options?: OpenSettingsOptions}): void {
-    const optionsMojo: OpenSettingsOptionsMojo = {
-      highlightField: SettingsPageFieldMojo.kNone,
-    };
-    if (request.options?.highlightField) {
-      optionsMojo.highlightField =
-          enumFromClient(request.options?.highlightField);
-    }
-    this.handler.openGlicSettingsPage(optionsMojo);
-  }
-
-  openPasswordManagerSettingsPage(): void {
-    this.handler.openPasswordManagerSettingsPage();
   }
 
   reportClientTransientError(request: {abslStatus: number}): void {
@@ -510,23 +494,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
         request.trialName, request.groupName);
   }
 
-  openOsPermissionSettingsMenu(request: {permission: string}) {
-    // Warning: calling openOsPermissionSettingsMenu with unsupported content
-    // setting type will terminate the render process (bad mojo message).
-    // Update GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new
-    // types.
-    switch (request.permission) {
-      case 'media':
-        return this.handler.openOsPermissionSettingsMenu(
-            ContentSettingsType.MEDIASTREAM_MIC);
-      case 'geolocation':
-        return this.handler.openOsPermissionSettingsMenu(
-            ContentSettingsType.GEOLOCATION);
-      default:
-        return this.handler.openOsPermissionSettingsMenu(
-            ContentSettingsType.COOKIES);
-    }
-  }
 
   getOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
     return this.handler.getOsMicrophonePermissionStatus();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinTabsOptions, Platform, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinTabsOptions, Platform, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
@@ -68,15 +68,6 @@ export const WebClientHostDef = defInterface({
               observation: SubscriberObservationType,
       }>(),
       histogram: {id: 98},
-    },
-    {
-      name: 'openGlicSettingsPage',
-      request: defMessage<{options?: OpenSettingsOptions}>(),
-      histogram: {id: 4},
-    },
-    {
-      name: 'openPasswordManagerSettingsPage',
-      histogram: {id: 78},
     },
     {
       name: 'closePanel',
@@ -344,11 +335,6 @@ export const WebClientHostDef = defInterface({
         groupName: string,
       }>(),
       histogram: {id: 46},
-    },
-    {
-      name: 'openOsPermissionSettingsMenu',
-      request: defMessage<{permission: string}>(),
-      histogram: {id: 47},
     },
     {
       name: 'getOsMicrophonePermissionStatus',
@@ -759,7 +745,7 @@ export const RECORDED_REQUEST_IDS = {
   WebClientCreated: 1,
   WebClientInitialized: 2,
   // Do not reuse deleted request ID: 3,
-  OpenGlicSettingsPage: 4,
+  // Do not reuse deleted request ID: 4,
   ClosePanel: 5,
   ClosePanelAndShutdown: 6,
   ShowProfilePicker: 7,
@@ -802,7 +788,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 44,
   ScrollTo: 45,
   SetSyntheticExperimentState: 46,
-  OpenOsPermissionSettingsMenu: 47,
+  // Do not reuse deleted request ID: 47,
   GetOsMicrophonePermissionStatus: 48,
   PinTabs: 49,
   UnpinTabs: 50,
@@ -833,7 +819,7 @@ export const RECORDED_REQUEST_IDS = {
   UninterruptActorTask: 75,
   ActivateTab: 76,
   CreateActorTab: 77,
-  OpenPasswordManagerSettingsPage: 78,
+  // Do not reuse deleted request ID: 78,
   SetOnboardingCompleted: 80,
   SubscribeToTabData: 81,
   // Do not reuse deleted request ID: 82,

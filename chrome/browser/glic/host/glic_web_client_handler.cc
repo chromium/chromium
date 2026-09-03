@@ -731,6 +731,7 @@ class GlicWebClientHandler
   }
 
   void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {
+    LogApiRequestCount(GlicHostApiRequestId::kOpenGlicSettingsPage);
     std::string_view metric_suffix;
     switch (options->highlightField) {
       case mojom::SettingsPageField::kOsHotkey:
@@ -755,6 +756,7 @@ class GlicWebClientHandler
   }
 
   void OpenPasswordManagerSettingsPage() override {
+    LogApiRequestCount(GlicHostApiRequestId::kOpenPasswordManagerSettingsPage);
     if (!base::FeatureList::IsEnabled(
             features::kGlicOpenPasswordManagerSettingsPageApi)) {
       return;
@@ -1416,6 +1418,7 @@ class GlicWebClientHandler
   }
 
   void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
+    LogApiRequestCount(GlicHostApiRequestId::kOpenOsPermissionSettingsMenu);
     if (type != ContentSettingsType::MEDIASTREAM_MIC &&
         type != ContentSettingsType::GEOLOCATION) {
       // This will terminate the render process.

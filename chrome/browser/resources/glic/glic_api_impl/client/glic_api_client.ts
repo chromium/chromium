@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PinCandidatesObserverReceiver} from '../../glic.mojom-webui.js';
+import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
+import {enumFromClient} from '../../enum_conversions.js';
+import {PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo} from '../../glic.mojom-webui.js';
 import type {PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
 import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
@@ -584,12 +586,14 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   openGlicSettingsPage(options?: OpenSettingsOptions): void {
-    this.clientRemote.requestNoResponse('openGlicSettingsPage', {options});
+    this.handler.openGlicSettingsPage({
+      highlightField: enumFromClient(options?.highlightField) ??
+          SettingsPageFieldMojo.kNone,
+    });
   }
 
   openPasswordManagerSettingsPage?(): void {
-    this.clientRemote.requestNoResponse(
-        'openPasswordManagerSettingsPage', undefined);
+    this.handler.openPasswordManagerSettingsPage();
   }
 
   reportClientTransientError(abslStatus: number): void {
@@ -908,8 +912,23 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   openOsPermissionSettingsMenu?(permission: string): void {
-    this.clientRemote.requestNoResponse(
-        'openOsPermissionSettingsMenu', {permission});
+    // Warning: calling openOsPermissionSettingsMenu with unsupported content
+    // setting type will terminate the render process (bad mojo message).
+    // Update GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new
+    // types.
+    switch (permission) {
+      case 'media':
+        this.handler.openOsPermissionSettingsMenu(
+            ContentSettingsType.MEDIASTREAM_MIC);
+        break;
+      case 'geolocation':
+        this.handler.openOsPermissionSettingsMenu(
+            ContentSettingsType.GEOLOCATION);
+        break;
+      default:
+        this.handler.openOsPermissionSettingsMenu(ContentSettingsType.COOKIES);
+        break;
+    }
   }
 
   async getOsMicrophonePermissionStatus(): Promise<boolean> {
