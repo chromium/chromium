@@ -767,7 +767,8 @@ auto GraphBuilderTflite::CreateAndBuild(
 }
 
 // static
-ContextProperties GraphBuilderTflite::GetContextProperties() {
+ContextProperties GraphBuilderTflite::GetContextProperties(
+    mojom::Device context_device) {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   static constexpr SupportedDataTypes kInt4AndInts8Int32 = {
       OperandDataType::kInt4, OperandDataType::kUint8, OperandDataType::kInt8,
@@ -826,7 +827,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
   static constexpr uint64_t kTensorByteLengthLimit = 1024 * 1024 * 1024;
 #endif
 
-  return ContextProperties(
+  ContextProperties properties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
       BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
@@ -1154,6 +1155,15 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {DataTypeConstraint::kUint8, SupportedRanks::UpTo(5)},
        /*where_value=*/
        {kFloat16To32AndInt8To64AndUint32, SupportedRanks::UpTo(5)}});
+
+  // The ML Drift GPU delegate does not support the int64 data type, so remove
+  // it from all op support limits when targeting the GPU to guide developers
+  // away from using operators that will fall back to the CPU.
+  if (context_device == mojom::Device::kGpu) {
+    properties.data_type_limits.RemoveDataType(OperandDataType::kInt64);
+  }
+
+  return properties;
 }
 
 GraphBuilderTflite::GraphBuilderTflite(

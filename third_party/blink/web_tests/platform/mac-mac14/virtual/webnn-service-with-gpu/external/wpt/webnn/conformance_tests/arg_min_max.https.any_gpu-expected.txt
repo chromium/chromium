@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [optional] argMin uint32 4D tensor, axis=1, all options
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'argMin' on 'MLGraphBuilder': Unsupported data type uint32 for argument input, must be one of [float32, float16, int32, int8, uint8]."
 [FAIL] [optional] argMax uint32 4D tensor, axis=1, all options
