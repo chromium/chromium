@@ -610,6 +610,7 @@ public class StripLayoutHelperManager
                         mIsIncognito,
                         () -> mTabModelSelector,
                         sideUiStateProviderSupplier,
+                        this::getGlicButtonsAvailableSpaceDp,
                         () -> getActiveStripLayoutHelper().getUnpinnedTabWidth(),
                         selectorClickHandler,
                         selectorKeyboardFocusHandler,
@@ -1142,10 +1143,9 @@ public class StripLayoutHelperManager
         //   Desktop Base: 2 * minTabWidth(68) - tabOverlap(28) + newTabButton (32) = 140dp
         // Optional Additions:
         //   + Tab Search Button: 48dp (Tablet) / 32dp (Desktop)
-        //   + Trailing Buttons (Glic, Glic actor, MSB): Dynamic (e.g. ~109dp in default state with
-        //     only Glic showing, ~96dp in collapsed state with both Glic and Glic actor showing,
-        //     +48dp (Tablet) / 32dp (Desktop) when MSB is showing)
-
+        //   + Model Selector Button (MSB): 48dp (Tablet) / 32dp (Desktop).
+        // Note: Glic buttons self-hide depending on available horizontal space, so their widths are
+        // not counted towards the fade threshold.
         float buttonTouchTargetSize = StripLayoutUtils.getButtonTouchTargetSizeDp(mContext);
         float thresholdDp =
                 (2 * StripLayoutUtils.getMinTabWidthDp())
@@ -1154,8 +1154,18 @@ public class StripLayoutHelperManager
                         + (getActiveStripLayoutHelper().getTabSearchButton().isVisible()
                                 ? buttonTouchTargetSize
                                 : 0.f)
-                        + mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding();
+                        + (mTrailingButtonsCoordinator.shouldModelSelectorButtonBeVisible()
+                                ? buttonTouchTargetSize
+                                : 0.f);
         return Math.round(thresholdDp);
+    }
+
+    /**
+     * Returns the available space in DP for Glic buttons before the strip reaches its fade
+     * transition threshold.
+     */
+    /* package */ float getGlicButtonsAvailableSpaceDp() {
+        return mWidth - mLeftPadding - mRightPadding - getFadeTransitionThresholdDp();
     }
 
     @Override

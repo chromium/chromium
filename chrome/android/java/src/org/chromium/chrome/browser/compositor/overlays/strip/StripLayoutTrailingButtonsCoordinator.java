@@ -90,10 +90,6 @@ public class StripLayoutTrailingButtonsCoordinator {
         void onTrailingButtonsLayoutStateChanged();
     }
 
-    // Minimum strip width in DP required to show text on the Glic Actor button (below this, only
-    // the icon is shown).
-    private static final float GLIC_ACTOR_TEXT_HIDE_THRESHOLD_DP = 700.f;
-
     // Slop values used in #updateTouchTargetInsets to ensure at least a 48dp touch target in the
     // Glic and Glic Actor buttons.
     //
@@ -125,6 +121,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private boolean mIsIncognito;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
+    private final Supplier<Float> mGlicButtonsAvailableSpaceSupplier;
     private final Supplier<Float> mTabWidthSupplier;
     private final BooleanSupplier mGlicIphShowingSupplier;
     private final StripLayoutTrailingButtonsObserver mObserver;
@@ -323,6 +320,8 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param isIncognito Whether the current tab model is incognito.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      * @param sideUiStateProviderSupplier Supplier for the {@link SideUiStateProvider}.
+     * @param glicButtonsAvailableSpaceSupplier Supplier for the available space in DP for Glic
+     *     buttons before the strip reaches its fade transition threshold.
      * @param tabWidthSupplier Supplier for the unpinned tab width in DP.
      * @param modelSelectorClickHandler The click handler {@link Runnable} for the model selector
      *     button.
@@ -349,6 +348,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             boolean isIncognito,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
+            Supplier<Float> glicButtonsAvailableSpaceSupplier,
             Supplier<Float> tabWidthSupplier,
             Runnable modelSelectorClickHandler,
             StripLayoutViewOnKeyboardFocusHandler modelSelectorKeyboardFocusHandler,
@@ -365,6 +365,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mIsIncognito = isIncognito;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
+        mGlicButtonsAvailableSpaceSupplier = glicButtonsAvailableSpaceSupplier;
         mTabWidthSupplier = tabWidthSupplier;
         mModelSelectorButtonClickHandler = modelSelectorClickHandler;
         mModelSelectorButtonKeyboardFocusHandler = modelSelectorKeyboardFocusHandler;
@@ -663,11 +664,8 @@ public class StripLayoutTrailingButtonsCoordinator {
     /** Sets the cache used for generating textures for the trailing buttons. */
     public void setLayerTitleCache(@Nullable LayerTitleCache titleCache) {
         mLayerTitleCache = titleCache;
-        if (mGlicButton != null) {
-            updateButtonTextProperties(mGlicButton);
-        }
-        if (mGlicActorButton != null) {
-            updateButtonTextProperties(mGlicActorButton);
+        if (mGlicButton != null || mGlicActorButton != null) {
+            updateTrailingButtonsState(/* animate= */ false, /* forceLayoutChanged= */ true);
         }
     }
 
@@ -797,30 +795,18 @@ public class StripLayoutTrailingButtonsCoordinator {
         mGlicButton.setBackgroundTint(mContext.getColorStateList(bgTintRes));
     }
 
-    @VisibleForTesting
-    /* package */ void updateButtonTextProperties(TintedCompositorTextButton button) {
-        boolean isActor = button.getType() == ButtonType.GLIC_ACTOR;
-        String text = button.getText();
-        if (mLayerTitleCache != null && !TextUtils.isEmpty(text)) {
-            button.setTextResourceId(
-                    mLayerTitleCache.getUpdatedGlicButtonText(text, isActor, mIsIncognito));
-        } else {
-            button.setTextResourceId(Resources.ID_NULL);
-        }
-        updateGlicButtonWidth(button, mLayerTitleCache);
-        updateButtonPositions();
-        mObserver.onTrailingButtonsLayoutStateChanged();
-    }
-
-    private void updateGlicButtonWidth(
-            TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
-        float targetWidth = calculateGlicButtonWidth(button, titleCache);
-        animateGlicButton(button, targetWidth, 1.0f, /* endAction= */ null);
-    }
-
     private float calculateGlicButtonWidth(
             TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
-        String text = button.getText();
+        return calculateGlicButtonWidthForText(
+                button.getText(),
+                isGlicDismissNudgeButtonVisible() && button.getType() == ButtonType.GLIC,
+                titleCache);
+    }
+
+    private float calculateGlicButtonWidthForText(
+            @Nullable String text,
+            boolean showDismissButton,
+            @Nullable LayerTitleCache titleCache) {
         float width = getGlicButtonBgWidthDp();
 
         if (!TextUtils.isEmpty(text) && titleCache != null) {
@@ -830,7 +816,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             + getDimensionDp(mContext, R.dimen.tab_strip_glic_icon_text_padding)
                             + (titleCache.getButtonTextWidth(text) / mDensity);
 
-            if (isGlicDismissNudgeButtonVisible() && button.getType() == ButtonType.GLIC) {
+            if (showDismissButton) {
                 width +=
                         getDimensionDp(
                                         mContext,
@@ -845,6 +831,32 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
 
         return width;
+    }
+
+    /**
+     * Calculates the minimum required width in DP for the Glic buttons.
+     *
+     * <p>Note: Always reserves space for the actor button's condensed footprint when the dismiss
+     * button is not shown, to prevent tab reflow or strip fade when an actor task starts. When the
+     * dismiss button is shown, the actor button is guaranteed to not be showing, so extra space
+     * does not need to be reserved.
+     *
+     * @param text The candidate text for an expanded trailing button (Glic or Actor).
+     * @param showDismissButton Whether to include the dismiss button width for a Glic nudge.
+     * @return The minimum required width in DP.
+     */
+    @VisibleForTesting
+    /* package */ float calculateMinRequiredWidthForGlicButton(
+            @Nullable String text, boolean showDismissButton) {
+        float actorButtonFootprint =
+                showDismissButton
+                        ? 0.f
+                        : getGlicButtonBgWidthDp()
+                                + getDimensionDp(mContext, R.dimen.tab_strip_glic_actor_button_gap);
+        return calculateGlicButtonWidthForText(text, showDismissButton, mLayerTitleCache)
+                + actorButtonFootprint
+                + GLIC_BUTTON_START_SLOP_DP
+                + GLIC_BUTTON_END_SLOP_DP;
     }
 
     private void animateGlicButton(
@@ -1022,24 +1034,32 @@ public class StripLayoutTrailingButtonsCoordinator {
             String targetGlicText = null;
             String targetActorText = null;
             if (targetActorVisible) {
-                // Glic button collapses its text to let the actor button take focus
-                if (mWidth >= GLIC_ACTOR_TEXT_HIDE_THRESHOLD_DP) {
-                    targetActorText =
-                            (mLastGlicActorButtonState == ButtonState.DONE)
-                                    ? mContext.getResources()
-                                            .getQuantityString(
-                                                    R.plurals.actor_task_nudge_task_complete_label,
-                                                    1)
-                                    : null;
+                // Glic button collapses its text to let the actor button take focus.
+                if (mLastGlicActorButtonState == ButtonState.DONE) {
+                    String taskCompleteText =
+                            mContext.getResources()
+                                    .getQuantityString(
+                                            R.plurals.actor_task_nudge_task_complete_label, 1);
+                    if (mGlicButtonsAvailableSpaceSupplier.get()
+                            >= calculateMinRequiredWidthForGlicButton(
+                                    taskCompleteText, /* showDismissButton= */ false)) {
+                        targetActorText = taskCompleteText;
+                    }
                 }
             } else {
                 // When actor is not visible, Glic button keeps its custom text if a nudge is
-                // showing; otherwise, it defaults to the standard label.
+                // showing; otherwise, it defaults to the standard label when strip width allows,
+                // or collapses to null (icon-only button) on narrow screens.
+                String askGeminiText =
+                        mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label);
                 if (targetDismissVisible) {
                     targetGlicText = mNudgeLabel;
+                } else if (mGlicButtonsAvailableSpaceSupplier.get()
+                        >= calculateMinRequiredWidthForGlicButton(
+                                askGeminiText, /* showDismissButton= */ false)) {
+                    targetGlicText = askGeminiText;
                 } else {
-                    targetGlicText =
-                            mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label);
+                    targetGlicText = null;
                 }
                 targetActorText = null;
             }
@@ -1490,12 +1510,22 @@ public class StripLayoutTrailingButtonsCoordinator {
                 || !mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)) {
             return false;
         }
-        return GlicUtils.isTabStripGlicSupported(mProfile)
-                && GlicUtils.isButtonPinnedToTabStrip(mProfile);
+        if (!GlicUtils.isTabStripGlicSupported(mProfile)
+                || !GlicUtils.isButtonPinnedToTabStrip(mProfile)) {
+            return false;
+        }
+        return mGlicButtonsAvailableSpaceSupplier.get()
+                >= calculateMinRequiredWidthForGlicButton(
+                        /* text= */ null, /* showDismissButton= */ false);
     }
 
     private boolean shouldGlicDismissNudgeBeVisible() {
-        return mNudgeLabel != null && shouldGlicBeVisible() && !mIsIncognito;
+        return mNudgeLabel != null
+                && shouldGlicBeVisible()
+                && !mIsIncognito
+                && mGlicButtonsAvailableSpaceSupplier.get()
+                        >= calculateMinRequiredWidthForGlicButton(
+                                mNudgeLabel, /* showDismissButton= */ true);
     }
 
     /** Returns whether the Glic actor button should be visible. */
