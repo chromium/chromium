@@ -105,5 +105,16 @@ if (!is_android) {
       "//components/performance_manager",
       "//content/test:test_support",
     ]
+
+    if (is_mac) {
+      sources +=
+          [ "chrome_render_widget_host_view_mac_history_swiper_browsertest.mm" ]
+      deps += [
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//chrome/test/base:chrome_test_path_utils",
+        "//third_party/blink/public/common:headers",
+        "//third_party/ocmock",
+      ]
+    }
   }
 }

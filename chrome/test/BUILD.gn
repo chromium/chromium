@@ -2817,7 +2817,6 @@ if (!is_android) {
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
-      "../browser/geic/geic_button_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
@@ -3247,7 +3246,6 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
-        "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/ui/views/frame/browser_frame_view_mac_browsertest.mm",
         "../browser/ui/views/fullscreen_mac_browsertest.cc",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
@@ -9115,13 +9113,7 @@ if (!is_android && !is_chromeos_device) {
       ]
     }
 
-    if (is_android) {
-      sources -= [
-        # TODO(peter): Enable the Notification browser tests.
-        "../browser/notifications/notification_interactive_uitest.cc",
-        "../browser/notifications/platform_notification_service_interactive_uitest.cc",
-      ]
-    } else {
+    if (!is_android) {
       deps += [ "//chrome/browser/metrics/desktop_session_duration:interactive_ui_tests" ]
     }
 
