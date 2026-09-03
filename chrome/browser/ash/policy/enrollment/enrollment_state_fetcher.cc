@@ -188,24 +188,33 @@ class DeviceIdentifiers {
   DeviceIdentifiers(const DeviceIdentifiers&) = delete;
   DeviceIdentifiers& operator=(const DeviceIdentifiers&) = delete;
 
+  using OnRetrievedCallback =
+      base::OnceCallback<void(std::string, std::string)>;
+
+  void StartRetrieval(ash::system::StatisticsProvider* statistics_provider,
+                      OnRetrievedCallback callback) {
+    statistics_provider->ScheduleOnMachineStatisticsLoaded(
+        base::BindOnce(&DeviceIdentifiers::Retrieve, weak_factory_.GetWeakPtr(),
+                       statistics_provider, std::move(callback)));
+  }
+
+ private:
   // Retrieves brand code and serial numbers.
   //
   // On success, stores retrieved identifiers in `rlz_brand_code` and
   // `serial_number` and returns true.
-  bool Retrieve(ash::system::StatisticsProvider* statistics_provider,
-                std::string& out_rlz_brand_code,
-                std::string& out_serial_number) {
-    out_rlz_brand_code = std::string(
+  void Retrieve(ash::system::StatisticsProvider* statistics_provider,
+                OnRetrievedCallback callback) {
+    std::string rlz_brand_code = std::string(
         statistics_provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey)
             .value_or(""));
-    out_serial_number =
+    std::string serial_number =
         std::string(statistics_provider->GetMachineID().value_or(""));
-    ReportDeviceIdentifierStatus(out_serial_number.empty(),
-                                 out_rlz_brand_code.empty());
-    return !out_serial_number.empty() && !out_rlz_brand_code.empty();
+    ReportDeviceIdentifierStatus(serial_number.empty(), rlz_brand_code.empty());
+    std::move(callback).Run(std::move(rlz_brand_code),
+                            std::move(serial_number));
   }
 
- private:
   static void ReportDeviceIdentifierStatus(bool serial_number_missing,
                                            bool rlz_brand_code_missing) {
     enum class DeviceIdentifierStatus {
@@ -236,6 +245,8 @@ class DeviceIdentifiers {
           DeviceIdentifierStatus::kAllPresent);
     }
   }
+
+  base::WeakPtrFactory<DeviceIdentifiers> weak_factory_{this};
 };
 
 // Class to send RLWE OPRF request as part of PSM protocol.
@@ -868,9 +879,18 @@ class EnrollmentStateFetcherImpl::Sequence {
     base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex,
                               ash::switches::IsRevenBranding());
 
-    if (!device_identifiers_.Retrieve(context_.statistics_provider,
-                                      context_.rlz_brand_code,
-                                      context_.serial_number)) {
+    device_identifiers_.StartRetrieval(
+        context_.statistics_provider,
+        base::BindOnce(&Sequence::OnDeviceIdentifierRetrieved,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void OnDeviceIdentifierRetrieved(std::string rlz_brand_code,
+                                   std::string serial_number) {
+    context_.rlz_brand_code = std::move(rlz_brand_code);
+    context_.serial_number = std::move(serial_number);
+    if (context_.rlz_brand_code.empty() || context_.serial_number.empty()) {
       // Skip enrollment if serial number or brand code are missing.
       // This is expected to happen for prototype devices, for instance.
       // See crbug.com/376581659.
@@ -883,7 +903,6 @@ class EnrollmentStateFetcherImpl::Sequence {
                                     weak_factory_.GetWeakPtr()));
   }
 
- private:
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
