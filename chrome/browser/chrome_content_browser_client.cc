@@ -355,6 +355,7 @@
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/child_process_data.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -8745,6 +8746,26 @@ bool ChromeContentBrowserClient::
 #else   // !BUILDFLAG(IS_ANDROID)
   return true;
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+base::FilePath ChromeContentBrowserClient::GetChildProcessPath(int flags) {
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) && BUILDFLAG(IS_LINUX)
+  if (flags & content::ChildProcessHost::CHILD_RENDERER) {
+    // TODO(crbug.com/552312254): Dedicated zygote for separate renderer binary
+    // on Linux is not yet supported. Until supported, launching chrome_renderer
+    // requires --no-zygote.
+    CHECK(
+        base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote))
+        << "--no-zygote is required when running separate renderer binary";
+
+    base::FilePath child_path;
+    if (base::PathService::Get(base::DIR_EXE, &child_path)) {
+      return child_path.Append(FILE_PATH_LITERAL("chrome_renderer"));
+    }
+  }
+#endif
+
+  return base::FilePath();
 }
 
 #if BUILDFLAG(IS_MAC)

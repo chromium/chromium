@@ -1405,7 +1405,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       fetch_keepalive_process_manager_;
 #endif
 
+  base::FilePath GetChildProcessPath(int flags) override;
+
 #if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/534570563): Deprecate GetChildProcessSuffix in favor of
+  // GetChildProcessPath.
   std::string GetChildProcessSuffix(int child_flags) override;
 #endif  // BUILDFLAG(IS_MAC)
 

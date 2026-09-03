@@ -2887,7 +2887,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // page (resulting in mixed content).
   virtual void OnDisplayInsecureContent(WebContents* web_contents) {}
 
+  // Returns the executable path to use for a child process with the given
+  // `flags` (from ChildProcessHost), allowing embedders to override the
+  // binary for specific child processes. Return an empty FilePath to use
+  // the default path.
+  virtual base::FilePath GetChildProcessPath(int flags);
+
 #if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/534570563): Deprecate GetChildProcessSuffix in favor of
+  // GetChildProcessPath.
   // Gets the suffix for an embedder-specific helper child process. The
   // |child_flags| is a value greater than
   // ChildProcessHost::CHILD_EMBEDDER_FIRST. The embedder-specific helper app

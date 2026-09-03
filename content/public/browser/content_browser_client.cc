@@ -1723,6 +1723,10 @@ bool ContentBrowserClient::IsFileSystemURLNavigationAllowed(
   return false;
 }
 
+base::FilePath ContentBrowserClient::GetChildProcessPath(int flags) {
+  return base::FilePath();
+}
+
 #if BUILDFLAG(IS_MAC)
 std::string ContentBrowserClient::GetChildProcessSuffix(int child_flags) {
   NOTIMPLEMENTED();

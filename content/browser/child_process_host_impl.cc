@@ -60,6 +60,10 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
   child_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
       switches::kBrowserSubprocessPath);
 
+  if (child_path.empty() && GetContentClient()->browser()) {
+    child_path = GetContentClient()->browser()->GetChildProcessPath(flags);
+  }
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Use /proc/self/exe rather than our known binary path so updates
   // can't swap out the binary from underneath us.

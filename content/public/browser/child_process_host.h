@@ -79,6 +79,9 @@ class CONTENT_EXPORT ChildProcessHost {
     // gdb). In this case, you'd use GetChildPath to get the real executable
     // file name, and then prepend the GDB command to the command line.
     CHILD_ALLOW_SELF = 1 << 0,
+
+    // Indicates that the child process to be launched is a separate renderer.
+    CHILD_RENDERER = 1 << 1,
 #elif BUILDFLAG(IS_MAC)
     // Note, on macOS these are not bitwise flags and each value is mutually
     // exclusive with the others. Each one of these options must correspond to a

@@ -241,10 +241,6 @@ if (!is_android && !is_mac) {
         "//components/crash/win:chrome_wer",
       ]
 
-      if (enable_separate_renderer_binary) {
-        data_deps += [ ":chrome_renderer" ]
-      }
-
       if (is_chrome_branded) {
         data_deps += [
           "//chrome/common/request_header_integrity/internal:chromecompaneros",
@@ -390,6 +386,10 @@ if (!is_android && !is_mac) {
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
       "//third_party/widevine/cdm",
     ]
+
+    if (enable_separate_renderer_binary) {
+      data_deps += [ ":chrome_renderer" ]
+    }
 
     if (is_linux) {
       sources += [
@@ -2126,7 +2126,10 @@ if (enable_separate_renderer_binary) {
                   "app/chrome_crash_reporter_client.h",
                 ]
       defines = [ "BUILDING_CHROME_RENDERER" ]
-      deps = _chrome_renderer_deps
+      deps = _chrome_renderer_deps + [
+               "//chrome/child",
+               "//sandbox/linux:sandbox_services",
+             ]
     }
   }
 }
