@@ -417,8 +417,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeferConnectionTypeAtStartup);
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationMac);
 // How long (in seconds) to avoid reusing a recently-used ephemeral port for
 // the same peer. Defaults to 120 to match common NAT timeout values.
-NET_EXPORT extern const base::FeatureParam<int>
-    kTcpPortRandomizationReuseDelaySec;
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpPortRandomizationReuseDelaySec);
+// If enabled, port randomization applies even where the remote address is
+// the loopback address. See https://crbug.com/546919930 for context.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kTcpPortRandomizationMacForLoopback);
 #endif
 
 // Avoid creating cache entries for transactions that are most likely no-store.

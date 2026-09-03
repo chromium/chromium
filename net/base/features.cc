@@ -326,8 +326,15 @@ BASE_FEATURE(kDeferConnectionTypeAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTcpPortRandomizationMac, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kTcpPortRandomizationReuseDelaySec{
-    &kTcpPortRandomizationMac, "reuse_delay_sec", 120};
+BASE_FEATURE_PARAM(int,
+                   kTcpPortRandomizationReuseDelaySec,
+                   &kTcpPortRandomizationMac,
+                   "reuse_delay_sec",
+                   120);
+BASE_FEATURE_PARAM(bool,
+                   kTcpPortRandomizationMacForLoopback,
+                   &kTcpPortRandomizationMac,
+                   false);
 #endif
 
 BASE_FEATURE(kAvoidEntryCreationForNoStore, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -122,7 +122,7 @@ class TCPSocketTest
       // "TcpSocketIoCompletionPortWin" feature is enabled and
       // whether we should use Read() or ReadIfReady() to read
       // the data.
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  protected:
   TCPSocketTest() {
 #if BUILDFLAG(IS_WIN)
@@ -130,8 +130,15 @@ class TCPSocketTest
         features::kTcpSocketIoCompletionPortWin,
         IsTcpSocketIoCompletionPortWinEnabled());
 #elif BUILDFLAG(IS_MAC)
-    AddScopedFeatureList().InitWithFeatureState(
-        features::kTcpPortRandomizationMac, IsTcpPortRandomizationMacEnabled());
+    if (IsTcpPortRandomizationMacEnabled()) {
+      AddScopedFeatureList().InitAndEnableFeatureWithParameters(
+          features::kTcpPortRandomizationMac,
+          {{"TcpPortRandomizationMacForLoopback",
+            IsLoopbackRandomizationEnabled() ? "true" : "false"}});
+    } else {
+      AddScopedFeatureList().InitAndDisableFeature(
+          features::kTcpPortRandomizationMac);
+    }
 #else
     CHECK(!std::get<0>(GetParam()));
 #endif  // BUILDFLAG(IS_WIN)
@@ -144,6 +151,7 @@ class TCPSocketTest
   }
 #elif BUILDFLAG(IS_MAC)
   bool IsTcpPortRandomizationMacEnabled() { return std::get<0>(GetParam()); }
+  bool IsLoopbackRandomizationEnabled() { return std::get<2>(GetParam()); }
 #endif  // BUILDFLAG(IS_WIN)
 
   bool ShouldUseReadIfReady() { return std::get<1>(GetParam()); }
@@ -1779,25 +1787,34 @@ INSTANTIATE_TEST_SUITE_P(
     TCPSocketTest,
     ::testing::Values(
         // Base tests
-        std::make_tuple(false, false),  // Base, Read
-        std::make_tuple(false, true)    // Base, ReadIfReady
+        std::make_tuple(false, false, false),  // Base, Read, Unused
+        std::make_tuple(false, true, false)    // Base, ReadIfReady, Unused
 #if BUILDFLAG(IS_WIN)
         // TcpSocketIoCompletionPortWin tests
         ,
         std::make_tuple(true,
-                        false),      // TcpSocketIoCompletionPortWin, Read
-        std::make_tuple(true, true)  // TcpSocketIoCompletionPortWin,
-                                     // ReadIfReady
+                        false,
+                        false),  // TcpSocketIoCompletionPortWin, Read, Unused
+        std::make_tuple(true, true, false)  // TcpSocketIoCompletionPortWin,
+                                            // ReadIfReady, Unused
 #elif BUILDFLAG(IS_MAC)
         // TcpPortRandomizationMac tests
         ,
+        std::make_tuple(true, false, false),  // TcpPortRandomizationMac, Read,
+                                              // LoopbackRandomizationDisabled
         std::make_tuple(true,
-                        false),      // TcpPortRandomizationMac, Read
-        std::make_tuple(true, true)  // TcpPortRandomizationMac,
-                                     // ReadIfReady
+                        true,
+                        false),  // TcpPortRandomizationMac, ReadIfReady,
+                                 // LoopbackRandomizationDisabled
+        std::make_tuple(true, false, true),  // TcpPortRandomizationMac, Read,
+                                             // LoopbackRandomizationEnabled
+        std::make_tuple(true,
+                        true,
+                        true)  // TcpPortRandomizationMac, ReadIfReady,
+                               // LoopbackRandomizationEnabled
 #endif
         ),
-    [](::testing::TestParamInfo<std::tuple<bool, bool>> info) {
+    [](::testing::TestParamInfo<std::tuple<bool, bool, bool>> info) {
       std::string name;
       if (std::get<0>(info.param)) {
 #if BUILDFLAG(IS_WIN)
@@ -1809,6 +1826,10 @@ INSTANTIATE_TEST_SUITE_P(
         name = "Base";
       }
       name += std::get<1>(info.param) ? "_ReadIfReady" : "_Read";
+#if BUILDFLAG(IS_MAC)
+      name += std::get<2>(info.param) ? "_LoopbackRandomizationEnabled"
+                                      : "_LoopbackRandomizationDisabled";
+#endif
       return name;
     });
 

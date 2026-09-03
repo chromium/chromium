@@ -302,7 +302,13 @@ int TCPSocketPosix::Connect(const IPEndPoint& address,
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kTcpPortRandomizationMac)) {
+  // Even if `kTcpPortRandomizationMac` is enabled, we still skip this code for
+  // loopback (zero) targets if `kTcpPortRandomizationMacForLoopback` is false.
+  // See https://crbug.com/546919930 for context.
+  if (base::FeatureList::IsEnabled(features::kTcpPortRandomizationMac) &&
+      ((!target_address.address().IsLoopback() &&
+        !target_address.address().IsZero()) ||
+       features::kTcpPortRandomizationMacForLoopback.Get())) {
     port_randomization_data_.reset();
     EphemeralPortRandomizer& randomizer =
         EphemeralPortRandomizer::GetInstance();
