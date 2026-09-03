@@ -273,8 +273,8 @@ PASS 'function XPathEvaluator() { [native code] }' is 'function XPathEvaluator()
 PASS 'function XPathEvaluator() { [native code] }' is 'function XPathEvaluator() { [native code] }'
 PASS 'function XPathResult() { [native code] }' is 'function XPathResult() { [native code] }'
 PASS 'function XPathResult() { [native code] }' is 'function XPathResult() { [native code] }'
-FAIL win['XSLTProcessor'] should be null (of type object). Was undefined (of type undefined).
-FAIL win['XSLTProcessor'] should be null. Was [object HTMLInputElement].
+PASS 'function XSLTProcessor() { [native code] }' is 'function XSLTProcessor() { [native code] }'
+PASS 'function XSLTProcessor() { [native code] }' is 'function XSLTProcessor() { [native code] }'
 PASS win['onload'] is null
 PASS win['onload'] is null
 PASS win['frames'] == '[object Window]' is true

@@ -42,8 +42,7 @@ function test()
     xmlSerializer = new XMLSerializer();
     shouldBe("XMLSerializer.prototype.isPrototypeOf(xmlSerializer)", true);
 
-    xsltProcessor = new XSLTProcessor();
-    shouldBe("XSLTProcessor.prototype.isPrototypeOf(xsltProcessor)", true);
+    shouldBe("window.XSLTProcessor", undefined);
 
     shouldBe("window.Document.prototype.isPrototypeOf(document)", true);
     shouldBe("window.HTMLDocument.prototype.isPrototypeOf(document)", true);

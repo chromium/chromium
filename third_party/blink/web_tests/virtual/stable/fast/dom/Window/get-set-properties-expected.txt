@@ -173,7 +173,7 @@ PASS: canGet('XPathEvaluator') should be 'true' and is.
 PASS: canSet('XPathEvaluator') should be 'true' and is.
 PASS: canGet('XPathResult') should be 'true' and is.
 PASS: canSet('XPathResult') should be 'true' and is.
-*** FAIL: canGet('XSLTProcessor') should be 'true' but instead is false. ***
+PASS: canGet('XSLTProcessor') should be 'true' and is.
 PASS: canSet('XSLTProcessor') should be 'true' and is.
 PASS: canGet('addEventListener') should be 'true' and is.
 PASS: canSet('addEventListener') should be 'true' and is.
