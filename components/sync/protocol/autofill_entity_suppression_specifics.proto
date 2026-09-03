@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message EntitySuppressionKey {
+  message Attribute {
+    optional string name = 1;
+    optional bytes value_hash = 2;
+  }
+
+  // The entity type (e.g. "passport").
+  optional string entity_type_name = 1;
+
+  // The set of attributes identifying the entity instance.
+  repeated Attribute attributes = 2;
+}
+
+message AutofillEntitySuppressionSpecifics {
+  // Random UUIDv4 identifying this record.
+  optional string guid = 1;
+
+  optional EntitySuppressionKey entity_suppression_key = 2;
+
+  // Schema version when suppressed.
+  optional int32 schema_version = 3;
+}

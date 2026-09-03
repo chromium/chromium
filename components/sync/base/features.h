@@ -54,6 +54,9 @@ BASE_DECLARE_FEATURE(kSyncNotebook);
 // Enables syncing history journeys.
 BASE_DECLARE_FEATURE(kSyncJourney);
 
+// Enables syncing entity suppression records for Autofill AI.
+BASE_DECLARE_FEATURE(kSyncAutofillEntitySuppression);
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:

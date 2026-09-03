@@ -12,6 +12,7 @@
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/arc_package_specifics.pb.h"
+#include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
@@ -786,7 +787,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(65 == GetNumDataTypes(),
+  static_assert(66 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -796,6 +797,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(app_setting);
   VISIT(arc_package);
   VISIT(autofill);
+  VISIT(autofill_entity_suppression);
   VISIT(autofill_offer);
   VISIT(autofill_profile);
   VISIT(autofill_valuable);
@@ -2523,6 +2525,22 @@ VISIT_PROTO_FIELDS(const sync_pb::ContextualTaskSpecifics& proto) {
   VISIT(contextual_task);
   VISIT(url_resource);
   VISIT(version);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::EntitySuppressionKey::Attribute& proto) {
+  VISIT(name);
+  VISIT_BYTES(value_hash);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::EntitySuppressionKey& proto) {
+  VISIT(entity_type_name);
+  VISIT_REP(attributes);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AutofillEntitySuppressionSpecifics& proto) {
+  VISIT(guid);
+  VISIT(entity_suppression_key);
+  VISIT(schema_version);
 }
 
 }  // namespace syncer

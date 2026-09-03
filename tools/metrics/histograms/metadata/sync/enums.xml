@@ -1062,6 +1062,7 @@ chromium-metrics-reviews@google.com.
   <int value="82" label="Encrypted Tab Context Item"/>
   <int value="83" label="Notebook"/>
   <int value="84" label="Journey"/>
+  <int value="85" label="Autofill Entity Suppression"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

@@ -10,6 +10,7 @@ sync_protocol_sources = [
   "app_setting_specifics.proto",
   "app_specifics.proto",
   "arc_package_specifics.proto",
+  "autofill_entity_suppression_specifics.proto",
   "autofill_offer_specifics.proto",
   "autofill_specifics.proto",
   "autofill_valuable_metadata_specifics.proto",

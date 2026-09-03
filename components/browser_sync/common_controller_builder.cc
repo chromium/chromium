@@ -578,6 +578,10 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     add_controller(CreateJourneyDataTypeController());
   }
 
+  if (!disabled_types.Has(syncer::AUTOFILL_ENTITY_SUPPRESSION)) {
+    add_controller(CreateAutofillEntitySuppressionDataTypeController());
+  }
+
   if (!disabled_types.Has(syncer::CONTEXTUAL_TASK)) {
     add_controller(CreateContextualTaskDataTypeController());
   }
@@ -1242,6 +1246,17 @@ CommonControllerBuilder::CreateJourneyDataTypeController() {
   // - Inject CoolKeyedService in this class and call GetControllerDelegate()
   //   on it to create the DataTypeController.
   // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+  return nullptr;
+}
+
+std::unique_ptr<syncer::DataTypeController>
+CommonControllerBuilder::CreateAutofillEntitySuppressionDataTypeController() {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncAutofillEntitySuppression)) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/501036619): Instantiate the DataTypeController once the
+  // keyed service and sync bridge are wired up.
   return nullptr;
 }
 

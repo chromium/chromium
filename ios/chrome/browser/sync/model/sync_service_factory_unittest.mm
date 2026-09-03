@@ -57,7 +57,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(65 == syncer::GetNumDataTypes(),
+    static_assert(66 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -137,6 +137,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     }
     if (base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
       datatypes.Put(syncer::JOURNEY);
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillEntitySuppression)) {
+      datatypes.Put(syncer::AUTOFILL_ENTITY_SUPPRESSION);
     }
     return datatypes;
   }

@@ -41,6 +41,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".APP_SETTING" summary="APP_SETTING"/>
   <variant name=".ARC_PACKAGE" summary="ARC_PACKAGE"/>
   <variant name=".AUTOFILL" summary="AUTOFILL"/>
+  <variant name=".AUTOFILL_ENTITY_SUPPRESSION"
+      summary="AUTOFILL_ENTITY_SUPPRESSION"/>
   <variant name=".AUTOFILL_OFFER" summary="AUTOFILL_OFFER"/>
   <variant name=".AUTOFILL_PROFILE" summary="AUTOFILL_PROFILE"/>
   <variant name=".AUTOFILL_VALUABLE" summary="AUTOFILL_VALUABLE"/>

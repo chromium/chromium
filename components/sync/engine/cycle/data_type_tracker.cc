@@ -121,6 +121,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case THEMES_ANDROID:
     case NOTEBOOK:
     case JOURNEY:
+    case AUTOFILL_ENTITY_SUPPRESSION:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
@@ -201,6 +202,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case THEMES_ANDROID:
     case NOTEBOOK:
     case JOURNEY:
+    case AUTOFILL_ENTITY_SUPPRESSION:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

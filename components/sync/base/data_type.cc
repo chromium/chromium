@@ -1193,10 +1193,26 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
             .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
         },
+        {
+            .type = AUTOFILL_ENTITY_SUPPRESSION,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillEntitySuppressionFieldNumber,
+            .debug_string = "Autofill Entity Suppression",
+            .histogram_suffix = "AUTOFILL_ENTITY_SUPPRESSION",
+            .stable_lowercase_string = "autofill_entity_suppression",
+            .encryption_policy = EncryptionPolicy::kAlwaysEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+            .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
+        },
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 65,
+static_assert(GetNumDataTypes() == 66,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1418,6 +1434,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case JOURNEY:
       specifics->mutable_journey();
+      break;
+    case AUTOFILL_ENTITY_SUPPRESSION:
+      specifics->mutable_autofill_entity_suppression();
       break;
   }
 }
@@ -1757,6 +1776,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kNotebook;
     case JOURNEY:
       return DataTypeForHistograms::kJourney;
+    case AUTOFILL_ENTITY_SUPPRESSION:
+      return DataTypeForHistograms::kAutofillEntitySuppression;
   }
   NOTREACHED();
 }

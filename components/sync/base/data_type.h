@@ -204,7 +204,10 @@ enum DataType {
   // Information about a history journey.
   JOURNEY,
 
-  LAST_USER_DATA_TYPE = JOURNEY,
+  // User entity suppression records for Autofill AI.
+  AUTOFILL_ENTITY_SUPPRESSION,
+
+  LAST_USER_DATA_TYPE = AUTOFILL_ENTITY_SUPPRESSION,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -318,7 +321,8 @@ enum class DataTypeForHistograms {
   kEncryptedTabContextItem = 82,
   kNotebook = 83,
   kJourney = 84,
-  kMaxValue = kJourney,
+  kAutofillEntitySuppression = 85,
+  kMaxValue = kAutofillEntitySuppression,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -353,7 +357,8 @@ inline constexpr DataTypeSet AlwaysPreferredUserTypes() {
           SHARING_MESSAGE,
           SKILL,
           AI_THREAD,
-          GEMINI_THREAD};
+          GEMINI_THREAD,
+          AUTOFILL_ENTITY_SUPPRESSION};
 }
 
 // User types which are always encrypted.
