@@ -1357,6 +1357,23 @@ static NSWindow* __weak _deferredResignKeyWindow;
     return NO;
   }
 
+  // If the event is being redispatched, do not consume it again. This prevents
+  // dispatch loops that break accelerator key dispatch in fullscreen mode. Note
+  // that in fullscreen mode, the keys are dispatched to the key window, which
+  // is not the NSToolbarFullScreenWindow, but the BrowserNativeWidgetWindow.
+  // When redispatched, redispatchKeyEvent: resets theEvent.window to _owner
+  // which is also the BrowserNativeWidgetWindow. This implies that
+  // theEvent.window will be a BrowserNativeWidgetWindow which implements
+  // CommandDispatchingWindow.
+  if ([theEvent.window
+          conformsToProtocol:@protocol(CommandDispatchingWindow)]) {
+    NSObject<CommandDispatchingWindow>* window =
+        static_cast<NSObject<CommandDispatchingWindow>*>(theEvent.window);
+    if ([[window commandDispatcher] isEventBeingRedispatched:theEvent]) {
+      return NO;
+    }
+  }
+
   // If the event is reserved by the system, do not pass it to web content.
   // If the user changes the system hotkey mapping after Chrome has been
   // launched, it is possible that a formerly reserved system hotkey is no

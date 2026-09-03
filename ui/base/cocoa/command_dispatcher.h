@@ -32,6 +32,9 @@ COMPONENT_EXPORT(UI_BASE)
 // YES if the event is handled.
 - (BOOL)performKeyEquivalent:(NSEvent*)event;
 
+// Returns true if the event is currently being redispatched.
+- (BOOL)isEventBeingRedispatched:(NSEvent*)event;
+
 // Validate a user interface item (e.g. an NSMenuItem), consulting |handler| for
 // -commandDispatch: item actions.
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
