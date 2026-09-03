@@ -49,11 +49,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
             boolean success = schedulingVisitor.getSuccess();
             BackgroundTaskSchedulerUma.getInstance()
                     .reportTaskScheduled(taskInfo.getTaskId(), success);
-
-            // Retain expiration metrics
-            MetricsVisitor metricsVisitor = new MetricsVisitor(taskInfo.getTaskId());
-            taskInfo.getTimingInfo().accept(metricsVisitor);
-
             return success;
         }
     }
@@ -81,29 +76,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
         @Override
         public void visit(TaskInfo.PeriodicInfo periodicInfo) {
             mSuccess = mSchedulerDelegate.schedule(mContext, mTaskInfo);
-        }
-    }
-
-    // TODO(crbug.com/41477414): Update the documentation for the expiration feature.
-    private static class MetricsVisitor implements TaskInfo.TimingInfoVisitor {
-        private final int mTaskId;
-
-        MetricsVisitor(int taskId) {
-            mTaskId = taskId;
-        }
-
-        @Override
-        public void visit(TaskInfo.OneOffInfo oneOffInfo) {
-            BackgroundTaskSchedulerUma.getInstance()
-                    .reportTaskCreatedAndExpirationState(
-                            mTaskId, oneOffInfo.expiresAfterWindowEndTime());
-        }
-
-        @Override
-        public void visit(TaskInfo.PeriodicInfo periodicInfo) {
-            BackgroundTaskSchedulerUma.getInstance()
-                    .reportTaskCreatedAndExpirationState(
-                            mTaskId, periodicInfo.expiresAfterWindowEndTime());
         }
     }
 

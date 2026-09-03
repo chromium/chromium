@@ -35,7 +35,6 @@ public class BackgroundTaskSchedulerImplTest {
     @Mock private BackgroundTaskSchedulerUma mBackgroundTaskSchedulerUma;
 
     private TaskInfo mTask;
-    private TaskInfo mExpirationTask;
 
     @Before
     public void setUp() {
@@ -46,12 +45,6 @@ public class BackgroundTaskSchedulerImplTest {
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TimeUnit.DAYS.toMillis(1)).build();
         mTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
-        TaskInfo.TimingInfo expirationTimingInfo =
-                TaskInfo.OneOffInfo.create()
-                        .setWindowEndTimeMs(TimeUnit.DAYS.toMillis(1))
-                        .setExpiresAfterWindowEndTime(true)
-                        .build();
-        mExpirationTask = TaskInfo.createTask(TaskIds.TEST, expirationTimingInfo).build();
 
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(
                 new TestBackgroundTaskFactory());
@@ -66,20 +59,6 @@ public class BackgroundTaskSchedulerImplTest {
         verify(mDelegate, times(1)).schedule(eq(RuntimeEnvironment.application), eq(mTask));
         verify(mBackgroundTaskSchedulerUma, times(1))
                 .reportTaskScheduled(eq(TaskIds.TEST), eq(true));
-        verify(mBackgroundTaskSchedulerUma, times(1))
-                .reportTaskCreatedAndExpirationState(eq(TaskIds.TEST), eq(false));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testScheduleTaskWithExpirationSuccessful() {
-        doReturn(true)
-                .when(mDelegate)
-                .schedule(eq(RuntimeEnvironment.application), eq(mExpirationTask));
-        BackgroundTaskSchedulerFactoryInternal.getScheduler()
-                .schedule(RuntimeEnvironment.application, mExpirationTask);
-        verify(mBackgroundTaskSchedulerUma, times(1))
-                .reportTaskCreatedAndExpirationState(eq(TaskIds.TEST), eq(true));
     }
 
     @Test

@@ -293,30 +293,6 @@ public class BackgroundTaskSchedulerUmaTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
-    public void testReportTaskScheduledWithExpiration() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        BackgroundTaskSchedulerUma.getInstance()
-                .reportTaskCreatedAndExpirationState(TaskIds.TEST, /* expires= */ true);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(
-                        eq("Android.BackgroundTaskScheduler.TaskCreated.WithExpiration"),
-                        ArgumentMatchers.eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportTaskScheduledWithoutExpiration() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        BackgroundTaskSchedulerUma.getInstance()
-                .reportTaskCreatedAndExpirationState(TaskIds.TEST, /* expires= */ false);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(
-                        eq("Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration"),
-                        ArgumentMatchers.eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
     public void testReportTaskStarted() {
         doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
         BackgroundTaskSchedulerUma.getInstance().reportTaskStarted(TaskIds.OMAHA_JOB_ID);
