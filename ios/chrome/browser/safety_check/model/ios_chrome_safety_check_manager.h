@@ -15,7 +15,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -75,7 +74,6 @@ class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
 class IOSChromeSafetyCheckManager
     : public KeyedService,
       public IOSChromePasswordCheckManager::Observer,
-      public OmahaServiceObserver,
       public signin::IdentityManager::Observer {
  public:
   explicit IOSChromeSafetyCheckManager(
@@ -113,12 +111,6 @@ class IOSChromeSafetyCheckManager
   void InsecureCredentialsChanged() override;
   void ManagerWillShutdown(
       IOSChromePasswordCheckManager* password_check_manager) override;
-
-  // `OmahaServiceObserver` implementation.
-  void OnServiceStarted(OmahaService* omaha_service) override;
-  void UpgradeRecommendedDetailsChanged(
-      UpgradeRecommendedDetails details) override;
-  void ServiceWillShutdown(OmahaService* omaha_service) override;
 
   // `signin::IdentityManager::Observer` implementation.
   void OnPrimaryAccountChanged(

@@ -369,30 +369,8 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
   }
 
   OmahaService* service = GetInstance();
-  service->StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
-
-  if (IsOmahaServiceRefactorEnabled()) {
-    base::RepeatingCallback<void(const UpgradeRecommendedDetails&)>
-        wrapped_callback_that_notifies_observers = base::BindRepeating(
-            [](OmahaService* service, UpgradeRecommendedCallback callback,
-               const UpgradeRecommendedDetails& details) {
-              // `OmahaService` is never destroyed due to `NoDestructor`,
-              // ensuring the `base::Unretained(service)` reference below
-              // remains valid throughout its lifetime.
-              service->task_runner_->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(&OmahaService::NotifyObservers,
-                                 base::Unretained(service), details));
-
-              callback.Run(details);
-            },
-            service, callback);
-
-    service->set_upgrade_recommended_callback(
-        wrapped_callback_that_notifies_observers);
-  } else {
-    service->set_upgrade_recommended_callback(callback);
-  }
+  service->StartInternal();
+  service->set_upgrade_recommended_callback(callback);
 
   // This should only be called once.
   DCHECK(!service->pending_url_loader_factory_ ||
@@ -428,63 +406,11 @@ void OmahaService::CheckNow(OneOffCallback callback) {
       return;
     }
 
-    if (IsOmahaServiceRefactorEnabled()) {
-      CHECK(service->task_runner_);
-
-      base::OnceCallback<void(UpgradeRecommendedDetails)>
-          wrapped_callback_that_notifies_observers = base::BindOnce(
-              [](OmahaService* service, OneOffCallback callback,
-                 const UpgradeRecommendedDetails details) {
-                // `OmahaService` is never destroyed due to `NoDestructor`,
-                // ensuring the `base::Unretained(service)` reference below
-                // remains valid throughout its lifetime.
-                service->task_runner_->PostTask(
-                    FROM_HERE,
-                    base::BindOnce(&OmahaService::NotifyObservers,
-                                   base::Unretained(service), details));
-
-                std::move(callback).Run(details);
-              },
-              service, std::move(callback));
-
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&OmahaService::CheckNowOnIOThread,
-                         base::Unretained(service),
-                         std::move(wrapped_callback_that_notifies_observers)));
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&OmahaService::CheckNowOnIOThread,
-                         base::Unretained(service), std::move(callback)));
-    }
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OmahaService::CheckNowOnIOThread,
+                       base::Unretained(service), std::move(callback)));
   }
-}
-
-void OmahaService::AddObserver(OmahaServiceObserver* observer) {
-  if (OmahaService::IsEnabled()) {
-    GetInstance()->RegisterObserver(observer);
-  }
-}
-
-void OmahaService::RemoveObserver(OmahaServiceObserver* observer) {
-  if (OmahaService::IsEnabled()) {
-    GetInstance()->UnregisterObserver(observer);
-  }
-}
-
-void OmahaService::RegisterObserver(OmahaServiceObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(IsOmahaServiceRefactorEnabled());
-
-  observers_.AddObserver(observer);
-}
-
-void OmahaService::UnregisterObserver(OmahaServiceObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(IsOmahaServiceRefactorEnabled());
-
-  observers_.RemoveObserver(observer);
 }
 
 void OmahaService::CheckNowOnIOThread(OneOffCallback callback) {
@@ -513,29 +439,17 @@ OmahaService::OmahaService(bool schedule)
       sending_install_event_(false) {}
 
 OmahaService::~OmahaService() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (foreground_notification_registration_handle_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:foreground_notification_registration_handle_];
   }
-
-  for (auto& observer : observers_) {
-    observer.ServiceWillShutdown(this);
-  }
-
-  DCHECK(observers_.empty());
 }
 
-void OmahaService::StartInternal(
-    const scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+void OmahaService::StartInternal() {
   if (started_) {
     return;
   }
   started_ = true;
-  task_runner_ = task_runner;
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
@@ -594,12 +508,6 @@ void OmahaService::StartInternal(
 
   if (persist_again) {
     PersistStates();
-  }
-
-  if (IsOmahaServiceRefactorEnabled()) {
-    for (auto& observer : observers_) {
-      observer.OnServiceStarted(this);
-    }
   }
 }
 
@@ -751,15 +659,6 @@ std::string OmahaService::GetCurrentPingContent() {
       request_id, ios::device_util::GetRandomId(),
       std::string(version_info::GetVersionNumber()), GetChannelString(),
       base::Time::FromTimeT(application_install_date_), ping_content);
-}
-
-void OmahaService::NotifyObservers(UpgradeRecommendedDetails details) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(IsOmahaServiceRefactorEnabled());
-
-  for (auto& observer : observers_) {
-    observer.UpgradeRecommendedDetailsChanged(details);
-  }
 }
 
 void OmahaService::SendPing() {

@@ -34,8 +34,6 @@ BASE_FEATURE(kSafetyCheckAutorunByManagerKillswitch,
 BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHideToolbar, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsHideToolbarEnabled() {
@@ -100,10 +98,6 @@ bool IsSafetyCheckAutorunByManagerEnabled() {
 bool ShouldHideSafetyCheckModuleIfNoIssues() {
   return base::FeatureList::IsEnabled(
       kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
-}
-
-bool IsOmahaServiceRefactorEnabled() {
-  return base::FeatureList::IsEnabled(kOmahaServiceRefactor);
 }
 
 BASE_FEATURE(kIOSChooseFromDriveSignedOut, base::FEATURE_DISABLED_BY_DEFAULT);
