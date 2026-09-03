@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 
 #include "base/check.h"
 #include "base/check_op.h"

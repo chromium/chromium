@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("browser_delegate") {
+  public = [
+    "browser_controller.h",
+    "browser_delegate.h",
+    "browser_type.h",
+  ]
+
+  sources = [ "browser_controller.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/account_id",
+    "//components/apps/link_capturing",
+    "//components/sessions:session_id",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//ui/gfx/geometry",
+    "//ui/views/controls/webview",
+    "//url",
+  ]
+}

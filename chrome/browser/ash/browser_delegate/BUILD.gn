@@ -4,30 +4,11 @@
 
 assert(is_chromeos)
 
-# To be moved out of //chrome.
-static_library("browser_delegate") {
-  sources = [
-    "browser_controller.cc",
-    "browser_controller.h",
-    "browser_delegate.h",
-    "browser_type.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/account_id",
-    "//components/apps/link_capturing",
-    "//components/sessions:session_id",
-    "//components/tab_groups",
-    "//components/tabs:public",
-    "//components/webapps/browser",
-    "//components/webapps/common",
-    "//content/public/browser",
-    "//ui/gfx/geometry",
-    "//ui/views",
-    "//ui/views/controls/webview",
-    "//url",
-  ]
+# Forwarding group for staged migration to
+# //chromeos/ash/components/browser_delegate.
+# TODO(crbug.com/369689187): Remove once all uses are migrated.
+group("browser_delegate") {
+  public_deps = [ "//chromeos/ash/components/browser_delegate" ]
 }
 
 static_library("impl") {

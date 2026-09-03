@@ -3,5 +3,4 @@ include_rules = [
     "+chrome/app/chrome_command_ids.h",
     "+chrome/browser",
     "+chrome/common/chrome_features.h",
-    "+ui/views/controls/webview",
 ]

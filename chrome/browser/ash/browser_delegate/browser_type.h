@@ -5,20 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_TYPE_H_
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_TYPE_H_
 
-namespace ash {
-
-// Enumerates the various types of browser.
-// See BrowserController and BrowserDelegate.
-// TODO(crbug.com/369689187): Replace kOther once we know what we need.
-enum class BrowserType {
-  kApp,
-  kAppPopup,
-  kDevTools,
-  kNormal,
-  kPopup,
-  kOther,
-};
-
-}  // namespace ash
+// TODO(crbug.com/369689187): Delete this file and use direct include of
+// chromeos/ash/components/browser_delegate/browser_type.h.
+#include "chromeos/ash/components/browser_delegate/browser_type.h"
 
 #endif  // CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_TYPE_H_
