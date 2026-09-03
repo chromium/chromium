@@ -559,7 +559,7 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
     [
       'bootstatus',
       sim_udid,
-      '-bd',
+      '-b',
     ],
     path,
   )

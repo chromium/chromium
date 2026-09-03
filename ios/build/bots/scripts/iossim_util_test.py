@@ -989,10 +989,10 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       ]
       check_calls = [
         mock.call(dyld_cmd),
-        mock.call(['xcrun', 'simctl', 'bootstatus', udid, '-bd'], timeout=120),
+        mock.call(['xcrun', 'simctl', 'bootstatus', udid, '-b'], timeout=120),
         mock.call(dyld_cmd),
         mock.call(
-          ['xcrun', 'simctl', '--set', '/path', 'bootstatus', udid, '-bd'],
+          ['xcrun', 'simctl', '--set', '/path', 'bootstatus', udid, '-b'],
           timeout=120,
         ),
       ]
