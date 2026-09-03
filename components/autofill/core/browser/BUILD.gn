@@ -1827,6 +1827,8 @@ static_library("test_support") {
     "test_utils/entity_data_test_util.cc",
     "test_utils/entity_data_test_util.h",
     "test_utils/field_prediction_test_matchers.h",
+    "test_utils/personal_context_test_util.cc",
+    "test_utils/personal_context_test_util.h",
     "test_utils/test_autofill_clock.cc",
     "test_utils/test_autofill_clock.h",
     "test_utils/test_event_waiter.h",

@@ -17,10 +17,14 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/data_model_util.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
@@ -93,6 +97,77 @@ bool IsPersonalContextSpiiType(EntityType type) {
   return GetPersonalContextSpiiType(
              type, EntityInstance::RecordType::kPersonalContext) ==
          EntityInstance::PersonalContextSpiiType::kSpii;
+}
+
+bool IsValidDateWithinTtl(const EntityInstance& entity,
+                          AttributeTypeName type_name,
+                          base::TimeDelta ttl) {
+  base::optional_ref<const AttributeInstance> attr =
+      entity.attribute(AttributeType(type_name));
+  if (!attr) {
+    return false;
+  }
+
+  data_util::Date date;
+  if (!data_util::ParseDate(attr->GetCompleteRawInfo(), u"YYYY-MM-DD", date) ||
+      !data_util::IsValidDateForFormat(date, u"YYYY-MM-DD")) {
+    return false;
+  }
+
+  // Set the time to the end of the day so the date remains valid throughout the
+  // whole day.
+  base::Time::Exploded exploded = {
+      .year = date.year,
+      .month = date.month,
+      .day_of_month = date.day,
+      .hour = 23,
+      .minute = 59,
+      .second = 59,
+      .millisecond = 999,
+  };
+  base::Time time;
+  return base::Time::FromLocalExploded(exploded, &time) &&
+         time + ttl >= base::Time::Now();
+}
+
+bool ValidateTtl(const EntityInstance& entity) {
+  switch (entity.type().name()) {
+    case EntityTypeName::kPassport:
+      return IsValidDateWithinTtl(
+          entity, AttributeTypeName::kPassportExpirationDate, base::Days(0));
+    case EntityTypeName::kDriversLicense:
+      return IsValidDateWithinTtl(
+          entity, AttributeTypeName::kDriversLicenseExpirationDate,
+          base::Days(0));
+    case EntityTypeName::kNationalIdCard:
+      return IsValidDateWithinTtl(
+          entity, AttributeTypeName::kNationalIdCardExpirationDate,
+          base::Days(0));
+    case EntityTypeName::kOrder:
+      return IsValidDateWithinTtl(entity, AttributeTypeName::kOrderDate,
+                                  base::Days(90));
+    case EntityTypeName::kShipment:
+      return IsValidDateWithinTtl(
+          entity, AttributeTypeName::kShipmentShippedDate, base::Days(30));
+    case EntityTypeName::kFlightReservation:
+      return IsValidDateWithinTtl(
+          entity, AttributeTypeName::kFlightReservationDepartureDate,
+          base::Days(90));
+    case EntityTypeName::kVehicle:
+      return true;
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      // Unsupported by Ambient Autofill.
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool IsValidAmbientAutofillEntity(const EntityInstance& entity) {
+  return AttributesMeetImportConstraints(
+             entity.type(),
+             DenseSet(entity.attributes(), &AttributeInstance::type)) &&
+         ValidateTtl(entity);
 }
 
 // Logs the request latency of a personal context network request.
@@ -325,7 +400,11 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
       }
     } else if (std::optional<EntityInstance> converted =
                    ConvertProtoToEntityInstance(entity, /*mask_spii=*/true)) {
-      entities.push_back({std::move(*converted), entity});
+      // TODO(crbug.com/501037715): Record metrics for
+      // `IsValidAmbientAutofillEntity`.
+      if (IsValidAmbientAutofillEntity(*converted)) {
+        entities.push_back({std::move(*converted), entity});
+      }
     }
   }
   return entities;

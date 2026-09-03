@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,11 +19,13 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl_test_api.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
+#include "components/autofill/core/browser/test_utils/personal_context_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
@@ -71,6 +74,14 @@ using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArg;
 
 using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+using test::CreateDriversLicenseProto;
+using test::CreateFlightReservationProto;
+using test::CreateNationalIdProto;
+using test::CreateOrderProto;
+using test::CreatePassportProto;
+using test::CreateShipmentProto;
+using test::CreateVehicleProto;
 
 [[nodiscard]] auto HasAttributeWithValue(AttributeTypeName attribute_type_name,
                                          std::u16string value) {
@@ -155,6 +166,17 @@ class MockAutofillAiPersonalContextAccessManagerObserver
               (override));
 };
 
+personal_context::proto::Date TodayWithDelta(
+    base::TimeDelta delta = base::TimeDelta()) {
+  base::Time::Exploded exploded;
+  (base::Time::Now() + delta).UTCExplode(&exploded);
+  personal_context::proto::Date date;
+  date.set_year(exploded.year);
+  date.set_month(exploded.month);
+  date.set_day(exploded.day_of_month);
+  return date;
+}
+
 class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
  public:
   AutofillAiPersonalContextAccessManagerImplTest() {
@@ -201,6 +223,12 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
 
   MockAutofillAiPersonalContextAccessManagerObserver& mock_observer() {
     return mock_observer_;
+  }
+
+  void SetClockToDate(const std::string& date_string) {
+    base::Time time;
+    ASSERT_TRUE(base::Time::FromString(date_string.c_str(), &time));
+    task_environment_.AdvanceClock(time - base::Time::Now());
   }
 
   void FastForwardBy(base::TimeDelta delta) {
@@ -283,8 +311,10 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
         ->mutable_sensitive_pii_presence()
         ->set_type(SensitivePiiPresence::PASSPORT);
     personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-    spii_response.add_entities()->mutable_passport()->set_number(
-        std::string(passport_number));
+    personal_context::proto::Passport* passport =
+        spii_response.add_entities()->mutable_passport();
+    passport->set_number(std::string(passport_number));
+    *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
     std::vector<EntityInstance> entities;
     EXPECT_CALL(mock_observer(),
@@ -334,6 +364,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextSuccess) {
   personal_context::proto::Entity* entity = expected_response.add_entities();
   entity->mutable_order()->set_order_id("12345");
   entity->mutable_order()->set_merchant_name("Amazon");
+  *entity->mutable_order()->mutable_order_date() = TodayWithDelta();
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(), OnPrefetchContextComplete)
@@ -360,6 +391,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::Entity* order_entity = response.add_entities();
   order_entity->mutable_order()->set_order_id("12345");
   order_entity->mutable_order()->set_merchant_name("Amazon");
+  *order_entity->mutable_order()->mutable_order_date() = TodayWithDelta();
 
   // Add an unrequested kPassport presence signal.
   personal_context::proto::Entity* passport_presence = response.add_entities();
@@ -402,7 +434,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       ->set_type(SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       passport_spii_response;
-  passport_spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      passport_spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
                       passport_presence_response, passport_spii_response);
@@ -417,8 +452,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       expected_response;
-  expected_response.add_entities()->mutable_drivers_license()->set_number(
-      "DL98765");
+  personal_context::proto::DriversLicense* dl =
+      expected_response.add_entities()->mutable_drivers_license();
+  dl->set_number("DL98765");
+  *dl->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
@@ -446,7 +483,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
                       presence_response, spii_response);
@@ -497,6 +537,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       expected_response;
   personal_context::proto::Entity* entity = expected_response.add_entities();
   entity->mutable_order()->set_order_id("12345");
+  entity->mutable_order()->set_merchant_name("Amazon");
+  *entity->mutable_order()->mutable_order_date() = TodayWithDelta();
 
   PrefetchContextSync(requested_types, {}, expected_response);
   histogram_tester().ExpectUniqueSample(
@@ -576,15 +618,25 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContextTriggerResultLoggingMultipleTypes) {
   personal_context::proto::ContextMemoryAmbientAutofillResponse
-      expected_response;
-  personal_context::proto::Entity* entity = expected_response.add_entities();
+      expected_order_response;
+  personal_context::proto::Entity* entity =
+      expected_order_response.add_entities();
   entity->mutable_order()->set_order_id("12345");
+  entity->mutable_order()->set_merchant_name("Amazon");
+  *entity->mutable_order()->mutable_order_date() = TodayWithDelta();
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      expected_passport_response;
+  personal_context::proto::Passport* passport =
+      expected_passport_response.add_entities()->mutable_passport();
+  passport->set_number("12345");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   // Since both types are initiated, we should only log `kInitiated` once.
   PrefetchContextSync({EntityType(EntityTypeName::kOrder),
                        EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
-                      expected_response, expected_response);
+                      expected_order_response, expected_passport_response);
   histogram_tester().ExpectUniqueSample(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
       PersonalContextPrefetchTriggerResult::kInitiated, 1);
@@ -599,7 +651,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("12345");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("12345");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   base::OnceCallback<void(personal_context::FetchContextResult)>
       presence_callback;
@@ -673,8 +728,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       expected_response;
-  personal_context::proto::Entity* entity = expected_response.add_entities();
-  entity->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      expected_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -699,7 +756,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   FastForwardBy(base::Milliseconds(456));
 
   personal_context::proto::FetchPiiEntitiesResponse pii_response;
-  *pii_response.add_entities() = *entity;
+  *pii_response.add_entities()->mutable_passport() = *passport;
   std::move(callback).Run(personal_context::FetchPiiEntitiesResult(
       base::ok(std::move(pii_response))));
 
@@ -720,7 +777,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("12345");
+  personal_context::proto::Passport* spii_passport =
+      spii_response.add_entities()->mutable_passport();
+  spii_passport->set_number("12345");
+  *spii_passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   base::OnceCallback<void(personal_context::FetchContextResult)>
       presence_callback;
@@ -794,6 +854,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       expected_response;
   personal_context::proto::Entity* entity = expected_response.add_entities();
   entity->mutable_order()->set_order_id("12345");
+  entity->mutable_order()->set_merchant_name("Amazon");
+  *entity->mutable_order()->mutable_order_date() = TodayWithDelta();
 
   base::OnceCallback<void(personal_context::FetchContextResult)> callback;
   EXPECT_CALL(
@@ -853,7 +915,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchedEntities_TTL) {
       ->set_type(SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       passport_spii_response;
-  passport_spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      passport_spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
                       passport_presence_response, passport_spii_response);
@@ -875,8 +940,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchedEntities_TTL) {
       ->set_type(SensitivePiiPresence::DRIVERS_LICENSE);
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       dl_spii_response;
-  dl_spii_response.add_entities()->mutable_drivers_license()->set_number(
-      "DL987");
+  personal_context::proto::DriversLicense* dl =
+      dl_spii_response.add_entities()->mutable_drivers_license();
+  dl->set_number("DL987");
+  *dl->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kDriversLicense)},
                       {EntityType(EntityTypeName::kDriversLicense)},
                       dl_presence_response, dl_spii_response);
@@ -915,7 +982,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
                       presence_response, spii_response);
@@ -1006,7 +1076,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -1057,7 +1130,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   // 2. Mock responses.
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
@@ -1091,7 +1167,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, ResetStateForType) {
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
                       presence_response, spii_response);
@@ -1118,7 +1197,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -1188,7 +1270,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -1206,8 +1291,11 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   // 2. Prepare unmasked response.
   personal_context::proto::FetchPiiEntitiesResponse expected_response;
-  expected_response.add_entities()->mutable_passport()->set_number(
-      "P123_UNMASKED");
+  personal_context::proto::Passport* unmasked_passport =
+      expected_response.add_entities()->mutable_passport();
+  unmasked_passport->set_number("P123_UNMASKED");
+  *unmasked_passport->mutable_expiration_date() =
+      TodayWithDelta(base::Days(365));
 
   EXPECT_CALL(mock_personal_context_service(), FetchPiiEntities(_, _, _))
       .WillOnce(RunOnceCallback<2>(personal_context::FetchPiiEntitiesResult(
@@ -1269,7 +1357,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -1342,7 +1433,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -1611,7 +1705,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
                       {EntityType(EntityTypeName::kPassport)},
                       presence_response, spii_response);
@@ -1684,7 +1781,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   // 1. Initial prefetch at T = 0.
   PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
@@ -1722,7 +1822,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
       SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  spii_response.add_entities()->mutable_passport()->set_number("P123");
+  personal_context::proto::Passport* passport =
+      spii_response.add_entities()->mutable_passport();
+  passport->set_number("P123");
+  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -1924,8 +2027,17 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContext_SuppressedEntitiesAreFiltered) {
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  response.add_entities()->mutable_order()->set_order_id("ORD1");
-  response.add_entities()->mutable_order()->set_order_id("ORD2");
+  personal_context::proto::Order* order1 =
+      response.add_entities()->mutable_order();
+  order1->set_order_id("ORD1");
+  order1->set_merchant_name("Merchant1");
+  *order1->mutable_order_date() = TodayWithDelta();
+
+  personal_context::proto::Order* order2 =
+      response.add_entities()->mutable_order();
+  order2->set_order_id("ORD2");
+  order2->set_merchant_name("Merchant2");
+  *order2->mutable_order_date() = TodayWithDelta();
 
   suppression_manager().SuppressEntity(
       *PersonalContextEntityToEntityInstance(response.entities(0)));
@@ -1943,8 +2055,17 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        OnEntitySuppressionsChanged_SuppressEntityEvictsAndReemits) {
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  response.add_entities()->mutable_order()->set_order_id("ORD1");
-  response.add_entities()->mutable_order()->set_order_id("ORD2");
+  personal_context::proto::Order* order1 =
+      response.add_entities()->mutable_order();
+  order1->set_order_id("ORD1");
+  order1->set_merchant_name("Merchant1");
+  *order1->mutable_order_date() = TodayWithDelta();
+
+  personal_context::proto::Order* order2 =
+      response.add_entities()->mutable_order();
+  order2->set_order_id("ORD2");
+  order2->set_merchant_name("Merchant2");
+  *order2->mutable_order_date() = TodayWithDelta();
 
   EXPECT_CALL(mock_observer(), OnPrefetchContextComplete);
   PrefetchContextSync({EntityType(EntityTypeName::kOrder)}, {}, response);
@@ -1967,12 +2088,21 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        OnEntitySuppressionsChanged_UnsuppressEntityEvictsAndReemits) {
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  response.add_entities()->mutable_order()->set_order_id("ORD1");
-  response.add_entities()->mutable_order()->set_order_id("ORD2");
+  personal_context::proto::Order* order1 =
+      response.add_entities()->mutable_order();
+  order1->set_order_id("ORD1");
+  order1->set_merchant_name("Merchant1");
+  *order1->mutable_order_date() = TodayWithDelta();
 
-  EntityInstance order1 =
+  personal_context::proto::Order* order2 =
+      response.add_entities()->mutable_order();
+  order2->set_order_id("ORD2");
+  order2->set_merchant_name("Merchant2");
+  *order2->mutable_order_date() = TodayWithDelta();
+
+  EntityInstance order1_instance =
       *PersonalContextEntityToEntityInstance(response.entities(0));
-  suppression_manager().SuppressEntity(order1);
+  suppression_manager().SuppressEntity(order1_instance);
 
   EXPECT_CALL(mock_observer(), OnPrefetchContextComplete);
   PrefetchContextSync({EntityType(EntityTypeName::kOrder)}, {}, response);
@@ -1989,7 +2119,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
               HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD1"),
               HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD2")))));
 
-  suppression_manager().UnsuppressEntity(order1);
+  suppression_manager().UnsuppressEntity(order1_instance);
 }
 
 // Tests that OnEntitySuppressionsChanged is a no-op when the proto cache is
@@ -2053,6 +2183,8 @@ class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
     personal_context::proto::Entity entity;
     entity.mutable_passport()->set_number(std::string(passport_number));
     entity.mutable_passport()->set_name(std::string(passport_name));
+    *entity.mutable_passport()->mutable_expiration_date() =
+        TodayWithDelta(base::Days(365));
     return entity;
   }
 
@@ -2063,6 +2195,8 @@ class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
     personal_context::proto::Entity entity;
     entity.mutable_drivers_license()->set_number(std::string(dl_number));
     entity.mutable_drivers_license()->set_name(std::string(dl_name));
+    *entity.mutable_drivers_license()->mutable_expiration_date() =
+        TodayWithDelta(base::Days(365));
     return entity;
   }
 
@@ -2142,6 +2276,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   personal_context::proto::Entity* order_entity = response.add_entities();
   order_entity->mutable_order()->set_order_id("ORD-999");
   order_entity->mutable_order()->set_merchant_name("BestBuy");
+  *order_entity->mutable_order()->mutable_order_date() = TodayWithDelta();
 
   *response.add_entities() = CreateEncryptedEntity("encrypted_passport_bytes");
 
@@ -2370,6 +2505,269 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
                    Property(&EntityType::name, EntityTypeName::kPassport)),
           HasAttributeWithValue(AttributeTypeName::kPassportName, u"Jane Doe"),
           HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"45"))));
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchPassport_ValidatesTtlAndImportConstraints) {
+  SetClockToDate("2025-06-01 12:00:00");
+  const EntityType passport_type(EntityTypeName::kPassport);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      presence_response;
+  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
+      SensitivePiiPresence::PASSPORT);
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
+  *spii_response.add_entities() =
+      CreatePassportProto({.number = u"VALID", .expiry_date = u"2025-06-01"});
+  *spii_response.add_entities() =
+      CreatePassportProto({.number = u"EXPIRED", .expiry_date = u"2025-05-31"});
+  *spii_response.add_entities() = CreatePassportProto(
+      {.number = u"NO_EXPIRY_DATE", .expiry_date = nullptr});
+  // Missing import constraint (number).
+  *spii_response.add_entities() =
+      CreatePassportProto({.number = nullptr, .expiry_date = u"2025-06-01"});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({passport_type}, {passport_type}, presence_response,
+                      spii_response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(entities[0]
+                .attribute(AttributeType(AttributeTypeName::kPassportNumber))
+                ->GetCompleteRawInfo(),
+            u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchDriversLicense_ValidatesTtlAndImportConstraints) {
+  SetClockToDate("2025-06-01 12:00:00");
+  const EntityType dl_type(EntityTypeName::kDriversLicense);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      presence_response;
+  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
+      SensitivePiiPresence::DRIVERS_LICENSE);
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
+  *spii_response.add_entities() = CreateDriversLicenseProto(
+      {.number = u"VALID", .expiration_date = u"01/06/2025"});
+  *spii_response.add_entities() = CreateDriversLicenseProto(
+      {.number = u"EXPIRED", .expiration_date = u"31/05/2025"});
+  *spii_response.add_entities() = CreateDriversLicenseProto(
+      {.number = u"NO_EXPIRATION_DATE", .expiration_date = nullptr});
+  // Missing import constraint (number).
+  *spii_response.add_entities() = CreateDriversLicenseProto(
+      {.number = nullptr, .expiration_date = u"01/06/2025"});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({dl_type}, {dl_type}, presence_response, spii_response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(
+      entities[0]
+          .attribute(AttributeType(AttributeTypeName::kDriversLicenseNumber))
+          ->GetCompleteRawInfo(),
+      u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchNationalId_ValidatesTtlAndImportConstraints) {
+  SetClockToDate("2025-06-01 12:00:00");
+  const EntityType nid_type(EntityTypeName::kNationalIdCard);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      presence_response;
+  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
+      SensitivePiiPresence::NATIONAL_ID);
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
+  *spii_response.add_entities() =
+      CreateNationalIdProto({.number = u"VALID", .expiry_date = u"01/06/2025"});
+  *spii_response.add_entities() = CreateNationalIdProto(
+      {.number = u"EXPIRED", .expiry_date = u"31/05/2025"});
+  *spii_response.add_entities() = CreateNationalIdProto(
+      {.number = u"NO_EXPIRY_DATE", .expiry_date = nullptr});
+  // Missing import constraint (number).
+  *spii_response.add_entities() =
+      CreateNationalIdProto({.number = nullptr, .expiry_date = u"01/06/2025"});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({nid_type}, {nid_type}, presence_response, spii_response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(
+      entities[0]
+          .attribute(AttributeType(AttributeTypeName::kNationalIdCardNumber))
+          ->GetCompleteRawInfo(),
+      u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchOrder_ValidatesTtlAndImportConstraints) {
+  SetClockToDate("2025-06-01 12:00:00");
+  const EntityType order_type(EntityTypeName::kOrder);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+
+  *response.add_entities() = CreateOrderProto(
+      {.id = u"VALID", .date = u"2025-03-03", .merchant_name = u"Store"});
+  *response.add_entities() = CreateOrderProto(
+      {.id = u"EXPIRED", .date = u"2025-03-02", .merchant_name = u"Store"});
+  *response.add_entities() = CreateOrderProto(
+      {.id = u"NO_DATE", .date = nullptr, .merchant_name = u"Store"});
+  // Missing import constraint (order_id).
+  *response.add_entities() = CreateOrderProto(
+      {.id = nullptr, .date = u"2025-05-01", .merchant_name = u"Store"});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({order_type}, /*expected_spii_types=*/{}, response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(entities[0]
+                .attribute(AttributeType(AttributeTypeName::kOrderId))
+                ->GetCompleteRawInfo(),
+            u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchShipment_ValidatesTtlAndImportConstraints) {
+  SetClockToDate("2025-06-01 12:00:00");
+  const EntityType shipment_type(EntityTypeName::kShipment);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+
+  *response.add_entities() = CreateShipmentProto({.tracking_number = u"VALID",
+                                                  .shipped_date = u"2025-05-02",
+                                                  .merchant_name = u"Store"});
+  *response.add_entities() = CreateShipmentProto({.tracking_number = u"EXPIRED",
+                                                  .shipped_date = u"2025-05-01",
+                                                  .merchant_name = u"Store"});
+  *response.add_entities() =
+      CreateShipmentProto({.tracking_number = u"NO_SHIPPED_DATE",
+                           .shipped_date = nullptr,
+                           .merchant_name = u"Store"});
+  // Missing import constraint (tracking number).
+  *response.add_entities() = CreateShipmentProto({.tracking_number = nullptr,
+                                                  .shipped_date = u"2025-05-20",
+                                                  .merchant_name = u"Store"});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({shipment_type}, /*expected_spii_types=*/{}, response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(
+      entities[0]
+          .attribute(AttributeType(AttributeTypeName::kShipmentTrackingNumber))
+          ->GetCompleteRawInfo(),
+      u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchFlightReservation_ValidatesTtlAndImportConstraints) {
+  SetClockToDate("2025-06-01 12:00:00");
+  const EntityType flight_type(EntityTypeName::kFlightReservation);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+
+  base::Time valid_departure_date;
+  ASSERT_TRUE(
+      base::Time::FromString("2025-03-03 00:00:00", &valid_departure_date));
+  base::Time expired_departure_date;
+  ASSERT_TRUE(
+      base::Time::FromString("2025-03-02 00:00:00", &expired_departure_date));
+
+  *response.add_entities() = CreateFlightReservationProto({
+      .flight_number = u"VALID",
+      .departure_time = valid_departure_date,
+  });
+  *response.add_entities() = CreateFlightReservationProto({
+      .flight_number = u"EXPIRED",
+      .departure_time = expired_departure_date,
+  });
+  *response.add_entities() = CreateFlightReservationProto({
+      .flight_number = u"NO_DEPARTURE_DATE",
+      .departure_time = std::nullopt,
+  });
+  // Missing import constraint (flight number, ticket number, confirmation
+  // code).
+  *response.add_entities() = CreateFlightReservationProto({
+      .flight_number = nullptr,
+      .ticket_number = nullptr,
+      .confirmation_code = nullptr,
+      .departure_time = valid_departure_date,
+  });
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({flight_type}, /*expected_spii_types=*/{}, response);
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(entities[0]
+                .attribute(AttributeType(
+                    AttributeTypeName::kFlightReservationFlightNumber))
+                ->GetCompleteRawInfo(),
+            u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchVehicle_ValidatesImportConstraints) {
+  const EntityType vehicle_type(EntityTypeName::kVehicle);
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  *response.add_entities() =
+      CreateVehicleProto({.plate = u"VALID", .number = nullptr});
+  // Missing import constraint (no VIN and no license plate).
+  *response.add_entities() =
+      CreateVehicleProto({.plate = nullptr, .number = nullptr});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({vehicle_type}, /*expected_spii_types=*/{}, response);
+  EXPECT_EQ(entities.size(), 1u);
+  EXPECT_EQ(
+      entities[0]
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetCompleteRawInfo(),
+      u"VALID");
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchUnsupportedEntityType_Dropped) {
+  const DenseSet<EntityType> requested_types = {
+      EntityType(EntityTypeName::kKnownTravelerNumber)};
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  personal_context::proto::Entity* ktn = response.add_entities();
+  ktn->mutable_known_traveler_number()->set_number("KTN123");
+  ktn->mutable_known_traveler_number()->set_name("Alice");
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .Times(0);
+
+  PrefetchContextSync(requested_types, /*expected_spii_types=*/{}, response);
 }
 
 }  // namespace
