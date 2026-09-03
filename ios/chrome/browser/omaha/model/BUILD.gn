@@ -12,6 +12,7 @@ source_set("model") {
     "//ios/chrome/browser/upgrade/model:public",
   ]
   deps = [
+    ":backend",
     "//base:i18n",
     "//build:branding_buildflags",
     "//components/application_locale_storage",
@@ -35,10 +36,30 @@ source_set("model") {
   ]
 }
 
+source_set("backend") {
+  visibility = [
+    ":model",
+    ":unit_tests",
+  ]
+  sources = [
+    "omaha_response.h",
+    "omaha_response.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/upgrade/model:public",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "omaha_service_unittest.mm" ]
+  sources = [
+    "omaha_response_unittest.mm",
+    "omaha_service_unittest.mm",
+  ]
   deps = [
+    ":backend",
     ":model",
     "//base",
     "//components/metrics",

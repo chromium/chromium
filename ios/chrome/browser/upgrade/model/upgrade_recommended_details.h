@@ -13,6 +13,9 @@ struct UpgradeRecommendedDetails {
   GURL upgrade_url;
   std::string next_version;
   bool is_up_to_date = false;
+
+  friend constexpr bool operator==(const UpgradeRecommendedDetails&,
+                                   const UpgradeRecommendedDetails&) = default;
 };
 
 #endif  // IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_RECOMMENDED_DETAILS_H_
