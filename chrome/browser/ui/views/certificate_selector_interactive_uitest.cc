@@ -149,6 +149,8 @@ IN_PROC_BROWSER_TEST_F(CertificateSelectorTest, DoubleClick) {
   base::RunLoop loop;
   selector_->set_on_destroy(loop.QuitClosure());
 
+  selector_->ResetViewShownTimeStampForTesting();
+
   // Simulate double clicking on an entry in the certificate list.
   selector_->OnDoubleClick();
 
@@ -158,5 +160,19 @@ IN_PROC_BROWSER_TEST_F(CertificateSelectorTest, DoubleClick) {
   // Closing the dialog through a double click must call only the Accept()
   // function and not Cancel().
   EXPECT_TRUE(accepted);
+  EXPECT_FALSE(canceled);
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateSelectorTest,
+                       DoubleClickSoonAfterShowIsIgnored) {
+  bool accepted = false;
+  bool canceled = false;
+  selector_->TrackState(&accepted, &canceled);
+
+  // Simulate double clicking immediately after the dialog is shown. It should
+  // be ignored by the input protector.
+  selector_->OnDoubleClick();
+
+  EXPECT_FALSE(accepted);
   EXPECT_FALSE(canceled);
 }

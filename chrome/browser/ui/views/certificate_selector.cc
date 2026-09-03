@@ -39,11 +39,14 @@
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
@@ -344,9 +347,23 @@ void CertificateSelector::OnSelectionChanged() {
 }
 
 void CertificateSelector::OnDoubleClick() {
-  if (GetSelectedCert()) {
-    AcceptDialog();
+  if (!GetSelectedCert()) {
+    return;
   }
+
+  views::DialogClientView* const client_view = GetDialogClientView();
+  if (client_view) {
+    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+    if (client_view->IsPossiblyUnintendedInteraction(
+            event, ShouldAllowKeyEventsDuringInputProtection())) {
+      return;
+    }
+  }
+
+  AcceptDialog();
 }
 
 BEGIN_METADATA(CertificateSelector)
