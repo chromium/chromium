@@ -6,7 +6,7 @@
 
 #import "ios/components/order_file/save_order_file.h"
 
-#define IOS_ORDER_FILE_STARTUP_END_DELAY_MS 4000
+#define IOS_ORDER_FILE_STARTUP_END_DELAY_MS 10000
 
 static NSString* const kOrderFileError = @"OrderFileGenerationError";
 
