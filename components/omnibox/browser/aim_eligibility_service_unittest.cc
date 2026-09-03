@@ -241,10 +241,42 @@ TEST_F(AimEligibilityServiceTest, IsAimUrl) {
   EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
       GURL("https://google.com/feature?a=1&b=2"), std::nullopt));
 
-  // Check that the host override works correctly
+  // Check that the host override works correctly with and without ports
   EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
       GURL("https://goo.gl/feature?a=1&b=2"),
       contextual_tasks::HostOverride::FromString("goo.gl")));
+  EXPECT_TRUE(aim_eligibility_service_->IsAimUrl(
+      GURL("https://goo.gl/search?a=1&b=2"),
+      contextual_tasks::HostOverride::FromString("goo.gl")));
+  EXPECT_TRUE(aim_eligibility_service_->IsAimUrl(
+      GURL("https://goo.gl:8888/search?a=1&b=2"),
+      contextual_tasks::HostOverride::FromString("goo.gl:8888")));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
+      GURL("https://goo.gl:9999/search?a=1&b=2"),
+      contextual_tasks::HostOverride::FromString("goo.gl:8888")));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
+      GURL("https://goo.gl/search?a=1&b=2"),
+      contextual_tasks::HostOverride::FromString("goo.gl:8888")));
+}
+
+TEST_F(AimEligibilityServiceTest, IsAimHost_HostOverrideWithPort) {
+  contextual_tasks::HostOverride override_with_port{"localhost.corp.google.com",
+                                                    8888};
+  EXPECT_TRUE(aim_eligibility_service_->IsAimHost(
+      GURL("https://localhost.corp.google.com:8888/search"),
+      override_with_port));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimHost(
+      GURL("https://localhost.corp.google.com:9999/search"),
+      override_with_port));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimHost(
+      GURL("https://localhost.corp.google.com/search"), override_with_port));
+
+  contextual_tasks::HostOverride override_no_port{"localhost.corp.google.com",
+                                                  std::nullopt};
+  EXPECT_TRUE(aim_eligibility_service_->IsAimHost(
+      GURL("https://localhost.corp.google.com/search"), override_no_port));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimHost(
+      GURL("https://localhost.corp.google.com:8888/search"), override_no_port));
 }
 
 TEST_F(AimEligibilityServiceTest, IsAimUrl_HostWildcard) {

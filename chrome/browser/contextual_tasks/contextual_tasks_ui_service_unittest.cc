@@ -2242,6 +2242,18 @@ TEST_F(ContextualTasksUiServiceTest, GetAiUrlFromWebUIUrl_HostOverride) {
 }
 
 TEST_F(ContextualTasksUiServiceTest,
+       GetAiUrlFromWebUIUrl_HostOverrideWithPort) {
+  GURL base_url("https://google.com/search");
+  GURL webui_url(
+      "chrome://"
+      "contextual-tasks?param1=1&chrome_host=localhost.corp.google.com:8888");
+
+  EXPECT_EQ(
+      GURL("https://localhost.corp.google.com:8888/search?param1=1"),
+      ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
        GetAiUrlFromWebUIUrl_UntrustedHostOverride) {
   GURL base_url("https://google.com/search");
   GURL webui_url(
@@ -2282,6 +2294,15 @@ TEST_F(ContextualTasksUiServiceTest, IsTrustedHost) {
   EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("[::1]"));
   EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("::1"));
 
+  // Valid trusted hosts with port
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsTrustedHost("gws-prod.corp.google.com:8080"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost(
+      "localhost.corp.google.com:8888"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("localhost:8080"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("127.0.0.1:8888"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("[::1]:8888"));
+
   // Delimiter and bypass attempts
   EXPECT_FALSE(
       ContextualTasksUiService::IsTrustedHost("attacker.com/.corp.google.com"));
@@ -2296,12 +2317,12 @@ TEST_F(ContextualTasksUiServiceTest, IsTrustedHost) {
   EXPECT_FALSE(
       ContextualTasksUiService::IsTrustedHost("attacker.com:.corp.google.com"));
   EXPECT_FALSE(
-      ContextualTasksUiService::IsTrustedHost("gws-prod.corp.google.com:8080"));
-  EXPECT_FALSE(
       ContextualTasksUiService::IsTrustedHost("attacker.com .corp.google.com"));
 
   // Domain boundary and near-domain bypass attempts
   EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("evilcorp.google.com"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("evilcorp.google.com:8080"));
   EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("notcorp.google.com"));
   EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("corp0google.com"));
   EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("corp-google.com"));
@@ -2311,6 +2332,10 @@ TEST_F(ContextualTasksUiServiceTest, IsTrustedHost) {
   EXPECT_FALSE(
       ContextualTasksUiService::IsTrustedHost("malicious.example.com"));
   EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(""));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(
+      "gws-prod.corp.google.com:99999"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("gws-prod.corp.google.com:0"));
 }
 
 TEST_F(ContextualTasksUiServiceTest, GetHostFromUrl) {
@@ -2332,6 +2357,13 @@ TEST_F(ContextualTasksUiServiceTest, GetHostFromUrl) {
                              GURL("https://google.com?chrome_host=127.0.0.1")));
   EXPECT_EQ("[::1]", ContextualTasksUiService::GetHostFromUrl(
                          GURL("https://google.com?chrome_host=%5B%3A%3A1%5D")));
+  EXPECT_EQ("localhost.corp.google.com:8888",
+            ContextualTasksUiService::GetHostFromUrl(
+                GURL("https://google.com?"
+                     "chrome_host=localhost.corp.google.com:8888")));
+  EXPECT_EQ("[::1]:8888",
+            ContextualTasksUiService::GetHostFromUrl(
+                GURL("https://google.com?chrome_host=%5B%3A%3A1%5D:8888")));
 
   // Bypasses using URL encoding / delimiters
   EXPECT_EQ(std::nullopt, ContextualTasksUiService::GetHostFromUrl(GURL(
@@ -2394,8 +2426,14 @@ TEST_F(ContextualTasksUiServiceTest, ForcedEmbeddedPageHostOverride) {
 
   // Set an override and verify it's returned.
   contextual_tasks::SetForcedEmbeddedPageHostOverride(
-      contextual_tasks::HostOverride{"test.google.com"});
-  EXPECT_EQ((contextual_tasks::HostOverride{"test.google.com"}),
+      contextual_tasks::HostOverride{"test.google.com", std::nullopt});
+  EXPECT_EQ((contextual_tasks::HostOverride{"test.google.com", std::nullopt}),
+            contextual_tasks::GetForcedEmbeddedPageHost());
+
+  // Set an override with port and verify it's returned.
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"localhost.corp.google.com", 8888});
+  EXPECT_EQ((contextual_tasks::HostOverride{"localhost.corp.google.com", 8888}),
             contextual_tasks::GetForcedEmbeddedPageHost());
 
   // Clearing the override should return to the default state.
@@ -2409,7 +2447,7 @@ TEST_F(ContextualTasksUiServiceTest,
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   contextual_tasks::SetForcedEmbeddedPageHostOverride(
-      contextual_tasks::HostOverride{"test.google.com"});
+      contextual_tasks::HostOverride{"test.google.com", std::nullopt});
 
   GURL url("https://www.google.com/search?q=test");
   GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
@@ -2427,12 +2465,41 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest,
+       AddRequiredSidePanelUrlChanges_WithHostOverrideAndPort) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"localhost.corp.google.com", 8888});
+
+  GURL url("https://www.google.com/search?q=test");
+  GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      url, web_contents.get());
+
+  EXPECT_EQ("localhost.corp.google.com", new_url.host());
+  EXPECT_EQ(8888, new_url.EffectiveIntPort());
+  std::string gsc_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "gsc", &gsc_val));
+  EXPECT_EQ("2", gsc_val);
+  std::string q_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "q", &q_val));
+  EXPECT_EQ("test", q_val);
+
+  // Navigating to already-rewritten URL does not trigger further changes (no
+  // loop).
+  EXPECT_EQ(new_url, ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+                         new_url, web_contents.get()));
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
        AddRequiredSidePanelUrlChanges_SignInDomain_NotOverridden) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   contextual_tasks::SetForcedEmbeddedPageHostOverride(
-      contextual_tasks::HostOverride{"test.google.com"});
+      contextual_tasks::HostOverride{"test.google.com", std::nullopt});
 
   GURL signin_url("https://login.corp.google.com/signin");
   GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
@@ -2449,7 +2516,7 @@ TEST_F(ContextualTasksUiServiceTest,
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   contextual_tasks::SetForcedEmbeddedPageHostOverride(
-      contextual_tasks::HostOverride{"test.google.com"});
+      contextual_tasks::HostOverride{"test.google.com", std::nullopt});
 
   GURL webui_url("chrome://contextual-tasks/?chrome_task_id=123");
   GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(

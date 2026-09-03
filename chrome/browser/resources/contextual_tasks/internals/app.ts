@@ -188,7 +188,10 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   }
 
   protected async onSetForcedHostClick_() {
-    const url = URL.parse(this.forcedHost_);
+    const rawInput = this.forcedHost_.trim();
+    const urlToParse =
+        rawInput.includes('://') ? rawInput : `https://${rawInput}`;
+    const url = URL.parse(urlToParse);
 
     // Check if the current URL is valid.
     if (!url) {
@@ -198,12 +201,22 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
 
     // Verify that the host is a Google domain.
     // LINT.IfChange(AllowedHosts)
-    if (!url.host.endsWith('.google.com') && !url.host.endsWith('.googlers.com')) {
+    if (!url.hostname.endsWith('.google.com') &&
+        !url.hostname.endsWith('.googlers.com') &&
+        url.hostname !== 'google.com' && url.hostname !== 'googlers.com') {
       this.currentHost_ =
           `Error: URL must be a Google domain (.google.com or .googlers.com)`;
       return;
     }
     // LINT.ThenChange(//components/contextual_tasks/public/features.cc:AllowedHosts)
+
+    if (url.port) {
+      const portNum = Number(url.port);
+      if (!Number.isInteger(portNum) || portNum < 1 || portNum > 65535) {
+        this.currentHost_ = `Error: Invalid port (${url.port})`;
+        return;
+      }
+    }
 
     await this.proxy_.handler.setForcedEmbeddedPageHost(url.href);
     await this.refreshCurrentHost_();

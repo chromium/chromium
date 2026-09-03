@@ -11,6 +11,7 @@ source_set("feature_list") {
   ]
   deps = [
     "//base",
+    "//net",
     "//ui/base",
     "//url",
   ]
@@ -127,6 +128,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/url_deduplication",
     "//components/visited_url_ranking/public",
+    "//net",
     "//testing/gtest",
     "//url",
   ]
