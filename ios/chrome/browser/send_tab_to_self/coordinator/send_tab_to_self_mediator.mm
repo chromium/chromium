@@ -35,8 +35,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!_authenticationService, base::NotFatalUntil::M150);
-  CHECK(!_identityManagerObserver, base::NotFatalUntil::M150);
+  CHECK(!_authenticationService);
+  CHECK(!_identityManagerObserver);
 }
 
 #pragma mark - Public

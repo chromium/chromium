@@ -247,12 +247,12 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 #pragma mark - SendTabToSelfMediatorDelegate
 
 - (void)mediatorWantsToBeStopped:(SendTabToSelfMediator*)mediator {
-  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M150);
+  CHECK_EQ(mediator, _mediator);
   [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
 }
 
 - (void)mediatorWantsToRefreshView:(SendTabToSelfMediator*)mediator {
-  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M150);
+  CHECK_EQ(mediator, _mediator);
   if (_signinCoordinator) {
     // Nothing to refresh in case of sign-in. The signin coordinator will deal
     // with the update itself.
@@ -489,7 +489,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 // Called when the sign-in flow is complete.
 - (void)onSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
                               succeeded:(BOOL)succeeded {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
   if (!succeeded) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
