@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -50,6 +51,7 @@
 #include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/proto/audio.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/capability_names.h"
@@ -1163,6 +1165,69 @@ TEST_F(IpcDesktopEnvironmentTest, OnTerminalDisconnectedWithError) {
 
   desktop_environment_factory_.reset();
   DestroyDesktopProcess();
+}
+
+TEST_F(IpcDesktopEnvironmentTest, AudioPacketDeliveryAndTeardownSafety) {
+  auto clipboard_stub = std::make_unique<protocol::MockClipboardStub>();
+  input_injector_->Start(std::move(clipboard_stub));
+
+  setup_run_loop_->Run();
+
+  int id = terminal_id_;
+  auto* connection = GetConnection(id);
+  ASSERT_NE(connection, nullptr);
+  DesktopSessionProxy* proxy = connection->desktop_session_proxy;
+  ASSERT_NE(proxy, nullptr);
+
+  auto audio_capturer = desktop_environment_->CreateAudioCapturer();
+  ASSERT_NE(audio_capturer, nullptr);
+
+  auto audio_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner({});
+
+  base::test::TestFuture<std::unique_ptr<AudioPacket>> received_packet_future;
+  base::test::TestFuture<void> start_future;
+  audio_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](AudioCapturer* capturer,
+                        AudioCapturer::PacketCapturedCallback callback,
+                        base::OnceClosure done) {
+                       capturer->Start(std::move(callback));
+                       std::move(done).Run();
+                     },
+                     audio_capturer.get(),
+                     received_packet_future.GetSequenceBoundRepeatingCallback(),
+                     start_future.GetSequenceBoundCallback()));
+  EXPECT_TRUE(start_future.Wait());
+
+  // Deliver an audio packet via DesktopSessionProxy::OnAudioPacket.
+  auto packet = std::make_unique<AudioPacket>();
+  packet->add_data("test_audio_data");
+  proxy->OnAudioPacket(std::move(packet));
+
+  auto received_packet = received_packet_future.Take();
+  ASSERT_NE(received_packet, nullptr);
+  ASSERT_EQ(received_packet->data_size(), 1);
+  EXPECT_EQ(received_packet->data(0), "test_audio_data");
+
+  // Destroy the audio capturer on the audio sequence as WebRTC does.
+  base::test::TestFuture<void> destroy_future;
+  audio_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<AudioCapturer> capturer, base::OnceClosure done) {
+            capturer.reset();
+            std::move(done).Run();
+          },
+          std::move(audio_capturer),
+          destroy_future.GetSequenceBoundCallback()));
+  EXPECT_TRUE(destroy_future.Wait());
+
+  // Stray audio packet arriving after capturer was destroyed.
+  auto stray_packet = std::make_unique<AudioPacket>();
+  stray_packet->add_data("stray_audio_data");
+  proxy->OnAudioPacket(std::move(stray_packet));
+
+  DeleteDesktopEnvironment();
 }
 
 }  // namespace remoting
