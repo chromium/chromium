@@ -118,10 +118,12 @@ import java.io.IOException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures({
     SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
-    ChromeFeatureList.SETTINGS_IN_TAB // crbug.com/521895796
+    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
+    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
 })
 @DisableLeakChecks("crbug.com/527131198")
 public class IdentityDiscControllerTest {
