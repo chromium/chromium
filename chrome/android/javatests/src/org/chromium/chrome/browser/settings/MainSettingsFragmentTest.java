@@ -10,6 +10,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasFlag;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -34,6 +39,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 
 import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
@@ -834,6 +840,35 @@ public class MainSettingsFragmentTest {
     public void testTabsSettingsOn() {
         startSettings();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationSettings_launchesInNewTask() {
+        Assume.assumeTrue(supportNotificationSettings());
+        startSettings();
+
+        // Stub the intent to open the notification settings page.
+        ActivityResult intentResult = new ActivityResult(Activity.RESULT_OK, null);
+        intending(hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)).respondWith(intentResult);
+
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText(R.string.prefs_notifications))));
+        onView(withText(R.string.prefs_notifications)).perform(click());
+
+        // This is an instrumentation test, so it's hard to force device form factor. Instead,
+        // we just check that the flag is set the way we expect it to be set.
+        var flagMatcher =
+                SettingsInTab.isEnabled()
+                        ? hasFlag(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        : not(hasFlag(Intent.FLAG_ACTIVITY_NEW_TASK));
+        intended(
+                allOf(
+                        hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS),
+                        hasExtra(
+                                Settings.EXTRA_APP_PACKAGE,
+                                ContextUtils.getApplicationContext().getPackageName()),
+                        flagMatcher));
     }
 
     @Test

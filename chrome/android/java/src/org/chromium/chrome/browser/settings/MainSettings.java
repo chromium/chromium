@@ -470,6 +470,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
         intent.putExtra(
                 Settings.EXTRA_APP_PACKAGE, ContextUtils.getApplicationContext().getPackageName());
+        if (SettingsInTab.isEnabled()) {
+            // SettingsInTab opens the notification UI in a new window.
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         PackageManager pm = context.getPackageManager();
         return intent.resolveActivity(pm) != null;
     }
