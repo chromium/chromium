@@ -45,6 +45,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/browser/btm_redirect.h"
@@ -2968,6 +2969,33 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
 
   Detach();
   agent_host_ = nullptr;
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetAnnotatedPageContent) {
+  constexpr char kPageUrl[] =
+      "data:text/html,<body><h1>Hello APC</h1>"
+      "<p>Test paragraph</p></body>";
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), GURL(kPageUrl)));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  Attach();
+  base::DictValue params;
+  params.Set("includeActionableInformation", true);
+  const base::DictValue* result =
+      SendCommandSync("Page.getAnnotatedPageContent", std::move(params));
+  ASSERT_TRUE(result);
+  // Page.pdl defines "content" as a binary parameter. It contains the
+  // base64-encoded serialized AnnotatedPageContent protobuf.
+  const std::string* content_base64 = result->FindString("content");
+  ASSERT_TRUE(content_base64);
+  EXPECT_FALSE(content_base64->empty());
+
+  std::string decoded_proto;
+  ASSERT_TRUE(base::Base64Decode(*content_base64, &decoded_proto));
+  optimization_guide::proto::AnnotatedPageContent apc;
+  ASSERT_TRUE(apc.ParseFromString(decoded_proto));
+  EXPECT_TRUE(apc.has_root_node());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

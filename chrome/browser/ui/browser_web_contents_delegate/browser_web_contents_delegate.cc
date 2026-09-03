@@ -63,6 +63,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/paint_preview/browser/paint_preview_client.h"
 #include "components/permissions/permission_request_manager.h"
@@ -92,6 +93,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/base_window.h"
@@ -1452,6 +1454,27 @@ std::string BrowserWebContentsDelegate::GetTitleForMediaControls(
   return app_browser_controller_
              ? app_browser_controller_->GetTitleForMediaControls()
              : std::string();
+}
+
+void BrowserWebContentsDelegate::GetAIPageContent(
+    content::WebContents* web_contents,
+    bool include_actionable_elements,
+    base::OnceCallback<void(const std::string&)> callback) {
+  auto options = include_actionable_elements
+                     ? optimization_guide::ActionableAIPageContentOptions(
+                           /*on_critical_path=*/false)
+                     : optimization_guide::DefaultAIPageContentOptions(
+                           /*on_critical_path=*/false);
+
+  optimization_guide::GetAIPageContent(
+      web_contents, std::move(options),
+      base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
+                         -> std::string {
+        if (!result.has_value()) {
+          return "";
+        }
+        return result->proto.SerializeAsString();
+      }).Then(std::move(callback)));
 }
 
 void BrowserWebContentsDelegate::PrintCrossProcessSubframe(
