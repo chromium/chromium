@@ -172,7 +172,7 @@ public class UrlBarUnitTest {
 
         mUrlBar =
                 LayoutInflater.from(mActivity)
-                        .inflate(R.layout.url_bar, layout, true)
+                        .inflate(R.layout.url_bar, layout, /* attachToRoot= */ true)
                         .findViewById(R.id.url_bar);
 
         mUrlBar.setDelegate(mUrlBarDelegate);
@@ -1412,7 +1412,10 @@ public class UrlBarUnitTest {
         mUrlBar.setAllowMultilineInput(true);
         // Mark current input as wrapping eligible.
         mUrlBar.setInputIsMultilineEligible(true);
-        mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.LAYOUT_DIRECTION_LTR,
+                /* previouslyFocusedRect= */ new Rect());
         assertFalse(mUrlBar.isHorizontallyScrollable());
 
         // Mark current input as wrapping ineligible.
@@ -1420,12 +1423,18 @@ public class UrlBarUnitTest {
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         // Defocused omnibox - never multiline
-        mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, new Rect());
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.LAYOUT_DIRECTION_LTR,
+                /* previouslyFocusedRect= */ new Rect());
         mUrlBar.setInputIsMultilineEligible(true);
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         // Disallow multiline input - never multiline
-        mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.LAYOUT_DIRECTION_LTR,
+                /* previouslyFocusedRect= */ new Rect());
         mUrlBar.setAllowMultilineInput(false);
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
@@ -1903,11 +1912,27 @@ public class UrlBarUnitTest {
 
         // 1. Verify that setting a selection before the autocomplete clears it.
         verifySelectionState(
-                "test", "ing is fun", "foo.com", 1, 1, false, "test", "test", "foo.com");
+                "test",
+                "ing is fun",
+                "foo.com",
+                /* selectionStart= */ 1,
+                /* selectionEnd= */ 1,
+                /* expectedHasAutocomplete= */ false,
+                "test",
+                "test",
+                "foo.com");
 
         // 2. Verify that setting a selection range before the autocomplete clears it.
         verifySelectionState(
-                "test", "ing is fun", "foo.com", 0, 4, false, "test", "test", "foo.com");
+                "test",
+                "ing is fun",
+                "foo.com",
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 4,
+                /* expectedHasAutocomplete= */ false,
+                "test",
+                "test",
+                "foo.com");
 
         // 3. Verify that setting a selection range that covers a portion of the non-autocomplete
         // and autocomplete text does not delete the autocomplete text.
@@ -1915,9 +1940,9 @@ public class UrlBarUnitTest {
                 "test",
                 "ing_is_fun",
                 "foo.com",
-                2,
-                5,
-                false,
+                /* selectionStart= */ 2,
+                /* selectionEnd= */ 5,
+                /* expectedHasAutocomplete= */ false,
                 "testing_is_fun",
                 "testing_is_fun",
                 "foo.com");
@@ -1928,9 +1953,9 @@ public class UrlBarUnitTest {
                 "test",
                 "ing_is_fun",
                 "foo.com",
-                0,
-                14,
-                false,
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 14,
+                /* expectedHasAutocomplete= */ false,
                 "testing_is_fun",
                 "testing_is_fun",
                 "foo.com");
@@ -1941,9 +1966,9 @@ public class UrlBarUnitTest {
                 "test",
                 "ing_is_fun",
                 "foo.com",
-                14,
-                14,
-                false,
+                /* selectionStart= */ 14,
+                /* selectionEnd= */ 14,
+                /* expectedHasAutocomplete= */ false,
                 "testing_is_fun",
                 "testing_is_fun",
                 "foo.com");
