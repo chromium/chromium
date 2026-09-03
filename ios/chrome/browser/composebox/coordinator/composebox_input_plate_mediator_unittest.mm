@@ -443,7 +443,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
-
 // Tests that the send button is hidden when there is no text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, HidesSendButtonWithoutText) {
   EraseOmniboxText();
@@ -464,7 +463,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
-
 
 // Tests that QR code button is shown with non Google DSE.
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsQRScannerButtonWithNonGoogleDSE) {

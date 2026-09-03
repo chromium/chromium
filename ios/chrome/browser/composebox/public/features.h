@@ -46,9 +46,6 @@ bool EnableComposeboxServerSideState();
 // Weather verbatim suggestion is enabled in AIM in composebox.
 bool IsComposeboxVerbatimSuggestionInAIMEnabled();
 
-// Whether to force the composebox on top.
-bool IsComposeboxForceTopEnabled();
-
 // Used to enable the extra advanced controls in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxAdditionalAdvancedTools);
 
@@ -60,9 +57,6 @@ BASE_DECLARE_FEATURE(kComposeboxServerSideState);
 
 // Used to enable verbatim suggestions in AIM.
 BASE_DECLARE_FEATURE(kComposeboxVerbatimSuggestionInAIM);
-
-// Used to force top input plate in the composebox.
-BASE_DECLARE_FEATURE(kComposeboxForceTop);
 
 // Used to enable the AIM nudge button in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxAIMNudge);
