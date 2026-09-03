@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -170,14 +169,15 @@ class KioskBrowserSession::PluginHandlerDelegateImpl
 };
 #endif
 
-KioskBrowserSession::KioskBrowserSession(Profile* profile)
-    : KioskBrowserSession(profile,
-                          base::BindOnce(chrome::AttemptUserExit),
-                          g_browser_process->local_state()) {}
+KioskBrowserSession::KioskBrowserSession(PrefService* local_state,
+                                         Profile* profile)
+    : KioskBrowserSession(local_state,
+                          profile,
+                          base::BindOnce(chrome::AttemptUserExit)) {}
 
-KioskBrowserSession::KioskBrowserSession(Profile* profile,
-                                         base::OnceClosure attempt_user_exit,
-                                         PrefService* local_state)
+KioskBrowserSession::KioskBrowserSession(PrefService* local_state,
+                                         Profile* profile,
+                                         base::OnceClosure attempt_user_exit)
     : KioskBrowserSession(profile,
                           std::move(attempt_user_exit),
                           std::make_unique<KioskMetricsService>(local_state)) {}
@@ -190,9 +190,9 @@ KioskBrowserSession::~KioskBrowserSession() {
 
 // static
 std::unique_ptr<KioskBrowserSession> KioskBrowserSession::CreateForTesting(
+    PrefService* local_state,
     Profile* profile,
     base::OnceClosure attempt_user_exit,
-    PrefService* local_state,
     const std::vector<std::string>& crash_dirs) {
   return base::WrapUnique(new KioskBrowserSession(
       profile, std::move(attempt_user_exit),

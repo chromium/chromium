@@ -313,7 +313,7 @@ class KioskBrowserSessionBaseTest
     CreateWebKioskMainBrowser(web_app_id);
 
     kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
-        profile(), base::DoNothing(), local_state(), {crash_path().value()});
+        local_state(), profile(), base::DoNothing(), {crash_path().value()});
     kiosk_browser_session_->InitForWebKiosk(web_app_id);
 
     task_environment_.RunUntilIdle();
@@ -325,14 +325,14 @@ class KioskBrowserSessionBaseTest
     CreateWebKioskMainBrowser(iwa_id);
 
     kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
-        profile(), base::DoNothing(), local_state(), {crash_path().value()});
+        local_state(), profile(), base::DoNothing(), {crash_path().value()});
     kiosk_browser_session_->InitForIwaKiosk(iwa_id);
   }
 
   // Simulate starting a chrome app kiosk session.
   void StartChromeAppKioskSession() {
     kiosk_browser_session_ = std::make_unique<KioskBrowserSession>(
-        profile(), base::DoNothing(), local_state());
+        local_state(), profile(), base::DoNothing());
     kiosk_browser_session_->InitForChromeAppKiosk(kTestAppId);
   }
 

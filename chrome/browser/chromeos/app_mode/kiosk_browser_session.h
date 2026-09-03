@@ -44,18 +44,20 @@ class KioskSessionPluginHandlerDelegate;
 // KioskBrowserSession maintains a kiosk session and handles its lifetime.
 class KioskBrowserSession {
  public:
-  explicit KioskBrowserSession(Profile* profile);
-  KioskBrowserSession(Profile* profile,
-                      base::OnceClosure attempt_user_exit,
-                      PrefService* local_state);
+  // `local_state` must be non-null and must outlive `this`.
+  KioskBrowserSession(PrefService* local_state, Profile* profile);
+  KioskBrowserSession(PrefService* local_state,
+                      Profile* profile,
+                      base::OnceClosure attempt_user_exit);
   KioskBrowserSession(const KioskBrowserSession&) = delete;
   KioskBrowserSession& operator=(const KioskBrowserSession&) = delete;
   virtual ~KioskBrowserSession();
 
+  // `local_state` must be non-null and must outlive `this`.
   static std::unique_ptr<KioskBrowserSession> CreateForTesting(
+      PrefService* local_state,
       Profile* profile,
       base::OnceClosure attempt_user_exit,
-      PrefService* local_state,
       const std::vector<std::string>& crash_dirs);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

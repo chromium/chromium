@@ -54,7 +54,7 @@ KioskSystemSession::KioskSystemSession(
     const std::optional<webapps::AppId>& app_id)
     : local_state_(local_state),
       profile_(profile),
-      browser_session_(profile),
+      browser_session_(&local_state, profile),
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>(local_state)),
