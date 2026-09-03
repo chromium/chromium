@@ -11,6 +11,20 @@
 
 #import "base/check.h"
 
+namespace {
+
+// Returns a UIEdgeInsets with each edge clamped to be non-negative.
+UIEdgeInsets MakeSanitizedInsets(CGFloat top,
+                                 CGFloat left,
+                                 CGFloat bottom,
+                                 CGFloat right) {
+  return UIEdgeInsetsMake(
+      std::max<CGFloat>(0.0, top), std::max<CGFloat>(0.0, left),
+      std::max<CGFloat>(0.0, bottom), std::max<CGFloat>(0.0, right));
+}
+
+}  // namespace
+
 @implementation CRWViewportInsetsAnimator {
   NSTimeInterval _duration;
   CGFloat _initialVelocity;
@@ -107,7 +121,7 @@
     easedProgress = 1.0;
   }
 
-  UIEdgeInsets currentInsets = UIEdgeInsetsMake(
+  UIEdgeInsets currentInsets = MakeSanitizedInsets(
       _startInsets.top + easedProgress * (_targetInsets.top - _startInsets.top),
       _startInsets.left +
           easedProgress * (_targetInsets.left - _startInsets.left),
