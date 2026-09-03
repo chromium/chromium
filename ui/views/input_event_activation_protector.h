@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/views/views_export.h"
 #include "ui/views/windows_stationarity_monitor.h"
@@ -104,6 +105,10 @@ class VIEWS_EXPORT InputEventActivationProtector
 
   // Policies that evaluate if an interaction should be blocked.
   std::vector<std::unique_ptr<InputProtectionPolicy>> policies_;
+
+  base::ScopedObservation<WindowsStationarityMonitor,
+                          WindowsStationarityMonitor::Observer>
+      stationarity_observation_{this};
 };
 
 }  // namespace views

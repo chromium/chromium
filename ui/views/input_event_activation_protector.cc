@@ -17,20 +17,18 @@ namespace views {
 
 InputEventActivationProtector::InputEventActivationProtector()
     : cooldown_interval_(GetDoubleClickInterval()) {
-  WindowsStationarityMonitor::GetInstance()->AddObserver(this);
+  stationarity_observation_.Observe(WindowsStationarityMonitor::GetInstance());
   AddPolicy(std::make_unique<DefaultInputProtectionPolicy>());
 }
 
 InputEventActivationProtector::InputEventActivationProtector(
     std::unique_ptr<InputProtectionPolicy> policy)
     : cooldown_interval_(GetDoubleClickInterval()) {
-  WindowsStationarityMonitor::GetInstance()->AddObserver(this);
+  stationarity_observation_.Observe(WindowsStationarityMonitor::GetInstance());
   AddPolicy(std::move(policy));
 }
 
-InputEventActivationProtector::~InputEventActivationProtector() {
-  WindowsStationarityMonitor::GetInstance()->RemoveObserver(this);
-}
+InputEventActivationProtector::~InputEventActivationProtector() = default;
 
 void InputEventActivationProtector::VisibilityChanged(bool is_visible) {
   for (const auto& policy : policies_) {
