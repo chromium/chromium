@@ -243,8 +243,7 @@ bool UpdateCommandLineFromConfigFile(const base::DictValue& config,
 }
 
 bool IsProtectedServiceWorker(const GURL& scope) {
-  static const auto protected_service_workers = GetProtectedServiceWorkers();
-  for (const auto& pattern : protected_service_workers) {
+  for (const auto& pattern : GetProtectedServiceWorkers()) {
     if (pattern.Matches(scope)) {
       return true;
     }
