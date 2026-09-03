@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "url/gurl.h"
 
+@class MostVisitedTilesCollectionView;
 @class NewTabPageColorPalette;
 class TemplateURLService;
 
@@ -38,5 +39,17 @@ UIButtonConfigurationUpdateHandler CreateThemedButtonConfigurationUpdateHandler(
     PaletteColorProvider paletteBackgroundColorProvider,
     UIBlurEffectStyle imageBlurEffectStyleOverride =
         UIBlurEffectStyleSystemMaterial);
+
+/// Creates and returns a container view wrapping `collectionView` with standard
+/// NTP card background styling, corner radius, and bottom padding. Returns nil
+/// if `collectionView` is nil.
+UIView* CreateMostVisitedContainerView(
+    MostVisitedTilesCollectionView* collectionView,
+    BOOL hasBackground);
+
+/// Calculates the layout height of Most Visited Tiles given its container
+/// or inner collection view (using system layout fitting when bounds are zero).
+CGFloat MostVisitedContainerHeight(UIView* containerView,
+                                   UIView* mostVisitedView);
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_UTILS_H_

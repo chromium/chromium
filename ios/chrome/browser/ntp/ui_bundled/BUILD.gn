@@ -406,6 +406,7 @@ source_set("unit_tests") {
     "new_tab_page_mediator_unittest.mm",
     "new_tab_page_redesign_view_controller_unittest.mm",
     "new_tab_page_trait_unittest.mm",
+    "new_tab_page_utils_unittest.mm",
   ]
   deps = [
     ":component_factory",
@@ -414,6 +415,7 @@ source_set("unit_tests") {
     ":ntp_internal",
     ":theme",
     ":ui_bundled",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
@@ -568,12 +570,15 @@ source_set("utils") {
     "new_tab_page_utils.mm",
   ]
   deps = [
+    ":constants",
     ":feature_flags",
     ":theme",
     "//components/lens:lens_url_utils",
     "//components/search_engines",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/first_run/public:utils",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//third_party/omnibox_proto",
   ]
   public_deps = [ "//base" ]

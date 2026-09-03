@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
@@ -74,12 +75,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 - (CGFloat)headerHeight {
   CGFloat height = kMagicStackHeight + kMagicStackToFeedSpacing;
   if (IsMVTInBottomSheetEnabled() && _mostVisitedContainerView) {
-    CGFloat mvtHeight = CGRectGetHeight(_mostVisitedContainerView.bounds);
-    if (mvtHeight <= 0 && _mostVisitedView) {
-      mvtHeight = [_mostVisitedView
-                      systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-                      .height;
-    }
+    CGFloat mvtHeight =
+        MostVisitedContainerHeight(_mostVisitedContainerView, _mostVisitedView);
     if (mvtHeight > 0) {
       height += mvtHeight +
                 content_suggestions::ReducedModuleSpacing(self.traitCollection);

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
 @class LayoutGuideCenter;
-@class NewTabPageHeaderView;
 @protocol NewTabPageMutator;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderCommands;
