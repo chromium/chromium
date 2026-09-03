@@ -4,10 +4,11 @@
  *
  * @param {string} testId - The unique test run token.
  * @param {Object} [options] - URL configuration options.
+ * @param {string} [options.host] - Custom host (default: location.host).
  * @param {string|string[]} [options.link] - Custom Link header(s).
  * @param {number} [options.num_redirects] - Number of redirects in chain.
  * @param {string} [options.redirect_location] - Target URL for redirect.
- * @param {string} [options.host] - Custom host (default: location.host).
+ * @param {number} [options.status] - HTTP response status code.
  * @returns {string} Fully qualified PMI URL.
  */
 function createPaymentMethodIdentifierUrl(testId, options = {}) {
@@ -25,6 +26,9 @@ function createPaymentMethodIdentifierUrl(testId, options = {}) {
   if (options.redirect_location !== undefined) {
     url.searchParams.set('redirect_location', options.redirect_location);
   }
+  if (options.status !== undefined) {
+    url.searchParams.set('status', options.status);
+  }
   return url.href;
 }
 
@@ -33,8 +37,11 @@ function createPaymentMethodIdentifierUrl(testId, options = {}) {
  *
  * @param {string} testId - The unique test run token.
  * @param {Object} [options] - URL configuration options.
- * @param {string} [options.redirect_location] - Target URL for redirect.
  * @param {string} [options.host] - Custom host (default: location.host).
+ * @param {string} [options.redirect_location] - Target URL for redirect.
+ * @param {number} [options.status] - HTTP response status code.
+ * @param {string} [options.body] - Custom response body.
+ * @param {string} [options.content_type] - Custom Content-Type header.
  * @returns {string} Fully qualified manifest URL.
  */
 function createPaymentMethodManifestUrl(testId, options = {}) {
@@ -44,6 +51,15 @@ function createPaymentMethodManifestUrl(testId, options = {}) {
   url.searchParams.set('id', testId);
   if (options.redirect_location !== undefined) {
     url.searchParams.set('redirect_location', options.redirect_location);
+  }
+  if (options.status !== undefined) {
+    url.searchParams.set('status', options.status);
+  }
+  if (options.body !== undefined) {
+    url.searchParams.set('body', options.body);
+  }
+  if (options.content_type !== undefined) {
+    url.searchParams.set('content_type', options.content_type);
   }
   return url.href;
 }

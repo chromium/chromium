@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Manifest GET request sets Referer header to match PMI URL
+  assert_true: Manifest GET request must include Referer header expected true got false
+Harness: the test ran to completion.
