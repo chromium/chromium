@@ -11,9 +11,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 
 namespace policy::skyvault {
 
@@ -53,7 +53,8 @@ SkyvaultCaptureUploadNotification::SkyvaultCaptureUploadNotification(
   notification_->set_progress(-1);
   notification_->set_vector_small_image(ash::kCaptureModeIcon);
 
-  SystemNotificationHelper::GetInstance()->Display(*notification_);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::make_unique<message_center::Notification>(*notification_));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::GetFileSizeCallback(filename),
@@ -62,14 +63,16 @@ SkyvaultCaptureUploadNotification::SkyvaultCaptureUploadNotification(
 }
 
 SkyvaultCaptureUploadNotification::~SkyvaultCaptureUploadNotification() {
-  SystemNotificationHelper::GetInstance()->Close(kUploadNotificationId);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kUploadNotificationId, /*by_user=*/false);
 }
 
 void SkyvaultCaptureUploadNotification::UpdateProgress(int64_t bytes_so_far) {
   if (file_size_.has_value()) {
     const auto percent = 100.0 * bytes_so_far / file_size_.value();
     notification_->set_progress(static_cast<int>(percent));
-    SystemNotificationHelper::GetInstance()->Display(*notification_);
+    message_center::MessageCenter::Get()->AddNotification(
+        std::make_unique<message_center::Notification>(*notification_));
   }
 }
 

@@ -10,11 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace policy::skyvault {
@@ -28,20 +27,12 @@ class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    system_notification_helper_ = std::make_unique<SystemNotificationHelper>();
-    tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_capture.png");
     base::WriteFile(file_path_, "test content");
   }
 
-  void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
-
  protected:
-  std::unique_ptr<SystemNotificationHelper> system_notification_helper_;
-  std::unique_ptr<NotificationDisplayServiceTester> tester_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_path_;
 };
@@ -51,9 +42,10 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, CreationAndDisplay) {
                                                  /*for_video=*/false);
   base::RunLoop().RunUntilIdle();
 
-  std::optional<message_center::Notification> displayed_notification =
-      tester_->GetNotification(kUploadNotificationId);
-  ASSERT_TRUE(displayed_notification.has_value());
+  const message_center::Notification* displayed_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          kUploadNotificationId);
+  ASSERT_TRUE(displayed_notification);
   EXPECT_EQ(displayed_notification->type(),
             message_center::NOTIFICATION_TYPE_PROGRESS);
   EXPECT_EQ(displayed_notification->progress(), 0);
@@ -67,9 +59,10 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, UpdateProgress) {
   notification.UpdateProgress(6);
   base::RunLoop().RunUntilIdle();
 
-  std::optional<message_center::Notification> displayed_notification =
-      tester_->GetNotification(kUploadNotificationId);
-  ASSERT_TRUE(displayed_notification.has_value());
+  const message_center::Notification* displayed_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          kUploadNotificationId);
+  ASSERT_TRUE(displayed_notification);
   EXPECT_EQ(displayed_notification->progress(), 50);
 }
 
@@ -82,8 +75,8 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, CancelClosure) {
   notification.SetCancelClosure(
       base::BindLambdaForTesting([&cancel_called]() { cancel_called = true; }));
 
-  tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                         kUploadNotificationId, 0, std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      kUploadNotificationId, 0);
 
   EXPECT_TRUE(cancel_called);
 }
