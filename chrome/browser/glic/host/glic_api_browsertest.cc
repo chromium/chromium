@@ -2263,7 +2263,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
   auto container =
       coordinator().GetWebContentsWarmingPoolForTesting().TakeContainer();
   ASSERT_TRUE(container);
-  auto* web_contents = container->web_contents();
+  auto* web_contents = container->active_web_contents();
 
   // Wait for the WebUI to initialize and reach the kReady state.
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));

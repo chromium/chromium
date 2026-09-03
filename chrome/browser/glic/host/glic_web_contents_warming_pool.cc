@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_webui_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -72,8 +73,9 @@ class GlicWebContentsWarmingPool::Metrics {
       bool is_warming_allowed_by_memory_pressure) {
     WarmingPoolStatus status = WarmingPoolStatus::kCold;
     if (warmed_container) {
-      status = warmed_container->IsCrashed() ? WarmingPoolStatus::kCrashed
-                                             : WarmingPoolStatus::kHit;
+      status = warmed_container->ShouldReloadOnShow()
+                   ? WarmingPoolStatus::kCrashed
+                   : WarmingPoolStatus::kHit;
       if (status == WarmingPoolStatus::kHit) {
         RecordWarmedContainerFate(WarmedContainerFate::kUsed);
       }
@@ -190,6 +192,10 @@ GlicWebContentsWarmingPool::CreateContainer() {
   TRACE_EVENT("glic", "GlicWebContentsWarmingPool::CreateContainer");
   bool initially_hidden =
       base::FeatureList::IsEnabled(features::kGlicContentsInitiallyHidden);
+  if (base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+    return std::make_unique<GlicNoWebviewContentsManager>(profile_,
+                                                          initially_hidden);
+  }
   return std::make_unique<GlicWebUIContentsManager>(profile_, initially_hidden);
 }
 
@@ -239,7 +245,7 @@ void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
   CHECK(IsWarmingAllowedByMemoryPressure() ||
         reason == ContainerCreationReason::kUserTriggeredColdStart);
   delay_timer_.Stop();
-  if (warmed_container_ && warmed_container_->IsCrashed()) {
+  if (warmed_container_ && warmed_container_->ShouldReloadOnShow()) {
     metrics_->RecordWarmedContainerFate(Metrics::WarmedContainerFate::kCrashed);
     warmed_container_ = nullptr;
   }
@@ -311,7 +317,7 @@ GlicWebContentsWarmingPool::GetWarmedContainerForTesting() const {
 }
 
 content::WebContents* GlicWebContentsWarmingPool::GetWarmedWebContents() const {
-  return warmed_container_ ? warmed_container_->web_contents() : nullptr;
+  return warmed_container_ ? warmed_container_->active_web_contents() : nullptr;
 }
 
 }  // namespace glic

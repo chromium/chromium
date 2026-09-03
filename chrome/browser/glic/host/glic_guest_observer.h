@@ -51,6 +51,7 @@ class GlicGuestObserver
   void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle);
   void MaybeEnableMojoJsBindings(content::RenderFrameHost* render_frame_host);
   void MaybeEnableMojoJsBindings(content::NavigationHandle* navigation_handle);
+  void MaybeSetBackgroundColor(content::RenderFrameHost* render_frame_host);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

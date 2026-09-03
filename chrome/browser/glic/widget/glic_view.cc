@@ -96,16 +96,24 @@ void GlicView::ContentsZoomChange(bool zoom_in) {
 }
 
 void GlicView::SetWebContents(content::WebContents* new_web_contents) {
-  // Clear the delegate on the old WebContents if this view is currently the
-  // delegate. Checks `GetDelegate() == this` to avoid clearing the delegate if
-  // another view has already taken over (e.g. during transitions between panel
-  // and floaty).
-  if (web_contents() && web_contents()->GetDelegate() == this) {
-    web_contents()->SetDelegate(nullptr);
+  // In NoWebview mode, PrivilegedWebContents owns the WebContentsDelegate.
+  // We must not overwrite or clear it.
+  // TODO(crbug.com/534807813): Plumb required delegate callbacks via
+  // PrivilegedWebContents APIs instead of setting the delegate directly.
+  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+    // Clear the delegate on the old WebContents if this view is currently the
+    // delegate. Checks `GetDelegate() == this` to avoid clearing the delegate
+    // if another view has already taken over (e.g. during transitions between
+    // panel and floaty).
+    if (web_contents() && web_contents()->GetDelegate() == this) {
+      web_contents()->SetDelegate(nullptr);
+    }
   }
   views::WebView::SetWebContents(new_web_contents);
-  if (new_web_contents) {
-    new_web_contents->SetDelegate(this);
+  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+    if (new_web_contents) {
+      new_web_contents->SetDelegate(this);
+    }
   }
 }
 

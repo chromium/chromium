@@ -274,7 +274,7 @@ void Host::RemoveObserver(Observer* observer) {
 
 void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
   CHECK(!contents_ ||
-        contents_->web_contents() == page_handler->webui_contents());
+        contents_->active_web_contents() == page_handler->webui_contents());
   if (handler_info_) {
     // The glic window supports right-click->Reload. When this happens, there
     // is momentarily two page handlers for the same web contents. Since this
@@ -488,7 +488,7 @@ void Host::ReclaimWebContents(
 }
 
 content::WebContents* Host::webui_contents() const {
-  return contents_ ? contents_->web_contents() : nullptr;
+  return contents_ ? contents_->active_web_contents() : nullptr;
 }
 
 void Host::SetWebContentsVisibilityOverride(

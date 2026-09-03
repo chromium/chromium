@@ -36,7 +36,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   // GlicWebContentsManager impl.
   void AttachToHost(Host* host) override;
   void SetVisibility(content::Visibility visibility) override;
-  content::WebContents* web_contents() const override;
+  content::WebContents* active_web_contents() const override;
   void OnActuatingChanged(bool actuating) override;
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override;
   std::unique_ptr<content::WebContents> ReleaseWebContents() override;
@@ -45,7 +45,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
   base::CallbackListSubscription RegisterWebContentsChangedCallback(
       WebContentsChangedCallback callback) override;
   GlicWebClientManager& web_client_manager() override;
-  bool IsCrashed() const override;
+  bool ShouldReloadOnShow() const override;
 
  private:
   // content::WebContentsObserver:

@@ -6,9 +6,12 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -54,6 +57,7 @@ GlicGuestObserver::~GlicGuestObserver() = default;
 void GlicGuestObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   MaybeEnableMojoJsBindings(render_frame_host);
+  MaybeSetBackgroundColor(render_frame_host);
 }
 
 void GlicGuestObserver::ReadyToCommitNavigation(
@@ -101,6 +105,18 @@ void GlicGuestObserver::MaybeEnableMojoJsBindings(
     navigation_handle->GetRenderFrameHost()->EnableMojoJsBindings(
         /*features=*/nullptr);
   }
+}
+
+void GlicGuestObserver::MaybeSetBackgroundColor(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->GetParentOrOuterDocument() ||
+      !render_frame_host->GetView() || !web_contents()) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  render_frame_host->GetView()->SetBackgroundColor(
+      GetGlicBackgroundColor(profile, web_contents()->GetColorProvider()));
 }
 
 }  // namespace glic

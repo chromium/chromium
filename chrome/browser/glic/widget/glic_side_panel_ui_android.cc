@@ -104,9 +104,15 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
         browser_window->GetWindow()->IsActive());
   }
 
+  // In NoWebview mode, PrivilegedWebContents owns the WebContentsDelegate.
+  // We must not overwrite or clear it.
+  // TODO(crbug.com/534807813): Plumb required delegate callbacks via
+  // PrivilegedWebContents APIs instead of setting the delegate directly.
   content::WebContents* web_contents = delegate_->host().webui_contents();
-  if (web_contents) {
-    web_contents->SetDelegate(this);
+  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+    if (web_contents) {
+      web_contents->SetDelegate(this);
+    }
   }
 
   glic_side_panel_coordinator->SetWebContents(web_contents);
@@ -120,9 +126,11 @@ GlicSidePanelUi::~GlicSidePanelUi() {
   // `panel_` weak pointers) is still valid.
   panel_focus_dependent_hotkey_manager_.reset();
   panel_visibility_dependent_hotkey_manager_.reset();
-  content::WebContents* web_contents = delegate_->host().webui_contents();
-  if (web_contents && web_contents->GetDelegate() == this) {
-    web_contents->SetDelegate(nullptr);
+  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+    content::WebContents* web_contents = delegate_->host().webui_contents();
+    if (web_contents && web_contents->GetDelegate() == this) {
+      web_contents->SetDelegate(nullptr);
+    }
   }
 }
 

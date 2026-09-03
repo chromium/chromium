@@ -169,7 +169,7 @@ void GlicWebUIContentsManager::SetVisibility(content::Visibility visibility) {
   web_contents()->UpdateWebContentsVisibility(visibility);
 }
 
-content::WebContents* GlicWebUIContentsManager::web_contents() const {
+content::WebContents* GlicWebUIContentsManager::active_web_contents() const {
   return WebContentsObserver::web_contents();
 }
 
@@ -248,7 +248,7 @@ GlicWebClientManager& GlicWebUIContentsManager::web_client_manager() {
   return web_client_manager_;
 }
 
-bool GlicWebUIContentsManager::IsCrashed() const {
+bool GlicWebUIContentsManager::ShouldReloadOnShow() const {
   return web_contents_ ? web_contents_->IsCrashed() : false;
 }
 

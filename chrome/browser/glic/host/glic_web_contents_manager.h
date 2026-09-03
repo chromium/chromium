@@ -43,14 +43,14 @@ class GlicWebContentsManager {
   // Sets the visibility state of the managed WebContents.
   virtual void SetVisibility(content::Visibility visibility) = 0;
 
-  // Returns the active WebContents that should currently be embedded in the
-  // view hierarchy (e.g. the primary WebUI contents, the guest contents, or
-  // the loading/error overlay).
+  // Returns the active WebContents currently presented in the view hierarchy
+  // (e.g. the primary WebUI contents, the guest contents, or the
+  // loading/error overlay).
   //
-  // Returns nullptr if a warmed container enters an error state before being
-  // attached to a host (since it has neither an active guest nor an overlay).
-  // Once attached, this is always non-null.
-  virtual content::WebContents* web_contents() const = 0;
+  // Returns nullptr when no WebContents is currently active for display (i.e.
+  // while warming in the background pool, or when attached to a host but
+  // hidden). Once about to be shown or showing, this is guaranteed non-null.
+  virtual content::WebContents* active_web_contents() const = 0;
 
   // Notifies the manager when actuation state changes.
   virtual void OnActuatingChanged(bool actuating) = 0;
@@ -79,9 +79,14 @@ class GlicWebContentsManager {
   // Returns the manager responsible for Mojo routing to the guest web client.
   virtual GlicWebClientManager& web_client_manager() = 0;
 
-  // Returns true if any of the underlying WebContents managed by this object
-  // have crashed (e.g. renderer process gone).
-  virtual bool IsCrashed() const = 0;
+  // Returns true if the manager encountered an error or crash from which it
+  // may be able to recover by reloading (creating a fresh manager instance)
+  // when shown or taken from the warming pool.
+  //
+  // Returns false if the manager is healthy or if it is in an unrecoverable
+  // state (such as a sign-in or policy error panel) that should be presented
+  // to the user rather than reloaded.
+  virtual bool ShouldReloadOnShow() const = 0;
 };
 
 }  // namespace glic

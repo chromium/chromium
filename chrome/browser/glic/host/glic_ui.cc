@@ -411,7 +411,7 @@ void GlicUI::BindInterface(
 
 void GlicUI::AttachToHost(Host* host) {
   // GlicUI should not be attached to Host in NoWebview mode, where
-  // NoWebviewContentsContainerImpl owns and manages the web client.
+  // GlicNoWebviewContentsManager owns and manages the web client.
   CHECK(!base::FeatureList::IsEnabled(features::kGlicNoWebview));
   if (host_) {
     // This might be called multiple times, but it's not allowed to change the

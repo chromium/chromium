@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(GlicManualWarmingPoolBrowserTest,
       "Wait for initial cold warming"));
   auto* warmed_container = warming_pool.GetWarmedContainerForTesting();
   ASSERT_TRUE(warmed_container);
-  content::WaitForLoadStop(warmed_container->web_contents());
+  content::WaitForLoadStop(warmed_container->active_web_contents());
 
   ProfileDestructionWaiter profile_destruction_waiter(new_profile);
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(

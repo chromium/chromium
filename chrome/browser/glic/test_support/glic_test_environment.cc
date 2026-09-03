@@ -153,14 +153,15 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
   static TestCookieSynchronizer* InjectForProfile(Profile* profile) {
     GlicKeyedService* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(profile, true);
+    auto* auth_controller = service->GetAuthController();
+    if (!auth_controller) {
+      return nullptr;
+    }
     auto cookie_synchronizer = std::make_unique<TestCookieSynchronizer>(
         profile, IdentityManagerFactory::GetForProfile(profile));
     TestCookieSynchronizer* ptr = cookie_synchronizer.get();
-    if (auto* auth_controller = service->GetAuthController()) {
-      auth_controller->SetCookieSynchronizerForTesting(
-          std::move(cookie_synchronizer));
-    }
-
+    auth_controller->SetCookieSynchronizerForTesting(
+        std::move(cookie_synchronizer));
     return ptr;
   }
 
@@ -386,7 +387,9 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
   internal::TestCookieSynchronizer* cookie_synchronizer =
       internal::TestCookieSynchronizer::InjectForProfile(profile);
 
-  cookie_synchronizer_ = cookie_synchronizer->GetWeakPtr();
+  if (cookie_synchronizer) {
+    cookie_synchronizer_ = cookie_synchronizer->GetWeakPtr();
+  }
   const GlicTestEnvironmentConfig& config = internal::GetConfig();
   if (config.fre_status) {
     SetFRECompletion(*config.fre_status);
@@ -444,7 +447,9 @@ GlicKeyedService* GlicTestEnvironmentService::GetService() {
 }
 
 void GlicTestEnvironmentService::SetResultForFutureCookieSync(bool result) {
-  cookie_synchronizer_->set_copy_cookies_result(result);
+  if (cookie_synchronizer_) {
+    cookie_synchronizer_->set_copy_cookies_result(result);
+  }
 }
 
 void GlicTestEnvironmentService::SetFRECompletion(prefs::FreStatus fre_status) {
