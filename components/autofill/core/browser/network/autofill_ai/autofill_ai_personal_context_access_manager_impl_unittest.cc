@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -82,6 +83,13 @@ using test::CreateOrderProto;
 using test::CreatePassportProto;
 using test::CreateShipmentProto;
 using test::CreateVehicleProto;
+
+// Cache TTL values initialized directly from production feature defaults.
+const base::TimeDelta kPrefetchCacheTTL =
+    features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
+        .default_value;
+const base::TimeDelta kUnmaskedSpiiCacheTTL =
+    features::kAutofillAmbientAutofillUnmaskedSpiiCacheTTL.default_value;
 
 [[nodiscard]] auto HasAttributeWithValue(AttributeTypeName attribute_type_name,
                                          std::u16string value) {
@@ -294,8 +302,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
                              CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
                          MatchContextFetchRequest(proto_spii_types, false), _,
                          _))
-            .WillOnce(
-                RunOnceCallback<3>(FetchContextSuccess(spii_response)));
+            .WillOnce(RunOnceCallback<3>(FetchContextSuccess(spii_response)));
       }
     }
 
@@ -552,15 +559,14 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       PersonalContextPrefetchTriggerResult::kSkippedFreshCache, 1);
 
   // Cache TTL Expired
-  FastForwardBy(base::Minutes(31));
+  FastForwardBy(kPrefetchCacheTTL + base::Seconds(1));
 
   EXPECT_CALL(
       mock_personal_context_service(),
       FetchContext(
           personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
           _, _))
-      .WillOnce(
-          RunOnceCallback<3>(FetchContextSuccess(expected_response)));
+      .WillOnce(RunOnceCallback<3>(FetchContextSuccess(expected_response)));
 
   access_manager().PrefetchContext(requested_types);
   histogram_tester().ExpectBucketCount(
@@ -568,7 +574,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       PersonalContextPrefetchTriggerResult::kInitiated, 2);
 
   // Skipped in Backoff (After Failure)
-  FastForwardBy(base::Minutes(31));
+  // Forward past the cache TTL to trigger a new network request.
+  FastForwardBy(kPrefetchCacheTTL + base::Seconds(1));
 
   ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
       ContextMemoryError::ExecutionError::kGenericFailure);
@@ -591,8 +598,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       PersonalContextPrefetchTriggerResult::kSkippedBackoff, 1);
 
   // Skipped In-Flight (Request Pending)
-  // Fast forward out of backoff first to allow a new request to be initiated.
-  FastForwardBy(base::Minutes(31));
+  // Fast forward past the backoff delay from the previous failure. The 1-second
+  // delay comes from kBackoffPolicy.initial_delay_ms in the implementation.
+  FastForwardBy(base::Seconds(1));
 
   // Trigger a prefetch but do not complete the mock callback. This puts the
   // request state in RequestStatus::kPending.
@@ -927,12 +935,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchedEntities_TTL) {
   EXPECT_FALSE(access_manager().IsTypePrefetched(
       EntityType(EntityTypeName::kDriversLicense)));
 
-  // Fast forward 15 minutes (Passport still valid).
-  FastForwardBy(base::Minutes(15));
+  // Fast forward half TTL (Passport still valid).
+  FastForwardBy(kPrefetchCacheTTL / 2);
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // 2. Prefetch DL at T+15.
+  // 2. Prefetch DL at half TTL.
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       dl_presence_response;
   dl_presence_response.add_entities()
@@ -952,21 +960,20 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchedEntities_TTL) {
   EXPECT_TRUE(access_manager().IsTypePrefetched(
       EntityType(EntityTypeName::kDriversLicense)));
 
-  // Fast forward another 15 minutes (Total T+30). Passport should expire, DL
-  // should be valid.
+  // Fast forward past Passport TTL. Passport should expire, DL should be valid.
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
                                    _, EntityType(EntityTypeName::kPassport)));
-  FastForwardBy(base::Minutes(15));
+  FastForwardBy(kPrefetchCacheTTL / 2 + base::Seconds(1));
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
   EXPECT_TRUE(access_manager().IsTypePrefetched(
       EntityType(EntityTypeName::kDriversLicense)));
 
-  // Fast forward another 15 minutes (Total T+45). DL should expire.
+  // Fast forward past DL TTL. DL should expire.
   EXPECT_CALL(mock_observer(),
               OnMaskedEntityTypeEvicted(
                   _, EntityType(EntityTypeName::kDriversLicense)));
-  FastForwardBy(base::Minutes(15));
+  FastForwardBy(kPrefetchCacheTTL / 2 + base::Seconds(1));
   EXPECT_FALSE(access_manager().IsTypePrefetched(
       EntityType(EntityTypeName::kDriversLicense)));
 }
@@ -992,22 +999,21 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // Fast forward 20 minutes (Passport still valid).
-  FastForwardBy(base::Minutes(20));
+  // Fast forward half TTL (Passport still valid).
+  FastForwardBy(kPrefetchCacheTTL / 2);
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // 2. Trigger a follow-up prefetch request for Passport at T = 20.
+  // 2. Trigger a follow-up prefetch request for Passport at T = TTL/2.
   // Since the cache is still valid, no network request should be made.
   EXPECT_CALL(mock_personal_context_service(), FetchContext).Times(0);
   access_manager().PrefetchContext({EntityType(EntityTypeName::kPassport)});
 
-  // Fast forward another 15 minutes (Total T = 35, past the original 30-min
-  // TTL). The original eviction task should have fired at T = 30 and cleared
-  // the cache.
+  // Fast forward past the TTL (cached Passport data not valid any more).
+  // The original eviction task should have fired and cleared the cache.
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
                                    _, EntityType(EntityTypeName::kPassport)));
-  FastForwardBy(base::Minutes(15));
+  FastForwardBy(kPrefetchCacheTTL / 2 + base::Seconds(1));
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 }
@@ -1021,12 +1027,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   test_api(access_manager()).CacheUnmaskedSpiiEntity(passport);
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
 
-  // Fast forward 30 seconds (still valid).
-  FastForwardBy(base::Seconds(30));
+  // Fast forward half TTL (still valid).
+  FastForwardBy(kUnmaskedSpiiCacheTTL / 2);
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
 
-  // Fast forward another 31 seconds (expired).
-  FastForwardBy(base::Seconds(31));
+  // Fast forward past TTL (expired).
+  FastForwardBy(kUnmaskedSpiiCacheTTL / 2 + base::Seconds(1));
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), std::nullopt);
 }
 
@@ -1039,12 +1045,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   test_api(access_manager()).CachePresenceSignal(passport_type);
   EXPECT_TRUE(test_api(access_manager()).IsPresenceSignalCached(passport_type));
 
-  // Fast forward 15 minutes (still valid).
-  FastForwardBy(base::Minutes(15));
+  // Fast forward half TTL (still valid).
+  FastForwardBy(kPrefetchCacheTTL / 2);
   EXPECT_TRUE(test_api(access_manager()).IsPresenceSignalCached(passport_type));
 
-  // Fast forward another 16 minutes (expired).
-  FastForwardBy(base::Minutes(16));
+  // Fast forward past TTL (expired).
+  FastForwardBy(kPrefetchCacheTTL / 2 + base::Seconds(1));
   EXPECT_FALSE(
       test_api(access_manager()).IsPresenceSignalCached(passport_type));
 }
@@ -1150,8 +1156,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // 4. Complete Presence request (Request 1) second.
   EXPECT_CALL(mock_observer(),
               OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  presence_callback_future.Take().Run(
-      FetchContextSuccess(presence_response));
+  presence_callback_future.Take().Run(FetchContextSuccess(presence_response));
 
   // `ServerHasSpiiPresenceSignal` should now return true even if the presence
   // signal arrived after the SPII data was cached.
@@ -1217,14 +1222,15 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   ASSERT_EQ(entities.size(), 1u);
   EntityInstance::EntityId passport_guid = entities[0].guid();
 
-  // 2. Fast forward 29.5 minutes.
-  FastForwardBy(base::Minutes(29) + base::Seconds(30));
+  // 2. Fast forward to shortly before before TTL expiration.
+  constexpr base::TimeDelta kDeltaBeforeExpiry = base::Seconds(30);
+  FastForwardBy(kPrefetchCacheTTL - kDeltaBeforeExpiry);
 
   // The prefetched state is still valid (expires in 30 seconds).
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // 3. Cache unmasked SPII Passport at T=29.5.
+  // 3. Cache unmasked SPII Passport shortly before TTL expiration.
   EntityInstance passport_unmasked = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kPersonalContext});
   // Use the same GUID as the masked one to ensure they are linked.
@@ -1232,11 +1238,11 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   test_api(access_manager()).CacheUnmaskedSpiiEntity(passport_unmasked);
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), passport_unmasked);
 
-  // 4. Fast forward 30 seconds (Total T+30). The prefetched entity expires.
+  // 4. Fast forward to TTL + 1s. The prefetched entity expires.
   // This should also trigger the eviction of the unmasked SPII cache.
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
                                    _, EntityType(EntityTypeName::kPassport)));
-  FastForwardBy(base::Seconds(30));
+  FastForwardBy(kDeltaBeforeExpiry + base::Seconds(1));
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
@@ -1607,8 +1613,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, FailureTriggersBackoff) {
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kOrder)));
   check.Call("7. Success");
 
-  // 8. Expire the prefetched state (30 mins).
-  FastForwardBy(base::Minutes(30));
+  // 8. Expire the prefetched state.
+  FastForwardBy(kPrefetchCacheTTL + base::Seconds(1));
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kOrder)));
 
@@ -1648,9 +1654,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   EXPECT_EQ(access_manager().GetPrefetchStatusByEntityType(order_type),
             RequestStatus::kSuccess);
 
-  // 3. Fast forward 30 minutes (TTL expires). Status should transition back to
+  // 3. Fast forward (TTL expires). Status should transition back to
   // `kNotStarted`.
-  FastForwardBy(base::Minutes(30));
+  FastForwardBy(kPrefetchCacheTTL + base::Seconds(1));
   EXPECT_EQ(access_manager().GetPrefetchStatusByEntityType(order_type),
             RequestStatus::kNotStarted);
 }
@@ -1862,12 +1868,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
         {{"ambient_autofill_eligible_tiers", "1,2"}}}},
       {});
 
-  // Before 30 seconds, startup logging should not have occurred.
+  // Before the startup delay, startup logging should not have occurred.
   histogram_tester().ExpectTotalCount(
       "Autofill.Ai.PersonalContext.NonEligibilityReason", 0);
 
-  // Fast forward by 31 seconds to trigger startup logging.
-  FastForwardBy(base::Seconds(31));
+  // Fast forward past startup delay to trigger startup logging.
+  FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
 
   histogram_tester().ExpectTotalCount(
       "Autofill.Ai.PersonalContext.NonEligibilityReason", 1);
@@ -1887,8 +1893,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            1);
 
-  // Fast forward by 31 seconds to complete startup logging (records kEligible).
-  FastForwardBy(base::Seconds(31));
+  // Fast forward past the startup delay to complete startup logging (records
+  // kEligible).
+  FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
 
   histogram_tester().ExpectBucketCount(
       "Autofill.Ai.PersonalContext.NonEligibilityReason",
@@ -1916,7 +1923,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            1);
-  FastForwardBy(base::Seconds(31));
+  FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
 
   histogram_tester().ExpectBucketCount(
       "Autofill.Ai.PersonalContext.NonEligibilityReason",
@@ -1957,8 +1964,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            1);
 
-  // Fast forward by 31 seconds to complete startup logging.
-  FastForwardBy(base::Seconds(31));
+  // Fast forward past startup delay to complete startup logging.
+  FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
 
   histogram_tester().ExpectBucketCount(
       "Autofill.Ai.PersonalContext.NonEligibilityReason",
@@ -2417,15 +2424,15 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // Fast forward 15 minutes (still valid).
-  FastForwardBy(base::Minutes(15));
+  // Fast forward half TTL (still valid).
+  FastForwardBy(kPrefetchCacheTTL / 2);
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // Fast forward another 15 minutes (TTL expires at 30 min).
+  // Fast forward another half TTL + 1s (TTL expires at kPrefetchCacheTTL).
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
                                    _, EntityType(EntityTypeName::kPassport)));
-  FastForwardBy(base::Minutes(15));
+  FastForwardBy(kPrefetchCacheTTL / 2 + base::Seconds(1));
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 }
