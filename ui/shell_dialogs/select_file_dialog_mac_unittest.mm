@@ -74,13 +74,17 @@ class SelectFileDialogMacTest : public PlatformTest,
 
   // Helper method to create a dialog with the given `args`. Returns the created
   // NSSavePanel.
-  NSSavePanel* SelectFileWithParams(FileDialogArguments args) {
+  NSSavePanel* SelectFileWithParams(
+      FileDialogArguments args,
+      NSWindowStyleMask style_mask = NSWindowStyleMaskTitled,
+      NSInteger level = NSNormalWindowLevel) {
     NSWindow* parent_window =
         [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
-                                    styleMask:NSWindowStyleMaskTitled
+                                    styleMask:style_mask
                                       backing:NSBackingStoreBuffered
                                         defer:NO];
     parent_window.releasedWhenClosed = NO;
+    parent_window.level = level;
     parent_windows_.push_back(parent_window);
 
     dialog_->SelectFile(args.type, args.title, args.default_path,
@@ -527,6 +531,26 @@ TEST_F(SelectFileDialogMacTest, DontCrashWithBogusExtension) {
   NSSavePanel* panel = SelectFileWithParams(args);
   // If execution gets this far, there was no crash.
   EXPECT_TRUE(panel);
+}
+
+TEST_F(SelectFileDialogMacTest, NonTitledParentWindow) {
+  FileDialogArguments args;
+  NSSavePanel* panel =
+      SelectFileWithParams(args, NSWindowStyleMaskBorderless);
+  EXPECT_TRUE(panel);
+  EXPECT_TRUE(panel.visible);
+  EXPECT_EQ(panel.level, NSModalPanelWindowLevel);
+}
+
+TEST_F(SelectFileDialogMacTest, FloatingParentWindow) {
+  FileDialogArguments args;
+  NSSavePanel* panel =
+      SelectFileWithParams(args, NSWindowStyleMaskBorderless,
+                           NSFloatingWindowLevel);
+  EXPECT_TRUE(panel);
+  EXPECT_TRUE(panel.visible);
+  EXPECT_GE(panel.level, NSModalPanelWindowLevel);
+  EXPECT_GT(panel.level, NSFloatingWindowLevel);
 }
 
 }  // namespace ui::test
