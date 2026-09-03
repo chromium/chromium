@@ -30,25 +30,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_FRAME_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/rustfft_ffi.rs.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/rust/cxx/v1/cxx.h"
-
-#if BUILDFLAG(IS_MAC)
-#include <Accelerate/Accelerate.h>
-#else
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/pffft/src/pffft.h"
-#endif
 
 namespace blink {
 
@@ -60,9 +49,6 @@ class PLATFORM_EXPORT FFTFrame final {
   USING_FAST_MALLOC(FFTFrame);
 
  public:
-  // The constructors, destructor, and methods up to the CROSS-PLATFORM section
-  // have platform-dependent implementations.
-
   explicit FFTFrame(unsigned fft_size);
   FFTFrame() = delete;
   FFTFrame(const FFTFrame&) = delete;
@@ -70,12 +56,8 @@ class PLATFORM_EXPORT FFTFrame final {
   ~FFTFrame() = default;
 
   // Returns the smallest and largest supported FFT lengths.
-  static unsigned MinFFTSize();
-  static unsigned MaxFFTSize();
-
-  // Perform any initialization needed.  Must be called from the main thread.
-  static void Initialize(float sample_rate);
-  static void Cleanup();
+  static constexpr unsigned MinFFTSize() { return 2; }
+  static constexpr unsigned MaxFFTSize() { return 1u << 30; }
 
   // Compute the FFT of |data|, storing the resulting FFT in |real_data_| and
   // |imag_data_|.  |data| MUST have size at least |fft_size_| elements.
@@ -92,10 +74,6 @@ class PLATFORM_EXPORT FFTFrame final {
   const AudioFloatArray& ImagData() const { return imag_data_; }
 
   unsigned FftSize() const { return fft_size_; }
-  unsigned Log2FFTSize() const { return log2fft_size_; }
-
-  // CROSS-PLATFORM
-  // The remaining public methods have cross-platform implementations:
 
   // Interpolates from frame1 -> frame2 as x goes from 0.0 -> 1.0
   static std::unique_ptr<FFTFrame> CreateInterpolatedFrame(
@@ -116,21 +94,7 @@ class PLATFORM_EXPORT FFTFrame final {
                                       const FFTFrame& frame2,
                                       double x);
 
-  void PlatformConstruct();
-  static unsigned PlatformMinFFTSize();
-  static unsigned PlatformMaxFFTSize();
-  static void PlatformInitialize(float sample_rate);
-  static void PlatformCleanup();
-  void PlatformDoFFT(base::span<const float> data);
-  void PlatformDoInverseFFT(base::span<float> data);
-
   unsigned fft_size_ = 0;
-
-  // When using PFFFT, this slot is irrelevant and unused because PFFFT
-  // supports sizes that aren't a power of 2.
-  // TODO(https://crbug.com/40637820) Look into whether Mac vDSP really needs
-  // this.
-  unsigned log2fft_size_ = 0;
 
   // These two arrays contain the transformed data.  Instead of a single array
   // of complex numbers, we split the complex data into an array of the real
@@ -161,22 +125,7 @@ class PLATFORM_EXPORT FFTFrame final {
   AudioFloatArray real_data_;
   AudioFloatArray imag_data_;
 
-#if BUILDFLAG(IS_MAC)
-  DSPSplitComplex& DspSplitComplex() { return frame_; }
-  DSPSplitComplex DspSplitComplex() const { return frame_; }
-  FFTSetup fft_setup_;
-  DSPSplitComplex frame_;
-#else
-  // Work array for converting PFFFT results to and from the format expected in
-  // `real_data_` and `imag_data_`.
-  AudioFloatArray complex_data_;
-
-  // Work array used by the PFFFT transform routines.  For real FFTs, this must
-  // be the same size as the FFT size.
-  AudioFloatArray pffft_work_;
-#endif
-
-  std::optional<rust::Box<blink::rust_fft::RustFft>> rust_fft_;
+  rust::Box<blink::rust_fft::RustFft> rust_fft_;
 };
 
 }  // namespace blink

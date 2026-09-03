@@ -434,7 +434,6 @@ component("platform") {
     "audio/media_multi_channel_resampler.h",
     "audio/panner.cc",
     "audio/panner.h",
-    "audio/pffft/fft_frame_pffft.cc",
     "audio/push_pull_fifo.cc",
     "audio/push_pull_fifo.h",
     "audio/reverb.cc",
@@ -1722,7 +1721,6 @@ component("platform") {
 
   if (is_mac) {
     sources += [
-      "audio/mac/fft_frame_mac.cc",
       "audio/mac/vector_math_mac.h",
       "fonts/mac/attributed_string_type_converter.h",
       "fonts/mac/attributed_string_type_converter.mm",
@@ -1811,7 +1809,6 @@ component("platform") {
     "//third_party/blink/renderer/platform/scheduler",
     "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/fdlibm",
-    "//third_party/pffft",
     "//ui/base",
     "//ui/base:ui_data_pack",
     "//ui/base/cursor",
@@ -1989,11 +1986,6 @@ component("platform") {
   if (current_cpu == "arm64" || current_cpu == "arm64e" ||
       current_cpu == "arm") {
     sources += [ "audio/cpu/arm/delay_neon.cc" ]
-  }
-
-  if (!is_mac) {
-    include_dirs += [ "//third_party/pffft/src" ]
-    deps += [ "//third_party/pffft" ]
   }
 
   if (rtc_use_h265) {

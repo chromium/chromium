@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
 #include "third_party/blink/renderer/modules/webaudio/stereo_panner_node.h"
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_node.h"
-#include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 #include "third_party/blink/renderer/platform/audio/iir_filter.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -181,8 +180,6 @@ void BaseAudioContext::Initialize() {
     // The AudioParams in the listener need access to the destination node, so
     // only create the listener if the destination node exists.
     listener_ = MakeGarbageCollected<AudioListener>(*this);
-
-    FFTFrame::Initialize(sampleRate());
 
     // Report the context construction to the inspector.
     ReportDidCreate();
