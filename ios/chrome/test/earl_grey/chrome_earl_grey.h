@@ -105,9 +105,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the current layout is showing the bottom omnibox.
 - (BOOL)isCurrentLayoutBottomOmnibox;
 
-// Returns whether the ComposeboxIOS feature is enabled.
-- (BOOL)isComposeboxIOSEnabled;
-
 // Returns whether the Proactive Suggestions Framework feature is enabled.
 - (BOOL)isProactiveSuggestionsFrameworkEnabled;
 

@@ -614,9 +614,6 @@ enum class TipsNotificationType;
 // Returns whether the current layout is showing the bottom omnibox.
 + (BOOL)isCurrentLayoutBottomOmnibox;
 
-// Returns whether the ComposeboxIOS feature is enabled.
-+ (BOOL)isComposeboxIOSEnabled;
-
 // Returns whether chrome next is enabled.
 + (BOOL)isChromeNextEnabled;
 

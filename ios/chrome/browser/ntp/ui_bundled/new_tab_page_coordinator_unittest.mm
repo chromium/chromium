@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -636,9 +635,6 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
 
   ExpectMethodToProxyToVC(@selector(willUpdateSnapshot),
                           @selector(willUpdateSnapshot));
-  if (!IsComposeboxIOSEnabled()) {
-    ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusOmnibox));
-  }
   ExpectMethodToProxyToVC(@selector(locationBarDidResignFirstResponder),
                           @selector(omniboxDidEndEditing));
 

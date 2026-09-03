@@ -197,10 +197,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isCurrentLayoutBottomOmnibox];
 }
 
-- (BOOL)isComposeboxIOSEnabled {
-  return [ChromeEarlGreyAppInterface isComposeboxIOSEnabled];
-}
-
 - (BOOL)isProactiveSuggestionsFrameworkEnabled {
   return [ChromeEarlGreyAppInterface isProactiveSuggestionsFrameworkEnabled];
 }

@@ -432,9 +432,6 @@
 // Returns matcher for the voice search button on the main Settings screen.
 + (id<GREYMatcher>)voiceSearchButton;
 
-// Returns matcher for the voice search button on the omnibox input accessory.
-+ (id<GREYMatcher>)voiceSearchInputAccessoryButton;
-
 // Returns matcher for the settings main menu view.
 + (id<GREYMatcher>)settingsCollectionView;
 

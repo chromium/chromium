@@ -198,7 +198,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",
-    "//ios/chrome/browser/omnibox/ui/keyboard_assist",
     "//ios/chrome/browser/optimization_guide/model:eg_app_support+eg2",
     "//ios/chrome/browser/page_info/test:eg_app_support+eg2",
     "//ios/chrome/browser/partial_translate/ui_bundled:eg_app_support+eg2",

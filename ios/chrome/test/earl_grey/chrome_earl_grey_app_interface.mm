@@ -1427,10 +1427,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
 }
 
-+ (BOOL)isComposeboxIOSEnabled {
-  return IsComposeboxIOSEnabled();
-}
-
 + (BOOL)isChromeNextEnabled {
   return IsChromeNextIaEnabled();
 }
