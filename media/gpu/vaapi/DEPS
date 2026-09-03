@@ -3,8 +3,4 @@ include_rules = [
   "+third_party/libva_protected_content/va_protected_content.h",
 ]
 
-specific_include_rules = {
-  ".*_unittest\\.cc": [
-    "+third_party/libwebp",
-  ],
-}
+
