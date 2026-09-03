@@ -25,4 +25,12 @@ rust::Str SchemeHostPortHost(const SchemeHostPort& tuple) {
   return rust::Str(tuple.host());
 }
 
+std::unique_ptr<Origin> CloneOrigin(const Origin& origin) {
+  return std::make_unique<Origin>(origin);
+}
+
+std::unique_ptr<Origin> CreateOriginFromGURL(const GURL& url) {
+  return std::make_unique<Origin>(Origin::Create(url));
+}
+
 }  // namespace url

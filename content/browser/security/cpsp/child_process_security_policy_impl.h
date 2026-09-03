@@ -251,9 +251,15 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   std::vector<url::Origin> GetIsolatedOrigins(
       std::optional<IsolatedOriginSource> source = std::nullopt,
       BrowserContext* browser_context = nullptr) override;
+  void GetIsolatedOrigins_Cpp(std::optional<IsolatedOriginSource> source,
+                              BrowserContext* browser_context,
+                              std::vector<url::Origin>* origins);
   bool IsIsolatedSiteFromSource(const url::Origin& origin,
                                 IsolatedOriginSource source) override;
+  bool IsIsolatedSiteFromSource_Cpp(const url::Origin& origin,
+                                    IsolatedOriginSource source);
   void ClearIsolatedOriginsForTesting() override;
+  void ClearIsolatedOriginsForTesting_Cpp();
 
   // Centralized internal implementation of site isolation enforcements,
   // including CanAccessDataForOrigin and HostsOrigin. It supports the following
@@ -365,6 +371,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   std::optional<url::Origin>
   GetMatchingProcessIsolatedOriginFromLegacyOriginList(
       const IsolationContext& isolation_context,
+      const url::Origin& origin,
+      const GURL& site_url);
+  std::optional<url::Origin>
+  GetMatchingProcessIsolatedOriginFromLegacyOriginList_Cpp(
+      const base::UnguessableToken& browser_context_id,
+      const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& origin,
       const GURL& site_url);
 
@@ -671,6 +683,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // TODO(alexmos): Exposing this more generally will require extra care, such
   // as ensuring that there are no active SiteInstances in that origin.
   void RemoveIsolatedOriginForTesting(const url::Origin& origin);
+  void RemoveIsolatedOriginForTesting_Cpp(const url::Origin& origin);
 
   // Returns false for redirects that must be blocked no matter which renderer
   // process initiated the request (if any).
@@ -774,6 +787,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // can have multiple entries when it's isolated in several BrowserContexts.
   // Only counts precise origin matches, without subdomain matching.
   int GetIsolatedOriginEntryCountForTesting(const url::Origin& origin);
+  int GetIsolatedOriginEntryCountForTesting_Cpp(const url::Origin& origin);
 
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
@@ -1119,6 +1133,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                  bool isolate_all_subdomains,
                                  IsolatedOriginSource source)
       EXCLUSIVE_LOCKS_REQUIRED(isolated_origins_lock_);
+  void AddIsolatedOriginInternal_Cpp(
+      const base::UnguessableToken& browser_context_id,
+      const url::Origin& origin,
+      bool applies_to_future_browsing_instances,
+      BrowsingInstanceId browsing_instance_id,
+      bool isolate_all_subdomains,
+      IsolatedOriginSource source)
+      EXCLUSIVE_LOCKS_REQUIRED(isolated_origins_lock_);
 
   bool AddProcessReference(ChildProcessId child_id, bool duplicating_handle);
   void RemoveProcessReference(ChildProcessId child_id);
@@ -1137,6 +1159,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RemoveOriginAgentClusterState_Cpp(
       const BrowsingInstanceId& browsing_instance_id);
   void RemoveIsolatedOriginsForBrowsingInstance(
+      const BrowsingInstanceId& browsing_instance_id);
+  void RemoveIsolatedOriginsForBrowsingInstance_Cpp(
       const BrowsingInstanceId& browsing_instance_id);
 
   // Creates the value to place in the "killed_process_origin_lock" crash key
@@ -1220,6 +1244,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // BrowsingContext.
   void RemoveIsolatedOriginsForBrowserContext(
       const base::UnguessableToken& browser_context_id);
+  void RemoveIsolatedOriginsForBrowserContext_Cpp(
+      const base::UnguessableToken& browser_context_id);
 
   // Helpers to remove all origins that have ever requested a particular OAC
   // state in `browser_context`.
@@ -1286,7 +1312,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   //      isolated only in a single BrowsingInstance with ID
   //      |browsing_instance_id_|.
   //   2. Optionally, which BrowserContext (profile) it applies to.  When the
-  //      |browser_context| field in the IsolatedOriginEntry is non-null, a
+  //      |browser_context_id_| field in the IsolatedOriginEntry is non-null, a
   //      particular isolated origin entry only applies to that BrowserContext.
   //      Note that the same origin may be isolated in different profiles,
   //      possibly with different BrowsingInstance ID cut-offs.  For example:

@@ -255,6 +255,7 @@ class ChildProcessSecurityPolicy {
   // Defines available sources of isolated origins.  This should be specified
   // when adding isolated origins with the AddFutureIsolatedOrigins() call
   // below.
+  // LINT.IfChange(IsolatedOriginSource)
   enum class IsolatedOriginSource {
     // Used for origins that are hardcoded into the browser.
     BUILT_IN,
@@ -275,6 +276,7 @@ class ChildProcessSecurityPolicy {
     // Used for testing purposes.
     TEST
   };
+  // LINT.ThenChange(//content/browser/security/cpsp/child_process_security_policy_impl.rs:IsolatedOriginSource)
 
   // Add |origins| to the list of origins that require process isolation.  When
   // making process model decisions for such origins, the scheme+host tuple

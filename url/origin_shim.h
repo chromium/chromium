@@ -23,6 +23,13 @@ rust::Str SchemeHostPortScheme(const SchemeHostPort& tuple);
 // Shim for FFI to call SchemeHostPort::host() and get a Rust `str`.
 rust::Str SchemeHostPortHost(const SchemeHostPort& tuple);
 
+// Shim to clone an origin (since Rust cannot clone opaque C++ types).
+std::unique_ptr<Origin> CloneOrigin(const Origin& origin);
+
+// Shim for `url::Origin::Create(const GURL&)`, returning a unique_ptr for Rust.
+// See the warnings on `url::Origin::Create()` before using.
+std::unique_ptr<Origin> CreateOriginFromGURL(const GURL& url);
+
 }  // namespace url
 
 #endif  // URL_ORIGIN_SHIM_H_

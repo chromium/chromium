@@ -40,6 +40,18 @@ impl PartialEq for ffi::GURL {
 }
 impl Eq for ffi::GURL {}
 
+impl PartialOrd for ffi::GURL {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for ffi::GURL {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        ffi::possibly_invalid_spec(self).cmp(ffi::possibly_invalid_spec(other))
+    }
+}
+
 impl Debug for ffi::GURL {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("GURL").field("spec", &ffi::possibly_invalid_spec(self)).finish()

@@ -457,33 +457,6 @@ GURL NormalizeExternalFileUrl(const GURL& url) {
 }
 #endif
 
-// Helper to remove the trailing dot from the provided URL's host, if present.
-// Used when looking for matching legacy isolated origins.
-std::optional<GURL> RemoveTrailingDotFromUrlIfNecessary(const GURL& url) {
-  if (url.has_host() && url.host().back() == '.') {
-    GURL::Replacements replacements;
-    std::string_view host(url.host());
-    host.remove_suffix(1);
-    replacements.SetHostStr(host);
-    return url.ReplaceComponents(replacements);
-  }
-  return std::nullopt;
-}
-
-// Reconstructs the given origin with its default port if it currently has a
-// non-default port. Used for resolving matches for legacy isolated origins
-// where isolate_all_subdomains is true. Legacy isolated origins don't support
-// ports, so the port needs to be cleared when returning an origin that matched
-// a wildcard.
-url::Origin CreateOriginWithDefaultPortIfNecessary(const url::Origin& origin) {
-  uint16_t default_port = url::DefaultPortForScheme(origin.scheme());
-  if (origin.port() != default_port) {
-    return url::Origin::Create(
-        GURL(origin.scheme() + url::kStandardSchemeSeparator + origin.host()));
-  }
-  return origin;
-}
-
 }  // namespace
 
 ChildProcessSecurityPolicyImpl::Handle::Handle() = default;
@@ -3157,6 +3130,30 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
     BrowsingInstanceId browsing_instance_id,
     bool isolate_all_subdomains,
     IsolatedOriginSource source) {
+  base::UnguessableToken browser_context_id =
+      browser_context ? browser_context->UniqueToken()
+                      : base::UnguessableToken::Null();
+
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::add_isolated_origin_internal(
+          browser_context_id,
+          // Make a copy for Rust to own.
+          std::make_unique<url::Origin>(origin_to_add),
+          applies_to_future_browsing_instances, browsing_instance_id,
+          isolate_all_subdomains, source),
+      AddIsolatedOriginInternal_Cpp(browser_context_id, origin_to_add,
+                                    applies_to_future_browsing_instances,
+                                    browsing_instance_id,
+                                    isolate_all_subdomains, source));
+}
+
+void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal_Cpp(
+    const base::UnguessableToken& browser_context_id,
+    const url::Origin& origin_to_add,
+    bool applies_to_future_browsing_instances,
+    BrowsingInstanceId browsing_instance_id,
+    bool isolate_all_subdomains,
+    IsolatedOriginSource source) {
   // GetSiteForOrigin() is used to look up the site URL of |origin| to speed
   // up the isolated origin lookup.  This only performs a straightforward
   // translation of an origin to eTLD+1; it does *not* take into account
@@ -3165,10 +3162,6 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
   // very careful about using GetSiteForOrigin() elsewhere, and consider
   // whether you should be using SiteInfo::Create() instead.
   GURL key(SiteInfo::GetSiteForOrigin(origin_to_add));
-
-  base::UnguessableToken browser_context_id =
-      browser_context ? browser_context->UniqueToken()
-                      : base::UnguessableToken::Null();
 
   // Check if the origin to be added already exists, in which case it may not
   // need to be added again.
@@ -3238,6 +3231,14 @@ void ChildProcessSecurityPolicyImpl::RemoveStateForBrowserContext(
 
 void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginsForBrowserContext(
     const base::UnguessableToken& browser_context_id) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::
+          remove_isolated_origins_for_browser_context(browser_context_id),
+      RemoveIsolatedOriginsForBrowserContext_Cpp(browser_context_id));
+}
+
+void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginsForBrowserContext_Cpp(
+    const base::UnguessableToken& browser_context_id) {
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
 
   for (auto& iter : isolated_origins_) {
@@ -3299,7 +3300,41 @@ bool ChildProcessSecurityPolicyImpl::IsGloballyIsolatedOriginForTesting(
 std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
     std::optional<IsolatedOriginSource> source,
     BrowserContext* browser_context) {
-  std::vector<url::Origin> origins;
+  std::vector<url::Origin> rust_origins;
+  std::vector<url::Origin> cpp_origins;
+
+  // TODO(https://crbug.com/40226863): This doesn't use RUST_CPP_RETURN_FUNCTION
+  // because Rust and C++ may end up sorting the returned origin vector
+  // differently, so these vectors are sorted before being compared in
+  // kRustAndCpp mode below. Ideally, this function would return a set instead,
+  // but CXX doesn't support sets yet. Revisit this when CXX or Crubit allows
+  // sets to be passed.
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::get_isolated_origins(
+          source.has_value(), source.value_or(IsolatedOriginSource::BUILT_IN),
+          browser_context ? browser_context->UniqueToken()
+                          : base::UnguessableToken::Null(),
+          rust_origins),
+      GetIsolatedOrigins_Cpp(source, browser_context, &cpp_origins));
+
+  const RustPolicy rust_cpp_policy = GetRustPolicy();
+  if (rust_cpp_policy == RustPolicy::kRustAndCpp) {
+    std::ranges::sort(rust_origins);
+    std::ranges::sort(cpp_origins);
+    CHECK(rust_origins == cpp_origins);
+  }
+
+  if (IsRustEnabled(GetRustPolicy())) {
+    return rust_origins;
+  }
+  return cpp_origins;
+}
+
+void ChildProcessSecurityPolicyImpl::GetIsolatedOrigins_Cpp(
+    std::optional<IsolatedOriginSource> source,
+    BrowserContext* browser_context,
+    std::vector<url::Origin>* origins) {
+  CHECK(origins);
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
   for (const auto& iter : isolated_origins_) {
     for (const auto& isolated_origin_entry : iter.second) {
@@ -3322,15 +3357,32 @@ std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
         continue;
       }
 
-      origins.push_back(isolated_origin_entry.origin());
+      origins->push_back(isolated_origin_entry.origin());
     }
   }
-  return origins;
 }
 
 bool ChildProcessSecurityPolicyImpl::IsIsolatedSiteFromSource(
     const url::Origin& origin,
     IsolatedOriginSource source) {
+  RUST_CPP_RETURN_FUNCTION(
+      rust::child_process_security_policy::is_isolated_site_from_source(
+          // Make a copy for Rust to own.
+          std::make_unique<url::Origin>(origin), source),
+      IsIsolatedSiteFromSource_Cpp(origin, source));
+}
+
+bool ChildProcessSecurityPolicyImpl::IsIsolatedSiteFromSource_Cpp(
+    const url::Origin& origin,
+    IsolatedOriginSource source) {
+  // Determine whether the scheme+eTLD+1 (the site URL) of `origin` is already
+  // isolated due to `source`. Because COOP-triggered isolation isolates the
+  // entire site (eTLD+1) rather than just the specific origin, we look up using
+  // the `site_url` key, and then verify if the entry's origin is exactly equal
+  // to the site's origin. This function assumes that the passed-in `origin` is
+  // a valid non-opaque origin, which is currently guaranteed in the callers by
+  // checking `IsolatedOriginUtil::IsValidIsolatedOrigin(origin)` prior to
+  // calling this.
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
   GURL site_url = SiteInfo::GetSiteForOrigin(origin);
   auto it = isolated_origins_.find(site_url);
@@ -3423,7 +3475,12 @@ std::optional<url::Origin> ChildProcessSecurityPolicyImpl::
         const GURL& site_url) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+  // TODO(crbug.com/466132514): This should eventually use a separate type for
+  // BrowserContext IDs based on base::TokenType().
+  base::UnguessableToken browser_context_id =
+      isolation_context.browser_context()
+          ? isolation_context.browser_context()->UniqueToken()
+          : base::UnguessableToken::Null();
 
   // If |isolation_context| does not specify a BrowsingInstance ID (which should
   // only happen in tests), then assume that we want to retrieve the latest
@@ -3436,6 +3493,39 @@ std::optional<url::Origin> ChildProcessSecurityPolicyImpl::
     browsing_instance_id = SiteInstanceImpl::NextBrowsingInstanceId();
   }
 
+  const RustPolicy rust_cpp_policy = GetRustPolicy();
+  std::optional<url::Origin> rust_result = std::nullopt;
+
+  if (IsRustEnabled(rust_cpp_policy)) {
+    auto rust_match = rust::child_process_security_policy::
+        get_matching_process_isolated_origin_from_legacy_origin_list(
+            browser_context_id, browsing_instance_id,
+            // Make copies of `origin` and `site_url` for Rust to own.
+            std::make_unique<url::Origin>(origin),
+            std::make_unique<GURL>(site_url));
+    if (rust_match) {
+      rust_result = std::make_optional(*rust_match);
+    }
+  }
+
+  std::optional<url::Origin> cpp_result = std::nullopt;
+  if (IsCppEnabled(rust_cpp_policy)) {
+    cpp_result = GetMatchingProcessIsolatedOriginFromLegacyOriginList_Cpp(
+        browser_context_id, browsing_instance_id, origin, site_url);
+  }
+
+  return CheckAndReturnOptionalRustAndCppResults(rust_result, cpp_result,
+                                                 rust_cpp_policy);
+}
+
+std::optional<url::Origin> ChildProcessSecurityPolicyImpl::
+    GetMatchingProcessIsolatedOriginFromLegacyOriginList_Cpp(
+        const base::UnguessableToken& browser_context_id,
+        const BrowsingInstanceId& browsing_instance_id,
+        const url::Origin& origin,
+        const GURL& site_url) {
+  base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+
   // Look up the list of origins corresponding to |origin|'s site.
   auto it = isolated_origins_.find(site_url);
 
@@ -3445,7 +3535,7 @@ std::optional<url::Origin> ChildProcessSecurityPolicyImpl::
   // match it.
   if (it == isolated_origins_.end()) {
     std::optional<GURL> fallback_site_url =
-        RemoveTrailingDotFromUrlIfNecessary(site_url);
+        IsolatedOriginUtil::RemoveTrailingDotFromUrlIfNecessary(site_url);
     if (fallback_site_url) {
       it = isolated_origins_.find(*fallback_site_url);
     }
@@ -3461,8 +3551,7 @@ std::optional<url::Origin> ChildProcessSecurityPolicyImpl::
     for (const auto& isolated_origin_entry : it->second) {
       // If this isolated origin applies only to a specific profile, don't
       // use it for a different profile.
-      if (!isolated_origin_entry.MatchesProfile(
-              isolation_context.browser_context()->UniqueToken())) {
+      if (!isolated_origin_entry.MatchesProfile(browser_context_id)) {
         continue;
       }
 
@@ -3475,7 +3564,8 @@ std::optional<url::Origin> ChildProcessSecurityPolicyImpl::
         // IsolatedOriginEntry constructed from http://[*.]isolated.com, so
         // https://a.b.c.isolated.com must be returned.
         if (isolated_origin_entry.isolate_all_subdomains()) {
-          return CreateOriginWithDefaultPortIfNecessary(origin);
+          return IsolatedOriginUtil::CreateOriginWithDefaultPortIfNecessary(
+              origin);
         }
 
         if (!best_match || best_match->host().length() <
@@ -3751,6 +3841,15 @@ void ChildProcessSecurityPolicyImpl::RemoveOriginAgentClusterState_Cpp(
 
 void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginsForBrowsingInstance(
     const BrowsingInstanceId& browsing_instance_id) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::
+          remove_isolated_origins_for_browsing_instance(browsing_instance_id),
+      RemoveIsolatedOriginsForBrowsingInstance_Cpp(browsing_instance_id));
+}
+
+void ChildProcessSecurityPolicyImpl::
+    RemoveIsolatedOriginsForBrowsingInstance_Cpp(
+        const BrowsingInstanceId& browsing_instance_id) {
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
   for (auto& iter : isolated_origins_) {
     std::erase_if(
@@ -3926,6 +4025,14 @@ bool ChildProcessSecurityPolicyImpl::RecordOriginAgentClusterRequestIfNew_Cpp(
 
 void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginForTesting(
     const url::Origin& origin) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::remove_isolated_origin_for_testing(
+          std::make_unique<url::Origin>(origin)),
+      RemoveIsolatedOriginForTesting_Cpp(origin));
+}
+
+void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginForTesting_Cpp(
+    const url::Origin& origin) {
   GURL key(SiteInfo::GetSiteForOrigin(origin));
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
   std::erase_if(isolated_origins_[key],
@@ -3939,11 +4046,25 @@ void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginForTesting(
 }
 
 void ChildProcessSecurityPolicyImpl::ClearIsolatedOriginsForTesting() {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::clear_isolated_origins_for_testing(),
+      ClearIsolatedOriginsForTesting_Cpp());
+}
+
+void ChildProcessSecurityPolicyImpl::ClearIsolatedOriginsForTesting_Cpp() {
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
   isolated_origins_.clear();
 }
 
 int ChildProcessSecurityPolicyImpl::GetIsolatedOriginEntryCountForTesting(
+    const url::Origin& origin) {
+  RUST_CPP_RETURN_FUNCTION(rust::child_process_security_policy::
+                               get_isolated_origin_entry_count_for_testing(
+                                   std::make_unique<url::Origin>(origin)),
+                           GetIsolatedOriginEntryCountForTesting_Cpp(origin));
+}
+
+int ChildProcessSecurityPolicyImpl::GetIsolatedOriginEntryCountForTesting_Cpp(
     const url::Origin& origin) {
   GURL key(SiteInfo::GetSiteForOrigin(origin));
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);

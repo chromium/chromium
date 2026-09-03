@@ -1958,6 +1958,8 @@ source_set("browser") {
     "security/coop/cross_origin_opener_policy_status.h",
     "security/cpsp/child_process_security_policy_impl.cc",
     "security/cpsp/child_process_security_policy_impl.h",
+    "security/cpsp/child_process_security_policy_shim.cc",
+    "security/cpsp/child_process_security_policy_shim.h",
     "security/dip/document_isolation_policy_reporter.cc",
     "security/dip/document_isolation_policy_reporter.h",
     "serial/serial_service.cc",

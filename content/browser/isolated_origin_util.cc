@@ -181,4 +181,28 @@ bool IsolatedOriginUtil::IsValidIsolatedOriginImpl(
   return true;
 }
 
+// static
+std::optional<GURL> IsolatedOriginUtil::RemoveTrailingDotFromUrlIfNecessary(
+    const GURL& url) {
+  if (url.has_host() && url.host().back() == '.') {
+    GURL::Replacements replacements;
+    std::string_view host(url.host());
+    host.remove_suffix(1);
+    replacements.SetHostStr(host);
+    return url.ReplaceComponents(replacements);
+  }
+  return std::nullopt;
+}
+
+// static
+url::Origin IsolatedOriginUtil::CreateOriginWithDefaultPortIfNecessary(
+    const url::Origin& origin) {
+  uint16_t default_port = url::DefaultPortForScheme(origin.scheme());
+  if (origin.port() != default_port) {
+    return url::Origin::CreateFromNormalizedTuple(origin.scheme(),
+                                                  origin.host(), default_port);
+  }
+  return origin;
+}
+
 }  // namespace content

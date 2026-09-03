@@ -108,6 +108,19 @@ class CONTENT_EXPORT IsolatedOriginUtil {
   static bool IsValidOriginForOriginAgentClusterOptOut(
       const url::Origin& origin);
 
+  // Helper to remove the trailing dot from the provided URL's host, if present.
+  // Used when looking for matching legacy isolated origins.
+  static std::optional<GURL> RemoveTrailingDotFromUrlIfNecessary(
+      const GURL& url);
+
+  // Reconstructs the given origin with its default port if it currently has a
+  // non-default port. Used for resolving matches for legacy isolated origins
+  // where isolate_all_subdomains is true. Legacy isolated origins don't support
+  // ports, so the port needs to be cleared when returning an origin that
+  // matched a wildcard.
+  static url::Origin CreateOriginWithDefaultPortIfNecessary(
+      const url::Origin& origin);
+
  private:
   // Used to implement both IsValidIsolatedOrigin and
   // IsValidOriginForOptInIsolation. The legacy isolated origin case performs
