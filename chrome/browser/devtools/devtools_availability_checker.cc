@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
@@ -34,11 +35,13 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -333,6 +336,24 @@ bool IsInspectionAllowed(Profile* profile, const GURL& url) {
                 std::string(url.host()),
                 extensions::ExtensionRegistry::EVERYTHING)) {
       return IsInspectionAllowed(profile, extension);
+    }
+  }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (url.SchemeIs(webapps::kIsolatedAppScheme) &&
+      web_app::AreWebAppsEnabled(profile)) {
+    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
+        web_app::IsolatedWebAppUrlInfo::Create(url);
+    if (url_info.has_value()) {
+      if (auto* web_app_provider =
+              web_app::WebAppProvider::GetForWebApps(profile)) {
+        if (const web_app::WebApp* web_app =
+                web_app_provider->registrar_unsafe().GetAppById(
+                    url_info->app_id())) {
+          return IsInspectionAllowed(profile, web_app);
+        }
+      }
     }
   }
 #endif
