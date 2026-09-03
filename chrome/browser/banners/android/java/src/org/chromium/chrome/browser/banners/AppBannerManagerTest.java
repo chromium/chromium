@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -931,13 +932,13 @@ public class AppBannerManagerTest {
                     Criteria.checkThat(installButton.getVisibility(), Matchers.is(View.VISIBLE));
                 });
 
-        // 2. Set the delegate to always return true (app is installed).
+        // 2. Set the delegate to return that the app is installed.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     rule.getActivity()
                             .getToolbarManager()
                             .getLocationBarModelForTesting()
-                            .setAppInstalledDelegate((url2) -> true);
+                            .setAppInstalledDelegate((tab) -> AppInstallState.INSTALLED);
                 });
 
         // Navigate again to trigger the check with the new delegate.

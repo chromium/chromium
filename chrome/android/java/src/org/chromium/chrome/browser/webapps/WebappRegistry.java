@@ -68,9 +68,11 @@ import java.util.Set;
  */
 @NullMarked
 public class WebappRegistry {
-    /** Observer for changes in the list of installed web apps. */
+    /** Observer for changes in the list of installed or pending web apps. */
     public interface Observer {
         void onOriginsWithInstalledAppChanged();
+
+        default void onPendingAppInstallStatusChanged() {}
     }
 
     private @Nullable ObserverList<Observer> mObservers;
@@ -96,6 +98,13 @@ public class WebappRegistry {
         ThreadUtils.assertOnUiThread();
         for (Observer observer : getObservers()) {
             observer.onOriginsWithInstalledAppChanged();
+        }
+    }
+
+    public void notifyPendingAppInstallStatusChanged() {
+        ThreadUtils.assertOnUiThread();
+        for (Observer observer : getObservers()) {
+            observer.onPendingAppInstallStatusChanged();
         }
     }
 
@@ -221,6 +230,7 @@ public class WebappRegistry {
                 String manifestId = storage.getWebApkManifestId();
                 if (manifestId != null) {
                     mPendingManifestIdToPackageName.remove(manifestId);
+                    notifyPendingAppInstallStatusChanged();
                 }
                 notifyOriginsWithInstalledAppChanged();
             }
@@ -430,11 +440,16 @@ public class WebappRegistry {
     }
 
     public void registerPendingWebApk(String manifestId, String packageName) {
+        ThreadUtils.assertOnUiThread();
         mPendingManifestIdToPackageName.put(manifestId, packageName);
+        notifyPendingAppInstallStatusChanged();
     }
 
     public void removePendingWebApk(String manifestId) {
-        mPendingManifestIdToPackageName.remove(manifestId);
+        ThreadUtils.assertOnUiThread();
+        if (mPendingManifestIdToPackageName.remove(manifestId) != null) {
+            notifyPendingAppInstallStatusChanged();
+        }
     }
 
     /** Returns whether there is a pending WebAPK installation for the given manifest ID. */
@@ -521,6 +536,7 @@ public class WebappRegistry {
     }
 
     void clearForTesting() {
+        mPendingManifestIdToPackageName.clear();
         Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
             it.next().getValue().delete();

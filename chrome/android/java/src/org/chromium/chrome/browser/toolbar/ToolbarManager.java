@@ -130,6 +130,7 @@ import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.LocationBarFocusScrimHandler;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -4110,12 +4111,23 @@ public class ToolbarManager
         }
 
         @Override
-        public boolean isAppInstalled(GURL url) {
-            Origin origin = Origin.create(url.getSpec());
-            return origin != null
+        public @AppInstallState int getAppInstallState(@Nullable Tab tab) {
+            if (tab == null) return AppInstallState.NOT_INSTALLED;
+
+            Origin origin = Origin.create(tab.getUrl().getSpec());
+            if (origin != null
                     && WebappRegistry.getInstance()
                             .getOriginsWithInstalledApp()
-                            .contains(origin.toString());
+                            .contains(origin.toString())) {
+                return AppInstallState.INSTALLED;
+            }
+
+            String manifestId = WebappRegistry.getManifestIdOrUrl(tab);
+            if (WebappRegistry.getInstance().isWebApkPending(manifestId)) {
+                return AppInstallState.PENDING_INSTALL;
+            }
+
+            return AppInstallState.NOT_INSTALLED;
         }
 
         @Override
@@ -4130,6 +4142,15 @@ public class ToolbarManager
 
         @Override
         public void onOriginsWithInstalledAppChanged() {
+            notifyObservers();
+        }
+
+        @Override
+        public void onPendingAppInstallStatusChanged() {
+            notifyObservers();
+        }
+
+        private void notifyObservers() {
             for (Runnable observer : mObservers) {
                 observer.run();
             }

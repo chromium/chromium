@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBarSelectionController.SelectableView;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -2499,7 +2500,7 @@ class LocationBarMediator
     boolean shouldShowInstallButton() {
         if (mUrlHasFocus
                 || mIsUrlFocusChangeInProgress
-                || mLocationBarDataProvider.currentUrlHasInstalledApp()) {
+                || mLocationBarDataProvider.getAppInstallState() != AppInstallState.NOT_INSTALLED) {
             return false;
         }
 

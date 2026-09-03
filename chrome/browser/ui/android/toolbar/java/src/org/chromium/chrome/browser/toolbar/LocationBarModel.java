@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -1089,8 +1090,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public boolean currentUrlHasInstalledApp() {
-        GURL url = getCurrentGurl();
-        return mAppInstalledDelegate != null && mAppInstalledDelegate.isAppInstalled(url);
+    public @AppInstallState int getAppInstallState() {
+        return mAppInstalledDelegate != null
+                ? mAppInstalledDelegate.getAppInstallState(getTab())
+                : AppInstallState.NOT_INSTALLED;
     }
 }

@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.OmniboxPrerender.Natives;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
@@ -2974,16 +2975,66 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
 
         // 1. App is not installed yet -> Install button should show
-        doReturn(false).when(mLocationBarDataProvider).currentUrlHasInstalledApp();
+        doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
         mMediator.onAppInstallationStateChanged();
         verify(mLocationBarLayout).setInstallButtonVisibility(true);
 
         clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
 
         // 2. App becomes installed -> Install button should hide
-        doReturn(true).when(mLocationBarDataProvider).currentUrlHasInstalledApp();
+        doReturn(AppInstallState.INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
         mMediator.onAppInstallationStateChanged();
         verify(mLocationBarLayout).setInstallButtonVisibility(false);
+    }
+
+    @Test
+    public void testInstallButton_visibilityRespondsToPendingAppInstallation() {
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        mMediator.onUrlFocusChange(false);
+        mMediator.setUrlFocusChangeInProgress(false);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        doReturn(AppInstallState.PENDING_INSTALL)
+                .when(mLocationBarDataProvider)
+                .getAppInstallState();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+    }
+
+    @Test
+    public void testInstallButton_restoredWhenPendingInstallationFails() {
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        mMediator.onUrlFocusChange(false);
+        mMediator.setUrlFocusChangeInProgress(false);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        // 1. Pending installation in progress -> install button is suppressed.
+        doReturn(AppInstallState.PENDING_INSTALL)
+                .when(mLocationBarDataProvider)
+                .getAppInstallState();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        // 2. Pending installation fails / is cancelled -> install button is restored.
+        doReturn(AppInstallState.NOT_INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(true);
     }
 
     @Test
@@ -3413,11 +3464,27 @@ public class LocationBarMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(mTabletMediator.shouldShowInstallButton());
 
-        // 2. Mock the data provider to return true for installed app
-        doReturn(true).when(mLocationBarDataProvider).currentUrlHasInstalledApp();
+        // 2. Mock the data provider to return installed app
+        doReturn(AppInstallState.INSTALLED).when(mLocationBarDataProvider).getAppInstallState();
         mTabletMediator.onUrlChanged(/* isTabChanging= */ false);
 
         // 3. Verify shouldShowInstallButton() is now false
+        assertFalse(mTabletMediator.shouldShowInstallButton());
+    }
+
+    @Test
+    public void testInstallButtonSuppressedWhenPendingAppInstall() {
+        mTabletMediator.onFinishNativeInitialization();
+
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(mTabletMediator.shouldShowInstallButton());
+
+        doReturn(AppInstallState.PENDING_INSTALL)
+                .when(mLocationBarDataProvider)
+                .getAppInstallState();
+        mTabletMediator.onUrlChanged(/* isTabChanging= */ false);
+
         assertFalse(mTabletMediator.shouldShowInstallButton());
     }
 

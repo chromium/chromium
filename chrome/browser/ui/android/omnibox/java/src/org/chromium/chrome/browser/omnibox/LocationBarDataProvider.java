@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -20,6 +21,9 @@ import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Central read-only data provider interface supplying contextual tab, page, and toolbar data to the
@@ -97,9 +101,22 @@ public interface LocationBarDataProvider {
         default void onAppInstallationStateChanged() {}
     }
 
-    /** Delegate to resolve whether an app is installed for a URL. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        AppInstallState.NOT_INSTALLED,
+        AppInstallState.INSTALLED,
+        AppInstallState.PENDING_INSTALL,
+    })
+    @interface AppInstallState {
+        int NOT_INSTALLED = 0;
+        int INSTALLED = 1;
+        int PENDING_INSTALL = 2;
+    }
+
+    /** Delegate to resolve the app install state for a tab. */
     interface AppInstalledDelegate {
-        boolean isAppInstalled(GURL url);
+        @AppInstallState
+        int getAppInstallState(@Nullable Tab tab);
 
         default void addObserver(Runnable observer) {}
 
@@ -222,8 +239,8 @@ public interface LocationBarDataProvider {
     /** Returns the user-selected placement of the Toolbar. */
     NonNullObservableSupplier<@ControlsPosition Integer> getToolbarPositionSupplier();
 
-    /** Returns whether the current URL has an installed app. */
-    default boolean currentUrlHasInstalledApp() {
-        return false;
+    /** Returns the app install state for the current tab. */
+    default @AppInstallState int getAppInstallState() {
+        return AppInstallState.NOT_INSTALLED;
     }
 }
