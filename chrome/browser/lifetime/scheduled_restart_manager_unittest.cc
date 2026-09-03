@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/lifetime/scheduled_restart_test_utils.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -25,7 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #endif
 
@@ -45,7 +46,7 @@ class ScheduledRestartManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
     dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
 #endif
   }
