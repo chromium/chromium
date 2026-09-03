@@ -177,6 +177,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.net.NetError;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
@@ -1410,5 +1412,44 @@ public class ToolbarManagerUnitTest {
         mToolbarManager.destroy();
         assertNull(mToolbarManager.getHubExitNavigationHelperForTesting());
         verify(layoutStateProvider).removeObserver(helper);
+    }
+
+    @Test
+    public void
+            testOnDidFinishNavigationInPrimaryMainFrame_resetsNtpAnimationsWhenNavigatingBackToNtp() {
+        testOnDidFinishNavigationInPrimaryMainFrameImpl(
+                JUnitTestGURLs.NTP_URL, /* shouldReset= */ true);
+    }
+
+    @Test
+    public void testOnDidFinishNavigationInPrimaryMainFrame_doesNotResetNtpAnimationsForWebpage() {
+        testOnDidFinishNavigationInPrimaryMainFrameImpl(
+                JUnitTestGURLs.EXAMPLE_URL, /* shouldReset= */ false);
+    }
+
+    private void testOnDidFinishNavigationInPrimaryMainFrameImpl(GURL url, boolean shouldReset) {
+        Tab tab = mockTab(/* isNtp= */ true, /* isIncognito= */ false);
+        NewTabPage ntp = (NewTabPage) tab.getNativePage();
+
+        mActivityTabProvider.setForTesting(tab);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        ActivityTabProvider.ActivityTabTabObserver observer =
+                mToolbarManager.getActivityTabTabObserverForTesting();
+        assertNotNull(observer);
+
+        NavigationHandle navigation = mock(NavigationHandle.class);
+        when(navigation.hasCommitted()).thenReturn(true);
+        when(navigation.isSameDocument()).thenReturn(false);
+        when(navigation.getUrl()).thenReturn(url);
+        when(navigation.errorCode()).thenReturn(NetError.OK);
+
+        observer.onDidFinishNavigationInPrimaryMainFrame(tab, navigation);
+
+        if (shouldReset) {
+            verify(ntp).setUrlFocusAnimationsDisabled(false);
+        } else {
+            verify(ntp, never()).setUrlFocusAnimationsDisabled(anyBoolean());
+        }
     }
 }

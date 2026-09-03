@@ -65,6 +65,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -1610,9 +1611,10 @@ public class ToolbarManager
                             mBottomControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
                         }
 
-                        // If the load failed due to a different navigation, there is no need to
-                        // reset the location bar animations.
-                        if (navigation.errorCode() != NetError.OK
+                        // If the load failed due to a different navigation, or we navigated back to
+                        // the NTP, reset the location bar animations.
+                        if ((navigation.errorCode() != NetError.OK
+                                        || UrlUtilities.isNtpUrl(navigation.getUrl()))
                                 && !hasPendingNonNtpNavigation(tab)) {
                             NewTabPage ntp = getNewTabPageForCurrentTab();
                             if (ntp == null) return;
@@ -3986,6 +3988,10 @@ public class ToolbarManager
 
     public @Nullable ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinatorForTesting() {
         return mTabSwitcherButtonCoordinator;
+    }
+
+    public @Nullable ActivityTabTabObserver getActivityTabTabObserverForTesting() {
+        return mActivityTabTabObserver;
     }
 
     private boolean isForward() {
