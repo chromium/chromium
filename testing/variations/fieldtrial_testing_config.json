@@ -17815,26 +17815,6 @@
             ]
         }
     ],
-    "SessionRestoreInfobar": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_ContinueDefault",
-                    "params": {
-                        "continue_session": "true"
-                    },
-                    "enable_features": [
-                        "SessionRestoreInfobar"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedHighlightingIphClank": [
         {
             "platforms": [
