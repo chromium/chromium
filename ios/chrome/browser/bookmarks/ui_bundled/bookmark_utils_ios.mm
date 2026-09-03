@@ -640,56 +640,6 @@ std::vector<raw_ptr<const bookmarks::BookmarkNode>> VisibleNonDescendantNodes(
   return results;
 }
 
-// Whether `vector1` contains only elements of `vector2` in the same order.
-BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2) {
-  NodeVector::const_iterator it = vector2.begin();
-  // Scan the first vector.
-  for (const auto* node : vector1) {
-    // Look for a match in the rest of the second vector. When found, advance
-    // the iterator on vector2 to only focus on the remaining part of vector2,
-    // so that ordering is verified.
-    it = std::find(it, vector2.end(), node);
-    if (it == vector2.end()) {
-      return NO;
-    }
-    // If found in vector2, advance the iterator so that the match is only
-    // matched once.
-    it++;
-  }
-  return YES;
-}
-
-// Returns the indices in `vector2` of the items in `vector2` that are not
-// present in `vector1`.
-// `vector1` MUST be a subvector of `vector2` in the sense of `IsSubvector`.
-std::vector<NodeVector::size_type> MissingNodesIndices(
-    const NodeVector& vector1,
-    const NodeVector& vector2) {
-  CHECK(IsSubvectorOfNodes(vector1, vector2), base::NotFatalUntil::M152)
-      << "Can't compute missing nodes between nodes among which the first is "
-         "not a subvector of the second.";
-
-  std::vector<NodeVector::size_type> missing_nodes_indices;
-  // Keep an iterator on vector1.
-  NodeVector::const_iterator it1 = vector1.begin();
-  // Scan vector2, looking for vector1 elements.
-  for (NodeVector::size_type i2 = 0; i2 != vector2.size(); i2++) {
-    // When vector1 has been fully traversed, all remaining elements of vector2
-    // are to be added to the missing nodes.
-    // Otherwise, while the element of vector2 is not equal to the element the
-    // iterator on vector1 is pointing to, add vector2 elements to the missing
-    // nodes.
-    if (it1 == vector1.end() || vector2[i2] != *it1) {
-      missing_nodes_indices.push_back(i2);
-    } else {
-      // When there is a match between vector2 and vector1, advance the iterator
-      // of vector1.
-      it1++;
-    }
-  }
-  return missing_nodes_indices;
-}
-
 #pragma mark - Cache position in table view.
 
 NSArray<NSNumber*>* CreateBookmarkPath(const bookmarks::BookmarkModel* model,

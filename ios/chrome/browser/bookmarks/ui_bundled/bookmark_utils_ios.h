@@ -175,16 +175,6 @@ std::vector<raw_ptr<const bookmarks::BookmarkNode>> VisibleNonDescendantNodes(
     BookmarkStorageType type,
     const std::vector<std::u16string>& search_terms = {});
 
-// Whether `vector1` contains only elements of `vector2` in the same order.
-BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2);
-
-// Returns the indices in `vector2` of the items in `vector2` that are not
-// present in `vector1`.
-// `vector1` MUST be a subvector of `vector2` in the sense of `IsSubvector`.
-std::vector<NodeVector::size_type> MissingNodesIndices(
-    const NodeVector& vector1,
-    const NodeVector& vector2);
-
 // Creates bookmark path for `folderId` passed in. For eg: for folderId = 76,
 // MobileBookmarks (3) --> Test1(76) will be returned as [3, 76], where the
 // first element always represents a permanent folder. Returns nullptr if the
