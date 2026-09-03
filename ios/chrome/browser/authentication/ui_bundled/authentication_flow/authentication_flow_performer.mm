@@ -47,12 +47,10 @@
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -133,8 +131,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
   // Dialog for the managed confirmation dialog.
   ManagedProfileCreationCoordinator* _managedConfirmationScreenCoordinator;
-  // Dialog for the managed confirmation dialog.
-  AlertCoordinator* _managedConfirmationAlertCoordinator;
   // Used to fetch the signin restriction policies for a single
   // account without needing to register it for all policies.
   // This needs to be a member of the class because it works asynchronously and
@@ -162,8 +158,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 - (void)interrupt {
   [self stopAgeMismatchSignoutCoordinator];
   [self stopManagedConfirmation];
-  [_managedConfirmationAlertCoordinator stop];
-  _managedConfirmationAlertCoordinator = nil;
   _delegate = nil;
   [self stopWatchdogTimer];
   [self stopReauthCoordinator];
@@ -306,7 +300,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                            delegate:(id<AuthenticationFlowDelegate>)delegate
                   postSignInActions:(PostSignInActionSet)postSignInActions
                         accessPoint:(signin_metrics::AccessPoint)accessPoint {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
@@ -355,28 +348,15 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Presented"));
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    _managedConfirmationScreenCoordinator =
-        [[ManagedProfileCreationCoordinator alloc]
-            initWithBaseViewController:viewController
-                              identity:identity
-                          hostedDomain:hostedDomain
-                               browser:browser
-                                  mode:mode];
-    _managedConfirmationScreenCoordinator.delegate = self;
-    [_managedConfirmationScreenCoordinator start];
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock acceptBlock = ^{
-    [weakSelf managedConfirmationAlertAccepted:YES];
-  };
-  ProceduralBlock cancelBlock = ^{
-    [weakSelf managedConfirmationAlertAccepted:NO];
-  };
-  _managedConfirmationAlertCoordinator =
-      ManagedConfirmationDialogContentForHostedDomain(
-          hostedDomain, browser, viewController, acceptBlock, cancelBlock);
+  _managedConfirmationScreenCoordinator =
+      [[ManagedProfileCreationCoordinator alloc]
+          initWithBaseViewController:viewController
+                            identity:identity
+                        hostedDomain:hostedDomain
+                             browser:browser
+                                mode:mode];
+  _managedConfirmationScreenCoordinator.delegate = self;
+  [_managedConfirmationScreenCoordinator start];
 }
 
 - (void)showAgeMismatchDialogForIdentity:(id<SystemIdentity>)identity
@@ -420,7 +400,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 - (void)checkNoDialog {
   [super checkNoDialog];
   CHECK(!_managedConfirmationScreenCoordinator);
-  CHECK(!_managedConfirmationAlertCoordinator);
   CHECK(!_ageMismatchSignoutCoordinator);
 }
 
@@ -445,27 +424,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   _managedConfirmationScreenCoordinator = nil;
 }
 
-// Called when `_managedConfirmationAlertCoordinator` is finished.
-// `accepted` is YES when the user confirmed or NO if the user canceled.
-- (void)managedConfirmationAlertAccepted:(BOOL)accepted {
-  CHECK(_managedConfirmationAlertCoordinator);
-  CHECK(!_managedConfirmationScreenCoordinator);
-  CHECK(!AreSeparateProfilesForManagedAccountsEnabled());
-  [_managedConfirmationAlertCoordinator stop];
-  _managedConfirmationAlertCoordinator = nil;
-  ManagedProfileCreationResult result;
-  if (accepted) {
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      result = ManagedProfileCreationResult::kSeparate;
-    } else {
-      result = ManagedProfileCreationResult::kMerge;
-    }
-  } else {
-    result = ManagedProfileCreationResult::kCancelled;
-  }
-  [self managedConfirmationDoneWithResult:result];
-}
-
 // Called when `_leavingPrimaryAccountConfirmationDialogCoordinator` is done.
 - (void)leavingPrimaryAccountConfirmationDone:(BOOL)continueFlow {
   [_leavingPrimaryAccountConfirmationDialogCoordinator stop];
@@ -488,7 +446,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       break;
     case ManagedProfileCreationResult::kSeparate:
       separate = YES;
-      CHECK(AreSeparateProfilesForManagedAccountsEnabled());
       break;
   }
   base::RecordAction(
@@ -554,7 +511,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                                    result:(std::optional<
                                               signin::ManagedAccountSigninMode>)
                                               mode {
-  CHECK(!_managedConfirmationAlertCoordinator);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
   [self stopManagedConfirmation];
   ManagedProfileCreationResult result;

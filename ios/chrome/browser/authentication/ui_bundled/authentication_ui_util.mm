@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
@@ -210,42 +209,6 @@ NSString* ViewControllerPresentationStatusDescription(
   return @"Not presented";
 }
 
-AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
-    NSString* hosted_domain,
-    Browser* browser,
-    UIViewController* view_controller,
-    ProceduralBlock accept_block,
-    ProceduralBlock cancel_block) {
-  CHECK(!AreSeparateProfilesForManagedAccountsEnabled());
-  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
-  NSString* subtitle =
-      l10n_util::GetNSStringF(IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
-                              base::SysNSStringToUTF16(hosted_domain));
-  // If we ever use this method in a test where migration was forced, the button
-  // should be IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT.
-  NSString* accept_label =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
-  NSString* cancel_label = l10n_util::GetNSString(IDS_CANCEL);
-
-  AlertCoordinator* managed_confirmation_alert_coordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:view_controller
-                                                   browser:browser
-                                                     title:title
-                                                   message:subtitle];
-
-  [managed_confirmation_alert_coordinator
-      addItemWithTitle:cancel_label
-                action:cancel_block
-                 style:UIAlertActionStyleCancel];
-  [managed_confirmation_alert_coordinator
-      addItemWithTitle:accept_label
-                action:accept_block
-                 style:UIAlertActionStyleDefault];
-  managed_confirmation_alert_coordinator.noInteractionAction = cancel_block;
-  [managed_confirmation_alert_coordinator start];
-  return managed_confirmation_alert_coordinator;
-}
-
 SignedInUserState GetSignedInUserState(
     AuthenticationService* authentication_service,
     signin::IdentityManager* identity_manager,
@@ -273,10 +236,6 @@ bool ForceLeavingPrimaryAccountConfirmationDialog(
       return false;
     case SignedInUserState::kManagedAccountClearsDataOnSignout:
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing:
-      if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-        return true;
-      }
-
       // Show the dialog only if a managed account is signing out from the
       // personal profile. (This can only happen for managed accounts that were
       // already signed in before there was multi-profile support.)

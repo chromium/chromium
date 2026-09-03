@@ -122,7 +122,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -267,14 +266,6 @@ enum class ProfileChoice {
 
 // Returns the available ProfileChoices.
 base::span<const ProfileChoice> GetProfileChoices() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Note: Separate profiles for managed accounts are launched; this code path
-    // is only relevant for some EG tests covering the migration.
-    static constexpr auto kSingleProfileChoices = std::to_array<ProfileChoice>({
-        ProfileChoice::kPersonalProfile,
-    });
-    return kSingleProfileChoices;
-  }
   static constexpr auto kProfileChoices = std::to_array<ProfileChoice>({
       ProfileChoice::kProfileFromTask,
       ProfileChoice::kProfileForScene,
@@ -1386,8 +1377,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
           boolForKey:kWidgetKitRefreshFiveMinutes]),
       kFieldTrialVersionKey : @1,
     },
+    // TODO(crbug.com/407498240): Remove this key and its usages, since
+    // multi-profile is now always enabled.
     kMultiprofileKey : @{
-      kFieldTrialValueKey : @(AreSeparateProfilesForManagedAccountsEnabled()),
+      kFieldTrialValueKey : @YES,
       kFieldTrialVersionKey : @1,
     },
   };
@@ -1655,7 +1648,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
              forScene:(SceneState*)sceneState
                reason:(ChangeProfileReason)reason
          continuation:(ChangeProfileContinuation)continuation {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
 
   CHECK(sceneState);
@@ -1721,7 +1713,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 }
 
 - (void)deleteProfile:(std::string_view)profileName {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
   CHECK(manager->CanDeleteProfileWithName(profileName));

@@ -34,12 +34,10 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -210,11 +208,9 @@
     [self addFakeIdentity:identity withUnknownCapabilities:NO];
   }
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    GetApplicationContext()
-        ->GetAccountProfileMapper()
-        ->MakePersonalProfileManagedWithGaiaID(identity.gaiaId);
-  }
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MakePersonalProfileManagedWithGaiaID(identity.gaiaId);
 
   chrome_test_util::SignIn(identity);
 }
@@ -277,10 +273,6 @@
         profileSeparationDataMigrationSettings {
   chrome_test_util::SetPolicyResponseForNextProfileSeparationPolicyRequest(
       profileSeparationDataMigrationSettings);
-}
-
-+ (BOOL)areSeparateProfilesForManagedAccountsEnabled {
-  return AreSeparateProfilesForManagedAccountsEnabled();
 }
 
 @end

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
-#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
@@ -34,6 +33,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -220,11 +220,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       [self isRunningTest:@selector(testSaveToDriveSwitchProfileCancel)] ||
       [self isRunningTest:@selector(testSaveToDriveSwitchProfileSwitch)]) {
     configuration.features_enabled.push_back(kIOSSaveToDriveSignedOut);
-  }
-  if ([self isRunningTest:@selector(testSaveToDriveSwitchProfileCancel)] ||
-      [self isRunningTest:@selector(testSaveToDriveSwitchProfileSwitch)]) {
-    configuration.features_enabled.push_back(
-        kSeparateProfilesForManagedAccounts);
   }
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
     const std::string commandLineSwitch =
@@ -920,8 +915,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:HistoryScreenMatcher()];
 }
 
-// Tests that uninstalling the Google Drive app while download manager UI is shown
-// updates the button from "OPEN" in Drive to "GET THE APP".
+// Tests that uninstalling the Google Drive app while download manager UI is
+// shown updates the button from "OPEN" in Drive to "GET THE APP".
 - (void)testDownloadToDriveAppUninstalledUpdatesButton {
   auto canOpenURLSwizzler = std::make_unique<EarlGreyScopedBlockSwizzler>(
       @"UIApplication", @"canOpenURL:", ^BOOL(id blockSelf, NSURL* url) {

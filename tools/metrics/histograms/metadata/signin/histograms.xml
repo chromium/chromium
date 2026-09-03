@@ -2866,8 +2866,7 @@ prefs when the profile is loaded.  -->
     Records when fetching the hosted domain for an account starts or finishes,
     while determining which profile to assign the account into. A fetch is
     started as soon as an account is detected (i.e. independent of Chrome signin
-    state), if the hosted domain isn't locally cached already. Only recorded if
-    kSeparateProfilesForManagedAccounts is enabled.
+    state), if the hosted domain isn't locally cached already.
   </summary>
 </histogram>
 
@@ -2880,10 +2879,8 @@ prefs when the profile is loaded.  -->
     is available for AccountProfileMapper and whether it is available for
     IdentityManager in the a profile. According to crbug.com/393340481 it is
     possible for an identity to be available in AccountProfileMapper and not in
-    IdentityManager. This metric can be removed once
-    `kSeparateProfilesForManagedAccounts` is launched and if
-    `AccountProfileMapper` and `IdentityManager` are in sync. This is record
-    only for iOS.
+    IdentityManager. This metric can be removed once `AccountProfileMapper` and
+    `IdentityManager` are in sync. This is record only for iOS.
   </summary>
 </histogram>
 

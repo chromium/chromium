@@ -228,9 +228,7 @@ TEST_F(PushNotificationDelegateTest,
        HandleNotificationResponseWithChimeGaiaID) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kSeparateProfilesForManagedAccounts, kIOSPushNotificationMultiProfile,
-       kContentPushNotifications},
-      {});
+      {kIOSPushNotificationMultiProfile, kContentPushNotifications}, {});
 
   // Assign Gaia ID "12345" to the test profile.
   profile_manager_.GetProfileAttributesStorage()

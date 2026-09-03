@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/manage_sync/public/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/signin/model/test_constants_utils.h"
@@ -40,17 +39,6 @@ using chrome_test_util::SettingsSignInRowMatcher;
 - (void)tearDownHelper {
   [ChromeEarlGrey clearFakeSyncServerData];
   [super tearDownHelper];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector
-            (testReloadOnRemoveSecondaryAccountInOtherProfile)]) {
-    config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
-  }
-
-  return config;
 }
 
 // Tests that the Accounts list screen is correctly popped if the signed in

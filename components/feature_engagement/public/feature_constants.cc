@@ -926,8 +926,6 @@ BASE_FEATURE(kIPHiOSSafariImportFeature,
 BASE_FEATURE(kIPHiOSSettingsInOverflowMenuBubbleFeature,
              "IPH_iOSSettingsInOverflowMenuBubbleFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Note: This IPH will only be triggered if
-// `kSeparateProfilesForManagedAccounts` is enabled.
 BASE_FEATURE(kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature,
              "IPH_iOSSwitchAccountsWithNTPAccountParticleDiscFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

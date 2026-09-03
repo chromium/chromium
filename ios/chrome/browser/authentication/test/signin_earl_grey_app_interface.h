@@ -115,12 +115,6 @@ enum class UserSelectableType;
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings;
 
-// Returns whether the feature to put each managed account into its own separate
-// profile is enabled. This depends on the `kSeparateProfilesForManagedAccounts`
-// feature flag, plus some additional conditions which can't be directly checked
-// in the test app.
-+ (BOOL)areSeparateProfilesForManagedAccountsEnabled;
-
 // Triggers a persistent MDM error for the provided identity.
 + (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
                 userActionable:(BOOL)userActionable;

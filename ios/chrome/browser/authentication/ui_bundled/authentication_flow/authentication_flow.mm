@@ -38,14 +38,12 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -598,8 +596,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   PrefService* profilePrefService = profile->GetPrefs();
   SignedInUserState signedInUserState = GetSignedInUserState(
       authenticationService, identityManager, profilePrefService);
-  if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState,
-                                                    profile,
+  if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState, profile,
                                                     _identityToSignIn.gaiaId) &&
       _unsyncedDataTypes.value().empty()) {
     [self continueFlow];
@@ -637,12 +634,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
 - (void)fetchProfileSeparationPoliciesIfNeededStep {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    // As there is a single profile, the profile separation policy is not
-    // needed.
-    [self continueFlow];
-    return;
-  }
   std::optional<signin::ManagedAccountSigninMode> mode =
       [self managedProfileCreationMode];
   if (!mode) {
@@ -731,9 +722,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       identityManager->GetAccountsWithRefreshTokens();
   BOOL isValidIdentityInCurrentProfile = std::ranges::contains(
       accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
-  if (!isValidIdentityOnDevice ||
-      (!isValidIdentityInCurrentProfile &&
-       !AreSeparateProfilesForManagedAccountsEnabled())) {
+  if (!isValidIdentityOnDevice) {
     // Handle the case where the identity is no longer valid.
     NSError* error = ios::provider::CreateMissingIdentitySigninError();
     [self handleAuthenticationError:error];
@@ -980,8 +969,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(AuthenticationState::kFetchManagedStatus, _state);
   _identityToSignInHostedDomain = hostedDomain;
-  if ([self.delegate respondsToSelector:@selector
-                     (authenticationFlowDidFetchHostedDomain:)]) {
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 authenticationFlowDidFetchHostedDomain:)]) {
     [self.delegate authenticationFlowDidFetchHostedDomain:hostedDomain];
   }
   [self continueFlow];
@@ -1033,8 +1023,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                                    prefs::kSigninHasAcceptedManagementDialog,
                                    gaiaIDHash, base::Value(true));
 
-  _shouldConvertPersonalProfileToManaged =
-      AreSeparateProfilesForManagedAccountsEnabled() && !browsingDataSeparate;
+  _shouldConvertPersonalProfileToManaged = !browsingDataSeparate;
 
   // When we show the managed profile screen, the profile is a new one, ensure
   // the history sync screen is shown then in case a separate profile is
@@ -1042,8 +1031,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // destroyed.
   // TODO(crbug.com/403183877): Make sure that only one entity is responsible
   // for showing the sync screen.
-  if (AreSeparateProfilesForManagedAccountsEnabled() &&
-      !_shouldConvertPersonalProfileToManaged) {
+  if (!_shouldConvertPersonalProfileToManaged) {
     // Note that the history sync screen may not be displayed for any reason
     // considered in `GetSkipReason`.
     _postSignInActions.Put(
@@ -1062,14 +1050,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (void)didFailToSwitchToProfile {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   NSError* error = ios::provider::CreateMissingIdentitySigninError();
   [self handleAuthenticationError:error];
 }
 
 - (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
                                      completion:(base::OnceClosure)completion {
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK(completion);
   CHECK(newProfileBrowser);
   // Sign-in related work should be done on regular browser.
@@ -1101,37 +1087,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 #pragma mark - Private methods
 
-// Returns the mode for Managed Profile Creation view, or any non-null value if
-// profiles are not separated. Returns nullopt if there is no need for this
-// view.
+// Returns the mode for Managed Profile Creation view. Returns nullopt if there
+// is no need for this view.
 - (std::optional<signin::ManagedAccountSigninMode>)managedProfileCreationMode {
   if ([_identityToSignInHostedDomain length] == 0) {
     // No hosted domain, don't show the dialog as there is no host.
     return std::nullopt;
   }
   GaiaId gaiaId = _identityToSignIn.gaiaId;
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    BrowserPolicyConnectorIOS* policy_connector =
-        GetApplicationContext()->GetBrowserPolicyConnector();
-    bool hasMachineLevelPolicies =
-        policy_connector && policy_connector->HasMachineLevelPolicies();
-    if (hasMachineLevelPolicies) {
-      // Don't show the dialog if the browser has already machine level policies
-      // as the user already knows that their browser is managed.
-      return std::nullopt;
-    }
-
-    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaiaId);
-    const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
-        [self prefs], prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
-
-    if (already_seen && already_seen->GetIfBool().value_or(false)) {
-      return std::nullopt;
-    }
-    // The exact value is not actually used. Only the fact that this is not
-    // nullopt.
-    return signin::ManagedAccountSigninMode::kMergeProfileData;
-  }
   if (GetApplicationContext()
           ->GetAccountProfileMapper()
           ->IsProfileForGaiaIDFullyInitialized(gaiaId)) {

@@ -143,8 +143,7 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     // For convenience, add the identity, if it was not added yet.
     [SigninEarlGrey addFakeIdentity:fakeIdentity];
   }
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled] &&
-      IsIdentityPossiblyManaged(fakeIdentity)) {
+  if (IsIdentityPossiblyManaged(fakeIdentity)) {
     [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
     [ChromeEarlGreyUI waitForAppToIdle];
     CloseHistorySyncSheet(enableHistorySync);

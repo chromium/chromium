@@ -194,10 +194,7 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "separate_profiles_egtest.mm",
-    "separate_profiles_migration_egtest.mm",
-  ]
+  sources = [ "separate_profiles_egtest.mm" ]
   deps = [
     "//base/test:test_support",
     "//components/policy/core/browser",

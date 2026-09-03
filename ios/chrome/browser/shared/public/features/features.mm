@@ -348,9 +348,6 @@ bool IsAppBackgroundRefreshEnabled() {
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSeparateProfilesForManagedAccounts,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAuthenticationFlowReauthFirstKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

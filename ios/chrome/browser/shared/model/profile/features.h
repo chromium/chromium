@@ -9,11 +9,6 @@
 
 // THIS CANNOT BE USED FROM EARLGREY TESTS.
 
-// Returns whether the feature to put each managed account into its own separate
-// profile is enabled. This is the case if `kSeparateProfilesForManagedAccounts`
-// is enabled.
-bool AreSeparateProfilesForManagedAccountsEnabled();
-
 // YES if Profile-specific push notification handling is enabled.
 bool IsMultiProfilePushNotificationHandlingEnabled();
 

@@ -352,9 +352,4 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 }
 
-- (BOOL)areSeparateProfilesForManagedAccountsEnabled {
-  return
-      [SigninEarlGreyAppInterface areSeparateProfilesForManagedAccountsEnabled];
-}
-
 @end
