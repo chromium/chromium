@@ -1287,16 +1287,8 @@ class IframeInfoMultiSourcePageContextFetcherBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/555870916): Test failing on Mac.
-#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC \
-  DISABLED_TakesScreenshot_AddsIframeInfoToAPC
-#else
-#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC \
-  TakesScreenshot_AddsIframeInfoToAPC
-#endif
 IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
-                       MAYBE_TakesScreenshot_AddsIframeInfoToAPC) {
+                       TakesScreenshot_AddsIframeInfoToAPC) {
   GURL top_frame_url = GetURL(kHostA, "/iframe.html");
   GURL iframe_url = GetURL(kHostB);
   url::Origin iframe_origin = url::Origin::Create(iframe_url);
@@ -1330,6 +1322,9 @@ IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
         sub_future.GetCallback());
     ASSERT_TRUE(sub_future.Wait());
   }
+
+  // Ensure the compositor has caught up with the current web contents.
+  content::WaitForCopyableViewInWebContents(web_contents());
 
   FetchPageContextOptions options;
   options.screenshot_options = ScreenshotOptions::ViewportOnly(
@@ -1384,17 +1379,9 @@ IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
                                   .screenshot_info()));
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/538452667): Test failing on Mac.
-#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity \
-  DISABLED_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity
-#else
-#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity \
-  TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity
-#endif
 IN_PROC_BROWSER_TEST_F(
     IframeInfoMultiSourcePageContextFetcherBrowserTest,
-    MAYBE_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity) {
+    TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity) {
   GURL top_frame_url = GetURL(kHostA, "/iframe.html");
   GURL iframe_url = GetURL(kHostB);
   url::Origin iframe_origin = url::Origin::Create(iframe_url);
@@ -1431,6 +1418,9 @@ IN_PROC_BROWSER_TEST_F(
         sub_future.GetCallback());
     ASSERT_TRUE(sub_future.Wait());
   }
+
+  // Ensure the compositor has caught up with the current web contents.
+  content::WaitForCopyableViewInWebContents(web_contents());
 
   FetchPageContextOptions options;
   options.screenshot_options = ScreenshotOptions::ViewportOnly(
