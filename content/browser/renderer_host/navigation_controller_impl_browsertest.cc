@@ -22020,6 +22020,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(initial_site_instance, contents()->GetSiteInstance());
 }
 
+// TODO(crbug.com/511774376): Add a browser test to verify that the navigate
+// event for a cross-document history traversal is not dispatched when the
+// destination entry was committed at an opaque origin due to CSP sandbox.
+
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigateToNavigationApiKey_NullCommittedOrigin) {
   // Ensure there's a history entry before the error page.

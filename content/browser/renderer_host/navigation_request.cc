@@ -1889,6 +1889,7 @@ NavigationRequest::NavigationRequest(
     origin_related_state_.emplace(OriginRelatedState{
         .item_sequence_number = frame_entry->item_sequence_number(),
         .document_sequence_number = frame_entry->document_sequence_number(),
+        .committed_origin = frame_entry->committed_origin(),
     });
   }
 
@@ -4759,10 +4760,12 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   //
   // If PolicyContainer::ComputePoliciesToCommit() has run
   // `policy_container_builder_` will be valid, but even if it hasn't, we can
-  // speculatively take `commit_params_->frame_policy.sandbox_flags` if we
-  // haven't received the response yet and don't have the final
-  // `policy_container_builder_`, and if the state of the kOrigin flag changes,
-  // we'll detect the change and recompute the target SiteInstance elsewhere.
+  // speculatively take `commit_params_->frame_policy.sandbox_flags` (or
+  // `dest_site_instance_` for history navigations) if we haven't received the
+  // response yet and don't have the final `policy_container_builder_`, to
+  // reduce the chance that recomputing will be needed. If the state of the
+  // kOrigin flag changes, we'll detect the change and recompute the target
+  // SiteInstance elsewhere.
   //
   // In general, about:blank documents should stay in their initiator's process.
   // If neither the initiator or about:blank is sandboxed, or if both are, then
@@ -4792,12 +4795,15 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       // Note: We'll end up here if this function is called before
       // ComputePoliciesToCommit(), such as when computing a speculative
       // RenderFrameHost's SiteInstance before receiving a response. In that
-      // event we use the sandbox flags in commit_params_ as a current "best
+      // event we use the sandbox flags in commit_params_ (or the destination
+      // SiteInstance, if this is a history navigation) as a current "best
       // estimate".
       has_origin_restricted_sandbox_flag =
-          (commit_params_->frame_policy.sandbox_flags &
-           network::mojom::WebSandboxFlags::kOrigin) ==
-          network::mojom::WebSandboxFlags::kOrigin;
+          ((commit_params_->frame_policy.sandbox_flags &
+            network::mojom::WebSandboxFlags::kOrigin) ==
+           network::mojom::WebSandboxFlags::kOrigin) ||
+          (dest_site_instance_ &&
+           dest_site_instance_->GetSiteInfo().IsSandboxed());
     }
 
     // It's possible that a sandbox attribute can disappear from a frame that
@@ -12030,13 +12036,19 @@ void NavigationRequest::MaybeDispatchNavigateEventForCrossDocumentTraversal() {
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT) {
     return;
   }
-  // Only fire the navigate event if the destination is same-origin. Because
-  // this check is performed at navigation start time, `destination_origin` is
+  // Only fire the navigate event if the destination is same-origin. Prefer
+  // the origin recorded when the destination entry previously committed, since
+  // the URL alone does not reflect opaque origins resulting from CSP sandbox.
+  // See also PopulateSingleNavigationApiHistoryEntryVector(). Because this
+  // check is performed at navigation start time, the URL-derived fallback is
   // based on the pre-redirect URL, which is consistent with the renderer
   // process logic for firing the navigate event for non-history navigations.
-  url::Origin destination_origin = url::Origin::Resolve(
-      common_params_->url,
-      common_params_->initiator_origin.value_or(url::Origin()));
+  url::Origin destination_origin =
+      origin_related_state_ && origin_related_state_->committed_origin
+          ? *origin_related_state_->committed_origin
+          : url::Origin::Resolve(
+                common_params_->url,
+                common_params_->initiator_origin.value_or(url::Origin()));
   if (!frame_tree_node_->current_origin().IsSameOriginWith(
           destination_origin)) {
     return;

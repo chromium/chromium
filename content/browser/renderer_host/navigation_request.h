@@ -3209,6 +3209,9 @@ class CONTENT_EXPORT NavigationRequest
   struct OriginRelatedState {
     int64_t item_sequence_number;
     int64_t document_sequence_number;
+    // The origin that was recorded when the FrameNavigationEntry was previously
+    // committed, if any. May be nullopt for entries that have never committed.
+    std::optional<url::Origin> committed_origin;
   };
   std::optional<OriginRelatedState> origin_related_state_;
 
