@@ -22,6 +22,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,7 +41,9 @@ public class PageInfoIphControllerUnitTest {
     private static final int IPH_RES_ID = R.string.accessibility_omnibox_btn_refine;
     private static final int TIMEOUT = 12345;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private UserEducationHelper mHelper;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;

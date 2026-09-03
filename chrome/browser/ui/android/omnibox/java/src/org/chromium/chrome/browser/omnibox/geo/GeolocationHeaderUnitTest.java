@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -97,7 +99,8 @@ public class GeolocationHeaderUnitTest {
             "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRsgBAQ==";
     private int mRefreshLastKnownLocationCount;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private Profile mProfileMock;
@@ -114,14 +117,28 @@ public class GeolocationHeaderUnitTest {
         GeolocationTracker.setLocationAgeForTesting(1 * 60 * 1000L);
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ true);
         GeolocationHeader.resetStateForTesting();
-        setSiteGeolocationPermissions(
-                /* approximate= */ ContentSetting.ALLOW, /* precise= */ ContentSetting.ALLOW);
-        when(mWebsitePreferenceBridgeJniMock.isDseOrigin(any(BrowserContextHandle.class), any()))
+        lenient()
+                .when(
+                        mWebsitePreferenceBridgeJniMock.getPermissionSettingWithEmbargo(
+                                any(BrowserContextHandle.class),
+                                eq(ContentSettingsType.GEOLOCATION_WITH_OPTIONS),
+                                anyString(),
+                                anyString()))
+                .thenReturn(
+                        new PermissionSetting(
+                                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW),
+                                null,
+                                false));
+        lenient()
+                .when(
+                        mWebsitePreferenceBridgeJniMock.isDseOrigin(
+                                any(BrowserContextHandle.class), any()))
                 .thenReturn(true);
-        when(mProfileMock.isOffTheRecord()).thenReturn(false);
-        when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
+        lenient().when(mProfileMock.isOffTheRecord()).thenReturn(false);
+        lenient()
+                .when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
                 .thenReturn("https://www.google.com/search?q=a");
-        when(mTemplateUrlServiceMock.isDefaultSearchEngineGoogle()).thenReturn(true);
+        lenient().when(mTemplateUrlServiceMock.isDefaultSearchEngineGoogle()).thenReturn(true);
         mRefreshLastKnownLocationCount = 0;
         GeolocationTracker.setRefreshLastKnownLocationRunnableForTesting(
                 () -> mRefreshLastKnownLocationCount++);

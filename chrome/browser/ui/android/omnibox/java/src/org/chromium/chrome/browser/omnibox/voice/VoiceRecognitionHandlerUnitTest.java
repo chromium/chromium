@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
@@ -82,7 +84,9 @@ import java.util.concurrent.ExecutionException;
 public class VoiceRecognitionHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.URL_1;
     private static final GURL DEFAULT_SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Tab mTab;
     @Mock private VoiceRecognitionHandler.Observer mObserver;
@@ -114,16 +118,22 @@ public class VoiceRecognitionHandlerUnitTest {
         VoiceRecognitionUtil.setHasRecognitionIntentHandlerForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
-        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
+        lenient()
+                .doReturn(mAutocompleteController)
+                .when(mAutocompleteControllerJniMock)
+                .getForProfile(any());
         UserPrefs.setPrefServiceForTesting(mPrefs);
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        lenient().doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
-        doReturn(DEFAULT_SEARCH_URL).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
+        lenient()
+                .doReturn(DEFAULT_SEARCH_URL)
+                .when(mTemplateUrlService)
+                .getUrlForVoiceSearchQuery(any());
 
-        doReturn(DEFAULT_SEARCH_URL).when(mMatch).getUrl();
-        doReturn(true).when(mMatch).isSearchSuggestion();
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
+        lenient().doReturn(DEFAULT_SEARCH_URL).when(mMatch).getUrl();
+        lenient().doReturn(true).when(mMatch).isSearchSuggestion();
+        lenient().doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         var activity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mWindowAndroid = spy(new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true));
@@ -140,9 +150,9 @@ public class VoiceRecognitionHandlerUnitTest {
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
-        doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
-        doReturn(mTab).when(mDataProvider).getTab();
-        doReturn(DEFAULT_URL).when(mTab).getUrl();
+        lenient().doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
+        lenient().doReturn(mTab).when(mDataProvider).getTab();
+        lenient().doReturn(DEFAULT_URL).when(mTab).getUrl();
     }
 
     @After
@@ -205,12 +215,6 @@ public class VoiceRecognitionHandlerUnitTest {
     }
 
     @Test
-    public void testIsVoiceSearchEnabled_TrueWhenIncognito() {
-        doReturn(true).when(mDataProvider).isIncognito();
-        assertTrue(mHandler.isVoiceSearchEnabled());
-    }
-
-    @Test
     public void testIsVoiceSearchEnabled_FalseWhenNoPermissionAndCantRequestPermission() {
         doReturn(false).when(mPermissionDelegate).hasPermission(anyString());
         assertFalse(mHandler.isVoiceSearchEnabled());
@@ -220,40 +224,24 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testIsVoiceSearchEnabled_Success() {
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         assertTrue(mHandler.isVoiceSearchEnabled());
     }
 
     @Test
     public void testIsVoiceSearchEnabled_AllowedByPolicy() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
         assertTrue(mHandler.isVoiceSearchEnabled());
     }
 
     @Test
     public void testIsVoiceSearchEnabled_DisabledByPolicy() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         assertFalse(mHandler.isVoiceSearchEnabled());
-    }
-
-    @Test
-    public void testIsVoiceSearchEnabled_AudioCapturePolicyAllowsByDefault() {
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
-        assertTrue(mHandler.isVoiceSearchEnabled());
     }
 
     @Test
     public void testIsVoiceSearchEnabled_UpdateAfterProfileSet() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
         assertTrue(mHandler.isVoiceSearchEnabled());
 
@@ -304,7 +292,6 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(false).when(mPermissionDelegate).hasPermission(anyString());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
         doReturn(false).when(mPermissionDelegate).canRequestPermission(anyString());
-        setReportedPermissionResult(PackageManager.PERMISSION_DENIED);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
         verify(mIntentHandler, never()).recordVoiceSearchStartEvent(anyInt());
         verify(mObserver).onVoiceAvailabilityImpacted();

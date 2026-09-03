@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -19,6 +20,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -30,7 +32,8 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SiteControlsIphControllerUnitTest {
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mAnchorView;
@@ -41,7 +44,7 @@ public class SiteControlsIphControllerUnitTest {
 
     @Before
     public void setUp() {
-        doReturn(true).when(mAnchorView).isShown();
+        lenient().doReturn(true).when(mAnchorView).isShown();
         mController =
                 new SiteControlsIphController(mUserEducationHelper, mAnchorView, mAppMenuHandler);
     }
