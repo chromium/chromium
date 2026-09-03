@@ -5,11 +5,15 @@
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 
 #include <memory>
+#include <string_view>
 
+#include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
@@ -22,6 +26,40 @@
 #include "url/gurl.h"
 
 namespace glic {
+
+namespace {
+
+GlicNoWebviewContentsManager* GetNoWebviewContentsManager(
+    GlicInstanceImpl* instance) {
+  if (!instance) {
+    return nullptr;
+  }
+  return static_cast<GlicNoWebviewContentsManager*>(
+      instance->host().contents_manager());
+}
+
+void ClickOverlayElement(content::WebContents* overlay_contents,
+                         std::string_view query_selector) {
+  ASSERT_TRUE(overlay_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_contents));
+  content::ExecuteScriptAsync(overlay_contents,
+                              base::StringPrintf(
+                                  R"(
+        const start = Date.now();
+        const check = () => {
+          const el = document.querySelector('%s');
+          if (el && !el.hidden) {
+            el.click();
+          } else if (Date.now() - start <= 5000) {
+            setTimeout(check, 50);
+          }
+        };
+        check();
+      )",
+                                  std::string(query_selector).c_str()));
+}
+
+}  // namespace
 
 class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
  public:
@@ -160,8 +198,105 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   EXPECT_TRUE(manager.ShouldReloadOnShow());
 }
 
-// TODO: Add end-to-end close button, overlay destruction on guest ready,
-// and retry/reload tests in the next commit once Host routes to
-// GlicNoWebviewContentsManager.
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       IneligibleAccountHelpClickOpensTab) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  manager->SetErrorState(mojom::ErrorPanelType::kIneligibleAccount);
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  ClickOverlayElement(manager->overlay_contents(),
+                      "#ineligibleAccountHelpButton");
+
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(new_tab->GetContents()->GetVisibleURL(),
+            GURL(features::kGlicIneligibleAccountHelpUrl.Get()));
+  EXPECT_OK(WaitForGlicClose(instance));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       LocationMismatchHelpClickOpensTab) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  manager->SetErrorState(mojom::ErrorPanelType::kLocationMismatch);
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  ClickOverlayElement(manager->overlay_contents(),
+                      "#locationMismatchHelpButton");
+
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(new_tab->GetContents()->GetVisibleURL(),
+            GURL(features::kGlicLocationMismatchHelpUrl.Get()));
+  EXPECT_OK(WaitForGlicClose(instance));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       DisabledByAdminLinkClickOpensTabAndRecordsMetric) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  manager->SetErrorState(mojom::ErrorPanelType::kDisabledByAdminWithLink);
+
+  base::UserActionTester user_action_tester;
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  ClickOverlayElement(manager->overlay_contents(), "#disabledByAdminPanel a");
+
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(new_tab->GetContents()->GetVisibleURL(),
+            GURL(features::kGlicCaaLinkUrl.Get()));
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Glic.DisabledByAdminPanelLinkClicked"),
+      1);
+  EXPECT_OK(WaitForGlicClose(instance));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       CloseButtonClickClosesPanel) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  ClickOverlayElement(manager->overlay_contents(),
+                      "#loadingPanel .close-button");
+  EXPECT_OK(WaitForGlicClose(instance));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       DisabledByAdminCloseButtonClickClosesPanel) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  manager->SetErrorState(mojom::ErrorPanelType::kDisabledByAdmin);
+
+  ClickOverlayElement(manager->overlay_contents(),
+                      "#disabledByAdminCloseButton");
+  EXPECT_OK(WaitForGlicClose(instance));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       RetryButtonClickTriggersReload) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  manager->SetErrorState(mojom::ErrorPanelType::kOffline);
+
+  ClickOverlayElement(manager->overlay_contents(), "#retry");
+}
 
 }  // namespace glic

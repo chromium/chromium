@@ -151,6 +151,10 @@ class Host : public GlicSharingManagerProvider {
     virtual void WebClientInitializeFailed() {}
     // The webview reached a login page.
     virtual void LoginPageCommitted() {}
+    // Called when the active WebContents in the host changes (e.g. in
+    // NoWebview mode when swapping between the overlay WebUI and guest).
+    virtual void ActiveWebContentsChanged(content::WebContents* new_contents) {}
+
     // Called when the WebUI state changes in the glic WebUI.
     // If the glic WebUI is destroyed, the webUI state is returned to
     // kUninitialized.
@@ -416,32 +420,15 @@ class Host : public GlicSharingManagerProvider {
   GlicPageHandler* page_handler() const;
   bool IsGlicWebUiHost(content::RenderProcessHost* host) const;
 
-  // Information about the page handler which is cleared when the page handler
-  // goes away.
-  struct PageHandlerInfo {
-    PageHandlerInfo();
-    ~PageHandlerInfo();
-    PageHandlerInfo(PageHandlerInfo&&);
-    PageHandlerInfo& operator=(PageHandlerInfo&&);
-
-    raw_ptr<GlicPageHandler> page_handler = nullptr;
+  struct ClientState {
     // True if the response to PanelWillOpen was received. Cleared when
-    // PanelWasClosed() is called.
+    // PanelWasClosed() is called or when the web client is disconnected.
     bool open_complete = false;
     bool context_access_indicator_enabled = false;
   };
 
   void PanelWillOpenComplete(GlicWebClientAccess* client,
                              mojom::OpenPanelInfoPtr open_info);
-  PageHandlerInfo* FindInfo(GlicPageHandler* handler);
-  const PageHandlerInfo* FindInfo(GlicPageHandler* handler) const {
-    return const_cast<Host*>(this)->FindInfo(handler);
-  }
-  PageHandlerInfo* FindInfoForWebUiContents(content::WebContents* web_contents);
-  const PageHandlerInfo* FindInfoForWebUiContents(
-      content::WebContents* web_contents) const {
-    return const_cast<Host*>(this)->FindInfoForWebUiContents(web_contents);
-  }
   GlicWebClientManager* web_client_manager();
   const GlicWebClientManager* web_client_manager() const;
   content::Visibility GetExpectedVisibility() const;
@@ -470,9 +457,13 @@ class Host : public GlicSharingManagerProvider {
       pending_additional_contexts_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
   std::optional<mojom::PanelState> pending_panel_state_;
+  ClientState client_state_;
+
+  void OnActiveWebContentsChanged(content::WebContents* new_contents);
 
   std::unique_ptr<GlicWebContentsManager> contents_;
-  std::optional<PageHandlerInfo> handler_info_;
+  base::CallbackListSubscription contents_changed_subscription_;
+  raw_ptr<GlicPageHandler> page_handler_ = nullptr;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
 

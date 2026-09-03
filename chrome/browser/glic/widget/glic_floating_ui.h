@@ -38,6 +38,7 @@ class GlicInstanceMetrics;
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder,
                        public Host::EmbedderDelegate,
+                       public Host::Observer,
                        public LocalHotkeyManager::Panel,
                        public views::WidgetObserver,
                        public web_modal::WebContentsModalDialogManagerDelegate,
@@ -87,6 +88,9 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void ClosePanel() override;
   void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override;
+
+  // Host::Observer:
+  void ActiveWebContentsChanged(content::WebContents* new_contents) override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -153,6 +157,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   // Used by web modals to listens for glic window events, e.g. size change or
   // window close.

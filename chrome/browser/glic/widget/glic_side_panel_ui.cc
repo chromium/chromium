@@ -75,6 +75,7 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
   // enterprise users) via constrained_window APIs.
   SetModalDialogDelegate(this);
+  host_observation_.Observe(&delegate_->host());
   panel_state_.kind = mojom::PanelStateKind::kAttached;
 }
 
@@ -254,6 +255,14 @@ void GlicSidePanelUi::OnReload() {
   content::WebContents* web_contents = delegate_->host().webui_contents();
   if (web_contents && glic_view_) {
     glic_view_->SetWebContents(web_contents);
+  }
+  SetModalDialogDelegate(this);
+}
+
+void GlicSidePanelUi::ActiveWebContentsChanged(
+    content::WebContents* new_contents) {
+  if (glic_view_) {
+    glic_view_->SetWebContents(new_contents);
   }
   SetModalDialogDelegate(this);
 }

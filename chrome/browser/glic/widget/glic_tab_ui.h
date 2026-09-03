@@ -28,6 +28,7 @@ namespace glic {
 // browser tab.
 class GlicTabUi : public GlicUiEmbedder,
                   public Host::EmbedderDelegate,
+                  public Host::Observer,
                   public BrowserCollectionObserver {
  public:
   GlicTabUi(base::WeakPtr<tabs::TabInterface> tab,
@@ -63,6 +64,9 @@ class GlicTabUi : public GlicUiEmbedder,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override;
 
+  // Host::Observer:
+  void ActiveWebContentsChanged(content::WebContents* new_contents) override;
+
   // BrowserCollectionObserver:
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
@@ -73,6 +77,7 @@ class GlicTabUi : public GlicUiEmbedder,
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_observation_{this};
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 

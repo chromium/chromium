@@ -27,6 +27,7 @@ GlicTabUi::GlicTabUi(base::WeakPtr<tabs::TabInterface> tab,
                      GlicUiEmbedder::Delegate& delegate)
     : tab_(tab), delegate_(delegate) {
   browser_observation_.Observe(GlobalBrowserCollection::GetInstance());
+  host_observation_.Observe(&delegate_->host());
   if (auto* browser_window = tab_->GetBrowserWindowInterface()) {
     delegate_->OnEmbedderWindowActivationChanged(
         browser_window->GetWindow()->IsActive());
@@ -34,6 +35,8 @@ GlicTabUi::GlicTabUi(base::WeakPtr<tabs::TabInterface> tab,
 }
 
 GlicTabUi::~GlicTabUi() = default;
+
+void GlicTabUi::ActiveWebContentsChanged(content::WebContents* new_contents) {}
 
 Host::EmbedderDelegate* GlicTabUi::GetHostEmbedderDelegate() {
   return this;

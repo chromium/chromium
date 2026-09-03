@@ -40,6 +40,7 @@ class GlicInstanceMetrics;
 class GlicSidePanelUi
     : public GlicUiEmbedder,
       public Host::EmbedderDelegate,
+      public Host::Observer,
       public LocalHotkeyManager::Panel,
       public web_modal::WebContentsModalDialogManagerDelegate {
  public:
@@ -75,6 +76,9 @@ class GlicSidePanelUi
   void ClosePanel() override;
   void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
+
+  // Host::Observer:
+  void ActiveWebContentsChanged(content::WebContents* new_contents) override;
 
   void SidePanelStateChanged(GlicSidePanelCoordinator::State state);
 
@@ -117,6 +121,8 @@ class GlicSidePanelUi
   base::CallbackListSubscription deactivation_subscription_;
 
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
+
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };

@@ -87,6 +87,7 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->OnPictureInPictureWidgetOpened(glic_widget_.get());
   browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
+  host_observation_.Observe(&delegate_->host());
 }
 
 GlicFloatingUi::~GlicFloatingUi() {
@@ -249,6 +250,13 @@ void GlicFloatingUi::CloseSelectionOverlay() {
   selection_overlay_controller->Close();
 }
 #endif
+
+void GlicFloatingUi::ActiveWebContentsChanged(
+    content::WebContents* new_contents) {
+  if (auto* glic_view = GetGlicView()) {
+    glic_view->SetWebContents(new_contents);
+  }
+}
 
 void GlicFloatingUi::EnableDragResize(bool enabled) {
   user_resizable_ = enabled;

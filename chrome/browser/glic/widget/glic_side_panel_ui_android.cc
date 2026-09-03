@@ -117,6 +117,7 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 
   glic_side_panel_coordinator->SetWebContents(web_contents);
 
+  host_observation_.Observe(&delegate_->host());
   panel_state_.kind = mojom::PanelStateKind::kAttached;
 }
 
@@ -251,6 +252,18 @@ void GlicSidePanelUi::OnReload() {
   if (glic_side_panel_coordinator) {
     glic_side_panel_coordinator->SetWebContents(
         delegate_->host().webui_contents());
+  }
+}
+
+void GlicSidePanelUi::ActiveWebContentsChanged(
+    content::WebContents* new_contents) {
+  if (auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator()) {
+    if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+      if (new_contents) {
+        new_contents->SetDelegate(this);
+      }
+    }
+    glic_side_panel_coordinator->SetWebContents(new_contents);
   }
 }
 
