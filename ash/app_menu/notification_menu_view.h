@@ -98,7 +98,8 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
  private:
   friend class NotificationMenuViewTestAPI;
 
-  using NotificationItemViews = std::deque<NotificationItemView*>;
+  using NotificationItemViews =
+      std::deque<raw_ptr<NotificationItemView, DanglingUntriaged>>;
 
   // Returns an iterator to the notification matching the supplied ID, or
   // notification_item_views_.end() if none.

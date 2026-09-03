@@ -4,3 +4,4 @@ check_raw_ptr_in_container:
   included_types:
     - "std::stack"
     - "std::unordered_set"
+    - "std::deque"
