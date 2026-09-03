@@ -407,11 +407,15 @@ static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
   crash_key.Set(processName);
 }
 
+static void JNI_AwBrowserProcess_ReadTracingCommandLineOnMainThread(
+    JNIEnv* env) {
+  tracing::TraceStartupConfig::InitializeFromCommandLine(
+      *base::CommandLine::ForCurrentProcess());
+}
+
 static void JNI_AwBrowserProcess_InitTracing(JNIEnv* env,
                                              bool enable_system_backend,
                                              bool called_on_background_thread) {
-  tracing::TraceStartupConfig::InitializeFromCommandLine(
-      *base::CommandLine::ForCurrentProcess());
   tracing::InitTracing(/*enable_consumer=*/true,
                        /*will_trace_thread_restart=*/false,
                        /*enable_system_backend=*/enable_system_backend ||

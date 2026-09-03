@@ -906,7 +906,22 @@ public final class AwBrowserProcess {
     }
 
     /**
+     * Read the command line flags required for tracing init.
+     *
+     * <p>This method must be called on the main thread, to ensure there is no cross-thread access
+     * to the native CommandLine instance.
+     *
+     * <p>Must be called before {@link #initTracing(boolean, boolean)}.
+     */
+    public static void readTracingCommandLineOnMainThread() {
+        AwBrowserProcessJni.get().readTracingCommandLineOnMainThread();
+    }
+
+    /**
      * Start tracing initialization.
+     *
+     * <p>This requires {@link #readTracingCommandLineOnMainThread()} to be called before calling
+     * this method.
      *
      * <p>This must only be called <em>before</em> Content startup. If Content Main has already been
      * called, tracing will already be initialized, and this method will crash.
@@ -953,6 +968,8 @@ public final class AwBrowserProcess {
         void setProcessNameCrashKey(@JniType("std::string") String processName);
 
         void onStartupComplete();
+
+        void readTracingCommandLineOnMainThread();
 
         void initTracing(
                 @JniType("bool") boolean enableSystemConsumer,

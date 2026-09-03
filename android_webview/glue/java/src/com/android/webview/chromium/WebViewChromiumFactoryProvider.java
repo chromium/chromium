@@ -590,11 +590,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 if (WebViewCachedFlags.get()
                         .isCachedFeatureEnabled(AwFeatures.WEBVIEW_EARLY_TRACING_INIT)) {
                     AwBrowserProcess.disableTracingInitDuringBrowserMain();
+                    AwBrowserProcess.readTracingCommandLineOnMainThread();
                     AwBrowserProcess.initTracing(
                             enableSystemTracing, /* runningOnBackgroundThread= */ false);
                 } else if (WebViewCachedFlags.get()
                         .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BACKGROUND_TRACING_INIT)) {
                     AwBrowserProcess.disableTracingInitDuringBrowserMain();
+                    AwBrowserProcess.readTracingCommandLineOnMainThread();
                     AwBrowserProcess.markTracingInitializedOnBackground();
                     // Posting as USER_VISIBLE because startup will eventually wait if it isn't done
                     // yet.
