@@ -92,12 +92,14 @@ void Shadow::SetContentBounds(const gfx::Rect& content_bounds) {
   // content bounds were last set. When the window moves but doesn't change
   // size, this is a no-op. (The origin stays the same in this case.)
   if (content_bounds == content_bounds_ &&
-      layer()->bounds() == last_layer_bounds_) {
+      (!layer() || layer()->bounds() == last_layer_bounds_)) {
     return;
   }
 
   content_bounds_ = content_bounds;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::SetElevation(int elevation) {
@@ -107,6 +109,9 @@ void Shadow::SetElevation(int elevation) {
   }
 
   elevation_ = elevation;
+  if (!layer()) {
+    return;
+  }
 
   // Stop waiting for any as yet unfinished implicit animations.
   StopObservingImplicitAnimations();
@@ -142,20 +147,27 @@ void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   }
 
   rounded_corners_ = radii;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::SetStyle(Style style) {
-  if (style_ == style)
+  if (style_ == style) {
     return;
+  }
 
   style_ = style;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::SetColorMap(const ElevationToColorsMap& color_map) {
   color_map_ = color_map;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::OnImplicitAnimationsCompleted() {

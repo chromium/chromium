@@ -124,6 +124,52 @@ TEST_F(ShadowTest, ResetLayerBoundsBySettingSameContentBounds) {
   EXPECT_EQ(layer_bounds, shadow.layer()->bounds());
 }
 
+// Test that calling setters before Init() does not crash and properties are
+// properly applied when Init() is called.
+TEST_F(ShadowTest, ConfigureBeforeInit) {
+  Shadow shadow;
+
+  // Set properties before Init(). These should not crash or create layers.
+  const gfx::Rect content_bounds(100, 100, 300, 300);
+  shadow.SetContentBounds(content_bounds);
+  EXPECT_EQ(content_bounds, shadow.content_bounds());
+
+  shadow.SetElevation(kElevationSmall);
+  EXPECT_EQ(kElevationSmall, shadow.elevation());
+
+  const gfx::RoundedCornersF radii(10, 20, 30, 40);
+  shadow.SetRoundedCorners(radii);
+  EXPECT_EQ(radii, shadow.rounded_corners());
+
+  Shadow::ElevationToColorsMap color_map;
+  color_map[kElevationLarge] =
+      Shadow::ElevationColors{SK_ColorRED, SK_ColorBLUE};
+  shadow.SetColorMap(color_map);
+  EXPECT_EQ(color_map, shadow.color_map());
+
+  shadow.SetStyle(Shadow::Style::kMaterialDesign);
+  EXPECT_EQ(Shadow::Style::kMaterialDesign, shadow.style());
+
+  EXPECT_FALSE(shadow.layer());
+  EXPECT_FALSE(shadow.shadow_layer());
+  EXPECT_FALSE(shadow.details_for_testing());
+
+  // Call Init() and verify that the shadow appearance is correctly updated with
+  // the previously configured properties.
+  shadow.Init(kElevationLarge);
+  EXPECT_TRUE(shadow.layer());
+  EXPECT_TRUE(shadow.shadow_layer());
+  ASSERT_TRUE(shadow.details_for_testing());
+
+  gfx::Rect shadow_bounds(content_bounds);
+  shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
+  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  EXPECT_EQ(GetNineboxImageSize(kElevationLarge, radii),
+            shadow.details_for_testing()->nine_patch_image.size());
+  EXPECT_EQ(SK_ColorRED, shadow.details_for_testing()->values[0].color());
+  EXPECT_EQ(SK_ColorBLUE, shadow.details_for_testing()->values[1].color());
+}
+
 // Test that the elevation is reduced when the contents are too small to handle
 // the full elevation.
 TEST_F(ShadowTest, AdjustElevationForSmallContents) {
