@@ -25,7 +25,7 @@
   --ntp-composebox-carousel-inner-margin-block-end: 2px;
   --ntp-composebox-tool-chip-padding-block-end: 0px;
   --text-input-inline-start-spacing: var(--cr-composebox-text-input-inline-start, 18px);
-  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 30px);
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 28px);
   border-radius: var(--expanded-border-radius);
   box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-composebox-font-size);

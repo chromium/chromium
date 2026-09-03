@@ -258,7 +258,7 @@ cr-searchbox-input::part(searchbox-input) {
 }
 
 :host([ntp-realbox-next-enabled]) {
-  --cr-searchbox-border-radius: 30px;
+  --cr-searchbox-border-radius: 28px;
   --cr-searchbox-dropdown-padding-bottom: 10px;
   --cr-searchbox-dropdown-padding-top: 10px;
   --cr-searchbox-height: 56px;
@@ -276,7 +276,6 @@ cr-searchbox-input::part(searchbox-input) {
 }
 
 :host-context([energy-effect-enabled_]):host([ntp-realbox-next-enabled]) {
-  --cr-searchbox-border-radius: 28px;
   --cr-searchbox-border: 1px solid #DADCE0;
 }
 

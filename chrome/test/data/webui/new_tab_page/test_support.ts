@@ -240,3 +240,80 @@ export function assertCenterAligned(
             Array.from(uniqueValues).join(', ')}]):\n${details}`);
   }
 }
+
+export interface EffectiveBorderRadii {
+  topLeft: number;
+  bottomLeft: number;
+  topRight: number;
+  bottomRight: number;
+}
+
+/**
+ * Calculates the actual used/rendered border radii for an element per the
+ * W3C CSS Backgrounds and Borders Module Level 3 (§ 5.5 Corner Overlap).
+ *
+ * When the sum of adjacent radii along any edge exceeds the edge's dimension,
+ * all radii are proportionally reduced by factor:
+ * f = min(1, W / Sum_top, H / Sum_right, W / Sum_bottom, H / Sum_left).
+ *
+ * @see https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
+ */
+export function getEffectiveBorderRadii(element: Element):
+    EffectiveBorderRadii {
+  const style = window.getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+
+  const w = rect.width;
+  const h = rect.height;
+
+  const rtl = parseFloat(style.borderTopLeftRadius) || 0;
+  const rtr = parseFloat(style.borderTopRightRadius) || 0;
+  const rbr = parseFloat(style.borderBottomRightRadius) || 0;
+  const rbl = parseFloat(style.borderBottomLeftRadius) || 0;
+
+  // Sum adjacent corner radii along each of the four edges.
+  const sumTop = rtl + rtr;
+  const sumRight = rtr + rbr;
+  const sumBottom = rbl + rbr;
+  const sumLeft = rtl + rbl;
+
+  // Compute reduction factor for each side (defaults to 1 if sum is 0 to avoid
+  // division by zero).
+  const fTop = sumTop > 0 ? w / sumTop : 1;
+  const fRight = sumRight > 0 ? h / sumRight : 1;
+  const fBottom = sumBottom > 0 ? w / sumBottom : 1;
+  const fLeft = sumLeft > 0 ? h / sumLeft : 1;
+
+  // W3C Rule: Apply the single minimum factor uniformly across all corners.
+  const f = Math.min(1, fTop, fRight, fBottom, fLeft);
+
+  return {
+    topLeft: rtl * f,
+    bottomLeft: rbl * f,
+    topRight: rtr * f,
+    bottomRight: rbr * f,
+  };
+}
+
+/**
+ * Asserts that two sets of effective border radii match within a specified
+ * tolerance to account for floating-point arithmetic and subpixel rendering.
+ */
+export function assertEffectiveBorderRadiiCloseTo(
+    expected: EffectiveBorderRadii, actual: EffectiveBorderRadii,
+    tolerance: number = 0.01, message?: string): void {
+  const corners: Array<keyof EffectiveBorderRadii> = [
+    'topLeft',
+    'topRight',
+    'bottomLeft',
+    'bottomRight',
+  ];
+  for (const corner of corners) {
+    const diff = Math.abs(expected[corner] - actual[corner]);
+    assertTrue(
+        diff <= tolerance,
+        `${message ? message + ': ' : ''}${corner} radius mismatch. Expected ~${
+            expected[corner]}, actual: ${actual[corner]} (diff: ${diff} > ${
+            tolerance})`);
+  }
+}
