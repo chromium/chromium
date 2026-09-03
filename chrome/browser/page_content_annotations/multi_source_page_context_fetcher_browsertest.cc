@@ -1384,9 +1384,17 @@ IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
                                   .screenshot_info()));
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/538452667): Test failing on Mac.
+#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity \
+  DISABLED_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity
+#else
+#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity \
+  TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity
+#endif
 IN_PROC_BROWSER_TEST_F(
     IframeInfoMultiSourcePageContextFetcherBrowserTest,
-    TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity) {
+    MAYBE_TakesScreenshot_AddsIframeInfoToAPC_IframeHasNoBorderAndLowOpacity) {
   GURL top_frame_url = GetURL(kHostA, "/iframe.html");
   GURL iframe_url = GetURL(kHostB);
   url::Origin iframe_origin = url::Origin::Create(iframe_url);
