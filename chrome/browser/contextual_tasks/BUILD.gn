@@ -471,6 +471,7 @@ source_set("ui_impl") {
       "//third_party/blink/public/common:headers",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/protobuf:protobuf_lite",
+      "//ui/views/controls/webview",
       "//url",
     ]
   }

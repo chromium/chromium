@@ -22,7 +22,8 @@
   background-color: var(--search-background-color);
 }
 
-:host([dark-mode]) {
+:host([dark-mode]),
+:host([dark-mode_]) {
   --search-background-color: rgba(16, 18, 23, 1);
   --toolbar-divider-color: rgb(94,94,94);
   --toolbar-menu-background-color: rgb(31, 31, 31);
@@ -30,7 +31,8 @@
   --toolbar-menu-icon-color: rgba(199, 199, 199, 1);
 }
 
-:host([is-ai-page][dark-mode]) {
+:host([is-ai-page][dark-mode]),
+:host([is-ai-page_][dark-mode_]) {
   --search-background-color: rgba(16, 18, 24, 1);
 }
 

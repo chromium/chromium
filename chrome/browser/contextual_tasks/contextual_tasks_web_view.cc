@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -17,8 +18,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -38,6 +42,18 @@ ContextualTasksWebView::ContextualTasksWebView(
 
     toolbar_web_view_ = AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
+    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+        toolbar_web_view_->GetWebContents(), SK_ColorTRANSPARENT);
+    toolbar_web_view_->GetWebContents()->SetPageBaseBackgroundColor(
+        SK_ColorTRANSPARENT);
+    blink::web_pref::WebPreferences prefs =
+        toolbar_web_view_->GetWebContents()->GetOrCreateWebPreferences();
+    prefs.preferred_color_scheme =
+        contextual_tasks::ShouldUseDarkMode(browser_window->GetProfile())
+            ? blink::mojom::PreferredColorScheme::kDark
+            : blink::mojom::PreferredColorScheme::kLight;
+    toolbar_web_view_->GetWebContents()->SetWebPreferences(prefs);
+
     toolbar_web_view_->SetPreferredSize(gfx::Size(0, 40));
     toolbar_web_view_->LoadInitialURL(
         GURL(chrome::kChromeUIContextualTasksToolbarURL));

@@ -4,17 +4,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>$i18n{title}</title>
+    <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
 <if expr="not is_android">
     <link rel="stylesheet" href="//theme/colors.css?sets=chrome">
 </if>
     <style>
       html, body {
+        background-color: transparent;
+        color-scheme: light dark;
         height: 100%;
         margin: 0;
         overflow: hidden;
         padding: 0;
         width: 100%;
+      }
+
+      /* This is only used for first load before WebUI styles initialize. */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: var(--google-grey-900, rgba(16, 18, 23, 1));
+        }
       }
 
       body {
