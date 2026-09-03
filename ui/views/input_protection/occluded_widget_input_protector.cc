@@ -254,8 +254,8 @@ void OccludedWidgetInputProtector::UpdateTrackingImpl(Widget* widget) {
 }
 
 void OccludedWidgetInputProtector::Register(Widget* widget) {
-  if (!widget->HasObserver(this)) {
-    widget->AddObserver(this);
+  if (!widget_observations_.IsObservingSource(widget)) {
+    widget_observations_.AddObservation(widget);
   }
 
   if (widget->IsVisible()) {
@@ -269,7 +269,9 @@ void OccludedWidgetInputProtector::Register(Widget* widget) {
 
 void OccludedWidgetInputProtector::Unregister(Widget* widget) {
   StopTracking(widget);
-  widget->RemoveObserver(this);
+  if (widget_observations_.IsObservingSource(widget)) {
+    widget_observations_.RemoveObservation(widget);
+  }
 }
 
 void OccludedWidgetInputProtector::StopTracking(Widget* widget) {

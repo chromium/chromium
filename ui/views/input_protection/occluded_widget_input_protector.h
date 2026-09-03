@@ -12,6 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "ui/gfx/geometry/rect.h"
@@ -134,6 +135,9 @@ class VIEWS_EXPORT OccludedWidgetInputProtector : public views::WidgetObserver {
   // Marked mutable because it acts as a cache of recently occluded areas and
   // is lazily pruned during const operations (specifically `ShouldBlockEvent`).
   mutable base::circular_deque<HistoricalOcclusion> occlusion_history_;
+
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 };
 
 }  // namespace views
