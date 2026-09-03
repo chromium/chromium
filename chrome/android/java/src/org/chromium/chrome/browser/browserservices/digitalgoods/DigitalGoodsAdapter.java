@@ -131,7 +131,7 @@ public class DigitalGoodsAdapter {
 
                             @Override
                             public void onNoTwaFound() {
-                                Log.w(TAG, "Unable to execute " + command + ".");
+                                Log.w(TAG, "Unable to execute %s.", command);
                                 onClientAppUnavailable.run();
                             }
                         });

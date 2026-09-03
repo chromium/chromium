@@ -508,7 +508,7 @@ public class ProcessInitializationHandler {
                         AsyncTask.THREAD_POOL_EXECUTOR.execute(
                                 new LogcatExtractionRunnable(minidump));
                     } else {
-                        Log.e(TAG, "Missing dump for child " + pid);
+                        Log.e(TAG, "Missing dump for child %d", pid);
                     }
                 });
 

@@ -73,7 +73,7 @@ public class GetDetailsConverter {
             @Override
             public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_COMMAND.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
+                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
                     returnClientAppError(callback);
                     return;
                 }
@@ -106,7 +106,7 @@ public class GetDetailsConverter {
     static @Nullable ItemDetails convertItemDetails(Bundle item) {
         for (String field : REQUIRED_FIELDS) {
             if (item.containsKey(field) && (item.get(field) instanceof String)) continue;
-            Log.w(TAG, "Item does not contain field String " + field + ".");
+            Log.w(TAG, "Item does not contain field String %s.", field);
             return null;
         }
 

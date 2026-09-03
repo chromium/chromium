@@ -46,7 +46,7 @@ class AcknowledgeConverter {
             @Override
             public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_ACKNOWLEDGE.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
+                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
                     ConsumeConverter.returnClientAppError(callback);
                     return;
                 }

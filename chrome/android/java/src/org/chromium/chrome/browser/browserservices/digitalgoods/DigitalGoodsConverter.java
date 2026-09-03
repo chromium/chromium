@@ -57,7 +57,7 @@ public class DigitalGoodsConverter {
             return responseCode;
         }
 
-        Log.w(TAG, "Unexpected response code: " + responseCode);
+        Log.w(TAG, "Unexpected response code: %d", responseCode);
         return BillingResponseCode.ERROR;
     }
 
@@ -72,7 +72,7 @@ public class DigitalGoodsConverter {
             case PLAY_BILLING_ITEM_UNAVAILABLE:
                 return BillingResponseCode.ITEM_UNAVAILABLE;
             default:
-                Log.w(TAG, "Unexpected response code: " + responseCode);
+                Log.w(TAG, "Unexpected response code: %d", responseCode);
                 return BillingResponseCode.ERROR;
         }
     }
@@ -83,7 +83,7 @@ public class DigitalGoodsConverter {
         if (field != null && clazz.isAssignableFrom(field.getClass())) {
             return true;
         }
-        Log.w(TAG, "Missing field " + key + " of type " + clazz.getName() + ".");
+        Log.w(TAG, "Missing field %s of type %s.", key, clazz.getName());
         return false;
     }
 

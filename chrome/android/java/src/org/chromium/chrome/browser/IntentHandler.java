@@ -962,7 +962,7 @@ public class IntentHandler {
             String value = bundleExtraHeaders.getString(key);
 
             if (!HttpUtil.isAllowedHeader(key, value)) {
-                Log.w(TAG, "Ignoring forbidden header " + key + " in EXTRA_HEADERS.");
+                Log.w(TAG, "Ignoring forbidden header %s in EXTRA_HEADERS.", key);
                 continue;
             }
 
@@ -971,13 +971,13 @@ public class IntentHandler {
 
             if (!fromChrome) {
                 if (key.toLowerCase(Locale.US).startsWith("x-chrome-")) {
-                    Log.w(TAG, "Ignoring x-chrome header " + key + " in EXTRA_HEADERS.");
+                    Log.w(TAG, "Ignoring x-chrome header %s in EXTRA_HEADERS.", key);
                     continue;
                 }
 
                 if (!shouldAllowNonSafelistedHeaders
                         && !IntentHandlerJni.get().isCorsSafelistedHeader(key, value)) {
-                    Log.w(TAG, "Ignoring non-CORS-safelisted header " + key + " in EXTRA_HEADERS.");
+                    Log.w(TAG, "Ignoring non-CORS-safelisted header %s in EXTRA_HEADERS.", key);
                     continue;
                 }
             }

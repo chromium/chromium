@@ -73,12 +73,10 @@ public class DownloadForegroundServiceImpl extends SplitCompatService.Impl {
             boolean killOldNotification) {
         Log.w(
                 TAG,
-                "startOrUpdateForegroundService new: "
-                        + newNotificationId
-                        + ", old: "
-                        + oldNotificationId
-                        + ", kill old: "
-                        + killOldNotification);
+                "startOrUpdateForegroundService new: %d, old: %d, kill old: %b",
+                newNotificationId,
+                oldNotificationId,
+                killOldNotification);
         // Handle notifications and start foreground.
         if (oldNotificationId == INVALID_NOTIFICATION_ID && oldNotification == null) {
             // If there is no old notification or old notification id, just start foreground.
@@ -121,10 +119,9 @@ public class DownloadForegroundServiceImpl extends SplitCompatService.Impl {
             @Nullable Notification pinnedNotification) {
         Log.w(
                 TAG,
-                "stopDownloadForegroundService status: "
-                        + stopForegroundNotification
-                        + ", id: "
-                        + pinnedNotificationId);
+                "stopDownloadForegroundService status: %d, id: %d",
+                stopForegroundNotification,
+                pinnedNotificationId);
         // Record when stopping foreground.
         DownloadNotificationUmaHelper.recordForegroundServiceLifecycleHistogram(
                 DownloadNotificationUmaHelper.ForegroundLifecycle.STOP);
@@ -201,7 +198,7 @@ public class DownloadForegroundServiceImpl extends SplitCompatService.Impl {
 
     @VisibleForTesting
     void startForegroundInternal(int notificationId, Notification notification) {
-        Log.w(TAG, "startForegroundInternal id: " + notificationId);
+        Log.w(TAG, "startForegroundInternal id: %d", notificationId);
         ForegroundServiceUtils.getInstance()
                 .startForeground(
                         getService(),
@@ -212,7 +209,7 @@ public class DownloadForegroundServiceImpl extends SplitCompatService.Impl {
 
     @VisibleForTesting
     void stopForegroundInternal(int flags) {
-        Log.w(TAG, "stopForegroundInternal flags: " + flags);
+        Log.w(TAG, "stopForegroundInternal flags: %d", flags);
         ForegroundServiceUtils.getInstance().stopForeground(getService(), flags);
     }
 

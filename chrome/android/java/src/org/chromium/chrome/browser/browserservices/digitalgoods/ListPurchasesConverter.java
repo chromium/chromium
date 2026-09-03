@@ -45,7 +45,7 @@ class ListPurchasesConverter {
             @Override
             public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_COMMAND.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
+                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
                     returnClientAppError(callback);
                     return;
                 }

@@ -109,7 +109,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
 
         // In the pending case, start foreground with specific notificationId and notification.
         if (isProcessingPending) {
-            Log.w(TAG, "Starting service with type " + downloadUpdate.mDownloadStatus);
+            Log.w(TAG, "Starting service with type %d", downloadUpdate.mDownloadStatus);
             startOrUpdateForegroundService(downloadUpdate);
 
             // Post a delayed task to eventually check to see if service needs to be stopped.
@@ -248,7 +248,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     /** Helper code to stop and unbind service. */
     @VisibleForTesting
     void stopAndUnbindService(@DownloadNotificationService.DownloadStatus int downloadStatus) {
-        Log.w(TAG, "stopAndUnbindService status: " + downloadStatus);
+        Log.w(TAG, "stopAndUnbindService status: %d", downloadStatus);
         assertNonNull(mBoundService);
         mIsServiceBound = false;
 
