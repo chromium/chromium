@@ -162,11 +162,12 @@ DisconnectWindowGtk::~DisconnectWindowGtk() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (disconnect_window_) {
-    gtk_widget_destroy(disconnect_window_.get());
-    disconnect_window_ = nullptr;
+    signals_.clear();
+    cooldown_timer_.Stop();
     toggle_button_ = nullptr;
     message_ = nullptr;
     button_ = nullptr;
+    gtk_widget_destroy(disconnect_window_.ExtractAsDangling());
   }
 }
 

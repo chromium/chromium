@@ -89,8 +89,8 @@ void It2MeConfirmationDialogLinux::Hide() {
   dialog_timer_.Stop();
 
   if (confirmation_window_) {
-    gtk_widget_destroy(confirmation_window_);
-    confirmation_window_ = nullptr;
+    signal_.Reset();
+    gtk_widget_destroy(confirmation_window_.ExtractAsDangling());
   }
 }
 

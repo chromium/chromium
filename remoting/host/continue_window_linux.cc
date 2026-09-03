@@ -49,10 +49,7 @@ class ContinueWindowGtk : public ContinueWindow {
 ContinueWindowGtk::ContinueWindowGtk() : continue_window_(nullptr) {}
 
 ContinueWindowGtk::~ContinueWindowGtk() {
-  if (continue_window_) {
-    gtk_widget_destroy(continue_window_);
-    continue_window_ = nullptr;
-  }
+  HideUi();
 }
 
 void ContinueWindowGtk::ShowUi() {
@@ -68,8 +65,8 @@ void ContinueWindowGtk::HideUi() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (continue_window_) {
-    gtk_widget_destroy(continue_window_);
-    continue_window_ = nullptr;
+    signal_.Reset();
+    gtk_widget_destroy(continue_window_.ExtractAsDangling());
   }
 }
 
