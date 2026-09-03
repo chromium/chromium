@@ -49,6 +49,7 @@ class HistoryBackendDBBaseTest : public HistoryUnitTestBase {
   [[nodiscard]] bool CreateBackendAndDatabase();
 
   void CreateDBVersion(int version);
+  void CreateDBFromSQLFile(const std::string& filename);
 
   int GetDatabaseVersion() const;
 

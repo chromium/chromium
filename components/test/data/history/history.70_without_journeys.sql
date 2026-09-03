@@ -21,10 +21,6 @@ CREATE TABLE cluster_keywords(cluster_id INTEGER NOT NULL,keyword VARCHAR NOT NU
 CREATE TABLE cluster_visit_duplicates(visit_id INTEGER NOT NULL,duplicate_visit_id INTEGER NOT NULL,PRIMARY KEY(visit_id,duplicate_visit_id))WITHOUT ROWID;
 CREATE TABLE visited_links(id INTEGER PRIMARY KEY AUTOINCREMENT,link_url_id INTEGER NOT NULL,top_level_url LONGVARCHAR NOT NULL,frame_url LONGVARCHAR NOT NULL,visit_count INTEGER DEFAULT 0 NOT NULL);
 CREATE TABLE history_sync_metadata (storage_key INTEGER PRIMARY KEY NOT NULL, value BLOB);
-CREATE TABLE journeys (journey_id TEXT PRIMARY KEY NOT NULL, title TEXT NOT NULL, emoji TEXT, overview TEXT, short_overview TEXT, creation_time_micros INTEGER NOT NULL);
-CREATE TABLE journey_history_entries (journey_id TEXT NOT NULL, visit_timestamp_micros INTEGER NOT NULL, PRIMARY KEY (journey_id, visit_timestamp_micros));
-CREATE TABLE journey_continuation_queries (journey_id TEXT NOT NULL, title TEXT NOT NULL, prompt TEXT NOT NULL);
-CREATE TABLE journey_sync_metadata (storage_key TEXT PRIMARY KEY NOT NULL, value BLOB NOT NULL);
 DELETE FROM sqlite_sequence;
 CREATE INDEX visits_url_index ON visits (url);
 CREATE INDEX visits_from_index ON visits (from_visit);
@@ -41,6 +37,4 @@ CREATE INDEX clusters_for_visit ON clusters_and_visits(visit_id);
 CREATE INDEX cluster_keywords_cluster_id_index ON cluster_keywords(cluster_id);
 CREATE INDEX visited_links_index ON visited_links (link_url_id, top_level_url, frame_url);
 CREATE INDEX urls_url_index ON urls (url);
-CREATE INDEX journey_history_entries_journey_id_idx ON journey_history_entries (journey_id);
-CREATE INDEX journey_continuation_queries_journey_id_idx ON journey_continuation_queries (journey_id);
 COMMIT;

@@ -12,6 +12,8 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/init_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -287,6 +289,57 @@ TEST_F(BatchRecentVisitsTest, EmptyDatabase) {
   auto result =
       db_.GetBatchRecentVisitsForSignificantURLs(/*max_visits_per_url=*/10);
   EXPECT_TRUE(result.empty());
+}
+
+class JourneysHistoryDatabaseTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_file_ = temp_dir_.GetPath().AppendASCII("JourneysTest.db");
+    ASSERT_EQ(sql::INIT_OK, db_.Init(db_file_));
+  }
+
+  bool AddTestJourney(const std::string& id = "j1") {
+    journeys::JourneyRow journey;
+    journey.journey_id = id;
+    journey.title = "Title";
+    journey.creation_time = base::Time::FromSecondsSinceUnixEpoch(1000);
+    return db_.AddOrUpdateJourneys({journey});
+  }
+
+  bool AddTestSyncMetadata(const std::string& key = "j1") {
+    sync_pb::EntityMetadata metadata;
+    metadata.set_sequence_number(1);
+    return db_.GetJourneysMetadataDB()->UpdateEntityMetadata(syncer::JOURNEY,
+                                                             key, metadata);
+  }
+
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_file_;
+  TestHistoryDatabase db_;
+};
+
+TEST_F(JourneysHistoryDatabaseTest, Init_ExposesMetadataDB) {
+  syncer::MetadataBatch batch;
+  EXPECT_TRUE(db_.GetJourneysMetadataDB()->GetAllSyncMetadata(&batch));
+  EXPECT_TRUE(batch.GetAllMetadata().empty());
+}
+
+TEST_F(JourneysHistoryDatabaseTest, RecreateAllTablesButURL_ClearsJourneys) {
+  ASSERT_TRUE(AddTestJourney("j1"));
+  ASSERT_EQ(db_.GetAllJourneys().size(), 1u);
+
+  EXPECT_TRUE(db_.RecreateAllTablesButURL());
+  EXPECT_TRUE(db_.GetAllJourneys().empty());
+}
+
+TEST_F(JourneysHistoryDatabaseTest,
+       RecreateAllTablesButURL_AllowsSubsequentWrites) {
+  ASSERT_TRUE(AddTestJourney("j0"));
+  EXPECT_TRUE(db_.RecreateAllTablesButURL());
+  EXPECT_TRUE(AddTestJourney("j1"));
+  EXPECT_EQ(db_.GetAllJourneys().size(), 1u);
+  EXPECT_TRUE(AddTestSyncMetadata("j1"));
 }
 
 }  // namespace history

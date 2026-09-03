@@ -97,10 +97,14 @@ bool HistoryBackendDBBaseTest::CreateBackendAndDatabase() {
 }
 
 void HistoryBackendDBBaseTest::CreateDBVersion(int version) {
+  CreateDBFromSQLFile(base::StringPrintf("history.%d.sql", version));
+}
+
+void HistoryBackendDBBaseTest::CreateDBFromSQLFile(
+    const std::string& filename) {
   base::FilePath data_path;
   ASSERT_TRUE(GetTestDataHistoryDir(&data_path));
-  data_path =
-      data_path.AppendASCII(base::StringPrintf("history.%d.sql", version));
+  data_path = data_path.AppendASCII(filename);
   ASSERT_NO_FATAL_FAILURE(
       ExecuteSQLScript(data_path, history_dir_.Append(kHistoryFilename)));
 }

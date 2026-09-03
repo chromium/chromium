@@ -3109,6 +3109,41 @@ TEST_P(HistoryBackendDBTest, VerifyTestSQLFileForCurrentVersionAlreadyExists) {
   EXPECT_TRUE(CreateBackendAndDatabase());
 }
 
+TEST_P(HistoryBackendDBTest, InitJourneysTablesOnExistingDatabase) {
+  ASSERT_NO_FATAL_FAILURE(
+      CreateDBFromSQLFile("history.70_without_journeys.sql"));
+
+  // Open the old version of the DB and confirm journey tables don't exist yet.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_FALSE(db.DoesTableExist("journeys"));
+    ASSERT_FALSE(db.DoesTableExist("journey_history_entries"));
+    ASSERT_FALSE(db.DoesTableExist("journey_continuation_queries"));
+    ASSERT_FALSE(db.DoesTableExist("journey_sync_metadata"));
+  }
+
+  // Opening the DB triggers HistoryDatabase::Init() which idempotently creates
+  // them.
+  ASSERT_TRUE(CreateBackendAndDatabase());
+
+  // Database version should match the current version (no migration needed for
+  // journey tables, but future migrations may advance it).
+  EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
+
+  DeleteBackend();
+
+  // Verify the tables now exist.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    EXPECT_TRUE(db.DoesTableExist("journeys"));
+    EXPECT_TRUE(db.DoesTableExist("journey_history_entries"));
+    EXPECT_TRUE(db.DoesTableExist("journey_continuation_queries"));
+    EXPECT_TRUE(db.DoesTableExist("journey_sync_metadata"));
+  }
+}
+
 bool FilterURL(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
