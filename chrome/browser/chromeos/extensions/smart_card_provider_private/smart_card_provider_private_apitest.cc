@@ -2025,4 +2025,155 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       ConsecutiveTransactionsWithDelayedRemoteDisconnect) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kTransactionJs,
+                             R"(
+      function afterEndTransaction(disposition) {
+        if (disposition !== "LEAVE_CARD") {
+          chrome.test.notifyFail(`Wrong disposition: ${disposition}`);
+        }
+        chrome.test.notifyPass();
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  // 1. Begin Transaction 1.
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      result_future1;
+  connection->BeginTransaction(result_future1.GetCallback());
+  auto result1 = result_future1.Take();
+  ASSERT_TRUE(result1->is_transaction());
+
+  mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction1(
+      std::move(result1->get_transaction()));
+  EXPECT_TRUE(transaction1.is_connected());
+
+  // 2. End Transaction 1.
+  {
+    ResultCatcher result_catcher;
+    base::test::TestFuture<device::mojom::SmartCardResultPtr> end_result_future;
+    transaction1->EndTransaction(SmartCardDisposition::kLeave,
+                                 end_result_future.GetCallback());
+    EXPECT_TRUE(end_result_future.Take()->is_success());
+    ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+  // Note: transaction1 is kept alive here (simulating delayed GC in Blink).
+
+  // 3. Begin Transaction 2 on the same connection.
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      result_future2;
+  connection->BeginTransaction(result_future2.GetCallback());
+  auto result2 = result_future2.Take();
+  ASSERT_TRUE(result2->is_transaction());
+
+  mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction2(
+      std::move(result2->get_transaction()));
+  EXPECT_TRUE(transaction2.is_connected());
+
+  // 4. Now drop transaction1's remote (simulating GC sweeping the old
+  // transaction while Transaction 2 is in progress).
+  transaction1.reset();
+  transaction2.FlushForTesting();
+
+  // 5. End Transaction 2.
+  {
+    ResultCatcher result_catcher;
+    base::test::TestFuture<device::mojom::SmartCardResultPtr> end_result_future;
+    transaction2->EndTransaction(SmartCardDisposition::kLeave,
+                                 end_result_future.GetCallback());
+    EXPECT_TRUE(end_result_future.Take()->is_success());
+    ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       EndTransactionNotTransacted) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kTransactionJs,
+                             R"(
+      function afterEndTransaction(disposition) {
+        chrome.test.notifyPass();
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      begin_result_future;
+  connection->BeginTransaction(begin_result_future.GetCallback());
+  auto begin_result = begin_result_future.Take();
+  ASSERT_TRUE(begin_result->is_transaction());
+
+  mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction(
+      std::move(begin_result->get_transaction()));
+  EXPECT_TRUE(transaction.is_connected());
+
+  ResultCatcher result_catcher;
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> end_result_future1;
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> end_result_future2;
+
+  // The first call ends the transaction. The second concurrent call on the
+  // same transaction remote should fail with kNotTransacted.
+  transaction->EndTransaction(SmartCardDisposition::kLeave,
+                              end_result_future1.GetCallback());
+  transaction->EndTransaction(SmartCardDisposition::kLeave,
+                              end_result_future2.GetCallback());
+
+  auto result1 = end_result_future1.Take();
+  auto result2 = end_result_future2.Take();
+
+  EXPECT_TRUE(result1->is_success());
+  ASSERT_TRUE(result2->is_error());
+  EXPECT_EQ(result2->get_error(),
+            device::mojom::SmartCardError::kNotTransacted);
+
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       EndTransactionInvalidHandle) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kTransactionJs,
+                             R"(
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId, "SUCCESS");
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      begin_result_future;
+  connection->BeginTransaction(begin_result_future.GetCallback());
+  auto begin_result = begin_result_future.Take();
+  ASSERT_TRUE(begin_result->is_transaction());
+
+  mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction(
+      std::move(begin_result->get_transaction()));
+  EXPECT_TRUE(transaction.is_connected());
+
+  // Disconnect the connection while the transaction remote is held.
+  base::test::TestFuture<device::mojom::SmartCardResultPtr>
+      disconnect_result_future;
+  connection->Disconnect(SmartCardDisposition::kLeave,
+                         disconnect_result_future.GetCallback());
+  EXPECT_TRUE(disconnect_result_future.Take()->is_success());
+
+  // Calling EndTransaction on the invalidated handle should return
+  // kInvalidHandle.
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> end_result_future;
+  transaction->EndTransaction(SmartCardDisposition::kLeave,
+                              end_result_future.GetCallback());
+  auto end_result = end_result_future.Take();
+  ASSERT_TRUE(end_result->is_error());
+  EXPECT_EQ(end_result->get_error(),
+            device::mojom::SmartCardError::kInvalidHandle);
+}
+
 }  // namespace extensions
