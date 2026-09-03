@@ -2912,8 +2912,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [GetInteractionForPasswordEntry(@"example1.com, 2 accounts")
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      performAction:grey_tap()];
+  TapNavigationBarEditButton();
 
   // Delete first password.
   DeleteCredential(@"user1", @"https://example1.com/");
