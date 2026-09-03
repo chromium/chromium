@@ -178,6 +178,7 @@
   // or zero rect frame. An arbitrary non-zero frame fixes this issue.
   TabGridTopToolbar* topToolbar = [[TabGridTopToolbar alloc]
       initWithLayoutGuideCenter:LayoutGuideCenterForScene(self.sceneState)];
+  topToolbar.layoutState = self.sceneState.layoutState;
   self.topToolbar = topToolbar;
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
   [topToolbar setSearchBarDelegate:self.searchDelegate];

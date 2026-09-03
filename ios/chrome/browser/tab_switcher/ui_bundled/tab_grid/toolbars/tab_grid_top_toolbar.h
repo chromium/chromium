@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
 @class LayoutGuideCenter;
+@class SceneLayoutState;
 @class TabGridPageControl;
 @protocol TabGridToolbarsGridDelegate;
 
@@ -44,6 +45,8 @@
 @property(nonatomic, assign) int selectedTabsCount;
 // Delegate to call when a button is tapped.
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
+// The layout state.
+@property(nonatomic, weak) SceneLayoutState* layoutState;
 
 - (instancetype)initWithLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
     NS_DESIGNATED_INITIALIZER;

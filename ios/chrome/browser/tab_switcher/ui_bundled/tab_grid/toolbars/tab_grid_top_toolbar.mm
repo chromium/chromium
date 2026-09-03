@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -33,7 +34,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -61,7 +61,7 @@ CGFloat HorizontalMargin() {
 
 }  // namespace
 
-@interface TabGridTopToolbar ()
+@interface TabGridTopToolbar () <SceneLayoutStateObserver>
 @end
 
 @implementation TabGridTopToolbar {
@@ -198,6 +198,20 @@ CGFloat HorizontalMargin() {
   _overflowMenuButton.menu = [self createOverflowMenu];
 }
 
+- (void)setLayoutState:(SceneLayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  if (_layoutState) {
+    [_layoutState removeObserver:self];
+  }
+  _layoutState = layoutState;
+  if (_layoutState) {
+    [_layoutState addObserver:self];
+  }
+  [self setButtonsForTraitCollection:self.traitCollection];
+}
+
 - (void)setSelectAllButtonEnabled:(BOOL)enabled {
   _selectAllButton.enabled = enabled;
 }
@@ -278,6 +292,13 @@ CGFloat HorizontalMargin() {
                                                     textDidChange:)]) {
     [_searchBar.delegate searchBar:_searchBar textDidChange:text];
   }
+}
+
+#pragma mark - SceneLayoutStateObserver
+
+- (void)layoutState:(SceneLayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  [self setButtonsForTraitCollection:self.traitCollection];
 }
 
 #pragma mark - UIView
@@ -440,6 +461,7 @@ CGFloat HorizontalMargin() {
   } else {
     switch (_mode) {
       case TabGridMode::kNormal: {
+        _searchFirstConstraint.active = YES;
         if (self.page == TabGridPageTabGroups) {
           _overflowMenuButton.hidden = YES;
         } else {
@@ -448,13 +470,16 @@ CGFloat HorizontalMargin() {
         _pageActionMenuEntrypointBeforeDoneConstraint.active = YES;
         _searchButton.hidden = NO;
         _pageControl.hidden = NO;
-        if (IsChromeNextIaEnabled() &&
-            ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+        BOOL appBarAvailable =
+            self.layoutState.appBarPosition != AppBarPosition::kNone;
+        if (IsChromeNextIaEnabled() && appBarAvailable) {
           // When the App Bar is available, there should not be a "Done" button
           // to exit the Tab Grid. The grid is dismissed with the Tab Grid
           // button in the App Bar.
           _overflowMenuConstraint.active = YES;
           _overflowMenuBeforeDoneConstraint.active = NO;
+          _pageActionMenuEntrypointFirstConstraint.active = YES;
+          _pageActionMenuEntrypointBeforeDoneConstraint.active = NO;
         } else {
           _exitTabGridButton.hidden = NO;
         }
