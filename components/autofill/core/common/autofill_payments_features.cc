@@ -310,6 +310,11 @@ BASE_FEATURE(kAutofillEnableWalletBrandingV2,
 BASE_FEATURE(kAutofillEnableWalletDirectOffers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, an offer notification bubble will be shown for wallet
+// direct offers if any are available for the current merchant page.
+BASE_FEATURE(kAutofillEnableWalletDirectOffersNotificationBubble,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, shows the Wallet Reminder Notice for credit cards after payment
 // form submission if higher-priority Autofill features (such as mandatory
 // re-auth, VCN, or card save) do not take precedence.

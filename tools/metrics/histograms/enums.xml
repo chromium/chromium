@@ -10876,6 +10876,8 @@ from previous Chrome versions.
       label="AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse:enabled"/>
   <int value="-1199159971"
       label="ContextualSuggestionsIPHReverseScroll:enabled"/>
+  <int value="-1197978230"
+      label="AutofillEnableWalletDirectOffersNotificationBubble:enabled"/>
   <int value="-1197916855" label="WindowNaming:enabled"/>
   <int value="-1197817692" label="CrostiniBullseyeUpgrade:enabled"/>
   <int value="-1197245070" label="CookieDeprecationMessages:disabled"/>
@@ -19993,6 +19995,8 @@ from previous Chrome versions.
   <int value="1630913464" label="AndroidContextMenuDisabledMenuItems:disabled"/>
   <int value="1630988998" label="VrBrowsingExperimentalRendering:disabled"/>
   <int value="1631147591" label="PerformanceInterventionUI:enabled"/>
+  <int value="1631195969"
+      label="AutofillEnableWalletDirectOffersNotificationBubble:disabled"/>
   <int value="1631646254" label="DataControlsDragEnforcement:disabled"/>
   <int value="1632112977" label="ash-disable-tablet-autohide-titlebars"/>
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>

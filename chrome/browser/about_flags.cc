@@ -8364,7 +8364,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityReducedAnimationsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityReducedAnimations)},
 
-
     {"enable-accessibility-magnifier-follows-chromevox",
      flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxName,
      flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxDescription,
@@ -14058,6 +14057,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidUnknownGamepadExtraAxesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidUnknownGamepadExtraAxes)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"autofill-enable-wallet-direct-offers-notification-bubble",
+     flag_descriptions::kAutofillEnableWalletDirectOffersNotificationBubbleName,
+     flag_descriptions::
+         kAutofillEnableWalletDirectOffersNotificationBubbleDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableWalletDirectOffersNotificationBubble)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

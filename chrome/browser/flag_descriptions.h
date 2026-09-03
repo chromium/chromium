@@ -1193,6 +1193,14 @@ inline constexpr char kAutofillEnableWalletDirectOffersDescription[] =
     "When enabled, direct offers synced via Google Wallet will be available "
     "for autofill into merchant promo code fields during checkout.";
 
+inline constexpr char
+    kAutofillEnableWalletDirectOffersNotificationBubbleName[] =
+        "Enable Wallet Direct Offers Notification Bubble";
+inline constexpr char
+    kAutofillEnableWalletDirectOffersNotificationBubbleDescription[] =
+        "When enabled, an offer notification bubble will be shown for wallet "
+        "direct offers if any are available for the current merchant page.";
+
 inline constexpr char kAutofillEnableWalletDisclosureNoticePublicPassName[] =
     "Enable Wallet Disclosure Notice for public passes";
 inline constexpr char

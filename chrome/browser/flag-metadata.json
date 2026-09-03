@@ -1208,6 +1208,15 @@
     "expiry_milestone": 165
   },
   {
+    "name": "autofill-enable-wallet-direct-offers-notification-bubble",
+    "owners": [
+      "wilsonlow@google.com",
+      "vinnypersky@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "autofill-enable-wallet-disclosure-notice-public-pass",
     "owners": [
       "brunobraga@google.com",
