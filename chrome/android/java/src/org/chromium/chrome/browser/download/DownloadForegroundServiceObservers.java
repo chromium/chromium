@@ -76,7 +76,7 @@ public final class DownloadForegroundServiceObservers {
         observers.remove(observerClassName);
 
         // Clear observer list if there are none.
-        if (observers.size() == 0) {
+        if (observers.isEmpty()) {
             removeAllObservers();
             return;
         }

@@ -1270,7 +1270,7 @@ public class CustomTabsConnection {
 
     private @ParallelRequestStatus int doParallelResourceRequest(
             SessionHolder<?> session, Uri url, String referrer, String packageName, int policy) {
-        if (url.toString().equals("") || !isValid(url)) {
+        if (url.toString().isEmpty() || !isValid(url)) {
             return ParallelRequestStatus.FAILURE_INVALID_URL;
         }
         String urlString = url.toString();

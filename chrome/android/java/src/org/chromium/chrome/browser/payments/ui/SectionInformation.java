@@ -206,7 +206,7 @@ public class SectionInformation {
                     mSelectedItem -= mSelectedItem > i ? 1 : 0;
                 }
                 mItems.remove(i);
-                if (mItems.size() == 0) mSelectedItem = INVALID_SELECTION;
+                if (mItems.isEmpty()) mSelectedItem = INVALID_SELECTION;
                 break;
             }
         }
