@@ -46,17 +46,36 @@ using content::WebContents;
 
 namespace {
 
+// Represents the un-pickled header of a WebContentsState buffer.
+struct StateHeader {
+  bool is_off_the_record = false;
+  int entry_count = 0;
+  int current_entry_index = 0;
+};
+
+// Max size for serialized navigation entries taken from
+// CommandStorageManager::CreateUpdateTabNavigationCommand, leaving headroom for
+// session command overhead.
+constexpr size_t kSessionCommandOverheadBytes = 1024;
+constexpr size_t kMaxNavigationStateSize =
+    std::numeric_limits<sessions::SessionCommand::size_type>::max() -
+    kSessionCommandOverheadBytes;
+
 ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, int size) {
   return jni_zero::ByteBufferAllocateDirect(env, size);
 }
 
-void WriteStateHeaderToPickle(bool off_the_record,
-                              int entry_count,
-                              int current_entry_index,
-                              base::Pickle* pickle) {
-  pickle->WriteBool(off_the_record);
-  pickle->WriteInt(entry_count);
-  pickle->WriteInt(current_entry_index);
+void WriteStateHeaderToPickle(const StateHeader& header, base::Pickle* pickle) {
+  pickle->WriteBool(header.is_off_the_record);
+  pickle->WriteInt(header.entry_count);
+  pickle->WriteInt(header.current_entry_index);
+}
+
+bool ReadStateHeaderFromPickle(base::PickleIterator* iter,
+                               StateHeader* header) {
+  return iter->ReadBool(&header->is_off_the_record) &&
+         iter->ReadInt(&header->entry_count) &&
+         iter->ReadInt(&header->current_entry_index);
 }
 
 base::Pickle WriteSerializedNavigationsAsPickle(
@@ -64,7 +83,9 @@ base::Pickle WriteSerializedNavigationsAsPickle(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
     int current_entry) {
   base::Pickle pickle;
-  WriteStateHeaderToPickle(is_off_the_record, navigations.size(), current_entry,
+  WriteStateHeaderToPickle({.is_off_the_record = is_off_the_record,
+                            .entry_count = static_cast<int>(navigations.size()),
+                            .current_entry_index = current_entry},
                            &pickle);
 
   // Write out all of the NavigationEntrys.
@@ -72,11 +93,7 @@ base::Pickle WriteSerializedNavigationsAsPickle(
     // Write each SerializedNavigationEntry as a separate pickle to avoid
     // optional reads of one tab bleeding into the next tab's data.
     base::Pickle tab_navigation_pickle;
-    // Max size taken from
-    // CommandStorageManager::CreateUpdateTabNavigationCommand.
-    static const size_t max_state_size =
-        std::numeric_limits<sessions::SessionCommand::size_type>::max() - 1024;
-    navigation.WriteToPickle(max_state_size, &tab_navigation_pickle);
+    navigation.WriteToPickle(kMaxNavigationStateSize, &tab_navigation_pickle);
     pickle.WriteInt(tab_navigation_pickle.size());
     pickle.WriteBytes(tab_navigation_pickle.AsBytes());
   }
@@ -302,14 +319,15 @@ bool WebContentsState::ExtractNavigationEntries(
     bool* is_off_the_record,
     int* current_entry_index,
     std::vector<sessions::SerializedNavigationEntry>* navigations) {
-  int entry_count;
   base::PickleIterator iter = base::PickleIterator::WithData(buffer);
-  if (!iter.ReadBool(is_off_the_record) || !iter.ReadInt(&entry_count) ||
-      !iter.ReadInt(current_entry_index)) {
+  StateHeader header;
+  if (!ReadStateHeaderFromPickle(&iter, &header)) {
     LOG(ERROR) << "Failed to restore state from byte array (length="
                << buffer.size() << ").";
     return false;
   }
+  *is_off_the_record = header.is_off_the_record;
+  *current_entry_index = header.current_entry_index;
 
   // Support for versions 0 and 1 is removed in M142/M143. Metrics suggests
   // in-the-wild usage is virtually non-existent (see crbug.com/41493935).
@@ -319,8 +337,8 @@ bool WebContentsState::ExtractNavigationEntries(
   }
 
   // `saved_state_version` == 2 and greater.
-  navigations->reserve(entry_count);
-  for (int i = 0; i < entry_count; ++i) {
+  navigations->reserve(header.entry_count);
+  for (int i = 0; i < header.entry_count; ++i) {
     // Read each SerializedNavigationEntry as a separate pickle to avoid
     // optional reads of one tab bleeding into the next tab's data.
     std::optional<base::span<const uint8_t>> tab_entry = iter.ReadData();
@@ -335,7 +353,7 @@ bool WebContentsState::ExtractNavigationEntries(
       return false;  // If we failed to read a navigation, give up on others.
     }
 
-    navigations->push_back(nav);
+    navigations->push_back(std::move(nav));
   }
 
   // Validate the data.
@@ -356,20 +374,21 @@ bool WebContentsState::ExtractMetadata(base::span<const uint8_t> buffer,
     return false;
   }
 
-  int entry_count;
-  int current_entry_index;
   base::PickleIterator iter = base::PickleIterator::WithData(buffer);
-  if (!iter.ReadBool(is_off_the_record) || !iter.ReadInt(&entry_count) ||
-      !iter.ReadInt(&current_entry_index)) {
+  StateHeader header;
+  if (!ReadStateHeaderFromPickle(&iter, &header)) {
     return false;
   }
 
-  if (current_entry_index < 0 || current_entry_index >= entry_count) {
+  *is_off_the_record = header.is_off_the_record;
+
+  if (header.current_entry_index < 0 ||
+      header.current_entry_index >= header.entry_count) {
     return false;
   }
 
   // Skip entries before the active one.
-  for (int i = 0; i < current_entry_index; ++i) {
+  for (int i = 0; i < header.current_entry_index; ++i) {
     if (!iter.ReadData().has_value()) {
       return false;
     }
@@ -479,6 +498,7 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
   int new_entry_index = current_entry_index + (clobber_current_entry ? 0 : 1);
   navigations.erase(std::next(navigations.begin(), new_entry_index),
                     navigations.end());
+
   std::unique_ptr<content::NavigationEntry> new_entry =
       CreatePendingNavigationEntry(browser_context, title, url, referrer_url,
                                    referrer_policy, initiator_origin);
