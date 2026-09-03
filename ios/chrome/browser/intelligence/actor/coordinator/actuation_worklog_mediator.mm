@@ -6,6 +6,8 @@
 
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -63,16 +65,31 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }  // namespace
 
 @implementation ActuationWorklogMediator {
+  // Service tracking actor tasks and updates.
+  raw_ptr<actor::ActorService> _actorService;
   // Latest emitted update, used to deduplicate consecutive identical updates.
   NSString* _latestEmittedTaskUpdate;
 }
 
-- (instancetype)init {
+- (instancetype)initWithActorService:(actor::ActorService*)actorService {
   self = [super init];
+  if (self) {
+    _actorService = actorService;
+  }
   return self;
 }
 
+- (void)connect {
+  if (_actorService) {
+    _actorService->AddTaskUpdatesObserver(self);
+  }
+}
+
 - (void)disconnect {
+  if (_actorService) {
+    _actorService->RemoveTaskUpdatesObserver(self);
+    _actorService = nullptr;
+  }
   [_consumer reset];
   _consumer = nil;
   _latestEmittedTaskUpdate = nil;

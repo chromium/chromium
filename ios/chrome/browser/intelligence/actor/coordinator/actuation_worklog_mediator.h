@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 
+namespace actor {
+class ActorService;
+}  // namespace actor
+
 @protocol ActuationWorklogConsumer;
 
 // Translates `ActorTask` execution updates into displayable timeline items and
@@ -18,8 +22,14 @@
 // The consumer that receives formatted worklog updates.
 @property(nonatomic, weak) id<ActuationWorklogConsumer> consumer;
 
-// Designated initializer.
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+// Designated initializer with task update service to observe.
+- (instancetype)initWithActorService:(actor::ActorService*)actorService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Starts observing task updates from `ActorService`.
+- (void)connect;
 
 // Disconnects the mediator and cleans up references.
 - (void)disconnect;

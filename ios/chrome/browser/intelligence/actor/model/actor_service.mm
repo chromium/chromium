@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
+#import <algorithm>
 #import <set>
 
 #import "base/barrier_callback.h"
@@ -12,7 +13,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
-#import "ios/chrome/browser/intelligence/actor/model/snackbar_actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -44,7 +44,31 @@ ActorService::~ActorService() {
 }
 
 void ActorService::Shutdown() {
-  task_observer_ = nil;
+  task_observers_.clear();
+}
+
+// TODO(crbug.com/556295233): Add new ActorService observation pattern for
+// coarse updates (task started/completed).
+void ActorService::AddTaskUpdatesObserver(
+    id<ActorTaskUpdatesObserver> observer) {
+  if (!observer || std::ranges::contains(task_observers_, observer)) {
+    return;
+  }
+  std::erase_if(task_observers_, [](id obs) { return obs == nil; });
+  task_observers_.push_back(observer);
+  for (const auto& [task_id, task] : active_tasks_) {
+    task->AddObserver(observer);
+  }
+}
+
+// TODO(crbug.com/556295233): Add new ActorService observation pattern for
+// coarse updates (task started/completed).
+void ActorService::RemoveTaskUpdatesObserver(
+    id<ActorTaskUpdatesObserver> observer) {
+  std::erase(task_observers_, observer);
+  for (const auto& [task_id, task] : active_tasks_) {
+    task->RemoveObserver(observer);
+  }
 }
 
 ActorTaskId ActorService::CreateTask(const std::string& title,
@@ -57,11 +81,11 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
       task_id, title, allow_incognito_web_states, journal_.get(),
       tool_factory_.get(), browser_list);
 
-  // TODO(crbug.com/512521102): Cleanup observers lifecycle.
-  // Only the latest task is tracked.
-  task_observer_ =
-      [[SnackbarActorTaskUpdatesObserver alloc] initWithProfile:profile_];
-  task->AddObserver(task_observer_);
+  for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
+    if (observer) {
+      task->AddObserver(observer);
+    }
+  }
 
   active_tasks_[task_id] = std::move(task);
   return task_id;

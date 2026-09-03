@@ -74,7 +74,6 @@ using intelligence::actor::kSpacingLarge;
   _actuationActive = active;
   _headerView.actuating = active;
   [self updateVisibility];
-  [self.delegate worklogViewController:self setActuationActive:active];
 }
 
 - (void)setTaskTitle:(NSString*)taskTitle {
@@ -106,6 +105,14 @@ using intelligence::actor::kSpacingLarge;
 - (void)worklogCompactView:(ActuationWorklogCompactView*)view
            didChangeHeight:(CGFloat)targetHeight {
   _compactHeightConstraint.constant = targetHeight;
+  CGFloat headerHeight = _headerView.bounds.size.height;
+  if (headerHeight == 0) {
+    headerHeight =
+        [_headerView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+            .height;
+  }
+  CGFloat totalHeight = headerHeight + targetHeight;
+  [self.delegate worklogViewController:self didChangeHeight:totalHeight];
 }
 
 #pragma mark - Private

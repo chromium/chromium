@@ -6,12 +6,15 @@ source_set("coordinator") {
   sources = [
     "actor_overlay_coordinator.h",
     "actor_overlay_coordinator.mm",
+    "actuation_worklog_coordinator.h",
+    "actuation_worklog_coordinator.mm",
     "actuation_worklog_mediator.h",
     "actuation_worklog_mediator.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/ui",
@@ -20,6 +23,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

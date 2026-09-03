@@ -14,10 +14,9 @@
 // Delegate protocol for ActuationWorklogViewController events.
 @protocol ActuationWorklogViewControllerDelegate <NSObject>
 
-// Called when actuation active state changes.
-// TODO(crbug.com/555198195): Remove in favor of a separate actor observer.
+// Called when the worklog view controller's fitting height changes.
 - (void)worklogViewController:(ActuationWorklogViewController*)viewController
-           setActuationActive:(BOOL)active;
+              didChangeHeight:(CGFloat)height;
 
 @end
 

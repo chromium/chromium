@@ -10,7 +10,6 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/task/single_thread_task_runner.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -21,7 +20,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
-#import "ios/chrome/browser/intelligence/actor/model/snackbar_actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
@@ -32,9 +31,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -51,7 +47,39 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
+
+// TODO(crbug.com/556276928): Centralize fake observer across unit tests.
+@interface FakeActorServiceTaskUpdatesObserver
+    : NSObject <ActorTaskUpdatesObserver>
+@property(nonatomic, assign) NSInteger registeredCount;
+@property(nonatomic, assign) NSInteger stateChangeCount;
+@property(nonatomic, assign) NSInteger stoppedCount;
+@property(nonatomic, copy) NSString* taskTitle;
+@end
+
+@implementation FakeActorServiceTaskUpdatesObserver
+
+- (void)didRegisterAsObserverForTaskID:(actor::ActorTaskId)taskID
+                             taskTitle:(NSString*)taskTitle
+                            taskUpdate:(NSString*)taskUpdate
+                          currentState:(actor::ActorTaskState)state
+                             webStates:(NSArray<NSNumber*>*)webStatesIDs {
+  _registeredCount++;
+  _taskTitle = [taskTitle copy];
+}
+
+- (void)actorTaskWithID:(actor::ActorTaskId)taskID
+         didChangeState:(actor::ActorTaskState)newState
+              fromState:(actor::ActorTaskState)oldState {
+  _stateChangeCount++;
+}
+
+- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
+                    finalState:(actor::ActorTaskState)finalState {
+  _stoppedCount++;
+}
+
+@end
 
 namespace actor {
 
@@ -112,6 +140,7 @@ class ActorServiceTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kActorTools);
 
     static_cast<web::FakeWebClient*>(web_client_.Get())
         ->SetJavaScriptFeatures({
@@ -120,16 +149,14 @@ class ActorServiceTest : public PlatformTest {
   }
 
  protected:
-  // Wait for all currently queued or posted asynchronous tasks on the default
-  // task runner to finish executing. Since `base::SequencedTaskRunner` executes
-  // posted tasks in a strict first-in, first-out order, posting a task to quit
-  // a run loop guarantees that all previously posted tasks (such as deferred
-  // snackbar presentation tasks) have completed before the loop exits.
-  void WaitForTasksToComplete() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+  PerformActionsResult PerformActions(
+      ActorService* service,
+      ActorTaskId task_id,
+      const std::vector<optimization_guide::proto::Action>& actions = {},
+      const std::string& update = "Update") {
+    base::test::TestFuture<PerformActionsResult> future;
+    service->PerformActions(task_id, actions, update, future.GetCallback());
+    return future.Take();
   }
 
   void SwapTask(ActorService* service,
@@ -150,6 +177,7 @@ class ActorServiceTest : public PlatformTest {
     return service->tool_factory_.get();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -164,9 +192,6 @@ class ActorServiceMockTimeTest : public ActorServiceTest {
 // Tests that `ActorService` is successfully created when the `kActorTools`
 // feature is enabled.
 TEST_F(ActorServiceTest, ServiceCreationWithFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   EXPECT_NE(nullptr, service);
 }
@@ -174,8 +199,8 @@ TEST_F(ActorServiceTest, ServiceCreationWithFeatureEnabled) {
 // Tests that `ActorService` is not created when the `kActorTools` feature is
 // disabled.
 TEST_F(ActorServiceTest, ServiceCreationWithFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kActorTools);
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(kActorTools);
 
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   EXPECT_EQ(nullptr, service);
@@ -183,9 +208,6 @@ TEST_F(ActorServiceTest, ServiceCreationWithFeatureDisabled) {
 
 // Tests that `CreateTask` generates unique IDs for sequential tasks.
 TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -202,9 +224,6 @@ TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
 // Tests that requesting tab observation with a null WebState triggers the
 // callback.
 TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -226,9 +245,6 @@ TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
 
 // Tests that requesting tab observation with a valid WebState extracts APC.
 TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -290,9 +306,6 @@ TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
 // Tests that GetWebStateForID returns nullptr for a tab that is not controlled
 // by the task.
 TEST_F(ActorServiceTest, GetWebStateForID_NotControlled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -318,9 +331,6 @@ TEST_F(ActorServiceTest, GetWebStateForID_NotControlled) {
 
 // Tests that GetWebStateForID finds a tab that is controlled by the task.
 TEST_F(ActorServiceTest, GetWebStateForID_Controlled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -340,11 +350,7 @@ TEST_F(ActorServiceTest, GetWebStateForID_Controlled) {
   // Make the tab controlled by the task by performing an action targeting it.
   std::vector<optimization_guide::proto::Action> actions;
   actions.push_back(MakeSuccessfulActorAction(web_state_id));
-
-  service->PerformActions(task_id, actions, "Update",
-                          base::BindOnce(^(PerformActionsResult result){
-                              // Do nothing.
-                          }));
+  PerformActions(service, task_id, actions);
 
   EXPECT_EQ(fake_web_state_ptr,
             service->GetWebStateForID(web_state_id, task_id));
@@ -361,9 +367,6 @@ TEST_F(ActorServiceTest, GetWebStateForID_Controlled) {
 // Tests that AddControlledWebState correctly adds a WebState so that
 // GetWebStateForID finds it immediately before any actions are performed.
 TEST_F(ActorServiceTest, AddControlledWebState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -393,9 +396,6 @@ TEST_F(ActorServiceTest, AddControlledWebState) {
 // Tests that GetWebStateForID does not find a tab in an incognito browser if
 // the task does not allow incognito.
 TEST_F(ActorServiceTest, GetWebStateForID_Incognito_NotAllowed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -424,9 +424,6 @@ TEST_F(ActorServiceTest, GetWebStateForID_Incognito_NotAllowed) {
 // Tests that CreateTask crashes when trying to allow incognito web states,
 // as it is not yet supported.
 TEST_F(ActorServiceTest, CreateTask_Incognito_Crashes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -435,9 +432,6 @@ TEST_F(ActorServiceTest, CreateTask_Incognito_Crashes) {
 
 // Tests that GetWebStateForID returns nullptr when the task is not found.
 TEST_F(ActorServiceTest, GetWebStateForID_TaskNotFound) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -455,9 +449,6 @@ TEST_F(ActorServiceTest, GetWebStateForID_TaskNotFound) {
 // Tests that GetActiveTaskState returns the state of the active task, or
 // nullopt if there are no active tasks.
 TEST_F(ActorServiceTest, GetActiveTaskState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -471,9 +462,6 @@ TEST_F(ActorServiceTest, GetActiveTaskState) {
 // Tests that PerformActions completes immediately when the WebState is not
 // loading.
 TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -492,11 +480,7 @@ TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
   actions.push_back(
       MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier()));
 
-  base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, actions, "Update", future.GetCallback());
-
-  // This will run the loop until the PerformActions callback executes.
-  const PerformActionsResult& result = future.Get();
+  PerformActionsResult result = PerformActions(service, task_id, actions);
   ASSERT_EQ(1u, result.action_results.size());
   EXPECT_TRUE(result.action_results[0].tool_result.IsOk());
 
@@ -506,9 +490,6 @@ TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
 // Tests that PerformActions is deferred when the WebState is loading, and only
 // resolves when loading completes.
 TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -557,9 +538,6 @@ TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
 // deferred PerformActions callback to run to prevent hanging.
 TEST_F(ActorServiceMockTimeTest,
        PerformActions_Loading_TimeoutResolvesCallback) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -600,88 +578,9 @@ TEST_F(ActorServiceMockTimeTest,
   browser_list->RemoveBrowser(test_browser.get());
 }
 
-// Test that the snackbar task updates observer installed in the service only
-// tracks the latest created task.
-TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
-  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
-  browser_list->AddBrowser(test_browser.get());
-
-  id snackbar_commands =
-      OCMProtocolMock(@protocol(GeminiActorSnackbarCommands));
-  [test_browser->GetCommandDispatcher()
-      startDispatchingToTarget:snackbar_commands
-                   forProtocol:@protocol(GeminiActorSnackbarCommands)];
-
-  // Expect first task registration message.
-  [[snackbar_commands expect]
-      showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                                 SnackbarMessage* message) {
-        return [message.title isEqualToString:@"First Task"] &&
-               [message.subtitle isEqualToString:@"Started"];
-      }]
-              additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
-
-  // Create first task. This immediately emits a registration snackbar message.
-  ActorTaskId task_id1 =
-      service->CreateTask("First Task", /*allow_incognito_web_states=*/false);
-
-  WaitForTasksToComplete();
-  [snackbar_commands verify];
-
-  // Expect second task registration message.
-  [[snackbar_commands expect]
-      showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                                 SnackbarMessage* message) {
-        return [message.title isEqualToString:@"Second Task"] &&
-               [message.subtitle isEqualToString:@"Started"];
-      }]
-              additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
-
-  // Create second task. This replaces the observer installed in the service
-  // and emits a registration snackbar message for the second task.
-  service->CreateTask("Second Task", /*allow_incognito_web_states=*/false);
-
-  WaitForTasksToComplete();
-  [snackbar_commands verify];
-
-  // Now trigger a state update on the first task. Since the observer tracks
-  // only the latest created task, this update should not be tracked.
-  // We verify this by ensuring the mock rejects any new messages for the first
-  // task.
-  [[snackbar_commands reject]
-      showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                                 SnackbarMessage* message) {
-        return [message.title isEqualToString:@"First Task"] &&
-               [message.subtitle isEqualToString:@"Started"];
-      }]
-              additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
-
-  std::vector<optimization_guide::proto::Action> actions;
-  base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id1, actions, "Updating first again",
-                          future.GetCallback());
-  (void)future.Get();
-
-  [snackbar_commands verify];
-
-  [test_browser->GetCommandDispatcher()
-      stopDispatchingToTarget:snackbar_commands];
-  browser_list->RemoveBrowser(test_browser.get());
-}
-
 // Test that StopTask stops and erases the task, and verifies that Stop() is
 // called on the ActorTask.
 TEST_F(ActorServiceTest, StopTask) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
@@ -709,6 +608,109 @@ TEST_F(ActorServiceTest, StopTask) {
 
   // Verify the task is also erased from ActorService's active tasks.
   EXPECT_FALSE(HasTask(service, task_id));
+}
+
+// Test lifecycle of a single task updates observer.
+TEST_F(ActorServiceTest, TaskUpdatesObserverLifecycle) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  service->AddTaskUpdatesObserver(observer);
+
+  ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  EXPECT_EQ(1, observer.registeredCount);
+  EXPECT_NSEQ(@"Test Task", observer.taskTitle);
+
+  PerformActions(service, task_id);
+  EXPECT_GT(observer.stateChangeCount, 0);
+
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  EXPECT_EQ(1, observer.stoppedCount);
+
+  service->RemoveTaskUpdatesObserver(observer);
+}
+
+// Test that adding an observer when a task is already running immediately
+// attaches the observer to the active task.
+TEST_F(ActorServiceTest, LateAddedTaskUpdatesObserverAttachesToActiveTasks) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Active Task", /*allow_incognito_web_states=*/false);
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  service->AddTaskUpdatesObserver(observer);
+  EXPECT_EQ(1, observer.registeredCount);
+  EXPECT_NSEQ(@"Active Task", observer.taskTitle);
+
+  PerformActions(service, task_id);
+  EXPECT_GT(observer.stateChangeCount, 0);
+
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  EXPECT_EQ(1, observer.stoppedCount);
+
+  service->RemoveTaskUpdatesObserver(observer);
+}
+
+// Test broadcasting to multiple task updates observers and selective removal.
+TEST_F(ActorServiceTest, MultipleTaskUpdatesObserversBroadcastAndRemoval) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorServiceTaskUpdatesObserver* observer1 =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  FakeActorServiceTaskUpdatesObserver* observer2 =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+
+  service->AddTaskUpdatesObserver(observer1);
+  service->AddTaskUpdatesObserver(observer2);
+
+  // Both observers should receive the registration callback on task creation.
+  ActorTaskId task_id =
+      service->CreateTask("Shared Task", /*allow_incognito_web_states=*/false);
+  EXPECT_EQ(1, observer1.registeredCount);
+  EXPECT_NSEQ(@"Shared Task", observer1.taskTitle);
+  EXPECT_EQ(1, observer2.registeredCount);
+  EXPECT_NSEQ(@"Shared Task", observer2.taskTitle);
+
+  // Performing actions transitions task state and broadcasts to all observers.
+  PerformActions(service, task_id);
+  EXPECT_GT(observer1.stateChangeCount, 0);
+  EXPECT_EQ(observer1.stateChangeCount, observer2.stateChangeCount);
+
+  // Stopping the task should only notify the remaining active observer.
+  service->RemoveTaskUpdatesObserver(observer1);
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  EXPECT_EQ(0, observer1.stoppedCount);
+  EXPECT_EQ(1, observer2.stoppedCount);
+
+  // Creating a new task should only notify observer2.
+  service->CreateTask("Next Task", /*allow_incognito_web_states=*/false);
+  EXPECT_EQ(1, observer1.registeredCount);
+  EXPECT_EQ(2, observer2.registeredCount);
+
+  service->RemoveTaskUpdatesObserver(observer2);
+}
+
+// Test that adding a duplicate task updates observer is ignored.
+TEST_F(ActorServiceTest, DuplicateTaskUpdatesObserverIgnored) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  service->AddTaskUpdatesObserver(observer);
+  service->AddTaskUpdatesObserver(observer);
+
+  service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  EXPECT_EQ(1, observer.registeredCount);
+
+  service->RemoveTaskUpdatesObserver(observer);
 }
 
 }  // namespace actor

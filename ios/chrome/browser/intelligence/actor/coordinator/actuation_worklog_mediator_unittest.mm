@@ -59,8 +59,9 @@ class ActuationWorklogMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     fake_consumer_ = [[FakeActuationWorklogConsumer alloc] init];
-    mediator_ = [[ActuationWorklogMediator alloc] init];
+    mediator_ = [[ActuationWorklogMediator alloc] initWithActorService:nullptr];
     mediator_.consumer = fake_consumer_;
+    [mediator_ connect];
   }
 
   void TearDown() override {

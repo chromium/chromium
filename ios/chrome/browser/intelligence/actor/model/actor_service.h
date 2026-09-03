@@ -19,7 +19,7 @@
 #import "ios/web/public/web_state_id.h"
 
 @class PageContextWrapper;
-@class SnackbarActorTaskUpdatesObserver;
+@protocol ActorTaskUpdatesObserver;
 class ProfileIOS;
 
 namespace web {
@@ -89,6 +89,12 @@ class ActorService : public KeyedService {
   // Returns the aggregated journal for this service.
   AggregatedJournal* GetJournal() { return journal_.get(); }
 
+  // Registers an observer for task updates.
+  void AddTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
+
+  // Removes a registered observer for task updates.
+  void RemoveTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
+
   // Returns the execution state of the currently active task, or `std::nullopt`
   // if there are no active tasks.
   std::optional<ActorTaskState> GetActiveTaskState() const;
@@ -123,9 +129,8 @@ class ActorService : public KeyedService {
   // Map of active tasks, keyed by their task ID.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> active_tasks_;
 
-  // TODO(crbug.com/512521102): Cleanup observers lifecycle.
-  // Task observer for the latest task.
-  __strong SnackbarActorTaskUpdatesObserver* task_observer_;
+  // Observers for task updates.
+  std::vector<__weak id<ActorTaskUpdatesObserver>> task_observers_;
 
   // Map of pending PageContext extractions ("observations"). Used to keep the
   // wrapper alive while the extraction is in progress.
