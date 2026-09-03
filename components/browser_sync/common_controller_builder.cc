@@ -43,6 +43,8 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/journeys/journey_data_type_controller.h"
 #include "components/history/core/browser/sync/history_data_type_controller.h"
 #include "components/history/core/browser/sync/history_delete_directives_data_type_controller.h"
 #include "components/notebooks/public/notebooks_service.h"
@@ -575,7 +577,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::JOURNEY)) {
-    add_controller(CreateJourneyDataTypeController());
+    add_controller(CreateJourneyDataTypeController(sync_service));
   }
 
   if (!disabled_types.Has(syncer::AUTOFILL_ENTITY_SUPPRESSION)) {
@@ -1229,24 +1231,15 @@ CommonControllerBuilder::CreateNotebookDataTypeController() {
 }
 
 std::unique_ptr<syncer::DataTypeController>
-CommonControllerBuilder::CreateJourneyDataTypeController() {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
+CommonControllerBuilder::CreateJourneyDataTypeController(
+    syncer::SyncService* sync_service) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncJourney) ||
+      !history_service_.value()) {
     return nullptr;
   }
 
-  // TODO(crbug.com/526686844): In CL #4, register the type, i.e. instantiate
-  // the DataTypeController. There is more than one way to go about it,
-  // but one option is:
-  // - Create a trivial implementation of DataTypeSyncBridge which lives in
-  //   your feature's directory. It should have synchronous access to your
-  //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-  //   CoolKeyedService (often the model itself).
-  // - Expose CoolKeyedService::GetControllerDelegate() which calls
-  //   bridge->change_processor()->GetControllerDelegate().
-  // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-  //   on it to create the DataTypeController.
-  // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
-  return nullptr;
+  return std::make_unique<history::JourneyDataTypeController>(
+      sync_service, history_service_.value(), pref_service_.value());
 }
 
 std::unique_ptr<syncer::DataTypeController>

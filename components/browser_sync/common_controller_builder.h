@@ -315,7 +315,8 @@ class CommonControllerBuilder {
   CreateContextualTaskDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateNotebookDataTypeController();
-  std::unique_ptr<syncer::DataTypeController> CreateJourneyDataTypeController();
+  std::unique_ptr<syncer::DataTypeController> CreateJourneyDataTypeController(
+      syncer::SyncService* sync_service);
   std::unique_ptr<syncer::DataTypeController>
   CreateAutofillEntitySuppressionDataTypeController();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
