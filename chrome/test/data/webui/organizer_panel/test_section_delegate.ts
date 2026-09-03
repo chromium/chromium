@@ -12,6 +12,10 @@ export class TestSectionDelegate implements
   private lastClickedItem_?: OrganizerListSectionItem<unknown>;
   private clickCount_: number = 0;
 
+  private lastActionButtonClickedItem_?: OrganizerListSectionItem<unknown>;
+  private lastActionButtonElement_?: HTMLElement;
+  private actionButtonClickCount_: number = 0;
+
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = []) {
     this.header_ = header;
@@ -39,5 +43,25 @@ export class TestSectionDelegate implements
 
   getClickCount(): number {
     return this.clickCount_;
+  }
+
+  onItemActionButtonClicked(
+      item: OrganizerListSectionItem<unknown>, buttonElement: HTMLElement) {
+    this.lastActionButtonClickedItem_ = item;
+    this.lastActionButtonElement_ = buttonElement;
+    this.actionButtonClickCount_++;
+  }
+
+  getLastActionButtonClickedItem():
+      OrganizerListSectionItem<unknown>|undefined {
+    return this.lastActionButtonClickedItem_;
+  }
+
+  getLastActionButtonElement(): HTMLElement|undefined {
+    return this.lastActionButtonElement_;
+  }
+
+  getActionButtonClickCount(): number {
+    return this.actionButtonClickCount_;
   }
 }

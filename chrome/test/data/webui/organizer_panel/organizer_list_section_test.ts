@@ -168,6 +168,45 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(items[1], delegate.getLastClickedItem());
   });
 
+  test('notifies delegate when an item action button is clicked', async () => {
+    const items: Array<OrganizerListSectionItem<unknown>> = [
+      {
+        title: 'Tab 1',
+        description: ['tab1.com'],
+        hoveredActionButton: {
+          icon: 'cr:close',
+          ariaLabel: 'Close tab',
+        },
+      },
+      {
+        title: 'Tab 2',
+        description: ['tab2.com'],
+        hoveredActionButton: {
+          icon: 'cr:close',
+          ariaLabel: 'Close tab',
+        },
+      },
+    ];
+    const delegate = new TestSectionDelegate('Open Tabs', items);
+    listSection.delegate = delegate;
+    await microtasksFinished();
+
+    const listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(2, listItems.length);
+
+    const actionButton = listItems[1]!.$.actionButton;
+    assertTrue(!!actionButton);
+
+    actionButton.click();
+    await microtasksFinished();
+
+    assertEquals(1, delegate.getActionButtonClickCount());
+    assertEquals(items[1], delegate.getLastActionButtonClickedItem());
+    assertEquals(actionButton, delegate.getLastActionButtonElement());
+    assertEquals(0, delegate.getClickCount());
+  });
+
   test('filters items based on searchQuery', async () => {
     const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
       {title: 'Google', description: ['google.com']},

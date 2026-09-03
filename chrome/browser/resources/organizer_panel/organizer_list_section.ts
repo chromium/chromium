@@ -117,7 +117,19 @@ export class OrganizerListSectionElement extends CrLitElement implements
   protected onItemClick_(e: Event) {
     const target = e.currentTarget as OrganizerListSectionItemElement;
     assert(target.item);
-    this.delegate?.onItemClick(target.item);
+    assert(this.delegate);
+    this.delegate.onItemClick(target.item);
+  }
+
+  protected onItemActionButtonClick_(e: CustomEvent<{
+    item: OrganizerListSectionItem<unknown>,
+    buttonElement: HTMLElement,
+  }>) {
+    assert(e.detail.item);
+    assert(e.detail.buttonElement);
+    assert(this.delegate);
+    this.delegate.onItemActionButtonClicked?.(
+        e.detail.item, e.detail.buttonElement);
   }
 
   protected getFilteredItems_(): Array<OrganizerListSectionItem<unknown>> {
