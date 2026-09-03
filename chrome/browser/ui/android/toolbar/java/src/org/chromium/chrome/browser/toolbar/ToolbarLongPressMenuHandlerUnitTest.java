@@ -664,4 +664,21 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         handler.handleMenuClick(ToolbarLongPressMenuHandler.MenuItemType.SEND_TAB_TO_SELF);
         verify(onSendTabToSelfClicked).run();
     }
+
+    @Test
+    @Config(qualifiers = "ldltr-sw600dp")
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
+    public void testBuildMenuItemsOnTablet() {
+        mUrl = JUnitTestGURLs.URL_1;
+        assertNotNull(mToolbarLongPressMenuHandler.getOnLongClickListener());
+
+        ModelList list = mToolbarLongPressMenuHandler.buildMenuItems(/* onTop= */ true);
+        assertEquals(2, list.size());
+        assertEquals(
+                ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK,
+                list.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                ToolbarLongPressMenuHandler.MenuItemType.SEND_TAB_TO_SELF,
+                list.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
 }

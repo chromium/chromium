@@ -79,6 +79,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final BooleanSupplier mSuppressLongPressSupplier;
     private final Supplier<@Nullable GURL> mUrlSupplier;
     private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
+    private final boolean mIsBottomToolbarEnabled;
     private final @Nullable OnLongClickListener mOnLongClickListener;
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -124,11 +125,11 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
 
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
 
-        boolean isBottomToolbarEnabled =
+        mIsBottomToolbarEnabled =
                 ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                         context, isCustomTab);
         boolean isSttsEnabled = ChromeFeatureList.sSendTabToSelfExtraEntryPoints.isEnabled();
-        if (isBottomToolbarEnabled || isSttsEnabled) {
+        if (mIsBottomToolbarEnabled || isSttsEnabled) {
             mOnLongClickListener =
                     (view) -> {
                         if (mSuppressLongPressSupplier.getAsBoolean()) {
@@ -240,14 +241,16 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     @VisibleForTesting
     ModelList buildMenuItems(boolean onTop) {
         ModelList itemList = new ModelList();
-        itemList.add(
-                new ListItemBuilder()
-                        .withTitleRes(
-                                onTop
-                                        ? R.string.toolbar_move_to_the_bottom
-                                        : R.string.toolbar_move_to_the_top)
-                        .withMenuId(MenuItemType.MOVE_ADDRESS_BAR_TO)
-                        .build());
+        if (mIsBottomToolbarEnabled) {
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(
+                                    onTop
+                                            ? R.string.toolbar_move_to_the_bottom
+                                            : R.string.toolbar_move_to_the_top)
+                            .withMenuId(MenuItemType.MOVE_ADDRESS_BAR_TO)
+                            .build());
+        }
         itemList.add(
                 new ListItemBuilder()
                         .withTitleRes(R.string.toolbar_copy_link)
