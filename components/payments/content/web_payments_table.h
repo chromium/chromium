@@ -45,8 +45,10 @@ struct SecurePaymentConfirmationCredential;
 //                         platform-specific
 //                         SecurePaymentConfirmationUseCredentialStoreAPIs flag:
 //                         On Android, currently, this table is not used.
+//                         The primary key of this table is the pair of
+//                         `credential_id` and `relying_party_id`.
 //
-//   credential_id         The WebAuthn credential identifier blob. Primary key.
+//   credential_id         The WebAuthn credential identifier blob.
 //   relying_party_id      The relying party identifier string.
 //   label                 The instrument human-readable label string.
 //   icon                  The serialized SkBitmap blob.

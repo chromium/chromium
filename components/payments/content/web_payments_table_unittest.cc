@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -247,27 +248,43 @@ TEST_F(WebPaymentsTableTest, UpdatingCredentialReturnsTrue) {
 }
 
 TEST_F(WebPaymentsTableTest,
-       DifferentRelyingPartiesCannotUseSameCredentialIdentifier) {
+       DifferentRelyingPartiesCanUseSameCredentialIdentifier) {
   WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
                                           "relying-party-1.example",
                                           CreateUserId(/*first_byte=*/4))));
 
-  EXPECT_FALSE(table->AddSecurePaymentConfirmationCredential(
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
                                           "relying-party-2.example",
                                           CreateUserId(/*first_byte=*/5))));
 
-  auto credentials = table->GetSecurePaymentConfirmationCredentials(
+  auto credentials1 = table->GetSecurePaymentConfirmationCredentials(
       CreateCredentialIdList(/*first_byte=*/0), "relying-party-1.example");
   ExpectOneValidCredential({0, 1, 2, 3}, "relying-party-1.example",
-                           {4, 5, 6, 7}, std::move(credentials));
-  EXPECT_TRUE(table
-                  ->GetSecurePaymentConfirmationCredentials(
-                      CreateCredentialIdList(/*first_byte=*/0),
-                      "relying-party-2.example")
-                  .empty());
+                           {4, 5, 6, 7}, std::move(credentials1));
+
+  auto credentials2 = table->GetSecurePaymentConfirmationCredentials(
+      CreateCredentialIdList(/*first_byte=*/0), "relying-party-2.example");
+  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party-2.example",
+                           {5, 6, 7, 8}, std::move(credentials2));
+
+  // Updating RP 1's credential does not remove RP 2's credential.
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
+      SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party-1.example",
+                                          CreateUserId(/*first_byte=*/8))));
+
+  credentials1 = table->GetSecurePaymentConfirmationCredentials(
+      CreateCredentialIdList(/*first_byte=*/0), "relying-party-1.example");
+  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party-1.example",
+                           {8, 9, 10, 11}, std::move(credentials1));
+
+  credentials2 = table->GetSecurePaymentConfirmationCredentials(
+      CreateCredentialIdList(/*first_byte=*/0), "relying-party-2.example");
+  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party-2.example",
+                           {5, 6, 7, 8}, std::move(credentials2));
 }
 
 TEST_F(WebPaymentsTableTest, RelyingPartyCanHaveMultipleCredentials) {
@@ -523,6 +540,85 @@ TEST_F(WebPaymentsTableTest, BrowserBoundKeyTableLastUsedMigration) {
   EXPECT_TRUE(web_payments_table->CreateTablesIfNecessary());
   EXPECT_TRUE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_browser_bound_key", "last_used"));
+}
+
+// Test migrating an existing credential table with single-column primary key
+// to composite primary key (credential_id, relying_party_id).
+TEST_F(WebPaymentsTableTest, CredentialTableCompositePrimaryKeyMigration) {
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(web_payments_table->RazeForTest());
+
+  // Credential ID {0, 1, 2, 3} and its SQLite hex blob literal representation.
+  const std::vector<uint8_t> kCredentialId =
+      CreateCredentialId(/*first_byte=*/0);
+  constexpr char kCredentialIdHex[] = "x'00010203'";
+
+  // Create the SPC instrument table as it existed with only `credential_id`
+  // as the primary key.
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(
+      "CREATE TABLE IF NOT EXISTS secure_payment_confirmation_instrument ( "
+      "credential_id BLOB NOT NULL PRIMARY KEY, "
+      "relying_party_id VARCHAR NOT NULL, "
+      "label VARCHAR NOT NULL, "
+      "icon BLOB NOT NULL, "
+      "date_created INTEGER NOT NULL DEFAULT 0, "
+      "user_id BLOB)"));
+
+  // Insert a credential for RP 1.
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(base::StrCat(
+      {"INSERT INTO secure_payment_confirmation_instrument "
+       "(credential_id, relying_party_id, label, icon, "
+       "date_created, user_id) "
+       "VALUES (",
+       kCredentialIdHex, ", 'relying-party-1.example', 'Label 1', x'', ",
+       base::NumberToString(
+           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()),
+       ", x'04050607')"})));
+
+  // In the legacy schema, inserting another RP with the same credential ID
+  // fails due to PRIMARY KEY constraint violation.
+  EXPECT_FALSE(web_payments_table->ExecuteForTest(base::StrCat(
+      {"INSERT INTO secure_payment_confirmation_instrument "
+       "(credential_id, relying_party_id, label, icon, "
+       "date_created, user_id) "
+       "VALUES (",
+       kCredentialIdHex, ", 'relying-party-2.example', 'Label 2', x'', ",
+       base::NumberToString(
+           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()),
+       ", x'04050607')"})));
+
+  // Run table initialization which performs the composite PK migration.
+  EXPECT_TRUE(web_payments_table->CreateTablesIfNecessary());
+
+  // Verify the existing RP 1 credential is preserved.
+  std::vector<std::vector<uint8_t>> credential_ids;
+  credential_ids.push_back(kCredentialId);
+  EXPECT_EQ(1u, web_payments_table
+                    ->GetSecurePaymentConfirmationCredentials(
+                        std::move(credential_ids), "relying-party-1.example")
+                    .size());
+
+  // Now, adding a credential for RP 2 with the same credential ID succeeds.
+  SecurePaymentConfirmationCredential rp2_credential(
+      kCredentialId, "relying-party-2.example", CreateUserId());
+  EXPECT_TRUE(web_payments_table->AddSecurePaymentConfirmationCredential(
+      rp2_credential));
+
+  // Both credentials exist independently.
+  std::vector<std::vector<uint8_t>> query_ids_1;
+  query_ids_1.push_back(kCredentialId);
+  EXPECT_EQ(1u, web_payments_table
+                    ->GetSecurePaymentConfirmationCredentials(
+                        std::move(query_ids_1), "relying-party-1.example")
+                    .size());
+
+  std::vector<std::vector<uint8_t>> query_ids_2;
+  query_ids_2.push_back(kCredentialId);
+  EXPECT_EQ(1u, web_payments_table
+                    ->GetSecurePaymentConfirmationCredentials(
+                        std::move(query_ids_2), "relying-party-2.example")
+                    .size());
 }
 
 // Tests that a browser bound key can be added and retrieved using the

@@ -54,12 +54,6 @@ bool WebPaymentsTable::CreateTablesIfNecessary() {
     return false;
   }
 
-  // TODO(crbug.com/384940851): Update secure_payment_confirmation_instrument's
-  // primary key to the pair of (credential_id, relying_party_id).
-
-  // The `credential_id` column is 20 bytes for UbiKey on Linux, but the size
-  // can vary for different authenticators. The relatively small sizes make it
-  // OK to make `credential_id` the primary key.
   if (!db()->Execute(
           "CREATE TABLE IF NOT EXISTS secure_payment_confirmation_instrument ( "
           "credential_id BLOB NOT NULL PRIMARY KEY, "
@@ -89,6 +83,64 @@ bool WebPaymentsTable::CreateTablesIfNecessary() {
             "user_id BLOB")) {
       LOG(ERROR)
           << "Cannot alter the secure_payment_confirmation_instrument table";
+      return false;
+    }
+  }
+
+  // If the table was created with only `credential_id` as the primary key,
+  // migrate it to a composite primary key of (credential_id, relying_party_id).
+  bool spc_instrument_needs_key_migration = false;
+  {
+    sql::Statement s(db()->GetUniqueStatement(
+        "PRAGMA table_info(secure_payment_confirmation_instrument)"));
+    // PRAGMA table_info schema: 0: cid, 1: name, 2: type, 3: notnull,
+    // 4: dflt_value, 5: pk (0 if not in primary key, >=1 if part of PK).
+    constexpr int kTableInfoNameColumn = 1;
+    constexpr int kTableInfoPkColumn = 5;
+    while (s.Step()) {
+      if (s.ColumnString(kTableInfoNameColumn) == "relying_party_id" &&
+          s.ColumnInt(kTableInfoPkColumn) == 0) {
+        spc_instrument_needs_key_migration = true;
+        break;
+      }
+    }
+  }
+
+  if (spc_instrument_needs_key_migration) {
+    if (!db()->Execute(
+            "CREATE TABLE secure_payment_confirmation_instrument_temp ( "
+            "credential_id BLOB NOT NULL, "
+            "relying_party_id VARCHAR NOT NULL, "
+            "label VARCHAR NOT NULL, "
+            "icon BLOB NOT NULL, "
+            "date_created INTEGER NOT NULL DEFAULT 0, "
+            "user_id BLOB, "
+            "PRIMARY KEY (credential_id, relying_party_id))")) {
+      LOG(ERROR)
+          << "Cannot create temp secure_payment_confirmation_instrument table";
+      return false;
+    }
+
+    if (!db()->Execute(
+            "INSERT INTO secure_payment_confirmation_instrument_temp "
+            "SELECT credential_id, relying_party_id, label, icon, "
+            "date_created, user_id FROM "
+            "secure_payment_confirmation_instrument")) {
+      LOG(ERROR) << "Cannot copy secure_payment_confirmation_instrument data";
+      return false;
+    }
+
+    if (!db()->Execute("DROP TABLE secure_payment_confirmation_instrument")) {
+      LOG(ERROR)
+          << "Cannot drop old secure_payment_confirmation_instrument table";
+      return false;
+    }
+
+    if (!db()->Execute(
+            "ALTER TABLE secure_payment_confirmation_instrument_temp "
+            "RENAME TO secure_payment_confirmation_instrument")) {
+      LOG(ERROR)
+          << "Cannot rename temp secure_payment_confirmation_instrument table";
       return false;
     }
   }
@@ -220,27 +272,13 @@ bool WebPaymentsTable::AddSecurePaymentConfirmationCredential(
   }
 
   {
-    // Check for credential identifier reuse by a different relying party.
-    sql::Statement s0(
-        db()->GetUniqueStatement("SELECT label "
-                                 "FROM secure_payment_confirmation_instrument "
-                                 "WHERE credential_id=? "
-                                 "AND relying_party_id<>?"));
-    int index = 0;
-    s0.BindBlob(index++, credential.credential_id);
-    s0.BindString(index++, credential.relying_party_id);
-    if (s0.Step()) {
-      VLOG(1) << "WebPaymentsTable::AddSecurePaymentConfirmationCredential: "
-                 "Credential identifier already in use by different RP!";
-      return false;
-    }
-  }
-
-  {
     sql::Statement s1(db()->GetUniqueStatement(
         "DELETE FROM secure_payment_confirmation_instrument "
-        "WHERE credential_id=?"));
-    s1.BindBlob(0, credential.credential_id);
+        "WHERE credential_id=? "
+        "AND relying_party_id=?"));
+    int index = 0;
+    s1.BindBlob(index++, credential.credential_id);
+    s1.BindString(index++, credential.relying_party_id);
 
     if (!s1.Run()) {
       VLOG(1) << "WebPaymentsTable::AddSecurePaymentConfirmationCredential: "
