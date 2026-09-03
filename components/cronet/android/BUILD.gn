@@ -1364,6 +1364,7 @@ template("repackage_jars") {
   if (defined(invoker.jar_excluded_patterns)) {
     _excludes += invoker.jar_excluded_patterns
   }
+
   dist_jar(target_name) {
     requires_android = true
     direct_deps_only = true
@@ -1516,6 +1517,7 @@ instrumentation_test_apk("cronet_sample_test_apk") {
 
 _cronet_shared_library_for_testing_name =
     "${_cronet_shared_lib_name}_for_testing"
+
 shared_library("cronet_tests") {
   output_name = _cronet_shared_library_for_testing_name
   testonly = true
