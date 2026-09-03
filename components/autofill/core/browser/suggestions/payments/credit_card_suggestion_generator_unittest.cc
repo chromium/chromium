@@ -3575,9 +3575,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/false);
 
@@ -3632,9 +3629,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
@@ -3685,36 +3679,10 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 }
 
 TEST_F(CreditCardSuggestionGeneratorTest,
-       GenerateLocalSaveAndFillSuggestion_FlagDisabled) {
-  // Complete credit card form (passes FormStructure::IsCompleteCreditCardForm)
-  FormBundle form_bundle = GetFormWithTypes(
-      {.fields = {
-           {.role = FieldType::CREDIT_CARD_NUMBER, .value = u"411"},
-           {.role = FieldType::CREDIT_CARD_EXP_MONTH},
-           {.role = FieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR},
-           {.role = FieldType::CREDIT_CARD_VERIFICATION_CODE},
-           {.role = FieldType::CREDIT_CARD_NAME_FULL},
-       }});
-  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
-      *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{},
-      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
-      credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown,
-      /*exclude_virtual_cards=*/false);
-
-  ASSERT_GE(suggestions.size(), 0ul);
-}
-
-TEST_F(CreditCardSuggestionGeneratorTest,
        SaveAndFillSuggestion_NotOfferedWhenCreditCardIsSavedInProfile) {
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3757,9 +3725,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3794,9 +3759,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
   autofill_client().set_is_off_the_record(true);
 
@@ -3837,9 +3799,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
 
   FormBundle form_bundle = GetFormWithTypes(
@@ -3901,9 +3860,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
@@ -3954,9 +3910,6 @@ TEST_F(CreditCardSuggestionGeneratorTest,
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBottomSheetScanCardAndFill);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSaveAndFill);
 #endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 

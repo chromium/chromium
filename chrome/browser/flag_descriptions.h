@@ -1147,11 +1147,6 @@ inline constexpr char kAutofillEnableResurrectingPaymentsUsersDescription[] =
     "will be prompted to turn it back on in instances where they can benefit "
     "from it.";
 
-inline constexpr char kAutofillEnableSaveAndFillName[] = "Enable Save and Fill";
-inline constexpr char kAutofillEnableSaveAndFillDescription[] =
-    "When enabled, show an option to offer saving and filling a credit card "
-    "with a single click when users don't have any cards saved in Autofill.";
-
 inline constexpr char kAutofillEnableScanCardOptionWhenNoCardsSavedName[] =
     "Enable 'Scan card' option when no cards saved";
 inline constexpr char

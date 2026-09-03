@@ -11265,11 +11265,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSkillsEnabled)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-save-and-fill",
-     flag_descriptions::kAutofillEnableSaveAndFillName,
-     flag_descriptions::kAutofillEnableSaveAndFillDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSaveAndFill)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"default-browser-promo-entry-point",
      flag_descriptions::kDefaultBrowserPromoEntryPointName,
