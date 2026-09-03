@@ -14,10 +14,6 @@ namespace invalidation {
 class ProfileInvalidationProvider;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace ios_web_view {
 class WebViewBrowserState;
 
@@ -47,8 +43,6 @@ class WebViewProfileInvalidationProviderFactory
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace ios_web_view
