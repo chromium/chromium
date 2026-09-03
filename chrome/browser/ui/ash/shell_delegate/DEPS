@@ -54,7 +54,6 @@ specific_include_rules = {
   ],
 
   ".*browsertest\\.cc": [
-    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/tabs/tab_enums.h",
     "+chrome/browser/ui/tabs/tab_strip_model_observer.h",

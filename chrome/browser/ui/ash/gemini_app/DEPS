@@ -20,8 +20,5 @@ specific_include_rules = {
     "+chrome/browser/web_applications/web_app_provider.h",
     "+chrome/common",
     "+chrome/test",
-
-    # TODO(http://b/333907855): Remove after migrating app.
-    "+chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h",
   ]
 }
