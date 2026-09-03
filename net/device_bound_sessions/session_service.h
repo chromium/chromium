@@ -23,6 +23,7 @@
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_display.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_event.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/log/net_log_with_source.h"
@@ -239,7 +240,7 @@ class NET_EXPORT SessionService {
   // Find a pre-provisioned key that matches the parameters.
   virtual SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
   FindPreProvisionedKey(
-      const RegistrationFetcherParam& param,
+      const ProviderRegistrationParams& provider_params,
       base::optional_ref<const url::Origin> original_request_initiator) = 0;
 
   // Add an observer for session changes that include `url`. `callback`

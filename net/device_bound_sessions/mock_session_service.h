@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -78,7 +80,7 @@ class SessionServiceMock : public SessionService {
   MOCK_METHOD(
       (SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>),
       FindPreProvisionedKey,
-      (const RegistrationFetcherParam& param,
+      (const ProviderRegistrationParams& provider_params,
        base::optional_ref<const url::Origin> original_request_initiator),
       (override));
   MOCK_METHOD(void,

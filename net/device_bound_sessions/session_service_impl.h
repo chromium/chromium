@@ -25,6 +25,7 @@
 #include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
@@ -78,6 +79,17 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionProactiveRefreshAttempt)
 
+  // Parameters required to initiate a session registration. It's shared by
+  // all registration flows (standalone, federated, and SSO).
+  struct RegistrationParams {
+    SessionService::OnAccessCallback access_callback;
+    RegistrationFetcherParam fetcher_param;
+    net::IsolationInfo isolation_info;
+    net::SiteForCookies site_for_cookies;
+    net::NetLogWithSource net_log;
+    std::optional<url::Origin> original_request_initiator;
+  };
+
   SessionServiceImpl(unexportable_keys::UnexportableKeyService& key_service,
                      const URLRequestContext* request_context,
                      SessionStore* store,
@@ -92,7 +104,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void RegisterBoundSession(
       OnAccessCallback on_access_callback,
-      RegistrationFetcherParam registration_params,
+      RegistrationFetcherParam fetcher_param,
       const IsolationInfo& isolation_info,
       const net::SiteForCookies& site_for_cookies,
       const NetLogWithSource& net_log,
@@ -105,7 +117,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       unexportable_keys::UnexportableSigningKeyId key_id) override;
 
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
-  FindPreProvisionedKey(const RegistrationFetcherParam& param,
+  FindPreProvisionedKey(const ProviderRegistrationParams& provider_params,
                         base::optional_ref<const url::Origin>
                             original_request_initiator) override;
 
@@ -238,19 +250,48 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   using ObserverSet = absl::flat_hash_set<std::unique_ptr<Observer>>;
 
+  using FetchStarter = base::OnceCallback<void(
+      RegistrationFetcher*,
+      RegistrationRequestParam,
+      RegistrationFetcher::RegistrationCompleteCallback)>;
+
+  // The type of registration for a bound session. Used for histograms.
+  // LINT.IfChange(RegistrationType)
+  enum class RegistrationType {
+    kStandalone = 0,
+    kFederated = 1,
+    kSingleSignOn = 2,
+    kMaxValue = kSingleSignOn,
+  };
+
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, RegistrationType type) {
+    switch (type) {
+      case RegistrationType::kStandalone:
+        sink.Append("Standalone");
+        return;
+      case RegistrationType::kFederated:
+        sink.Append("Federated");
+        return;
+      case RegistrationType::kSingleSignOn:
+        sink.Append("SingleSignOn");
+        return;
+    }
+  }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:RegistrationType)
+
   void OnLoadSessionsComplete(SessionsMap sessions);
 
   void OnRegistrationComplete(OnAccessCallback on_access_callback,
-                              bool is_google_subdomain_for_histograms,
-                              bool is_federated_registration_for_histograms,
-                              SchemefulSite site,
+                              GURL endpoint,
+                              RegistrationType registration_type_for_histograms,
                               RegistrationFetcher* fetcher,
-                              RegistrationResult result);
+                              RegistrationResult registration_result);
   void OnRefreshRequestCompletion(RefreshTrigger trigger,
                                   OnAccessCallback on_access_callback,
                                   SessionKey session_key,
                                   RegistrationFetcher* fetcher,
-                                  RegistrationResult result);
+                                  RegistrationResult registration_result);
 
   void StartGarbageCollection();
   void OnGetAllKeysForGarbageCollection(
@@ -361,8 +402,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void GetFederatedProviderSessionIfValid(
       ProviderRegistrationParams provider_params,
       OnAccessCallback on_access_callback,
-      base::OnceCallback<void(base::expected<Session*, SessionError>)>
-          callback);
+      base::OnceCallback<void(SessionErrorOr<Session*>)> callback);
 
   // Helper for getting the federated provider session. Checks that the
   // key thumbprints maps and runs `callback` with the resulting
@@ -370,7 +410,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void CheckFederatedProviderKey(
       SessionKey provider_session_key,
       std::string provider_key_thumbprint,
-      base::OnceCallback<void(base::expected<Session*, SessionError>)> callback,
+      base::OnceCallback<void(SessionErrorOr<Session*>)> callback,
       std::optional<unexportable_keys::UnexportableSigningKeyId> provider_key);
 
   void OnAddSessionKeyRestored(
@@ -426,16 +466,19 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnAllPrewarmSessionsDone(PrewarmCallback callback,
                                 std::vector<PrewarmResult> session_results);
 
-  // Helper function for common behavior from federated and regular
-  // session registration.
-  void RegisterBoundSessionInternal(
-      OnAccessCallback on_access_callback,
-      RegistrationFetcherParam registration_params,
-      const IsolationInfo& isolation_info,
-      const net::SiteForCookies& site_for_cookies,
-      const NetLogWithSource& net_log,
-      const std::optional<url::Origin>& original_request_initiator,
-      base::expected<Session*, SessionError> federated_provider_session);
+  void StartRegistration(RegistrationParams registration_params,
+                         RegistrationType registration_type_for_histograms,
+                         FetchStarter fetch_starter);
+
+  void RegisterStandaloneBoundSession(RegistrationParams registration_params);
+
+  void RegisterSingleSignOnBoundSession(
+      RegistrationParams registration_params,
+      unexportable_keys::UnexportableSigningKeyId pre_provisioned_key);
+
+  void RegisterFederatedBoundSession(
+      RegistrationParams registration_params,
+      SessionErrorOr<Session*> federated_provider_session);
 
   ChallengeResult SetChallengeForBoundSessionInternal(
       OnAccessCallback on_access_callback,

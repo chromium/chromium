@@ -2649,6 +2649,7 @@ chromium-metrics-reviews@google.com.
   <token key="RegistrationType">
     <variant name="" summary="any"/>
     <variant name=".Federated" summary="a federated"/>
+    <variant name=".SingleSignOn" summary="a single sign-on"/>
     <variant name=".Standalone" summary="a standalone"/>
   </token>
 </histogram>

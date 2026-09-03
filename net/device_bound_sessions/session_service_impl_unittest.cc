@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -94,6 +95,11 @@ constexpr char kSessionId3[] = "SessionId3";
 constexpr char kChallenge[] = "challenge";
 
 constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
+
+constexpr char kRelyingPartySessionId[] = "RelyingPartySessionId";
+constexpr char kRelyingPartyOrigin[] = "https://rp.test";
+constexpr char kIdentityProviderOrigin[] = "https://provider.test";
+constexpr char kProviderKey[] = "key_digest_123";
 
 proto::Session CreateSessionProto(std::string_view session_id,
                                   std::string_view url_string) {
@@ -4643,6 +4649,11 @@ TEST_F(
 
 class SessionServiceImplPreProvisionedKeyTest : public SessionServiceImplTest {
  public:
+  SessionServiceImplPreProvisionedKeyTest() {
+    AddScopedFeatureList().InitAndEnableFeature(
+        net::features::kDeviceBoundSessionsForSingleSignOn);
+  }
+
   void SetUp() override {
     SessionServiceImplTest::SetUp();
     SetService(std::make_unique<SessionServiceImpl>(
@@ -4650,10 +4661,20 @@ class SessionServiceImplPreProvisionedKeyTest : public SessionServiceImplTest {
         /*store=*/nullptr,
         /*restricted_sites=*/std::vector<SchemefulSite>(),
         /*has_cookie_access_cb=*/
-        base::BindRepeating(
-            [](const CookieAccessCheckParams&) { return true; }),
+        base::BindLambdaForTesting([&](const CookieAccessCheckParams& params) {
+          return allow_cookie_access_;
+        }),
         /*client_cert_handler=*/base::DoNothing()));
   }
+
+  void SetCookieAccess(bool allow) { allow_cookie_access_ = allow; }
+
+ private:
+  bool CheckCookieAccess(const CookieAccessCheckParams&) {
+    return allow_cookie_access_;
+  }
+
+  bool allow_cookie_access_ = true;
 };
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
@@ -4674,17 +4695,11 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, provider_key,
                                              provider_url, key_id));
 
-  RegistrationFetcherParam param =
-      RegistrationFetcherParam::CreateInstanceForTesting(
-          provider_url,
-          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-          "challenge",
-          /*authorization=*/std::nullopt,
-          ProviderRegistrationParams{.provider_key = provider_key,
-                                     .provider_url = provider_url});
-
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
-      service().FindPreProvisionedKey(param, rp_origin);
+      service().FindPreProvisionedKey(
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = provider_url},
+          rp_origin);
 
   EXPECT_THAT(found_key, base::test::ValueIs(key_id));
 }
@@ -4707,43 +4722,30 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, provider_key,
                                              provider_url, key_id));
 
-  // 1. Wrong RP (relying party mismatch): key is not accessible.
-  RegistrationFetcherParam matching_param =
-      RegistrationFetcherParam::CreateInstanceForTesting(
-          provider_url,
-          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-          "challenge",
-          /*authorization=*/std::nullopt,
-          ProviderRegistrationParams{.provider_key = provider_key,
-                                     .provider_url = provider_url});
+  // Wrong RP (relying party mismatch): key is not accessible.
   auto wrong_rp_origin = url::Origin::Create(GURL("https://wrong-rp.test"));
-  EXPECT_THAT(service().FindPreProvisionedKey(matching_param, wrong_rp_origin),
+  EXPECT_THAT(service().FindPreProvisionedKey(
+                  ProviderRegistrationParams{.provider_key = provider_key,
+                                             .provider_url = provider_url},
+                  wrong_rp_origin),
               base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 
-  // 2. Wrong IdP (identity provider mismatch): key is not accessible.
+  // Wrong IdP (identity provider mismatch): key is not accessible.
   GURL wrong_provider_url("https://wrong-provider.test");
-  RegistrationFetcherParam wrong_idp_param =
-      RegistrationFetcherParam::CreateInstanceForTesting(
-          wrong_provider_url,
-          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-          "challenge",
-          /*authorization=*/std::nullopt,
-          ProviderRegistrationParams{.provider_key = provider_key,
-                                     .provider_url = wrong_provider_url});
-  EXPECT_THAT(service().FindPreProvisionedKey(wrong_idp_param, rp_origin),
-              base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 
-  // 3. Wrong key digest (provider key mismatch): key is not accessible.
+  EXPECT_THAT(
+      service().FindPreProvisionedKey(
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = wrong_provider_url},
+          rp_origin),
+      base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+
+  // Wrong key digest (provider key mismatch): key is not accessible.
   std::string wrong_provider_key = "wrong_digest_456";
-  RegistrationFetcherParam wrong_digest_param =
-      RegistrationFetcherParam::CreateInstanceForTesting(
-          provider_url,
-          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-          "challenge",
-          /*authorization=*/std::nullopt,
-          ProviderRegistrationParams{.provider_key = wrong_provider_key,
-                                     .provider_url = provider_url});
-  EXPECT_THAT(service().FindPreProvisionedKey(wrong_digest_param, rp_origin),
+  EXPECT_THAT(service().FindPreProvisionedKey(
+                  ProviderRegistrationParams{.provider_key = wrong_provider_key,
+                                             .provider_url = provider_url},
+                  rp_origin),
               base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 }
 
@@ -4788,19 +4790,11 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest, MissingInitiator) {
   unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
 
   service().AddPreProvisionedKey(rp_origin, provider_key, provider_url, key_id);
-
-  RegistrationFetcherParam param =
-      RegistrationFetcherParam::CreateInstanceForTesting(
-          provider_url,
-          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-          "challenge",
-          /*authorization=*/std::nullopt,
-          ProviderRegistrationParams{.provider_key = provider_key,
-                                     .provider_url = provider_url});
-
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
       service().FindPreProvisionedKey(
-          param, /*original_request_initiator=*/std::nullopt);
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = provider_url},
+          /*original_request_initiator=*/std::nullopt);
 
   EXPECT_FALSE(found_key.has_value());
   EXPECT_EQ(found_key.error(),
@@ -5018,6 +5012,323 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
 
   EXPECT_FALSE(service().AddPreProvisionedKey(rp_origin, "new_key",
                                               provider_url, key_id));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       RegisterBoundSessionSingleSignOnSuccess) {
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  auto rp_url = GURL(kRelyingPartyOrigin);
+  auto rp_origin = url::Origin::Create(rp_url);
+  GURL provider_url(kIdentityProviderOrigin);
+
+  // Add a pre-provisioned key (in a real scenario this would be done via
+  // Secure-Session-GenerateKey header).
+  EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, kProviderKey,
+                                             provider_url, key_id));
+
+  FakeDeviceBoundSessionObserver observer;
+  base::HistogramTester histograms;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](unexportable_keys::UnexportableSigningKeyId key_id, const GURL& rp_url,
+         RegistrationFetcher::RegistrationCompleteCallback callback) {
+        auto session = Session::CreateIfValid(SessionParams{
+            .session_id = kRelyingPartySessionId,
+            .fetcher_url = rp_url.Resolve("/refresh"),
+            .refresh_url = base::StrCat({kRelyingPartyOrigin, "/refresh"}),
+            .scope =
+                {
+                    .include_site = true,
+                    .origin = kRelyingPartyOrigin,
+                },
+            .credentials =
+                {
+                    {
+                        .name = "test_cookie",
+                        .attributes = "secure",
+                    },
+                },
+        });
+        (*session)->set_unexportable_key_id(key_id);
+        std::move(callback).Run(/*fetcher=*/nullptr,
+                                RegistrationResult(std::move(*session)));
+      },
+      key_id, rp_url));
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      rp_url.Resolve("/register"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256}, kChallenge,
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key{kProviderKey},
+                                 .provider_url{provider_url}},
+      AttestationMode::kNone, url::Origin::Create(provider_url));
+
+  service().RegisterBoundSession(
+      observer.GetCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), rp_origin);
+
+  // Validate the relying session exists and has the expected key ID.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(rp_url), Session::Id(kRelyingPartySessionId)});
+  ASSERT_NE(relying_session, nullptr);
+  EXPECT_EQ(relying_session->id().value(), kRelyingPartySessionId);
+  EXPECT_EQ(relying_session->unexportable_key_id(), key_id);
+
+  // Validate that access observer received creation notification.
+  ASSERT_EQ(observer.notifications().size(), 1u);
+  EXPECT_EQ(observer.notifications()[0].access_type,
+            SessionAccess::AccessType::kCreation);
+  EXPECT_EQ(observer.notifications()[0].session_key.id.value(),
+            kRelyingPartySessionId);
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
+      SessionError::kSuccess, 1);
+
+  // Validate that the pre-provisioned key was consumed upon session creation.
+  EXPECT_THAT(service().FindPreProvisionedKey(
+                  ProviderRegistrationParams{.provider_key{kProviderKey},
+                                             .provider_url{provider_url}},
+                  rp_origin),
+              base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       RegisterBoundSessionSingleSignOnKeyNotFound) {
+  FakeDeviceBoundSessionObserver observer;
+  base::HistogramTester histograms;
+  GURL rp_url(kRelyingPartyOrigin);
+  GURL provider_url(kIdentityProviderOrigin);
+
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kRelyingPartySessionId, base::StrCat({kRelyingPartyOrigin, "/refresh"}),
+      kRelyingPartyOrigin);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      rp_url.Resolve("/register"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256}, kChallenge,
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key{kProviderKey},
+                                 .provider_url{provider_url}},
+      AttestationMode::kNone, url::Origin::Create(provider_url));
+
+  service().RegisterBoundSession(
+      observer.GetCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), url::Origin::Create(rp_url));
+
+  // Validate the session does not exist.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(rp_url), Session::Id(kRelyingPartySessionId)});
+  EXPECT_EQ(relying_session, nullptr);
+  EXPECT_TRUE(observer.notifications().empty());
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kPreProvisionedKeyNotFound, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
+      SessionError::kPreProvisionedKeyNotFound, 1);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       RegisterBoundSessionSingleSignOnMissingInitiator) {
+  GURL provider_url(kIdentityProviderOrigin);
+  GURL rp_url(kRelyingPartyOrigin);
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  EXPECT_TRUE(service().AddPreProvisionedKey(
+      url::Origin::Create(rp_url), kProviderKey, provider_url, key_id));
+
+  base::HistogramTester histograms;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kRelyingPartySessionId, base::StrCat({kRelyingPartyOrigin, "/refresh"}),
+      kRelyingPartyOrigin);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      rp_url.Resolve("/register"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256}, kChallenge,
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key{kProviderKey},
+                                 .provider_url{provider_url}},
+      AttestationMode::kNone, url::Origin::Create(provider_url));
+
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+
+  // Validate the session does not exist.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(rp_url), Session::Id(kRelyingPartySessionId)});
+  EXPECT_EQ(relying_session, nullptr);
+
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult",
+      SessionError::kInvalidPreProvisionedKeyInitiatorMissing, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
+      SessionError::kInvalidPreProvisionedKeyInitiatorMissing, 1);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       RegisterBoundSessionSingleSignOnNoCookieAccess) {
+  GURL rp_url(kRelyingPartyOrigin);
+  auto rp_origin = url::Origin::Create(rp_url);
+  GURL provider_url("https://provider.test");
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  // Add the key while cookie access is allowed.
+  EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, kProviderKey,
+                                             provider_url, key_id));
+
+  // Disallow cookie access.
+  SetCookieAccess(false);
+
+  base::HistogramTester histograms;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kRelyingPartySessionId, base::StrCat({kRelyingPartyOrigin, "/refresh"}),
+      kRelyingPartyOrigin);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      rp_url.Resolve("/register"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256}, kChallenge,
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key{kProviderKey},
+                                 .provider_url{provider_url}},
+      AttestationMode::kNone,
+      url::Origin::Create(GURL(kIdentityProviderOrigin)));
+
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), rp_origin);
+
+  // Validate the session does not exist.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(rp_url), Session::Id(kRelyingPartySessionId)});
+  EXPECT_EQ(relying_session, nullptr);
+
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult",
+      SessionError::kPreProvisionedKeyAccessNotGranted, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
+      SessionError::kPreProvisionedKeyAccessNotGranted, 1);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       RegisterBoundSessionSingleSignOnFetcherError) {
+  GURL rp_url(kRelyingPartyOrigin);
+  auto rp_origin = url::Origin::Create(rp_url);
+  GURL provider_url(kIdentityProviderOrigin);
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, kProviderKey,
+                                             provider_url, key_id));
+
+  base::HistogramTester histograms;
+  auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::kNetError, base::StrCat({kRelyingPartyOrigin, "/refresh"}));
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      rp_url.Resolve("/register"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256}, kChallenge,
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key{kProviderKey},
+                                 .provider_url{provider_url}},
+      AttestationMode::kNone,
+      url::Origin::Create(GURL(kIdentityProviderOrigin)));
+
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), rp_origin);
+
+  // Validate the session does not exist.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(rp_url), Session::Id(kRelyingPartySessionId)});
+  EXPECT_EQ(relying_session, nullptr);
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kNetError, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
+      SessionError::kNetError, 1);
+}
+
+class SessionServiceImplTestWithoutSingleSignOn
+    : public SessionServiceImplTest {
+ public:
+  SessionServiceImplTestWithoutSingleSignOn() {
+    AddScopedFeatureList().InitAndDisableFeature(
+        net::features::kDeviceBoundSessionsForSingleSignOn);
+  }
+};
+
+TEST_F(SessionServiceImplTestWithoutSingleSignOn,
+       IgnoresRegistrationIfSingleSignOnDisabledAndProviderKeyPresent) {
+  GURL rp_url(kRelyingPartyOrigin);
+  GURL provider_url(kIdentityProviderOrigin);
+  FakeDeviceBoundSessionObserver observer;
+  base::HistogramTester histograms;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kRelyingPartySessionId, base::StrCat({kRelyingPartyOrigin, "/refresh"}),
+      kRelyingPartyOrigin);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      rp_url.Resolve("/register"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256}, kChallenge,
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key{kProviderKey},
+                                 .provider_url{provider_url}},
+      AttestationMode::kNone, url::Origin::Create(provider_url));
+
+  service().RegisterBoundSession(
+      observer.GetCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), url::Origin::Create(rp_url));
+
+  // Validate the session does not exist.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(rp_url), Session::Id(kRelyingPartySessionId)});
+
+  EXPECT_EQ(relying_session, nullptr);
+  EXPECT_TRUE(observer.notifications().empty());
+
+  histograms.ExpectTotalCount("Net.DeviceBoundSessions.RegistrationResult", 0);
+  histograms.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RegistrationResult.Standalone", 0);
+  histograms.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn", 0);
 }
 
 }  // namespace net::device_bound_sessions
