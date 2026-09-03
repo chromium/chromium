@@ -1034,6 +1034,27 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testShowsOneLoyaltyCardWithFirstTimeUse() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showAffiliatedLoyaltyCards(
+                            List.of(CVS_LOYALTY_CARD),
+                            List.of(CVS_LOYALTY_CARD, DB_LOYALTY_CARD),
+                            /* firstTimeUsage= */ true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView,
+                "touch_to_fill_loyalty_card_sheet_one_loyalty_card_first_time_use");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/428186413")
     public void testShowsAllLoyaltyCardsScreen() throws IOException {
         runOnUiThreadBlocking(
