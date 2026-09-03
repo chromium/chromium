@@ -35,7 +35,8 @@ constexpr char kProxyConfigurationProviderKeyName[] =
 // is set.
 std::optional<NSArray<nw_proxy_config_t>*> MapProxyRulesToNative(
     std::vector<ProxyRule> rules,
-    scoped_refptr<base::RefCountedData<base::AtomicFlag>> cancel_flag) {
+    scoped_refptr<base::RefCountedData<base::AtomicFlag>> cancel_flag)
+    API_AVAILABLE(ios(17.0)) {
   CHECK(!web::WebThread::CurrentlyOn(web::WebThread::UI));
 
   NSMutableArray<nw_proxy_config_t>* native_configs = [NSMutableArray array];
@@ -116,7 +117,7 @@ ProxyConfigurationProvider::~ProxyConfigurationProvider() {
 }
 
 void ProxyConfigurationProvider::UpdateProxyConfiguration(
-    std::vector<ProxyRule> rules) {
+    std::vector<ProxyRule> rules) API_AVAILABLE(ios(17.0)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cancel_flag_) {
     cancel_flag_->data.Set();
