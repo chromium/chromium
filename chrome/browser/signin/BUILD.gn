@@ -670,6 +670,7 @@ source_set("unit_tests") {
   if (enable_dice_support) {
     sources += [
       "cross_device_signin_promo_manager_unittest.cc",
+      "dice_intercepted_session_startup_helper_unittest.cc",
       "dice_response_handler_factory_unittest.cc",
       "dice_response_handler_unittest.cc",
       "dice_signed_in_profile_creator_unittest.cc",
