@@ -94,6 +94,12 @@ static bool JNI_TaskManagerServiceBridge_IsTaskKillable(JNIEnv* env,
   return TaskManagerInterface::GetTaskManager()->IsTaskKillable(task_id);
 }
 
+static int32_t JNI_TaskManagerServiceBridge_GetType(JNIEnv* env,
+                                                    TaskId task_id) {
+  return static_cast<int32_t>(
+      TaskManagerInterface::GetTaskManager()->GetType(task_id));
+}
+
 static void JNI_TaskManagerServiceBridge_KillTask(JNIEnv* env, TaskId task_id) {
   TaskManagerInterface::GetTaskManager()->KillTask(task_id);
 }

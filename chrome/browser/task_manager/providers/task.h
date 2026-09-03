@@ -32,36 +32,38 @@ class TaskProviderObserver;
 // shared by multiple tasks.
 class Task {
  public:
-  // Note that the declaration order here determines the default sort order
-  // in the task manager.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.task_manager
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: TaskType
   enum Type {
     UNKNOWN = 0,
 
-    /* Singleton processes first that don't belong to a particular tab. */
-    BROWSER,   /* The main browser process. */
-    GPU,       /* A graphics process. */
-    ARC,       /* An ARC process. */
-    CROSTINI,  /* A Crostini VM process. */
-    ZYGOTE,    /* A Linux zygote process. */
-    UTILITY,   /* A browser utility process. */
+    // Singleton processes first that don't belong to a particular tab.
+    BROWSER,   // The main browser process.
+    GPU,       // A graphics process.
+    ARC,       // An ARC process.
+    CROSTINI,  // A Crostini VM process.
+    ZYGOTE,    // A Linux zygote process.
+    UTILITY,   // A browser utility process.
 
-    /* Per-Tab processes next. */
-    RENDERER,  /* A normal WebContents renderer process. */
-    EXTENSION, /* An extension or app process. */
+    // Per-Tab processes next.
+    RENDERER,   // A normal WebContents renderer process.
+    EXTENSION,  // An extension or app process.
 
-    /* Plugin processes last.*/
-    GUEST,            /* A browser plugin guest process. */
-    SANDBOX_HELPER,   /* A sandbox helper process. */
-    DEDICATED_WORKER, /* A dedicated worker running on the renderer process. */
-    SHARED_WORKER,    /* A shared worker running on the renderer process. */
-    SERVICE_WORKER,   /* A service worker running on the renderer process. */
+    // Plugin processes last.
+    GUEST,             // A browser plugin guest process.
+    SANDBOX_HELPER,    // A sandbox helper process.
+    DEDICATED_WORKER,  // A dedicated worker running on the renderer process.
+    SHARED_WORKER,     // A shared worker running on the renderer process.
+    SERVICE_WORKER,    // A service worker running on the renderer process.
   };
 
   // Additional Type Information about a Task.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.task_manager
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: TaskSubType
   enum class SubType {
     kNoSubType = 0,
 
-    /* Renderer Processes may also be marked as a specific renderer subtype. */
+    // Renderer Processes may also be marked as a specific renderer subtype.
     kSpareRenderer,
     kUnknownRenderer,
   };

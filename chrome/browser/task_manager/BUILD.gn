@@ -281,7 +281,10 @@ source_set("impl") {
 if (is_android) {
   java_cpp_enum("java_enum_srcjar") {
     visibility = [ "//chrome/browser/task_manager/internal/android:*" ]
-    sources = [ "task_manager_observer.h" ]
+    sources = [
+      "providers/task.h",
+      "task_manager_observer.h",
+    ]
   }
 }
 

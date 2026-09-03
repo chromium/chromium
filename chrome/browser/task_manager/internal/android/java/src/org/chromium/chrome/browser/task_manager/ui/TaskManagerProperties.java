@@ -14,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -25,6 +26,24 @@ import java.lang.annotation.RetentionPolicy;
  * the current task manager state.
  */
 class TaskManagerProperties {
+    /** Categories for filtering tasks in the Task Manager toolbar. */
+    @IntDef({
+        Category.TABS_AND_EXTENSIONS,
+        Category.BROWSER,
+        Category.ALL_TASKS,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Category {
+        /** Tasks associated with tabs and extensions. */
+        int TABS_AND_EXTENSIONS = 0;
+
+        /** Tasks for browser internal processes (e.g. GPU, utility, browser core). */
+        int BROWSER = 1;
+
+        /** Shows all tasks without category filtering. */
+        int ALL_TASKS = 2;
+    }
+
     @IntDef({
         RowType.TASK,
     })
@@ -62,8 +81,12 @@ class TaskManagerProperties {
     static final WritableObjectPropertyKey<SortDescriptor> SORT_DESCRIPTOR =
             new WritableObjectPropertyKey<>();
 
+    /** Property key for active filter category. */
+    static final WritableIntPropertyKey SELECTED_CATEGORY = new WritableIntPropertyKey();
+
     /** All the property keys used by the header model. */
-    static final PropertyKey[] HEADER_PROPERTY_KEYS = new PropertyKey[] {COLUMNS, SORT_DESCRIPTOR};
+    static final PropertyKey[] HEADER_PROPERTY_KEYS =
+            new PropertyKey[] {COLUMNS, SORT_DESCRIPTOR, SELECTED_CATEGORY};
 
     /** Property key for task id. */
     static final ReadableLongPropertyKey TASK_ID = new ReadableLongPropertyKey();
@@ -73,6 +96,9 @@ class TaskManagerProperties {
 
     /** Property key for whether the task is killable. */
     static final ReadableBooleanPropertyKey IS_KILLABLE = new ReadableBooleanPropertyKey();
+
+    /** Property key for task type. */
+    static final WritableIntPropertyKey TASK_TYPE = new WritableIntPropertyKey();
 
     /** Property key for task name. */
     static final WritableObjectPropertyKey<String> TASK_NAME = new WritableObjectPropertyKey<>();

@@ -103,6 +103,10 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().isTaskKillable(taskId);
     }
 
+    public @TaskType int getType(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getType(taskId);
+    }
+
     public void killTask(long taskId) {
         TaskManagerServiceBridgeJni.get().killTask(taskId);
     }
@@ -141,6 +145,9 @@ public class TaskManagerServiceBridge {
         GpuMemoryUsage getGpuMemoryUsage(long taskId);
 
         boolean isTaskKillable(long taskId);
+
+        @TaskType
+        int getType(long taskId);
 
         void killTask(long taskId);
     }

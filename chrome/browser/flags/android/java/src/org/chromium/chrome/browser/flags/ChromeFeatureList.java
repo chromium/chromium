@@ -831,6 +831,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
+    public static final String TASK_MANAGER_TOOLBAR = "TaskManagerToolbar";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TEXT_HIGHLIGHT_FULL_LINK = "TextHighlightFullLink";

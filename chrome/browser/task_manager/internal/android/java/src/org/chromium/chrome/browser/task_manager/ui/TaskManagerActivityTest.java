@@ -24,10 +24,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridgeJni;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.TASK_MANAGER_TOOLBAR)
 public class TaskManagerActivityTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TaskManagerServiceBridge.Natives mBridge;

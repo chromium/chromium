@@ -215,6 +215,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kSafetyHubUnifiedPasswordsModule,
     &features::kSafetyHubWeakAndReusedPasswords,
     &features::kTaskManagerClank,
+    &features::kTaskManagerToolbar,
     &feed::kAndroidOpenIncognitoAsWindow,
     &feed::kFeedAudioOverviews,
     &feed::kFeedContainment,

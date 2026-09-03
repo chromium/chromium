@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
+import android.view.ViewStub;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,8 +25,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.Category;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,6 +43,10 @@ import java.util.Set;
 
 /** Binds the model and the view of task manager. */
 class TaskManagerCoordinator implements OnCreateContextMenuListener {
+    private static final @Category int[] CATEGORIES = {
+        Category.TABS_AND_EXTENSIONS, Category.BROWSER, Category.ALL_TASKS,
+    };
+
     private final PropertyModel mHeaderModel;
 
     private final TaskManagerMediator mMediator;
@@ -102,6 +110,10 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                 (hasSelectedTask) -> killButton.setEnabled(hasSelectedTask));
 
         taskManagerView.setOnCreateContextMenuListener(this);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_TOOLBAR)) {
+            initToolbar(taskManagerView, headerModel);
+        }
 
         mMediator.startObserving();
     }
@@ -276,6 +288,61 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             return R.id.gpu_memory_id;
         } else {
             throw new IllegalArgumentException("column key " + columnKey + " not supported");
+        }
+    }
+
+    /** Converts the given category to the resource id of the corresponding ChipView. */
+    static @IdRes int getCategoryChipId(@Category int category) {
+        switch (category) {
+            case Category.TABS_AND_EXTENSIONS:
+                return R.id.category_chip_tabs;
+            case Category.BROWSER:
+                return R.id.category_chip_browser;
+            case Category.ALL_TASKS:
+                return R.id.category_chip_all;
+            default:
+                throw new IllegalArgumentException("category " + category + " not supported");
+        }
+    }
+
+    private void initToolbar(View taskManagerView, PropertyModel headerModel) {
+        ViewStub toolbarStub = taskManagerView.findViewById(R.id.task_manager_toolbar_stub);
+        if (toolbarStub == null) return;
+        View toolbarView = toolbarStub.inflate();
+        initCategoryChips(toolbarView, headerModel);
+    }
+
+    private void initCategoryChips(View toolbar, PropertyModel headerModel) {
+        View chipsContainer = toolbar.findViewById(R.id.category_chips_container);
+        if (chipsContainer == null) return;
+
+        for (@Category int category : CATEGORIES) {
+            ChipView chip = toolbar.findViewById(getCategoryChipId(category));
+            if (chip != null) {
+                // Update the chip data
+                chip.setOnClickListener(v -> mMediator.setSelectedCategory(category));
+            }
+        }
+
+        // Update the chip view
+        mModelChangeProcessors.add(
+                PropertyModelChangeProcessor.create(
+                        headerModel,
+                        chipsContainer,
+                        (model, view, key) -> {
+                            if (key == TaskManagerProperties.SELECTED_CATEGORY) {
+                                updateCategoryChipsView(view, model);
+                            }
+                        }));
+    }
+
+    private static void updateCategoryChipsView(View container, PropertyModel model) {
+        @Category int selected = model.get(TaskManagerProperties.SELECTED_CATEGORY);
+        for (@Category int category : CATEGORIES) {
+            ChipView chip = container.findViewById(getCategoryChipId(category));
+            if (chip != null) {
+                chip.setSelected(selected == category);
+            }
         }
     }
 }
