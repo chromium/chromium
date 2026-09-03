@@ -130,6 +130,11 @@ chromium-metrics-reviews@google.com.
       summary="immediately before the Browser constructor is called"/>
 </variants>
 
+<variants name="SurfaceSyncState">
+  <variant name=".SurfaceSyncDisabled" summary="surface sync disabled"/>
+  <variant name=".SurfaceSyncEnabled" summary="surface sync enabled"/>
+</variants>
+
 <!-- LINT.IfChange(TopChromeWebUIName) -->
 
 <variants name="TopChromeWebUIName">
@@ -666,6 +671,33 @@ chromium-metrics-reviews@google.com.
   <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
+<histogram
+    name="InitialWebUI.ReloadButton.BrowserPaintToReloadButtonPaint{SurfaceSyncState}"
+    units="ms" expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the native browser window's first presentation
+    until the reload button first paint, with {SurfaceSyncState}. Cases where
+    the reload button paints before browser window presentation record 0 ms.
+  </summary>
+  <token key="SurfaceSyncState" variants="SurfaceSyncState"/>
+</histogram>
+
+<histogram
+    name="InitialWebUI.ReloadButton.BrowserWindowClosedBeforePaint{SurfaceSyncState}"
+    units="ms" expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Recorded when the browser window closes after its first presentation while
+    the reload button WebUI has not yet completed its first paint. Records the
+    elapsed time between browser window first presentation and window closure.
+    Sliced by {SurfaceSyncState}.
+  </summary>
+  <token key="SurfaceSyncState" variants="SurfaceSyncState"/>
+</histogram>
+
 <histogram name="InitialWebUI.ReloadButton.InputCount"
     enum="ReloadButtonInputType" expires_after="2027-01-17">
   <owner>mych@chromium.org</owner>
@@ -706,6 +738,60 @@ chromium-metrics-reviews@google.com.
     <variant name=".KeyPress" summary="a KeyPress"/>
     <variant name=".MouseRelease" summary="a MouseRelease"/>
   </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.ReloadButton.PaintedAtBrowserFirstPaint{SurfaceSyncState}"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Emitted on every browser window first presentation. Records true if the
+    reload button had already completed its first visually non-empty paint, or
+    false if the browser window presented with the reload button unpainted.
+    Sliced by {SurfaceSyncState}.
+  </summary>
+  <token key="SurfaceSyncState" variants="SurfaceSyncState"/>
+</histogram>
+
+<histogram
+    name="InitialWebUI.ReloadButton.PaintedWithin10SecondsAfterBrowserPaint{SurfaceSyncState}"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Emitted for every browser window session that reaches first presentation.
+    Records true if the reload button was ready when the browser presented or
+    finished painting within 10 seconds of browser window presentation. Records
+    false if 10 seconds elapsed without paint, or if the session terminated
+    before 10 seconds without painting. Sliced by {SurfaceSyncState}.
+  </summary>
+  <token key="SurfaceSyncState" variants="SurfaceSyncState"/>
+</histogram>
+
+<histogram name="InitialWebUI.ReloadButton.SurfaceSync.Result"
+    enum="InitialWebUISurfaceSyncResult" expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Recorded per browser window when InitialWebUISurfaceSync is enabled upon
+    first presentation, post-deadline paint, or pre-paint session termination.
+    Measures whether the reload button WebUI painted within the Finch-configured
+    deadline, exceeded the deadline and painted later, or terminated before
+    paint (window closed or renderer crashed).
+  </summary>
+</histogram>
+
+<histogram
+    name="InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterDeadline"
+    units="ms" expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the elapsed time between the surface sync deadline expiration and
+    the first visually non-empty paint of the reload button WebUI. Only recorded
+    when the reload button paints after the deadline has passed.
+  </summary>
 </histogram>
 
 <histogram

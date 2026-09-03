@@ -164,6 +164,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/default_browser/visual_guided_setter_controller_win.h:DefaultBrowserVisualGuideOutcome) -->
 
+<!-- LINT.IfChange(InitialWebUISurfaceSyncResult) -->
+
+<enum name="InitialWebUISurfaceSyncResult">
+  <int value="0" label="Ready Within Deadline"/>
+  <int value="1" label="Deadline Exceeded - Painted Later"/>
+  <int value="2" label="Deadline Exceeded - Closed Before Paint"/>
+  <int value="3" label="Deadline Exceeded - Render Process Gone"/>
+  <int value="4" label="Closed Before Browser Presentation"/>
+  <int value="5" label="Render Process Gone Before Browser Presentation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_utils.h:InitialWebUISurfaceSyncResult) -->
+
 <!-- LINT.IfChange(InitialWebUIView) -->
 
 <enum name="InitialWebUIView">

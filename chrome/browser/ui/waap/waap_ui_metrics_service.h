@@ -92,10 +92,36 @@ class WaapUIMetricsService : public KeyedService {
       base::TimeTicks browser_window_paint_time,
       base::TimeTicks reload_button_paint_time);
 
+  // Records whether the reload button was painted when the browser window
+  // first presents onto the screen.
+  void OnReloadButtonPaintedAtBrowserFirstPaint(bool reload_button_painted);
+
+  // Records whether the reload button was painted within 10 seconds of the
+  // browser window's first presentation.
+  void OnReloadButtonPaintedWithin10SecondsAfterBrowserPaint(
+      bool painted_within_10s);
+
+  // Records the result of initial surface synchronization for the WebUI
+  // toolbar.
+  void OnInitialWebUISurfaceSyncResult(
+      waap::InitialWebUISurfaceSyncResult result);
+
+  // Records the latency from surface sync deadline expiration to reload button
+  // paint.
+  void OnSurfaceSyncTimeToPaintAfterDeadline(base::TimeDelta delta);
+
+  // Records the duration from the browser window's first presentation until
+  // the reload button's first paint.
+  void OnBrowserPaintToReloadButtonPaint(base::TimeDelta delta);
+
+  // Records the duration from the browser window's first presentation to
+  // window closure when the reload button has not yet completed its first
+  // paint.
+  void OnReloadButtonBrowserWindowClosedBeforePaint(base::TimeDelta delta);
+
   // Records the input type used to activate the ReloadButton.
   void OnReloadButtonInput(
       WaapUIMetricsRecorder::ReloadButtonInputType input_type);
-
 
   void RecordReloadButtonInteractionToReload(
       base::TimeTicks interaction_ticks,

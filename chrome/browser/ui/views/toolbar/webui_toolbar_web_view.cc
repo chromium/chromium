@@ -1104,6 +1104,11 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
     return;
   }
 
+  if (auto* metrics_manager =
+          InitialWebUIWindowMetricsManager::From(browser_)) {
+    metrics_manager->OnReloadButtonRenderProcessGone();
+  }
+
   // Reset the crash count if when the reset interval is reached.
   if (clock_->NowTicks() - last_crash_time_ >=
       features::kWebUIReloadButtonCrashRecoverResetInterval.Get()) {

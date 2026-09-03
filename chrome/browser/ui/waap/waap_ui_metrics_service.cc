@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -58,10 +59,24 @@ std::string_view ExistingWindowToString(bool with_existing_window) {
   return with_existing_window ? "WithExistingWindow" : "WithoutExistingWindow";
 }
 
+const char* GetSurfaceSyncSuffix() {
+  return base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync)
+             ? ".SurfaceSyncEnabled"
+             : ".SurfaceSyncDisabled";
+}
+
 // Helper to construct the full histogram name for ReloadButton metrics
 std::string BuildReloadButtonHistogramName(std::string_view base,
                                            std::string_view slice = "") {
   return base::StrCat({"InitialWebUI.ReloadButton.", base, slice});
+}
+
+void RecordReloadButtonPaintDuration(std::string_view name,
+                                     base::TimeDelta delta,
+                                     std::string_view slice = "") {
+  base::UmaHistogramCustomTimes(BuildReloadButtonHistogramName(name, slice),
+                                std::max(base::TimeDelta(), delta),
+                                base::Milliseconds(1), base::Minutes(3), 100);
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -335,6 +350,47 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
                              reload_button_paint_time);
 }
 
+void WaapUIMetricsService::OnReloadButtonPaintedAtBrowserFirstPaint(
+    bool reload_button_painted) {
+  base::UmaHistogramBoolean(
+      BuildReloadButtonHistogramName("PaintedAtBrowserFirstPaint",
+                                     GetSurfaceSyncSuffix()),
+      reload_button_painted);
+}
+
+void WaapUIMetricsService::
+    OnReloadButtonPaintedWithin10SecondsAfterBrowserPaint(
+        bool painted_within_10s) {
+  base::UmaHistogramBoolean(
+      BuildReloadButtonHistogramName("PaintedWithin10SecondsAfterBrowserPaint",
+                                     GetSurfaceSyncSuffix()),
+      painted_within_10s);
+}
+
+void WaapUIMetricsService::OnInitialWebUISurfaceSyncResult(
+    waap::InitialWebUISurfaceSyncResult result) {
+  base::UmaHistogramEnumeration(
+      BuildReloadButtonHistogramName("SurfaceSync.Result"), result);
+}
+
+void WaapUIMetricsService::OnSurfaceSyncTimeToPaintAfterDeadline(
+    base::TimeDelta delta) {
+  RecordReloadButtonPaintDuration("SurfaceSync.TimeToPaintAfterDeadline",
+                                  delta);
+}
+
+void WaapUIMetricsService::OnBrowserPaintToReloadButtonPaint(
+    base::TimeDelta delta) {
+  RecordReloadButtonPaintDuration("BrowserPaintToReloadButtonPaint", delta,
+                                  GetSurfaceSyncSuffix());
+}
+
+void WaapUIMetricsService::OnReloadButtonBrowserWindowClosedBeforePaint(
+    base::TimeDelta delta) {
+  RecordReloadButtonPaintDuration("BrowserWindowClosedBeforePaint", delta,
+                                  GetSurfaceSyncSuffix());
+}
+
 void WaapUIMetricsService::OnStartupBrowserWindowShowRequestedToFirstPaint(
     base::TimeTicks request_time,
     base::TimeTicks paint_time) {
@@ -348,8 +404,8 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowShowRequestedToFirstPaint(
     base::TimeTicks request_time,
     base::TimeTicks paint_time) {
   RecordNewWindowPaintMetric(
-      "BrowserWindow.ShowRequestedToFirstPaint2", source,
-      with_existing_window, request_time, paint_time);
+        "BrowserWindow.ShowRequestedToFirstPaint2", source,
+        with_existing_window, request_time, paint_time);
 }
 
 void WaapUIMetricsService::OnStartupBrowserWindowClosedBeforeFirstPaint(

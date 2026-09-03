@@ -27,6 +27,19 @@ enum class NewWindowCreationSource {
   kMaxValue = kSessionRestore,
 };
 
+// Result of initial surface synchronization for the WebUI toolbar.
+// LINT.IfChange(InitialWebUISurfaceSyncResult)
+enum class InitialWebUISurfaceSyncResult {
+  kReadyWithinDeadline = 0,
+  kDeadlineExceededPaintedLater = 1,
+  kDeadlineExceededClosedBeforePaint = 2,
+  kDeadlineExceededRenderProcessGone = 3,
+  kClosedBeforeBrowserPresentation = 4,
+  kRenderProcessGoneBeforeBrowserPresentation = 5,
+  kMaxValue = kRenderProcessGoneBeforeBrowserPresentation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:InitialWebUISurfaceSyncResult)
+
 // Returns true if the given URL is the initial WebUI scheme.
 // This is only relevant on non-Android platforms.
 bool IsForInitialWebUI(const GURL& url);
