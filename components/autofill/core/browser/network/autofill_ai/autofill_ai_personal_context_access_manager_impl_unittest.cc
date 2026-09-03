@@ -709,40 +709,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       base::Milliseconds(456), 1);
 }
 
-// Tests that total prefetch latency for Non-SPII entity types (which only
-// require a single request) is correctly recorded.
-TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
-       PrefetchTotalLatencyLogging_NonSpii) {
-  const DenseSet<EntityType> requested_types = {
-      EntityType(EntityTypeName::kOrder)};
-
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      expected_response;
-  personal_context::proto::Entity* entity = expected_response.add_entities();
-  entity->mutable_order()->set_order_id("12345");
-
-  base::OnceCallback<void(personal_context::FetchContextResult)> callback;
-  EXPECT_CALL(
-      mock_personal_context_service(),
-      FetchContext(
-          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
-          _, _))
-      .WillOnce(MoveArg<3>(&callback));
-
-  // Trigger prefetch.
-  access_manager().PrefetchContext(requested_types);
-
-  // Fast forward by 123 milliseconds.
-  base::TimeDelta latency = base::Milliseconds(123);
-  FastForwardBy(latency);
-
-  // Complete the request.
-  std::move(callback).Run(FetchContextSuccess(expected_response));
-
-  // Verify that the total latency is recorded to the histogram.
-  histogram_tester().ExpectUniqueTimeSample(
-      "Autofill.Ai.PersonalContext.Prefetch.TotalLatency.Order", latency, 1);
-}
 
 // Tests that total prefetch latency for SPII entity types (which require
 // two requests to complete) is correctly recorded when the final request
@@ -821,7 +787,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // types (which only require a single request) are correctly recorded.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchLatencyLogging_NonSpii) {
-  base::HistogramTester histogram_tester;
   const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
@@ -849,11 +814,11 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   std::move(callback).Run(FetchContextSuccess(expected_response));
 
   // Verify NonSpiiAndPresence request latency is recorded.
-  histogram_tester.ExpectUniqueTimeSample(
+  histogram_tester().ExpectUniqueTimeSample(
       "Autofill.Ai.PersonalContext.RequestLatency.PrefetchNonSpiiAndPresence",
       latency, 1);
   // Verify that the total latency is recorded to the histogram.
-  histogram_tester.ExpectUniqueTimeSample(
+  histogram_tester().ExpectUniqueTimeSample(
       "Autofill.Ai.PersonalContext.Prefetch.TotalLatency.Order", latency, 1);
 }
 
