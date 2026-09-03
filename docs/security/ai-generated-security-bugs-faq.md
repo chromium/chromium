@@ -104,7 +104,7 @@ can't patch around the vulnerability as a temporary fix, mark the bug with the
 ## Do AI-generated security bugs have special requirements around being made public?
 
 No, we should treat these in the same way and with the same care as
-human-reported vulnerabilities. They will be made public 14 weeks after being
+human-reported vulnerabilities. They will be made public 30 days after being
 fixed. It is OK to make a bug public if it's determined that it's not a
 vulnerability (i.e., the report describes a functional bug instead).
 

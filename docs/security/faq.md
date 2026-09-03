@@ -35,7 +35,7 @@ affect products besides Chromium, and we don’t want to put users of those
 products unnecessarily at risk by opening the bug before fixes for the other
 affected products have shipped.
 
-Therefore, we make all security bugs public within approximately 14 weeks of the
+Therefore, we make all security bugs public within approximately 30 days of the
 fix landing in the Chromium repository. The exception to this is in the event of
 the bug reporter or some other responsible party explicitly requesting anonymity
 or protection against disclosing other particularly sensitive data included in

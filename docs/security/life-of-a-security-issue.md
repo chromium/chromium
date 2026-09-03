@@ -176,7 +176,7 @@ acknowledging the reporter as requested (if they have consented to such).
 
 ## 12. Publicly disclose
 
-Except in rare circumstances where the bug report has been embargoed, 14 weeks
+Except in rare circumstances where the bug report has been embargoed, 30 days
 after the issue is marked *Fixed*, security automation opens the bug for public
 disclosure. At that time, the reporter can consider their obligations under
 coordinated disclosure to be fulfilled.

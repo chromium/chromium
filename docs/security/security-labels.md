@@ -260,10 +260,11 @@ be used.
 Remove **security@chromium.org, **security-notify@chromium.org** and
 **security-notify@webrtc.org** from **Collaborator Groups** and Update **Issue
 Access level to Default Visibility** for security bugs that have been closed
-(Fixed, Verified, Duplicate, WontFix,Invalid) more than 14 weeks ago, making
-them publicly accessible. The idea here is that by 14 weeks, important security
-fixes will have shipped in a Stable channel update and allowing users time to
-update.
+(Fixed, Verified, Duplicate) more than 30 days ago, making them publicly
+accessible. The idea here is that by 30 days, important security fixes will have
+shipped in a Stable channel update and allowing users time to update. Issues we
+do not accept (WontFix,Invalid) will be made public after 14 weeks to allow time
+for resubmission.
 
 ### Set **security-notify@chromium.org as Collaborator** On Fixed Bugs
 
@@ -344,7 +345,7 @@ and verifies the security fixes being shipped in that Stable channel update and
 applies the appropriate **#-M121** tag in the **Release** field. Since the bug
 was externally reported, it will also be issued a CVE ID, and the **CVE** field
 is updated with the appropriate CVE for that issue: **2024-####**.
-7. 14 weeks after the bug is marked **Fixed**, Blintz updates the **Visibility**
+7. 30 days after the bug is marked **Fixed**, Blintz updates the **Visibility**
 from **Issue access level -- Limited Visibility** to **Default Visibility** and
 removes security-notify@chromium.org from Collaborators, making the issue
 publicly visible. There is one crucial exception -- Blintz will not update the

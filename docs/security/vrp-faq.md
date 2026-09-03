@@ -421,7 +421,7 @@ security problem, and adding necessary pocs and traces as attachments.
 
 #### When will the bug I reported be publicly disclosed?
 
-* Most security bugs are automatically opened for public access 14 weeks after
+* Most security bugs are automatically opened for public access 30 days after
   the bug is closed as Fixed, meaning the fix commit is landed on Chromium main.
 * Our automation removes the view restrictions, opening the report for public
   visibility at that time.
