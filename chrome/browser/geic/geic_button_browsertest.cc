@@ -26,7 +26,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -185,6 +188,11 @@ IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, GeicButtonTogglesSidePanel) {
       [&]() { return side_panel_ui->IsSidePanelShowing(); }));
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kGeic)));
+
+  SidePanel* side_panel =
+      BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
+  ASSERT_TRUE(side_panel);
+  EXPECT_EQ(side_panel->GetHeaderView<SidePanelHeader>(), nullptr);
 
   // Second click closes the side panel.
   views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());

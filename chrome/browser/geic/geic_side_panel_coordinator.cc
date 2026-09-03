@@ -48,11 +48,13 @@ GeicSidePanelCoordinator::~GeicSidePanelCoordinator() = default;
 
 void GeicSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* registry) {
-  registry->Register(std::make_unique<SidePanelEntry>(
+  auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntryKey(SidePanelEntryId::kGeic),
       base::BindRepeating(&GeicSidePanelCoordinator::CreateGeicView,
                           base::Unretained(this)),
-      /*default_content_width_callback=*/base::NullCallback()));
+      /*default_content_width_callback=*/base::NullCallback());
+  entry->set_should_show_header(false);
+  registry->Register(std::move(entry));
 }
 
 void GeicSidePanelCoordinator::Toggle() {
