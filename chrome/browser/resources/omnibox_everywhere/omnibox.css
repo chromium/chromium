@@ -205,6 +205,7 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 16px;
+  --omnibox-everywhere-top-actions-top: 16px;
 }
 
 :host-context([energy-effect-enabled_]):host([is-fusebox-enabled]) {
