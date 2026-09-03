@@ -28,6 +28,7 @@
 #include "components/search_provider_logos/logo_cache.h"
 #include "components/search_provider_logos/logo_observer.h"
 #include "components/search_provider_logos/switches.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -249,9 +250,9 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks,
 
   GURL base_url;
   GURL doodle_url;
-  const bool is_google = template_url->url_ref().HasGoogleBaseURLs(
+  is_google_ = template_url->url_ref().HasGoogleBaseURLs(
       template_url_service_->search_terms_data());
-  if (is_google) {
+  if (is_google_) {
     // Note: Ideally the Google doodle URL would be specified in
     // prepopulated_engines.json, but there is some custom logic in
     // `GetGoogleDoodleURL()` that can't be represented in the static file.
@@ -509,8 +510,16 @@ void LogoServiceImpl::FetchLogo() {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->site_for_cookies = net::SiteForCookies::FromUrl(url);
-  loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  if (is_google_) {
+    loader_ =
+        variations::CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
+            std::move(request),
+            // Incognito NTP does not have a Logo.
+            variations::InIncognito::kNo, traffic_annotation);
+  } else {
+    loader_ = network::SimpleURLLoader::Create(std::move(request),
+                                               traffic_annotation);
+  }
   loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&LogoServiceImpl::OnURLLoadComplete,
