@@ -139,10 +139,11 @@ bool MetricReportingManager::Delegate::IsAppServiceAvailableForProfile(
 
 // static
 std::unique_ptr<MetricReportingManager> MetricReportingManager::Create(
+    PrefService* local_state,
     ::network::NetworkQualityTracker* network_quality_tracker,
     policy::ManagedSessionService* managed_session_service) {
   auto manager = base::WrapUnique(new MetricReportingManager(
-      network_quality_tracker, std::make_unique<Delegate>()));
+      local_state, network_quality_tracker, std::make_unique<Delegate>()));
   manager->DelayedInit(managed_session_service);
   return manager;
 }
@@ -235,9 +236,11 @@ MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
 }
 
 MetricReportingManager::MetricReportingManager(
+    PrefService* local_state,
     ::network::NetworkQualityTracker* network_quality_tracker,
     std::unique_ptr<Delegate> delegate)
     : network_quality_tracker_(CHECK_DEREF(network_quality_tracker)),
+      local_state_reporting_settings_(local_state),
       delegate_(std::move(delegate)) {}
 
 void MetricReportingManager::Shutdown() {

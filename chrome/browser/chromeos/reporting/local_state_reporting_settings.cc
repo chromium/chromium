@@ -7,21 +7,20 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace reporting {
 
-LocalStateReportingSettings::LocalStateReportingSettings() {
-  CHECK(g_browser_process);
-  CHECK(g_browser_process->local_state());
-  pref_change_registrar_.Init(g_browser_process->local_state());
+LocalStateReportingSettings::LocalStateReportingSettings(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
+  pref_change_registrar_.Init(&local_state_.get());
 }
 
 LocalStateReportingSettings::~LocalStateReportingSettings() = default;
@@ -30,7 +29,7 @@ base::CallbackListSubscription LocalStateReportingSettings::AddSettingsObserver(
     const std::string& path,
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(g_browser_process->local_state()->FindPreference(path));
+  CHECK(local_state_->FindPreference(path));
   CHECK(callback);
 
   auto [iterator, added_element] = settings_observers_.emplace(
@@ -54,26 +53,24 @@ bool LocalStateReportingSettings::PrepareTrustedValues(
 bool LocalStateReportingSettings::GetBoolean(const std::string& path,
                                              bool* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* const pref_service = g_browser_process->local_state();
-  if (!pref_service->FindPreference(path) ||
-      !pref_service->GetValue(path).is_bool()) {
+  if (!local_state_->FindPreference(path) ||
+      !local_state_->GetValue(path).is_bool()) {
     // Invalid path or data type.
     return false;
   }
-  *out_value = pref_service->GetBoolean(path);
+  *out_value = local_state_->GetBoolean(path);
   return true;
 }
 
 bool LocalStateReportingSettings::GetInteger(const std::string& path,
                                              int* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* const pref_service = g_browser_process->local_state();
-  if (!pref_service->FindPreference(path) ||
-      !pref_service->GetValue(path).is_int()) {
+  if (!local_state_->FindPreference(path) ||
+      !local_state_->GetValue(path).is_int()) {
     // Invalid path or data type.
     return false;
   }
-  *out_value = pref_service->GetInteger(path);
+  *out_value = local_state_->GetInteger(path);
   return true;
 }
 
@@ -81,13 +78,12 @@ bool LocalStateReportingSettings::GetList(
     const std::string& path,
     const base::ListValue** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* const pref_service = g_browser_process->local_state();
-  if (!pref_service->FindPreference(path) ||
-      !pref_service->GetValue(path).is_list()) {
+  if (!local_state_->FindPreference(path) ||
+      !local_state_->GetValue(path).is_list()) {
     // Invalid path or data type.
     return false;
   }
-  *out_value = &pref_service->GetList(path);
+  *out_value = &local_state_->GetList(path);
   return true;
 }
 

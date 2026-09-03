@@ -18,20 +18,24 @@ MockDelegate::MockDelegate() = default;
 MockDelegate::~MockDelegate() = default;
 
 MetricReportingManagerForTest::MetricReportingManagerForTest(
+    PrefService* local_state,
     ::network::NetworkQualityTracker* network_quality_tracker,
     std::unique_ptr<Delegate> delegate)
-    : MetricReportingManager(network_quality_tracker, std::move(delegate)) {}
+    : MetricReportingManager(local_state,
+                             network_quality_tracker,
+                             std::move(delegate)) {}
 
 MetricReportingManagerForTest::~MetricReportingManagerForTest() = default;
 
 // static
 std::unique_ptr<MetricReportingManagerForTest>
 MetricReportingManagerForTest::Create(
+    PrefService* local_state,
     ::network::NetworkQualityTracker* network_quality_tracker,
     std::unique_ptr<Delegate> delegate,
     policy::ManagedSessionService* managed_session_service) {
   auto manager = base::WrapUnique(new MetricReportingManagerForTest(
-      network_quality_tracker, std::move(delegate)));
+      local_state, network_quality_tracker, std::move(delegate)));
   manager->DelayedInit(managed_session_service);
   return manager;
 }

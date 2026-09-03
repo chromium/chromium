@@ -216,6 +216,7 @@ TEST_F(HttpsLatencyEventsTest, RoutineVerdictProblem) {
   auto init_delay = delegate->GetInitDelay();
 
   auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
       std::move(delegate), nullptr);
 
@@ -324,6 +325,7 @@ TEST_F(HttpsLatencyEventsTest, ReportDeviceNetworkStatusDisabled) {
           &diagnostics);
 
   auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
       std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
@@ -346,6 +348,7 @@ TEST_F(HttpsLatencyEventsTest, ReportDeviceNetworkStatusUnaffiliatedUser) {
       std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
           &diagnostics);
   auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
       std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
@@ -378,6 +381,7 @@ TEST_F(HttpsLatencyEventsTest, EventCheckingRateSet) {
           &diagnostics);
   auto init_delay = delegate->GetInitDelay();
   auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
       std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());

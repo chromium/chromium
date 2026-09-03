@@ -32,6 +32,8 @@
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
+class PrefService;
+
 namespace network {
 class NetworkQualityTracker;
 }  // namespace network
@@ -81,9 +83,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     virtual bool IsAppServiceAvailableForProfile(Profile* profile) const;
   };
 
-  // `network_quality_tracker` must be non-null and must outlive the returned
-  // object.
+  // `local_state` and `network_quality_tracker` must be non-null and must
+  // outlive the returned object.
   static std::unique_ptr<MetricReportingManager> Create(
+      PrefService* local_state,
       ::network::NetworkQualityTracker* network_quality_tracker,
       policy::ManagedSessionService* managed_session_service);
 
@@ -106,8 +109,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   Delegate* delegate() const;
 
  protected:
-  // `network_quality_tracker` must be non-null and must outlive `this`.
+  // `local_state` and `network_quality_tracker` must be non-null and must
+  // outlive `this`.
   MetricReportingManager(
+      PrefService* local_state,
       ::network::NetworkQualityTracker* network_quality_tracker,
       std::unique_ptr<Delegate> delegate);
 

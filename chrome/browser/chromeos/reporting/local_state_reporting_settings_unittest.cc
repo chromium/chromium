@@ -34,7 +34,8 @@ class LocalStateReportingSettingsTest : public ::testing::Test {
   ::content::BrowserTaskEnvironment task_environment_;
 
  protected:
-  LocalStateReportingSettings local_state_reporting_settings_;
+  LocalStateReportingSettings local_state_reporting_settings_{
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState()};
 };
 
 TEST_F(LocalStateReportingSettingsTest, InvalidIntegerPrefPath) {

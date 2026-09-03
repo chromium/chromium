@@ -24,7 +24,6 @@ static_library("reporting") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/common",

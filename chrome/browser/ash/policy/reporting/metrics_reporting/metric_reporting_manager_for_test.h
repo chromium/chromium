@@ -11,6 +11,8 @@
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace reporting::test {
 
 // Report manager mock delegate
@@ -117,7 +119,9 @@ class MockDelegate : public MetricReportingManager::Delegate {
 // Manager class extension for testing purposes.
 class MetricReportingManagerForTest : public MetricReportingManager {
  public:
+  // `local_state` must be non-null and must outlive the returned object.
   static std::unique_ptr<MetricReportingManagerForTest> Create(
+      PrefService* local_state,
       ::network::NetworkQualityTracker* network_quality_tracker,
       std::unique_ptr<Delegate> delegate,
       policy::ManagedSessionService* managed_session_service);
@@ -137,7 +141,9 @@ class MetricReportingManagerForTest : public MetricReportingManager {
   FakeMetricReportQueue* kiosk_heartbeat_telemetry_queue() const;
 
  private:
+  // `local_state` must be non-null and must outlive `this`.
   MetricReportingManagerForTest(
+      PrefService* local_state,
       ::network::NetworkQualityTracker* network_quality_tracker,
       std::unique_ptr<Delegate> delegate);
 };

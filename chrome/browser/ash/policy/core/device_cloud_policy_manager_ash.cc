@@ -280,7 +280,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
                                                     task_runner_),
         task_runner_, GetSystemLogUploadUrl());
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
-        network_quality_tracker, managed_session_service_.get());
+        local_state_, network_quality_tracker, managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
     event_based_log_manager_ =
         std::make_unique<EventBasedLogManager>(local_state_, this);
