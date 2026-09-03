@@ -776,6 +776,47 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_TRUE(success_future.Wait());
   EXPECT_TRUE(GetInstanceForTab(tab));
 }
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithClipboardPolicyNavigationSuccess) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  // Create mock AdditionalContext containing PNG image data.
+  auto context_mojom = mojom::AdditionalContext::New();
+  context_mojom->source = mojom::AdditionalContextSource::kShareContextMenu;
+  context_mojom->name = "https://example.com/image.png";
+
+  auto context_data = mojom::ContextData::New();
+  context_data->mime_type = "image/png";
+  // The first 4 bytes of a valid PNG file header, so it isn't rejected.
+  context_data->data =
+      mojo_base::BigBuffer(std::vector<uint8_t>{0x89, 0x50, 0x4E, 0x47});
+
+  context_mojom->parts.push_back(
+      mojom::AdditionalContextPart::NewData(std::move(context_data)));
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  options.additional_context = AdditionalTabContext(
+      std::move(context_mojom), rfh->GetGlobalId(), PolicyCheck::kClipboard);
+
+  coordinator().Invoke(std::move(options));
+
+  // Navigating the source tab after invocation starts should not cause the
+  // paste policy check to fail.
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(),
+                                     GURL("data:text/html,navigation")));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(GetInstanceForTab(tab));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithPolicyCheckNone) {
@@ -967,7 +1008,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidContextData) {
 
   EXPECT_EQ(error_future.Get(),
             GlicInvokeError::kAdditionalContextNoClipboardMetadata);
-  EXPECT_TRUE(GetInstanceForTab(tab));
+
+  // Since we failed the copy policy check (which happens first), we will have
+  // stopped the flow before creating a glic instance.
+  EXPECT_FALSE(GetInstanceForTab(tab));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
@@ -975,20 +1019,17 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   tabs::TabInterface* tab = CreateUserInitiatedTab(GURL("about:blank"));
   ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
 
-  // Set up invocation that we know will fail (PastePolicyCheck).
-  auto context_mojom = CreateMockAdditionalContext(
-      "image/jpeg", std::vector<uint8_t>{0xFF, 0xD8, 0xFF, 0xE0});
-
   base::test::TestFuture<GlicInvokeError> error_future;
   GlicInvokeOptions options(glic::Target(*tab),
                             mojom::InvocationSource::kOsButton);
   options.on_error = error_future.GetCallback();
-
-  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
-  ASSERT_TRUE(rfh);
-
-  options.additional_context = AdditionalTabContext(
-      std::move(context_mojom), rfh->GetGlobalId(), PolicyCheck::kClipboard);
+  // Cancel the invocation after the client has connected.
+  options.on_client_connected =
+      base::BindOnce([](base::WeakPtr<GlicInstance> instance) {
+        if (instance) {
+          instance->CancelInvoke();
+        }
+      });
 
   GlicInvokeWithAutoSubmitOptions auto_submit_options;
   auto_submit_options.show_panel = false;
@@ -996,9 +1037,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   auto instance_wp = coordinator().InvokeWithAutoSubmit(
       GetPassKey(), std::move(options), std::move(auto_submit_options));
 
-  // Will fail in PastePolicyCheck
-  EXPECT_EQ(error_future.Get(),
-            GlicInvokeError::kAdditionalContextNoClipboardMetadata);
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kCancelled);
 
   ASSERT_TRUE(instance_wp);
   auto* ui_contents = static_cast<GlicInstanceImpl*>(instance_wp.get())

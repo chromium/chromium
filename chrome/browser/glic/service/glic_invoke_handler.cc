@@ -252,6 +252,17 @@ void GlicInvokeHandler::Invoke() {
 
   std::vector<std::unique_ptr<GlicInvokeTask>> tasks;
 
+  // The copy check task must come first so that it is started immediately. This
+  // ensures that data needed for the check is cached immediately, removing the
+  // need to observe navigations that may disrupt the check.
+  if (options_.additional_context.has_value() &&
+      options_.additional_context->policy_check == PolicyCheck::kClipboard) {
+    tasks.push_back(std::make_unique<CopyPolicyTask>(
+        &*instance_, options_,
+        base::BindOnce(&GlicInvokeHandler::OnError,
+                       weak_ptr_factory_.GetWeakPtr())));
+  }
+
   if (IsActuatingFeatureMode() && IsTabTarget()) {
     tasks.push_back(std::make_unique<SetTabPendingActuationTask>(
         instance_->profile(), GetTab().GetHandle()));
@@ -260,14 +271,6 @@ void GlicInvokeHandler::Invoke() {
   if (should_wait_for_load_ && IsTabTarget()) {
     tasks.push_back(
         std::make_unique<WaitForNavigationTask>(GetTab().GetContents()));
-  }
-
-  if (options_.additional_context.has_value() &&
-      options_.additional_context->policy_check == PolicyCheck::kClipboard) {
-    tasks.push_back(std::make_unique<CopyPolicyTask>(
-        &*instance_, options_,
-        base::BindOnce(&GlicInvokeHandler::OnError,
-                       weak_ptr_factory_.GetWeakPtr())));
   }
 
   ShowOptions show_options = CreateShowOptions(resolved_target_, options_);
@@ -324,8 +327,8 @@ void GlicInvokeHandler::Invoke() {
   if (options_.additional_context.has_value() &&
       options_.additional_context->policy_check == PolicyCheck::kClipboard &&
       IsTabTarget()) {
-    tasks.push_back(std::make_unique<PastePolicyCheckTask>(
-        GetTab().GetContents(), &*instance_, options_,
+    tasks.push_back(std::make_unique<PastePolicyTask>(
+        &*instance_, options_,
         base::BindOnce(&GlicInvokeHandler::OnError,
                        weak_ptr_factory_.GetWeakPtr())));
   }

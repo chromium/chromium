@@ -81,6 +81,12 @@ void ExtractTextData(const GlicInvokeOptions& options,
   }
 }
 
+content::BrowserContext* GetBrowserContext(
+    content::GlobalRenderFrameHostId rfh_id) {
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+  return rfh ? rfh->GetBrowserContext() : nullptr;
+}
+
 }  // namespace
 
 SequentialTaskGroup::SequentialTaskGroup() = default;
@@ -453,11 +459,52 @@ ClipboardPolicyTask::ClipboardPolicyTask(
   src_url_ = GURL(options.additional_context->context->name.value_or(""));
   is_drag_and_drop_ =
       (options.GetInvocationSource() == mojom::InvocationSource::kWebDragDrop);
+  auto* source_rfh = content::RenderFrameHost::FromID(source_rfh_id_);
+  if (source_rfh) {
+    image_markup_ = GetImageMarkup(src_url_, source_rfh);
+  }
 }
 
 ClipboardPolicyTask::~ClipboardPolicyTask() = default;
 
-void ClipboardPolicyTask::Start(base::OnceClosure done_callback) {
+bool ClipboardPolicyTask::TryCreateClipboardData(
+    content::ClipboardPasteData& data,
+    ui::ClipboardMetadata& metadata) {
+  // Having both is invalid because ClipboardMetadata only supports one format.
+  if (!thumbnail_data_.empty() && !text_data_.empty()) {
+    std::move(error_callback_).Run(GlicInvokeError::kInvalidConfiguration);
+    return false;
+  }
+
+  if (thumbnail_data_.empty() && text_data_.empty()) {
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextNoClipboardMetadata);
+    return false;
+  }
+
+  ui::ClipboardFormatType format_type = ui::ClipboardFormatType::PngType();
+  size_t data_size = thumbnail_data_.size();
+  if (!text_data_.empty()) {
+    format_type = ui::ClipboardFormatType::PlainTextType();
+    data_size = text_data_.size() * sizeof(char16_t);
+  }
+
+  metadata = CreateClipboardMetadata(format_type, data_size, is_drag_and_drop_);
+  data.png = thumbnail_data_;
+  data.text = text_data_;
+  data.html = image_markup_;
+  return true;
+}
+
+CopyPolicyTask::CopyPolicyTask(
+    GlicInstanceImpl* instance,
+    const GlicInvokeOptions& options,
+    base::OnceCallback<void(GlicInvokeError)> error_callback)
+    : ClipboardPolicyTask(instance, options, std::move(error_callback)) {}
+
+CopyPolicyTask::~CopyPolicyTask() = default;
+
+void CopyPolicyTask::Start(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
 
   if (!source_rfh_id_) {
@@ -487,41 +534,12 @@ void ClipboardPolicyTask::Start(base::OnceClosure done_callback) {
           source_rfh->GetGlobalId()),
       *source_rfh);
 
-  // Having both is invalid because ClipboardMetadata only supports one format.
-  if (!thumbnail_data_.empty() && !text_data_.empty()) {
-    std::move(error_callback_).Run(GlicInvokeError::kInvalidConfiguration);
+  content::ClipboardPasteData data;
+  ui::ClipboardMetadata metadata;
+  if (!TryCreateClipboardData(data, metadata)) {
     return;
   }
-  ui::ClipboardFormatType format_type = ui::ClipboardFormatType::PngType();
-  size_t data_size = thumbnail_data_.size();
-  if (!text_data_.empty()) {
-    format_type = ui::ClipboardFormatType::PlainTextType();
-    data_size = text_data_.size() * sizeof(char16_t);
-  }
 
-  ui::ClipboardMetadata metadata =
-      CreateClipboardMetadata(format_type, data_size, is_drag_and_drop_);
-
-  content::ClipboardPasteData data;
-  data.png = thumbnail_data_;
-  data.text = text_data_;
-  data.html = GetImageMarkup(src_url_, source_rfh);
-
-  RunPolicyCheck(source, metadata, std::move(data), source_rfh);
-}
-
-CopyPolicyTask::CopyPolicyTask(
-    GlicInstanceImpl* instance,
-    const GlicInvokeOptions& options,
-    base::OnceCallback<void(GlicInvokeError)> error_callback)
-    : ClipboardPolicyTask(instance, options, std::move(error_callback)) {}
-
-CopyPolicyTask::~CopyPolicyTask() = default;
-
-void CopyPolicyTask::RunPolicyCheck(const content::ClipboardEndpoint& source,
-                                    const ui::ClipboardMetadata& metadata,
-                                    content::ClipboardPasteData data,
-                                    content::RenderFrameHost* source_rfh) {
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
       source, metadata, data,
       base::BindOnce(&CopyPolicyTask::OnCopyPolicyCheckComplete,
@@ -541,25 +559,44 @@ void CopyPolicyTask::OnCopyPolicyCheckComplete(
   std::move(done_callback_).Run();
 }
 
-PastePolicyCheckTask::PastePolicyCheckTask(
-    content::WebContents* web_contents,
+PastePolicyTask::PastePolicyTask(
     GlicInstanceImpl* instance,
     const GlicInvokeOptions& options,
     base::OnceCallback<void(GlicInvokeError)> error_callback)
     : ClipboardPolicyTask(instance, options, std::move(error_callback)) {
-  Observe(web_contents);
+  if (!source_rfh_id_) {
+    return;
+  }
+  auto* source_rfh = content::RenderFrameHost::FromID(source_rfh_id_);
+  if (!source_rfh) {
+    return;
+  }
+
+  content::ClipboardEndpoint source(
+      ui::DataTransferEndpoint(
+          source_rfh->GetMainFrame()->GetLastCommittedURL(),
+          {.off_the_record =
+               source_rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(&GetBrowserContext, source_rfh->GetGlobalId()),
+      *source_rfh);
+
+  cached_source_ = enterprise_data_protection::CacheFullPasteSource(source);
 }
 
-PastePolicyCheckTask::~PastePolicyCheckTask() = default;
+PastePolicyTask::~PastePolicyTask() = default;
 
-void PastePolicyCheckTask::RunPolicyCheck(
-    const content::ClipboardEndpoint& source,
-    const ui::ClipboardMetadata& metadata,
-    content::ClipboardPasteData paste_data,
-    content::RenderFrameHost* source_rfh) {
-  if (thumbnail_data_.empty() && text_data_.empty()) {
+void PastePolicyTask::Start(base::OnceClosure done_callback) {
+  done_callback_ = std::move(done_callback);
+
+  if (!cached_source_.has_value()) {
     std::move(error_callback_)
-        .Run(GlicInvokeError::kAdditionalContextNoClipboardMetadata);
+        .Run(GlicInvokeError::kAdditionalContextNoSourceFrame);
+    return;
+  }
+
+  content::ClipboardPasteData data;
+  ui::ClipboardMetadata metadata;
+  if (!TryCreateClipboardData(data, metadata)) {
     return;
   }
 
@@ -571,34 +608,21 @@ void PastePolicyCheckTask::RunPolicyCheck(
     return;
   }
 
-  auto get_browser_context =
-      [](content::GlobalRenderFrameHostId rfh_id) -> content::BrowserContext* {
-    auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-    return rfh ? rfh->GetBrowserContext() : nullptr;
-  };
-
   content::ClipboardEndpoint destination(
       ui::DataTransferEndpoint(
           glic_rfh->GetLastCommittedURL(),
           {.off_the_record = glic_rfh->GetBrowserContext()->IsOffTheRecord()}),
-      base::BindRepeating(get_browser_context, glic_rfh->GetGlobalId()),
+      base::BindRepeating(&GetBrowserContext, glic_rfh->GetGlobalId()),
       *glic_rfh);
 
   enterprise_data_protection::PasteIfAllowedByPolicy(
-      source, destination, metadata, std::move(paste_data),
-      base::BindOnce(&PastePolicyCheckTask::OnPastePolicyCheckComplete,
+      cached_source_.value(), destination, metadata, std::move(data),
+      base::BindOnce(&PastePolicyTask::OnPastePolicyCheckComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PastePolicyCheckTask::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::move(error_callback_)
-      .Run(GlicInvokeError::kAdditionalContextSawNavigation);
-}
-
-void PastePolicyCheckTask::OnPastePolicyCheckComplete(
+void PastePolicyTask::OnPastePolicyCheckComplete(
     std::optional<content::ClipboardPasteData> data) {
-  Observe(nullptr);
   if (!data || (!thumbnail_data_.empty() && data->png.empty()) ||
       (!text_data_.empty() && data->text.empty())) {
     // Policy denied or error.
@@ -669,8 +693,8 @@ std::optional<GlicTaskType> CopyPolicyTask::GetType() const {
   return GlicTaskType::kCopyPolicy;
 }
 
-std::optional<GlicTaskType> PastePolicyCheckTask::GetType() const {
-  return GlicTaskType::kPastePolicyCheck;
+std::optional<GlicTaskType> PastePolicyTask::GetType() const {
+  return GlicTaskType::kPastePolicy;
 }
 
 }  // namespace glic
