@@ -262,6 +262,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // For recording dialog-duration UMA histograms.
   const base::TimeTicks dialog_open_time_;
 
+  base::OnceClosure on_picker_destroying_;
+
   base::WeakPtrFactory<DesktopMediaPickerDialogView> weak_factory_{this};
 };
 

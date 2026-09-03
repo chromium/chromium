@@ -35,10 +35,22 @@ DesktopMediaList::WebContentsFilter GetDefaultFilter() {
 
 class MockDesktopMediaPicker : public DesktopMediaPicker {
  public:
+  MockDesktopMediaPicker() = default;
+  ~MockDesktopMediaPicker() override {
+    if (params_.on_picker_destroying) {
+      params_.on_picker_destroying.Run();
+    }
+  }
+
+  void SetParams(const Params& params) { params_ = params; }
+
   MOCK_METHOD3(Show,
                void(const Params& params,
                     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
                     DoneCallback done_callback));
+
+ private:
+  Params params_{Params::RequestSource::kUnknown};
 };
 
 class MockDesktopMediaList : public DesktopMediaList {
@@ -204,4 +216,35 @@ TEST_F(DesktopMediaPickerControllerTest, ShowPicker_NotifiesShownCallback) {
   DesktopMediaPickerController controller(&factory_);
   controller.Show(picker_params_, source_types_, done_.Get(),
                   on_show_picker.Get());
+}
+
+// Test that on_picker_destroying is passed in picker params and invoked when
+// the picker is destroyed.
+TEST_F(DesktopMediaPickerControllerTest,
+       ShowPicker_ForwardsOnPickerDestroyingCallback) {
+  auto filter = GetDefaultFilter();
+  picker_params_.includable_web_contents_filter = filter;
+  base::MockCallback<base::RepeatingClosure> on_picker_destroying;
+  picker_params_.on_picker_destroying = on_picker_destroying.Get();
+
+  EXPECT_CALL(factory_, CreatePicker(nullptr));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
+  EXPECT_CALL(done_, Run("", media_id_));
+  auto* picker_raw = picker_.get();
+  EXPECT_CALL(*picker_, Show)
+      .WillOnce([&, picker_raw](
+                    const DesktopMediaPicker::Params& params,
+                    std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
+                    DesktopMediaPicker::DoneCallback cb) {
+        EXPECT_TRUE(params.on_picker_destroying);
+        picker_raw->SetParams(params);
+        std::move(cb).Run(media_id_);
+      });
+
+  EXPECT_CALL(on_picker_destroying, Run());
+
+  {
+    DesktopMediaPickerController controller(&factory_);
+    controller.Show(picker_params_, source_types_, done_.Get());
+  }
 }

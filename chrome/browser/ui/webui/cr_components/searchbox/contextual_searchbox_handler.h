@@ -590,6 +590,7 @@ class ContextualSearchboxHandler
   void OnChromeDefaultPickerResults(StartScreenshareCallback callback,
                                     const std::string& err,
                                     content::DesktopMediaID source);
+  void OnChromeDefaultPickerDestroyed();
   void OnNativePickerCreated(content::DesktopMediaID::Id id);
   void OnNativePickerSourceSelected(content::DesktopMediaID::Type type,
                                     StartScreenshareCallback callback,
@@ -609,6 +610,7 @@ class ContextualSearchboxHandler
                              ProcessedScreenshot result);
   void NotifyScreensharePickerOpened();
   void NotifyScreensharePickerClosed();
+  bool IsScreenshareInProgress() const;
 
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler>
       drive_picker_result_handler_receiver_{this};
@@ -623,6 +625,21 @@ class ContextualSearchboxHandler
       drive_picker_deactivation_blocker_;
 
   std::unique_ptr<DesktopMediaPickerController> screenshare_picker_controller_;
+
+  // State for coordinating screenshot capture with picker dialog destruction
+  // when using DesktopMediaPickerController. To avoid capturing the picker
+  // dialog in the screenshot while it is still closing, screenshot capture is
+  // deferred until the dialog's Views widget is destroyed.
+  //
+  // `pending_screenshare_source_` holds the selected capture source and
+  // `pending_screenshare_callback_` holds the Mojo completion callback if the
+  // user selected a source before the dialog finished destroying.
+  // `chrome_default_picker_destroyed_` tracks whether the dialog widget was
+  // destroyed before `OnChromeDefaultPickerResults()` was invoked.
+  std::optional<content::DesktopMediaID> pending_screenshare_source_;
+  StartScreenshareCallback pending_screenshare_callback_;
+  bool chrome_default_picker_destroyed_ = false;
+
   raw_ptr<DesktopMediaPickerFactory> picker_factory_ = nullptr;
   std::unique_ptr<content::desktop_capture::ScreenshotCaptureRequest>
       active_screenshot_request_;
