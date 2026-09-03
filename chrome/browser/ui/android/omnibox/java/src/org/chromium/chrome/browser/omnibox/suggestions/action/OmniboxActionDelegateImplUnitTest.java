@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -30,6 +29,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -51,7 +51,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -61,7 +60,9 @@ public class OmniboxActionDelegateImplUnitTest {
     private static final int TEST_TAB_ID = 1;
     private static final int TEST_WINDOW_ID = 2;
     private static final GURL TEST_URL = new GURL("https://www.example.com/");
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Tab mTab;
     @Mock private Consumer<String> mMockOpenUrl;
@@ -97,7 +98,6 @@ public class OmniboxActionDelegateImplUnitTest {
                         mTabManagerSupplier,
                         mBringTabToFrontCallback);
         SettingsNavigationFactory.setInstanceForTesting(mMockSettingsNavigation);
-        doAnswer(inv -> Collections.emptyList().iterator()).when(mTabModel).iterator();
     }
 
     @After

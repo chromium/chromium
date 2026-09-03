@@ -24,6 +24,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -51,7 +52,9 @@ public class OmniboxActionInSuggestUnitTest {
                     ActionType.CHROME_AIM_VALUE,
                     ActionType.CHROME_TAB_SWITCH_VALUE);
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private OmniboxActionDelegate mDelegate;
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<String> mUrlCaptor;

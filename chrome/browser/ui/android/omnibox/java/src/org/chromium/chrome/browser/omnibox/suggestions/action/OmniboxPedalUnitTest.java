@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -33,7 +34,9 @@ import java.util.List;
 /** Tests for {@link OmniboxPedal}s. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxPedalUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private OmniboxActionDelegate mDelegate;
     private static final List<Integer> sPedalsWithCustomIcons =
             List.of(OmniboxPedalId.PLAY_CHROME_DINO_GAME);
