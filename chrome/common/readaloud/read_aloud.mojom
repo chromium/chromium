@@ -68,6 +68,11 @@ interface ReadAloudPlaybackControllerClient {
   OnWordBoundaryReached(uint32 segment_index,
                         uint32 character_offset,
                         mojo_base.mojom.TimeDelta audio_timestamp);
+  // Emits the sentence-chunked timeline of text extracted from the webpage.
+  // This is called exactly once per playback session during initialization.
+  // `chunks` is a strictly ordered array of sentence segments up to a
+  // limit of 10,000.
+  OnTextChunked(array<mojo_base.mojom.String16> chunks);
   // Synthesizes `text_chunk` into audio. `sequence_id` is a monotonically increasing
   // request ID used by the utility process to correlate responses and discard stale callbacks.
   RequestSpeechSynthesis(mojo_base.mojom.String16 text_chunk,

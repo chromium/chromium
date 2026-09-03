@@ -76,6 +76,13 @@ class MockReadAloudPlaybackControllerClient
     std::move(callback).Run(mojo_base::BigBuffer(), true);
   }
 
+  void OnTextChunked(const std::vector<std::u16string>& chunks) override {
+    last_chunks_ = chunks;
+    if (chunks_closure_) {
+      std::move(chunks_closure_).Run();
+    }
+  }
+
   void ClearLastState() { last_state_.reset(); }
 
   void WaitForStateChange(read_aloud::mojom::PlaybackState expected_state) {
@@ -91,6 +98,15 @@ class MockReadAloudPlaybackControllerClient
     EXPECT_EQ(last_state_.value(), expected_state);
   }
 
+  void WaitForChunks() {
+    if (last_chunks_.has_value()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    chunks_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   void WaitForDisconnect() {
     if (!receiver_.is_bound())
       return;
@@ -104,12 +120,18 @@ class MockReadAloudPlaybackControllerClient
     return last_state_;
   }
 
+  const std::optional<std::vector<std::u16string>>& last_chunks() const {
+    return last_chunks_;
+  }
+
  private:
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerClient>
       receiver_{this};
   std::optional<read_aloud::mojom::PlaybackState> last_state_;
   std::optional<read_aloud::mojom::PlaybackState> expected_state_to_wait_for_;
   base::OnceClosure state_changed_closure_;
+  std::optional<std::vector<std::u16string>> last_chunks_;
+  base::OnceClosure chunks_closure_;
 };
 
 }  // namespace

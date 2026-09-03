@@ -99,6 +99,10 @@ void ReadAloudBridge::OnWordHighlightUpdated(int absolute_start_index,
       env, j_bridge, absolute_start_index, absolute_end_index);
 }
 
+void ReadAloudBridge::OnTextChunked(const std::vector<std::u16string>& chunks) {
+  // TODO(crbug.com/524283143)): JNI Bridge for Text Chunks.
+}
+
 void ReadAloudBridge::OnHighlightingSupported(bool supported) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);

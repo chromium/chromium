@@ -59,6 +59,7 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
                          std::string_view selected_voice_id) override;
   void OnWordHighlightUpdated(int absolute_start_index,
                               int absolute_end_index) override;
+  void OnTextChunked(const std::vector<std::u16string>& chunks) override;
   void OnHighlightingSupported(bool supported) override;
   void OnFallbackEngaged() override;
   void OnPlaybackError(std::string_view error_message) override;

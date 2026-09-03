@@ -34,6 +34,7 @@ inline constexpr int kMaxRetryAttempts = 3;
 inline constexpr size_t kMaxTextSegments = 1000;
 inline constexpr size_t kMaxTextLengthPerSegment = 65536;  // 64 KB max characters per segment
 inline constexpr size_t kMaxVoiceIdLength = 256;
+inline constexpr size_t kMaxTextChunks = 10000;
 
 // Allowed range for speech speed rate scaling.
 inline constexpr float kMinPlaybackRate = 0.25f;

@@ -38,6 +38,11 @@ class MockClient : public read_aloud::mojom::ReadAloudPlaybackControllerClient {
                base::TimeDelta audio_timestamp),
               (override));
 
+  MOCK_METHOD(void,
+              OnTextChunked,
+              (const std::vector<std::u16string>& chunks),
+              (override));
+
   void RequestSpeechSynthesis(
       const std::u16string& text_chunk,
       uint64_t sequence_id,

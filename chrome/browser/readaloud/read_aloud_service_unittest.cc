@@ -31,6 +31,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,6 +83,10 @@ class MockDelegate : public ReadAloudService::Delegate {
               (const GURL& url, bool is_readable),
               (override));
   MOCK_METHOD(void, OnNativeDestroyed, (), (override));
+  MOCK_METHOD(void,
+              OnTextChunked,
+              (const std::vector<std::u16string>&),
+              (override));
 };
 
 class MockDomDistillerService
@@ -123,13 +128,18 @@ class FakePlaybackController
 
   void Bind(
       mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackController>
-          receiver) {
+          receiver,
+      mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
+          client) {
     receiver_.reset();
     receiver_.Bind(std::move(receiver));
+    client_.reset();
+    client_.Bind(std::move(client));
   }
 
   void Reset() {
     receiver_.reset();
+    client_.reset();
     received_segments_.clear();
     last_audio_stream_.reset();
     last_data_pipe_.reset();
@@ -212,10 +222,14 @@ class FakePlaybackController
   }
   bool has_audio_stream() const { return last_audio_stream_.is_valid(); }
   bool has_data_pipe() const { return !last_data_pipe_.is_null(); }
+  read_aloud::mojom::ReadAloudPlaybackControllerClient* client() {
+    return client_.get();
+  }
 
  private:
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{
       this};
+  mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient> client_;
   std::vector<read_aloud::mojom::TextSegmentPtr> received_segments_;
   mojo::PendingRemote<media::mojom::AudioOutputStream> last_audio_stream_;
   media::mojom::ReadWriteAudioDataPipePtr last_data_pipe_;
@@ -316,9 +330,11 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
 
   void BindController(
       mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackController>
-          receiver) {
+          receiver,
+      mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
+          client) {
     if (fake_controller_) {
-      fake_controller_->Bind(std::move(receiver));
+      fake_controller_->Bind(std::move(receiver), std::move(client));
     }
   }
 
@@ -1143,6 +1159,32 @@ TEST_F(ReadAloudServiceTest,
             EXPECT_EQ(response_bytes.size(), 0u);
           }));
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(ReadAloudServiceTest, OnTextChunkedForwardsToDelegate) {
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  std::vector<std::u16string> chunks = {u"First chunk.", u"Second chunk!"};
+
+  EXPECT_CALL(*delegate_ptr, OnTextChunked(chunks)).Times(1);
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+
+  service()->OnTextChunked(chunks);
+}
+
+TEST_F(ReadAloudServiceTest, OnTextChunkedExceedsLimit) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  std::vector<std::u16string> chunks(readaloud::kMaxTextChunks + 1, u"chunk");
+  fake_controller()->client()->OnTextChunked(chunks);
+
+  EXPECT_EQ("Received invalid chunk payload",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace readaloud
