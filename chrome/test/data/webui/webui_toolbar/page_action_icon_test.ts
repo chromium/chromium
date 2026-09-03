@@ -115,8 +115,12 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   addFocusRequestListener() {
     return 0;
   }
+  addShowSplitTabsContextMenuListener() {
+    return 0;
+  }
   removeNavigationStateListener() {}
   removeFocusRequestListener() {}
+  removeShowSplitTabsContextMenuListener() {}
 
   onChipClicked(_chip: LhsChipIdentifier, _isPointerClick: boolean) {}
   onChipPointerEntered(_chip: LhsChipIdentifier) {}

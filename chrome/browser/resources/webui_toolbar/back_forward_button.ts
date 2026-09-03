@@ -92,7 +92,8 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
       return;
     }
     this.browserProxy_.toolbarUIHandler.showContextMenu(
-        this.contextMenuType_, getContextMenuPosition(this), source);
+        this.contextMenuType_, getContextMenuPosition(this), source,
+        /*showMenuToken=*/ null);
   }
 
   private onShortPress_(e: MouseEvent) {

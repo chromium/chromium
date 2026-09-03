@@ -8,7 +8,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {BrowserProxyImpl, ContextMenuType} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BatterySaverButtonElement} from 'chrome://webui-toolbar.top-chrome/app.js';
-import {INVALID_FOCUS_REQUEST_HANDLE, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {INVALID_FOCUS_REQUEST_HANDLE, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import type {BrowserControlsServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/browser_controls_api.mojom-webui.js';
 import type {ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api.mojom-webui.js';
@@ -23,8 +23,11 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   bind() {
     return new Promise<never>(() => {});
   }
-  showContextMenu(menuType: number, bounds: any, source: number) {
-    this.methodCalled('showContextMenu', {menuType, bounds, source});
+  showContextMenu(
+      menuType: number, bounds: any, source: number,
+      showMenuToken: number|null = null) {
+    this.methodCalled(
+        'showContextMenu', {menuType, bounds, source, showMenuToken});
   }
   showOverflowMenu() {
     return Promise.resolve({result: {}});
@@ -140,8 +143,12 @@ class TestBatterySaverBrowserProxy extends TestBrowserProxy implements
   addFocusRequestListener() {
     return INVALID_FOCUS_REQUEST_HANDLE;
   }
+  addShowSplitTabsContextMenuListener() {
+    return INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE;
+  }
   removeNavigationStateListener() {}
   removeFocusRequestListener() {}
+  removeShowSplitTabsContextMenuListener() {}
 
   onChipClicked() {}
   onChipPointerEntered() {}
@@ -150,8 +157,11 @@ class TestBatterySaverBrowserProxy extends TestBrowserProxy implements
   onChipExpandAnimationEnded() {}
   onChipCollapseAnimationEnded() {}
 
-  showContextMenu(menuType: number, bounds: any, source: number) {
-    this.methodCalled('showContextMenu', {menuType, bounds, source});
+  showContextMenu(
+      menuType: number, bounds: any, source: number,
+      showMenuToken: number|null = null) {
+    this.methodCalled(
+        'showContextMenu', {menuType, bounds, source, showMenuToken});
   }
 }
 

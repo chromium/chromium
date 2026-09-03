@@ -192,7 +192,8 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
     const type = this.getContextMenuType_();
     if (type !== ContextMenuType.kUnspecified) {
       this.browserProxy_.toolbarUIHandler.showContextMenu(
-          type, getContextMenuPosition(this), getContextMenuSourceType(e));
+          type, getContextMenuPosition(this), getContextMenuSourceType(e),
+          /*showMenuToken=*/ null);
     }
   }
 }

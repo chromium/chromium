@@ -75,6 +75,8 @@ class Observer : public mojom::ToolbarUIObserver {
   void OnFocusRequested(
       toolbar_ui_api::mojom::FocusRequestTarget target) override {}
 
+  void ShowSplitTabsContextMenu() override {}
+
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // Easily accessible for testing. Start with nullopt to easily differentiate
@@ -162,12 +164,12 @@ class ToolbarUIServiceNoInitialObserverTest : public ToolbarUIServiceTest {
 
 // Tests that calling ShowContextMenu() opens the context menu.
 TEST_F(ToolbarUIServiceTest, TestShowContextMenu) {
-  EXPECT_CALL(delegate(),
-              HandleContextMenu(::testing::_, ::testing::_, ::testing::_));
+  EXPECT_CALL(delegate(), HandleContextMenu(::testing::_, ::testing::_,
+                                            ::testing::_, ::testing::_));
 
   service().ShowContextMenu(mojom::ContextMenuType::kReload,
                             gfx::RectF(1, 2, 3, 4),
-                            ui::mojom::MenuSourceType::kMouse);
+                            ui::mojom::MenuSourceType::kMouse, std::nullopt);
 }
 
 // Tests that calling OnNavigationControlsStateChanged() calls the page with the

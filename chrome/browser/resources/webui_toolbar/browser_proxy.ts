@@ -53,6 +53,11 @@ export type FocusRequestListener = (target: FocusRequestTarget) => void;
 export type FocusRequestHandle = number;
 export const INVALID_FOCUS_REQUEST_HANDLE: FocusRequestHandle = -1;
 
+export type ShowSplitTabsContextMenuListener = () => void;
+export type ShowSplitTabsContextMenuHandle = number;
+export const INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE:
+    ShowSplitTabsContextMenuHandle = -1;
+
 import type {PermissionChipDelegate} from '/shared/permission_chip_delegate.js';
 import type {LhsChipIdentifier} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -71,12 +76,16 @@ export interface BrowserProxy extends PermissionChipDelegate {
 
   addNavigationStateListener(listener: NavigationControlsStateListener):
       NavigationControlsStateListenerHandle;
-
   addFocusRequestListener(listener: FocusRequestListener): FocusRequestHandle;
+  addShowSplitTabsContextMenuListener(
+      listener: ShowSplitTabsContextMenuListener):
+      ShowSplitTabsContextMenuHandle;
 
   removeNavigationStateListener(handle: NavigationControlsStateListenerHandle):
       void;
   removeFocusRequestListener(handle: FocusRequestHandle): void;
+  removeShowSplitTabsContextMenuListener(
+      handle: ShowSplitTabsContextMenuHandle): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -142,6 +151,11 @@ export class BrowserProxyImpl implements BrowserProxy {
     return this.callbackRouter.onFocusRequested.addListener(listener);
   }
 
+  addShowSplitTabsContextMenuListener(
+      listener: ShowSplitTabsContextMenuListener) {
+    return this.callbackRouter.showSplitTabsContextMenu.addListener(listener);
+  }
+
   removeNavigationStateListener(handle: NavigationControlsStateListenerHandle) {
     if (handle !== INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE) {
       this.callbackRouter.removeListener(handle);
@@ -150,6 +164,13 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   removeFocusRequestListener(handle: FocusRequestHandle) {
     if (handle !== INVALID_FOCUS_REQUEST_HANDLE) {
+      this.callbackRouter.removeListener(handle);
+    }
+  }
+
+  removeShowSplitTabsContextMenuListener(
+      handle: ShowSplitTabsContextMenuHandle) {
+    if (handle !== INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE) {
       this.callbackRouter.removeListener(handle);
     }
   }

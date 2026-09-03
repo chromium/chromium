@@ -79,6 +79,7 @@ class WebUIToolbarControlDelegate {
   // Returns the internal view that's the actual WebView.
   virtual views::View* GetInternalWebView() = 0;
   virtual content::WebContents* GetWebContents() = 0;
+  virtual WebUIToolbarUI* GetWebUIToolbarUI() const = 0;
 
   // Announces an alert to accessibility screen readers.
   virtual void AnnounceAlert(const std::u16string& announcement) = 0;
@@ -178,6 +179,9 @@ class WebUIToolbarWebView
   WebUIOverflowButton& overflow_button_for_testing() {
     return overflow_button_;
   }
+  WebUISplitTabsControl& split_tabs_control_for_testing() {
+    return split_tabs_control_;
+  }
 
   void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen);
   void SetBackForwardEnabled(int command_id, bool enabled);
@@ -202,7 +206,8 @@ class WebUIToolbarWebView
   // ToolbarUIService::ToolbarUIServiceDelegate:
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                          const gfx::RectF& bounds_in_css_pixels,
-                         ui::mojom::MenuSourceType source) override;
+                         ui::mojom::MenuSourceType source,
+                         std::optional<uint32_t> show_menu_token) override;
   void ShowOverflowMenu(
       std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr> controls,
       const gfx::RectF& bounds_in_css_pixels,
@@ -494,9 +499,8 @@ class WebUIToolbarWebView
   // Resolves the initial deadline from features and applies it if enabled.
   void ApplyInitialSurfaceSyncDeadline();
 
-  // Returns the active WebUI toolbar controller (const-safe).
-  // Robust against teardown as it uses the observed WebContents.
-  WebUIToolbarUI* GetWebUIToolbarUI() const;
+  // WebUIToolbarControlDelegate:
+  WebUIToolbarUI* GetWebUIToolbarUI() const override;
 
   void OnTouchUiChanged();
   void PostPushNavigationState();

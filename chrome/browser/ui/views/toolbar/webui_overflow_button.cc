@@ -71,6 +71,7 @@ void WebUIOverflowButton::ExecuteCommand(
         base::UserMetricsAction("ResponsiveToolbar.OverflowMenuItemActivated"));
     base::RecordAction(base::UserMetricsAction(action_name.c_str()));
   }
+  OnMenuClosed();
 }
 
 bool WebUIOverflowButton::IsCurrentlyOverflowed(

@@ -67,6 +67,10 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
     return INVALID_FOCUS_REQUEST_HANDLE;
   }
 
+  addShowSplitTabsContextMenuListener() {
+    return 0;
+  }
+
   removeNavigationStateListener(handle: number) {
     this.methodCalled('removeNavigationStateListener', handle);
     this.listener_ = null;
@@ -75,6 +79,8 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   removeFocusRequestListener(handle: number) {
     this.methodCalled('removeFocusRequestListener', handle);
   }
+
+  removeShowSplitTabsContextMenuListener() {}
 
   onChipClicked(_chip: LhsChipIdentifier, _isPointerClick: boolean) {}
   onChipPointerEntered(_chip: LhsChipIdentifier) {}

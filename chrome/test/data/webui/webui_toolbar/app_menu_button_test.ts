@@ -18,8 +18,9 @@ class TestToolbarUiHandler extends TestBrowserProxy {
   }
 
   showContextMenu(
-      type: ContextMenuType, rect: DOMRect, source: MenuSourceType) {
-    this.methodCalled('showContextMenu', [type, rect, source]);
+      type: ContextMenuType, rect: DOMRect, source: MenuSourceType,
+      showMenuToken: number|null = null) {
+    this.methodCalled('showContextMenu', [type, rect, source, showMenuToken]);
   }
 
   onAppMenuFocusChanged(focused: boolean) {

@@ -28,6 +28,11 @@ interface ToolbarUIObserver {
   // Called to focus an element in the WebUI, with `target` specifying
   // which one.
   OnFocusRequested(FocusRequestTarget target);
+
+  // Requests that JavaScript show the split tabs menu. Although the browser
+  // process is responsivle for showing the menu, only the WebUI can determine
+  // the button's location and ensure it's visible before anchoring.
+  ShowSplitTabsContextMenu();
 };
 
 struct InitialState {
@@ -70,9 +75,23 @@ interface ToolbarUIService {
   // WebUI (DOMRect) to avoid misalignment after scaling by the zoom factor.
   // The source indicates what triggered showing this menu (mouse, keyboard,
   // etc).
+  //
+  // `showMenuState` is an opaque identifier that should be echoed back in the
+  // State associated with the control for `menu_type`. It's used so that
+  // controls that have been hidden due to overflow can be shown and act like
+  // there is a menu visible until they can be sure the browser process has
+  // processed their request for a context menu, at which point, they can trust
+  // the relevant fields of the control's State indicate if a menu was indeed
+  // opened, and the control can be hidden again due to overflow. Used to
+  // prevent visual flickering due to outdated state messages. Only controls
+  // whose State fields have a `show_menu_token` field support this. For other
+  // controls, it's ignored. For controls that support `show_menu_token`, it's
+  // also ignored if null. It's only used for left click menus, since clicking
+  // on the overflow menu always acts as a left click.
   ShowContextMenu(ContextMenuType menu_type,
                   gfx.mojom.RectF bounds_in_css_pixels,
-                  ui.mojom.MenuSourceType source);
+                  ui.mojom.MenuSourceType source,
+                  uint32? show_menu_token);
 
   // Displays the overflow menu with the provided list of overflow control
   // items at the provided bounding rectangle in CSS pixels.

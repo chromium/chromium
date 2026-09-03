@@ -356,6 +356,12 @@ void WebUIToolbarUI::OnFocusRequested(
   }
 }
 
+void WebUIToolbarUI::ShowSplitTabsContextMenu() {
+  if (toolbar_ui_service_) {
+    toolbar_ui_service_->ShowSplitTabsContextMenu();
+  }
+}
+
 void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   CHECK(dependency_provider);
 

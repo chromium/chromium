@@ -93,6 +93,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -107,6 +108,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -593,7 +595,8 @@ void WebUIToolbarWebView::OnBlur() {
 void WebUIToolbarWebView::HandleContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
     const gfx::RectF& bounds_in_css_pixels,
-    ui::mojom::MenuSourceType source) {
+    ui::mojom::MenuSourceType source,
+    std::optional<uint32_t> show_menu_token) {
   gfx::Rect screen_rect =
       ConvertBoundsFromCssPixelsToScreenCoords(bounds_in_css_pixels);
 
@@ -609,7 +612,8 @@ void WebUIToolbarWebView::HandleContextMenu(
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction:
     case toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext:
-      split_tabs_control_.HandleContextMenu(menu_type, screen_rect, source);
+      split_tabs_control_.HandleContextMenu(menu_type, screen_rect, source,
+                                            show_menu_token);
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kHome:
       home_control_.HandleContextMenu(screen_rect, source);
@@ -1200,9 +1204,7 @@ void WebUIToolbarWebView::OverflowButtonClicked(
     browser_controls_adapter_->NavigateHome(WindowOpenDisposition::CURRENT_TAB);
     return;
   } else if (identifier == kToolbarSplitTabsToolbarButtonElementId) {
-    // TODO(crbug.com/491791965): Implement this. The main complexity is that if
-    // the current tab is already split, rather than trying to split the current
-    // tab, we should show the split tab menu.
+    split_tabs_control_.HandleContextMenuOverflowClick();
     return;
   }
   NOTREACHED();

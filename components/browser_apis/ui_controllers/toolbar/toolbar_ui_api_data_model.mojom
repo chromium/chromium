@@ -210,6 +210,11 @@ struct SplitTabsControlState {
   SplitTabActiveLocation location;
   bool should_be_shown;
   bool is_context_menu_visible;
+
+  // The value of the `show_menu_token` from the most recent
+  // ShowContextMenu() call made for one of the split-tabs menus. 0 if no
+  // ShowContextMenu() calls have been received yet.
+  uint32 menu_open_token;
 };
 
 struct BackForwardControlState {

@@ -5,13 +5,19 @@
 import {assert} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
+import type {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import type {ToolbarAppElement} from './app.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import type {ResponsiveControl} from './responsive_control.js';
+import {getContextMenuPosition} from './toolbar_button.js';
 
 export interface OverflowableButtonState {
   shouldBeShown: boolean;
+  isContextMenuVisible?: boolean;
+  menuOpenToken?: number;
 }
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -23,6 +29,8 @@ export interface OverflowableButton {
   expandUpToPreferredWidth(): void;
   setToPreferredWidth(): void;
   controlsToAddToOverflowMenu(): OverflowMenuItem[];
+  showContextMenuAndPreventOverflow(
+      menuType: ContextMenuType, sourceType: MenuSourceType): void;
 }
 
 /**
@@ -36,6 +44,16 @@ export interface OverflowableButton {
  * take part in layout at all. It does not handle hiding the button if
  * `shouldBeShown` is false - that's currently expected to be done by the
  * child class.
+ *
+ * It also has support for buttons with context menus. When
+ * `state.isContextMenuVisible` is true, the button will not be hidden due to
+ * overflow (though if `shouldBeShown` is false, the button is still assumed to
+ * be hidden by the child button class's logic). If a control has
+ * a `state.menuOpenToken` field, invoking
+ * `this.showContextMenuAndPreventOverflow` method will cause the class to keep
+ * `state.isContextMenuVisible` set to true until the browser process has echoed
+ * back the `menuOpenToken` value. This mixin is expected to be the sole class
+ * to manage `menuOpenToken` for a button that uses it.
  *
  * This class is primarily designed to be used in combination with
  * cr-icon-buttons. It expects the CrLitElement to be the ancestor of an
@@ -59,12 +77,20 @@ export const OverflowableButtonMixin =
           shouldBeShown: false,
         };
 
+        // Local count of context menu requests sent to the browser. Wraps
+        // around at 2^32.
+        private menuOpenToken_: number = 0;
+
         shouldBeShown(): boolean {
           return this.state.shouldBeShown;
         }
 
         // The minimum width hides the button using `overflow-display-none`.
         setToMinWidth() {
+          // If context menu is visible, leave at full width.
+          if (this.state.isContextMenuVisible) {
+            return;
+          }
           this.classList.add('overflow-display-none');
         }
 
@@ -75,6 +101,11 @@ export const OverflowableButtonMixin =
         // initial setToMinWidth() call, and only if shouldBeShown() returns
         // true.
         expandUpToPreferredWidth() {
+          // If context menu is visible, should already be at preferred width,
+          // so do nothing.
+          if (this.state.isContextMenuVisible) {
+            return;
+          }
           this.setToPreferredWidth();
 
           const shadowRoot = this.getRootNode() as ShadowRoot;
@@ -117,21 +148,89 @@ export const OverflowableButtonMixin =
           }];
         }
 
+        override willUpdate(changedProperties: PropertyValues<this>): void {
+          super.willUpdate(changedProperties);
+          if (changedProperties.has('state')) {
+            const oldState = changedProperties.get('state');
+            if (this.state.menuOpenToken !== undefined) {
+              if (!oldState) {
+                // Set `menuOpenToken_` to `state.menuOpenToken` if this is the
+                // first state update - this is to prevent any issues restarting
+                // the WebUI process after a crash. Doesn't matter if this is in
+                // updated() or willUpdated(), just here because the else clause
+                // needs to be here.
+                this.menuOpenToken_ = this.state.menuOpenToken;
+              } else if (this.state.menuOpenToken !== this.menuOpenToken_) {
+                // If the browser hasn't caught up with `menuOpenToken_` yet,
+                // keep `isContextMenuVisible` set to true. Since this modifies
+                // `state`, needs to in willUpdate() rather than updated().
+                this.state.isContextMenuVisible = true;
+              }
+            }
+          }
+        }
+
         override updated(changedProperties: PropertyValues<this>) {
           super.updated(changedProperties);
           if (changedProperties.has('state')) {
             const oldState = changedProperties.get('state');
-            // If there's potentially been a change in our visibility, request
-            // that there be a new layout once all updated() calls have
-            // completed.
+
+            // When there's a context menu visible, control is not allowed to
+            // overflow.
+            if (this.state.isContextMenuVisible) {
+              this.setToPreferredWidth();
+            }
+
+            // Need to run a layout if this is the first state update, if the
+            // visibility of `this` changed, or if the visibility of the context
+            // menu changed. Technically don't need to do a layout if the
+            // context menu became visible when the button was not overflowed,
+            // but that's a bit tricky to check.
             if (!oldState ||
-                oldState.shouldBeShown !== this.state.shouldBeShown) {
-              this.dispatchEvent(new CustomEvent('request-layout', {
-                bubbles: true,
-                composed: true,
-              }));
+                oldState.shouldBeShown !== this.state.shouldBeShown ||
+                oldState.isContextMenuVisible !==
+                    this.state.isContextMenuVisible) {
+              this.fire('request-layout');
             }
           }
+        }
+
+        // Shows the context menu with the provided parameters, and makes the
+        // button not overflow until the browser process has echoed back the
+        // updated `menuOpenToken_` value. May only be used when the button's
+        // State has `menuOpenToken` and `isContextMenuVisible` fields.
+        showContextMenuAndPreventOverflow(
+            menuType: ContextMenuType, sourceType: MenuSourceType) {
+          // This is only supported if `state` has both `menuOpenToken` and
+          // `isContextMenuVisible` fields.
+          assert(this.state.menuOpenToken !== undefined);
+          assert(this.state.isContextMenuVisible !== undefined);
+
+          // `shouldBeShown` is currently handled entirely by subclasses. Since
+          // we need a visible button to get the location when showing a context
+          // menu, just give up if the button can't be shown. We could consider
+          // making this class set `shouldBeShow` to true whenever it sets
+          // `isContextMenuVisible` to true, to ensure buttons with context
+          // menus are always shown, as opposed to only preventing them from
+          // overflowing.
+          if (!this.shouldBeShown()) {
+            return;
+          }
+
+          // `>>> 0` is logically equivalent to casting to a uint32, which is
+          // the type of the `menuOpenToken` field.
+          this.menuOpenToken_ = (this.menuOpenToken_ + 1) >>> 0;
+          this.state.isContextMenuVisible = true;
+          // If this was overflowed, need to make visible and do a new layout
+          // before getting the location to place the context menu.
+          if (this.classList.contains('overflow-display-none')) {
+            this.setToPreferredWidth();
+            this.fire('layout-now');
+          }
+
+          BrowserProxyImpl.getInstance().toolbarUIHandler.showContextMenu(
+              menuType, getContextMenuPosition(this), sourceType,
+              this.menuOpenToken_);
         }
       }
 

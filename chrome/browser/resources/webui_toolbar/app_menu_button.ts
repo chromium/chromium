@@ -134,7 +134,7 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
   private handleMenuClick_(e: Event) {
     this.browserProxy_.toolbarUIHandler.showContextMenu(
         ContextMenuType.kAppMenu, getContextMenuPosition(this),
-        getClickSourceType(e));
+        getClickSourceType(e), /*showMenuToken=*/ null);
   }
 
   protected getTooltip_(): string {

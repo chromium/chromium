@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   webui_toolbar_view->HandleContextMenu(
       toolbar_ui_api::mojom::ContextMenuType::kReload, gfx::RectF(control_rect),
-      ui::mojom::MenuSourceType::kMouse);
+      ui::mojom::MenuSourceType::kMouse, /*show_menu_token=*/std::nullopt);
 
   // Verify reload button state updates.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Show back button context menu.
   webui_toolbar_view->HandleContextMenu(
       toolbar_ui_api::mojom::ContextMenuType::kBack, gfx::RectF(control_rect),
-      ui::mojom::MenuSourceType::kMouse);
+      ui::mojom::MenuSourceType::kMouse, /*show_menu_token=*/std::nullopt);
 
   // Verify back button state updates.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -763,7 +763,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Show forward button context menu.
   webui_toolbar_view->HandleContextMenu(
       toolbar_ui_api::mojom::ContextMenuType::kForward,
-      gfx::RectF(control_rect), ui::mojom::MenuSourceType::kMouse);
+      gfx::RectF(control_rect), ui::mojom::MenuSourceType::kMouse,
+      /*show_menu_token=*/std::nullopt);
 
   // Verify forward button state updates.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -828,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Show context menu.
   webui_toolbar_view->HandleContextMenu(
       toolbar_ui_api::mojom::ContextMenuType::kHome, gfx::RectF(control_rect),
-      ui::mojom::MenuSourceType::kMouse);
+      ui::mojom::MenuSourceType::kMouse, /*show_menu_token=*/std::nullopt);
 
   // Verify background is highlighted (NOT transparent).
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -887,7 +888,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Show context menu.
   webui_toolbar_view->HandleContextMenu(
       toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext,
-      gfx::RectF(control_rect), ui::mojom::MenuSourceType::kMouse);
+      gfx::RectF(control_rect), ui::mojom::MenuSourceType::kMouse,
+      /*show_menu_token=*/std::nullopt);
 
   // Verify split tabs button state updates.
   EXPECT_TRUE(base::test::RunUntil([&]() {

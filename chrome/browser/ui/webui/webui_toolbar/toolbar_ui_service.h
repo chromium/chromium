@@ -36,7 +36,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void HandleContextMenu(
         toolbar_ui_api::mojom::ContextMenuType menu_type,
         const gfx::RectF& bounds_in_css_pixels,
-        ui::mojom::MenuSourceType source) = 0;
+        ui::mojom::MenuSourceType source,
+        std::optional<uint32_t> show_menu_token) = 0;
     virtual void ShowOverflowMenu(
         std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr> controls,
         const gfx::RectF& bounds_in_css_pixels,
@@ -130,12 +131,14 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnNavigationControlsStateChanged(
       const mojom::NavigationControlsState& state);
   void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
+  void ShowSplitTabsContextMenu();
 
   // toolbar_ui_api::mojom::ToolbarUIService:
   void Bind(BindCallback callback) override;
   void ShowContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                        const gfx::RectF& bounds_in_css_pixels,
-                       ui::mojom::MenuSourceType source) override;
+                       ui::mojom::MenuSourceType source,
+                       std::optional<uint32_t> show_menu_token) override;
   void ShowOverflowMenu(
       std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr> controls,
       const gfx::RectF& bounds_in_css_pixels,

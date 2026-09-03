@@ -30,7 +30,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} from './browser_proxy.js';
+import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE} from './browser_proxy.js';
 import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
@@ -119,6 +119,7 @@ export {
   IconsetMap,
   INVALID_FOCUS_REQUEST_HANDLE,
   INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE,
+  INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE,
   LhsChipIdentifier,
   SecurityChipRole,
   LocationBarElement,
@@ -376,6 +377,7 @@ export class ToolbarAppElement extends AppElementBase {
       location: SplitTabActiveLocation.kStart,
       shouldBeShown: false,
       isContextMenuVisible: false,
+      menuOpenToken: 0,
     },
     backForwardControlState: {
       backButtonState: {
@@ -500,6 +502,8 @@ export class ToolbarAppElement extends AppElementBase {
       () => void = () => this.scheduleLayoutIfNeeded_();
   private requestLayoutListener_:
       () => void = () => this.scheduleLayoutResponsiveControls_();
+  private layoutNowListener_:
+      () => void = () => this.layoutResponsiveControls();
 
   private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
 
@@ -566,6 +570,7 @@ export class ToolbarAppElement extends AppElementBase {
     this.addEventListener('drop', this.dropListener_);
     this.addEventListener('keydown', this.keyDownListener_);
     this.addEventListener('request-layout', this.requestLayoutListener_);
+    this.addEventListener('layout-now', this.layoutNowListener_);
 
     // This ResizeObserver performs a new layout, if needed, when toolbar-app is
     // resized. This is too late in the process to avoid a visible re-layout,
@@ -692,6 +697,7 @@ export class ToolbarAppElement extends AppElementBase {
     this.removeEventListener('drop', this.dropListener_);
     this.removeEventListener('keydown', this.keyDownListener_);
     this.removeEventListener('request-layout', this.requestLayoutListener_);
+    this.removeEventListener('layout-now', this.layoutNowListener_);
 
     this.resizeObserver_?.disconnect();
     window.removeEventListener('resize', this.windowResizeListener_);

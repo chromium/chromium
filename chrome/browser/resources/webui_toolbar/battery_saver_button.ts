@@ -48,7 +48,7 @@ export class BatterySaverButtonElement extends CrLitElement {
   protected onClick_(e: MouseEvent) {
     this.browserProxy_.toolbarUIHandler.showContextMenu(
         ContextMenuType.kBatterySaver, getContextMenuPosition(this),
-        getContextMenuSourceType(e));
+        getContextMenuSourceType(e), /*showMenuToken=*/ null);
   }
 }
 

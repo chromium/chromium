@@ -164,7 +164,8 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
   private onLongPress_(source: MenuSourceType) {
     if (this.state.canShowMenu) {
       this.browserProxy_.toolbarUIHandler.showContextMenu(
-          ContextMenuType.kReload, getContextMenuPosition(this), source);
+          ContextMenuType.kReload, getContextMenuPosition(this), source,
+          /*showMenuToken=*/ null);
     }
   }
 

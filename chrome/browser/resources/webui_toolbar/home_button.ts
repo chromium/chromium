@@ -63,7 +63,8 @@ export class HomeButtonElement extends HomeButtonElementBase {
 
   private onLongPress_(source: MenuSourceType) {
     this.browserProxy_.toolbarUIHandler.showContextMenu(
-        ContextMenuType.kHome, getContextMenuPosition(this), source);
+        ContextMenuType.kHome, getContextMenuPosition(this), source,
+        /*showMenuToken=*/ null);
   }
 
   private onShortPress_(e: MouseEvent) {

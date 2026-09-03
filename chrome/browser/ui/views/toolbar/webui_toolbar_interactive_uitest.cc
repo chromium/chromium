@@ -2487,7 +2487,8 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
         &GetWebUIToolbar()->overflow_button_for_testing();
     // Wait for overflow menu to appear.
     if (!base::test::RunUntil([&]() -> bool {
-          return overflow_button->overflow_menu_for_testing();
+          auto* menu = overflow_button->overflow_menu_for_testing();
+          return menu && menu->IsMenuRunning();
         })) {
       return nullptr;
     }
@@ -2497,8 +2498,8 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
 
   // Simulates a mouse click on the MenuItemView at `index` within
   // `overflow_menu`.
-  [[nodiscard]] static bool ClickOverflowMenuItem(OverflowMenu& overflow_menu,
-                                                  size_t index) {
+  [[nodiscard]] bool ClickOverflowMenuItem(OverflowMenu& overflow_menu,
+                                           size_t index) {
     views::MenuItemView* root_item = overflow_menu.root_menu_item();
     if (!root_item || !root_item->GetSubmenu()) {
       return false;
@@ -2509,9 +2510,18 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     }
 
     gfx::Point center = item->GetBoundsInScreen().CenterPoint();
-    return ui_test_utils::SendMouseMoveSync(center) &&
-           ui_test_utils::SendMouseEventsSync(
-               ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP);
+    if (!ui_test_utils::SendMouseMoveSync(center) ||
+        !ui_test_utils::SendMouseEventsSync(
+            ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP)) {
+      return false;
+    }
+
+    WebUIOverflowButton* overflow_button =
+        &GetWebUIToolbar()->overflow_button_for_testing();
+    // Wait for overflow menu to fully close.
+    return base::test::RunUntil([&]() -> bool {
+      return !overflow_button->overflow_menu_for_testing();
+    });
   }
 
  private:
@@ -2781,6 +2791,111 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   forward_observer.Wait();
   // Make sure the expected URL committed.
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kSecondUrl);
+}
+
+// Test clicking the split-tabs button when it appears on the overflow menu.
+// Clicking it once should split the tab. Clicking it again should force the
+// icon to be visible and show a menu anchored at the split-tabs button's
+// location. Closing the menu should hide the button again, due to the same lack
+// of space that made it show on the overflow menu in the first place.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuClickSplitTabsButton) {
+  // Pin the split-tabs button.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                  true);
+
+  // Wait until split-tabs button is visible initially.
+  ASSERT_TRUE(
+      WaitForTrackedElements({kToolbarSplitTabsToolbarButtonElementId}));
+
+  // Force all overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for split-tabs button to be hidden and overflow button to be visible.
+  ASSERT_TRUE(
+      WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                             {kToolbarSplitTabsToolbarButtonElementId}));
+
+  // Open the overflow menu.
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Find the split-tabs item index in the overflow menu model.
+  const ui::SimpleMenuModel* menu_model =
+      overflow_menu->menu_model_for_testing();
+  ASSERT_TRUE(menu_model);
+  std::optional<size_t> split_tabs_index;
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    if (menu_model->GetLabelAt(i) ==
+        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW)) {
+      split_tabs_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(split_tabs_index.has_value());
+
+  // First press: Click split-tabs item on the overflow menu.
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, *split_tabs_index));
+
+  // Wait for the active tab to be split.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto* tab_strip_model = browser()->GetTabStripModel();
+    return tab_strip_model && tab_strip_model->GetActiveTab() &&
+           tab_strip_model->GetActiveTab()->IsSplit();
+  }));
+
+  // Expect the split-tabs button itself to remain overflowed / not-visible.
+  EXPECT_TRUE(
+      WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                             {kToolbarSplitTabsToolbarButtonElementId}));
+
+  // Open the overflow menu a second time.
+  overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  WebUISplitTabsControl* split_tabs_control =
+      &webui_toolbar_view->split_tabs_control_for_testing();
+  menu_model = overflow_menu->menu_model_for_testing();
+  ASSERT_TRUE(menu_model);
+  split_tabs_index.reset();
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    if (menu_model->GetLabelAt(i) ==
+        l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW)) {
+      split_tabs_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(split_tabs_index.has_value());
+
+  // Second press: Click split-tabs item on the overflow menu again.
+  ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu, *split_tabs_index));
+
+  // Expect second press to both show the split-tabs button and trigger menu
+  // creation.
+  ui::TrackedElement* split_tabs_element =
+      WaitForTrackedElementVisible(kToolbarSplitTabsToolbarButtonElementId);
+  ASSERT_TRUE(split_tabs_element);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto* menu_runner = split_tabs_control->menu_runner_for_testing();
+    if (!menu_runner || !menu_runner->IsRunning()) {
+      return false;
+    }
+    // Close the menu as soon as it's observed.
+    menu_runner->Cancel();
+    return true;
+  }));
+
+  // Close the menu and verify that the split-tabs button is hidden again.
+  if (split_tabs_control->menu_runner_for_testing()) {
+    split_tabs_control->menu_runner_for_testing()->Cancel();
+  }
+  // Verify that the split-tabs button is hidden again, in response to closing
+  // the menu.
+  EXPECT_TRUE(
+      WaitForTrackedElementHidden(kToolbarSplitTabsToolbarButtonElementId));
 }
 
 // Test that manual invocations of showOverflowMenu() with an empty list of

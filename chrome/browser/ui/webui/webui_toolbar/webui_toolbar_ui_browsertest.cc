@@ -123,7 +123,8 @@ class MockToolbarUIDelegate
               HandleContextMenu,
               (toolbar_ui_api::mojom::ContextMenuType menu_type,
                const gfx::RectF& bounds,
-               ui::mojom::MenuSourceType source),
+               ui::mojom::MenuSourceType source,
+               std::optional<uint32_t> show_menu_token),
               (override));
   MOCK_METHOD(void,
               ShowOverflowMenu,
