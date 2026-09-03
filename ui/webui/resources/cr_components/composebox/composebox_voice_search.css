@@ -197,6 +197,14 @@
   position: relative;
 }
 
+:host-context([webui-rounded-icons]) #stopButton {
+  --cr-icon-button-icon-size: 24px;
+}
+
+:host-context([webui-rounded-icons]) #submitButton::part(submit) {
+  --cr-composebox-submit-icon-size: 24px;
+}
+
 :host-context([in-voice-search-mode]) #submitButton::part(submit) {
   opacity: 1;
 }
