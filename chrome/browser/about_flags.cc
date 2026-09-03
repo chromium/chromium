@@ -11087,6 +11087,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicActorSkipScreenshotDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(actor::kGlicActorSkipScreenshot)},
 #if BUILDFLAG(IS_ANDROID)
+    {"actor-live-notification", flag_descriptions::kActorLiveNotificationName,
+     flag_descriptions::kActorLiveNotificationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kActorLiveNotification)},
     {"actor-notification-intent-routing",
      flag_descriptions::kActorNotificationIntentRoutingName,
      flag_descriptions::kActorNotificationIntentRoutingDescription, kOsAndroid,

@@ -38,6 +38,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "actor-live-notification",
+    "owners": [
+      "bbetini@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "actor-notification-intent-routing",
     "owners": [
       "bbetini@google.com",

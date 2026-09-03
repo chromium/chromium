@@ -12477,6 +12477,7 @@ from previous Chrome versions.
   <int value="-703552662" label="PrefetchAndroidFonts:disabled"/>
   <int value="-703519655" label="SystemLiveCaption:enabled"/>
   <int value="-703236931" label="EnableUnexportableKeysSpareKeyPool:enabled"/>
+  <int value="-703038214" label="ActorLiveNotification:enabled"/>
   <int value="-702783087" label="ReaderModeDistillInApp:enabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-701652734" label="UnoPhase2FollowUp:enabled"/>
@@ -20766,6 +20767,7 @@ from previous Chrome versions.
   <int value="1859016750" label="Conch:disabled"/>
   <int value="1859378256" label="EnableClipboardDataControlsAndroid:enabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
+  <int value="1860171143" label="ActorLiveNotification:disabled"/>
   <int value="1860349258" label="EnableFastInkForSoftwareCursor:enabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>
   <int value="1860955818" label="PowerScheduler:enabled"/>

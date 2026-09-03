@@ -1761,6 +1761,11 @@ inline constexpr char kGlicActorSkipScreenshotDescription[] =
     "If enabled, Glic actor will skip capturing and uploading screenshots when "
     "an actor turn is completed.";
 
+inline constexpr char kActorLiveNotificationName[] = "Actor live notification";
+inline constexpr char kActorLiveNotificationDescription[] =
+    "Enables live notification (promoted ongoing) support for Actor tasks on "
+    "Android.";
+
 inline constexpr char kActorNotificationIntentRoutingName[] =
     "Actor notification intent routing";
 inline constexpr char kActorNotificationIntentRoutingDescription[] =
