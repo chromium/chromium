@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/controls/focus_ring.h"
@@ -87,7 +88,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
     void OnViewIsDeleting(View* observed_view) override;
 
    private:
-    raw_ptr<ScrollView> scroll_view_;
+    base::ScopedObservation<ScrollView, ViewObserver> scroll_view_observation_{
+        this};
   };
 
   ScrollView();

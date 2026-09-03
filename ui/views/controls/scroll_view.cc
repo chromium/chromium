@@ -1428,21 +1428,19 @@ void ScrollView::EnableViewportLayer() {
 
 ScrollView::ScopedScrollSynchronizer::ScopedScrollSynchronizer(
     base::PassKey<ScrollView>,
-    ScrollView& scroll_view)
-    : scroll_view_(&scroll_view) {
-  scroll_view.AddObserver(this);
+    ScrollView& scroll_view) {
+  scroll_view_observation_.Observe(&scroll_view);
 }
 
 ScrollView::ScopedScrollSynchronizer::~ScopedScrollSynchronizer() {
-  if (scroll_view_) {
-    scroll_view_->OnScopedScrollSynchronizerDestroyed();
-    scroll_view_->RemoveObserver(this);
+  if (ScrollView* scroll_view = scroll_view_observation_.GetSource()) {
+    scroll_view->OnScopedScrollSynchronizerDestroyed();
   }
 }
 
 void ScrollView::ScopedScrollSynchronizer::OnViewIsDeleting(
     View* observed_view) {
-  scroll_view_ = nullptr;
+  scroll_view_observation_.Reset();
 }
 
 std::unique_ptr<ScrollView::ScopedScrollSynchronizer>
