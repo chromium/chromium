@@ -740,6 +740,47 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     }
 
     @Test
+    public void testGlicNudge_HiddenAndSuppressedWhenActorTaskActive() {
+        // 1. Display a Glic nudge initially with no active actor task.
+        String initialNudgeText = "Summarize page";
+        mCoordinator.setNudgeLabelForTesting(initialNudgeText);
+        ShadowLooper.idleMainLooper();
+
+        assertTrue("Glic button should be visible.", mGlicButton.isVisible());
+        assertTrue(
+                "Dismiss button should be visible when nudge is shown.",
+                mGlicDismissButton.isVisible());
+        assertEquals("Glic text should show nudge text.", initialNudgeText, mGlicButton.getText());
+        assertFalse("Actor button should not be visible initially.", mGlicActorButton.isVisible());
+
+        // 2. An actor task starts: actor button should appear, and nudge / dismiss button should
+        // hide.
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
+        mCoordinator.onGlicActorButtonStateChanged(ButtonState.WORKING, false);
+        ShadowLooper.idleMainLooper();
+
+        assertTrue("Actor button should become visible.", mGlicActorButton.isVisible());
+        assertNull(
+                "Glic text should collapse (null) when actor task starts.", mGlicButton.getText());
+        assertFalse(
+                "Dismiss button should hide when actor task starts.",
+                mGlicDismissButton.isVisible());
+
+        // 3. Attempt to trigger a new Glic nudge while the Actor task is active: should remain
+        // suppressed.
+        mCoordinator.setNudgeLabelForTesting("Second nudge text");
+        mCoordinator.onSizeChanged(1000f, 0f, 0f, 0f);
+        ShadowLooper.idleMainLooper();
+
+        assertNull(
+                "Glic text should remain collapsed (null) when actor task is active.",
+                mGlicButton.getText());
+        assertFalse(
+                "Dismiss button should remain hidden when actor task is active.",
+                mGlicDismissButton.isVisible());
+    }
+
+    @Test
     public void testOnLongPress_OnGlicButton() {
         doTestGlicButtonContextMenuTriggered(/* viaSecondaryClick= */ false);
     }

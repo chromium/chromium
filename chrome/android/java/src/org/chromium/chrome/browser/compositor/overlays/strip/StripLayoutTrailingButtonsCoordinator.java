@@ -1522,6 +1522,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private boolean shouldGlicDismissNudgeBeVisible() {
         return mNudgeLabel != null
                 && shouldGlicBeVisible()
+                && !shouldGlicActorBeVisible()
                 && !mIsIncognito
                 && mGlicButtonsAvailableSpaceSupplier.get()
                         >= calculateMinRequiredWidthForGlicButton(
