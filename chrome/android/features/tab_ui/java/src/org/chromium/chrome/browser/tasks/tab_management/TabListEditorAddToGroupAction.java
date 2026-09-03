@@ -130,10 +130,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
             }
         }
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
-        int numTabs =
-                editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(tabModel, itemIds)
-                        : itemIds.size();
+        int numTabs = getSelectedTabCount(itemIds);
 
         setEnabledAndItemCount(
                 !areAnyTabsPartOfSharedGroup(tabModel, tabs, null) && !itemIds.isEmpty(), numTabs);

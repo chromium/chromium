@@ -167,7 +167,7 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    public void testCloseActionWithTabGroups_ActionOnRelatedTabs() {
+    public void testCloseActionWithTabGroups_GroupedLayout() {
         configure(TabListLayoutType.GROUPED);
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -236,7 +236,7 @@ public class TabListEditorCloseActionUnitTest {
     }
 
     @Test
-    public void testCloseActionWithTabGroups_NoActionOnRelatedTabs() {
+    public void testCloseActionWithTabGroups_FlatLayout() {
         configure(TabListLayoutType.FLAT);
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(

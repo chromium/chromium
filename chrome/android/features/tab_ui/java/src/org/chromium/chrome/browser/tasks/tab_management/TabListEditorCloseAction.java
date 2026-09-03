@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -57,10 +58,7 @@ public class TabListEditorCloseAction extends TabListEditorAction {
 
     @Override
     public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
-        int size =
-                editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabModel(), itemIds)
-                        : itemIds.size();
+        int size = getSelectedTabCount(itemIds);
         setEnabledAndItemCount(!itemIds.isEmpty(), size);
     }
 
@@ -76,7 +74,7 @@ public class TabListEditorCloseAction extends TabListEditorAction {
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs)
                                 .allowUndo(TabClosureParamsUtils.shouldAllowUndo(triggeringMotion))
-                                .hideTabGroups(editorSupportsActionOnRelatedTabs())
+                                .hideTabGroups(getLayoutType() == TabListLayoutType.GROUPED)
                                 .build(),
                         /* allowDialog= */ true);
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(

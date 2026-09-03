@@ -131,7 +131,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
             }
         }
 
-        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : itemIds.size();
+        int size = getSelectedTabCount(itemIds);
         setEnabledAndItemCount(enableShare, size);
     }
 

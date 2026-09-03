@@ -282,7 +282,7 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    public void testShareActionWithAllFilterableTabs_actionsOnTabs() throws Exception {
+    public void testShareActionWithAllFilterableTabs_flatLayout() throws Exception {
         mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, TabListLayoutType.FLAT);
 
         List<Integer> tabIds = new ArrayList<>();
@@ -306,8 +306,7 @@ public class TabListEditorShareActionUnitTest {
     }
 
     @Test
-    public void testShareActionWithAllFilterableTabs_actionsOnTabsAndRelatedTabs()
-            throws Exception {
+    public void testShareActionWithAllFilterableTabs_groupedLayout() throws Exception {
         mAction.configure(
                 () -> mTabModel, mSelectionDelegate, mDelegate, TabListLayoutType.GROUPED);
 

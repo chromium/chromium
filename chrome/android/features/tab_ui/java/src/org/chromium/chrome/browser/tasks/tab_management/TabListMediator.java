@@ -251,15 +251,15 @@ public class TabListMediator implements TabListNotificationHandler {
          * Standard flat grid or list. Does not visually package tabs into clusters or headers.
          * Surfaces using this layout: - {@link TabGroupUiCoordinator} (Bottom Tab Strip) - {@link
          * TabGridDialogCoordinator} (Inside the Group Popup) - {@link TabListEditorCoordinator}
-         * (Selection mode, when display groups are disabled)
+         * (Flat selection mode)
          */
         int FLAT = 0;
 
         /**
          * Clustered grid. Visually merges an entire group of tabs into a single proxy tile model.
          * Surfaces using this layout: - {@link TabSwitcherPaneCoordinator} (Grid Tab Switcher) -
-         * {@link TabListEditorCoordinator} (Selection mode, when display groups are enabled) -
-         * {@link ArchivedTabsDialogCoordinator} (Implicitly uses TabListEditor with groups enabled)
+         * {@link TabListEditorCoordinator} (Grouped selection mode) - {@link
+         * ArchivedTabsDialogCoordinator} (Archived tabs selection mode)
          */
         int GROUPED = 1;
 

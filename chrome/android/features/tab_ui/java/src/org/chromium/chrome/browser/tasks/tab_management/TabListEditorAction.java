@@ -126,7 +126,7 @@ public abstract class TabListEditorAction {
 
     private static final String EXPECTED_RESOURCE_TYPE_NAME = "plurals";
 
-    private final ObserverList<ActionObserver> mObsevers = new ObserverList<>();
+    private final ObserverList<ActionObserver> mObservers = new ObserverList<>();
     private final PropertyModel mModel;
     private Supplier<@Nullable TabModel> mCurrentTabModelSupplier;
     private ActionDelegate mActionDelegate;
@@ -187,20 +187,21 @@ public abstract class TabListEditorAction {
      * @param observer an {@link ActionObserver} to observe when this action occurs.
      */
     public void addActionObserver(ActionObserver observer) {
-        mObsevers.addObserver(observer);
+        mObservers.addObserver(observer);
     }
 
     /**
      * @param observer an {@link ActionObserver} to remove.
      */
     public void removeActionObserver(ActionObserver observer) {
-        mObsevers.removeObserver(observer);
+        mObservers.removeObserver(observer);
     }
 
     /**
      * Defaults to notifying observers of when an action is taken. Should be overridden to false if
      * the action changes the selection state rather than taking an action.
-     * @return Whether to notify obsevers of the action.
+     *
+     * @return Whether to notify observers of the action.
      */
     public boolean shouldNotifyObserversOfAction() {
         return true;
@@ -209,13 +210,6 @@ public abstract class TabListEditorAction {
     /** Returns the {@link TabListLayoutType} of the editor. */
     public @TabListLayoutType int getLayoutType() {
         return mLayoutType;
-    }
-
-    /**
-     * @return Whether the TabListEditor supports applying the actions to related tabs.
-     */
-    public boolean editorSupportsActionOnRelatedTabs() {
-        return getLayoutType() == TabListLayoutType.GROUPED;
     }
 
     /**
@@ -236,8 +230,8 @@ public abstract class TabListEditorAction {
     }
 
     /**
-     * Processes the selected tabs from the selection list this includes related tabs if {@link
-     * #editorSupportsActionOnRelatedTabs()} is true.
+     * Processes the selected tabs from the selection list; this includes related tabs when the
+     * layout type is {@link TabListLayoutType#GROUPED}.
      *
      * @param tabs A list of tabs from getTabsFromSelection().
      * @param tabGroupSyncIds A list of tab group sync ids representing {@link SavedTabGroups} that
@@ -279,7 +273,7 @@ public abstract class TabListEditorAction {
 
         List<Tab> tabs = getTabsOrTabsAndRelatedTabsFromSelection();
         if (shouldNotifyObserversOfAction()) {
-            for (ActionObserver obs : mObsevers) {
+            for (ActionObserver obs : mObservers) {
                 obs.preProcessSelectedTabs(tabs);
             }
         }
@@ -375,9 +369,15 @@ public abstract class TabListEditorAction {
     }
 
     protected List<Tab> getTabsOrTabsAndRelatedTabsFromSelection() {
-        return editorSupportsActionOnRelatedTabs()
+        return getLayoutType() == TabListLayoutType.GROUPED
                 ? getTabsAndRelatedTabsFromSelection()
                 : getTabsFromSelection();
+    }
+
+    protected int getSelectedTabCount(List<TabListEditorItemSelectionId> itemIds) {
+        return getLayoutType() == TabListLayoutType.GROUPED
+                ? getTabCountIncludingRelatedTabs(getTabModel(), itemIds)
+                : itemIds.size();
     }
 
     private List<String> getTabGroupSyncIdsFromSelection() {
