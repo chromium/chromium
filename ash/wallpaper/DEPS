@@ -10,8 +10,4 @@ specific_include_rules = {
     # UserManager::FindUser() resolves the User for an AccountId.
     "+components/user_manager/user_manager.h",
   ],
-  "wallpaper_controller_unittest\\.cc": [
-    "+chromeos/ash/components/geolocation",
-    "+components/user_manager",
-  ],
 }

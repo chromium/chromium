@@ -17,11 +17,3 @@ include_rules = [
   "+ui/display",
 ]
 
-specific_include_rules = {
-  "saved_desk_delegate\\.h": [
-    "+components/favicon_base/favicon_callback.h"
-  ],
-  "test_saved_desk_delegate\\.h": [
-    "+components/favicon_base/favicon_callback.h"
-  ],
-}

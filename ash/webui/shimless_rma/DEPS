@@ -24,7 +24,6 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\\.cc": [
-    "+chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h",
     "+components/session_manager/test/test_user_session_manager.h",
   ],
 }

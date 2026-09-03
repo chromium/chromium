@@ -177,21 +177,12 @@ specific_include_rules = {
   "ash_prefs\\.cc": [
     "+components/user_manager/user_manager.h",
   ],
-  "keyboard_capability_unittest\\.cc": [
-    "+device/udev_linux/fake_udev_loader.h",
-  ],
-  "policy_recommendation_restorer_unittest\\.cc": [
-    "+components/sync_preferences/testing_pref_service_syncable.h"
-  ],
   "root_window_controller\\.(cc|h)": [
     "+ash/host"
   ],
   "shell\\.cc": [
     "+ash/host/ash_window_tree_host_init_params.h",
     "+chromeos/ash/components/fwupd",
-  ],
-  "window_manager\\.cc": [
-    "+ash/host/ash_window_tree_host.h"
   ],
   ".*test\\.cc": [
     # Allowed to access user_manager in test code to set up testing environment
