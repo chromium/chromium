@@ -137,9 +137,17 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testAcquirePool_nullModel() {
-        when(mTabModelSelector.getModel(false)).thenReturn(null);
-        assertNull(BackgroundTabRestorationHelper.acquirePool(mTabModelSelector));
+    public void testAcquirePool_preNative_fallsBackToPersistedToken() {
+        when(mProfile.isNativeInitialized()).thenReturn(false);
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN,
+                        "persisted_token");
+
+        BackgroundTabPool pool = BackgroundTabRestorationHelper.acquirePool(mTabModelSelector);
+        assertNotNull(pool);
+        assertEquals("persisted_token", pool.getProfileToken());
+        BackgroundTabPoolManager.release(pool);
     }
 
     @Test
@@ -232,7 +240,7 @@ public class BackgroundTabRestorationHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testFetchBackgroundTabIds_poolAcquireFails() {
-        when(mTabModelSelector.getModel(false)).thenReturn(null);
+        when(mNormalTabModel.getProfile()).thenReturn(null);
         Set<Integer> ids =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
                         TabOrchestratorType.TABBED, mTabModelSelector, /* isIncognito= */ false);
@@ -358,8 +366,8 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testMaybeRestoreBackgroundTab_nullModel() {
-        when(mTabModelSelector.getModel(false)).thenReturn(null);
+    public void testMaybeRestoreBackgroundTab_nullProfile() {
+        when(mNormalTabModel.getProfile()).thenReturn(null);
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
                         TabOrchestratorType.TABBED,
