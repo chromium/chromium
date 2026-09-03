@@ -7,20 +7,16 @@ package org.chromium.components.browser_ui.settings;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SearchViewProvider.Observer;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** A helper class for applying the default search behavior to search items in Chromium settings. */
 @NullMarked
@@ -95,30 +91,6 @@ public class SearchUtils {
             QueryChangeListener changeListener) {
         searchView.setFocusable(false);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
-
-        View searchPlate = searchView.findViewById(R.id.search_plate);
-        if (searchPlate != null) {
-            Drawable bg =
-                    ContextCompat.getDrawable(searchView.getContext(), R.drawable.pill_background);
-            if (bg != null) {
-                int tint =
-                        SemanticColorUtils.getSettingsContainerBackgroundColor(
-                                searchView.getContext());
-                bg.mutate().setTint(tint);
-                searchPlate.setBackground(bg);
-            }
-            int paddingStart =
-                    searchView
-                            .getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.settings_search_plate_padding_start);
-            ViewCompat.setPaddingRelative(
-                    searchPlate,
-                    paddingStart,
-                    searchPlate.getPaddingTop(),
-                    searchPlate.getPaddingEnd(),
-                    searchPlate.getPaddingBottom());
-        }
 
         // Restore the search view if a query was recovered.
         if (initialQuery != null) {

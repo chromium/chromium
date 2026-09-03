@@ -9,7 +9,6 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,12 +20,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.TooltipCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
@@ -39,7 +39,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -118,6 +117,11 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     private boolean mHasBackButton;
     private boolean mHasSearchButton;
 
+    private @Nullable View mActiveTitleView;
+    private @Nullable ChromeImageButton mActiveSearchButton;
+    private @Nullable SearchView mActiveSearchView;
+    private @Nullable OnBackPressedCallback mBackPressedCallback;
+
     /**
      * The index of the first title to show. Used to skip displaying the titles preceding {@code
      * Search results} when search is going on.
@@ -141,13 +145,12 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     MultiColumnTitleUpdater(
             @Nullable Bundle savedInstanceState,
             MultiColumnSettings multiColumnSettings,
-            Context context,
             LinearLayout container,
             Callback<String> mainTitleSetter,
             Callback<@Nullable String> titleTapCallback,
             @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath) {
         mMultiColumnSettings = multiColumnSettings;
-        mContext = context;
+        mContext = container.getContext();
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
         mTitleTapCallback = titleTapCallback;
@@ -343,6 +346,12 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             }
         }
         mContainer.removeAllViews();
+        mActiveTitleView = null;
+        mActiveSearchButton = null;
+        mActiveSearchView = null;
+        if (mBackPressedCallback != null) {
+            mBackPressedCallback.setEnabled(false);
+        }
 
         List<MultiColumnSettings.Title> titles = initTitlesList();
 
@@ -376,9 +385,17 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             backButton.setMinimumHeight(minTouchTargetPx);
             var layoutParams = new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL);
             backButton.setLayoutParams(layoutParams);
-            backButton.setOnClickListener(v -> navigateToTitle(prevTitle, prevIndex));
-            // Set both accessibility content description and tooltip.
+            backButton.setOnClickListener(
+                    (View v) -> {
+                        if (isSearchOpen()) {
+                            closeSearch();
+                        } else {
+                            navigateToTitle(prevTitle, prevIndex);
+                        }
+                    });
+            // Set both tooltip and accessibility content description.
             TooltipCompat.setTooltipText(backButton, mContext.getString(R.string.back));
+            backButton.setContentDescription(mContext.getString(R.string.back));
             mContainer.addView(backButton);
         }
 
@@ -446,30 +463,37 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 searchView.setLayoutParams(searchViewParams);
                 searchView.setMaxWidth(Integer.MAX_VALUE);
                 searchView.setVisibility(View.GONE);
-                Drawable bg = ContextCompat.getDrawable(mContext, R.drawable.pill_background);
-                if (bg != null) {
-                    int tint = SemanticColorUtils.getSettingsContainerBackgroundColor(mContext);
-                    bg.mutate().setTint(tint);
-                    searchView.setBackground(bg);
+                if (TextUtils.isEmpty(searchView.getQueryHint())) {
+                    searchView.setQueryHint(mContext.getString(R.string.search));
                 }
-                searchViewProvider.initSearchView(searchView);
+                View searchPlate = searchView.findViewById(R.id.search_plate);
+                if (searchPlate != null) {
+                    // The small search plate intentionally has no background on tablet/desktop,
+                    // similar to its appearance on mobile.
+                    searchPlate.setBackground(null);
+                }
 
-                searchButton.setOnClickListener(
-                        v -> {
-                            titleView.setVisibility(View.GONE);
-                            searchButton.setVisibility(View.GONE);
-                            searchView.setVisibility(View.VISIBLE);
-                            searchView.setIconified(false);
-                            searchView.requestFocus();
-                        });
+                mActiveTitleView = titleView;
+                mActiveSearchButton = searchButton;
+                mActiveSearchView = searchView;
+
+                searchButton.setOnClickListener(v -> openSearch());
 
                 searchView.setOnCloseListener(
                         () -> {
-                            searchView.setVisibility(View.GONE);
-                            titleView.setVisibility(View.VISIBLE);
-                            searchButton.setVisibility(View.VISIBLE);
+                            closeSearch();
                             return false;
                         });
+                searchViewProvider.setSearchViewObserver(
+                        (visible) -> {
+                            if (!visible) {
+                                closeSearch();
+                            }
+                        });
+                // Must be called after configuring listeners and setting the observer,
+                // so that initSearchView (via SearchUtils) receives the observer and does
+                // not have its close listener overwritten.
+                searchViewProvider.initSearchView(searchView);
 
                 mContainer.addView(searchButton);
                 mContainer.addView(searchView);
@@ -482,6 +506,75 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         if (mContainer.getParent() instanceof HorizontalScrollView scrollView) {
             scrollView.post(() -> scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
         }
+    }
+
+    private void openSearch() {
+        assert SettingsInTab.isEnabled();
+
+        if (mActiveTitleView != null) {
+            mActiveTitleView.setVisibility(View.GONE);
+        }
+        if (mActiveSearchButton != null) {
+            mActiveSearchButton.setVisibility(View.GONE);
+        }
+        if (mActiveSearchView != null) {
+            mActiveSearchView.setVisibility(View.VISIBLE);
+            mActiveSearchView.setIconified(false);
+            mActiveSearchView.requestFocus();
+        }
+        ensureBackPressedCallback();
+        if (mBackPressedCallback != null) {
+            mBackPressedCallback.setEnabled(true);
+        }
+    }
+
+    private void closeSearch() {
+        assert SettingsInTab.isEnabled();
+
+        if (!isSearchOpen()) return;
+
+        if (mActiveSearchView != null) {
+            mActiveSearchView.setVisibility(View.GONE);
+            mActiveSearchView.setQuery("", false);
+            mActiveSearchView.setIconified(true);
+            mActiveSearchView.clearFocus();
+        }
+        if (mActiveTitleView != null) {
+            mActiveTitleView.setVisibility(View.VISIBLE);
+        }
+        if (mActiveSearchButton != null) {
+            mActiveSearchButton.setVisibility(View.VISIBLE);
+        }
+        if (mBackPressedCallback != null) {
+            mBackPressedCallback.setEnabled(false);
+        }
+    }
+
+    private boolean isSearchOpen() {
+        assert SettingsInTab.isEnabled();
+
+        return mActiveSearchView != null && mActiveSearchView.getVisibility() == View.VISIBLE;
+    }
+
+    private void ensureBackPressedCallback() {
+        assert SettingsInTab.isEnabled();
+
+        // Nothing to do if callback is already set.
+        if (mBackPressedCallback != null) return;
+
+        // This method can be called asynchronously from posted tasks.
+        FragmentActivity activity = mMultiColumnSettings.getActivity();
+        if (activity == null) return;
+
+        mBackPressedCallback =
+                new OnBackPressedCallback(/* enabled= */ false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        closeSearch();
+                    }
+                };
+        activity.getOnBackPressedDispatcher()
+                .addCallback(mMultiColumnSettings, mBackPressedCallback);
     }
 
     private void navigateToTitle(MultiColumnSettings.Title title, int index) {

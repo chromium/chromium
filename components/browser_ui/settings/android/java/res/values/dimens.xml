@@ -19,5 +19,4 @@ found in the LICENSE file.
     <dimen name="pref_icon_frame_min_width">56dp</dimen>
     <dimen name="pref_summary_margin_top">4dp</dimen>
     <dimen name="pref_checkable_image_size">32dp</dimen>
-    <dimen name="settings_search_plate_padding_start">16dp</dimen>
 </resources>

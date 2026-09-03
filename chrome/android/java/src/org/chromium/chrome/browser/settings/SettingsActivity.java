@@ -459,7 +459,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 new MultiColumnTitleUpdater(
                         savedInstanceState,
                         mMultiColumnSettings,
-                        titleContainer.getContext(),
                         titleContainer,
                         this::setTitle,
                         this::onTitleTapped,

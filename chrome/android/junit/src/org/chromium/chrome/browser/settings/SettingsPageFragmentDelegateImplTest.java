@@ -173,6 +173,7 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
         when(mMockSettingsHostFragment.containsChild(mMultiColumnSettings)).thenReturn(true);
         when(mMockSettingsHostFragment.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
+        when(mTitleContainer.getContext()).thenReturn(mActivity);
         when(mTab.getId()).thenReturn(TAB_ID);
 
         mDelegate =
