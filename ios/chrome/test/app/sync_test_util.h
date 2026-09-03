@@ -51,9 +51,6 @@ void ClearFakeSyncServerData();
 // its usual on-destruction flush.
 void FlushFakeSyncServerToDisk();
 
-// Triggers a sync cycle for a set of `types`.
-void TriggerSyncCycleForTypes(syncer::DataTypeSet types);
-
 // Triggers a sync cycle for a `type`.
 void TriggerSyncCycle(syncer::DataType type);
 
