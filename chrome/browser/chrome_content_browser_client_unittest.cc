@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
@@ -531,6 +532,48 @@ TEST_F(ChromeContentBrowserClientTest, AutomaticBeaconCredentials) {
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   EXPECT_FALSE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
       profile(), GURL("a.test"), url::Origin::Create(GURL("c.test"))));
+}
+
+TEST_F(ChromeContentBrowserClientTest, AllowWorkerStorageAccess) {
+  ChromeContentBrowserClient client;
+  const GURL first_party_url("https://a.test/");
+  const GURL third_party_url("https://b.test/");
+  const blink::StorageKey first_party_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(first_party_url));
+  const blink::StorageKey partitioned_key = blink::StorageKey::Create(
+      url::Origin::Create(third_party_url), net::SchemefulSite(first_party_url),
+      blink::mojom::AncestorChainBit::kCrossSite);
+
+  // 1. First-party context should be allowed.
+  EXPECT_TRUE(client.AllowWorkerCacheStorage(first_party_url, profile(), {},
+                                             first_party_key));
+  EXPECT_TRUE(client.AllowWorkerIndexedDB(first_party_url, profile(), {},
+                                          first_party_key));
+
+  // 2. Partitioned third-party context with default settings should be allowed.
+  EXPECT_TRUE(client.AllowWorkerCacheStorage(third_party_url, profile(), {},
+                                             partitioned_key));
+  EXPECT_TRUE(client.AllowWorkerIndexedDB(third_party_url, profile(), {},
+                                          partitioned_key));
+
+  // 3. Partitioned third-party context with 3P cookies blocked should still be
+  // allowed because partitioned storage is allowed by default.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  EXPECT_TRUE(client.AllowWorkerCacheStorage(third_party_url, profile(), {},
+                                             partitioned_key));
+  EXPECT_TRUE(client.AllowWorkerIndexedDB(third_party_url, profile(), {},
+                                          partitioned_key));
+
+  // 4. If cookies/storage are explicitly blocked for the third-party origin,
+  // worker storage access should be blocked.
+  CookieSettingsFactory::GetForProfile(profile())->SetCookieSetting(
+      third_party_url, CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(client.AllowWorkerCacheStorage(third_party_url, profile(), {},
+                                              partitioned_key));
+  EXPECT_FALSE(client.AllowWorkerIndexedDB(third_party_url, profile(), {},
+                                           partitioned_key));
 }
 
 using TestEnterpriseProxyService = enterprise_net::MockEnterpriseProxyService;

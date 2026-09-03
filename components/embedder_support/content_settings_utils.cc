@@ -48,12 +48,41 @@ bool AllowWorkerStorageAccess(
     const blink::StorageKey& storage_key) {
   // TODO(crbug.com/40247160): Consider whether the following check should
   // somehow determine real CookieSettingOverrides rather than default to none.
+  // TODO(crbug.com/555286418): Deduplicate this storage access evaluation logic
+  // with ContentSettingsManagerImpl::EvaluateStorageAccessPermission,
+  // AllowServiceWorker, and AllowSharedWorker.
   content_settings::CookieSettingsBase::CookieSettingWithMetadata
       cookie_settings_metadata;
 
+  std::optional<url::Origin> top_frame_origin =
+      storage_key.IsFirstPartyContext()
+          ? storage_key.origin()
+          : url::Origin::Create(storage_key.top_level_site().GetURL());
+
+  // Storage access permissions are evaluated by reusing
+  // `IsFullCookieAccessAllowed()`. As a side effect of reusing this cookie
+  // helper, passing a nonced partition key causes `IsFullCookieAccessAllowed()`
+  // to immediately reject access because nonced contexts (e.g. FencedFrames or
+  // Credentialless iframes) cannot access unpartitioned cookies. However, such
+  // contexts are permitted to access partitioned storage (e.g. CacheStorage,
+  // IndexedDB) unless cookies/storage are explicitly blocked for the site. See:
+  // - https://wicg.github.io/anonymous-iframe/#proposal-credentials
+  // -
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frame.md#storage-and-communication
+  // We therefore intentionally omit the nonce when constructing the
+  // `cookie_partition_key` so that `IsFullCookieAccessAllowed()` evaluates the
+  // site-level permission and populates the metadata properly without
+  // triggering the nonced-cookie rejection.
+  std::optional<const net::CookiePartitionKey> cookie_partition_key =
+      net::CookiePartitionKey::FromStorageKeyComponents(
+          storage_key.top_level_site(),
+          net::CookiePartitionKey::BoolToAncestorChainBit(
+              storage_key.IsThirdPartyContext()),
+          /*nonce=*/std::nullopt);
+
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
-      url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      net::CookieSettingOverrides(), storage_key.ToCookiePartitionKey(),
+      url, storage_key.ToNetSiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides(), cookie_partition_key,
       &cookie_settings_metadata);
 
   if (!allow && PartitionedStorageByDefaultAllowed(cookie_settings_metadata)) {
